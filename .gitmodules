@@ -1,0 +1,6 @@
+[submodule "Frameworks/UICKeyChainStore"]
+	path = Frameworks/UICKeyChainStore
+	url = https://github.com/kishikawakatsumi/UICKeyChainStore.git
+[submodule "Frameworks/MBProgressHUD"]
+	path = Frameworks/MBProgressHUD
+	url = https://github.com/jdg/MBProgressHUD.git
