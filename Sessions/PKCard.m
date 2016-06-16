@@ -91,7 +91,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   _rsa = PEM_read_bio_RSAPrivateKey(fpem, NULL, NULL, (void *)pp);
   BIO_free(fpem);
 
-  if (!_rsa && !RSA_check_key(_rsa)) {
+  if (!_rsa || !RSA_check_key(_rsa)) {
     return nil;
   }
   

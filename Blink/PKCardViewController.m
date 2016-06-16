@@ -148,10 +148,7 @@
   NSString *pbkey = pb.string;
 
   // Ask for passphrase if it is encrypted.
-  if (([pbkey rangeOfString:@"^Proc-Type: 4,ENCRYPTED\n"
-                    options:NSRegularExpressionSearch]
-         .location != NSNotFound) ||
-      ([pbkey rangeOfString:@"^-----BEGIN ENCRYPTED PRIVATE KEY-----\n"
+  if (([pbkey rangeOfString:@"ENCRYPTED"
                     options:NSRegularExpressionSearch]
          .location != NSNotFound)) {
     UIAlertController *passphraseRequest = [UIAlertController alertControllerWithTitle:@"Encrypted key"
