@@ -172,7 +172,10 @@ static const char *usage_format =
   NSString *locales_path = [[NSBundle mainBundle] pathForResource:@"locales" ofType:@"bundle"];
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
 
+  // Mosh does not support scroll. Disable it to avoid problems.
+  [_stream.control.terminal setScrollEnabled:NO];
   mosh_main(_stream.in, _stream.out, _stream.sz, [_moshParams.ip UTF8String], [_moshParams.port UTF8String], [_moshParams.key UTF8String], [predict_mode UTF8String]);
+  [_stream.control.terminal setScrollEnabled:YES];
 
   fprintf(_stream.out, "\r\nMosh session finished!\r\n");
   fprintf(_stream.out, "\r\n");

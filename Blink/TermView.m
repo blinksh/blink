@@ -164,7 +164,7 @@ static NSDictionary *CTRLCodes = nil;
 #pragma mark Terminal Control
 - (void)setScrollEnabled:(BOOL)scroll
 {
-  _webView.scrollView.scrollEnabled = scroll;
+  [_webView.scrollView setScrollEnabled:NO];
 }
 
 - (void)loadTerminal
