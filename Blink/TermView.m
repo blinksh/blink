@@ -334,7 +334,15 @@ static NSDictionary *CTRLCodes = nil;
   
   _smartKeys.textInputDelegate = self;
   cover.hidden = YES;
+
+  [_webView evaluateJavaScript:@"focusTerm();" completionHandler:nil];
   return [super becomeFirstResponder];
+}
+
+- (BOOL)resignFirstResponder
+{
+  [_webView evaluateJavaScript:@"blurTerm();" completionHandler:nil];
+  return [super resignFirstResponder];
 }
 
 - (BOOL)hasText

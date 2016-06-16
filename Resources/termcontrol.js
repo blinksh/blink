@@ -31,8 +31,8 @@ var scaleTerm = function(scale) {
     t.setFontSize(this.fontSize * scale);
 }
 var focusTerm = function() {
-    t.scrollPort_.getScreenNode().focus();
+    t.onFocusChange_(true);
 }
 var blurTerm = function() {
-    t.scrollPort_.getScreenNode().blur();
+    t.onFocusChange_(false);
 }

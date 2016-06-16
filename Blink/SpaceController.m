@@ -234,6 +234,7 @@
 {
   if (completed) {
     [self displayHUD];
+    [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
   }
 }
 
@@ -311,6 +312,7 @@
 				    if (didComplete) {
 				      [weakSelf.viewports removeLastObject];
 				      [weakSelf displayHUD];
+				      [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   } else {
@@ -322,6 +324,7 @@
 				    if (didComplete) {
 				      [weakSelf.viewports removeObjectAtIndex:idx];
 				      [weakSelf displayHUD];
+				      [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   }
@@ -359,6 +362,8 @@
 				  }
 				  if (didComplete) {
 				    [weakSelf displayHUD];
+				    // Still not in view hierarchy, so calling through selector. There should be a way...
+				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				  }
 				}];
 }
