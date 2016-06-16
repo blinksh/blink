@@ -526,6 +526,12 @@ static void kbd_callback(const char *name, int name_len,
     int rc = 0;
     const char *pub = [pk.publicKey UTF8String];
     const char *priv = [pk.privateKey UTF8String];
+
+    if (!priv || !pub) {
+      [self debugMsg:@"Could not find public key files."];
+      return 0;
+    }
+
     char *passphrase = NULL;
 
     // Request passphrase from user

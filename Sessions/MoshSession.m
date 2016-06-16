@@ -48,9 +48,11 @@ static const char *usage_format =
   "-n      --predict=never      never use local echo\r\n"
   "\r\n"
   "-p NUM  --port=NUM           server-side UDP port\r\n"
-  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
-  "                                (example: \"ssh -p 2222\")\r\n"
-  "                                (default: \"ssh\")\r\n"
+  "-P NUM                       ssh connection port\r\n"
+  "-I id                        ssh authentication identity name\r\n"
+//  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
+//  "                                (example: \"ssh -p 2222\")\r\n"
+//  "                                (default: \"ssh\")\r\n"
   "\r\n"
   "        --verbose            verbose mode\r\n"
   "        --help               this message\r\n"
@@ -75,7 +77,7 @@ static const char *usage_format =
 - (int)main:(int)argc argv:(char **)argv
 {
   NSString *server;
-  NSString *predict_mode, *port_request, *ssh;
+  NSString *predict_mode, *port_request, *ssh, *sshPort, *sshIdentity;
   int help = 0;
   NSString *colors;
 
@@ -84,7 +86,7 @@ static const char *usage_format =
       {"server", required_argument, 0, 's'},
       {"predict", required_argument, 0, 'r'},
       {"port", required_argument, 0, 'p'},
-      {"ssh", required_argument, 0, 'S'},
+      //{"ssh", required_argument, 0, 'S'},
       {"verbose", no_argument, &_debug, 1},
       {"help", no_argument, &help, 1},
       {0, 0, 0, 0}};
@@ -93,7 +95,7 @@ static const char *usage_format =
 
   while (1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "anS:s:r:p:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "anp:I:P:", long_options, &option_index);
     if (c == -1) {
       break;
     }
@@ -102,7 +104,7 @@ static const char *usage_format =
       // Already parsed param
       continue;
     }
-
+    char *param;
     switch (c) {
       case 's':
 	server = [NSString stringWithFormat:@"%s", optarg];
@@ -113,15 +115,22 @@ static const char *usage_format =
       case 'p':
 	port_request = [NSString stringWithFormat:@"%s", optarg];
 	break;
-      case 'S':
-	ssh = [NSString stringWithFormat:@"%s", optarg];
-	break;
+//      case 'S':
+//        param = optarg;
+//	ssh = [NSString stringWithFormat:@"%s", optarg];
+//	break;
       case 'a':
 	predict_mode = @"always";
 	break;
       case 'n':
 	predict_mode = @"never";
 	break;
+        case 'P':
+        sshPort = [NSString stringWithFormat:@"%s", optarg];
+        break;
+        case 'I':
+        sshIdentity = [NSString stringWithFormat:@"%s", optarg];
+        break;
       default:
 	return [self dieMsg:@(usage_format)];
     }
@@ -155,7 +164,7 @@ static const char *usage_format =
   [self debugMsg:moshServerCmd];
 
   NSError *error;
-  [self setConnParamsWithSsh:ssh userHost:userhost moshCommand:moshServerCmd error:&error];
+  [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity moshCommand:moshServerCmd error:&error];
   if (error) {
     return [self dieMsg:error.localizedDescription];
   }
@@ -190,11 +199,17 @@ static const char *usage_format =
   return [NSString stringWithFormat:@"%@", [moshServerArgs componentsJoinedByString:@" "]];
 }
 
-- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost moshCommand:(NSString *)command error:(NSError **)error
+- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity moshCommand:(NSString *)command error:(NSError **)error
 {
   ssh = ssh ? ssh : @"ssh";
 
   NSMutableArray *sshArgs = [NSMutableArray arrayWithObjects:ssh, @"-t", userHost, @"--", command, nil];
+  if (port) {
+    [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
+  }
+  if (identity) {
+    [sshArgs insertObject:[NSString stringWithFormat:@"-i %@", identity] atIndex:1];
+  }
   if (_debug) {
     [sshArgs insertObject:@"-v" atIndex:1];
   }
