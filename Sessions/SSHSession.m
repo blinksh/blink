@@ -913,16 +913,22 @@ static void kbd_callback(const char *name, int name_len,
       if (feof(_stream.in)) {
 	// Propagate the EOF to the other end
 	libssh2_channel_send_eof(_channel);
+	break;
       }
       towrite = fread(streambuf, 1, BUFSIZ, _stream.in);
       rc = 0;
       do {
 	rc = libssh2_channel_write(_channel, streambuf + rc, towrite);
-	towrite -= rc;
+	if (rc > 0) {
+	  towrite -= rc;
+	}
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0 && towrite > 0);
       memset(streambuf, 0, BUFSIZ);
     }
     if (rc < 0 && LIBSSH2_ERROR_EAGAIN != rc) {
+      char *errmsg;
+      libssh2_session_last_error(_session, &errmsg, NULL, 0);
+      [self debugMsg:[NSString stringWithFormat:@"%s", errmsg]];
       [self debugMsg:@"error writing to socket. exiting..."];
       break;
     }
