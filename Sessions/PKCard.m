@@ -76,6 +76,11 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   EVP_PKEY *_pkey;
 }
 
++ (void)initialize {
+  // NOT deprecated.
+  OpenSSL_add_all_algorithms();
+}
+
 - (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase
 {
   self = [super init];
@@ -87,7 +92,6 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   _rsa = RSA_new();
   _pkey = EVP_PKEY_new();
 
-  OpenSSL_add_all_algorithms();
   _rsa = PEM_read_bio_RSAPrivateKey(fpem, NULL, NULL, (void *)pp);
   BIO_free(fpem);
 
@@ -144,10 +148,10 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
     cipher = EVP_aes_256_cbc();
   }
 
-  if (PEM_write_bio_PKCS8PrivateKey(fpem, _pkey,
+  if (!PEM_write_bio_PKCS8PrivateKey(fpem, _pkey,
 				    cipher,
 				    (char *)pp, // NULL for no passphrase
-				    (int)pp_sz, NULL, NULL) != 1) {
+				    (int)pp_sz, NULL, NULL)) {
     BIO_free(fpem);
     return nil;
   }
