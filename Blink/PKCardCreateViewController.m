@@ -89,13 +89,22 @@
   if ([identifier isEqualToString:@"unwindFromCreate"]) {
     if ([PKCard withID:_nameField.text]) {
       errorMsg = @"Cannot have two keys with the same name.";
-    }
-    if ([_nameField.text rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]].location != NSNotFound) {
+    } else if ([_nameField.text rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]].location != NSNotFound) {
       errorMsg = @"Spaces are not permitted in the name.";
-    }
-    if (_passphraseField.text.length && ![_passphraseField.text isEqualToString:_repassphraseField.text]) {
+    } else if (_passphraseField.text.length && ![_passphraseField.text isEqualToString:_repassphraseField.text]) {
       errorMsg = @"Passphrases do not match";
+    } else {
+      // Try to create the key
+      NSInteger selectedIndex = [_sizeField selectedSegmentIndex];
+      int length = [[_sizeField titleForSegmentAtIndex:selectedIndex] intValue];
+      // Create and return
+      SshRsa *key = _key ? _key : [[SshRsa alloc] initWithLength:length];
+      _pkcard = [PKCard saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKey]];
+      if (!_pkcard) {
+        errorMsg = @"OpenSSL error. Could not create Public Key.";
+      }
     }
+
     if (errorMsg) {
       UIAlertView *errorAlert = [[UIAlertView alloc]
             initWithTitle:@"Key error"
@@ -109,19 +118,5 @@
   }
   return YES;
 }
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
-{
-  // Get the new view controller using [segue destinationViewController].
-  // Pass the selected object to the new view controller.
-  if (_createButton == sender) {
-    NSInteger selectedIndex = [_sizeField selectedSegmentIndex];
-    int length = [[_sizeField titleForSegmentAtIndex:selectedIndex] intValue];
-    // Create and return
-    SshRsa *key = _key ? _key : [[SshRsa alloc] initWithLength:length];    
-    _pkcard = [PKCard saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKey]];
-  }
-}
-
 
 @end
