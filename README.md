@@ -21,33 +21,12 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.713
-- Releasing Blink as Open Source
-
-- Copy and Paste support.
-- SmartKeys: On-Screen keyboard display, with support for keyboard combos.
-- Modifier keys support on SmartKeys: continuous presses.
-- Closing a Terminal with Two Fingers down gesture.
-- Space swiping notifications.
-- Font size control with keyboard
-- Fixed CAPS as Ctrl problem with normal characters.
-- Smooth swiping spaces gestures.
-- Scroll.
-
-- New libssh2 based backend for ssh command.
-- ssh command with exec, pty and shell support.
-- DNS and Bonjour name resolution. Back to My Mac support.
-- Known Hosts verification.
-- Support for interactive authentication methods.
-- Public Key authorization support.
-- Settings dialog for Blink configuration.
-- PK creation from settings.
-
-- ssh-copy-id command.
-- stderr support for Sessions.
-- Duplicated streams for each Session, attached or detached.
-- Terminals freeing resources and correctly killing Sessions after termination.
-- Mosh prediction modes support.
+## Version 0.716
+	- Improved focus to follow the Terminals.
+	- Pasting key from clipboard problems fixed.
+	- ssh-copy-id problems fixed.
+	- Mosh session support for ssh port and identity added (-I and -P)
+	- Scroll during a Mosh Session disabled.
 
 [View all changes](CHANGELOG.md)
 
