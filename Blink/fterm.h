@@ -35,8 +35,6 @@
 
 FILE *fterm_open(TerminalView *wv, unsigned int size);
 
-@interface fTerm : NSObject
+@interface FUTF8Term : NSObject
 
 @end
-
-

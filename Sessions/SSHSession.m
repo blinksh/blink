@@ -901,14 +901,19 @@ static void kbd_callback(const char *name, int name_len,
       // Read from socket
       do {
 	rc = libssh2_channel_read(_channel, inputbuf, BUFSIZ);
-	fprintf(_stream.out, "%s", inputbuf);
-	memset(inputbuf, 0, BUFSIZ);
+	if (rc > 0) {
+	  fwrite(inputbuf, rc, 1, _stream.out);
+	}
+        memset(inputbuf, 0, BUFSIZ);
+
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
       do {
-	// TermStream stderr
-	rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
-	fprintf(_stream.out, "%s", inputbuf);
-	memset(inputbuf, 0, BUFSIZ);
+        rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
+        if (rc > 0) {
+          fwrite(inputbuf, rc, 1, _stream.err);
+        }
+        memset(inputbuf, 0, BUFSIZ);
+
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
     }
     if (rc < 0 && LIBSSH2_ERROR_EAGAIN != rc) {
