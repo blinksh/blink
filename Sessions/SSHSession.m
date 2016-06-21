@@ -48,7 +48,7 @@
 #define REQUEST_TTY_FORCE 3
 
 #define PORT 22
-#define TERM "vt100"
+#define TERM "xterm-256color"
 
 static const char *usage_format =
   "usage: ssh [options] [user@]hostname [command]\r\n"
@@ -691,6 +691,10 @@ static void kbd_callback(const char *name, int name_len,
       return -1;
     }
     [self debugMsg:@"ssh_session_start: pty requested"];
+    libssh2_channel_request_pty_size(_channel,
+				     _stream.sz->ws_col,
+				     _stream.sz->ws_row);
+
   }
 
   // Send command or start shell
@@ -897,14 +901,19 @@ static void kbd_callback(const char *name, int name_len,
       // Read from socket
       do {
 	rc = libssh2_channel_read(_channel, inputbuf, BUFSIZ);
-	fprintf(_stream.out, "%s", inputbuf);
-	memset(inputbuf, 0, BUFSIZ);
+	if (rc > 0) {
+	  fwrite(inputbuf, rc, 1, _stream.out);
+	}
+        memset(inputbuf, 0, BUFSIZ);
+
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
       do {
-	// TermStream stderr
-	rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
-	fprintf(_stream.out, "%s", inputbuf);
-	memset(inputbuf, 0, BUFSIZ);
+        rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
+        if (rc > 0) {
+          fwrite(inputbuf, rc, 1, _stream.err);
+        }
+        memset(inputbuf, 0, BUFSIZ);
+
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
     }
     if (rc < 0 && LIBSSH2_ERROR_EAGAIN != rc) {
@@ -957,6 +966,13 @@ static void kbd_callback(const char *name, int name_len,
   }
 
   return 0;
+}
+
+- (void)sigwinch
+{
+  libssh2_channel_request_pty_size(_channel,
+				   _stream.sz->ws_col,
+				   _stream.sz->ws_row);
 }
 
 @end

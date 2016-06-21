@@ -35,32 +35,36 @@
 
 #import "fterm.h"
 
-
 static int writefn(void *handler, const char *buf, int size);
 static int closefn(void *handler);
 
+@interface FUTF8Term ()
+
+@property (readonly) TerminalView *wv;
+
+- (id)initOnTermView:(TerminalView *)term;
+- (void)write:(const char *)buf length:(int)len;
+
+@end
+
+
 FILE *fterm_open(TerminalView *wv, unsigned int size)
 {
-  FILE *desc = funopen(CFBridgingRetain(wv), NULL, writefn, NULL, closefn);
+  FUTF8Term *fTerm = [[FUTF8Term alloc] initOnTermView:wv];
+  FILE *desc = funopen(CFBridgingRetain(fTerm), NULL, writefn, NULL, closefn);
   setvbuf(desc, NULL, _IONBF, 0);
   return desc;
 }
 
 static int writefn(void *handler, const char *buf, int size)
 {
-  TerminalView *term = (__bridge TerminalView *)(handler);
-  if (!term) {
+  FUTF8Term *fTerm = (__bridge FUTF8Term *)(handler);
+  if (!fTerm) {
     errno = EBADF;
     return -1;
   }
-  //NSString *s = [NSString stringWithFormat:@"%.*s", size, buf];
-  NSString *s = [[NSString alloc] initWithBytes:buf length:size encoding:NSUTF8StringEncoding];
-  while (s == nil) {
-    // Reduce size in case it failed (due to UTF8 chunks)
-    s = [[NSString alloc] initWithBytes:buf length:--size encoding:NSUTF8StringEncoding];
-  }
 
-  [term write:s];
+  [fTerm write:buf length:size];
   return size;
 }
 
@@ -70,5 +74,72 @@ static int closefn(void *handler)
   return 0;
 }
 
-@implementation fTerm : NSObject
+
+// UTF8 friendly stream
+@implementation FUTF8Term {
+  NSData *_splitChar;
+}
+
+- (id)initOnTermView:(TerminalView *)term
+{
+  self = [super init];
+
+  if (self) {
+    _wv = term;
+  }
+
+  return self;
+}
+
+- (void)write:(const char *)buf length:(int)len
+{
+  // Prepend characters to buf
+  NSMutableData *data = [[NSMutableData alloc] init];
+  if (_splitChar) {
+    [data appendData:_splitChar];
+    _splitChar = nil;
+  }
+
+  [data appendBytes:buf length:len];
+  len = (unsigned int)[data length];
+
+  // Find the first UTF mark and compare with the iterator.
+  int i = 1;
+  for (; i <= ((len >= 3) ? 3 : len); i++) {
+    unsigned char c = ((const char *)[data bytes])[len - i];
+
+    if (i == 1 && (c & 0x80) == 0) {
+      // Single simple character, all good
+      break;
+    }
+
+    // 10XXX XXXX
+    if (c >> 6 == 0x02) {
+      // Save character
+      //split_char[i] = c;
+      continue;
+    }
+
+    // Check if the character corresponds to the sequence by ORing with it
+    if ((i == 2 && ((c | 0xDF) == 0xDF)) || // 110X XXXX 1 1101 1111
+	(i == 3 && ((c | 0xEF) == 0xEF)) || // 1110 XXXX 2 1110 1111
+	(i == 4 && ((c | 0xF7) == 0xF7))) { // 1111 0XXX 3 1111 0111
+      // Complete sequence
+      break;
+    } else {
+      // Save splitted sequences
+      _splitChar = [data subdataWithRange:NSMakeRange(len - i, i)];
+      break;
+    }
+  }
+
+  NSString *output;
+  if (_splitChar) {
+    output = [[NSString alloc] initWithBytes:[data bytes] length:(len - [_splitChar length]) encoding:NSUTF8StringEncoding];
+  } else {
+    output = [[NSString alloc] initWithBytes:[data bytes] length:(len) encoding:NSUTF8StringEncoding];
+  }
+
+  [_wv write:output];
+}
 @end

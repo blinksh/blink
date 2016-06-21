@@ -104,12 +104,12 @@ static const char *available_commands =
 	// Probably passing a Server struct of some type.
 
 	[self runMoshWithArgs:cmdline];
-      } // else if ([cmd isEqualToString:@"ssh"]) {
-      //   // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-      //	// Probably passing a Server struct of some type.
+      } else if ([cmd isEqualToString:@"ssh"]) {
+        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+      	// Probably passing a Server struct of some type.
 
-      //   [self runSSHWithArgs:cmdline];
-      // }
+        [self runSSHWithArgs:cmdline];
+      }
       else if ([cmd isEqualToString:@"exit"]) {
 	break;
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
