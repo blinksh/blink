@@ -45,7 +45,7 @@
 static const char *available_commands =
   "Available commands:\r\n"
   "mosh: Start a mosh session.\r\n"
-  //  "ssh: Send a command through ssh.\r\n"
+  "ssh: Send a command through ssh.\r\n"
   "ssh-copy-id: Copy an identity to the server.\r\n"
   "config: Configure Blink.\r\n"
   "help: Prints this.\r\n"
