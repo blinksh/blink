@@ -21,12 +21,8 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.716
-	- Improved focus to follow the Terminals.
-	- Pasting key from clipboard problems fixed.
-	- ssh-copy-id problems fixed.
-	- Mosh session support for ssh port and identity added (-I and -P)
-	- Scroll during a Mosh Session disabled.
+## Version 0.722
+	- SSH session support. You can now start full ssh sessions inside the shell, or send remote ssh commands to a host.
 
 [View all changes](CHANGELOG.md)
 

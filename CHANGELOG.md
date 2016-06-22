@@ -1,3 +1,6 @@
+# Version 0.722
+	- SSH session support. You can now start full ssh sessions inside the shell, or send remote ssh commands to a host.
+
 # Version 0.716
 	- Improved focus to follow the Terminals.
 	- Pasting key from clipboard problems fixed.
