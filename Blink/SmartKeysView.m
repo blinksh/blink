@@ -35,7 +35,7 @@ NSString *const KbdLeftArrowKey = @"◀︎";
 NSString *const KbdRightArrowKey = @"▶︎";
 NSString *const KbdUpArrowKey = @"▲";
 NSString *const KbdDownArrowKey = @"▼";
-NSString *const KbdEscKey = @"esc";
+NSString *const KbdEscKey = @"⎋";
 NSString *const KbdTabKey = @"⇥";
 
 
