@@ -13,7 +13,7 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Use two fingers tap to create a new shell.
 - Move between shells by swapping your finger.
 - You can exit the session and get back to the shell to open a new connection.
-- You can also close a session by dragging to fingers down.
+- You can also close a session by dragging two fingers down.
 - Use pinch gesture to increase or reduce size of text. You can also use Cmd+ or Cmd- if using the keyboard.
 - Copy and Paste by selecting text o tapping the screen.
 - Run 'config' to setup your keys. Install them to a server through ssh-copy-id.
