@@ -13,7 +13,7 @@ git submodule update
 Blink makes use of multiple dependencies that you have to compile
 separately before building Blink itself. There are simple scripts available
 to perform this operation.
-- [Libssh2](https://github.com/x2on/libssh2-for-iOS)
+- [Libssh2](https://github.com/carloscabanero/libssh2-for-iOS)
 - [OpenSSL](https://github.com/x2on/OpenSSL-for-iPhone/tree/ee4665d089a91d7382fcb22b0b09c85a02935739)
 - [Protobuf](https://gist.github.com/BennettSmith/9487468ae3375d0db0cc)
 - [Mosh](https://github.com/blinksh/build-mosh)
