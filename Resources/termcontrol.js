@@ -2,12 +2,8 @@ var write_to_term = function(data) {
     t.io.print(data);
 }
 var sigwinch = function() {
-    var screen = document.getElementsByTagName("iframe")[0].contentWindow.document.getElementsByTagName("x-screen")[0];
-    var view_w = window.innerWidth;
-    var view_h = window.innerHeight;
-    screen.style.width = view_w;
-    screen.style.height = view_h;
-    
+    var termWindow = document.getElementsByTagName("iframe")[0].contentWindow;
+    termwindow.resizeTo(window.innerWidth, window.innerHeight);
 }
 window.addEventListener('resize', sigwinch);
 var increaseTermFontSize = function() {
