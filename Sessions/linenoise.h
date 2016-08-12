@@ -42,41 +42,40 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-  
-  typedef struct linenoiseCompletions {
-    size_t len;
-    char **cvec;
-  } linenoiseCompletions;
-  
-  typedef void(linenoiseCompletionCallback)(const char *, linenoiseCompletions *);
-  typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);
-  typedef void(linenoiseFreeHintsCallback)(void *);
-  void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
-  void linenoiseSetHintsCallback(linenoiseHintsCallback *);
-  void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *);
-  void linenoiseAddCompletion(linenoiseCompletions *, const char *);
-  
-  char *linenoise(const char *prompt);
-  void linenoiseFree(void *ptr);
-  int linenoiseHistoryAdd(const char *line);
-  int linenoiseHistorySetMaxLen(int len);
-  int linenoiseHistorySave(const char *filename);
-  int linenoiseHistoryLoad(const char *filename);
-  void linenoiseClearScreen(void);
-  void linenoiseSetMultiLine(int ml);
-  void linenoisePrintKeyCodes(void);
-  
-  typedef size_t (linenoisePrevCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
-  typedef size_t (linenoiseNextCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
-  typedef size_t (linenoiseReadCode)(int fd, char *buf, size_t buf_len, int* c);
-  
-  int linenoiseEdit(int stdin_fd, FILE *fstdout, char *buf, size_t buflen, const char *prompt, int cols);
-  
-  void linenoiseSetEncodingFunctions(
-                                     linenoisePrevCharLen *prevCharLenFunc,
-                                     linenoiseNextCharLen *nextCharLenFunc,
-                                     linenoiseReadCode *readCodeFunc);
-  
+
+typedef struct linenoiseCompletions {
+  size_t len;
+  char **cvec;
+} linenoiseCompletions;
+
+typedef void(linenoiseCompletionCallback)(const char *, linenoiseCompletions *);
+typedef char*(linenoiseHintsCallback)(const char *, int *color, int *bold);
+typedef void(linenoiseFreeHintsCallback)(void *);
+void linenoiseSetCompletionCallback(linenoiseCompletionCallback *);
+void linenoiseSetHintsCallback(linenoiseHintsCallback *);
+void linenoiseSetFreeHintsCallback(linenoiseFreeHintsCallback *);
+void linenoiseAddCompletion(linenoiseCompletions *, const char *);
+
+char *linenoise(const char *prompt);
+void linenoiseFree(void *ptr);
+int linenoiseHistoryAdd(const char *line);
+int linenoiseHistorySetMaxLen(int len);
+int linenoiseHistorySave(const char *filename);
+int linenoiseHistoryLoad(const char *filename);
+int linenoiseEdit(int stdin_fd, FILE *fstdout, char *buf, size_t buflen, const char *prompt, struct winsize *size);
+//void linenoiseClearScreen(struct linenoiseState *ls);
+void linenoiseSetMultiLine(int ml);
+void linenoisePrintKeyCodes(void);
+
+typedef size_t (linenoisePrevCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
+typedef size_t (linenoiseNextCharLen)(const char *buf, size_t buf_len, size_t pos, size_t *col_len);
+typedef size_t (linenoiseReadCode)(int fd, char *buf, size_t buf_len, int* c);
+
+void linenoiseSetEncodingFunctions(
+    linenoisePrevCharLen *prevCharLenFunc,
+    linenoiseNextCharLen *nextCharLenFunc,
+    linenoiseReadCode *readCodeFunc);
+
 #ifdef __cplusplus
 }
 #endif
