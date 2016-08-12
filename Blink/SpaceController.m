@@ -175,13 +175,15 @@
 - (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
 {
   CGFloat y = [sender translationInView:self.view].y;
+  CGFloat height = self.view.frame.size.height;
+
   if (y > 0) {
     _topConstraint.constant = y;
-    _viewportsController.view.alpha = 1 - (y / 100);
+    _viewportsController.view.alpha = 1 - (y * 2/ height);
   }
   if (sender.state == UIGestureRecognizerStateEnded) {
     CGPoint velocity = [sender velocityInView:self.view];
-    if (velocity.y > 100) {
+    if (velocity.y > height * 2) {
       _viewportsController.view.alpha = 1;
       _topConstraint.constant = 0;
       [self.view layoutIfNeeded];
