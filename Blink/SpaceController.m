@@ -139,8 +139,6 @@
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && [otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
-    [gestureRecognizer requireGestureRecognizerToFail: otherGestureRecognizer];
-    
     return NO;
   }
   return YES;
