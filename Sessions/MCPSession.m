@@ -33,6 +33,7 @@
 #include <string.h>
 
 #include "linenoise.h"
+#include "utf8.h"
 
 #import "MCPSession.h"
 #import "MoshSession.h"
@@ -86,6 +87,10 @@ static const char *available_commands =
 
   const char *history = [filePath UTF8String];
 
+  linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,
+                                linenoiseUtf8NextCharLen,
+                                linenoiseUtf8ReadCode);
+  
   linenoiseHistoryLoad(history);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
