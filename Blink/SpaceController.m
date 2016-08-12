@@ -206,11 +206,10 @@
     return _viewports[0];
   }
   NSInteger idx = [_viewports indexOfObject:viewController];
-  NSParameterAssert(idx != NSNotFound);
+
   if (idx >= [_viewports count] - 1) {
     return nil;
   }
-
   return _viewports[idx + 1];
 }
 
@@ -221,12 +220,10 @@
     return _viewports[0];
   }
   NSInteger idx = [_viewports indexOfObject:viewController];
-  NSParameterAssert(idx != NSNotFound);
 
   if (idx <= 0) {
     return nil;
   }
-
   return _viewports[idx - 1];
 }
 
@@ -290,7 +287,10 @@
 - (void)closeCurrentSpace
 {
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
-
+  if(idx == NSNotFound) {
+    return;
+  }
+  
   NSInteger numViewports = [_viewports count];
   
   [self.currentTerm terminate];
@@ -298,33 +298,33 @@
   __weak typeof(self) weakSelf = self;
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
+    [self.viewports removeObjectAtIndex:0];
     [self createShellAnimated:NO
 		   completion:^(BOOL didComplete) {
-		     [weakSelf.viewports removeObjectAtIndex:0];
 		   }];
   } else if (idx >= [_viewports count] - 1) {
-    // Last viewport, go to the previous
+    // Last viewport, go to the previous.
+    [self.viewports removeLastObject];
     [_viewportsController setViewControllers:@[ _viewports[idx - 1] ]
 				   direction:UIPageViewControllerNavigationDirectionReverse
-				    animated:YES
+				    animated:NO
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-				      [weakSelf.viewports removeLastObject];
-				      [weakSelf displayHUD];
-				      [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+                [weakSelf displayHUD];
+                [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   } else {
-    [_viewportsController setViewControllers:@[ _viewports[idx + 1] ]
+    [self.viewports removeObjectAtIndex:idx];
+    [_viewportsController setViewControllers:@[ _viewports[idx] ]
 				   direction:UIPageViewControllerNavigationDirectionForward
-				    animated:YES
+				    animated:NO
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-				      [weakSelf.viewports removeObjectAtIndex:idx];
-				      [weakSelf displayHUD];
-				      [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+                [weakSelf displayHUD];
+                [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   }
