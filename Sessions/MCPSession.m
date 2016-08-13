@@ -42,16 +42,6 @@
 
 #define MCP_MAX_LINE 4096
 
-static const char *available_commands =
-  "Available commands:\r\n"
-  "mosh: Start a mosh session.\r\n"
-  //  "ssh: Send a command through ssh.\r\n"
-  "ssh-copy-id: Copy an identity to the server.\r\n"
-  "help: Prints this.\r\n"
-  "exit: Close this window.\r\n"
-  "\r\n";
-
-
 @implementation MCPSession {
   Session *childSession;
 }
@@ -160,9 +150,36 @@ static const char *available_commands =
   childSession = nil;
 }
 
+- (NSString *)shortVersionString
+{
+  NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
+  
+  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleName"];
+  NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+  NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+  
+  return [NSString stringWithFormat:@"%@: v%@.%@. %@",
+          appDisplayName, majorVersion, minorVersion, compileDate];
+}
+
+
 - (void)showCommands
 {
-  [self out:available_commands];
+  NSString *help = [@[
+    @"",
+    [self shortVersionString],
+    @"",
+    @"Available commands:",
+    @"  mosh: Start a mosh session.",
+    //  @"ssh: Send a command through ssh.",
+    @"  ssh-copy-id: Copy an identity to the server.",
+    @"  help: Prints this.",
+    @"  exit: Close this window.",
+    @""
+  ] componentsJoinedByString:@"\r\n"];
+  
+  [self out:help.UTF8String];
 }
 
 - (void)out:(const char *)str
