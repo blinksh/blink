@@ -87,7 +87,7 @@
       NSString *cmd = arr[0];
 
       if ([cmd isEqualToString:@"help"]) {
-	[self showCommands];
+	[self showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {
 	// At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
 	// Probably passing a Server struct of some type.
@@ -163,8 +163,7 @@
           appDisplayName, majorVersion, minorVersion, compileDate];
 }
 
-
-- (void)showCommands
+- (void)showHelp
 {
   NSString *help = [@[
     @"",
@@ -172,13 +171,20 @@
     @"",
     @"Available commands:",
     @"  mosh: Start a mosh session.",
-    //  @"ssh: Send a command through ssh.",
+    //  @"  ssh: Send a command through ssh.",
     @"  ssh-copy-id: Copy an identity to the server.",
     @"  help: Prints this.",
     @"  exit: Close this window.",
+    @"",
+    @"Available gestures:",
+    @"",
+    @"  two fingers tap: New window.",
+    @"  two fingers swipe down: Close window.",
+    @"  one finger swipe left/right: Switch between windows.",
+    @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];
-  
+    
   [self out:help.UTF8String];
 }
 
