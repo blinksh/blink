@@ -174,7 +174,7 @@ static void kbd_callback(const char *name, int name_len,
     switch (c) {
       case 'p':
 	_options.port = (unsigned int)strtol(optarg, &ep, 10);
-	if (optarg == ep || *ep != '\0' || _options.port > 6553) {
+	if (optarg == ep || *ep != '\0' || _options.port > 65536) {
 	  return [self dieMsg:@"Wrong port value provided."];
 	}
 	break;
