@@ -177,7 +177,6 @@
     @"  exit: Close this window.",
     @"",
     @"Available gestures:",
-    @"",
     @"  two fingers tap: New window.",
     @"  two fingers swipe down: Close window.",
     @"  one finger swipe left/right: Switch between windows.",
