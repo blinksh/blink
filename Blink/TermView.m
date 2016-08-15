@@ -36,7 +36,7 @@
 #import "TermView.h"
 
 static NSDictionary *CTRLCodes = nil;
-
+static NSDictionary *FModifiers = nil;
 
 @interface CC : NSObject
 
@@ -56,6 +56,16 @@ static NSDictionary *CTRLCodes = nil;
     @"\\" : @"\x1C",
     @"^" : @"\x1E",
     @"_" : @"\x1F"
+  };
+  FModifiers = @{
+    @0 : @0,
+    [NSNumber numberWithInt:UIKeyModifierShift] : @2,
+    [NSNumber numberWithInt:UIKeyModifierAlternate] : @3,
+    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierAlternate] : @4,
+    [NSNumber numberWithInt:UIKeyModifierControl] : @5,
+    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierControl] : @6,
+    [NSNumber numberWithInt:UIKeyModifierAlternate|UIKeyModifierControl] : @7,
+    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierAlternate|UIKeyModifierControl] : @8
   };
 }
 
@@ -80,21 +90,43 @@ static NSDictionary *CTRLCodes = nil;
   }
 }
 
++ (NSString *)CSI
+{
+  return [CC ESC:@"["];
+}
+
 + (NSString *)KEY:(NSString *)c
 {
+  return [CC KEY:c MOD:nil];
+}
+
++ (NSString *)KEY:(NSString *)c MOD:(NSValue*)m
+{  
+  NSArray *out;
+  // TODO: CSI as a string instead of a function. It is always the same, the combinations
+  // are what change depending on the mode.
   if (c == UIKeyInputUpArrow) {
-    return @"\x1B[A";
+    out = @[[self CSI], @"A"];
   } else if (c == UIKeyInputDownArrow) {
-    return @"\x1B[B";
+    out = @[[self CSI], @"B"];
+    //    return @"\x1B[B";
   } else if (c == UIKeyInputLeftArrow) {
-    return @"\x1B[D";
+    out = @[[self CSI], @"D"];
+    //    return @"\x1B[D";
   } else if (c == UIKeyInputRightArrow) {
-    return @"\x1B[C";
+    out = @[[self CSI], @"C"];
+    //    return @"\x1B[C";
   } else if (c == UIKeyInputEscape) {
     return @"\x1B";
   } else if ([c isEqual:@"\n"]) {
     return @"\r";
   }
+
+  if (m) {
+    NSString *modSeq = [NSString stringWithFormat:@";\@", FModifiers[m]];
+    return [out componentsJoinedByString: modSeq];
+  }
+  
   return c;
 }
 @end
@@ -385,12 +417,17 @@ static NSDictionary *CTRLCodes = nil;
 - (void)setKbdCommands
 {
   _kbdCommands = [NSMutableArray array];
-
+  // [kbdCommands addObjectsFromArray:presetShortcuts]
+  // [kbdCommands addObjectsFromArray:functionKeys]
+  // [kbdCommands addObjectsFromArray:controlSeqs]
+  
+  // presetShortcuts
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)]];
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"+" modifierFlags:UIKeyModifierControl action:@selector(increaseFontSize:)]];
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"-" modifierFlags:UIKeyModifierControl action:@selector(decreaseFontSize:)]];
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"0" modifierFlags:UIKeyModifierControl action:@selector(resetFontSize:)]];
 
+  // controlSeqs
   NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>?";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
@@ -410,11 +447,15 @@ static NSDictionary *CTRLCodes = nil;
 			     }
 
 			   }];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(arrowSeq:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(arrowSeq:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(arrowSeq:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(arrowSeq:)]];
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
+
+  // Function keys with modifier sequences.
+  for (id modifier in FModifiers.allKeys) {
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
+  }
 }
 
 - (NSArray<UIKeyCommand *> *)keyCommands
@@ -451,9 +492,9 @@ static NSDictionary *CTRLCodes = nil;
   [_delegate write:[CC KEY:cmd.input]];
 }
 
-- (void)arrowSeq:(UIKeyCommand *)cmd
-{
-  [_delegate write:[CC KEY:cmd.input]];
+- (void)arrowSeq:(UIKeyCommand *)cmd modifier:(NSValue*)modifier
+{  
+  [_delegate write:[CC KEY:cmd.input MOD:modifier]];
 }
 
 // Shift prints uppercase in the case CAPSLOCK is blocked
