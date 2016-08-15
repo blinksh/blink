@@ -69,6 +69,10 @@ static NSDictionary *FModifiers = nil;
   };
 }
 
++ (NSDictionary *)FModifiers {
+  return FModifiers;
+}
+
 + (NSString *)CTRL:(NSString *)c
 {
   NSString *code;
@@ -95,26 +99,50 @@ static NSDictionary *FModifiers = nil;
   return [CC ESC:@"["];
 }
 
-+ (NSString *)KEY:(NSString *)c
++ (NSString *)SS3
 {
-  return [CC KEY:c MOD:nil];
+  return [CC ESC:@"O"];
 }
 
-+ (NSString *)KEY:(NSString *)c MOD:(NSValue*)m
++ (NSString *)KEY:(NSString *)c
+{
+  return [CC KEY:c MOD:0];
+}
+
++ (NSString *)KEY:(NSString *)c MOD:(NSInteger)m
 {  
   NSArray *out;
   // TODO: CSI as a string instead of a function. It is always the same, the combinations
   // are what change depending on the mode.
+  // Arrows to a dictionary too, and drop the correct code plus the right combination. We can then extend this
+  // to all the function keys. We will map F to different enumerators in the same way as arrow keys, and then
+  // map those to the corresponding control code.
   if (c == UIKeyInputUpArrow) {
-    out = @[[self CSI], @"A"];
+    if (m) {
+      out = @[[self CSI], @"A"];
+    } else {
+      return [NSString stringWithFormat:@"%@A", [self SS3]];
+    }
   } else if (c == UIKeyInputDownArrow) {
-    out = @[[self CSI], @"B"];
+    if (m) {
+      out = @[[self CSI], @"B"];
+    } else {
+      return [NSString stringWithFormat:@"%@B", [self SS3]];
+    }
     //    return @"\x1B[B";
   } else if (c == UIKeyInputLeftArrow) {
-    out = @[[self CSI], @"D"];
+    if (m) {
+      out = @[[self CSI], @"D"];
+    } else {
+      return [NSString stringWithFormat:@"%@D", [self SS3]];
+    }
     //    return @"\x1B[D";
   } else if (c == UIKeyInputRightArrow) {
-    out = @[[self CSI], @"C"];
+    if (m) {
+      out = @[[self CSI], @"C"];
+    } else {
+      return [NSString stringWithFormat:@"%@C", [self SS3]];
+    }
     //    return @"\x1B[C";
   } else if (c == UIKeyInputEscape) {
     return @"\x1B";
@@ -123,7 +151,7 @@ static NSDictionary *FModifiers = nil;
   }
 
   if (m) {
-    NSString *modSeq = [NSString stringWithFormat:@";\@", FModifiers[m]];
+    NSString *modSeq = [NSString stringWithFormat:@";%@", FModifiers[[NSNumber numberWithInteger:m]]];
     return [out componentsJoinedByString: modSeq];
   }
   
@@ -450,11 +478,11 @@ static NSDictionary *FModifiers = nil;
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
 
   // Function keys with modifier sequences.
-  for (id modifier in FModifiers.allKeys) {
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:0 action:@selector(arrowSeq:modifier:)]];
+  for (NSNumber *modifier in [CC FModifiers]) {
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
   }
 }
 
@@ -492,9 +520,9 @@ static NSDictionary *FModifiers = nil;
   [_delegate write:[CC KEY:cmd.input]];
 }
 
-- (void)arrowSeq:(UIKeyCommand *)cmd modifier:(NSValue*)modifier
+- (void)arrowSeq:(UIKeyCommand *)cmd
 {  
-  [_delegate write:[CC KEY:cmd.input MOD:modifier]];
+  [_delegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags]];
 }
 
 // Shift prints uppercase in the case CAPSLOCK is blocked
