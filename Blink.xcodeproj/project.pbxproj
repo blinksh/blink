@@ -45,6 +45,7 @@
 		0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F12A1D06324B00AB5438 /* libstdc++.tbd */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 074F307A1D062A3F00A73445 /* SmartKeys.xib */; };
+		0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DB1D0F8219000473B1 /* sauce.css in Resources */ = {isa = PBXBuildFile; fileRef = 079635D91D0F8219000473B1 /* sauce.css */; };
@@ -182,6 +183,7 @@
 		0732F12A1D06324B00AB5438 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		074F307A1D062A3F00A73445 /* SmartKeys.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SmartKeys.xib; sourceTree = "<group>"; };
+		0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HockeySDKResources.bundle; path = Frameworks/HockeySDK.embeddedframework/HockeySDK.framework/Versions/A/Resources/HockeySDKResources.bundle; sourceTree = SOURCE_ROOT; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
@@ -289,6 +291,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
 				070058EB1D12FA6D00D133E3 /* termcontrol.js */,
 				079635D91D0F8219000473B1 /* sauce.css */,
 				079635DA1D0F8219000473B1 /* webfont.js */,
@@ -556,6 +559,7 @@
 				074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				0716B58E1CFFAB9300268B5B /* Settings.storyboard in Resources */,
+				0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */,
 				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
 				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
