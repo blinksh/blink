@@ -9,10 +9,12 @@ Clone Blink into your local repository and make sure to obtain any submodules:
 git submodule init
 git submodule update
 
-## Dependencies
+## Dependencies & Requirements
 Blink makes use of multiple dependencies that you have to compile
 separately before building Blink itself. There are simple scripts available
 to perform this operation.
+- XCode 9.3
+- ncurses
 - [Libssh2](https://github.com/carloscabanero/libssh2-for-iOS)
 - [OpenSSL](https://github.com/x2on/OpenSSL-for-iPhone/tree/ee4665d089a91d7382fcb22b0b09c85a02935739)
 - [Protobuf](https://gist.github.com/BennettSmith/9487468ae3375d0db0cc)
