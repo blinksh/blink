@@ -179,6 +179,7 @@
     @"  mosh: mosh client.",
     @"  ssh: ssh client.",
     @"  ssh-copy-id: Copy an identity to the server.",
+    @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  help: Prints this.",
     @"  exit: Close this window.",
     @"",
