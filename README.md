@@ -21,8 +21,20 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.722
-	- SSH session support. You can now start full ssh sessions inside the shell, or send remote ssh commands to a host.
+## Version 0.916
+	This version contains many important bug fixes that should improve the experience a lot and reduce crashes to, hopefully, close to zero:
+	- Unicode support to Blink shell. Thanks Yury!
+	- Support for function keys + modifiers. Now you can do Ctrl/Alt/Shift + Arrows.
+	- Improved experience with drag down to close. Let me know what you think :)
+	- SSH with improved function keys in ncurses apps. htop, less, etc... should now work perfectly.
+	- New help message with version and gestures.
+	- Added asterisk, underscore and escape to SmartKeys.
+	- Added HockeySDKResources.bundle to project for improved updates.
+
+	- Fixed resize when in SplitView mode getting stuck.
+	- Fixed port bug.
+	- Optimized messaging to terminal to avoid overloading WKWebView.
+	- Optimized Terminal switching and closing that was causing crashes and inconsistencies.
 
 [View all changes](CHANGELOG.md)
 
