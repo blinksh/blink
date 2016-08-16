@@ -37,6 +37,9 @@
 
 static NSDictionary *CTRLCodes = nil;
 static NSDictionary *FModifiers = nil;
+static NSDictionary *FKeys = nil;
+static NSString *SS3 = nil;
+static NSString *CSI = nil;
 
 @interface CC : NSObject
 
@@ -61,15 +64,25 @@ static NSDictionary *FModifiers = nil;
     @0 : @0,
     [NSNumber numberWithInt:UIKeyModifierShift] : @2,
     [NSNumber numberWithInt:UIKeyModifierAlternate] : @3,
-    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierAlternate] : @4,
+    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate] : @4,
     [NSNumber numberWithInt:UIKeyModifierControl] : @5,
-    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierControl] : @6,
-    [NSNumber numberWithInt:UIKeyModifierAlternate|UIKeyModifierControl] : @7,
-    [NSNumber numberWithInt:UIKeyModifierShift|UIKeyModifierAlternate|UIKeyModifierControl] : @8
+    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierControl] : @6,
+    [NSNumber numberWithInt:UIKeyModifierAlternate | UIKeyModifierControl] : @7,
+    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierControl] : @8
   };
+  FKeys = @{
+    UIKeyInputUpArrow : @"A",
+    UIKeyInputDownArrow : @"B",
+    UIKeyInputRightArrow : @"C",
+    UIKeyInputLeftArrow : @"D"
+  };
+
+  SS3 = [self ESC:@"O"];
+  CSI = [self ESC:@"["];
 }
 
-+ (NSDictionary *)FModifiers {
++ (NSDictionary *)FModifiers
+{
   return FModifiers;
 }
 
@@ -94,56 +107,23 @@ static NSDictionary *FModifiers = nil;
   }
 }
 
-+ (NSString *)CSI
-{
-  return [CC ESC:@"["];
-}
-
-+ (NSString *)SS3
-{
-  return [CC ESC:@"O"];
-}
-
 + (NSString *)KEY:(NSString *)c
 {
-  return [CC KEY:c MOD:0];
+  return [CC KEY:c MOD:0 RAW:NO];
 }
 
-+ (NSString *)KEY:(NSString *)c MOD:(NSInteger)m
-{  
++ (NSString *)KEY:(NSString *)c MOD:(NSInteger)m RAW:(BOOL)raw
+{
   NSArray *out;
-  // TODO: CSI as a string instead of a function. It is always the same, the combinations
-  // are what change depending on the mode.
-  // Arrows to a dictionary too, and drop the correct code plus the right combination. We can then extend this
-  // to all the function keys. We will map F to different enumerators in the same way as arrow keys, and then
-  // map those to the corresponding control code.
-  if (c == UIKeyInputUpArrow) {
+
+  if ([FKeys.allKeys containsObject:c]) {
     if (m) {
-      out = @[[self CSI], @"A"];
+      out = @[ CSI, FKeys[c] ];
+    } else if (raw) {
+      return [NSString stringWithFormat:@"%@%@", SS3, FKeys[c]];
     } else {
-      return [NSString stringWithFormat:@"%@A", [self SS3]];
+      return [NSString stringWithFormat:@"%@%@", CSI, FKeys[c]];
     }
-  } else if (c == UIKeyInputDownArrow) {
-    if (m) {
-      out = @[[self CSI], @"B"];
-    } else {
-      return [NSString stringWithFormat:@"%@B", [self SS3]];
-    }
-    //    return @"\x1B[B";
-  } else if (c == UIKeyInputLeftArrow) {
-    if (m) {
-      out = @[[self CSI], @"D"];
-    } else {
-      return [NSString stringWithFormat:@"%@D", [self SS3]];
-    }
-    //    return @"\x1B[D";
-  } else if (c == UIKeyInputRightArrow) {
-    if (m) {
-      out = @[[self CSI], @"C"];
-    } else {
-      return [NSString stringWithFormat:@"%@C", [self SS3]];
-    }
-    //    return @"\x1B[C";
   } else if (c == UIKeyInputEscape) {
     return @"\x1B";
   } else if ([c isEqual:@"\n"]) {
@@ -151,10 +131,10 @@ static NSDictionary *FModifiers = nil;
   }
 
   if (m) {
-    NSString *modSeq = [NSString stringWithFormat:@";%@", FModifiers[[NSNumber numberWithInteger:m]]];
-    return [out componentsJoinedByString: modSeq];
+    NSString *modSeq = [NSString stringWithFormat:@"1;%@", FModifiers[[NSNumber numberWithInteger:m]]];
+    return [out componentsJoinedByString:modSeq];
   }
-  
+
   return c;
 }
 @end
@@ -174,7 +154,7 @@ static NSDictionary *FModifiers = nil;
   UIView *cover;
   UIPinchGestureRecognizer *_pinchGesture;
   NSTimer *_pinchSamplingTimer;
-
+  BOOL _raw;
 }
 
 - (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
@@ -195,13 +175,13 @@ static NSDictionary *FModifiers = nil;
     _dismissInput = YES;
     [self addGestureRecognizer:tapBackground];
 
-     UILongPressGestureRecognizer* longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
-     [longPressBackground setNumberOfTapsRequired:1];
-     longPressBackground.delegate = self;
-     // _dismissInput = YES;
-     [self addGestureRecognizer:tapBackground];
-    
-    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget: self action: @selector(handlePinch:)];
+    UILongPressGestureRecognizer *longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
+    [longPressBackground setNumberOfTapsRequired:1];
+    longPressBackground.delegate = self;
+    // _dismissInput = YES;
+    [self addGestureRecognizer:tapBackground];
+
+    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGesture.delegate = self;
     [self addGestureRecognizer:_pinchGesture];
 
@@ -225,6 +205,16 @@ static NSDictionary *FModifiers = nil;
 - (void)setScrollEnabled:(BOOL)scroll
 {
   [_webView.scrollView setScrollEnabled:NO];
+}
+
+- (void)setRawMode:(BOOL)raw
+{
+  _raw = raw;
+}
+
+- (BOOL)rawMode
+{
+  return _raw;
 }
 
 - (void)loadTerminal
@@ -335,35 +325,34 @@ static NSDictionary *FModifiers = nil;
   }
 }
 
-- (void) handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
+- (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
     //_lastPinchScale = _webView.scrollView.zoomScale;
     [_webView evaluateJavaScript:@"scaleTermStart();" completionHandler:nil];
     if (_pinchSamplingTimer)
       [_pinchSamplingTimer invalidate];
-    
+
     _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(pinchSampling:) userInfo:nil repeats:YES];
     [_pinchSamplingTimer fire];
   }
-  
-  if (gestureRecognizer.state == UIGestureRecognizerStateEnded ) {
+
+  if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
     [_pinchSamplingTimer invalidate];
   }
   //[_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
-  
-  
 
-// _webView.transform = CGAffineTransformScale(gestureRecognizer.view.transform, 1/gestureRecognizer.scale, 1/gestureRecognizer.scale);
-//  CGFloat scale = round(1.0 - (0.04 * (_lastPinchScale - gestureRecognizer.velocity)) * 100) / 100.0;
-//  
-//  if (gestureRecognizer.scale < 0.5 || gestureRecognizer.scale > 2.0)
-//    return;
-//  if (scale != _lastPinchScale) {
-//    NSLog(@"%f", scale);
-//    [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
-//    _lastPinchScale = scale;
-//  }
+
+  // _webView.transform = CGAffineTransformScale(gestureRecognizer.view.transform, 1/gestureRecognizer.scale, 1/gestureRecognizer.scale);
+  //  CGFloat scale = round(1.0 - (0.04 * (_lastPinchScale - gestureRecognizer.velocity)) * 100) / 100.0;
+  //
+  //  if (gestureRecognizer.scale < 0.5 || gestureRecognizer.scale > 2.0)
+  //    return;
+  //  if (scale != _lastPinchScale) {
+  //    NSLog(@"%f", scale);
+  //    [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
+  //    _lastPinchScale = scale;
+  //  }
 }
 
 - (void)pinchSampling:(NSTimer *)timer
@@ -391,7 +380,7 @@ static NSDictionary *FModifiers = nil;
   if (!_smartKeys) {
     _smartKeys = [[SmartKeys alloc] init];
   }
-  
+
   _smartKeys.textInputDelegate = self;
   cover.hidden = YES;
 
@@ -448,7 +437,7 @@ static NSDictionary *FModifiers = nil;
   // [kbdCommands addObjectsFromArray:presetShortcuts]
   // [kbdCommands addObjectsFromArray:functionKeys]
   // [kbdCommands addObjectsFromArray:controlSeqs]
-  
+
   // presetShortcuts
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)]];
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"+" modifierFlags:UIKeyModifierControl action:@selector(increaseFontSize:)]];
@@ -521,8 +510,8 @@ static NSDictionary *FModifiers = nil;
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
-{  
-  [_delegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags]];
+{
+  [_delegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
 }
 
 // Shift prints uppercase in the case CAPSLOCK is blocked

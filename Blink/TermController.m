@@ -29,9 +29,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#import "TermController.h"
 #import "MCPSession.h"
 #import "Session.h"
-#import "TermController.h"
 #import "fterm.h"
 
 
@@ -73,9 +73,9 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  
+
   [_terminal loadTerminal];
-  
+
   [self createPTY];
 }
 
@@ -105,7 +105,7 @@
 //  Since ViewController is a WKScriptMessageHandler, as declared in the ViewController interface, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message
-{  
+{
   NSDictionary *sentData = (NSDictionary *)message.body;
   NSString *operation = sentData[@"op"];
   NSDictionary *data = sentData[@"data"];
@@ -115,6 +115,16 @@
   } else if ([operation isEqualToString:@"terminalready"]) {
     [self startSession];
   }
+}
+
+- (void)setRawMode:(BOOL)raw
+{
+  [_terminal setRawMode:raw];
+}
+
+- (BOOL)rawMode
+{
+  return [_terminal rawMode];
 }
 
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols

@@ -355,7 +355,7 @@ static void kbd_callback(const char *name, int name_len,
 		     addr_len:ai->ai_addrlen
 		      timeout:&_options.connection_timeout] >= 0) {
       // Successful connection. Save host address
-      memcpy(hostaddr, ai->ai_addr, ai->ai_addrlen);      
+      memcpy(hostaddr, ai->ai_addr, ai->ai_addrlen);
       fprintf(_stream.out, "Connected to %s\r\n", ntop);
       break;
     } else {
@@ -512,7 +512,7 @@ static void kbd_callback(const char *name, int name_len,
   if (rc == 0) {
     [self debugMsg:@"Authentication succeeded."];
     return 1;
-  } else {    
+  } else {
     [self debugMsg:@"Auth by password failed"];
   }
   return 0;
@@ -549,7 +549,7 @@ static void kbd_callback(const char *name, int name_len,
     if (rc == 0) {
       [self debugMsg:@"Authentication succeeded."];
       return 1;
-    } else {      
+    } else {
       [self debugMsg:@"Authentication failed"];
     }
   }
@@ -694,7 +694,6 @@ static void kbd_callback(const char *name, int name_len,
     libssh2_channel_request_pty_size(_channel,
 				     _stream.sz->ws_col,
 				     _stream.sz->ws_row);
-
   }
 
   // Send command or start shell
@@ -867,6 +866,7 @@ static void kbd_callback(const char *name, int name_len,
   ssize_t rc;
   char inputbuf[BUFSIZ];
   char streambuf[BUFSIZ];
+  BOOL mode;
 
   [self set_nonblock:_sock];
 
@@ -874,6 +874,8 @@ static void kbd_callback(const char *name, int name_len,
 
   if (_tty_flag) {
     [self set_nonblock:fileno(_stream.in)];
+    mode = [self.stream.control.terminal rawMode];
+    [self.stream.control setRawMode:YES];
   }
 
   memset(pfds, 0, sizeof(struct pollfd) * numfds);
@@ -896,7 +898,7 @@ static void kbd_callback(const char *name, int name_len,
     if (-1 == rc) {
       break;
     }
-    
+
     if (pfds[0].revents & POLLIN) {
       // Read from socket
       do {
@@ -904,15 +906,15 @@ static void kbd_callback(const char *name, int name_len,
 	if (rc > 0) {
 	  fwrite(inputbuf, rc, 1, _stream.out);
 	}
-        memset(inputbuf, 0, BUFSIZ);
+	memset(inputbuf, 0, BUFSIZ);
 
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
       do {
-        rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
-        if (rc > 0) {
-          fwrite(inputbuf, rc, 1, _stream.err);
-        }
-        memset(inputbuf, 0, BUFSIZ);
+	rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
+	if (rc > 0) {
+	  fwrite(inputbuf, rc, 1, _stream.err);
+	}
+	memset(inputbuf, 0, BUFSIZ);
 
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
     }
@@ -960,6 +962,10 @@ static void kbd_callback(const char *name, int name_len,
   libssh2_channel_free(_channel);
   libssh2_session_free(_session);
   _channel = NULL;
+
+  if (_tty_flag) {
+    [self.stream.control setRawMode:mode];
+  }
 
   if (rc < 0) {
     return -1;

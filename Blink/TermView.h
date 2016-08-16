@@ -47,6 +47,8 @@
 
 - (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration;
 - (void)setScrollEnabled:(BOOL)scroll;
+- (void)setRawMode:(BOOL)raw;
+- (BOOL)rawMode;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;
 

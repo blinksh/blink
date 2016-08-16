@@ -43,6 +43,8 @@
 @property (strong, nonatomic) TerminalView *terminal;
 @property (strong, nonatomic) UIScrollView *containerView;
 
+- (void)setRawMode:(BOOL)raw;
+- (BOOL)rawMode;
 - (void)terminate;
 - (void)sigwinch;
 

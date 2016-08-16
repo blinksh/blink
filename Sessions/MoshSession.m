@@ -50,9 +50,9 @@ static const char *usage_format =
   "-p NUM  --port=NUM           server-side UDP port\r\n"
   "-P NUM                       ssh connection port\r\n"
   "-I id                        ssh authentication identity name\r\n"
-//  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
-//  "                                (example: \"ssh -p 2222\")\r\n"
-//  "                                (default: \"ssh\")\r\n"
+  //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
+  //  "                                (example: \"ssh -p 2222\")\r\n"
+  //  "                                (default: \"ssh\")\r\n"
   "\r\n"
   "        --verbose            verbose mode\r\n"
   "        --help               this message\r\n"
@@ -115,22 +115,22 @@ static const char *usage_format =
       case 'p':
 	port_request = [NSString stringWithFormat:@"%s", optarg];
 	break;
-//      case 'S':
-//        param = optarg;
-//	ssh = [NSString stringWithFormat:@"%s", optarg];
-//	break;
+      //      case 'S':
+      //        param = optarg;
+      //	ssh = [NSString stringWithFormat:@"%s", optarg];
+      //	break;
       case 'a':
 	predict_mode = @"always";
 	break;
       case 'n':
 	predict_mode = @"never";
 	break;
-        case 'P':
-        sshPort = [NSString stringWithFormat:@"%s", optarg];
-        break;
-        case 'I':
-        sshIdentity = [NSString stringWithFormat:@"%s", optarg];
-        break;
+      case 'P':
+	sshPort = [NSString stringWithFormat:@"%s", optarg];
+	break;
+      case 'I':
+	sshIdentity = [NSString stringWithFormat:@"%s", optarg];
+	break;
       default:
 	return [self dieMsg:@(usage_format)];
     }
@@ -174,8 +174,11 @@ static const char *usage_format =
 
   // Mosh does not support scroll. Disable it to avoid problems.
   [_stream.control.terminal setScrollEnabled:NO];
+  BOOL mode = [_stream.control rawMode];
+  [_stream.control.terminal setRawMode:YES];
   mosh_main(_stream.in, _stream.out, _stream.sz, [_moshParams.ip UTF8String], [_moshParams.port UTF8String], [_moshParams.key UTF8String], [predict_mode UTF8String]);
   [_stream.control.terminal setScrollEnabled:YES];
+  [_stream.control setRawMode:mode];
 
   fprintf(_stream.out, "\r\nMosh session finished!\r\n");
   fprintf(_stream.out, "\r\n");
