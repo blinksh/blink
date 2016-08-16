@@ -43,17 +43,6 @@
 
 #define MCP_MAX_LINE 4096
 
-static const char *available_commands =
-  "Available commands:\r\n"
-  "mosh: Start a mosh session.\r\n"
-  "ssh: Send a command through ssh.\r\n"
-  "ssh-copy-id: Copy an identity to the server.\r\n"
-  "config: Configure Blink.\r\n"
-  "help: Prints this.\r\n"
-  "exit: Close this window.\r\n"
-  "\r\n";
-
-
 @implementation MCPSession {
   Session *childSession;
 }
@@ -90,8 +79,8 @@ static const char *available_commands =
   [self.stream.control setRawMode:NO];
 
   linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,
-				linenoiseUtf8NextCharLen,
-				linenoiseUtf8ReadCode);
+                                linenoiseUtf8NextCharLen,
+                                linenoiseUtf8ReadCode);
 
   linenoiseHistoryLoad(history);
 
@@ -105,25 +94,25 @@ static const char *available_commands =
       NSString *cmd = arr[0];
 
       if ([cmd isEqualToString:@"help"]) {
-	[self showCommands];
+        [self showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {
-	// At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-	// Probably passing a Server struct of some type.
+        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+        // Probably passing a Server struct of some type.
 
-	[self runMoshWithArgs:cmdline];
+        [self runMoshWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"ssh"]) {
-	// At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-	// Probably passing a Server struct of some type.
+        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+        // Probably passing a Server struct of some type.
 
-	[self runSSHWithArgs:cmdline];
+        [self runSSHWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
-	break;
+        break;
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-	[self runSSHCopyIDWithArgs:cmdline];
+        [self runSSHCopyIDWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"config"]) {
-	[self showConfig];
+        [self showConfig];
       } else {
-	[self out:"Unknown command. Type 'help' for a list of available operations"];
+        [self out:"Unknown command. Type 'help' for a list of available operations"];
       }
     }
 
@@ -167,9 +156,41 @@ static const char *available_commands =
   childSession = nil;
 }
 
-- (void)showCommands
+- (NSString *)shortVersionString
 {
-  [self out:available_commands];
+  NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
+
+  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleName"];
+  NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+  NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
+
+  return [NSString stringWithFormat:@"%@: v%@.%@. %@",
+                                    appDisplayName, majorVersion, minorVersion, compileDate];
+}
+
+- (void)showHelp
+{
+  NSString *help = [@[
+    @"",
+    [self shortVersionString],
+    @"",
+    @"Available commands:",
+    @"  mosh: mosh client.",
+    @"  ssh: ssh client.",
+    @"  ssh-copy-id: Copy an identity to the server.",
+    @"  help: Prints this.",
+    @"  exit: Close this window.",
+    @"",
+    @"Available gestures:",
+    @"  two fingers tap: New window.",
+    @"  two fingers swipe down: Close window.",
+    @"  one finger swipe left/right: Switch between windows.",
+    @"  pinch: Change font size.",
+    @""
+  ] componentsJoinedByString:@"\r\n"];
+
+  [self out:help.UTF8String];
 }
 
 - (void)out:(const char *)str
