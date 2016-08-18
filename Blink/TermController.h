@@ -34,6 +34,16 @@
 #import "TermView.h"
 
 
+@class TermController;
+
+@protocol TermControlDelegate
+
+// terminalReady to start a specific session from the delegate, instead of inside the class.
+//- (void)terminalReady:(TermStream *)stream;
+- (void)terminalHangup:(TermController *)control;
+
+@end
+
 @interface TermController : UIViewController
 
 @property (readonly) FILE *termout;
@@ -42,6 +52,7 @@
 @property (readonly) struct winsize *termsz;
 @property (strong, nonatomic) TerminalView *terminal;
 @property (strong, nonatomic) UIScrollView *containerView;
+@property (weak) id<TermControlDelegate> delegate;
 
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;

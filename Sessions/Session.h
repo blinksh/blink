@@ -54,6 +54,11 @@ typedef struct SessionParams {
 
 @end
 
+@protocol SessionDelegate
+
+- (void)sessionFinished;
+
+@end
 
 @interface Session : NSObject {
   TermStream *_stream;
@@ -61,6 +66,7 @@ typedef struct SessionParams {
 }
 
 @property TermStream *stream;
+@property (weak) NSObject<SessionDelegate>* delegate;
 
 - (id)init __unavailable;
 - (id)initWithStream:(TermStream *)stream;

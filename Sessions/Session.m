@@ -72,10 +72,8 @@ void *run_session(void *params)
   [session main:argc argv:argv];
   free(argv);
   free(params);
-
-  //if (!p->attached) {
   [session.stream close];
-  //}
+  [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
 
   session.stream = nil;
   return NULL;
@@ -110,33 +108,36 @@ void *run_session(void *params)
   self = [super init];
 
   if (self) {
-    _stream = [[TermStream alloc] init];
-    _stream.in = fdopen(dup(fileno(stream.in)), "r");
-
-    // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
-    _stream.out = fdopen(dup(fileno(stream.out)), "w");
-    if (_stream.out == NULL) {
-      _stream.out = fterm_open(stream.control.terminal, 0);
-    }
-    _stream.err = fdopen(dup(fileno(stream.err)), "w");
-    if (_stream.err == NULL) {
-      _stream.err = fterm_open(stream.control.terminal, 0);
-    }
-
-    _stream.control = stream.control;
-    _stream.sz = stream.sz;
+    _stream = [self duplicateStream:stream];
   }
 
   return self;
 }
 
+- (TermStream *)duplicateStream:(TermStream *)stream
+{
+  TermStream *dupe = [[TermStream alloc] init];
+  dupe.in = fdopen(dup(fileno(stream.in)), "r");
+
+  // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
+  dupe.out = fdopen(dup(fileno(stream.out)), "w");
+  if (dupe.out == NULL) {
+    dupe.out = fterm_open(stream.control.terminal, 0);
+  }
+  dupe.err = fdopen(dup(fileno(stream.err)), "w");
+  if (dupe.err == NULL) {
+    dupe.err = fterm_open(stream.control.terminal, 0);
+  }
+
+  dupe.control = stream.control;
+  dupe.sz = stream.sz;
+
+  return dupe;
+}
+
 - (void)executeWithArgs:(NSString *)args
 {
-  SessionParams *params = malloc(sizeof(SessionParams));
-  // Pointer to our struct, we are responsible of release
-  params->session = CFBridgingRetain(self);
-  params->args = [args UTF8String];
-  params->attached = false;
+  SessionParams *params = [self createSessionParams:args];
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -146,14 +147,21 @@ void *run_session(void *params)
 
 - (void)executeAttachedWithArgs:(NSString *)args
 {
+  SessionParams *params = [self createSessionParams:args];
+
+  pthread_create(&_tid, NULL, run_session, params);
+  pthread_join(_tid, NULL);
+}
+
+- (SessionParams *)createSessionParams:(NSString *)args
+{
   SessionParams *params = malloc(sizeof(SessionParams));
   // Pointer to our struct, we are responsible of release
   params->session = CFBridgingRetain(self);
   params->args = [args UTF8String];
-  params->attached = true;
+  params->attached = false;
 
-  pthread_create(&_tid, NULL, run_session, params);
-  pthread_join(_tid, NULL);
+  return params;
 }
 
 @end

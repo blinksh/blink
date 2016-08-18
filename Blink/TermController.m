@@ -35,7 +35,7 @@
 #import "fterm.h"
 
 
-@interface TermController () <WKScriptMessageHandler, TerminalDelegate>
+@interface TermController () <WKScriptMessageHandler, TerminalDelegate, SessionDelegate>
 @end
 
 @implementation TermController {
@@ -99,6 +99,7 @@
   stream.sz = _termsz;
 
   _session = [[MCPSession alloc] initWithStream:stream];
+  _session.delegate = self;
   [_session executeWithArgs:@""];
 }
 
@@ -160,5 +161,11 @@
   }
 }
 
+#pragma mark SessionDelegate
+
+- (void)sessionFinished
+{
+    [_delegate terminalHangup:self];
+}
 
 @end

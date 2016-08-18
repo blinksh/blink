@@ -35,7 +35,8 @@
 #import "TermController.h"
 
 
-@interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, UIGestureRecognizerDelegate>
+@interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
+  UIGestureRecognizerDelegate, TermControlDelegate>
 
 @property (nonatomic, readonly) UIPageViewController *viewportsController;
 @property (nonatomic, readonly) NSMutableArray *viewports;
@@ -66,7 +67,7 @@
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
-  
+
   [self addChildViewController:_viewportsController];
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
@@ -80,13 +81,13 @@
   [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
   self->bottomConstraint = [NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.bottomLayoutGuide attribute:NSLayoutAttributeTop multiplier:1 constant:0];
   [self.view addConstraint:self->bottomConstraint];
-  
+
   // Termination notification
   UIApplication *app = [UIApplication sharedApplication];
   [[NSNotificationCenter defaultCenter] addObserver:self
-                                           selector:@selector(applicationWillTerminate:)
-                                               name:UIApplicationWillTerminateNotification
-                                             object:app];
+					   selector:@selector(applicationWillTerminate:)
+					       name:UIApplicationWillTerminateNotification
+					     object:app];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
@@ -290,9 +291,9 @@
   if(idx == NSNotFound) {
     return;
   }
-  
+
   NSInteger numViewports = [_viewports count];
-  
+
   [self.currentTerm terminate];
 
   __weak typeof(self) weakSelf = self;
@@ -311,8 +312,8 @@
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-                [weakSelf displayHUD];
-                [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+		[weakSelf displayHUD];
+		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   } else {
@@ -323,8 +324,8 @@
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-                [weakSelf displayHUD];
-                [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+		[weakSelf displayHUD];
+		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   }
@@ -333,6 +334,7 @@
 - (void)createShellAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
 {
   TermController *term = [[TermController alloc] init];
+  term.delegate = self;
 
   if (_viewports == nil) {
     _viewports = [[NSMutableArray alloc] init];
@@ -366,6 +368,16 @@
 				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				  }
 				}];
+}
+
+#pragma mark TermControlDelegate
+
+- (void)terminalHangup:(TermController *)control
+{
+  // Close the Space if the terminal finishing is the current one.
+  if (self.currentTerm == control) {
+    [self closeCurrentSpace];
+  }
 }
 
 @end
