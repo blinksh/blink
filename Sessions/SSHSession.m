@@ -880,46 +880,54 @@ static void kbd_callback(const char *name, int name_len,
 
   memset(pfds, 0, sizeof(struct pollfd) * numfds);
 
+  pfds[0].fd = _sock;
+  pfds[0].events = 0;
+  pfds[0].revents = 0;
+
+  pfds[1].fd = fileno(_stream.in);
+  pfds[1].events = POLLIN;
+  pfds[1].revents = 0;
+
   // Wait for stream->in or socket while not ready for reading
   do {
-    pfds[0].fd = _sock;
-    pfds[0].events = POLLIN;
-    pfds[0].revents = 0;
-
-    pfds[1].fd = fileno(_stream.in);
-    pfds[1].events = POLLIN;
-    pfds[1].revents = 0;
-
-    if (libssh2_channel_eof(_channel)) {
-      break;
-    }
-
-    rc = poll(pfds, numfds, -1);
-    if (-1 == rc) {
-      break;
-    }
-
-    if (pfds[0].revents & POLLIN) {
+    if (!pfds[0].events || pfds[0].revents & (POLLIN)) {
       // Read from socket
       do {
 	rc = libssh2_channel_read(_channel, inputbuf, BUFSIZ);
 	if (rc > 0) {
 	  fwrite(inputbuf, rc, 1, _stream.out);
+	  pfds[0].events = 0;
+	} else if (rc == LIBSSH2_ERROR_EAGAIN) {
+	  // Request the socket for input
+	  pfds[0].events = POLLIN;
 	}
 	memset(inputbuf, 0, BUFSIZ);
-
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
+      
       do {
 	rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
 	if (rc > 0) {
-	  fwrite(inputbuf, rc, 1, _stream.err);
+	  fwrite(inputbuf, rc, 1, _stream.err);	  
+	  pfds[0].events |= 0;
+	} else if (rc == LIBSSH2_ERROR_EAGAIN) {
+	  pfds[0].events = POLLIN;
 	}
+
 	memset(inputbuf, 0, BUFSIZ);
 
       } while (LIBSSH2_ERROR_EAGAIN != rc && rc > 0);
     }
     if (rc < 0 && LIBSSH2_ERROR_EAGAIN != rc) {
       [self debugMsg:@"error reading from socket. exiting..."];
+      break;
+    }
+
+    if (libssh2_channel_eof(_channel)) {
+      break;
+    }
+    
+    rc = poll(pfds, numfds, -1);
+    if (-1 == rc) {
       break;
     }
 
@@ -949,6 +957,7 @@ static void kbd_callback(const char *name, int name_len,
       [self debugMsg:@"error writing to socket. exiting..."];
       break;
     }
+
   } while (1);
 
   // Free resources and try to cleanup
