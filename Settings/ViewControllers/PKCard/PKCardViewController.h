@@ -34,4 +34,9 @@
 
 @interface PKCardViewController : UITableViewController
 
+@property NSIndexPath *currentSelectionIdx;
+
+- (void)makeSelectable:(BOOL)selectable initialSelection:(NSString *)selectionID;
+- (id)selectedObject;
+
 @end
