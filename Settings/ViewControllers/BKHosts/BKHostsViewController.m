@@ -46,7 +46,6 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        // Remove BKPubKey
         [BKHosts.all removeObjectAtIndex:indexPath.row];
         [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
         [BKHosts saveHosts];

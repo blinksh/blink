@@ -6,12 +6,14 @@
 //  Copyright © 2016 CARLOS CABANERO. All rights reserved.
 //
 
+#import "UICKeyChainStore/UICKeyChainStore.h"
 #import "BKHosts.h"
 
 NSMutableArray *Hosts;
 
 static NSURL *DocumentsDirectory = nil;
 static NSURL *HostsURL = nil;
+static UICKeyChainStore *Keychain = nil;
 
 @implementation BKHosts
 
@@ -21,7 +23,7 @@ static NSURL *HostsURL = nil;
     _hostName = [coder decodeObjectForKey:@"hostName"];
     _port = [coder decodeObjectForKey:@"port"];
     _user = [coder decodeObjectForKey:@"user"];
-    _password = [coder decodeObjectForKey:@"password"];
+    _passwordRef = [coder decodeObjectForKey:@"passwordRef"];
     _key = [coder decodeObjectForKey:@"key"];
     _moshPort = [coder decodeObjectForKey:@"moshPort"];
     _moshStartup = [coder decodeObjectForKey:@"moshStartup"];
@@ -36,14 +38,14 @@ static NSURL *HostsURL = nil;
     [encoder encodeObject:_hostName forKey:@"hostName"];
     [encoder encodeObject:_port forKey:@"port"];
     [encoder encodeObject:_user forKey:@"user"];
-    [encoder encodeObject:_password forKey:@"password"];
+    [encoder encodeObject:_passwordRef forKey:@"passwordRef"];
     [encoder encodeObject:_key forKey:@"key"];
     [encoder encodeObject:_moshPort forKey:@"moshPort"];
     [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
     [encoder encodeObject:_prediction forKey:@"prediction"];
 }
 
-- (id)initWithHost:(NSString*)host hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user password:(NSString*)password hostKey:(NSString*)hostKey moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction
+- (id)initWithHost:(NSString*)host hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user passwordRef:(NSString*)passwordRef hostKey:(NSString*)hostKey moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction
 {
     self = [super init];
     if(self){
@@ -53,7 +55,7 @@ static NSURL *HostsURL = nil;
             _port = [NSNumber numberWithInt:sshPort.intValue];
         }
         _user = user;
-        _password = password;
+        _passwordRef = passwordRef;
         _key = hostKey;
         if(![moshPort isEqualToString:@""]){
             _moshPort = [NSNumber numberWithInt:moshPort.intValue];
@@ -64,9 +66,19 @@ static NSURL *HostsURL = nil;
     return self;
 }
 
+- (NSString *)password
+{
+  if (!_passwordRef) {
+    return nil;
+  } else {
+    return [Keychain stringForKey:_passwordRef];
+  }
+}
+
 + (void)initialize
 {
-    [BKHosts loadHosts];
+  Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
+  [BKHosts loadHosts];
 }
 
 + (instancetype)withHost:(NSString *)aHost
@@ -97,9 +109,16 @@ static NSURL *HostsURL = nil;
 
 + (instancetype)saveHost:(NSString*)host  withNewHost:(NSString*)newHost hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user password:(NSString*)password hostKey:(NSString*)hostKey moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction
 {
-    BKHosts *bkHost = [BKHosts withHost:host];
+  NSString *pwdRef;
+  if (password) {
+    pwdRef = [host stringByAppendingString:@".pwd"];
+    [Keychain setString:password forKey:pwdRef];
+  }
+			
+  BKHosts *bkHost = [BKHosts withHost:host];
+  // Save password to keychain if it changed
     if(!bkHost){
-        bkHost = [[BKHosts alloc]initWithHost:newHost hostName:hostName sshPort:sshPort user:user password:password hostKey:hostKey moshPort:moshPort startUpCmd:startUpCmd prediction:prediction];
+        bkHost = [[BKHosts alloc]initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshPort:moshPort startUpCmd:startUpCmd prediction:prediction];
         [Hosts addObject:bkHost];
     } else {
         bkHost.host = newHost;
@@ -108,7 +127,7 @@ static NSURL *HostsURL = nil;
             bkHost.port = [NSNumber numberWithInt:sshPort.intValue];
         }
         bkHost.user = user;
-        bkHost.password = password;
+	bkHost.passwordRef = pwdRef;
         bkHost.key = hostKey;
         if(![moshPort isEqualToString:@""]){
             bkHost.moshPort = [NSNumber numberWithInt:moshPort.intValue];

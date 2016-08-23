@@ -22,7 +22,8 @@ enum BKMoshPrediction{
 @property (nonatomic, strong)NSString *hostName;
 @property (nonatomic, strong)NSNumber *port;
 @property (nonatomic, strong)NSString *user;
-@property (nonatomic, strong)NSString *password;
+@property (nonatomic, strong)NSString *passwordRef;
+@property (readonly) NSString *password;
 @property (nonatomic, strong)NSString *key;
 @property (nonatomic, strong)NSNumber *moshPort;
 @property (nonatomic, strong)NSString *moshStartup;
