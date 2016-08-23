@@ -33,6 +33,8 @@
 {
     if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
         [self performSegueWithIdentifier:@"unwindFromAddTheme" sender:self];
+        [PKSettingsFileDownloader cancelRunningDownloads];
+        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
     }
     [super viewWillDisappear:animated];
 }
@@ -66,12 +68,20 @@
     if(_urlTextField.text.length > 4 && [[_urlTextField.text substringFromIndex:[_urlTextField.text length]-4]isEqualToString:@".css"]){
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.urlTextField.enabled = NO;
-        self.importButton.enabled = NO;
+        [self configureImportButtonForCancel];
         [PKSettingsFileDownloader downloadFileAtUrl:_urlTextField.text withCompletionHandler:^(NSData *fileData, NSError *error) {
             if(error == nil){
                 [self performSelectorOnMainThread:@selector(downloadCompletedWithFilePath:) withObject:fileData waitUntilDone:NO];
             } else {
-                //Show alert
+                UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Network error" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+                [alertController addAction:ok];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [self presentViewController:alertController animated:YES completion:nil];
+                    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+                    self.urlTextField.enabled = YES;
+                    [self reconfigureImportButton];
+                });
             }
         }];
     } else {
@@ -84,6 +94,7 @@
 
 - (void)downloadCompletedWithFilePath:(NSData*)fileData{
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    [self.importButton setTitle:@"Download Complete" forState:UIControlStateNormal];
     self.importButton.enabled = NO;
     _downloadCompleted = YES;
     _tempFileData = fileData;
@@ -97,7 +108,7 @@
         NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
         NSString *documentsDirectory = [paths objectAtIndex:0];
         NSString *folderPath = [NSString stringWithFormat:@"%@/ThemesDir/",documentsDirectory];
-        NSString *filePath = [NSString stringWithFormat:@"%@/%@", folderPath,self.nameTextField.text];
+        NSString *filePath = [NSString stringWithFormat:@"%@/%@.css", folderPath,self.nameTextField.text];
         [[NSFileManager defaultManager] createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:nil error:nil];
         NSError *error;
         [_tempFileData writeToURL:[NSURL fileURLWithPath:filePath] options:NSDataWritingAtomic error:&error];
@@ -106,4 +117,25 @@
         [self.navigationController popViewControllerAnimated:YES];
     }
 }
+
+- (IBAction)cancelButtonTapped:(id)sender{
+    [PKSettingsFileDownloader cancelRunningDownloads];
+    [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+    self.urlTextField.enabled = YES;
+    [self reconfigureImportButton];
+}
+
+
+- (void)configureImportButtonForCancel{
+    [self.importButton setTitle:@"Cancel download" forState:UIControlStateNormal];
+    [self.importButton setTintColor:[UIColor redColor]];
+    [self.importButton addTarget:self action:@selector(cancelButtonTapped:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)reconfigureImportButton{
+    [self.importButton setTitle:@"Import" forState:UIControlStateNormal];
+    [self.importButton setTintColor:[UIColor blueColor]];
+    [self.importButton addTarget:self action:@selector(importButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+}
+
 @end
