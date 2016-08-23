@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
+#import "BKHosts.h"
 #import "BKPubKey.h"
 #import "SSHSession.h"
 
@@ -63,6 +64,7 @@ typedef struct {
   const char *user;
   int request_tty;
   const char *identity_file;
+  const char *pwd_key;
 } Options;
 
 
@@ -203,12 +205,13 @@ static void kbd_callback(const char *name, int name_len,
 
   NSArray *chunks = [userhost componentsSeparatedByString:@"@"];
   if ([chunks count] != 2) {
-    optind = 0;
-    return [self dieMsg:@"Could not parse user@host info"];
+    _options.hostname = [userhost UTF8String];
+  } else {
+    _options.user = [chunks[0] UTF8String];
+    _options.hostname = [chunks[1] UTF8String];
   }
-
-  _options.user = [chunks[0] UTF8String];
-  _options.hostname = [chunks[1] UTF8String];
+  
+  [self processHostSettings];
 
   NSMutableArray *command_args = [[NSMutableArray alloc] init];
 
@@ -279,6 +282,20 @@ static void kbd_callback(const char *name, int name_len,
   }
 }
 
+- (void)processHostSettings
+{
+  BKHosts *host;
+
+  if (!(host = [BKHosts withHost:[NSString stringWithUTF8String:_options.hostname]])) {
+    return;
+  }
+
+  _options.hostname = host.hostName ? [host.hostName UTF8String] : _options.hostname;
+  _options.port = _options.port ? _options.port : [host.port intValue];
+  _options.user = _options.user ? _options.user : [host.user UTF8String];
+  _options.identity_file = _options.identity_file ? _options.identity_file : [host.key UTF8String];
+  _options.pwd_key = host.password ? [host.password UTF8String] : NULL;
+}
 
 - (void)load_identity_files
 {
