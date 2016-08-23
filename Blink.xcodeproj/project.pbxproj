@@ -53,24 +53,24 @@
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
+		C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
+		C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
+		C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5411D6CC488003E0079 /* BKPredictionViewController.m */; };
+		C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */; };
+		C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */; };
+		C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
+		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
+		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
+		C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */; };
+		C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */; };
+		C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */; };
 		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		C9B2E0301D6B612400B89F69 /* PKCard.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* PKCard.m */; };
-		C9B2E0311D6B612400B89F69 /* PKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* PKDefaults.m */; };
-		C9B2E0321D6B612400B89F69 /* PKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* PKFont.m */; };
-		C9B2E0331D6B612400B89F69 /* PKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* PKHosts.m */; };
-		C9B2E0341D6B612400B89F69 /* PKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* PKTheme.m */; };
-		C9B2E0351D6B612400B89F69 /* PKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* PKSettingsFileDownloader.m */; };
-		C9B2E0361D6B612400B89F69 /* PKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0171D6B612400B89F69 /* PKAppearanceViewController.m */; };
-		C9B2E0371D6B612400B89F69 /* PKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0191D6B612400B89F69 /* PKFontCreateViewController.m */; };
-		C9B2E0381D6B612400B89F69 /* PKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E01B1D6B612400B89F69 /* PKThemeCreateViewController.m */; };
-		C9B2E0391D6B612400B89F69 /* PKCardCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E01E1D6B612400B89F69 /* PKCardCreateViewController.m */; };
-		C9B2E03A1D6B612400B89F69 /* PKCardDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0201D6B612400B89F69 /* PKCardDetailsViewController.m */; };
-		C9B2E03B1D6B612400B89F69 /* PKCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0221D6B612400B89F69 /* PKCardViewController.m */; };
-		C9B2E03C1D6B612400B89F69 /* PKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0251D6B612400B89F69 /* PKHostsDetailViewController.m */; };
-		C9B2E03D1D6B612400B89F69 /* PKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0271D6B612400B89F69 /* PKHostsViewController.m */; };
-		C9B2E03E1D6B612400B89F69 /* PKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0291D6B612400B89F69 /* PKPredictionViewController.m */; };
-		C9B2E03F1D6B612400B89F69 /* PKKeyboardModifierViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E02C1D6B612400B89F69 /* PKKeyboardModifierViewController.m */; };
-		C9B2E0401D6B612400B89F69 /* PKKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E02E1D6B612400B89F69 /* PKKeyboardViewController.m */; };
+		C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
+		C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
+		C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
+		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
+		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
+		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 /* End PBXBuildFile section */
 
@@ -209,41 +209,41 @@
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
 		C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DismissSegue.h; path = ViewControllers/DismissSegue.h; sourceTree = "<group>"; };
 		C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DismissSegue.m; path = ViewControllers/DismissSegue.m; sourceTree = "<group>"; };
+		C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsDetailViewController.h; sourceTree = "<group>"; };
+		C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsDetailViewController.m; sourceTree = "<group>"; };
+		C989E53E1D6CC488003E0079 /* BKHostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsViewController.h; sourceTree = "<group>"; };
+		C989E53F1D6CC488003E0079 /* BKHostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsViewController.m; sourceTree = "<group>"; };
+		C989E5401D6CC488003E0079 /* BKPredictionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPredictionViewController.h; sourceTree = "<group>"; };
+		C989E5411D6CC488003E0079 /* BKPredictionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPredictionViewController.m; sourceTree = "<group>"; };
+		C989E5431D6CC488003E0079 /* BKKeyboardModifierViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardModifierViewController.h; sourceTree = "<group>"; };
+		C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardModifierViewController.m; sourceTree = "<group>"; };
+		C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardViewController.h; sourceTree = "<group>"; };
+		C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardViewController.m; sourceTree = "<group>"; };
+		C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAppearanceViewController.h; sourceTree = "<group>"; };
+		C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAppearanceViewController.m; sourceTree = "<group>"; };
+		C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFontCreateViewController.h; sourceTree = "<group>"; };
+		C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFontCreateViewController.m; sourceTree = "<group>"; };
+		C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKThemeCreateViewController.h; sourceTree = "<group>"; };
+		C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKThemeCreateViewController.m; sourceTree = "<group>"; };
+		C989E55F1D6CC95A003E0079 /* BKPubKeyCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyCreateViewController.h; sourceTree = "<group>"; };
+		C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyCreateViewController.m; sourceTree = "<group>"; };
+		C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyDetailsViewController.h; sourceTree = "<group>"; };
+		C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyDetailsViewController.m; sourceTree = "<group>"; };
+		C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyViewController.h; sourceTree = "<group>"; };
+		C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyViewController.m; sourceTree = "<group>"; };
 		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
-		C9B2E0071D6B612300B89F69 /* PKCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCard.h; sourceTree = "<group>"; };
-		C9B2E0081D6B612300B89F69 /* PKCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCard.m; sourceTree = "<group>"; };
-		C9B2E0091D6B612300B89F69 /* PKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKDefaults.h; sourceTree = "<group>"; };
-		C9B2E00A1D6B612300B89F69 /* PKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKDefaults.m; sourceTree = "<group>"; };
-		C9B2E00B1D6B612300B89F69 /* PKFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKFont.h; sourceTree = "<group>"; };
-		C9B2E00C1D6B612300B89F69 /* PKFont.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKFont.m; sourceTree = "<group>"; };
-		C9B2E00D1D6B612300B89F69 /* PKHosts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKHosts.h; sourceTree = "<group>"; };
-		C9B2E00E1D6B612300B89F69 /* PKHosts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKHosts.m; sourceTree = "<group>"; };
-		C9B2E00F1D6B612300B89F69 /* PKTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKTheme.h; sourceTree = "<group>"; };
-		C9B2E0101D6B612300B89F69 /* PKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKTheme.m; sourceTree = "<group>"; };
-		C9B2E0121D6B612300B89F69 /* PKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKSettingsFileDownloader.h; sourceTree = "<group>"; };
-		C9B2E0131D6B612300B89F69 /* PKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKSettingsFileDownloader.m; sourceTree = "<group>"; };
-		C9B2E0161D6B612400B89F69 /* PKAppearanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKAppearanceViewController.h; sourceTree = "<group>"; };
-		C9B2E0171D6B612400B89F69 /* PKAppearanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKAppearanceViewController.m; sourceTree = "<group>"; };
-		C9B2E0181D6B612400B89F69 /* PKFontCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKFontCreateViewController.h; sourceTree = "<group>"; };
-		C9B2E0191D6B612400B89F69 /* PKFontCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKFontCreateViewController.m; sourceTree = "<group>"; };
-		C9B2E01A1D6B612400B89F69 /* PKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKThemeCreateViewController.h; sourceTree = "<group>"; };
-		C9B2E01B1D6B612400B89F69 /* PKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKThemeCreateViewController.m; sourceTree = "<group>"; };
-		C9B2E01D1D6B612400B89F69 /* PKCardCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardCreateViewController.h; sourceTree = "<group>"; };
-		C9B2E01E1D6B612400B89F69 /* PKCardCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardCreateViewController.m; sourceTree = "<group>"; };
-		C9B2E01F1D6B612400B89F69 /* PKCardDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardDetailsViewController.h; sourceTree = "<group>"; };
-		C9B2E0201D6B612400B89F69 /* PKCardDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardDetailsViewController.m; sourceTree = "<group>"; };
-		C9B2E0211D6B612400B89F69 /* PKCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardViewController.h; sourceTree = "<group>"; };
-		C9B2E0221D6B612400B89F69 /* PKCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardViewController.m; sourceTree = "<group>"; };
-		C9B2E0241D6B612400B89F69 /* PKHostsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKHostsDetailViewController.h; sourceTree = "<group>"; };
-		C9B2E0251D6B612400B89F69 /* PKHostsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKHostsDetailViewController.m; sourceTree = "<group>"; };
-		C9B2E0261D6B612400B89F69 /* PKHostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKHostsViewController.h; sourceTree = "<group>"; };
-		C9B2E0271D6B612400B89F69 /* PKHostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKHostsViewController.m; sourceTree = "<group>"; };
-		C9B2E0281D6B612400B89F69 /* PKPredictionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKPredictionViewController.h; sourceTree = "<group>"; };
-		C9B2E0291D6B612400B89F69 /* PKPredictionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKPredictionViewController.m; sourceTree = "<group>"; };
-		C9B2E02B1D6B612400B89F69 /* PKKeyboardModifierViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKKeyboardModifierViewController.h; sourceTree = "<group>"; };
-		C9B2E02C1D6B612400B89F69 /* PKKeyboardModifierViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKKeyboardModifierViewController.m; sourceTree = "<group>"; };
-		C9B2E02D1D6B612400B89F69 /* PKKeyboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKKeyboardViewController.h; sourceTree = "<group>"; };
-		C9B2E02E1D6B612400B89F69 /* PKKeyboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKKeyboardViewController.m; sourceTree = "<group>"; };
+		C9B2E0071D6B612300B89F69 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
+		C9B2E0081D6B612300B89F69 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
+		C9B2E0091D6B612300B89F69 /* BKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDefaults.h; sourceTree = "<group>"; };
+		C9B2E00A1D6B612300B89F69 /* BKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDefaults.m; sourceTree = "<group>"; };
+		C9B2E00B1D6B612300B89F69 /* BKFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFont.h; sourceTree = "<group>"; };
+		C9B2E00C1D6B612300B89F69 /* BKFont.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFont.m; sourceTree = "<group>"; };
+		C9B2E00D1D6B612300B89F69 /* BKHosts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHosts.h; sourceTree = "<group>"; };
+		C9B2E00E1D6B612300B89F69 /* BKHosts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHosts.m; sourceTree = "<group>"; };
+		C9B2E00F1D6B612300B89F69 /* BKTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTheme.h; sourceTree = "<group>"; };
+		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
+		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
+		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -412,6 +412,57 @@
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
 		};
+		C989E53B1D6CC488003E0079 /* BKHosts */ = {
+			isa = PBXGroup;
+			children = (
+				C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */,
+				C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */,
+				C989E53E1D6CC488003E0079 /* BKHostsViewController.h */,
+				C989E53F1D6CC488003E0079 /* BKHostsViewController.m */,
+				C989E5401D6CC488003E0079 /* BKPredictionViewController.h */,
+				C989E5411D6CC488003E0079 /* BKPredictionViewController.m */,
+			);
+			path = BKHosts;
+			sourceTree = "<group>";
+		};
+		C989E5421D6CC488003E0079 /* BKKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				C989E5431D6CC488003E0079 /* BKKeyboardModifierViewController.h */,
+				C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */,
+				C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */,
+				C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */,
+			);
+			path = BKKeyboard;
+			sourceTree = "<group>";
+		};
+		C989E54F1D6CC4A1003E0079 /* Appearance */ = {
+			isa = PBXGroup;
+			children = (
+				C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */,
+				C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */,
+				C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */,
+				C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */,
+				C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */,
+				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
+			);
+			name = Appearance;
+			path = Settings/ViewControllers/Appearance;
+			sourceTree = SOURCE_ROOT;
+		};
+		C989E55E1D6CC95A003E0079 /* BKPubKey */ = {
+			isa = PBXGroup;
+			children = (
+				C989E55F1D6CC95A003E0079 /* BKPubKeyCreateViewController.h */,
+				C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */,
+				C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */,
+				C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */,
+				C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */,
+				C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */,
+			);
+			path = BKPubKey;
+			sourceTree = "<group>";
+		};
 		C9B2E0031D6B612300B89F69 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -428,16 +479,16 @@
 		C9B2E0061D6B612300B89F69 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				C9B2E0071D6B612300B89F69 /* PKCard.h */,
-				C9B2E0081D6B612300B89F69 /* PKCard.m */,
-				C9B2E0091D6B612300B89F69 /* PKDefaults.h */,
-				C9B2E00A1D6B612300B89F69 /* PKDefaults.m */,
-				C9B2E00B1D6B612300B89F69 /* PKFont.h */,
-				C9B2E00C1D6B612300B89F69 /* PKFont.m */,
-				C9B2E00D1D6B612300B89F69 /* PKHosts.h */,
-				C9B2E00E1D6B612300B89F69 /* PKHosts.m */,
-				C9B2E00F1D6B612300B89F69 /* PKTheme.h */,
-				C9B2E0101D6B612300B89F69 /* PKTheme.m */,
+				C9B2E0071D6B612300B89F69 /* BKPubKey.h */,
+				C9B2E0081D6B612300B89F69 /* BKPubKey.m */,
+				C9B2E0091D6B612300B89F69 /* BKDefaults.h */,
+				C9B2E00A1D6B612300B89F69 /* BKDefaults.m */,
+				C9B2E00B1D6B612300B89F69 /* BKFont.h */,
+				C9B2E00C1D6B612300B89F69 /* BKFont.m */,
+				C9B2E00D1D6B612300B89F69 /* BKHosts.h */,
+				C9B2E00E1D6B612300B89F69 /* BKHosts.m */,
+				C9B2E00F1D6B612300B89F69 /* BKTheme.h */,
+				C9B2E0101D6B612300B89F69 /* BKTheme.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -445,8 +496,8 @@
 		C9B2E0111D6B612300B89F69 /* Network */ = {
 			isa = PBXGroup;
 			children = (
-				C9B2E0121D6B612300B89F69 /* PKSettingsFileDownloader.h */,
-				C9B2E0131D6B612300B89F69 /* PKSettingsFileDownloader.m */,
+				C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */,
+				C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -454,62 +505,12 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				C9B2E0151D6B612400B89F69 /* Appearance */,
-				C9B2E01C1D6B612400B89F69 /* PKCard */,
-				C9B2E0231D6B612400B89F69 /* PKHosts */,
-				C9B2E02A1D6B612400B89F69 /* PKKeyboard */,
+				C989E55E1D6CC95A003E0079 /* BKPubKey */,
+				C989E54F1D6CC4A1003E0079 /* Appearance */,
+				C989E53B1D6CC488003E0079 /* BKHosts */,
+				C989E5421D6CC488003E0079 /* BKKeyboard */,
 			);
 			path = ViewControllers;
-			sourceTree = "<group>";
-		};
-		C9B2E0151D6B612400B89F69 /* Appearance */ = {
-			isa = PBXGroup;
-			children = (
-				C9B2E0161D6B612400B89F69 /* PKAppearanceViewController.h */,
-				C9B2E0171D6B612400B89F69 /* PKAppearanceViewController.m */,
-				C9B2E0181D6B612400B89F69 /* PKFontCreateViewController.h */,
-				C9B2E0191D6B612400B89F69 /* PKFontCreateViewController.m */,
-				C9B2E01A1D6B612400B89F69 /* PKThemeCreateViewController.h */,
-				C9B2E01B1D6B612400B89F69 /* PKThemeCreateViewController.m */,
-			);
-			path = Appearance;
-			sourceTree = "<group>";
-		};
-		C9B2E01C1D6B612400B89F69 /* PKCard */ = {
-			isa = PBXGroup;
-			children = (
-				C9B2E01D1D6B612400B89F69 /* PKCardCreateViewController.h */,
-				C9B2E01E1D6B612400B89F69 /* PKCardCreateViewController.m */,
-				C9B2E01F1D6B612400B89F69 /* PKCardDetailsViewController.h */,
-				C9B2E0201D6B612400B89F69 /* PKCardDetailsViewController.m */,
-				C9B2E0211D6B612400B89F69 /* PKCardViewController.h */,
-				C9B2E0221D6B612400B89F69 /* PKCardViewController.m */,
-			);
-			path = PKCard;
-			sourceTree = "<group>";
-		};
-		C9B2E0231D6B612400B89F69 /* PKHosts */ = {
-			isa = PBXGroup;
-			children = (
-				C9B2E0241D6B612400B89F69 /* PKHostsDetailViewController.h */,
-				C9B2E0251D6B612400B89F69 /* PKHostsDetailViewController.m */,
-				C9B2E0261D6B612400B89F69 /* PKHostsViewController.h */,
-				C9B2E0271D6B612400B89F69 /* PKHostsViewController.m */,
-				C9B2E0281D6B612400B89F69 /* PKPredictionViewController.h */,
-				C9B2E0291D6B612400B89F69 /* PKPredictionViewController.m */,
-			);
-			path = PKHosts;
-			sourceTree = "<group>";
-		};
-		C9B2E02A1D6B612400B89F69 /* PKKeyboard */ = {
-			isa = PBXGroup;
-			children = (
-				C9B2E02B1D6B612400B89F69 /* PKKeyboardModifierViewController.h */,
-				C9B2E02C1D6B612400B89F69 /* PKKeyboardModifierViewController.m */,
-				C9B2E02D1D6B612400B89F69 /* PKKeyboardViewController.h */,
-				C9B2E02E1D6B612400B89F69 /* PKKeyboardViewController.m */,
-			);
-			path = PKKeyboard;
 			sourceTree = "<group>";
 		};
 		EA0BA1821C0CC57B00719C1A = {
@@ -713,39 +714,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C9B2E0401D6B612400B89F69 /* PKKeyboardViewController.m in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
-				C9B2E0301D6B612400B89F69 /* PKCard.m in Sources */,
-				C9B2E03B1D6B612400B89F69 /* PKCardViewController.m in Sources */,
-				C9B2E0391D6B612400B89F69 /* PKCardCreateViewController.m in Sources */,
+				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
-				C9B2E0381D6B612400B89F69 /* PKThemeCreateViewController.m in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
-				C9B2E0351D6B612400B89F69 /* PKSettingsFileDownloader.m in Sources */,
-				C9B2E0321D6B612400B89F69 /* PKFont.m in Sources */,
-				C9B2E03E1D6B612400B89F69 /* PKPredictionViewController.m in Sources */,
+				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
+				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
+				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
-				C9B2E0371D6B612400B89F69 /* PKFontCreateViewController.m in Sources */,
-				C9B2E03C1D6B612400B89F69 /* PKHostsDetailViewController.m in Sources */,
 				0716B58F1CFFAB9300268B5B /* SmartKeys.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
-				C9B2E0311D6B612400B89F69 /* PKDefaults.m in Sources */,
+				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
-				C9B2E0331D6B612400B89F69 /* PKHosts.m in Sources */,
-				C9B2E03D1D6B612400B89F69 /* PKHostsViewController.m in Sources */,
+				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
+				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
+				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
+				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
-				C9B2E03F1D6B612400B89F69 /* PKKeyboardModifierViewController.m in Sources */,
-				C9B2E0341D6B612400B89F69 /* PKTheme.m in Sources */,
+				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
+				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
 				0716B5901CFFAB9300268B5B /* SmartKeysView.m in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
-				C9B2E0361D6B612400B89F69 /* PKAppearanceViewController.m in Sources */,
-				C9B2E03A1D6B612400B89F69 /* PKCardDetailsViewController.m in Sources */,
+				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
+				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
+				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
+				C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

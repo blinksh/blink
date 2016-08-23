@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "SSHCopyIDSession.h"
-#import "PKCard.h"
+#import "BKPubKey.h"
 #import "SSHSession.h"
 
 static const char *copy_command =
@@ -49,7 +49,7 @@ static const char *usage_format =
   }
 
   NSString *keyName = [NSString stringWithFormat:@"%s", argv[1]];
-  PKCard *pkcard = [PKCard withID:keyName];
+  BKPubKey *pkcard = [BKPubKey withID:keyName];
 
   if (!pkcard) {
     return [self dieMsg:@"ERROR: No identities found."];

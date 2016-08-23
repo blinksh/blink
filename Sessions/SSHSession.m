@@ -39,7 +39,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-#import "PKCard.h"
+#import "BKPubKey.h"
 #import "SSHSession.h"
 
 #define REQUEST_TTY_AUTO 0
@@ -284,15 +284,15 @@ static void kbd_callback(const char *name, int name_len,
 {
   // Obtain valid auths that will be tried for the connection
   _identities = [[NSMutableArray alloc] init];
-  PKCard *pk;
+  BKPubKey *pk;
 
   if (_options.identity_file) {
-    if ((pk = [PKCard withID:[NSString stringWithUTF8String:_options.identity_file]]) != nil) {
+    if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:_options.identity_file]]) != nil) {
       [_identities addObject:pk];
     }
   }
 
-  if ((pk = [PKCard withID:@"id_rsa"]) != nil) {
+  if ((pk = [BKPubKey withID:@"id_rsa"]) != nil) {
     [_identities addObject:pk];
   }
 }
@@ -521,7 +521,7 @@ static void kbd_callback(const char *name, int name_len,
 - (int)ssh_login_publickey:(const char *)user
 {
   // Try all the identities until finding a successful one, and return
-  for (PKCard *pk in _identities) {
+  for (BKPubKey *pk in _identities) {
     [self debugMsg:@"Attempting authentication with publickey."];
     int rc = 0;
     const char *pub = [pk.publicKey UTF8String];
