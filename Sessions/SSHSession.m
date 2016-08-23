@@ -64,7 +64,7 @@ typedef struct {
   const char *user;
   int request_tty;
   const char *identity_file;
-  const char *pwd_key;
+  const char *password;
 } Options;
 
 
@@ -213,6 +213,10 @@ static void kbd_callback(const char *name, int name_len,
   
   [self processHostSettings];
 
+  if (!_options.user) {
+    return [self dieMsg:@"Missing user to establish connection."];
+  }
+
   NSMutableArray *command_args = [[NSMutableArray alloc] init];
 
   if (commands) {
@@ -294,7 +298,7 @@ static void kbd_callback(const char *name, int name_len,
   _options.port = _options.port ? _options.port : [host.port intValue];
   _options.user = _options.user ? _options.user : [host.user UTF8String];
   _options.identity_file = _options.identity_file ? _options.identity_file : [host.key UTF8String];
-  _options.pwd_key = host.password ? [host.password UTF8String] : NULL;
+  _options.password = host.password ? [host.password UTF8String] : NULL;
 }
 
 - (void)load_identity_files
@@ -468,16 +472,18 @@ static void kbd_callback(const char *name, int name_len,
   }
 
   int succ = 0;
-  //[self promptPassword:"pass" length:4];
 
   if (auth_type & 4) {
     succ = [self ssh_login_publickey:user];
+  }
+  if (!succ && _options.password) {
+    succ = [self ssh_login_password:user password:_options.password];
   }
   if (!succ && (auth_type & 2)) {
     succ = [self ssh_login_interactive:user];
   }
   if (!succ && auth_type & 1) {
-    succ = [self ssh_login_password:user];
+    succ = [self ssh_login_password:user password:NULL];
   }
 
   if (!succ) {
@@ -488,17 +494,18 @@ static void kbd_callback(const char *name, int name_len,
   return;
 }
 
-- (int)ssh_login_password:(const char *)user
+- (int)ssh_login_password:(const char *)user password:(char *)password
 {
-  char *password = nil;
   int retries = 3;
   char *errmsg;
 
   do {
     int rc;
-    fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
-    [self promptUser:&password];
-    fprintf(_stream.control.termout, "\r\n");
+    if (!password) {
+      fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
+      [self promptUser:&password];
+      fprintf(_stream.control.termout, "\r\n");
+    }
 
     if (strlen(password) != 0) {
       while ((rc = libssh2_userauth_password(_session, user, password)) == LIBSSH2_ERROR_EAGAIN)
