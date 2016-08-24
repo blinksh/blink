@@ -241,7 +241,10 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 
 + (void)initialize
 {
-  Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.bkpubkey"];
+  // Maintain compatibility with previous version of the class
+  [NSKeyedUnarchiver setClass:self forClassName:@"PKCard"];
+
+  Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pkcard"];
   [BKPubKey loadIDS];
 }
 
