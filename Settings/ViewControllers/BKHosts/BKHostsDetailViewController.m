@@ -22,6 +22,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *sshPortField;
 @property (weak, nonatomic) IBOutlet UITextField *userField;
 @property (weak, nonatomic) IBOutlet UITextField *passwordField;
+@property (weak, nonatomic) IBOutlet UITextField *moshServerField;
 @property (weak, nonatomic) IBOutlet UITextField *moshPortField;
 @property (weak, nonatomic) IBOutlet UITextField *startUpCmdField;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *saveButton;
@@ -44,6 +45,7 @@
         _passwordField.text = _bkHost.password;
         _hostKeyDetail.text = _bkHost.key;
         _predictionDetail.text = [BKHosts predictionStringForRawValue:_bkHost.prediction.intValue];
+	_moshServerField.text = _bkHost.moshServer;
         if(_bkHost.moshPort != nil){
             _moshPortField.text = [NSString stringWithFormat:@"%@",_bkHost.moshPort];
         }
@@ -119,7 +121,7 @@
         } else if ([_userField.text rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]].location != NSNotFound) {
             errorMsg = @"Spaces are not permitted in the User.";
         } else {
-            _bkHost = [BKHosts saveHost:self.bkHost.host withNewHost:_hostField.text hostName:_hostNameField.text sshPort:_sshPortField.text user:_userField.text password:_passwordField.text hostKey:_hostKeyDetail.text moshPort:_moshPortField.text startUpCmd:_startUpCmdField.text prediction:[BKHosts predictionValueForString:_predictionDetail.text]];
+          _bkHost = [BKHosts saveHost:self.bkHost.host withNewHost:_hostField.text hostName:_hostNameField.text sshPort:_sshPortField.text user:_userField.text password:_passwordField.text hostKey:_hostKeyDetail.text moshServer:_moshServerField.text moshPort:_moshPortField.text startUpCmd:_startUpCmdField.text prediction:[BKHosts predictionValueForString:_predictionDetail.text]];
             if (!_bkHost) {
                 errorMsg = @"Could not create new host.";
             }

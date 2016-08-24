@@ -1,3 +1,4 @@
+
 //
 //  BKHost.h
 //  settings
@@ -25,6 +26,7 @@ enum BKMoshPrediction{
 @property (nonatomic, strong)NSString *passwordRef;
 @property (readonly) NSString *password;
 @property (nonatomic, strong)NSString *key;
+@property (nonatomic, strong)NSString *moshServer;
 @property (nonatomic, strong)NSNumber *moshPort;
 @property (nonatomic, strong)NSString *moshStartup;
 @property (nonatomic, strong)NSNumber *prediction;
@@ -32,7 +34,7 @@ enum BKMoshPrediction{
 + (void)initialize;
 + (instancetype)withHost:(NSString *)ID;
 + (BOOL)saveHosts;
-+ (instancetype)saveHost:(NSString*)host withNewHost:(NSString*)newHost hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user password:(NSString*)password hostKey:(NSString*)hostKey moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction;
++ (instancetype)saveHost:(NSString*)host withNewHost:(NSString*)newHost hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user password:(NSString*)password hostKey:(NSString*)hostKey moshServer:(NSString*)moshServer moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction;
 + (NSMutableArray *)all;
 + (NSInteger)count;
 + (NSString*)predictionStringForRawValue:(int)rawValue;
