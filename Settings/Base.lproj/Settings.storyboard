@@ -24,7 +24,7 @@
                                             <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Keys (Disabled)" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zbf-r6-tRD">
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Keys" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zbf-r6-tRD">
                                                     <rect key="frame" x="52" y="0.0" width="513" height="43"/>
                                                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="16"/>
@@ -117,33 +117,12 @@
                                             <segue destination="Man-FB-xZk" kind="show" id="8ad-JV-a3b"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="Cell" textLabel="Zf9-Xf-SvL" imageView="q11-BF-UrK" style="IBUITableViewCellStyleDefault" id="bRp-Wa-scZ">
-                                        <rect key="frame" x="0.0" y="341" width="600" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="bRp-Wa-scZ" id="HtS-Gc-jZ3">
-                                            <rect key="frame" x="0.0" y="0.0" width="567" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Shortcuts (Disabled)" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Zf9-Xf-SvL">
-                                                    <rect key="frame" x="52" y="0.0" width="513" height="43"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="shortcuts" id="q11-BF-UrK">
-                                                    <rect key="frame" x="15" y="10" width="22" height="22"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                </imageView>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Info" id="NXV-Pf-9vR">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" textLabel="Vhg-Sb-bBf" style="IBUITableViewCellStyleDefault" id="yR4-6Z-vhH">
-                                        <rect key="frame" x="0.0" y="436" width="600" height="44"/>
+                                        <rect key="frame" x="0.0" y="392" width="600" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="yR4-6Z-vhH" id="jrO-XD-bfG">
                                             <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
@@ -1415,10 +1394,9 @@
         <image name="host" width="22" height="22"/>
         <image name="key" width="22" height="22"/>
         <image name="keyboard" width="22" height="22"/>
-        <image name="shortcuts" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dMC-e1-GtW"/>
-        <segue reference="9Nb-rb-KdA"/>
+        <segue reference="y9I-rB-ZKT"/>
     </inferredMetricsTieBreakers>
 </document>
