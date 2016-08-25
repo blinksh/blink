@@ -31,12 +31,12 @@
 
 #import <UIKit/UIKit.h>
 
-#import "PKCard.h"
+#import "BKPubKey.h"
 
 
-@interface PKCardCreateViewController : UITableViewController
+@interface BKPubKeyCreateViewController : UITableViewController
 
-@property (weak, nonatomic) PKCard *pkcard;
+@property (weak, nonatomic) BKPubKey *pubkey;
 @property (weak, nonatomic) NSString *passphrase;
 @property (weak, nonatomic) NSString *name;
 @property (weak, nonatomic) SshRsa *key;

@@ -11,11 +11,6 @@
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52E1CFFAB9300268B5B /* Main.storyboard */; };
-		0716B5791CFFAB9300268B5B /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5351CFFAB9300268B5B /* DismissSegue.m */; };
-		0716B58A1CFFAB9300268B5B /* PKCardCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B54C1CFFAB9300268B5B /* PKCardCreateViewController.m */; };
-		0716B58B1CFFAB9300268B5B /* PKCardDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B54E1CFFAB9300268B5B /* PKCardDetailsViewController.m */; };
-		0716B58C1CFFAB9300268B5B /* PKCardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5501CFFAB9300268B5B /* PKCardViewController.m */; };
-		0716B58E1CFFAB9300268B5B /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B5531CFFAB9300268B5B /* Settings.storyboard */; };
 		0716B58F1CFFAB9300268B5B /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5551CFFAB9300268B5B /* SmartKeys.m */; };
 		0716B5901CFFAB9300268B5B /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5571CFFAB9300268B5B /* SmartKeysView.m */; };
 		0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
@@ -54,10 +49,28 @@
 		07F670711D05EEE200C0A53C /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
 		07F670721D05EEE200C0A53C /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
 		07F670731D05EEE200C0A53C /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
-		07F670741D05EEE200C0A53C /* PKCard.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706A1D05EEE200C0A53C /* PKCard.m */; };
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
+		C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
+		C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
+		C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5411D6CC488003E0079 /* BKPredictionViewController.m */; };
+		C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */; };
+		C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */; };
+		C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
+		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
+		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
+		C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */; };
+		C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */; };
+		C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */; };
+		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
+		C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
+		C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
+		C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
+		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
+		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
+		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 /* End PBXBuildFile section */
 
@@ -141,16 +154,7 @@
 		0716B52A1CFFAB9300268B5B /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0716B52F1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
-		0716B5341CFFAB9300268B5B /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DismissSegue.h; sourceTree = "<group>"; };
-		0716B5351CFFAB9300268B5B /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DismissSegue.m; sourceTree = "<group>"; };
 		0716B53C1CFFAB9300268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0716B54B1CFFAB9300268B5B /* PKCardCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardCreateViewController.h; sourceTree = "<group>"; };
-		0716B54C1CFFAB9300268B5B /* PKCardCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardCreateViewController.m; sourceTree = "<group>"; };
-		0716B54D1CFFAB9300268B5B /* PKCardDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardDetailsViewController.h; sourceTree = "<group>"; };
-		0716B54E1CFFAB9300268B5B /* PKCardDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardDetailsViewController.m; sourceTree = "<group>"; };
-		0716B54F1CFFAB9300268B5B /* PKCardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCardViewController.h; sourceTree = "<group>"; };
-		0716B5501CFFAB9300268B5B /* PKCardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCardViewController.m; sourceTree = "<group>"; };
-		0716B5531CFFAB9300268B5B /* Settings.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Settings.storyboard; sourceTree = "<group>"; };
 		0716B5541CFFAB9300268B5B /* SmartKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeys.h; sourceTree = "<group>"; };
 		0716B5551CFFAB9300268B5B /* SmartKeys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeys.m; sourceTree = "<group>"; };
 		0716B5561CFFAB9300268B5B /* SmartKeysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysView.h; sourceTree = "<group>"; };
@@ -197,14 +201,49 @@
 		07F670661D05EEE200C0A53C /* MCPSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCPSession.m; sourceTree = "<group>"; };
 		07F670671D05EEE200C0A53C /* MoshSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoshSession.h; sourceTree = "<group>"; };
 		07F670681D05EEE200C0A53C /* MoshSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MoshSession.m; sourceTree = "<group>"; };
-		07F670691D05EEE200C0A53C /* PKCard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PKCard.h; sourceTree = "<group>"; };
-		07F6706A1D05EEE200C0A53C /* PKCard.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PKCard.m; sourceTree = "<group>"; };
 		07F6706B1D05EEE200C0A53C /* Session.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Session.h; sourceTree = "<group>"; };
 		07F6706C1D05EEE200C0A53C /* Session.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Session.m; sourceTree = "<group>"; };
 		07F6706D1D05EEE200C0A53C /* SSHCopyIDSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHCopyIDSession.h; sourceTree = "<group>"; };
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DismissSegue.h; path = ViewControllers/DismissSegue.h; sourceTree = "<group>"; };
+		C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DismissSegue.m; path = ViewControllers/DismissSegue.m; sourceTree = "<group>"; };
+		C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsDetailViewController.h; sourceTree = "<group>"; };
+		C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsDetailViewController.m; sourceTree = "<group>"; };
+		C989E53E1D6CC488003E0079 /* BKHostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsViewController.h; sourceTree = "<group>"; };
+		C989E53F1D6CC488003E0079 /* BKHostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsViewController.m; sourceTree = "<group>"; };
+		C989E5401D6CC488003E0079 /* BKPredictionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPredictionViewController.h; sourceTree = "<group>"; };
+		C989E5411D6CC488003E0079 /* BKPredictionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPredictionViewController.m; sourceTree = "<group>"; };
+		C989E5431D6CC488003E0079 /* BKKeyboardModifierViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardModifierViewController.h; sourceTree = "<group>"; };
+		C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardModifierViewController.m; sourceTree = "<group>"; };
+		C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardViewController.h; sourceTree = "<group>"; };
+		C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardViewController.m; sourceTree = "<group>"; };
+		C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAppearanceViewController.h; sourceTree = "<group>"; };
+		C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAppearanceViewController.m; sourceTree = "<group>"; };
+		C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFontCreateViewController.h; sourceTree = "<group>"; };
+		C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFontCreateViewController.m; sourceTree = "<group>"; };
+		C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKThemeCreateViewController.h; sourceTree = "<group>"; };
+		C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKThemeCreateViewController.m; sourceTree = "<group>"; };
+		C989E55F1D6CC95A003E0079 /* BKPubKeyCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyCreateViewController.h; sourceTree = "<group>"; };
+		C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyCreateViewController.m; sourceTree = "<group>"; };
+		C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyDetailsViewController.h; sourceTree = "<group>"; };
+		C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyDetailsViewController.m; sourceTree = "<group>"; };
+		C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyViewController.h; sourceTree = "<group>"; };
+		C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyViewController.m; sourceTree = "<group>"; };
+		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
+		C9B2E0071D6B612300B89F69 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
+		C9B2E0081D6B612300B89F69 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
+		C9B2E0091D6B612300B89F69 /* BKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDefaults.h; sourceTree = "<group>"; };
+		C9B2E00A1D6B612300B89F69 /* BKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDefaults.m; sourceTree = "<group>"; };
+		C9B2E00B1D6B612300B89F69 /* BKFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFont.h; sourceTree = "<group>"; };
+		C9B2E00C1D6B612300B89F69 /* BKFont.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFont.m; sourceTree = "<group>"; };
+		C9B2E00D1D6B612300B89F69 /* BKHosts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHosts.h; sourceTree = "<group>"; };
+		C9B2E00E1D6B612300B89F69 /* BKHosts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHosts.m; sourceTree = "<group>"; };
+		C9B2E00F1D6B612300B89F69 /* BKTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTheme.h; sourceTree = "<group>"; };
+		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
+		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
+		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -249,18 +288,10 @@
 			isa = PBXGroup;
 			children = (
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
-				0716B54B1CFFAB9300268B5B /* PKCardCreateViewController.h */,
-				0716B54C1CFFAB9300268B5B /* PKCardCreateViewController.m */,
-				0716B54D1CFFAB9300268B5B /* PKCardDetailsViewController.h */,
-				0716B54E1CFFAB9300268B5B /* PKCardDetailsViewController.m */,
-				0716B54F1CFFAB9300268B5B /* PKCardViewController.h */,
-				0716B5501CFFAB9300268B5B /* PKCardViewController.m */,
 				0716B5291CFFAB9300268B5B /* AppDelegate.h */,
 				0716B52A1CFFAB9300268B5B /* AppDelegate.m */,
 				0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */,
 				0716B52E1CFFAB9300268B5B /* Main.storyboard */,
-				0716B5341CFFAB9300268B5B /* DismissSegue.h */,
-				0716B5351CFFAB9300268B5B /* DismissSegue.m */,
 				0716B5541CFFAB9300268B5B /* SmartKeys.h */,
 				0716B5551CFFAB9300268B5B /* SmartKeys.m */,
 				074F307A1D062A3F00A73445 /* SmartKeys.xib */,
@@ -268,7 +299,6 @@
 				0716B5571CFFAB9300268B5B /* SmartKeysView.m */,
 				0716B5581CFFAB9300268B5B /* SpaceController.h */,
 				0716B5591CFFAB9300268B5B /* SpaceController.m */,
-				0716B5531CFFAB9300268B5B /* Settings.storyboard */,
 				0716B5611CFFAB9300268B5B /* TermController.h */,
 				0716B5621CFFAB9300268B5B /* TermController.m */,
 				079635831D0E6602000473B1 /* TermView.h */,
@@ -372,8 +402,6 @@
 				07F670661D05EEE200C0A53C /* MCPSession.m */,
 				07F670671D05EEE200C0A53C /* MoshSession.h */,
 				07F670681D05EEE200C0A53C /* MoshSession.m */,
-				07F670691D05EEE200C0A53C /* PKCard.h */,
-				07F6706A1D05EEE200C0A53C /* PKCard.m */,
 				07F6706B1D05EEE200C0A53C /* Session.h */,
 				07F6706C1D05EEE200C0A53C /* Session.m */,
 				07F6706D1D05EEE200C0A53C /* SSHCopyIDSession.h */,
@@ -384,9 +412,111 @@
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
 		};
+		C989E53B1D6CC488003E0079 /* BKHosts */ = {
+			isa = PBXGroup;
+			children = (
+				C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */,
+				C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */,
+				C989E53E1D6CC488003E0079 /* BKHostsViewController.h */,
+				C989E53F1D6CC488003E0079 /* BKHostsViewController.m */,
+				C989E5401D6CC488003E0079 /* BKPredictionViewController.h */,
+				C989E5411D6CC488003E0079 /* BKPredictionViewController.m */,
+			);
+			path = BKHosts;
+			sourceTree = "<group>";
+		};
+		C989E5421D6CC488003E0079 /* BKKeyboard */ = {
+			isa = PBXGroup;
+			children = (
+				C989E5431D6CC488003E0079 /* BKKeyboardModifierViewController.h */,
+				C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */,
+				C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */,
+				C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */,
+			);
+			path = BKKeyboard;
+			sourceTree = "<group>";
+		};
+		C989E54F1D6CC4A1003E0079 /* Appearance */ = {
+			isa = PBXGroup;
+			children = (
+				C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */,
+				C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */,
+				C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */,
+				C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */,
+				C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */,
+				C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */,
+			);
+			name = Appearance;
+			path = Settings/ViewControllers/Appearance;
+			sourceTree = SOURCE_ROOT;
+		};
+		C989E55E1D6CC95A003E0079 /* BKPubKey */ = {
+			isa = PBXGroup;
+			children = (
+				C989E55F1D6CC95A003E0079 /* BKPubKeyCreateViewController.h */,
+				C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */,
+				C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */,
+				C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */,
+				C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */,
+				C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */,
+			);
+			path = BKPubKey;
+			sourceTree = "<group>";
+		};
+		C9B2E0031D6B612300B89F69 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
+				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
+				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
+				C9B2E0061D6B612300B89F69 /* Model */,
+				C9B2E0111D6B612300B89F69 /* Network */,
+				C9B2E0141D6B612300B89F69 /* ViewControllers */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		C9B2E0061D6B612300B89F69 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				C9B2E0071D6B612300B89F69 /* BKPubKey.h */,
+				C9B2E0081D6B612300B89F69 /* BKPubKey.m */,
+				C9B2E0091D6B612300B89F69 /* BKDefaults.h */,
+				C9B2E00A1D6B612300B89F69 /* BKDefaults.m */,
+				C9B2E00B1D6B612300B89F69 /* BKFont.h */,
+				C9B2E00C1D6B612300B89F69 /* BKFont.m */,
+				C9B2E00D1D6B612300B89F69 /* BKHosts.h */,
+				C9B2E00E1D6B612300B89F69 /* BKHosts.m */,
+				C9B2E00F1D6B612300B89F69 /* BKTheme.h */,
+				C9B2E0101D6B612300B89F69 /* BKTheme.m */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		C9B2E0111D6B612300B89F69 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */,
+				C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
+		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				C989E55E1D6CC95A003E0079 /* BKPubKey */,
+				C989E54F1D6CC4A1003E0079 /* Appearance */,
+				C989E53B1D6CC488003E0079 /* BKHosts */,
+				C989E5421D6CC488003E0079 /* BKKeyboard */,
+			);
+			path = ViewControllers;
+			sourceTree = "<group>";
+		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
 				074F30781D062A2800A73445 /* main.m */,
@@ -558,13 +688,13 @@
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
 				074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
-				0716B58E1CFFAB9300268B5B /* Settings.storyboard in Resources */,
 				0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */,
 				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
 				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				079635DC1D0F8219000473B1 /* webfont.js in Resources */,
 				079635DB1D0F8219000473B1 /* sauce.css in Resources */,
+				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
 				070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -584,26 +714,39 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
-				0716B5791CFFAB9300268B5B /* DismissSegue.m in Sources */,
+				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
-				0716B58B1CFFAB9300268B5B /* PKCardDetailsViewController.m in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
+				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
+				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
+				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
 				0716B58F1CFFAB9300268B5B /* SmartKeys.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
-				0716B58C1CFFAB9300268B5B /* PKCardViewController.m in Sources */,
+				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
+				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
+				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
+				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
+				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
-				07F670741D05EEE200C0A53C /* PKCard.m in Sources */,
+				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
+				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
 				0716B5901CFFAB9300268B5B /* SmartKeysView.m in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
+				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
+				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
+				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
-				0716B58A1CFFAB9300268B5B /* PKCardCreateViewController.m in Sources */,
+				C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -650,6 +793,14 @@
 				0716B52F1CFFAB9300268B5B /* Base */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		C9B2E0041D6B612300B89F69 /* Settings.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				C9B2E0051D6B612300B89F69 /* Base */,
+			);
+			name = Settings.storyboard;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */

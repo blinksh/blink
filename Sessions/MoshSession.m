@@ -35,8 +35,12 @@
 
 #include "MoshiOSController.h"
 
+#import "BKHosts.h"
 #import "MoshSession.h"
 #import "SSHSession.h"
+
+
+static NSDictionary *predictionModeStrings = nil;
 
 static const char *usage_format =
   "Usage: mosh [options] [user@]host [--] [command]"
@@ -63,6 +67,9 @@ static const char *usage_format =
 @property NSString *ip;
 @property NSString *port;
 @property NSString *key;
+@property NSString *predictionMode;
+@property NSString *startupCmd;
+@property NSString *serverPath;
 
 @end
 
@@ -74,10 +81,20 @@ static const char *usage_format =
   int _debug;
 }
 
++ (void)initialize
+{
+  predictionModeStrings = @{
+  [NSNumber numberWithInt:BKMoshPredictionAdaptive]: @"adaptive",
+  [NSNumber numberWithInt:BKMoshPredictionAlways]: @"always",
+  [NSNumber numberWithInt:BKMoshPredictionNever]: @"never",
+  [NSNumber numberWithInt:BKMoshPredictionExperimental]: @"experimental",
+  [NSNumber numberWithInt:BKMoshPredictionUnknown]: @"adaptive"
+  };
+}
+
 - (int)main:(int)argc argv:(char **)argv
 {
-  NSString *server;
-  NSString *predict_mode, *port_request, *ssh, *sshPort, *sshIdentity;
+  NSString *ssh, *sshPort, *sshIdentity;
   int help = 0;
   NSString *colors;
 
@@ -92,6 +109,7 @@ static const char *usage_format =
       {0, 0, 0, 0}};
 
   optind = 0;
+  _moshParams = [[MoshParams alloc] init];
 
   while (1) {
     int option_index = 0;
@@ -107,23 +125,23 @@ static const char *usage_format =
     char *param;
     switch (c) {
       case 's':
-	server = [NSString stringWithFormat:@"%s", optarg];
+	_moshParams.serverPath = [NSString stringWithFormat:@"%s", optarg];
 	break;
       case 'r':
-	predict_mode = [NSString stringWithFormat:@"%s", optarg];
+	_moshParams.predictionMode = [NSString stringWithFormat:@"%s", optarg];
 	break;
       case 'p':
-	port_request = [NSString stringWithFormat:@"%s", optarg];
+	_moshParams.port = [NSString stringWithFormat:@"%s", optarg];
 	break;
       //      case 'S':
       //        param = optarg;
       //	ssh = [NSString stringWithFormat:@"%s", optarg];
       //	break;
       case 'a':
-	predict_mode = @"always";
+	_moshParams.predictionMode = @"always";
 	break;
       case 'n':
-	predict_mode = @"never";
+	_moshParams.predictionMode = @"never";
 	break;
       case 'P':
 	sshPort = [NSString stringWithFormat:@"%s", optarg];
@@ -144,29 +162,41 @@ static const char *usage_format =
     return [self dieMsg:@(usage_format)];
   }
 
-  // Validate prediction mode
-  if (!predict_mode) {
-    predict_mode = @"adaptive";
-  }
-  if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:predict_mode] == NSNotFound) {
-    return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
-  }
-
   NSString *userhost = [NSString stringWithFormat:@"%s", argv[optind++]];
 
-  char **remote_command = &argv[optind];
-  NSMutableArray *remoteChunks = [[NSMutableArray alloc] init];
-  for (int i = 0; i < argc - optind; i++) {
-    [remoteChunks addObject:[NSString stringWithFormat:@"%s", remote_command[i]]];
+  NSArray *chunks = [userhost componentsSeparatedByString:@"@"];
+  BKHosts *hostCfg;
+  if ([chunks count] != 2) {
+    hostCfg = [BKHosts withHost:userhost];
+  } else {
+    hostCfg = [BKHosts withHost:chunks[1]];
   }
 
-  NSString *moshServerCmd = [self getMoshServerStringCmd:server port:port_request withColors:colors run:[remoteChunks componentsJoinedByString:@" "]];
+  char **remote_command = &argv[optind];
+  int idx_remote_command = argc - optind;
+  NSMutableArray *remoteCmdChunks = [[NSMutableArray alloc] init];
+  if (idx_remote_command) {
+    for (int i = 0; i < idx_remote_command; i++) {
+      [remoteCmdChunks addObject:[NSString stringWithFormat:@"%s", remote_command[i]]];
+    }
+    _moshParams.startupCmd = [remoteCmdChunks componentsJoinedByString:@" "];
+  }
+
+  [self processMoshSettings:hostCfg];
+
+  NSString *moshServerCmd = [self getMoshServerStringCmd:_moshParams.serverPath port:_moshParams.port withColors:colors run:_moshParams.startupCmd];
   [self debugMsg:moshServerCmd];
 
   NSError *error;
   [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity moshCommand:moshServerCmd error:&error];
   if (error) {
     return [self dieMsg:error.localizedDescription];
+  }
+
+  // Validate prediction mode
+  _moshParams.predictionMode = _moshParams.predictionMode ?: @"adaptive";
+  if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:_moshParams.predictionMode] == NSNotFound) {
+    return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
   }
 
   NSString *locales_path = [[NSBundle mainBundle] pathForResource:@"locales" ofType:@"bundle"];
@@ -176,7 +206,7 @@ static const char *usage_format =
   [_stream.control.terminal setScrollEnabled:NO];
   BOOL mode = [_stream.control rawMode];
   [_stream.control.terminal setRawMode:YES];
-  mosh_main(_stream.in, _stream.out, _stream.sz, [_moshParams.ip UTF8String], [_moshParams.port UTF8String], [_moshParams.key UTF8String], [predict_mode UTF8String]);
+  mosh_main(_stream.in, _stream.out, _stream.sz, [_moshParams.ip UTF8String], [_moshParams.port UTF8String], [_moshParams.key UTF8String], [_moshParams.predictionMode UTF8String]);
   [_stream.control.terminal setScrollEnabled:YES];
   [_stream.control setRawMode:mode];
 
@@ -186,19 +216,38 @@ static const char *usage_format =
   return 0;
 }
 
+- (void)processMoshSettings:(BKHosts *)host
+{
+  NSString *server = host.moshServer.length ?
+    // Escape server path
+    [NSString stringWithFormat:@"\"%@\"", [host.moshServer stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]]
+    : nil;
+
+  _moshParams.serverPath = _moshParams.serverPath ?: server;
+
+  _moshParams.port = _moshParams.port ?: [host.moshPort stringValue];
+
+    NSString *startupCmd = host.moshStartup.length ? host.moshStartup : nil;
+  _moshParams.startupCmd = _moshParams.startupCmd ?: startupCmd;
+
+  NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
+  _moshParams.predictionMode = _moshParams.predictionMode ?: predictionMode;
+}
+
 - (NSString *)getMoshServerStringCmd:(NSString *)server port:(NSString *)port withColors:(NSString *)colors run:(NSString *)command
 {
-  server = server ? server : @"mosh-server";
-  colors = colors ? colors : @"256";
+  server = server.length ? server : @"mosh-server";
+  colors = colors.length ? colors : @"256";
 
   // Prepare ssh command
-  NSMutableArray *moshServerArgs = [NSMutableArray arrayWithObjects:server, @"new", @"-s", @"-c", colors, @"-l LC_ALL=en_US.UTF-8", @"--", nil];
+  NSMutableArray *moshServerArgs = [NSMutableArray arrayWithObjects:server, @"new", @"-s", @"-c", colors, @"-l LC_ALL=en_US.UTF-8", nil];
   if (port) {
     [moshServerArgs addObject:@"-p"];
     [moshServerArgs addObject:port];
   }
 
   if (command) {
+    [moshServerArgs addObject: @"--"];
     [moshServerArgs addObject:command];
   }
 
@@ -209,7 +258,7 @@ static const char *usage_format =
 {
   ssh = ssh ? ssh : @"ssh";
 
-  NSMutableArray *sshArgs = [NSMutableArray arrayWithObjects:ssh, @"-t", userHost, @"--", command, nil];
+  NSMutableArray*sshArgs = [NSMutableArray arrayWithObjects:ssh, @"-t", userHost, @"--", command, nil];
   if (port) {
     [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
   }
@@ -251,10 +300,7 @@ static const char *usage_format =
 
   ssize_t n = 0;
 
-  _moshParams = [[MoshParams alloc] init];
-
   while ((n = getline(&buf, &buf_sz, term_r)) >= 0) {
-
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     if ((match = [ipFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];

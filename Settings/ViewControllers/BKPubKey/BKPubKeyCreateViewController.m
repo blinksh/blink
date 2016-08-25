@@ -29,9 +29,9 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "PKCardCreateViewController.h"
+#import "BKPubKeyCreateViewController.h"
 
-@interface PKCardCreateViewController () <UITextFieldDelegate>
+@interface BKPubKeyCreateViewController () <UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *nameField;
 @property (weak, nonatomic) IBOutlet UISegmentedControl *sizeField;
@@ -41,7 +41,7 @@
 
 @end
 
-@implementation PKCardCreateViewController
+@implementation BKPubKeyCreateViewController
 
 - (void)viewDidLoad
 {
@@ -87,7 +87,7 @@
 {
   NSString *errorMsg;
   if ([identifier isEqualToString:@"unwindFromCreate"]) {
-    if ([PKCard withID:_nameField.text]) {
+    if ([BKPubKey withID:_nameField.text]) {
       errorMsg = @"Cannot have two keys with the same name.";
     } else if ([_nameField.text rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]].location != NSNotFound) {
       errorMsg = @"Spaces are not permitted in the name.";
@@ -99,20 +99,17 @@
       int length = [[_sizeField titleForSegmentAtIndex:selectedIndex] intValue];
       // Create and return
       SshRsa *key = _key ? _key : [[SshRsa alloc] initWithLength:length];
-      _pkcard = [PKCard saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKey]];
-      if (!_pkcard) {
+      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKey]];
+      if (!_pubkey) {
         errorMsg = @"OpenSSL error. Could not create Public Key.";
       }
     }
 
     if (errorMsg) {
-      UIAlertView *errorAlert = [[UIAlertView alloc]
-            initWithTitle:@"Key error"
-                  message:errorMsg
-                 delegate:nil
-        cancelButtonTitle:@"OK"
-        otherButtonTitles:nil];
-      [errorAlert show];
+      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Key error" message:errorMsg preferredStyle:UIAlertControllerStyleAlert];
+      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+      [alertController addAction:ok];
+      [self presentViewController:alertController animated:YES completion:nil];
       return NO;
     }
   }

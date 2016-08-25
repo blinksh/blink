@@ -31,7 +31,9 @@
 
 #import <UIKit/UIKit.h>
 
+@interface BKKeyboardModifierViewController : UITableViewController
 
-@interface PKCardViewController : UITableViewController
+- (void)performInitialSelection:(NSString *)selectedPrediction;
+- (NSString *)selectedObject;
 
 @end

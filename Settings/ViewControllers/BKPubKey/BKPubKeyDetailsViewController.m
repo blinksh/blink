@@ -29,22 +29,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "PKCardDetailsViewController.h"
+#import "BKPubKeyDetailsViewController.h"
 
 
-@interface PKCardDetailsViewController () <UITextFieldDelegate>
+@interface BKPubKeyDetailsViewController () <UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *name;
 
 @end
 
-@implementation PKCardDetailsViewController
+@implementation BKPubKeyDetailsViewController
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
 
-  _name.text = _pkcard.ID;
+  _name.text = _pubkey.ID;
 }
 
 - (void)didReceiveMemoryWarning
@@ -84,21 +84,21 @@
 - (IBAction)copyPublicKey:(id)sender
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  [pb setString:_pkcard.publicKey];
+  [pb setString:_pubkey.publicKey];
 }
 
 - (IBAction)copyPrivateKey:(id)sender
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  [pb setString:_pkcard.privateKey];
+  [pb setString:_pubkey.privateKey];
 }
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
   if ([segue.identifier isEqualToString:@"unwindFromDetails"]) {
-    if (_name.text.length && ![_name.text isEqualToString:_pkcard.ID]) {
-      _pkcard.ID = _name.text;
-      [PKCard saveIDS];
+    if (_name.text.length && ![_name.text isEqualToString:_pubkey.ID]) {
+      _pubkey.ID = _name.text;
+      [BKPubKey saveIDS];
     }
   }
 }

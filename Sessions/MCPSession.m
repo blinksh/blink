@@ -37,7 +37,7 @@
 
 #import "MCPSession.h"
 #import "MoshSession.h"
-#import "PKCard.h"
+#import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 

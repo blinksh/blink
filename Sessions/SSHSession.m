@@ -39,7 +39,8 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
-#import "PKCard.h"
+#import "BKHosts.h"
+#import "BKPubKey.h"
 #import "SSHSession.h"
 
 #define REQUEST_TTY_AUTO 0
@@ -63,6 +64,7 @@ typedef struct {
   const char *user;
   int request_tty;
   const char *identity_file;
+  const char *password;
 } Options;
 
 
@@ -203,12 +205,17 @@ static void kbd_callback(const char *name, int name_len,
 
   NSArray *chunks = [userhost componentsSeparatedByString:@"@"];
   if ([chunks count] != 2) {
-    optind = 0;
-    return [self dieMsg:@"Could not parse user@host info"];
+    _options.hostname = [userhost UTF8String];
+  } else {
+    _options.user = [chunks[0] UTF8String];
+    _options.hostname = [chunks[1] UTF8String];
   }
+  
+  [self processHostSettings];
 
-  _options.user = [chunks[0] UTF8String];
-  _options.hostname = [chunks[1] UTF8String];
+  if (!_options.user) {
+    return [self dieMsg:@"Missing user to establish connection."];
+  }
 
   NSMutableArray *command_args = [[NSMutableArray alloc] init];
 
@@ -279,20 +286,34 @@ static void kbd_callback(const char *name, int name_len,
   }
 }
 
+- (void)processHostSettings
+{
+  BKHosts *host;
+
+  if (!(host = [BKHosts withHost:[NSString stringWithUTF8String:_options.hostname]])) {
+    return;
+  }
+
+  _options.hostname = host.hostName ? [host.hostName UTF8String] : _options.hostname;
+  _options.port = _options.port ? _options.port : [host.port intValue];
+  _options.user = _options.user ? _options.user : [host.user UTF8String];
+  _options.identity_file = _options.identity_file ? _options.identity_file : [host.key UTF8String];
+  _options.password = host.password ? [host.password UTF8String] : NULL;
+}
 
 - (void)load_identity_files
 {
   // Obtain valid auths that will be tried for the connection
   _identities = [[NSMutableArray alloc] init];
-  PKCard *pk;
+  BKPubKey *pk;
 
   if (_options.identity_file) {
-    if ((pk = [PKCard withID:[NSString stringWithUTF8String:_options.identity_file]]) != nil) {
+    if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:_options.identity_file]]) != nil) {
       [_identities addObject:pk];
     }
   }
 
-  if ((pk = [PKCard withID:@"id_rsa"]) != nil) {
+  if ((pk = [BKPubKey withID:@"id_rsa"]) != nil) {
     [_identities addObject:pk];
   }
 }
@@ -451,16 +472,18 @@ static void kbd_callback(const char *name, int name_len,
   }
 
   int succ = 0;
-  //[self promptPassword:"pass" length:4];
 
   if (auth_type & 4) {
     succ = [self ssh_login_publickey:user];
+  }
+  if (!succ && _options.password) {
+    succ = [self ssh_login_password:user password:_options.password];
   }
   if (!succ && (auth_type & 2)) {
     succ = [self ssh_login_interactive:user];
   }
   if (!succ && auth_type & 1) {
-    succ = [self ssh_login_password:user];
+    succ = [self ssh_login_password:user password:NULL];
   }
 
   if (!succ) {
@@ -471,17 +494,18 @@ static void kbd_callback(const char *name, int name_len,
   return;
 }
 
-- (int)ssh_login_password:(const char *)user
+- (int)ssh_login_password:(const char *)user password:(char *)password
 {
-  char *password = nil;
   int retries = 3;
   char *errmsg;
 
   do {
     int rc;
-    fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
-    [self promptUser:&password];
-    fprintf(_stream.control.termout, "\r\n");
+    if (!password) {
+      fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
+      [self promptUser:&password];
+      fprintf(_stream.control.termout, "\r\n");
+    }
 
     if (strlen(password) != 0) {
       while ((rc = libssh2_userauth_password(_session, user, password)) == LIBSSH2_ERROR_EAGAIN)
@@ -521,7 +545,7 @@ static void kbd_callback(const char *name, int name_len,
 - (int)ssh_login_publickey:(const char *)user
 {
   // Try all the identities until finding a successful one, and return
-  for (PKCard *pk in _identities) {
+  for (BKPubKey *pk in _identities) {
     [self debugMsg:@"Attempting authentication with publickey."];
     int rc = 0;
     const char *pub = [pk.publicKey UTF8String];

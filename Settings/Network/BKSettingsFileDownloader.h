@@ -29,13 +29,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-#import "PKCard.h"
+@interface BKSettingsFileDownloader : NSObject
 
-
-@interface PKCardDetailsViewController : UITableViewController
-
-@property (weak, nonatomic) PKCard *pkcard;
++ (void)downloadFileAtUrl:(NSString *)urlString withCompletionHandler:(void (^)(NSData *fileData, NSError *error))completionHandler;
++ (void)cancelRunningDownloads;
 
 @end

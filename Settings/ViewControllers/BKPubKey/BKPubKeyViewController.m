@@ -31,24 +31,33 @@
 
 #import <CommonCrypto/CommonDigest.h>
 
-#import "PKCard.h"
-#import "PKCardCreateViewController.h"
-#import "PKCardDetailsViewController.h"
-#import "PKCardViewController.h"
+#import "BKPubKey.h"
+#import "BKPubKeyCreateViewController.h"
+#import "BKPubKeyDetailsViewController.h"
+#import "BKPubKeyViewController.h"
 
 
-@interface PKCardViewController ()
+@interface BKPubKeyViewController ()
 
 @end
 
-@implementation PKCardViewController {
+@implementation BKPubKeyViewController {
   NSString *_clipboardPassphrase;
   SshRsa *_clipboardKey;
+  BOOL _selectable;
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+  if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
+    [self performSegueWithIdentifier:@"unwindFromKeys" sender:self];
+  }
+  [super viewWillDisappear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -66,19 +75,32 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return PKCard.count;
+  return _selectable ? BKPubKey.count + 1 : BKPubKey.count;
 }
-
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+  UITableViewCell *cell;
 
-  PKCard *pk = [PKCard.all objectAtIndex:indexPath.row];
+  if (_selectable && indexPath.row == 0) {
+    cell = [tableView dequeueReusableCellWithIdentifier:@"None" forIndexPath:indexPath];
+  } else {
+    NSInteger pkIdx = _selectable ? indexPath.row - 1 : indexPath.row;
+    cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
+    BKPubKey *pk = [BKPubKey.all objectAtIndex:pkIdx];
 
-  // Configure the cell...
-  cell.textLabel.text = pk.ID;
-  cell.detailTextLabel.text = [self fingerprint:pk.publicKey];
+    // Configure the cell...
+    cell.textLabel.text = pk.ID;
+    cell.detailTextLabel.text = [self fingerprint:pk.publicKey];
+  }
+
+  if (_selectable) {
+    if (_currentSelectionIdx == indexPath) {
+      [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
+    } else {
+      [cell setAccessoryType:UITableViewCellAccessoryNone];
+    }
+  }
 
   return cell;
 }
@@ -97,14 +119,18 @@
   return ret;
 }
 
+- (UITableViewCellEditingStyle)tableView:(UITableView *)tableView editingStyleForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  return _selectable ? UITableViewCellEditingStyleNone : UITableViewCellEditingStyleDelete;
+}
 
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    // Remove PKCard
-    [PKCard.all removeObjectAtIndex:indexPath.row];
+    // Remove BKPubKey
+    [BKPubKey.all removeObjectAtIndex:indexPath.row];
     [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
-    [PKCard saveIDS];
+    [BKPubKey saveIDS];
     [self.tableView reloadData];
   }
 }
@@ -126,7 +152,7 @@
 
                                                    if (_clipboardKey) {
                                                      [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
-                                                   }                                                   
+                                                   }
                                                  }];
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -184,7 +210,7 @@
   } else {
     // If the key isn't encrypted, then try to generate it and go to the create key dialog to complete
     SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey passphrase:nil];
-    
+
     if (key == nil) {
       UIAlertView *errorAlert = [[UIAlertView alloc]
             initWithTitle:@"Invalid Key"
@@ -208,15 +234,15 @@
   // Get the new view controller using [segue destinationViewController].
   // Pass the selected object to the new view controller.
   if ([[segue identifier] isEqualToString:@"keyInfoSegue"]) {
-    PKCardDetailsViewController *details = segue.destinationViewController;
+    BKPubKeyDetailsViewController *details = segue.destinationViewController;
 
     NSIndexPath *indexPath = [[self tableView] indexPathForSelectedRow];
-    PKCard *pkcard = [PKCard.all objectAtIndex:indexPath.row];
-    details.pkcard = pkcard;
+    BKPubKey *pubkey = [BKPubKey.all objectAtIndex:indexPath.row];
+    details.pubkey = pubkey;
     return;
   }
   if ([[segue identifier] isEqualToString:@"createKeySegue"]) {
-    PKCardCreateViewController *create = segue.destinationViewController;
+    BKPubKeyCreateViewController *create = segue.destinationViewController;
 
     if (_clipboardKey) {
       create.key = _clipboardKey;
@@ -229,14 +255,74 @@
 
 - (IBAction)unwindFromCreate:(UIStoryboardSegue *)sender
 {
-  NSIndexPath *newIdx = [NSIndexPath indexPathForRow:(PKCard.count - 1) inSection:0];
+  NSIndexPath *newIdx;
+  if (_selectable) {
+    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
+  } else {
+    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
+  }
   [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 - (IBAction)unwindFromDetails:(UIStoryboardSegue *)sender
 {
-  NSIndexPath *selection = [self.tableView indexPathForSelectedRow];
-  [self.tableView reloadRowsAtIndexPaths:@[ selection ] withRowAnimation:UITableViewRowAnimationNone];
+  //NSIndexPath *selection = [self.tableView indexPathForSelectedRow];
+  [self.tableView reloadRowsAtIndexPaths:@[ _currentSelectionIdx ] withRowAnimation:UITableViewRowAnimationNone];
+}
+
+// TODO: Maybe we should call it "markable", because the selection still exists and it is important.
+#pragma mark - Selectable
+- (void)makeSelectable:(BOOL)selectable initialSelection:(NSString *)selectionID
+{
+  _selectable = selectable;
+
+  if (_selectable) {
+    // Object as initial selection.
+    // Guess the indexPath
+    NSInteger pos;
+    if (selectionID.length) {
+      if ([BKPubKey withID:selectionID]) {
+        pos = [BKPubKey.all indexOfObject:[BKPubKey withID:selectionID]];
+        pos += 1; //To accomodate "None" value
+      } else {
+        pos = 0;
+      }
+    } else {
+      pos = 0;
+    }
+    _currentSelectionIdx = [NSIndexPath indexPathForRow:pos inSection:0];
+  }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  if (_selectable && _currentSelectionIdx != nil) {
+    // When in selectable mode, do not show details.
+    [[tableView cellForRowAtIndexPath:_currentSelectionIdx] setAccessoryType:UITableViewCellAccessoryNone];
+  }
+  _currentSelectionIdx = indexPath;
+
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+
+  if (_selectable) {
+    [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
+  } else {
+    // Show details if not selectable
+    [self showKeyInfo:indexPath];
+  }
+}
+
+- (id)selectedObject
+{
+  if (_currentSelectionIdx.row == 0) {
+    return 0;
+  }
+  return _selectable ? BKPubKey.all[_currentSelectionIdx.row - 1] : BKPubKey.all[_currentSelectionIdx.row];
+}
+
+- (void)showKeyInfo:(NSIndexPath *)indexPath
+{
+  [self performSegueWithIdentifier:@"keyInfoSegue" sender:self];
 }
 
 @end
