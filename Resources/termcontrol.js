@@ -2,10 +2,26 @@ var write_to_term = function(data) {
     t.io.print(data);
 }
 var sigwinch = function() {
+    // This was removed as in theory the next resize would also take care of it.
+    // It looks like under certain scenarios there is a race condition under which different sizes are
+    // sent through different events on hterm and here included. This ensures that we take care of the
+    // event chain ourselves.
+    var screen = document.getElementsByTagName("iframe")[0].contentWindow.document.getElementsByTagName("x-screen")[0];
+    var view_w = window.innerWidth;
+    var view_h = window.innerHeight;
+    screen.style.width = view_w;
+    screen.style.height = view_h;
+
+    // This was done to fix the SplitView getting stuck.
+    // It shouldn't be necessary anymore, but it makes transitions smoother too.
     var termWindow = document.getElementsByTagName("iframe")[0].contentWindow;
-    termwindow.resizeTo(window.innerWidth, window.innerHeight);
+    termWindow.resizeTo(window.innerWidth, window.innerHeight);
+  
+    t.scrollPort_.onResize_(null);
 }
+
 window.addEventListener('resize', sigwinch);
+
 var increaseTermFontSize = function() {
     var size = t.getFontSize();
     t.setFontSize(++size);
