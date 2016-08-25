@@ -1,13 +1,36 @@
+////////////////////////////////////////////////////////////////////////////////
 //
-//  BKHost.m
-//  settings
+// B L I N K
 //
-//  Created by Atul M on 11/08/16.
-//  Copyright © 2016 CARLOS CABANERO. All rights reserved.
+// Copyright (C) 2016 Blink Mobile Shell Project
 //
+// This file is part of Blink.
+//
+// Blink is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Blink is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Blink. If not, see <http://www.gnu.org/licenses/>.
+//
+// In addition, Blink is also subject to certain additional terms under
+// GNU GPL version 3 section 7.
+//
+// You should have received a copy of these additional terms immediately
+// following the terms and conditions of the GNU General Public License
+// which accompanied the Blink Source Code. If not, see
+// <http://www.github.com/blinksh/blink>.
+//
+////////////////////////////////////////////////////////////////////////////////
 
-#import "UICKeyChainStore/UICKeyChainStore.h"
 #import "BKHosts.h"
+#import "UICKeyChainStore/UICKeyChainStore.h"
 
 NSMutableArray *Hosts;
 
@@ -19,57 +42,56 @@ static UICKeyChainStore *Keychain = nil;
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    _host = [coder decodeObjectForKey:@"host"];
-    _hostName = [coder decodeObjectForKey:@"hostName"];
-    _port = [coder decodeObjectForKey:@"port"];
-    _user = [coder decodeObjectForKey:@"user"];
-    _passwordRef = [coder decodeObjectForKey:@"passwordRef"];
-    _key = [coder decodeObjectForKey:@"key"];
-    _moshServer = [coder decodeObjectForKey:@"moshServer"];
-    _moshPort = [coder decodeObjectForKey:@"moshPort"];
-    _moshStartup = [coder decodeObjectForKey:@"moshStartup"];
-    _prediction = [coder decodeObjectForKey:@"prediction"];
-    
-    return self;
+  _host = [coder decodeObjectForKey:@"host"];
+  _hostName = [coder decodeObjectForKey:@"hostName"];
+  _port = [coder decodeObjectForKey:@"port"];
+  _user = [coder decodeObjectForKey:@"user"];
+  _passwordRef = [coder decodeObjectForKey:@"passwordRef"];
+  _key = [coder decodeObjectForKey:@"key"];
+  _moshServer = [coder decodeObjectForKey:@"moshServer"];
+  _moshPort = [coder decodeObjectForKey:@"moshPort"];
+  _moshStartup = [coder decodeObjectForKey:@"moshStartup"];
+  _prediction = [coder decodeObjectForKey:@"prediction"];
+
+  return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-    [encoder encodeObject:_host forKey:@"host"];
-    [encoder encodeObject:_hostName forKey:@"hostName"];
-    [encoder encodeObject:_port forKey:@"port"];
-    [encoder encodeObject:_user forKey:@"user"];
-    [encoder encodeObject:_passwordRef forKey:@"passwordRef"];
-    [encoder encodeObject:_key forKey:@"key"];
-    [encoder encodeObject:_moshServer forKey:@"moshServer"];
-    [encoder encodeObject:_moshPort forKey:@"moshPort"];
-    [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
-    [encoder encodeObject:_prediction forKey:@"prediction"];
+  [encoder encodeObject:_host forKey:@"host"];
+  [encoder encodeObject:_hostName forKey:@"hostName"];
+  [encoder encodeObject:_port forKey:@"port"];
+  [encoder encodeObject:_user forKey:@"user"];
+  [encoder encodeObject:_passwordRef forKey:@"passwordRef"];
+  [encoder encodeObject:_key forKey:@"key"];
+  [encoder encodeObject:_moshServer forKey:@"moshServer"];
+  [encoder encodeObject:_moshPort forKey:@"moshPort"];
+  [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
+  [encoder encodeObject:_prediction forKey:@"prediction"];
 }
 
-- (id)initWithHost:(NSString*)host hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user passwordRef:(NSString*)passwordRef hostKey:(NSString*)hostKey moshServer:(NSString*)moshServer moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction
+- (id)initWithHost:(NSString *)host hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user passwordRef:(NSString *)passwordRef hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
 {
-    self = [super init];
-    if(self){
-        _host = host;
-        _hostName = hostName;
-        if (![sshPort isEqualToString:@""]) {
-            _port = [NSNumber numberWithInt:sshPort.intValue];
-        }
-        _user = user;
-        _passwordRef = passwordRef;
-        _key = hostKey;
-	if(![moshServer isEqualToString:@""])
-  {
-	    _moshServer = moshServer;
-	}	  
-        if(![moshPort isEqualToString:@""]){
-            _moshPort = [NSNumber numberWithInt:moshPort.intValue];
-        }
-        _moshStartup = startUpCmd;
-        _prediction = [NSNumber numberWithInt:prediction];
+  self = [super init];
+  if (self) {
+    _host = host;
+    _hostName = hostName;
+    if (![sshPort isEqualToString:@""]) {
+      _port = [NSNumber numberWithInt:sshPort.intValue];
     }
-    return self;
+    _user = user;
+    _passwordRef = passwordRef;
+    _key = hostKey;
+    if (![moshServer isEqualToString:@""]) {
+      _moshServer = moshServer;
+    }
+    if (![moshPort isEqualToString:@""]) {
+      _moshPort = [NSNumber numberWithInt:moshPort.intValue];
+    }
+    _moshStartup = startUpCmd;
+    _prediction = [NSNumber numberWithInt:prediction];
+  }
+  return self;
 }
 
 - (NSString *)password
@@ -89,120 +111,120 @@ static UICKeyChainStore *Keychain = nil;
 
 + (instancetype)withHost:(NSString *)aHost
 {
-    for (BKHosts *host in Hosts) {
-        if ([host->_host isEqualToString:aHost]) {
-            return host;
-        }
+  for (BKHosts *host in Hosts) {
+    if ([host->_host isEqualToString:aHost]) {
+      return host;
     }
-    return nil;
+  }
+  return nil;
 }
 
 + (NSMutableArray *)all
 {
-    return Hosts;
+  return Hosts;
 }
 
 + (NSInteger)count
 {
-    return [Hosts count];
+  return [Hosts count];
 }
 
 + (BOOL)saveHosts
 {
-    // Save IDs to file
-    return [NSKeyedArchiver archiveRootObject:Hosts toFile:HostsURL.path];
+  // Save IDs to file
+  return [NSKeyedArchiver archiveRootObject:Hosts toFile:HostsURL.path];
 }
 
-+ (instancetype)saveHost:(NSString*)host  withNewHost:(NSString*)newHost hostName:(NSString*)hostName sshPort:(NSString*)sshPort user:(NSString*)user password:(NSString*)password hostKey:(NSString*)hostKey moshServer:(NSString*)moshServer moshPort:(NSString*)moshPort startUpCmd:(NSString*)startUpCmd prediction:(enum BKMoshPrediction)prediction
++ (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
 {
   NSString *pwdRef;
   if (password) {
     pwdRef = [host stringByAppendingString:@".pwd"];
     [Keychain setString:password forKey:pwdRef];
   }
-			
+
   BKHosts *bkHost = [BKHosts withHost:host];
   // Save password to keychain if it changed
-    if(!bkHost){
-      bkHost = [[BKHosts alloc]initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshServer:moshServer moshPort:moshPort startUpCmd:startUpCmd prediction:prediction];
-        [Hosts addObject:bkHost];
-    } else {
-        bkHost.host = newHost;
-        bkHost.hostName = hostName;
-        if(![sshPort isEqualToString:@""]){
-            bkHost.port = [NSNumber numberWithInt:sshPort.intValue];
-        }
-        bkHost.user = user;
-	bkHost.passwordRef = pwdRef;
-        bkHost.key = hostKey;
-	bkHost.moshServer = moshServer;
-        if(![moshPort isEqualToString:@""]){
-            bkHost.moshPort = [NSNumber numberWithInt:moshPort.intValue];
-        }
-        bkHost.moshStartup = startUpCmd;
-        bkHost.prediction = [NSNumber numberWithInt:prediction];
+  if (!bkHost) {
+    bkHost = [[BKHosts alloc] initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshServer:moshServer moshPort:moshPort startUpCmd:startUpCmd prediction:prediction];
+    [Hosts addObject:bkHost];
+  } else {
+    bkHost.host = newHost;
+    bkHost.hostName = hostName;
+    if (![sshPort isEqualToString:@""]) {
+      bkHost.port = [NSNumber numberWithInt:sshPort.intValue];
     }
-    
-    if(![BKHosts saveHosts]){
-        return nil;
+    bkHost.user = user;
+    bkHost.passwordRef = pwdRef;
+    bkHost.key = hostKey;
+    bkHost.moshServer = moshServer;
+    if (![moshPort isEqualToString:@""]) {
+      bkHost.moshPort = [NSNumber numberWithInt:moshPort.intValue];
     }
-    return bkHost;
+    bkHost.moshStartup = startUpCmd;
+    bkHost.prediction = [NSNumber numberWithInt:prediction];
+  }
+
+  if (![BKHosts saveHosts]) {
+    return nil;
+  }
+  return bkHost;
 }
 
 + (void)loadHosts
 {
-    if (DocumentsDirectory == nil) {
-        DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-        HostsURL = [DocumentsDirectory URLByAppendingPathComponent:@"hosts"];
-    }
-    
-    // Load IDs from file
-    if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:HostsURL.path]) == nil) {
-        // Initialize the structure if it doesn't exist
-        Hosts = [[NSMutableArray alloc] init];
-    }
+  if (DocumentsDirectory == nil) {
+    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+    HostsURL = [DocumentsDirectory URLByAppendingPathComponent:@"hosts"];
+  }
+
+  // Load IDs from file
+  if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:HostsURL.path]) == nil) {
+    // Initialize the structure if it doesn't exist
+    Hosts = [[NSMutableArray alloc] init];
+  }
 }
 
-+ (NSString*)predictionStringForRawValue:(int)rawValue
++ (NSString *)predictionStringForRawValue:(int)rawValue
 {
-    NSString *predictionString = nil;
-    switch (rawValue) {
-        case BKMoshPredictionAdaptive:
-            predictionString = @"Adaptive";
-            break;
-        case BKMoshPredictionAlways:
-            predictionString = @"Always";
-            break;
-        case BKMoshPredictionNever:
-            predictionString = @"Never";
-            break;
-        case BKMoshPredictionExperimental:
-            predictionString = @"Experimental";
-            break;
-            
-        default:
-            break;
-    }
-    return predictionString;
+  NSString *predictionString = nil;
+  switch (rawValue) {
+    case BKMoshPredictionAdaptive:
+      predictionString = @"Adaptive";
+      break;
+    case BKMoshPredictionAlways:
+      predictionString = @"Always";
+      break;
+    case BKMoshPredictionNever:
+      predictionString = @"Never";
+      break;
+    case BKMoshPredictionExperimental:
+      predictionString = @"Experimental";
+      break;
+
+    default:
+      break;
+  }
+  return predictionString;
 }
 
-+ (enum BKMoshPrediction)predictionValueForString:(NSString*)predictionString
++ (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString
 {
-    enum BKMoshPrediction value = BKMoshPredictionUnknown;
-    if([predictionString isEqualToString:@"Adaptive"]){
-        value = BKMoshPredictionAdaptive;
-    } else if([predictionString isEqualToString:@"Always"]){
-        value = BKMoshPredictionAlways;
-    } else if([predictionString isEqualToString:@"Never"]){
-        value = BKMoshPredictionNever;
-    } else if([predictionString isEqualToString:@"Experimental"]){
-        value = BKMoshPredictionExperimental;
-    }
-    return value;
+  enum BKMoshPrediction value = BKMoshPredictionUnknown;
+  if ([predictionString isEqualToString:@"Adaptive"]) {
+    value = BKMoshPredictionAdaptive;
+  } else if ([predictionString isEqualToString:@"Always"]) {
+    value = BKMoshPredictionAlways;
+  } else if ([predictionString isEqualToString:@"Never"]) {
+    value = BKMoshPredictionNever;
+  } else if ([predictionString isEqualToString:@"Experimental"]) {
+    value = BKMoshPredictionExperimental;
+  }
+  return value;
 }
 
-+ (NSMutableArray*)predictionStringList{
-    return [NSMutableArray arrayWithObjects:@"Adaptive", @"Always", @"Never", @"Experimental", nil];
++ (NSMutableArray *)predictionStringList
+{
+  return [NSMutableArray arrayWithObjects:@"Adaptive", @"Always", @"Never", @"Experimental", nil];
 }
 @end
-

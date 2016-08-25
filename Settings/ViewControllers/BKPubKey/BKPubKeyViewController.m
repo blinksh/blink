@@ -54,10 +54,10 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
-        [self performSegueWithIdentifier:@"unwindFromKeys" sender:self];
-    }
-    [super viewWillDisappear:animated];
+  if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
+    [self performSegueWithIdentifier:@"unwindFromKeys" sender:self];
+  }
+  [super viewWillDisappear:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -94,7 +94,7 @@
     cell.detailTextLabel.text = [self fingerprint:pk.publicKey];
   }
 
-  if( _selectable) {
+  if (_selectable) {
     if (_currentSelectionIdx == indexPath) {
       [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     } else {
@@ -152,7 +152,7 @@
 
                                                    if (_clipboardKey) {
                                                      [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
-                                                   }                                                   
+                                                   }
                                                  }];
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -210,7 +210,7 @@
   } else {
     // If the key isn't encrypted, then try to generate it and go to the create key dialog to complete
     SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey passphrase:nil];
-    
+
     if (key == nil) {
       UIAlertView *errorAlert = [[UIAlertView alloc]
             initWithTitle:@"Invalid Key"
@@ -255,12 +255,12 @@
 
 - (IBAction)unwindFromCreate:(UIStoryboardSegue *)sender
 {
-    NSIndexPath *newIdx;
-    if(_selectable){
-        newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
-    } else {
-       newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
-    }
+  NSIndexPath *newIdx;
+  if (_selectable) {
+    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
+  } else {
+    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
+  }
   [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
@@ -281,12 +281,12 @@
     // Guess the indexPath
     NSInteger pos;
     if (selectionID.length) {
-        if([BKPubKey withID:selectionID]){
-            pos = [BKPubKey.all indexOfObject:[BKPubKey withID:selectionID]];
-            pos+=1; //To accomodate "None" value
-        } else {
-            pos = 0;
-        }
+      if ([BKPubKey withID:selectionID]) {
+        pos = [BKPubKey.all indexOfObject:[BKPubKey withID:selectionID]];
+        pos += 1; //To accomodate "None" value
+      } else {
+        pos = 0;
+      }
     } else {
       pos = 0;
     }
@@ -302,7 +302,7 @@
   }
   _currentSelectionIdx = indexPath;
 
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];  
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 
   if (_selectable) {
     [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
@@ -314,9 +314,9 @@
 
 - (id)selectedObject
 {
-    if (_currentSelectionIdx.row == 0) {
-        return 0;
-    }
+  if (_currentSelectionIdx.row == 0) {
+    return 0;
+  }
   return _selectable ? BKPubKey.all[_currentSelectionIdx.row - 1] : BKPubKey.all[_currentSelectionIdx.row];
 }
 

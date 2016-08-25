@@ -1,10 +1,33 @@
+////////////////////////////////////////////////////////////////////////////////
 //
-//  BKTheme.m
-//  settings
+// B L I N K
 //
-//  Created by Atul M on 11/08/16.
-//  Copyright © 2016 CARLOS CABANERO. All rights reserved.
+// Copyright (C) 2016 Blink Mobile Shell Project
 //
+// This file is part of Blink.
+//
+// Blink is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Blink is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Blink. If not, see <http://www.gnu.org/licenses/>.
+//
+// In addition, Blink is also subject to certain additional terms under
+// GNU GPL version 3 section 7.
+//
+// You should have received a copy of these additional terms immediately
+// following the terms and conditions of the GNU General Public License
+// which accompanied the Blink Source Code. If not, see
+// <http://www.github.com/blinksh/blink>.
+//
+////////////////////////////////////////////////////////////////////////////////
 
 #import "BKTheme.h"
 
@@ -15,92 +38,94 @@ static NSURL *ThemesURL = nil;
 
 @implementation BKTheme
 
-- (instancetype)initWithName:(NSString*)themeName andFilePath:(NSString*)filePath{
-    self = [super init];
-    if(self){
-        self.name = themeName;
-        self.filepath = filePath;
-    }
-    return self;
+- (instancetype)initWithName:(NSString *)themeName andFilePath:(NSString *)filePath
+{
+  self = [super init];
+  if (self) {
+    self.name = themeName;
+    self.filepath = filePath;
+  }
+  return self;
 }
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-    _name = [coder decodeObjectForKey:@"name"];
-    _filepath = [coder decodeObjectForKey:@"filepath"];
-    return self;
+  _name = [coder decodeObjectForKey:@"name"];
+  _filepath = [coder decodeObjectForKey:@"filepath"];
+  return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
-    [encoder encodeObject:_name forKey:@"name"];
-    [encoder encodeObject:_filepath forKey:@"filepath"];
+  [encoder encodeObject:_name forKey:@"name"];
+  [encoder encodeObject:_filepath forKey:@"filepath"];
 }
 
 + (void)initialize
 {
-    [BKTheme loadThemes];
+  [BKTheme loadThemes];
 }
 
 + (instancetype)withTheme:(NSString *)athemeName
 {
-    for (BKTheme *theme in Themes) {
-        if ([theme->_name isEqualToString:athemeName]) {
-            return theme;
-        }
+  for (BKTheme *theme in Themes) {
+    if ([theme->_name isEqualToString:athemeName]) {
+      return theme;
     }
-    return nil;
+  }
+  return nil;
 }
 
 + (NSMutableArray *)all
 {
-    return Themes;
+  return Themes;
 }
 
 + (NSInteger)count
 {
-    return [Themes count];
+  return [Themes count];
 }
 
 + (BOOL)saveThemes
 {
-    // Save IDs to file
-    return [NSKeyedArchiver archiveRootObject:Themes toFile:ThemesURL.path];
+  // Save IDs to file
+  return [NSKeyedArchiver archiveRootObject:Themes toFile:ThemesURL.path];
 }
 + (instancetype)saveTheme:(NSString *)themeName withFilePath:(NSString *)filePath
 {
-    BKTheme *theme = [BKTheme withTheme:themeName];
-    if (!theme) {
-        theme = [[BKTheme alloc] initWithName:themeName andFilePath:filePath];
-        [Themes addObject:theme];
-    } else {
-        theme->_name = themeName;
-        theme->_filepath = filePath;
-    }
-    
-    if (![BKTheme saveThemes]) {
-        // This should never fail, but it is kept for testing purposes.
-        return nil;
-    }
-    return theme;
+  BKTheme *theme = [BKTheme withTheme:themeName];
+  if (!theme) {
+    theme = [[BKTheme alloc] initWithName:themeName andFilePath:filePath];
+    [Themes addObject:theme];
+  } else {
+    theme->_name = themeName;
+    theme->_filepath = filePath;
+  }
+
+  if (![BKTheme saveThemes]) {
+    // This should never fail, but it is kept for testing purposes.
+    return nil;
+  }
+  return theme;
 }
 
-+ (void)removeThemeAtIndex:(int)index{
-    [Themes removeObjectAtIndex:index];
++ (void)removeThemeAtIndex:(int)index
+{
+  [Themes removeObjectAtIndex:index];
 }
 
 + (void)loadThemes
 {
-    if (DocumentsDirectory == nil) {
-        DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-        ThemesURL = [DocumentsDirectory URLByAppendingPathComponent:@"themes"];
-    }
-    
-    // Load IDs from file
-    if ((Themes = [NSKeyedUnarchiver unarchiveObjectWithFile:ThemesURL.path]) == nil) {
-        // Initialize the structure if it doesn't exist
-        Themes = [[NSMutableArray alloc] init];
-    }
+  if (DocumentsDirectory == nil) {
+    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+    ThemesURL = [DocumentsDirectory URLByAppendingPathComponent:@"themes"];
+  }
+
+  // Load IDs from file
+  if ((Themes = [NSKeyedUnarchiver unarchiveObjectWithFile:ThemesURL.path]) == nil) {
+    // Initialize the structure if it doesn't exist
+    Themes = [[NSMutableArray alloc] init];
+  }
 }
 
 @end

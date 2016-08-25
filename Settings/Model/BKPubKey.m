@@ -76,7 +76,8 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   EVP_PKEY *_pkey;
 }
 
-+ (void)initialize {
++ (void)initialize
+{
   // NOT deprecated.
   OpenSSL_add_all_algorithms();
 }
@@ -85,7 +86,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 {
   self = [super init];
   const char *ckey = [privateKey UTF8String];
-  
+
   // Create a read-only memory BIO
   BIO *fpem = BIO_new_mem_buf((void *)ckey, -1);
   const char *pp = (passphrase) ? [passphrase UTF8String] : NULL;
@@ -98,7 +99,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   if (!_rsa || !RSA_check_key(_rsa)) {
     return nil;
   }
-  
+
   // Convert RSA to PKEY format
   // Initialise with both tied, we only have to release the rsa on dealloc
   if (!EVP_PKEY_assign_RSA(_pkey, _rsa)) {
@@ -149,9 +150,9 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   }
 
   if (!PEM_write_bio_PKCS8PrivateKey(fpem, _pkey,
-				    cipher,
-				    (char *)pp, // NULL for no passphrase
-				    (int)pp_sz, NULL, NULL)) {
+                                     cipher,
+                                     (char *)pp, // NULL for no passphrase
+                                     (int)pp_sz, NULL, NULL)) {
     BIO_free(fpem);
     return nil;
   }
@@ -192,7 +193,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   if (nBytes[0] & 0x80) {
     encodingLength++;
   }
-  
+
   pEncoding = (unsigned char *)malloc(encodingLength);
   memcpy(pEncoding, pSshHeader, 11);
 
@@ -355,7 +356,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 }
 
 - (NSString *)privateKey
-{  
+{
   return [Keychain stringForKey:_privateKeyRef];
 }
 
@@ -363,12 +364,12 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 {
   NSString *priv = [self privateKey];
   if ([priv rangeOfString:@"^Proc-Type: 4,ENCRYPTED\n"
-		  options:NSRegularExpressionSearch]
-	.location != NSNotFound)
+                  options:NSRegularExpressionSearch]
+        .location != NSNotFound)
     return YES;
   else if ([priv rangeOfString:@"^-----BEGIN ENCRYPTED PRIVATE KEY-----\n"
-		       options:NSRegularExpressionSearch]
-	     .location != NSNotFound)
+                       options:NSRegularExpressionSearch]
+             .location != NSNotFound)
     return YES;
   else
     return NO;
