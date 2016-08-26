@@ -29,11 +29,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#import "BKDefaults.h"
+#import "BKKeyboardModifierViewController.h"
+#import "BKSettingsNotifications.h"
 #import "TermController.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
 
+static NSDictionary *bkModifierMaps = nil;
 
 @interface TermController () <WKScriptMessageHandler, TerminalDelegate, SessionDelegate>
 @end
@@ -42,6 +46,16 @@
   int _pinput[2];
   MCPSession *_session;
   BOOL _viewIsLocked;
+}
+
++ (void)initialize 
+{
+  bkModifierMaps = @{
+  BKKeyboardModifierCtrl: [NSNumber numberWithInt:UIKeyModifierControl],
+  BKKeyboardModifierAlt: [NSNumber numberWithInt:UIKeyModifierAlternate],
+  BKKeyboardModifierCmd: [NSNumber numberWithInt:UIKeyModifierCommand],
+  BKKeyboardModifierCaps: [NSNumber numberWithInt:UIKeyModifierAlphaShift]
+  };  
 }
 
 - (void)write:(NSString *)input
@@ -60,6 +74,36 @@
   _terminal.delegate = self;
 
   self.view = _terminal;
+
+  [self configureTerminal];
+  [self listenToControlEvents];
+}
+
+- (void)configureTerminal
+{
+  for (NSString *key in [BKDefaults keyboardKeyList]) {
+    NSString *sequence = [BKDefaults keyboardMapping][key];
+    [self assignSequence:sequence toModifier:[bkModifierMaps[key] integerValue]];
+  }
+}
+
+- (void)assignSequence:(NSString *)seq toModifier:(NSInteger)modifier
+{
+  if ([seq isEqual:BKKeyboardSeqNone]) {
+    [_terminal assignSequence:nil toModifier:modifier];
+  } else if ([seq isEqual:BKKeyboardSeqCtrl]) {
+    [_terminal assignSequence:TermViewCtrlSeq toModifier:modifier];
+  } else if ([seq isEqual:BKKeyboardSeqEsc]) {
+    [_terminal assignSequence:TermViewEscSeq toModifier:modifier];
+  }
+}
+
+- (void)listenToControlEvents
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self
+					   selector:@selector(keyboardModifierChanged:)
+					       name:BKKeyboardModifierChanged
+					     object:nil];
 }
 
 - (void)terminate
@@ -165,7 +209,17 @@
 
 - (void)sessionFinished
 {
-    [_delegate terminalHangup:self];
+  [_delegate terminalHangup:self];
 }
+
+#pragma mark Notifications
+
+- (void)keyboardModifierChanged:(NSNotification *)notification
+{
+  // Map the sequence to a function in destination
+  NSDictionary *action = [notification userInfo];
+  [self assignSequence:action[@"sequence"] toModifier:[bkModifierMaps[action[@"modifier"]] integerValue]];
+}
+
 
 @end

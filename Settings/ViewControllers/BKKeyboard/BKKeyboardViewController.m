@@ -32,9 +32,12 @@
 #import "BKKeyboardViewController.h"
 #import "BKDefaults.h"
 #import "BKKeyboardModifierViewController.h"
+#import "BKSettingsNotifications.h"
 
 #define KEY_LABEL_TAG 1001
 #define VALUE_LABEL_TAG 1002
+
+NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
 
 @interface BKKeyboardViewController ()
 
@@ -70,8 +73,8 @@
 
 - (void)loadData
 {
-  _keyList = [BKDefaults keyBoardKeyList];
-  _keyboardMapping = [BKDefaults keyBoardMapping];
+  _keyList = [BKDefaults keyboardKeyList];
+  _keyboardMapping = [BKDefaults keyboardMapping];
 }
 
 #pragma mark - UICollection View Delegates
@@ -130,6 +133,15 @@
   [_keyboardMapping setObject:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults setModifer:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults saveDefaults];
+  
+  // Notify
+  [[NSNotificationCenter defaultCenter]
+      postNotificationName:BKKeyboardModifierChanged
+		    object:modifier
+		  userInfo:@{
+      @"modifier": [self selectedObject],
+	@"sequence":valueLabel.text}
+   ];
 }
 
 @end

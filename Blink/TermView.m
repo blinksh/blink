@@ -41,6 +41,9 @@ static NSDictionary *FKeys = nil;
 static NSString *SS3 = nil;
 static NSString *CSI = nil;
 
+NSString * const TermViewCtrlSeq = @"ctrlSeq:";
+NSString * const TermViewEscSeq = @"escSeq:";
+
 @interface CC : NSObject
 
 + (void)initialize;
@@ -100,7 +103,7 @@ static NSString *CSI = nil;
 
 + (NSString *)ESC:(NSString *)c
 {
-  if (c == nil || [c length] == 0) {
+  if (c == nil || [c length] == 0 || c == UIKeyInputEscape) {
     return @"\x1B";
   } else {
     return [NSString stringWithFormat:@"\x1B%c", [c characterAtIndex:0]];
@@ -155,6 +158,7 @@ static NSString *CSI = nil;
   UIPinchGestureRecognizer *_pinchGesture;
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
+  NSMutableDictionary *_controlKeys;
 }
 
 - (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
@@ -164,7 +168,7 @@ static NSString *CSI = nil;
   if (self) {
     _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
     _capsMapped = YES;
-    [self setKbdCommands];
+    [self resetDefaultControlKeys];
 
     _webView.opaque = NO;
     [self addSubview:_webView];
@@ -199,6 +203,12 @@ static NSString *CSI = nil;
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
   }
   return self;
+}
+
+- (void)resetDefaultControlKeys
+{
+  _controlKeys = [[NSMutableDictionary alloc] init];
+  [self setKbdCommands];
 }
 
 #pragma mark Terminal Control
@@ -434,51 +444,77 @@ static NSString *CSI = nil;
 - (void)setKbdCommands
 {
   _kbdCommands = [NSMutableArray array];
-  // [kbdCommands addObjectsFromArray:presetShortcuts]
-  // [kbdCommands addObjectsFromArray:functionKeys]
-  // [kbdCommands addObjectsFromArray:controlSeqs]
+  [_kbdCommands addObjectsFromArray:self.presetShortcuts];
+  for (NSNumber *modifier in _controlKeys.allKeys) {
+    [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
+  }
+  [_kbdCommands addObjectsFromArray:self.functionKeys];
+}
 
-  // presetShortcuts
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"+" modifierFlags:UIKeyModifierControl action:@selector(increaseFontSize:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"-" modifierFlags:UIKeyModifierControl action:@selector(decreaseFontSize:)]];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"0" modifierFlags:UIKeyModifierControl action:@selector(resetFontSize:)]];
+- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
+{
+  if (seq) {
+  NSMutableArray *cmds = [NSMutableArray array];
 
-  // controlSeqs
   NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>?";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
   [charset getCharacters:buffer range:NSMakeRange(0, length)];
 
   [charset enumerateSubstringsInRange:NSMakeRange(0, length)
-			      options:NSStringEnumerationByComposedCharacterSequences
-			   usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-			     [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierControl action:@selector(ctrlSeq:)]];
-			     [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierAlternate action:@selector(metaSeq:)]];
-			     [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierCommand action:@selector(ctrlSeq:)]];
-			     [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierAlphaShift action:@selector(ctrlSeq:)]];
-			     NSRange first = [substring rangeOfComposedCharacterSequenceAtIndex:0];
-			     NSRange match = [substring rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet] options:0 range:first];
-			     if (match.location != NSNotFound) {
-			       [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
+                              options:NSStringEnumerationByComposedCharacterSequences
+                           usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                             [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
+                                                                 modifierFlags:modifier
+                                                                        action:NSSelectorFromString(seq)]];
+
+			     // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
+			     if ((modifier == UIKeyModifierAlphaShift) && (seq == TermViewCtrlSeq)) {
+			       NSRange first = [substring rangeOfComposedCharacterSequenceAtIndex:0];
+			       NSRange match = [substring rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet] options:0 range:first];
+			       if (match.location != NSNotFound) {
+				 [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
+			       }
 			     }
 
-			   }];
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
 
-  // Function keys with modifier sequences.
-  for (NSNumber *modifier in [CC FModifiers]) {
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+                           }];
+
+  [_controlKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
+  } else {
+    [_controlKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
   }
+  [self setKbdCommands];
 }
 
-- (NSArray<UIKeyCommand *> *)keyCommands
+- (NSArray *)presetShortcuts
 {
-  return _kbdCommands;
+  return @[[UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)],
+	      [UIKeyCommand keyCommandWithInput:@"+" modifierFlags:UIKeyModifierControl action:@selector(increaseFontSize:)],
+	      [UIKeyCommand keyCommandWithInput:@"-" modifierFlags:UIKeyModifierControl action:@selector(decreaseFontSize:)],
+	      [UIKeyCommand keyCommandWithInput:@"0" modifierFlags:UIKeyModifierControl action:@selector(resetFontSize:)]];
 }
+
+- (NSArray *)functionKeys
+{
+  NSMutableArray *f = [NSMutableArray array];
+
+  for (NSNumber *modifier in [CC FModifiers]) {
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+  }
+
+  [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
+
+  return f;
+}
+
+ - (NSArray<UIKeyCommand *> *)keyCommands
+ {  
+   return _kbdCommands;
+ }
 
 - (void)yank:(id)sender
 {
@@ -506,7 +542,7 @@ static NSString *CSI = nil;
 
 - (void)escSeq:(UIKeyCommand *)cmd
 {
-  [_delegate write:[CC KEY:cmd.input]];
+  [_delegate write:[CC ESC:cmd.input]];
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd

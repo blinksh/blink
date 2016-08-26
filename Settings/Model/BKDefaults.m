@@ -31,11 +31,23 @@
 
 #import "BKDefaults.h"
 
+
 static NSURL *DocumentsDirectory = nil;
 static NSURL *DefaultsURL = nil;
 BKDefaults *defaults;
-@implementation BKDefaults
 
+NSString const *BKKeyboardModifierCtrl = @"⌃ Ctrl";
+NSString const *BKKeyboardModifierAlt  = @"⌥ Alt";
+NSString const *BKKeyboardModifierCmd  = @"⌘ Cmd";
+NSString const *BKKeyboardModifierCaps = @"⇪ CapsLock";
+
+NSString const *BKKeyboardSeqNone = @"None";
+NSString const *BKKeyboardSeqCtrl = @"Ctrl";
+NSString const *BKKeyboardSeqEsc  = @"Esc";
+NSString const *BKKeyboardSeqMeta = @"Meta";
+
+
+@implementation BKDefaults
 
 #pragma mark - NSCoding
 
@@ -75,10 +87,12 @@ BKDefaults *defaults;
   if ((defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:DefaultsURL.path]) == nil) {
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
-    defaults.keyboardMaps = [[NSMutableDictionary alloc] init];
-    for (NSString *key in [BKDefaults keyBoardKeyList]) {
-      [defaults.keyboardMaps setObject:@"None" forKey:key];
-    }
+    defaults.keyboardMaps = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+							   BKKeyboardSeqCtrl, BKKeyboardModifierCtrl, 
+							 BKKeyboardSeqEsc, BKKeyboardModifierAlt,
+							 BKKeyboardSeqNone, BKKeyboardModifierCmd,
+							 BKKeyboardSeqNone, BKKeyboardModifierCaps,
+			     nil];
   }
 }
 
@@ -123,18 +137,18 @@ BKDefaults *defaults;
   return defaults.fontSize;
 }
 
-
-+ (NSMutableArray *)keyboardModifierList
++ (NSArray *)keyboardModifierList
 {
-  return [NSMutableArray arrayWithObjects:@"None", @"Ctrl", @"Meta", @"Esc", nil];
+  return @[BKKeyboardSeqNone, BKKeyboardSeqCtrl, BKKeyboardSeqEsc];
 }
 
-+ (NSMutableArray *)keyBoardKeyList
++ (NSArray *)keyboardKeyList
 {
-  return [NSMutableArray arrayWithObjects:@"⌃ Ctrl", @"⌘ Cmd", @"⌥ Alt", @"⇪ CapsLock", nil];
+  return @[BKKeyboardModifierCtrl, BKKeyboardModifierAlt,
+			 BKKeyboardModifierCmd, BKKeyboardModifierCaps];
 }
 
-+ (NSMutableDictionary *)keyBoardMapping
++ (NSMutableDictionary *)keyboardMapping
 {
   return defaults.keyboardMaps;
 }

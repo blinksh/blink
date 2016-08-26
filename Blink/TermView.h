@@ -32,6 +32,8 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+extern NSString * const TermViewCtrlSeq;
+extern NSString * const TermViewEscSeq;
 
 @protocol TerminalDelegate
 
@@ -51,5 +53,5 @@
 - (BOOL)rawMode;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;
-
+- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
 @end

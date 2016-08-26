@@ -29,37 +29,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
-extern NSString const *BKKeyboardModifierCtrl;
-extern NSString const *BKKeyboardModifierAlt;
-extern NSString const *BKKeyboardModifierCmd;
-extern NSString const *BKKeyboardModifierCaps;
-
-extern NSString const *BKKeyboardSeqNone;
-extern NSString const *BKKeyboardSeqCtrl;
-extern NSString const *BKKeyboardSeqEsc;
-extern NSString const *BKKeyboardSeqMeta;
-
-@interface BKDefaults : NSObject <NSCoding>
-
-@property (nonatomic, strong) NSMutableDictionary *keyboardMaps;
-@property (nonatomic, strong) NSString *themeName;
-@property (nonatomic, strong) NSString *fontName;
-@property (nonatomic, strong) NSNumber *fontSize;
-@property (nonatomic, strong) NSString *defaultUser;
-
-
-+ (void)initialize;
-+ (BOOL)saveDefaults;
-+ (void)setModifer:(NSString *)modifier forKey:(NSString *)key;
-+ (void)setFontName:(NSString *)fontName;
-+ (void)setThemeName:(NSString *)themeName;
-+ (void)setFontSize:(NSNumber *)fontSize;
-+ (NSString *)selectedFontName;
-+ (NSString *)selectedThemeName;
-+ (NSNumber *)selectedFontSize;
-+ (NSMutableArray *)keyboardModifierList;
-+ (NSMutableArray *)keyboardKeyList;
-+ (NSMutableDictionary *)keyboardMapping;
-@end
+extern NSString *const BKKeyboardModifierChanged;
