@@ -1,3 +1,21 @@
+# Version 0.927
+	This version should complete the experience in relation to ssh and terminal configurations, mimicking a big part of what you can do in a normal shell:
+	- Hosts Configuration. Preconfigure a host parameters, like user, port, key and commands.
+	- Connect to a Host by specifying its name. Do "mosh plankton"
+	- Overwrite parameters from host configuration from the shell. So carlos@plankton will override the user field on plankton.
+	- Default Modifier keys settings changed: Ctrl is Ctrl, and Alt sends Esc. Everything else is undefined.
+	- Modifier keys configuration. CAPS as Ctrl or ESC, no problem! Cmd as Ctrl? You have it! Configure everything to you liking.
+	- Added secure passwords stored on Keychain to Host Configuration.
+	- Exiting the session within the MCP closes the Space.
+
+	- Fixed hang after "exec request accepted". Establishing connections should be smooth now.
+	- Fixed adjustments on viewport after rotating the display.
+	- Fixed Ctrl + Space sequences.
+	- Fixed wrong/unexisting Ctrl sequences.
+	- Added Esc+any character support.
+
+	- New settings added to project. Will start to fill up in raw branch.
+
 # Version 0.916
 	This version contains many important bug fixes that should improve the experience a lot and reduce crashes to, hopefully, close to zero:
 	- Unicode support to Blink shell. Thanks Yury!

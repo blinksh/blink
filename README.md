@@ -21,20 +21,23 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.916
-	This version contains many important bug fixes that should improve the experience a lot and reduce crashes to, hopefully, close to zero:
-	- Unicode support to Blink shell. Thanks Yury!
-	- Support for function keys + modifiers. Now you can do Ctrl/Alt/Shift + Arrows.
-	- Improved experience with drag down to close. Let me know what you think :)
-	- SSH with improved function keys in ncurses apps. htop, less, etc... should now work perfectly.
-	- New help message with version and gestures.
-	- Added asterisk, underscore and escape to SmartKeys.
-	- Added HockeySDKResources.bundle to project for improved updates.
+## Version 0.927
+	This version should complete the experience in relation to ssh and terminal configurations, mimicking a big part of what you can do in a normal shell:
+	- Hosts Configuration. Preconfigure a host parameters, like user, port, key and commands.
+	- Connect to a Host by specifying its name. Do "mosh plankton"
+	- Overwrite parameters from host configuration from the shell. So carlos@plankton will override the user field on plankton.
+	- Default Modifier keys settings changed: Ctrl is Ctrl, and Alt sends Esc. Everything else is undefined.
+	- Modifier keys configuration. CAPS as Ctrl or ESC, no problem! Cmd as Ctrl? You have it! Configure everything to you liking.
+	- Added secure passwords stored on Keychain to Host Configuration.
+	- Exiting the session within the MCP closes the Space.
 
-	- Fixed resize when in SplitView mode getting stuck.
-	- Fixed port bug.
-	- Optimized messaging to terminal to avoid overloading WKWebView.
-	- Optimized Terminal switching and closing that was causing crashes and inconsistencies.
+	- Fixed hang after "exec request accepted". Establishing connections should be smooth now.
+	- Fixed adjustments on viewport after rotating the display.
+	- Fixed Ctrl + Space sequences.
+	- Fixed wrong/unexisting Ctrl sequences.
+	- Added Esc+any character support.
+
+	- New settings added to project. Will start to fill up in raw branch.
 
 [View all changes](CHANGELOG.md)
 
