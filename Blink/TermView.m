@@ -455,8 +455,15 @@ NSString * const TermViewEscSeq = @"escSeq:";
 {
   if (seq) {
   NSMutableArray *cmds = [NSMutableArray array];
+  NSString *charset;
+  if (seq == TermViewCtrlSeq) {
+    charset = @"qwertyuiopasdfghjklzxcvbnm[\]^_ ";
+  } else if (seq == TermViewEscSeq) {
+    charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
+  } else {
+    return;
+  }
 
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>? ";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
   [charset getCharacters:buffer range:NSMakeRange(0, length)];
