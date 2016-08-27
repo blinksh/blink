@@ -148,7 +148,6 @@ NSString * const TermViewEscSeq = @"escSeq:";
 
 @implementation TerminalView {
   WKWebView *_webView;
-  BOOL _capsMapped;
   // option + e on iOS lets introduce an accented character, that we override
   BOOL _disableAccents;
   BOOL _dismissInput;
@@ -168,7 +167,6 @@ NSString * const TermViewEscSeq = @"escSeq:";
 
   if (self) {
     _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
-    _capsMapped = YES;
     [self resetDefaultControlKeys];
 
     _webView.opaque = NO;
@@ -271,7 +269,7 @@ NSString * const TermViewEscSeq = @"escSeq:";
 {
   // Always hide the AccessoryView.
   self.inputAccessoryView.hidden = YES;
-  _capsMapped = YES;
+  //_capsMapped = YES;
   // If keyboard hides, then become first responder. This ensures there is a responder for the long focus events.
   //[self becomeFirstResponder];
 }
@@ -290,7 +288,7 @@ NSString * const TermViewEscSeq = @"escSeq:";
   if (intersection.size.height == [iaView frame].size.height) {
     iaView.hidden = YES;
   } else {
-    _capsMapped = NO;
+    //_capsMapped = NO;
     iaView.hidden = NO;
   }
 }
@@ -425,8 +423,9 @@ NSString * const TermViewEscSeq = @"escSeq:";
     _disableAccents = NO;
   }
 
-  // Discard CAPS unless it is a control sequence or non single character.
-  if (_capsMapped == YES && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
+  // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
+  BOOL capsWithoutSWKeyboard = [self cappsMapped] & self.inputAccessoryView.hidden;
+  if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
     text = [text lowercaseString];
   }
 
@@ -470,7 +469,7 @@ NSString * const TermViewEscSeq = @"escSeq:";
                                                                         action:NSSelectorFromString(seq)]];
 
 			     // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
-			     if ((modifier == UIKeyModifierAlphaShift) && (seq == TermViewCtrlSeq)) {
+			     if (modifier == UIKeyModifierAlphaShift) {
 			       NSRange first = [substring rangeOfComposedCharacterSequenceAtIndex:0];
 			       NSRange match = [substring rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet] options:0 range:first];
 			       if (match.location != NSNotFound) {
@@ -516,6 +515,11 @@ NSString * const TermViewEscSeq = @"escSeq:";
  {  
    return _kbdCommands;
  }
+
+- (BOOL)cappsMapped
+{
+  return [[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count];
+}
 
 - (void)yank:(id)sender
 {
