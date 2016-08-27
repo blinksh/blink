@@ -445,7 +445,7 @@ static NSString *CSI = nil;
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"0" modifierFlags:UIKeyModifierControl action:@selector(resetFontSize:)]];
 
   // controlSeqs
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>?";
+  NSString *charset = @"qwertyuiopasdfghjklzxcvbnmйцукеёнгшщзхъфывапролджэячсмитьбю!@#$%^&*()=_[]{}'\\\"|`~,./<>?";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
   [charset getCharacters:buffer range:NSMakeRange(0, length)];
