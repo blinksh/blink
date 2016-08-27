@@ -62,7 +62,7 @@ static NSDictionary *bkModifierMaps = nil;
 {
   // Trasform the string and write it, with the correct sequence
   const char *str = [input UTF8String];
-  write(_pinput[1], str, strlen(str));
+  write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
 - (void)loadView

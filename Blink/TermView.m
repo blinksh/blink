@@ -57,6 +57,7 @@ NSString * const TermViewEscSeq = @"escSeq:";
 + (void)initialize
 {
   CTRLCodes = @{
+    @" " : @"\x00",
     @"[" : @"\x1B",
     @"]" : @"\x1D",
     @"\\" : @"\x1C",
@@ -456,7 +457,7 @@ NSString * const TermViewEscSeq = @"escSeq:";
   if (seq) {
   NSMutableArray *cmds = [NSMutableArray array];
 
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>?";
+  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm!@#$%^&*()=_[]{}'\\\"|`~,./<>? ";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
   [charset getCharacters:buffer range:NSMakeRange(0, length)];
