@@ -30,34 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
-#import <WebKit/WebKit.h>
 
-extern NSString * const TermViewCtrlSeq;
-extern NSString * const TermViewEscSeq;
-extern NSString * const TermViewCursorFuncSeq;
-extern NSString * const TermViewFFuncSeq;
+@interface BKKeyboardFuncTriggersViewController : UITableViewController
 
-
-@protocol TerminalDelegate
-
-- (void)write:(NSString *)input;
-
-@end
-
-@interface TerminalView : UIView
-
-@property (nonatomic) WKWebView *webView;
-@property (weak) id<TerminalDelegate> delegate;
-@property (nonatomic, readonly, weak) NSString *title;
-
-- (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration;
-- (void)setScrollEnabled:(BOOL)scroll;
-- (void)setRawMode:(BOOL)raw;
-- (BOOL)rawMode;
-- (void)loadTerminal;
-- (void)write:(NSString *)data;
-- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers;
+- (void)performInitialSelection:(NSArray *)selectedPrediction;
+- (NSArray *)selectedObjects;
 
 @end

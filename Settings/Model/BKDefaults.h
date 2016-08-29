@@ -35,31 +35,45 @@ extern NSString const *BKKeyboardModifierCtrl;
 extern NSString const *BKKeyboardModifierAlt;
 extern NSString const *BKKeyboardModifierCmd;
 extern NSString const *BKKeyboardModifierCaps;
+extern NSString const *BKKeyboardModifierShift;
 
 extern NSString const *BKKeyboardSeqNone;
 extern NSString const *BKKeyboardSeqCtrl;
 extern NSString const *BKKeyboardSeqEsc;
 extern NSString const *BKKeyboardSeqMeta;
 
+extern NSString const *BKKeyboardFuncFTriggers;
+extern NSString const *BKKeyboardFuncCursorTriggers;
+extern NSString const *BKKeyboardFuncShortcutTriggers;
+
 @interface BKDefaults : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSMutableDictionary *keyboardMaps;
+@property (nonatomic, strong) NSMutableDictionary *keyboardFuncTriggers;
 @property (nonatomic, strong) NSString *themeName;
 @property (nonatomic, strong) NSString *fontName;
 @property (nonatomic, strong) NSNumber *fontSize;
 @property (nonatomic, strong) NSString *defaultUser;
-
+@property (nonatomic) BOOL capsAsEsc;
+@property (nonatomic) BOOL shiftAsEsc;
 
 + (void)initialize;
 + (BOOL)saveDefaults;
 + (void)setModifer:(NSString *)modifier forKey:(NSString *)key;
++ (void)setCapsAsEsc:(BOOL)state;
++ (void)setShiftAsEsc:(BOOL)state;
++ (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
 + (void)setFontSize:(NSNumber *)fontSize;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
-+ (NSMutableArray *)keyboardModifierList;
-+ (NSMutableArray *)keyboardKeyList;
-+ (NSMutableDictionary *)keyboardMapping;
++ (NSArray *)keyboardModifierList;
++ (NSArray *)keyboardFuncTriggersList;
++ (NSArray *)keyboardKeyList;
++ (NSDictionary *)keyboardMapping;
++ (NSDictionary *)keyboardFuncTriggers;
++ (BOOL)isCapsAsEsc;
++ (BOOL)isShiftAsEsc;
 @end

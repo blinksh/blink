@@ -40,12 +40,16 @@ NSString const *BKKeyboardModifierCtrl = @"⌃ Ctrl";
 NSString const *BKKeyboardModifierAlt  = @"⌥ Alt";
 NSString const *BKKeyboardModifierCmd  = @"⌘ Cmd";
 NSString const *BKKeyboardModifierCaps = @"⇪ CapsLock";
+NSString const *BKKeyboardModifierShift = @"⇧ Shift";
 
 NSString const *BKKeyboardSeqNone = @"None";
 NSString const *BKKeyboardSeqCtrl = @"Ctrl";
 NSString const *BKKeyboardSeqEsc  = @"Esc";
 NSString const *BKKeyboardSeqMeta = @"Meta";
 
+NSString const *BKKeyboardFuncFTriggers = @"Function Keys";
+NSString const *BKKeyboardFuncCursorTriggers = @"Cursor Keys";
+NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 @implementation BKDefaults
 
@@ -54,21 +58,26 @@ NSString const *BKKeyboardSeqMeta = @"Meta";
 - (id)initWithCoder:(NSCoder *)coder
 {
   _keyboardMaps = [coder decodeObjectForKey:@"keyboardMaps"];
+  _keyboardFuncTriggers = [coder decodeObjectForKey:@"keyboardFuncTriggers"];
   _themeName = [coder decodeObjectForKey:@"themeName"];
   _fontName = [coder decodeObjectForKey:@"fontName"];
   _fontSize = [coder decodeObjectForKey:@"fontSize"];
   _defaultUser = [coder decodeObjectForKey:@"defaultUser"];
-
+  _capsAsEsc = [coder decodeBoolForKey:@"capsAsEsc"];
+  _shiftAsEsc = [coder decodeBoolForKey:@"shiftAsEsc"];
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)encoder
 {
   [encoder encodeObject:_keyboardMaps forKey:@"keyboardMaps"];
+  [encoder encodeObject:_keyboardFuncTriggers forKey:@"keyboardFuncTriggers"];
   [encoder encodeObject:_themeName forKey:@"themeName"];
   [encoder encodeObject:_fontName forKey:@"fontName"];
   [encoder encodeObject:_fontSize forKey:@"fontSize"];
   [encoder encodeObject:_defaultUser forKey:@"defaultUser"];
+  [encoder encodeBool:_capsAsEsc forKey:@"capsAsEsc"];
+  [encoder encodeBool:_shiftAsEsc forKey:@"shiftAsEsc"];
 }
 
 + (void)initialize
@@ -87,13 +96,33 @@ NSString const *BKKeyboardSeqMeta = @"Meta";
   if ((defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:DefaultsURL.path]) == nil) {
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
-    defaults.keyboardMaps = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-							   BKKeyboardSeqCtrl, BKKeyboardModifierCtrl, 
-							 BKKeyboardSeqEsc, BKKeyboardModifierAlt,
-							 BKKeyboardSeqNone, BKKeyboardModifierCmd,
-							 BKKeyboardSeqNone, BKKeyboardModifierCaps,
-			     nil];
   }
+  
+  if (!defaults.keyboardMaps) {
+    [defaults setDefaultKeyboardMaps];
+  }
+  if (!defaults.keyboardFuncTriggers) {
+    [defaults setDefaultKeyboardFuncTriggers];
+  }
+}
+
+- (void)setDefaultKeyboardMaps {
+  self.keyboardMaps = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+                           BKKeyboardSeqCtrl, BKKeyboardModifierCtrl,
+                           BKKeyboardSeqEsc, BKKeyboardModifierAlt,
+                           BKKeyboardSeqNone, BKKeyboardModifierCmd,
+                           BKKeyboardSeqNone, BKKeyboardModifierCaps,
+                           nil];
+}
+
+- (void)setDefaultKeyboardFuncTriggers {
+  self.keyboardFuncTriggers = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
+                                   @[BKKeyboardModifierAlt, BKKeyboardModifierShift], BKKeyboardFuncFTriggers,
+                                   @[BKKeyboardModifierCmd], BKKeyboardFuncCursorTriggers,
+                                   @[BKKeyboardModifierCmd], BKKeyboardFuncShortcutTriggers, nil];
+  
+  defaults.capsAsEsc = NO;
+  defaults.shiftAsEsc = NO;
 }
 
 + (BOOL)saveDefaults
@@ -106,6 +135,23 @@ NSString const *BKKeyboardSeqMeta = @"Meta";
 {
   if (modifier != nil) {
     [defaults.keyboardMaps setObject:modifier forKey:key];
+  }
+}
+
++ (void)setCapsAsEsc:(BOOL)state
+{
+  defaults.capsAsEsc = state;
+}
+
++ (void)setShiftAsEsc:(BOOL)state
+{
+  defaults.shiftAsEsc = state;
+}
+
++ (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func
+{
+  if (triggers.count && [@[BKKeyboardFuncFTriggers, BKKeyboardFuncCursorTriggers, BKKeyboardFuncShortcutTriggers] containsObject:func]) {
+    [defaults.keyboardFuncTriggers setObject:triggers forKey:func];
   }
 }
 
@@ -142,15 +188,36 @@ NSString const *BKKeyboardSeqMeta = @"Meta";
   return @[BKKeyboardSeqNone, BKKeyboardSeqCtrl, BKKeyboardSeqEsc];
 }
 
++ (NSArray *)keyboardFuncTriggersList
+{
+  return @[BKKeyboardModifierCtrl, BKKeyboardModifierAlt, BKKeyboardModifierCmd, BKKeyboardModifierShift];
+}
+
+
 + (NSArray *)keyboardKeyList
 {
   return @[BKKeyboardModifierCtrl, BKKeyboardModifierAlt,
 			 BKKeyboardModifierCmd, BKKeyboardModifierCaps];
 }
 
-+ (NSMutableDictionary *)keyboardMapping
++ (NSDictionary *)keyboardMapping
 {
   return defaults.keyboardMaps;
+}
+
++ (NSDictionary *)keyboardFuncTriggers
+{
+  return defaults.keyboardFuncTriggers;
+}
+
++ (BOOL)isCapsAsEsc
+{
+  return defaults.capsAsEsc;
+}
+
++ (BOOL)isShiftAsEsc
+{
+  return defaults.shiftAsEsc;
 }
 
 @end

@@ -31,6 +31,7 @@
 
 #import "BKKeyboardViewController.h"
 #import "BKDefaults.h"
+#import "BKKeyboardFuncTriggersViewController.h"
 #import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
 
@@ -38,12 +39,17 @@
 #define VALUE_LABEL_TAG 1002
 
 NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
+NSString *const BKKeyboardCapsAsEscChanged = @"BKKeyboardCapsAsEscChanged";
+NSString *const BKKeyboardShiftAsEscChanged = @"BKKeyboardShiftAsEscChanged";
+NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardFuncTriggerChanged";
 
 @interface BKKeyboardViewController ()
 
 @property (nonatomic, strong) NSIndexPath *currentSelectionIdx;
 @property (nonatomic, strong) NSMutableArray *keyList;
 @property (nonatomic, strong) NSMutableDictionary *keyboardMapping;
+@property (strong, nonatomic) IBOutlet UISwitch *capsAsEscSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *shiftAsEscSwitch;
 
 @end
 
@@ -73,36 +79,79 @@ NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
 
 - (void)loadData
 {
-  _keyList = [BKDefaults keyboardKeyList];
-  _keyboardMapping = [BKDefaults keyboardMapping];
+  _keyList = [NSMutableArray arrayWithArray:[BKDefaults keyboardKeyList]];
+  _keyboardMapping = [NSMutableDictionary dictionaryWithDictionary:[BKDefaults keyboardMapping]];
 }
 
 #pragma mark - UICollection View Delegates
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 1;
+  return 2;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  return _keyList.count;
+  switch (section) {
+  case 0:
+    return _keyList.count;
+  case 1:
+    return 5;
+  }
+  return 0;
 }
+
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-  return @"MODIFIER MAPPINGS";
+  switch (section) {
+    case 0:
+      return @"MODIFIER MAPPINGS";
+    case 1:
+      return @"SPECIAL KEYS";
+  }
+  return nil;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"keyMapperCell" forIndexPath:indexPath];
+  UITableViewCell *cell;
+  if (indexPath.section == 0) {
+    cell = [tableView dequeueReusableCellWithIdentifier:@"keyMapperCell" forIndexPath:indexPath];
 
-  UILabel *keyLabel = [cell viewWithTag:KEY_LABEL_TAG];
-  keyLabel.text = [_keyList objectAtIndex:indexPath.row];
+    UILabel *keyLabel = [cell viewWithTag:KEY_LABEL_TAG];
+    keyLabel.text = [_keyList objectAtIndex:indexPath.row];
 
-  UILabel *valueLabel = [cell viewWithTag:VALUE_LABEL_TAG];
-  valueLabel.text = [_keyboardMapping objectForKey:keyLabel.text];
+    UILabel *valueLabel = [cell viewWithTag:VALUE_LABEL_TAG];
+    valueLabel.text = [_keyboardMapping objectForKey:keyLabel.text];
+  } else {
+    switch (indexPath.row) {
+      case 0:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"capsAsEscCell" forIndexPath:indexPath];
+        [_capsAsEscSwitch setOn:[BKDefaults isCapsAsEsc]];
+        break;
+      case 1:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"shiftAsEscCell" forIndexPath:indexPath];
+        [_shiftAsEscSwitch setOn:[BKDefaults isShiftAsEsc]];
+        break;
+      case 2:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
+        cell.textLabel.text = BKKeyboardFuncFTriggers;
+        cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncFTriggers];
+        break;
+      case 3:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
+        cell.textLabel.text = BKKeyboardFuncCursorTriggers;
+        cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncCursorTriggers];
+        break;
+      case 4:
+        cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
+        cell.textLabel.text = BKKeyboardFuncShortcutTriggers;
+        cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncShortcutTriggers];
+        break;
+    }
+  }
+
   return cell;
 }
 
@@ -112,6 +161,41 @@ NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
   return indexPath;
 }
 
+- (NSString *)detailForKeyboardFunc:(const NSString *)func
+{
+  NSString *trigger = [[BKDefaults keyboardFuncTriggers][func] componentsJoinedByString:@" + "];
+
+  if (func == BKKeyboardFuncFTriggers) {
+    return [trigger stringByAppendingString:@" + number"];
+  } else if (func == BKKeyboardFuncCursorTriggers) {
+    return [trigger stringByAppendingString:@" + arrow"];
+  } else if (func == BKKeyboardFuncShortcutTriggers) {
+    return [trigger stringByAppendingString:@" + key"];
+  }
+
+  return nil;
+}
+
+#pragma mark - Actions
+- (IBAction)capsAsEscChanged:(UISwitch *)sender
+{
+  [BKDefaults setCapsAsEsc:[sender isOn]];
+  [BKDefaults saveDefaults];
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:BKKeyboardCapsAsEscChanged
+                  object:self];
+}
+
+- (IBAction)shiftAsEscChanged:(UISwitch *)sender
+{
+  BOOL what = [sender isOn];
+  [BKDefaults setShiftAsEsc:what];
+  [BKDefaults saveDefaults];
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:BKKeyboardShiftAsEscChanged
+                  object:self];
+}
+
 #pragma mark - Navigation
 
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
@@ -119,6 +203,10 @@ NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
   if ([segue.identifier isEqualToString:@"keyboardModifier"]) {
     BKKeyboardModifierViewController *modifier = segue.destinationViewController;
     [modifier performInitialSelection:[_keyboardMapping objectForKey:[self selectedObject]]];
+  } else if ([segue.identifier isEqualToString:@"keyboardFuncTriggers"]) {
+    BKKeyboardFuncTriggersViewController *vc = segue.destinationViewController;
+    UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:_currentSelectionIdx];
+    [vc performInitialSelection:[BKDefaults keyboardFuncTriggers][cell.textLabel.text]];
   }
 }
 
@@ -143,5 +231,29 @@ NSString *const BKKeyboardModifierChanged = @"BKKeyboardModifierChanged";
 	@"sequence":valueLabel.text}
    ];
 }
+
+- (IBAction)unwindFromKeyboardFuncTriggers:(UIStoryboardSegue *)sender
+{
+  BKKeyboardFuncTriggersViewController *vc = sender.sourceViewController;
+  UITableViewCell *cell = [self.tableView cellForRowAtIndexPath:_currentSelectionIdx];
+
+  NSString *function = cell.textLabel.text;
+  NSArray *trigger = [vc selectedObjects];
+
+  [BKDefaults setTriggers:trigger forFunction:function];
+  [BKDefaults saveDefaults];
+
+  cell.detailTextLabel.text = [self detailForKeyboardFunc:function];
+
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:BKKeyboardFuncTriggerChanged
+                  object:vc
+                userInfo:@{
+                  @"func" : function,
+                  @"trigger" : trigger
+                }];
+
+}
+
 
 @end

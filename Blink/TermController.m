@@ -54,7 +54,8 @@ static NSDictionary *bkModifierMaps = nil;
   BKKeyboardModifierCtrl: [NSNumber numberWithInt:UIKeyModifierControl],
   BKKeyboardModifierAlt: [NSNumber numberWithInt:UIKeyModifierAlternate],
   BKKeyboardModifierCmd: [NSNumber numberWithInt:UIKeyModifierCommand],
-  BKKeyboardModifierCaps: [NSNumber numberWithInt:UIKeyModifierAlphaShift]
+  BKKeyboardModifierCaps: [NSNumber numberWithInt:UIKeyModifierAlphaShift],
+  BKKeyboardModifierShift: [NSNumber numberWithInt:UIKeyModifierShift]
   };  
 }
 
@@ -85,6 +86,16 @@ static NSDictionary *bkModifierMaps = nil;
     NSString *sequence = [BKDefaults keyboardMapping][key];
     [self assignSequence:sequence toModifier:[bkModifierMaps[key] integerValue]];
   }
+  if ([BKDefaults isShiftAsEsc]) {
+    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
+  }
+  if ([BKDefaults isCapsAsEsc]) {
+    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
+  }
+  for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
+    NSArray *triggers = [BKDefaults keyboardFuncTriggers][func];
+    [self assignFunction:func toTriggers:triggers];
+  }
 }
 
 - (void)assignSequence:(NSString *)seq toModifier:(NSInteger)modifier
@@ -98,12 +109,48 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
+- (void)assignFunction:(NSString *)func toTriggers:(NSArray *)triggers
+{
+  UIKeyModifierFlags modifiers = 0;
+  for (NSString *t in triggers) {
+    NSNumber *modifier = bkModifierMaps[t];
+    modifiers = modifiers | modifier.intValue;
+  }
+  if ([func isEqual:BKKeyboardFuncCursorTriggers]) {
+    [_terminal assignFunction:TermViewCursorFuncSeq toTriggers:modifiers];
+  } else if ([func isEqual:BKKeyboardFuncFTriggers]) {
+    [_terminal assignFunction:TermViewFFuncSeq toTriggers:modifiers];
+  }
+}
+
 - (void)listenToControlEvents
 {
+  // With this one as delegate, we would just listen to a keyboardChanged event, and remap the keyboard.
+  // Like seriously remapping all keys anyway doesn't take that long, and you are in the settings of the app.
+  // I separated it in different functions here because I really didn't want to regenerate everthing here and in the TV.
+  // The other thing is that I can actually embed the info in the dictionary, and just redo here, instead of multiple events.
+  // (But in the end those would have to be separate strings anyway, so it is pretty much the same).
+  // And that was the thing, here we were mapping Defaults -> TC -> TV, even in the functions, and that doesn't make any sense anymore.
   [[NSNotificationCenter defaultCenter] addObserver:self
 					   selector:@selector(keyboardModifierChanged:)
 					       name:BKKeyboardModifierChanged
 					     object:nil];
+
+  [[NSNotificationCenter defaultCenter] addObserver:self
+  					   selector:@selector(keyboardCapsAsEscChanged:)
+  					       name:BKKeyboardCapsAsEscChanged
+  					     object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+  					   selector:@selector(keyboardShiftAsEscChanged:)
+  					       name:BKKeyboardShiftAsEscChanged
+  					     object:nil];
+  
+  [[NSNotificationCenter defaultCenter] addObserver:self
+                                           selector:@selector(keyboardFuncTriggerChanged:)
+                                               name:BKKeyboardFuncTriggerChanged
+                                             object:nil];
+  
 }
 
 - (void)terminate
@@ -221,5 +268,29 @@ static NSDictionary *bkModifierMaps = nil;
   [self assignSequence:action[@"sequence"] toModifier:[bkModifierMaps[action[@"modifier"]] integerValue]];
 }
 
+- (void)keyboardCapsAsEscChanged:(NSNotification *)notification
+{
+  if ([BKDefaults isCapsAsEsc]) {
+    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
+  } else {
+    [_terminal assignKey:nil toModifier:UIKeyModifierAlphaShift];
+  }
+}
+
+- (void)keyboardShiftAsEscChanged:(NSNotification *)notification
+{
+  if ([BKDefaults isShiftAsEsc]) {
+    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
+  } else {
+    [_terminal assignKey:nil toModifier:UIKeyModifierShift];
+  }
+  
+}
+
+- (void)keyboardFuncTriggerChanged:(NSNotification *)notification
+{
+  NSDictionary *action = [notification userInfo];
+  [self assignFunction:action[@"func"] toTriggers:action[@"trigger"]];
+}
 
 @end

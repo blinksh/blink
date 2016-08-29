@@ -52,6 +52,7 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9472D551D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m */; };
 		C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
 		C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
 		C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
@@ -207,6 +208,8 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		C9472D541D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardFuncTriggersViewController.h; sourceTree = "<group>"; };
+		C9472D551D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardFuncTriggersViewController.m; sourceTree = "<group>"; };
 		C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DismissSegue.h; path = ViewControllers/DismissSegue.h; sourceTree = "<group>"; };
 		C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DismissSegue.m; path = ViewControllers/DismissSegue.m; sourceTree = "<group>"; };
 		C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsDetailViewController.h; sourceTree = "<group>"; };
@@ -429,6 +432,8 @@
 		C989E5421D6CC488003E0079 /* BKKeyboard */ = {
 			isa = PBXGroup;
 			children = (
+				C9472D541D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.h */,
+				C9472D551D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m */,
 				C989E5431D6CC488003E0079 /* BKKeyboardModifierViewController.h */,
 				C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */,
 				C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */,
@@ -745,6 +750,7 @@
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
