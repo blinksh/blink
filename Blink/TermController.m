@@ -29,10 +29,10 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#import "TermController.h"
 #import "BKDefaults.h"
 #import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
-#import "TermController.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
@@ -48,15 +48,15 @@ static NSDictionary *bkModifierMaps = nil;
   BOOL _viewIsLocked;
 }
 
-+ (void)initialize 
++ (void)initialize
 {
   bkModifierMaps = @{
-  BKKeyboardModifierCtrl: [NSNumber numberWithInt:UIKeyModifierControl],
-  BKKeyboardModifierAlt: [NSNumber numberWithInt:UIKeyModifierAlternate],
-  BKKeyboardModifierCmd: [NSNumber numberWithInt:UIKeyModifierCommand],
-  BKKeyboardModifierCaps: [NSNumber numberWithInt:UIKeyModifierAlphaShift],
-  BKKeyboardModifierShift: [NSNumber numberWithInt:UIKeyModifierShift]
-  };  
+    BKKeyboardModifierCtrl : [NSNumber numberWithInt:UIKeyModifierControl],
+    BKKeyboardModifierAlt : [NSNumber numberWithInt:UIKeyModifierAlternate],
+    BKKeyboardModifierCmd : [NSNumber numberWithInt:UIKeyModifierCommand],
+    BKKeyboardModifierCaps : [NSNumber numberWithInt:UIKeyModifierAlphaShift],
+    BKKeyboardModifierShift : [NSNumber numberWithInt:UIKeyModifierShift]
+  };
 }
 
 - (void)write:(NSString *)input
@@ -132,25 +132,24 @@ static NSDictionary *bkModifierMaps = nil;
   // (But in the end those would have to be separate strings anyway, so it is pretty much the same).
   // And that was the thing, here we were mapping Defaults -> TC -> TV, even in the functions, and that doesn't make any sense anymore.
   [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(keyboardModifierChanged:)
-					       name:BKKeyboardModifierChanged
-					     object:nil];
+                                           selector:@selector(keyboardModifierChanged:)
+                                               name:BKKeyboardModifierChanged
+                                             object:nil];
 
   [[NSNotificationCenter defaultCenter] addObserver:self
-  					   selector:@selector(keyboardCapsAsEscChanged:)
-  					       name:BKKeyboardCapsAsEscChanged
-  					     object:nil];
-  
+                                           selector:@selector(keyboardCapsAsEscChanged:)
+                                               name:BKKeyboardCapsAsEscChanged
+                                             object:nil];
+
   [[NSNotificationCenter defaultCenter] addObserver:self
-  					   selector:@selector(keyboardShiftAsEscChanged:)
-  					       name:BKKeyboardShiftAsEscChanged
-  					     object:nil];
-  
+                                           selector:@selector(keyboardShiftAsEscChanged:)
+                                               name:BKKeyboardShiftAsEscChanged
+                                             object:nil];
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(keyboardFuncTriggerChanged:)
                                                name:BKKeyboardFuncTriggerChanged
                                              object:nil];
-  
 }
 
 - (void)terminate
@@ -284,7 +283,6 @@ static NSDictionary *bkModifierMaps = nil;
   } else {
     [_terminal assignKey:nil toModifier:UIKeyModifierShift];
   }
-  
 }
 
 - (void)keyboardFuncTriggerChanged:(NSNotification *)notification

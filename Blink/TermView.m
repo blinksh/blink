@@ -41,10 +41,10 @@ static NSDictionary *FKeys = nil;
 static NSString *SS3 = nil;
 static NSString *CSI = nil;
 
-NSString * const TermViewCtrlSeq = @"ctrlSeq:";
-NSString * const TermViewEscSeq = @"escSeq:";
-NSString * const TermViewCursorFuncSeq = @"cursorSeq:";
-NSString * const TermViewFFuncSeq = @"fkeySeq:";
+NSString *const TermViewCtrlSeq = @"ctrlSeq:";
+NSString *const TermViewEscSeq = @"escSeq:";
+NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
+NSString *const TermViewFFuncSeq = @"fkeySeq:";
 
 typedef enum {
   SpecialCursorKeyHome = 0,
@@ -153,21 +153,21 @@ typedef enum {
 
 + (NSString *)CURSOR:(SpecialCursorKeys)c
 {
-  switch(c) {
+  switch (c) {
     case SpecialCursorKeyHome:
-    return [NSString stringWithFormat:@"%@H", CSI];
-  case SpecialCursorKeyEnd:
-    return [NSString stringWithFormat:@"%@F", CSI];
-  case SpecialCursorKeyPgUp:
-    return [NSString stringWithFormat:@"%@5~", CSI];
-  case SpecialCursorKeyPgDown:
-    return [NSString stringWithFormat:@"%@6~", CSI];
+      return [NSString stringWithFormat:@"%@H", CSI];
+    case SpecialCursorKeyEnd:
+      return [NSString stringWithFormat:@"%@F", CSI];
+    case SpecialCursorKeyPgUp:
+      return [NSString stringWithFormat:@"%@5~", CSI];
+    case SpecialCursorKeyPgDown:
+      return [NSString stringWithFormat:@"%@6~", CSI];
   }
 }
 
 + (NSString *)FKEY:(NSInteger)number
 {
-  switch(number) {
+  switch (number) {
     case 1:
       return [NSString stringWithFormat:@"%@P", SS3];
     case 2:
@@ -181,10 +181,10 @@ typedef enum {
     case 6:
     case 7:
     case 8:
-      return [NSString stringWithFormat:@"%@1%ld~", CSI, number+1];
+      return [NSString stringWithFormat:@"%@1%ld~", CSI, number + 1];
     case 9:
     case 10:
-      return [NSString stringWithFormat:@"%@2%ld~", CSI, number-9];
+      return [NSString stringWithFormat:@"%@2%ld~", CSI, number - 9];
     default:
       return nil;
   }
@@ -369,20 +369,20 @@ typedef enum {
   } else {
     if (_pasteMenu) {
       [[UIMenuController sharedMenuController]
-	setMenuVisible:NO
-	      animated:YES];
+        setMenuVisible:NO
+              animated:YES];
     } else {
       [[UIMenuController sharedMenuController] setTargetRect:self.frame
-						      inView:self];
+                                                      inView:self];
 
       UIMenuItem *pasteItem = [[UIMenuItem alloc] initWithTitle:@"Paste"
-							 action:@selector(yank:)];
+                                                         action:@selector(yank:)];
 
       [[UIMenuController sharedMenuController]
-	setMenuItems:@[ pasteItem ]];
+        setMenuItems:@[ pasteItem ]];
       [[UIMenuController sharedMenuController]
-	setMenuVisible:YES
-	      animated:YES];
+        setMenuVisible:YES
+              animated:YES];
     }
     _pasteMenu = !_pasteMenu;
   }
@@ -538,7 +538,7 @@ typedef enum {
 
                                // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
                                if (modifier == UIKeyModifierAlphaShift) {
-				 [cmds addObjectsFromArray: [self shiftMaps]];
+                                 [cmds addObjectsFromArray:[self shiftMaps]];
                                }
                              }];
 
@@ -552,7 +552,7 @@ typedef enum {
 - (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
 {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
-  
+
   if (key == UIKeyInputEscape) {
     [cmds addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)]];
     if (modifier == UIKeyModifierAlphaShift) {
@@ -571,10 +571,10 @@ typedef enum {
   NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
 
   [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
-			      options:NSStringEnumerationByComposedCharacterSequences
-			   usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-      [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
-    }];
+                              options:NSStringEnumerationByComposedCharacterSequences
+                           usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                             [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
+                           }];
 
   return cmds;
 }
@@ -584,30 +584,36 @@ typedef enum {
   // And Removing the Seq?
   NSMutableArray *functions = [[NSMutableArray alloc] init];
   SEL seq = NSSelectorFromString(function);
-  
+
   if (function == TermViewCursorFuncSeq) {
-      [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:triggers action:seq]];
+    [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:triggers action:seq]];
     [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:triggers action:seq]];
     [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:triggers action:seq]];
     [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:triggers action:seq]];
-  } else if (function == TermViewFFuncSeq) {    
+  } else if (function == TermViewFFuncSeq) {
     [_specialFKeysRow enumerateSubstringsInRange:NSMakeRange(0, [_specialFKeysRow length])
                                          options:NSStringEnumerationByComposedCharacterSequences
-				      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-	[functions addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:triggers action:@selector(fkeySeq:)]];
-      }];
+                                      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                                        [functions addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:triggers action:@selector(fkeySeq:)]];
+                                      }];
   }
-  
+
   [_functionTriggerKeys setObject:functions forKey:function];
   [self setKbdCommands];
 }
 
 - (NSArray *)presetShortcuts
 {
-  return @[[UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)],
-	      [UIKeyCommand keyCommandWithInput:@"+" modifierFlags:UIKeyModifierControl action:@selector(increaseFontSize:)],
-	      [UIKeyCommand keyCommandWithInput:@"-" modifierFlags:UIKeyModifierControl action:@selector(decreaseFontSize:)],
-	      [UIKeyCommand keyCommandWithInput:@"0" modifierFlags:UIKeyModifierControl action:@selector(resetFontSize:)]];
+  return @[ [UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)],
+            [UIKeyCommand keyCommandWithInput:@"+"
+                                modifierFlags:UIKeyModifierControl
+                                       action:@selector(increaseFontSize:)],
+            [UIKeyCommand keyCommandWithInput:@"-"
+                                modifierFlags:UIKeyModifierControl
+                                       action:@selector(decreaseFontSize:)],
+            [UIKeyCommand keyCommandWithInput:@"0"
+                                modifierFlags:UIKeyModifierControl
+                                       action:@selector(resetFontSize:)] ];
 }
 
 - (NSArray *)functionModifierKeys
@@ -626,15 +632,15 @@ typedef enum {
   return f;
 }
 
- - (NSArray<UIKeyCommand *> *)keyCommands
- {  
-   return _kbdCommands;
- }
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return _kbdCommands;
+}
 
 - (BOOL)capsMapped
 {
-  return ([[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count] || 
-	  [[_functionKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count]);
+  return ([[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count] ||
+          [[_functionKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count]);
 }
 
 - (void)yank:(id)sender
@@ -715,17 +721,17 @@ typedef enum {
 {
   __block NSInteger idx = -1;
   [_specialFKeysRow enumerateSubstringsInRange:NSMakeRange(0, [_specialFKeysRow length])
-				       options:NSStringEnumerationByComposedCharacterSequences
-				    usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-      if ([cmd.input isEqual:substring]) {
-	idx = substringRange.location;
-	*stop = YES;
-      }
-    }];
+                                       options:NSStringEnumerationByComposedCharacterSequences
+                                    usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                                      if ([cmd.input isEqual:substring]) {
+                                        idx = substringRange.location;
+                                        *stop = YES;
+                                      }
+                                    }];
 
   if (idx >= 0) {
-    [_delegate write:[CC FKEY:idx+1]];
-  }		    
+    [_delegate write:[CC FKEY:idx + 1]];
+  }
 }
 
 // This are all key commands capture by UIKeyInput and triggered
