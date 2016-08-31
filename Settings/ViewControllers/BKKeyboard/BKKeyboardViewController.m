@@ -96,7 +96,7 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardFuncTriggerChanged";
   case 0:
     return _keyList.count;
   case 1:
-    return 5;
+    return 4;
   }
   return 0;
 }
@@ -144,11 +144,11 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardFuncTriggerChanged";
         cell.textLabel.text = BKKeyboardFuncCursorTriggers;
         cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncCursorTriggers];
         break;
-      case 4:
-        cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
-        cell.textLabel.text = BKKeyboardFuncShortcutTriggers;
-        cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncShortcutTriggers];
-        break;
+      // case 4:
+      //   cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
+      //   cell.textLabel.text = BKKeyboardFuncShortcutTriggers;
+      //   cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncShortcutTriggers];
+      //   break;
     }
   }
 
