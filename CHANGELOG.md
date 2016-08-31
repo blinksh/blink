@@ -1,3 +1,13 @@
+# Version 0.931
+	- Map Caps or Shift taps to Esc key.
+	- Cursor keys (Home, End, PgUp, PgDown) with default to Cmd+arrow.
+	- Function keys (F1-F10) with default to Cmd+number.
+	- Change mapping of any function key to a different combination.
+
+	- Improved placeholders for Hosts configurations.
+
+	- Removed Alt as Esc from initial defaults.
+
 # Version 0.927
 	This version should complete the experience in relation to ssh and terminal configurations, mimicking a big part of what you can do in a normal shell:
 	- Hosts Configuration. Preconfigure a host parameters, like user, port, key and commands.

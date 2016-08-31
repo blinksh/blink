@@ -2,7 +2,7 @@
 We are excited to introduce you to Blink. Blink is a unique mobile shell for iOS. We are creating the terminal we wanted to have and use all day: fully configurable, great keyboard support, great terminal rendering, and crazy fast thanks to [Mosh](https://github.com/mobile-shell/mosh). We won't stop there, and plan to convert this into a great work environment by adding other tools like scp. Hope you find on it a trusty and enjoyable tool too.
 
 # Obtaining Blink
-We want to share all the fun by inviting you to our Alpha. Would love to have you on board! If you would like to participate, follow and tweet us [@BlinkShell](https://twitter.com/BlinkShell) a little about your interest and usage scenarios. Invitations will be sent out in waves, please be patient if you do not receive yours immediately.
+We would love to have you on board! If you would like to participate, follow and tweet us [@BlinkShell](https://twitter.com/BlinkShell) a little about your interest and usage scenarios. Invitations will be sent out in waves, please be patient if you do not receive yours immediately.
 
 Bugs should be reported here on GitHub. Crash reports will be automatically reported back to us thanks to HockeyApp. If you have any questions or want to make sure we do not miss on an interesting feature, please send your suggestions to our Twitter account [@BlinkShell](https://twitter.com/BlinkShell). We would love to discuss them with you! Please do not use Twitter to report bugs.
 
@@ -21,23 +21,15 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.927
-	This version should complete the experience in relation to ssh and terminal configurations, mimicking a big part of what you can do in a normal shell:
-	- Hosts Configuration. Preconfigure a host parameters, like user, port, key and commands.
-	- Connect to a Host by specifying its name. Do "mosh plankton"
-	- Overwrite parameters from host configuration from the shell. So carlos@plankton will override the user field on plankton.
-	- Default Modifier keys settings changed: Ctrl is Ctrl, and Alt sends Esc. Everything else is undefined.
-	- Modifier keys configuration. CAPS as Ctrl or ESC, no problem! Cmd as Ctrl? You have it! Configure everything to you liking.
-	- Added secure passwords stored on Keychain to Host Configuration.
-	- Exiting the session within the MCP closes the Space.
+## Version 0.931
+	- Map Caps or Shift taps to Esc key.
+	- Cursor keys (Home, End, PgUp, PgDown) with default to Cmd+arrow.
+	- Function keys (F1-F10) with default to Cmd+number.
+	- Change mapping of any function key to a different combination.
 
-	- Fixed hang after "exec request accepted". Establishing connections should be smooth now.
-	- Fixed adjustments on viewport after rotating the display.
-	- Fixed Ctrl + Space sequences.
-	- Fixed wrong/unexisting Ctrl sequences.
-	- Added Esc+any character support.
+	- Improved placeholders for Hosts configurations.
 
-	- New settings added to project. Will start to fill up in raw branch.
+	- Removed Alt as Esc from initial defaults.
 
 [View all changes](CHANGELOG.md)
 
