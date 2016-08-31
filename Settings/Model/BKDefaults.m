@@ -117,7 +117,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 - (void)setDefaultKeyboardFuncTriggers {
   self.keyboardFuncTriggers = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
-                                   @[BKKeyboardModifierAlt, BKKeyboardModifierShift], BKKeyboardFuncFTriggers,
+                                   @[BKKeyboardModifierCmd], BKKeyboardFuncFTriggers,
                                    @[BKKeyboardModifierCmd], BKKeyboardFuncCursorTriggers,
                                    @[BKKeyboardModifierCmd], BKKeyboardFuncShortcutTriggers, nil];
   
