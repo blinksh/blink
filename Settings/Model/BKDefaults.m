@@ -109,7 +109,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 - (void)setDefaultKeyboardMaps {
   self.keyboardMaps = [[NSMutableDictionary alloc] initWithObjectsAndKeys:
                            BKKeyboardSeqCtrl, BKKeyboardModifierCtrl,
-                           BKKeyboardSeqEsc, BKKeyboardModifierAlt,
+                           BKKeyboardSeqNone, BKKeyboardModifierAlt,
                            BKKeyboardSeqNone, BKKeyboardModifierCmd,
                            BKKeyboardSeqNone, BKKeyboardModifierCaps,
                            nil];
