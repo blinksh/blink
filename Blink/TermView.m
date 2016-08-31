@@ -478,7 +478,7 @@ typedef enum {
   }
 
   // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
-  BOOL capsWithoutSWKeyboard = [self cappsMapped] & self.inputAccessoryView.hidden;
+  BOOL capsWithoutSWKeyboard = [self capsMapped] & self.inputAccessoryView.hidden;
   if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
     text = [text lowercaseString];
   }
@@ -538,11 +538,7 @@ typedef enum {
 
                                // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
                                if (modifier == UIKeyModifierAlphaShift) {
-                                 NSRange first = [substring rangeOfComposedCharacterSequenceAtIndex:0];
-                                 NSRange match = [substring rangeOfCharacterFromSet:[NSCharacterSet letterCharacterSet] options:0 range:first];
-                                 if (match.location != NSNotFound) {
-                                   [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
-                                 }
+				 [cmds addObjectsFromArray: [self shiftMaps]];
                                }
                              }];
 
@@ -555,13 +551,32 @@ typedef enum {
 
 - (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
 {
+  NSMutableArray *cmds = [[NSMutableArray alloc] init];
+  
   if (key == UIKeyInputEscape) {
-    UIKeyCommand *cmd = [UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)];
-    [_functionKeys setObject:@[cmd] forKey:[NSNumber numberWithInteger:modifier]];
+    [cmds addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)]];
+    if (modifier == UIKeyModifierAlphaShift) {
+      [cmds addObjectsFromArray:[self shiftMaps]];
+    }
+    [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   } else {
-    [_functionKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
+    [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   }
   [self setKbdCommands];
+}
+
+- (NSArray *)shiftMaps
+{
+  NSMutableArray *cmds = [[NSMutableArray alloc] init];
+  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
+
+  [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
+			      options:NSStringEnumerationByComposedCharacterSequences
+			   usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+      [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
+    }];
+
+  return cmds;
 }
 
 - (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers
@@ -616,9 +631,10 @@ typedef enum {
    return _kbdCommands;
  }
 
-- (BOOL)cappsMapped
+- (BOOL)capsMapped
 {
-  return [[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count];
+  return ([[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count] || 
+	  [[_functionKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count]);
 }
 
 - (void)yank:(id)sender
