@@ -34,6 +34,7 @@
 
 static NSURL *DocumentsDirectory = nil;
 static NSURL *DefaultsURL = nil;
+
 BKDefaults *defaults;
 
 NSString const *BKKeyboardModifierCtrl = @"⌃ Ctrl";
@@ -50,6 +51,7 @@ NSString const *BKKeyboardSeqMeta = @"Meta";
 NSString const *BKKeyboardFuncFTriggers = @"Function Keys";
 NSString const *BKKeyboardFuncCursorTriggers = @"Cursor Keys";
 NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
+
 
 @implementation BKDefaults
 
@@ -86,8 +88,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 }
 + (void)loadDefaults
 {
-  if (DocumentsDirectory == nil) {
-    //Hosts = [[NSMutableArray alloc] init];
+  if (DocumentsDirectory == nil) {    
     DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
     DefaultsURL = [DocumentsDirectory URLByAppendingPathComponent:@"defaults"];
   }

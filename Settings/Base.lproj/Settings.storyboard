@@ -1526,7 +1526,7 @@
         <image name="keyboard" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="y9I-rB-ZKT"/>
         <segue reference="dMC-e1-GtW"/>
-        <segue reference="9Nb-rb-KdA"/>
     </inferredMetricsTieBreakers>
 </document>

@@ -493,6 +493,11 @@ typedef enum {
   }
 }
 
+- (void)loadTerminalTheme:(NSString *)themeContent
+{
+  [_webView evaluateJavaScript:themeContent completionHandler:nil];
+}
+
 #pragma mark External Keyboard
 
 - (void)setKbdCommands

@@ -33,6 +33,7 @@
 #import "BKDefaults.h"
 #import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
+#import "BKTheme.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
@@ -150,6 +151,26 @@ static NSDictionary *bkModifierMaps = nil;
                                            selector:@selector(keyboardFuncTriggerChanged:)
                                                name:BKKeyboardFuncTriggerChanged
                                              object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+					     selector:@selector(appearanceChanged:)
+                                               name:BKAppearanceChanged
+                                             object:nil];
+
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+  [self setAppearanceFromSettings];
+}
+
+- (void)setAppearanceFromSettings
+{
+  // Load theme
+  BKTheme *theme = [BKTheme withTheme:[BKDefaults selectedThemeName]];
+  
+  // Execute the theme
+  [_terminal loadTerminalTheme:theme.content];  
 }
 
 - (void)terminate
@@ -289,6 +310,12 @@ static NSDictionary *bkModifierMaps = nil;
 {
   NSDictionary *action = [notification userInfo];
   [self assignFunction:action[@"func"] toTriggers:action[@"trigger"]];
+}
+
+- (void)appearanceChanged:(NSNotification *)notification
+{
+//  NSDictionary *action = [notification userInfo];
+  [self setAppearanceFromSettings];
 }
 
 @end

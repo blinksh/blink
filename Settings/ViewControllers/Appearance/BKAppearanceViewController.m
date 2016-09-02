@@ -37,6 +37,8 @@
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
 
+NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
+
 @interface BKAppearanceViewController ()
 
 @property (nonatomic, strong) NSIndexPath *selectedFontIndexPath;
@@ -62,13 +64,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-  [super viewWillDisappear:animated];
-  [self saveDefaultValues];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-  [super viewWillAppear:animated];
+  if (self.isMovingFromParentViewController) {
+    [self saveDefaultValues];
+  }
 }
 
 - (void)loadDefaultValues
@@ -96,7 +94,11 @@
   if (_selectedThemeIndexPath != nil) {
     [BKDefaults setThemeName:[[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row] name]];
   }
+
   [BKDefaults saveDefaults];
+  [[NSNotificationCenter defaultCenter]
+    postNotificationName:BKAppearanceChanged
+                  object:self];
 }
 
 #pragma mark - Table view data source
@@ -201,6 +203,7 @@
   }
 }
 
+
 - (IBAction)unwindFromAddFont:(UIStoryboardSegue *)sender
 {
   int lastIndex = (int)[BKFont count];
@@ -275,14 +278,14 @@
 }
 */
 
-/*
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
+//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+//  // Get the new view controller using [segue destinationViewController].
+//  // Pass the selected object to the new view controller.
+//}
+
 
 @end

@@ -31,17 +31,20 @@
 
 #import <Foundation/Foundation.h>
 
+
 @interface BKTheme : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *filepath;
+@property (nonatomic, strong) NSString *filename;
 
 + (void)initialize;
 + (instancetype)withTheme:(NSString *)themeName;
 + (BOOL)saveThemes;
-+ (instancetype)saveTheme:(NSString *)themeName withFilePath:(NSString *)filePath;
++ (instancetype)saveTheme:(NSString *)themeName withContent:(NSData *)content error:(NSError * __autoreleasing *)error;
 + (void)removeThemeAtIndex:(int)index;
 + (NSMutableArray *)all;
 + (NSInteger)count;
+
+- (NSString *)content;
 
 @end
