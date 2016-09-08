@@ -47,6 +47,7 @@ static NSDictionary *bkModifierMaps = nil;
   int _pinput[2];
   MCPSession *_session;
   BOOL _viewIsLocked;
+  BOOL _appearanceChanged;
 }
 
 + (void)initialize
@@ -161,7 +162,9 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void) viewDidAppear:(BOOL)animated
 {
-  [self setAppearanceFromSettings];
+  if (_appearanceChanged) {
+    [self setAppearanceFromSettings];
+  }
 }
 
 - (void)setAppearanceFromSettings
@@ -225,6 +228,7 @@ static NSDictionary *bkModifierMaps = nil;
   if ([operation isEqualToString:@"sigwinch"]) {
     [self updateTermRows:data[@"rows"] Cols:data[@"columns"]];
   } else if ([operation isEqualToString:@"terminalready"]) {
+    [self setAppearanceFromSettings];
     [self startSession];
   }
 }
@@ -315,7 +319,11 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)appearanceChanged:(NSNotification *)notification
 {
 //  NSDictionary *action = [notification userInfo];
-  [self setAppearanceFromSettings];
+  if (self.isViewLoaded && self.view.window) {
+    [self setAppearanceFromSettings];
+  } else {
+    _appearanceChanged = YES;
+  }
 }
 
 @end
