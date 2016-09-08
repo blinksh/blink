@@ -42,8 +42,9 @@
 + (BOOL)saveThemes;
 + (instancetype)saveTheme:(NSString *)themeName withContent:(NSData *)content error:(NSError * __autoreleasing *)error;
 + (void)removeThemeAtIndex:(int)index;
-+ (NSMutableArray *)all;
++ (NSArray *)all;
 + (NSInteger)count;
++ (NSInteger)defaultThemesCount;
 
 - (NSString *)content;
 

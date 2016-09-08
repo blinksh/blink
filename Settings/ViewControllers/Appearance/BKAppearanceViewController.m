@@ -224,7 +224,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
   // Return NO if you do not want the specified item to be editable.
-  if ((indexPath.section == 0 && indexPath.row < [BKTheme count]) || (indexPath.section == 1 && indexPath.row < [BKFont count])) {
+  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultThemesCount] && indexPath.row < [BKTheme count]) || (indexPath.section == 1 && indexPath.row < [BKFont count])) {
     return YES;
   } else {
     return NO;

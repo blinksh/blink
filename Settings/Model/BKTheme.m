@@ -31,20 +31,25 @@
 
 #import "BKTheme.h"
 
-NSMutableArray *Themes;
+NSMutableArray *CustomThemes;
+NSMutableArray *DefaultThemes;
 
 static NSURL *DocumentsDirectory = nil;
 static NSURL *BKSavedThemesURL = nil;
-static NSURL *ThemesURL = nil;
+static NSURL *BKDefaultThemesURL = nil;
+static NSURL *BKCustomThemesURL = nil;
 
-@implementation BKTheme
+@implementation BKTheme {
+  NSURL *_fileURL;
+}
 
-- (instancetype)initWithName:(NSString *)themeName andFileName:(NSString *)fileName
+- (instancetype)initWithName:(NSString *)themeName andFileName:(NSString *)fileName onURL:(NSURL *)fileURL
 {
   self = [super init];
   if (self) {
     self.name = themeName;
     self.filename = fileName;
+    _fileURL = fileURL;
   }
   return self;
 }
@@ -53,6 +58,8 @@ static NSURL *ThemesURL = nil;
 {
   _name = [coder decodeObjectForKey:@"title"];
   _filename = [coder decodeObjectForKey:@"filename"];
+  // Only Custom is initialized with URL
+  _fileURL = BKSavedThemesURL;
   return self;
 }
 
@@ -63,20 +70,19 @@ static NSURL *ThemesURL = nil;
 }
 
 - (NSString *)content
-{  
-  NSString *filepath = [[BKSavedThemesURL URLByAppendingPathComponent:self.filename] path];
-
+{
+  NSString *filepath = [[_fileURL URLByAppendingPathComponent:self.filename] path];
   return [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:nil];
 }
 
 + (void)initialize
 {
-  [BKTheme loadThemes];  
+  [BKTheme loadThemes];
 }
 
 + (instancetype)withTheme:(NSString *)themeName
 {
-  for (BKTheme *theme in Themes) {
+  for (BKTheme *theme in [BKTheme all]) {
     if ([theme->_name isEqualToString:themeName]) {
       return theme;
     }
@@ -84,38 +90,43 @@ static NSURL *ThemesURL = nil;
   return nil;
 }
 
-+ (NSMutableArray *)all
++ (NSArray *)all
 {
-  return Themes;
+  return [DefaultThemes arrayByAddingObjectsFromArray:CustomThemes];
 }
 
 + (NSInteger)count
 {
-  return [Themes count];
+  return [self.all count];
+}
+
++ (NSInteger)defaultThemesCount
+{
+  return [DefaultThemes count];
 }
 
 + (BOOL)saveThemes
 {
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Themes toFile:ThemesURL.path];
+  return [NSKeyedArchiver archiveRootObject:CustomThemes toFile:BKCustomThemesURL.path];
 }
 
-+ (instancetype)saveTheme:(NSString *)themeName withContent:(NSData *)content error:(NSError * __autoreleasing *)error
++ (instancetype)saveTheme:(NSString *)themeName withContent:(NSData *)content error:(NSError *__autoreleasing *)error
 {
   NSString *fileName = [[NSUUID UUID] UUIDString];
 
   NSURL *filePath = [BKSavedThemesURL URLByAppendingPathComponent:fileName];
   [[NSFileManager defaultManager] createDirectoryAtURL:BKSavedThemesURL withIntermediateDirectories:YES attributes:nil error:nil];
-    
+
   [content writeToURL:filePath options:NSDataWritingAtomic error:error];
 
   if (*error) {
     return nil;
   }
 
-  BKTheme *theme = [[BKTheme alloc] initWithName:themeName andFileName:fileName];
-  [Themes addObject:theme];
-  
+  BKTheme *theme = [[BKTheme alloc] initWithName:themeName andFileName:fileName onURL:BKSavedThemesURL];
+  [CustomThemes addObject:theme];
+
   if (![BKTheme saveThemes]) {
     // This should never fail, but it is kept for testing purposes.
     return nil;
@@ -125,21 +136,53 @@ static NSURL *ThemesURL = nil;
 
 + (void)removeThemeAtIndex:(int)index
 {
-  [Themes removeObjectAtIndex:index];
+  [CustomThemes removeObjectAtIndex:index - [BKTheme defaultThemesCount]];
+  [BKTheme saveThemes];
 }
 
 + (void)loadThemes
 {
+  [self loadDefaultThemes];
+  [self loadCustomThemes];
+}
+
++ (void)loadDefaultThemes
+{
+  // Load Default themes
+  BKDefaultThemesURL = [[[NSBundle mainBundle] resourceURL] URLByAppendingPathComponent:@"Themes"];
+  NSError *error = nil;
+  NSArray *properties = [NSArray arrayWithObjects:NSURLLocalizedNameKey, nil];
+
+  NSArray *themeFiles = [[NSFileManager defaultManager]
+      contentsOfDirectoryAtURL:BKDefaultThemesURL
+    includingPropertiesForKeys:properties
+                       options:(NSDirectoryEnumerationSkipsHiddenFiles)
+                         error:&error];
+
+  DefaultThemes = [[NSMutableArray alloc] init];
+  if (themeFiles != nil) {
+    for (NSURL *file in themeFiles) {
+      NSString *fileName = [file lastPathComponent];
+      BKTheme *theme = [[BKTheme alloc] initWithName:[fileName stringByReplacingOccurrencesOfString:@".js" withString:@""]
+                                         andFileName:fileName
+                                               onURL:BKDefaultThemesURL];
+      [DefaultThemes addObject:theme];
+    }
+  }
+}
+
++ (void)loadCustomThemes
+{
   if (DocumentsDirectory == nil) {
     DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    ThemesURL = [DocumentsDirectory URLByAppendingPathComponent:@"themes"];
+    BKCustomThemesURL = [DocumentsDirectory URLByAppendingPathComponent:@"themes"];
     BKSavedThemesURL = [DocumentsDirectory URLByAppendingPathComponent:@"ThemesDir"];
   }
 
   // Load IDs from file
-  if ((Themes = [NSKeyedUnarchiver unarchiveObjectWithFile:ThemesURL.path]) == nil) {
+  if ((CustomThemes = [NSKeyedUnarchiver unarchiveObjectWithFile:BKCustomThemesURL.path]) == nil) {
     // Initialize the structure if it doesn't exist
-    Themes = [[NSMutableArray alloc] init];
+    CustomThemes = [[NSMutableArray alloc] init];
   }
 }
 
