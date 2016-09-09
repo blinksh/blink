@@ -45,7 +45,7 @@ extern NSString * const TermViewFFuncSeq;
 @optional
 - (void)terminalIsReady;
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
-
+- (void)fontSizeChanged:(NSNumber *)size;
 @end
 
 @interface TerminalView : UIView
@@ -59,6 +59,7 @@ extern NSString * const TermViewFFuncSeq;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
 - (void)setColumnNumber:(NSInteger)count;
+- (void)setFontSize:(NSInteger)size;
 - (void)setInputEnabled:(BOOL)enabled;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;

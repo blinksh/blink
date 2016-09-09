@@ -33,7 +33,7 @@
       t.decorate(document.querySelector('#terminal'));
 
 t.onTerminalReady = function() {
-  window.webkit.messageHandlers.interOp.postMessage({"op": "terminalready", "data": {}});
+  window.webkit.messageHandlers.interOp.postMessage({"op": "terminalReady", "data": {}});
       var io = t.io.push();
       t.io.onTerminalResize = function(columns, rows) {
       window.webkit.messageHandlers.interOp.postMessage({"op": "sigwinch", "data": {columns: columns, rows: rows}});

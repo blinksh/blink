@@ -40,8 +40,13 @@ var scaleTermStart = function() {
 var scaleTerm = function(scale) {
     if (scale > 2.0) scale = 2.0;
     if (scale < 0.5) scale = 0.5;
-    t.setFontSize(this.fontSize * scale);
+    t.setFontSize(Math.floor(this.fontSize * scale));
+    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {size: t.getFontSize()}});
 }
+var setFontSize = function(size) {
+    t.setFontSize(size);
+}
+
 var focusTerm = function() {
     t.onFocusChange_(true);
 }

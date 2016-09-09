@@ -86,6 +86,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 {
   [BKDefaults loadDefaults];
 }
+
 + (void)loadDefaults
 {
   if (DocumentsDirectory == nil) {    
@@ -104,6 +105,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   }
   if (!defaults.keyboardFuncTriggers) {
     [defaults setDefaultKeyboardFuncTriggers];
+  }
+
+  if (!defaults.fontSize) {
+    [defaults setFontSize:[NSNumber numberWithInt:10]];
   }
 }
 

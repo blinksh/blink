@@ -316,7 +316,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (IBAction)stepperButtonPressed:(id)sender
 {
-  _fontSizeField.text = [NSString stringWithFormat:@"%d px", (int)[_fontSizeStepper value]];
+  int newSize = (int)[_fontSizeStepper value];
+  _fontSizeField.text = [NSString stringWithFormat:@"%d px", newSize];
+  [_testTerminal setFontSize:newSize];
 }
 
 /*
@@ -370,6 +372,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (selectedFont) {
     [self showcaseFont:selectedFont];
   }
+
+  NSNumber *fontSize = [BKDefaults selectedFontSize];
+  [_testTerminal setFontSize:fontSize.integerValue];
+}
+
+- (void)fontSizeChanged:(NSNumber *)size
+{
+  _fontSizeStepper.value = size.integerValue;
+  _fontSizeField.text = [NSString stringWithFormat:@"%@ px", size];
 }
 
 - (void)write:(NSString *)input

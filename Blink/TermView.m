@@ -297,6 +297,11 @@ typedef enum {
   [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%d\");", count] completionHandler:nil];
 }
 
+- (void)setFontSize:(NSInteger)size
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%d\");", size] completionHandler:nil];
+}
+
 - (void)loadTerminal
 {
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
@@ -333,9 +338,13 @@ typedef enum {
     if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
       [self.delegate updateTermRows:data[@"rows"] Cols:data[@"columns"]];
     }
-  } else if ([operation isEqualToString:@"terminalready"]) {
+  } else if ([operation isEqualToString:@"terminalReady"]) {
     if ([self.delegate respondsToSelector:@selector(terminalIsReady)]) {
       [self.delegate terminalIsReady];
+    } 
+  } else if ([operation isEqualToString:@"fontSizeChanged"]) {
+    if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
+      [self.delegate fontSizeChanged:data[@"size"]];
     }
   }
 }
