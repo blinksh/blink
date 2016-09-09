@@ -77,7 +77,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     _selectedThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:selectedTheme] inSection:0];
   }
   NSString *selectedFontName = [BKDefaults selectedFontName];
-  BKFont *selectedFont = [BKFont withFont:selectedFontName];
+  BKFont *selectedFont = [BKFont withName:selectedFontName];
   if (selectedFont != nil) {
     _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:1];
   }
@@ -224,7 +224,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
   // Return NO if you do not want the specified item to be editable.
-  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) || (indexPath.section == 1 && indexPath.row < [BKFont count])) {
+  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) ||
+      (indexPath.section == 1 && indexPath.row >= [BKFont defaultResourcesCount] && indexPath.row < [BKFont count])) {
     return YES;
   } else {
     return NO;
@@ -246,7 +247,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       }
 
     } else if (indexPath.section == 1) {
-      [BKFont removeFontAtIndex:(int)indexPath.row];
+      [BKFont removeResourceAtIndex:(int)indexPath.row];
 
       if (indexPath.row < _selectedFontIndexPath.row) {
         _selectedFontIndexPath = [NSIndexPath indexPathForRow:_selectedFontIndexPath.row - 1 inSection:0];

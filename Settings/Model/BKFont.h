@@ -31,18 +31,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BKFont : NSObject <NSCoding>
+#import "BKResource.h"
 
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *filepath;
-
-+ (void)initialize;
-+ (instancetype)withFont:(NSString *)fontName;
-+ (BOOL)saveFonts;
-+ (instancetype)saveFont:(NSString *)fontName withFilePath:(NSString *)filePath;
-+ (void)removeFontAtIndex:(int)index;
-+ (NSMutableArray *)all;
-+ (NSInteger)count;
-
-
+@interface BKFont : BKResource
 @end

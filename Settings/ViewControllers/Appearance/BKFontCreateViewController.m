@@ -137,18 +137,16 @@
 
 - (IBAction)didTapOnSave:(id)sender
 {
-  if ([BKFont withFont:self.nameTextField.text]) {
+  if ([BKFont withName:self.nameTextField.text]) {
     //Error
+    [self showErrorMsg:@"Cannot have two fonts with the same name"];
   } else {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *folderPath = [NSString stringWithFormat:@"%@/FontsDir/", documentsDirectory];
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@.css", folderPath, self.nameTextField.text];
-    [[NSFileManager defaultManager] createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:nil error:nil];
     NSError *error;
-    [_tempFileData writeToURL:[NSURL fileURLWithPath:filePath] options:NSDataWritingAtomic error:&error];
-    [BKFont saveFont:self.nameTextField.text withFilePath:filePath];
-    [BKFont saveFonts];
+    [BKFont saveResource:self.nameTextField.text withContent:_tempFileData error:&error];
+    
+    if (error) {
+      [self showErrorMsg:error.localizedDescription];
+    }
     [self.navigationController popViewControllerAnimated:YES];
   }
 }
@@ -175,4 +173,13 @@
   [self.importButton setTintColor:[UIColor blueColor]];
   [self.importButton addTarget:self action:@selector(importButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
 }
+
+- (void)showErrorMsg:(NSString *)errorMsg
+{
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Themes error" message:errorMsg preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+  [alertController addAction:ok];
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 @end
