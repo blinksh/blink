@@ -33,18 +33,31 @@
 #import "BKDefaults.h"
 #import "BKFont.h"
 #import "BKTheme.h"
+#import "TermView.h"
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
 
+typedef NS_ENUM(NSInteger, BKAppearanceSections) {
+  BKAppearance_Terminal = 0,
+    BKAppearance_Themes,
+    BKAppearance_Fonts,
+    BKAppearance_FontSize
+};
+
+#define BKAPPEARANCE_TERM_SECTION 0
+#define BKAPPEARANCE_THEME_SECTION 1
+#define BKAPPEARANCE
+
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
-@interface BKAppearanceViewController ()
+@interface BKAppearanceViewController () <TerminalDelegate>
 
 @property (nonatomic, strong) NSIndexPath *selectedFontIndexPath;
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
+@property (nonatomic, strong) TerminalView *testTerminal;
 
 @end
 
@@ -105,14 +118,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 3;
+  return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  if (section == 0) {
+  if (section == BKAppearance_Themes) {
     return [[BKTheme all] count] + 1;
-  } else if (section == 1) {
+  } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
   } else {
     return 1;
@@ -149,18 +162,52 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
 }
 
+- (void)attachTestTerminalToView:(UIView *)view
+{
+  _testTerminal = [[TerminalView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
+  _testTerminal.delegate = self;
+  if (!view.subviews.count) {
+    [view addSubview:_testTerminal];
+  }
+  [_testTerminal loadTerminal];
+}
+
+- (NSString *)cellIdentifierForSection:(NSInteger)section
+{
+  static NSString *cellIdentifier;
+  if (section == BKAppearance_Terminal) {
+    cellIdentifier = @"testTerminalCell";
+  } else if (section == BKAppearance_Themes || section == BKAppearance_Fonts) {
+    cellIdentifier = @"themeFontCell";
+  } else if (section == BKAppearance_FontSize) {
+    cellIdentifier = @"fontSizeCell";
+  }
+  return cellIdentifier;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[self cellIdentifierForSection:indexPath.section]];
+  return cell.bounds.size.height;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0 || indexPath.section == 1) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"themeFontCell" forIndexPath:indexPath];
-    if (indexPath.section == 0) {
+  NSString *cellIdentifier = [self cellIdentifierForSection:indexPath.section];
+  if (indexPath.section == BKAppearance_Terminal) {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+    [self attachTestTerminalToView:cell.contentView];
+    return cell;
+  } else if (indexPath.section == BKAppearance_Themes || indexPath.section == BKAppearance_Fonts) {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+    if (indexPath.section == BKAppearance_Themes) {
       [self setThemesUIForCell:cell atIndexPath:indexPath];
     } else {
       [self setFontsUIForCell:cell atIndexPath:indexPath];
     }
     return cell;
-  } else {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"fontSizeCell" forIndexPath:indexPath];
+  } else if(indexPath.section == BKAppearance_FontSize) {
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     _fontSizeField = [cell viewWithTag:FONT_SIZE_FIELD_TAG];
     _fontSizeStepper = [cell viewWithTag:FONT_SIZE_STEPPER_TAG];
     if ([BKDefaults selectedFontSize] != nil) {
@@ -171,12 +218,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     }
     return cell;
   }
-  // Configure the cell...
+  return nil;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.section == 0) {
+  if (indexPath.section == BKAppearance_Themes) {
     if (indexPath.row == [[BKTheme all] count]) {
       [self performSegueWithIdentifier:@"addTheme" sender:self];
     } else {
@@ -188,7 +235,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
     }
-  } else if (indexPath.section == 1) {
+  } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
       [self performSegueWithIdentifier:@"addFont" sender:self];
     } else {
@@ -224,8 +271,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
   // Return NO if you do not want the specified item to be editable.
-  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) ||
-      (indexPath.section == 1 && indexPath.row >= [BKFont defaultResourcesCount] && indexPath.row < [BKFont count])) {
+  if ((indexPath.section == BKAppearance_Themes && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) ||
+      (indexPath.section == BKAppearance_Fonts && indexPath.row >= [BKFont defaultResourcesCount] && indexPath.row < [BKFont count])) {
     return YES;
   } else {
     return NO;
@@ -237,7 +284,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     // Delete the row from the data source
-    if (indexPath.section == 0) {
+    if (indexPath.section == BKAppearance_Themes) {
       [BKTheme removeResourceAtIndex:(int)indexPath.row];
 
       if (indexPath.row < _selectedThemeIndexPath.row) {
@@ -246,7 +293,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
         _selectedThemeIndexPath = nil;
       }
 
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section == BKAppearance_Fonts) {
       [BKFont removeResourceAtIndex:(int)indexPath.row];
 
       if (indexPath.row < _selectedFontIndexPath.row) {
@@ -288,5 +335,31 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 //  // Pass the selected object to the new view controller.
 //}
 
+#pragma mark - Terminal
+
+- (void)terminalIsReady
+{
+  NSLog(@"initialized");
+  // Write content  
+  // if (selectedTheme) {
+  //   [self showcaseTheme:selectedTheme];
+  // }
+  // if (selectedFont) {
+  //   [self showcaseFont:selectedFont];
+  // }
+}
+
+- (void)write:(NSString *)input
+{
+  // Just ignore it
+}
+
+- (void)showcaseTheme:(BKTheme *)theme
+{
+}
+
+- (void)showcaseFont:(BKFont *)font
+{
+}
 
 @end
