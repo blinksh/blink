@@ -493,9 +493,14 @@ typedef enum {
   }
 }
 
-- (void)loadTerminalTheme:(NSString *)themeContent
+- (void)loadTerminalThemeJS:(NSString *)themeContent
 {
   [_webView evaluateJavaScript:themeContent completionHandler:nil];
+}
+
+- (void)loadTerminalFontCSS:(NSString *)cssPath
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(%@);", cssPath] completionHandler:nil];
 }
 
 #pragma mark External Keyboard

@@ -48,3 +48,7 @@ var focusTerm = function() {
 var blurTerm = function() {
     t.onFocusChange_(false);
 }
+
+var loadFontFromCSS = function(cssPath) {
+    
+}

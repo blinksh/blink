@@ -71,8 +71,12 @@ static NSURL *DocumentsDirectory = nil;
 
 - (NSString *)content
 {
-  NSString *filepath = [[_fileURL URLByAppendingPathComponent:self.filename] path];
-  return [NSString stringWithContentsOfFile:filepath encoding:NSUTF8StringEncoding error:nil];
+  return [NSString stringWithContentsOfFile:self.fullPath encoding:NSUTF8StringEncoding error:nil];
+}
+
+- (NSString *)fullPath
+{
+  return [[_fileURL URLByAppendingPathComponent:self.filename] path];
 }
 
 + (void)initialize

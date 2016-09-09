@@ -47,6 +47,7 @@
 // Funcs to return the default and custom arrays, and then counts on top
 + (NSInteger)defaultResourcesCount;
 
+- (NSString *)fullPath;
 - (NSString *)content;
 
 @end

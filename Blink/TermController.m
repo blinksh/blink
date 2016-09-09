@@ -33,6 +33,7 @@
 #import "BKDefaults.h"
 #import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
+#import "BKFont.h"
 #import "BKTheme.h"
 #import "MCPSession.h"
 #import "Session.h"
@@ -171,9 +172,14 @@ static NSDictionary *bkModifierMaps = nil;
 {
   // Load theme
   BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  
-  // Execute the theme
-  [_terminal loadTerminalTheme:theme.content];  
+  if (theme) {
+    [_terminal loadTerminalThemeJS:theme.content];
+  }
+
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  if (font) {
+    [_terminal loadTerminalFontCSS:font.fullPath];
+  }
 }
 
 - (void)terminate
