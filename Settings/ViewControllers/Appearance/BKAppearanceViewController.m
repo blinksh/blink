@@ -72,7 +72,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (void)loadDefaultValues
 {
   NSString *selectedThemeName = [BKDefaults selectedThemeName];
-  BKTheme *selectedTheme = [BKTheme withTheme:selectedThemeName];
+  BKTheme *selectedTheme = [BKTheme withName:selectedThemeName];
   if (selectedTheme != nil) {
     _selectedThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:selectedTheme] inSection:0];
   }
@@ -224,7 +224,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
 {
   // Return NO if you do not want the specified item to be editable.
-  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultThemesCount] && indexPath.row < [BKTheme count]) || (indexPath.section == 1 && indexPath.row < [BKFont count])) {
+  if ((indexPath.section == 0 && indexPath.row >= [BKTheme defaultResourcesCount] && indexPath.row < [BKTheme count]) || (indexPath.section == 1 && indexPath.row < [BKFont count])) {
     return YES;
   } else {
     return NO;
@@ -237,7 +237,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     // Delete the row from the data source
     if (indexPath.section == 0) {
-      [BKTheme removeThemeAtIndex:(int)indexPath.row];
+      [BKTheme removeResourceAtIndex:(int)indexPath.row];
 
       if (indexPath.row < _selectedThemeIndexPath.row) {
         _selectedThemeIndexPath = [NSIndexPath indexPathForRow:_selectedThemeIndexPath.row - 1 inSection:0];

@@ -29,18 +29,24 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "BKTheme.h"
+#import <Foundation/Foundation.h>
 
-@implementation BKTheme
 
-+ (NSString *)resourcesPathName
-{
-  return @"Themes";
-}
+@interface BKResource : NSObject <NSCoding>
 
-+ (NSString *)resourcesExtension
-{
-  return @"js";
-}
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *filename;
+
++ (void)initialize;
++ (instancetype)withName:(NSString *)name;
++ (BOOL)saveAll;
++ (instancetype)saveResource:(NSString *)name withContent:(NSData *)content error:(NSError *__autoreleasing *)error;
++ (void)removeResourceAtIndex:(int)index;
++ (NSArray *)all;
++ (NSInteger)count;
+// Funcs to return the default and custom arrays, and then counts on top
++ (NSInteger)defaultResourcesCount;
+
+- (NSString *)content;
 
 @end

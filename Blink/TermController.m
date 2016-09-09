@@ -170,7 +170,7 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)setAppearanceFromSettings
 {
   // Load theme
-  BKTheme *theme = [BKTheme withTheme:[BKDefaults selectedThemeName]];
+  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
   
   // Execute the theme
   [_terminal loadTerminalTheme:theme.content];  

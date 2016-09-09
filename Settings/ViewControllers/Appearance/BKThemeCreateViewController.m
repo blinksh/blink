@@ -136,16 +136,16 @@
 
 - (IBAction)didTapOnSave:(id)sender
 {
-  if ([BKTheme withTheme:self.nameTextField.text]) {
+  if ([BKTheme withName:self.nameTextField.text]) {
     [self showErrorMsg:@"Cannot have two themes with the same name"];
   } else {
     NSError *error;
-    [BKTheme saveTheme:self.nameTextField.text withContent:_tempFileData error:&error];
+    [BKTheme saveResource:self.nameTextField.text withContent:_tempFileData error:&error];
     
     if (error) {
       [self showErrorMsg:error.localizedDescription];
-      [self.navigationController popViewControllerAnimated:YES];
     }
+    [self.navigationController popViewControllerAnimated:YES];
   }
 }
 
