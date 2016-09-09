@@ -206,6 +206,7 @@ typedef enum {
   UIPinchGestureRecognizer *_pinchGesture;
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
+  BOOL _inputEnabled;
   NSMutableDictionary *_controlKeys;
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
@@ -229,6 +230,7 @@ typedef enum {
     [tapBackground setNumberOfTapsRequired:1];
     tapBackground.delegate = self;
     _dismissInput = YES;
+    _inputEnabled = YES;
     [self addGestureRecognizer:tapBackground];
 
     UILongPressGestureRecognizer *longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
@@ -280,6 +282,19 @@ typedef enum {
 - (BOOL)rawMode
 {
   return _raw;
+}
+
+- (void)setInputEnabled:(BOOL)enabled
+{
+  _inputEnabled = enabled;
+  if (!enabled && self.isFirstResponder) {
+    [self resignFirstResponder];
+  }
+}
+
+- (void)setColumnNumber:(NSInteger)count
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%d\");", count] completionHandler:nil];
 }
 
 - (void)loadTerminal
@@ -461,6 +476,10 @@ typedef enum {
 
 - (BOOL)becomeFirstResponder
 {
+  if (!_inputEnabled) {
+    return NO;
+  }
+
   if (!_smartKeys) {
     _smartKeys = [[SmartKeys alloc] init];
   }

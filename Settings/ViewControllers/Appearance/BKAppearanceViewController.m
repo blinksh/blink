@@ -87,12 +87,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   NSString *selectedThemeName = [BKDefaults selectedThemeName];
   BKTheme *selectedTheme = [BKTheme withName:selectedThemeName];
   if (selectedTheme != nil) {
-    _selectedThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:selectedTheme] inSection:0];
+    _selectedThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:selectedTheme] inSection:BKAppearance_Themes];
   }
   NSString *selectedFontName = [BKDefaults selectedFontName];
   BKFont *selectedFont = [BKFont withName:selectedFontName];
   if (selectedFont != nil) {
-    _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:1];
+    _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:BKAppearance_Fonts];
   }
 }
 
@@ -166,6 +166,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   _testTerminal = [[TerminalView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
   _testTerminal.delegate = self;
+  _testTerminal.backgroundColor = [UIColor blackColor];
+  [_testTerminal setInputEnabled:NO];
+
   if (!view.subviews.count) {
     [view addSubview:_testTerminal];
   }
@@ -234,6 +237,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _selectedThemeIndexPath = indexPath;
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
+      
+      [self showcaseTheme:[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row]];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
@@ -246,6 +251,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _selectedFontIndexPath = indexPath;
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
+      [self showcaseFont:[[BKFont all] objectAtIndex:_selectedFontIndexPath.row]];
     }
   }
 }
@@ -307,6 +313,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     // Create a new instance of the appropriate class, insert it into the array, and add a new row to the table view
   }
 }
+
 - (IBAction)stepperButtonPressed:(id)sender
 {
   _fontSizeField.text = [NSString stringWithFormat:@"%d px", (int)[_fontSizeStepper value]];
@@ -339,23 +346,40 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)terminalIsReady
 {
-  NSLog(@"initialized");
-  // Write content  
-  // if (selectedTheme) {
-  //   [self showcaseTheme:selectedTheme];
-  // }
-  // if (selectedFont) {
-  //   [self showcaseFont:selectedFont];
-  // }
+  [_testTerminal setColumnNumber:60];
+// Write content
+  NSMutableArray *lines = [[NSMutableArray alloc] init];
+  NSArray *fgs = @[@"    m",@"   1m",@"  30m",@"1;30m",@"  31m",@"1;31m",@"  32m",@"1;32m",@"  33m",@"1;33m",@"  34m",@"1;34m",@"  35m",@"1;35m",@"  36m",@"1;36m",@"  37m",@"1;37m"];
+  NSArray *bgs = @[@"40m",@"41m",@"42m",@"43m",@"44m",@"45m",@"46m",@"47m"];
+  for (NSString *fg in fgs) {
+    NSMutableArray *line = [[NSMutableArray alloc] init];
+    for (NSString *bg in bgs) {
+      [line addObject:[NSString stringWithFormat:@" \033[%@\033[%@  gYw \033[0m", fg, bg]];
+    }
+    [lines addObject:[line componentsJoinedByString:@""]];
+  }
+  NSString *showcase = [lines componentsJoinedByString:@"\r\n"];
+  [_testTerminal write:showcase];
+
+  BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
+  if (selectedTheme) {
+    [self showcaseTheme:selectedTheme];
+  }
+
+  BKFont *selectedFont = [BKFont withName:[BKDefaults selectedFontName]];
+  if (selectedFont) {
+    [self showcaseFont:selectedFont];
+  }
 }
 
 - (void)write:(NSString *)input
 {
-  // Just ignore it
+  // Nothing
 }
 
 - (void)showcaseTheme:(BKTheme *)theme
 {
+  [_testTerminal loadTerminalThemeJS:theme.content];
 }
 
 - (void)showcaseFont:(BKFont *)font

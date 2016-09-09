@@ -58,6 +58,8 @@ extern NSString * const TermViewFFuncSeq;
 - (void)setScrollEnabled:(BOOL)scroll;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
+- (void)setColumnNumber:(NSInteger)count;
+- (void)setInputEnabled:(BOOL)enabled;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;
 - (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;

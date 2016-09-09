@@ -49,6 +49,10 @@ var blurTerm = function() {
     t.onFocusChange_(false);
 }
 
+var setWidth = function(columnCount) {
+    t.setWidth(columnCount);
+}
+
 var loadFontFromCSS = function(cssPath) {
     
 }
