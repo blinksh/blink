@@ -191,7 +191,7 @@ typedef enum {
 }
 @end
 
-@interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate>
+@interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @end
 
 @implementation TerminalView {
@@ -212,15 +212,17 @@ typedef enum {
   NSString *_specialFKeysRow;
 }
 
-- (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
+- (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
 
   if (self) {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
+    
     _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
     [self resetDefaultControlKeys];
 
-    _webView.opaque = NO;
     [self addSubview:_webView];
 
     UITapGestureRecognizer *tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
@@ -302,6 +304,25 @@ typedef enum {
 - (NSString *)title
 {
   return _webView.title;
+}
+
+//  Since TermView is a WKScriptMessageHandler, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message
+{
+  NSDictionary *sentData = (NSDictionary *)message.body;
+  NSString *operation = sentData[@"op"];
+  NSDictionary *data = sentData[@"data"];
+
+  if ([operation isEqualToString:@"sigwinch"]) {
+    if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
+      [self.delegate updateTermRows:data[@"rows"] Cols:data[@"columns"]];
+    }
+  } else if ([operation isEqualToString:@"terminalready"]) {
+    if ([self.delegate respondsToSelector:@selector(terminalIsReady)]) {
+      [self.delegate terminalIsReady];
+    }
+  }
 }
 
 #pragma mark On-Screen keyboard - UIKeyInput

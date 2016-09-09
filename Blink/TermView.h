@@ -38,9 +38,13 @@ extern NSString * const TermViewCursorFuncSeq;
 extern NSString * const TermViewFFuncSeq;
 
 
-@protocol TerminalDelegate
+@protocol TerminalDelegate <NSObject>
 
 - (void)write:(NSString *)input;
+
+@optional
+- (void)terminalIsReady;
+- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 
 @end
 
@@ -50,7 +54,7 @@ extern NSString * const TermViewFFuncSeq;
 @property (weak) id<TerminalDelegate> delegate;
 @property (nonatomic, readonly, weak) NSString *title;
 
-- (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration;
+- (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;

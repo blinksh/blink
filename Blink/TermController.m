@@ -41,7 +41,7 @@
 
 static NSDictionary *bkModifierMaps = nil;
 
-@interface TermController () <WKScriptMessageHandler, TerminalDelegate, SessionDelegate>
+@interface TermController () <TerminalDelegate, SessionDelegate>
 @end
 
 @implementation TermController {
@@ -72,9 +72,7 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)loadView
 {
   [super loadView];
-  WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
-  [theConfiguration.userContentController addScriptMessageHandler:self name:@"interOp"];
-  _terminal = [[TerminalView alloc] initWithFrame:self.view.frame configuration:theConfiguration];
+  _terminal = [[TerminalView alloc] initWithFrame:self.view.frame];
   _terminal.delegate = self;
 
   self.view = _terminal;
@@ -223,22 +221,6 @@ static NSDictionary *bkModifierMaps = nil;
   [_session executeWithArgs:@""];
 }
 
-//  Since ViewController is a WKScriptMessageHandler, as declared in the ViewController interface, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
-- (void)userContentController:(WKUserContentController *)userContentController
-      didReceiveScriptMessage:(WKScriptMessage *)message
-{
-  NSDictionary *sentData = (NSDictionary *)message.body;
-  NSString *operation = sentData[@"op"];
-  NSDictionary *data = sentData[@"data"];
-
-  if ([operation isEqualToString:@"sigwinch"]) {
-    [self updateTermRows:data[@"rows"] Cols:data[@"columns"]];
-  } else if ([operation isEqualToString:@"terminalready"]) {
-    [self setAppearanceFromSettings];
-    [self startSession];
-  }
-}
-
 - (void)setRawMode:(BOOL)raw
 {
   [_terminal setRawMode:raw];
@@ -254,6 +236,12 @@ static NSDictionary *bkModifierMaps = nil;
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
   [_session sigwinch];
+}
+
+- (void)terminalIsReady
+{
+  [self setAppearanceFromSettings];
+  [self startSession];
 }
 
 - (void)didReceiveMemoryWarning
