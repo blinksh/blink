@@ -136,6 +136,11 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 }
 
 // Returns a PKCS#8 formatted key, with AEC encryption.
+- (NSString *)privateKey
+{
+  return [self privateKeyWithPassphrase:nil];
+}
+
 - (NSString *)privateKeyWithPassphrase:(NSString *)passphrase
 {
   BIO *fpem = BIO_new(BIO_s_mem());
@@ -282,8 +287,10 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 
   // Load IDs from file
   if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:KeysURL.path]) == nil) {
-    // Initialize the structure if it doesn't exist
+    // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
+    SshRsa *defaultKey = [[SshRsa alloc] initWithLength:4096];
+    [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:defaultKey.publicKey];
   }
 }
 

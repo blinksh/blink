@@ -91,7 +91,11 @@
 
     // Configure the cell...
     cell.textLabel.text = pk.ID;
-    cell.detailTextLabel.text = [self fingerprint:pk.publicKey];
+    if ([cell.textLabel.text isEqual:@"id_rsa"]) {
+      cell.detailTextLabel.text = [NSString stringWithFormat:@"Default Key - %@", [self fingerprint:pk.publicKey]];
+    } else {
+      cell.detailTextLabel.text = [self fingerprint:pk.publicKey];
+    }
   }
 
   if (_selectable) {
