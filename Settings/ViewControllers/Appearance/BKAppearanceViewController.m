@@ -124,9 +124,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
   if (section == BKAppearance_Themes) {
-    return [[BKTheme all] count] + 1;
+    return [[BKTheme all] count]; // + 1;
   } else if (section == BKAppearance_Fonts) {
-    return [[BKFont all] count] + 1;
+    return [[BKFont all] count]; // + 1;
   } else {
     return 1;
   }
@@ -134,32 +134,32 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)setFontsUIForCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.row == [[BKFont all] count]) {
-    cell.textLabel.text = @"Add a new font";
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  } else {
+  // if (indexPath.row == [[BKFont all] count]) {
+  //   cell.textLabel.text = @"Add a new font";
+  //   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  // } else {
     if (_selectedFontIndexPath == indexPath) {
       [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     } else {
       [cell setAccessoryType:UITableViewCellAccessoryNone];
     }
     cell.textLabel.text = [[[BKFont all] objectAtIndex:indexPath.row] name];
-  }
+  //  }
 }
 
 - (void)setThemesUIForCell:(UITableViewCell *)cell atIndexPath:(NSIndexPath *)indexPath
 {
-  if (indexPath.row == [[BKTheme all] count]) {
-    cell.textLabel.text = @"Add a new theme";
-    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  } else {
+  // if (indexPath.row == [[BKTheme all] count]) {
+  //   cell.textLabel.text = @"Add a new theme";
+  //   cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+  // } else {
     if (_selectedThemeIndexPath == indexPath) {
       [cell setAccessoryType:UITableViewCellAccessoryCheckmark];
     } else {
       [cell setAccessoryType:UITableViewCellAccessoryNone];
     }
     cell.textLabel.text = [[[BKTheme all] objectAtIndex:indexPath.row] name];
-  }
+  //  }
 }
 
 - (void)attachTestTerminalToView:(UIView *)view
@@ -227,9 +227,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (indexPath.section == BKAppearance_Themes) {
-    if (indexPath.row == [[BKTheme all] count]) {
-      [self performSegueWithIdentifier:@"addTheme" sender:self];
-    } else {
+    // if (indexPath.row == [[BKTheme all] count]) {
+    //   [self performSegueWithIdentifier:@"addTheme" sender:self];
+    // } else {
       if (_selectedThemeIndexPath != nil) {
         // When in selectable mode, do not show details.
         [[tableView cellForRowAtIndexPath:_selectedThemeIndexPath] setAccessoryType:UITableViewCellAccessoryNone];
@@ -239,11 +239,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       
       [self showcaseTheme:[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row]];
-    }
+    // }
   } else if (indexPath.section == BKAppearance_Fonts) {
-    if (indexPath.row == [[BKFont all] count]) {
-      [self performSegueWithIdentifier:@"addFont" sender:self];
-    } else {
+    // if (indexPath.row == [[BKFont all] count]) {
+    //   [self performSegueWithIdentifier:@"addFont" sender:self];
+    // } else {
       if (_selectedFontIndexPath != nil) {
         // When in selectable mode, do not show details.
         [[tableView cellForRowAtIndexPath:_selectedFontIndexPath] setAccessoryType:UITableViewCellAccessoryNone];
@@ -252,7 +252,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       [self showcaseFont:[[BKFont all] objectAtIndex:_selectedFontIndexPath.row]];
-    }
+    // }
   }
 }
 
