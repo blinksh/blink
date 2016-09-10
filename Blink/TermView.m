@@ -362,6 +362,15 @@ typedef enum {
   return NO;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
+  if ([otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]] &&
+      [gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+    return YES;
+  }
+
+  return NO;
+}
+
 - (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
   if (![self isFirstResponder]) {
