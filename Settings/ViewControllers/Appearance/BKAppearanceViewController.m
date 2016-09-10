@@ -194,6 +194,20 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   return cell.bounds.size.height;
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+  switch(section) {
+  case BKAppearance_Terminal:
+    return @"PREVIEW";
+  case BKAppearance_Themes:
+    return @"THEMES";
+  case BKAppearance_Fonts:
+    return @"FONTS";
+  default:
+    return nil;
+  }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   NSString *cellIdentifier = [self cellIdentifierForSection:indexPath.section];
