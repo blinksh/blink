@@ -222,6 +222,7 @@ typedef enum {
     [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
     
     _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+    _webView.opaque = NO;
     [self resetDefaultControlKeys];
 
     [self addSubview:_webView];
