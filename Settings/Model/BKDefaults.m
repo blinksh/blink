@@ -107,6 +107,12 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
     [defaults setDefaultKeyboardFuncTriggers];
   }
 
+  if (!defaults.fontName) {
+    [defaults setFontName:@"Source Code Pro"];
+  }
+  if (!defaults.themeName) {
+    [defaults setThemeName:@"Default"];
+  }
   if (!defaults.fontSize) {
     [defaults setFontSize:[NSNumber numberWithInt:10]];
   }
