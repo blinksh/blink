@@ -547,9 +547,9 @@ typedef enum {
   [_webView evaluateJavaScript:themeContent completionHandler:nil];
 }
 
-- (void)loadTerminalFontCSS:(NSString *)cssPath
+- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(%@);", cssPath] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
 }
 
 #pragma mark External Keyboard
