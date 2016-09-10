@@ -38,10 +38,14 @@ extern NSString * const TermViewCursorFuncSeq;
 extern NSString * const TermViewFFuncSeq;
 
 
-@protocol TerminalDelegate
+@protocol TerminalDelegate <NSObject>
 
 - (void)write:(NSString *)input;
 
+@optional
+- (void)terminalIsReady;
+- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
+- (void)fontSizeChanged:(NSNumber *)size;
 @end
 
 @interface TerminalView : UIView
@@ -50,14 +54,19 @@ extern NSString * const TermViewFFuncSeq;
 @property (weak) id<TerminalDelegate> delegate;
 @property (nonatomic, readonly, weak) NSString *title;
 
-- (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration;
+- (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
+- (void)setColumnNumber:(NSInteger)count;
+- (void)setFontSize:(NSNumber *)size;
+- (void)setInputEnabled:(BOOL)enabled;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;
 - (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
 - (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier;
 - (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers;
+- (void)loadTerminalThemeJS:(NSString *)themeContent;
+- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
 
 @end

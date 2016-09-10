@@ -46,6 +46,7 @@ extern NSString const *BKKeyboardFuncFTriggers;
 extern NSString const *BKKeyboardFuncCursorTriggers;
 extern NSString const *BKKeyboardFuncShortcutTriggers;
 
+
 @interface BKDefaults : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSMutableDictionary *keyboardMaps;

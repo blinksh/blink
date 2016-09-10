@@ -96,7 +96,7 @@
 
 - (IBAction)importButtonClicked:(id)sender
 {
-  if (_urlTextField.text.length > 4 && [[_urlTextField.text substringFromIndex:[_urlTextField.text length] - 4] isEqualToString:@".css"]) {
+  if (_urlTextField.text.length > 4 && [[_urlTextField.text substringFromIndex:[_urlTextField.text length] - 3] isEqualToString:@".js"]) {
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     self.urlTextField.enabled = NO;
     [self configureImportButtonForCancel];
@@ -117,7 +117,7 @@
                             }
                           }];
   } else {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"URL error" message:@"Please enter valid .css URL" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"URL error" message:@"Please enter valid .js URL" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
     [alertController addAction:ok];
     [self presentViewController:alertController animated:YES completion:nil];
@@ -136,18 +136,15 @@
 
 - (IBAction)didTapOnSave:(id)sender
 {
-  if ([BKTheme withTheme:self.nameTextField.text]) {
-    //Error
+  if ([BKTheme withName:self.nameTextField.text]) {
+    [self showErrorMsg:@"Cannot have two themes with the same name"];
   } else {
-    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES);
-    NSString *documentsDirectory = [paths objectAtIndex:0];
-    NSString *folderPath = [NSString stringWithFormat:@"%@/ThemesDir/", documentsDirectory];
-    NSString *filePath = [NSString stringWithFormat:@"%@/%@.css", folderPath, self.nameTextField.text];
-    [[NSFileManager defaultManager] createDirectoryAtPath:folderPath withIntermediateDirectories:YES attributes:nil error:nil];
     NSError *error;
-    [_tempFileData writeToURL:[NSURL fileURLWithPath:filePath] options:NSDataWritingAtomic error:&error];
-    [BKTheme saveTheme:self.nameTextField.text withFilePath:filePath];
-    [BKTheme saveThemes];
+    [BKTheme saveResource:self.nameTextField.text withContent:_tempFileData error:&error];
+    
+    if (error) {
+      [self showErrorMsg:error.localizedDescription];
+    }
     [self.navigationController popViewControllerAnimated:YES];
   }
 }
@@ -173,6 +170,14 @@
   [self.importButton setTitle:@"Import" forState:UIControlStateNormal];
   [self.importButton setTintColor:[UIColor blueColor]];
   [self.importButton addTarget:self action:@selector(importButtonClicked:) forControlEvents:UIControlEventTouchUpInside];
+}
+
+- (void)showErrorMsg:(NSString *)errorMsg
+{
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Themes error" message:errorMsg preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+  [alertController addAction:ok];
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 @end

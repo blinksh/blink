@@ -40,11 +40,32 @@ var scaleTermStart = function() {
 var scaleTerm = function(scale) {
     if (scale > 2.0) scale = 2.0;
     if (scale < 0.5) scale = 0.5;
-    t.setFontSize(this.fontSize * scale);
+    t.setFontSize(Math.floor(this.fontSize * scale));
+    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {size: t.getFontSize()}});
 }
+var setFontSize = function(size) {
+    t.setFontSize(size);
+}
+
 var focusTerm = function() {
     t.onFocusChange_(true);
 }
 var blurTerm = function() {
     t.onFocusChange_(false);
+}
+
+var setWidth = function(columnCount) {
+    t.setWidth(columnCount);
+}
+
+var loadFontFromCSS = function(cssPath, name) {
+    WebFont.load({
+	custom: {
+	    families: [name],
+	    urls: [cssPath]
+	},
+	context: t.scrollPort_.iframe_.contentWindow,
+	active: function() { t.syncFontFamily() }
+    });
+    t.prefs_.set('font-family', name);
 }

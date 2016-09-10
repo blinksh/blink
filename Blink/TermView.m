@@ -191,7 +191,7 @@ typedef enum {
 }
 @end
 
-@interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate>
+@interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @end
 
 @implementation TerminalView {
@@ -206,27 +206,31 @@ typedef enum {
   UIPinchGestureRecognizer *_pinchGesture;
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
+  BOOL _inputEnabled;
   NSMutableDictionary *_controlKeys;
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
 }
 
-- (id)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
+- (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
 
   if (self) {
+    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+    [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
+    
     _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
     [self resetDefaultControlKeys];
 
-    _webView.opaque = NO;
     [self addSubview:_webView];
 
     UITapGestureRecognizer *tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
     [tapBackground setNumberOfTapsRequired:1];
     tapBackground.delegate = self;
     _dismissInput = YES;
+    _inputEnabled = YES;
     [self addGestureRecognizer:tapBackground];
 
     UILongPressGestureRecognizer *longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
@@ -280,6 +284,24 @@ typedef enum {
   return _raw;
 }
 
+- (void)setInputEnabled:(BOOL)enabled
+{
+  _inputEnabled = enabled;
+  if (!enabled && self.isFirstResponder) {
+    [self resignFirstResponder];
+  }
+}
+
+- (void)setColumnNumber:(NSInteger)count
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%d\");", count] completionHandler:nil];
+}
+
+- (void)setFontSize:(NSNumber *)size
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", size] completionHandler:nil];
+}
+
 - (void)loadTerminal
 {
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
@@ -302,6 +324,29 @@ typedef enum {
 - (NSString *)title
 {
   return _webView.title;
+}
+
+//  Since TermView is a WKScriptMessageHandler, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
+- (void)userContentController:(WKUserContentController *)userContentController
+      didReceiveScriptMessage:(WKScriptMessage *)message
+{
+  NSDictionary *sentData = (NSDictionary *)message.body;
+  NSString *operation = sentData[@"op"];
+  NSDictionary *data = sentData[@"data"];
+
+  if ([operation isEqualToString:@"sigwinch"]) {
+    if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
+      [self.delegate updateTermRows:data[@"rows"] Cols:data[@"columns"]];
+    }
+  } else if ([operation isEqualToString:@"terminalReady"]) {
+    if ([self.delegate respondsToSelector:@selector(terminalIsReady)]) {
+      [self.delegate terminalIsReady];
+    } 
+  } else if ([operation isEqualToString:@"fontSizeChanged"]) {
+    if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
+      [self.delegate fontSizeChanged:data[@"size"]];
+    }
+  }
 }
 
 #pragma mark On-Screen keyboard - UIKeyInput
@@ -410,7 +455,7 @@ typedef enum {
   }
 
   if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-    [_pinchSamplingTimer invalidate];
+    [_pinchSamplingTimer invalidate];    
   }
   //[_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
 
@@ -449,6 +494,10 @@ typedef enum {
 
 - (BOOL)becomeFirstResponder
 {
+  if (!_inputEnabled) {
+    return NO;
+  }
+
   if (!_smartKeys) {
     _smartKeys = [[SmartKeys alloc] init];
   }
@@ -500,6 +549,16 @@ typedef enum {
   } else {
     [_delegate write:[CC KEY:text]];
   }
+}
+
+- (void)loadTerminalThemeJS:(NSString *)themeContent
+{
+  [_webView evaluateJavaScript:themeContent completionHandler:nil];
+}
+
+- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
 }
 
 #pragma mark External Keyboard

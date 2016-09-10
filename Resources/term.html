@@ -4,6 +4,7 @@
     <meta charset="utf-8" />
     <meta name = "viewport" content = "user-scalable=no, height=device-height, initial-scale=1.0">
     <script src="hterm_all.js"></script>
+    <script src="webfont.js"></script>
     <script src="termcontrol.js"></script>
     <style>
       body {
@@ -33,7 +34,7 @@
       t.decorate(document.querySelector('#terminal'));
 
 t.onTerminalReady = function() {
-  window.webkit.messageHandlers.interOp.postMessage({"op": "terminalready", "data": {}});
+  window.webkit.messageHandlers.interOp.postMessage({"op": "terminalReady", "data": {}});
       var io = t.io.push();
       t.io.onTerminalResize = function(columns, rows) {
       window.webkit.messageHandlers.interOp.postMessage({"op": "sigwinch", "data": {columns: columns, rows: rows}});

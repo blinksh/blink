@@ -31,17 +31,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface BKTheme : NSObject <NSCoding>
+#import "BKResource.h"
 
-@property (nonatomic, strong) NSString *name;
-@property (nonatomic, strong) NSString *filepath;
-
-+ (void)initialize;
-+ (instancetype)withTheme:(NSString *)themeName;
-+ (BOOL)saveThemes;
-+ (instancetype)saveTheme:(NSString *)themeName withFilePath:(NSString *)filePath;
-+ (void)removeThemeAtIndex:(int)index;
-+ (NSMutableArray *)all;
-+ (NSInteger)count;
-
+@interface BKTheme : BKResource
 @end

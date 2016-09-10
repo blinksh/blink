@@ -33,19 +33,23 @@
 #import "BKDefaults.h"
 #import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
+#import "BKFont.h"
+#import "BKTheme.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
 
 static NSDictionary *bkModifierMaps = nil;
 
-@interface TermController () <WKScriptMessageHandler, TerminalDelegate, SessionDelegate>
+@interface TermController () <TerminalDelegate, SessionDelegate>
 @end
 
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
   BOOL _viewIsLocked;
+  BOOL _appearanceChanged;
+  BOOL _disableFontSizeSelection;
 }
 
 + (void)initialize
@@ -69,9 +73,7 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)loadView
 {
   [super loadView];
-  WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
-  [theConfiguration.userContentController addScriptMessageHandler:self name:@"interOp"];
-  _terminal = [[TerminalView alloc] initWithFrame:self.view.frame configuration:theConfiguration];
+  _terminal = [[TerminalView alloc] initWithFrame:self.view.frame];
   _terminal.delegate = self;
 
   self.view = _terminal;
@@ -150,6 +152,38 @@ static NSDictionary *bkModifierMaps = nil;
                                            selector:@selector(keyboardFuncTriggerChanged:)
                                                name:BKKeyboardFuncTriggerChanged
                                              object:nil];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+					     selector:@selector(appearanceChanged:)
+                                               name:BKAppearanceChanged
+                                             object:nil];
+
+}
+
+- (void) viewDidAppear:(BOOL)animated
+{
+  if (_appearanceChanged) {
+    [self setAppearanceFromSettings];
+  }
+}
+
+- (void)setAppearanceFromSettings
+{
+  // Load theme
+  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+  if (theme) {
+    [_terminal loadTerminalThemeJS:theme.content];
+  }
+
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  if (font) {
+    [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
+  }
+
+  if (!_disableFontSizeSelection) {
+    NSNumber *fontSize = [BKDefaults selectedFontSize];
+    [_terminal setFontSize:fontSize];
+  }
 }
 
 - (void)terminate
@@ -193,21 +227,6 @@ static NSDictionary *bkModifierMaps = nil;
   [_session executeWithArgs:@""];
 }
 
-//  Since ViewController is a WKScriptMessageHandler, as declared in the ViewController interface, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
-- (void)userContentController:(WKUserContentController *)userContentController
-      didReceiveScriptMessage:(WKScriptMessage *)message
-{
-  NSDictionary *sentData = (NSDictionary *)message.body;
-  NSString *operation = sentData[@"op"];
-  NSDictionary *data = sentData[@"data"];
-
-  if ([operation isEqualToString:@"sigwinch"]) {
-    [self updateTermRows:data[@"rows"] Cols:data[@"columns"]];
-  } else if ([operation isEqualToString:@"terminalready"]) {
-    [self startSession];
-  }
-}
-
 - (void)setRawMode:(BOOL)raw
 {
   [_terminal setRawMode:raw];
@@ -223,6 +242,20 @@ static NSDictionary *bkModifierMaps = nil;
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
   [_session sigwinch];
+}
+
+- (void)fontSizeChanged:(NSNumber *)size
+{
+  // Ignore the font size settings in case it was manually changed
+  if (size != [BKDefaults selectedFontSize]) {
+    _disableFontSizeSelection = YES;
+  }
+}
+
+- (void)terminalIsReady
+{
+  [self setAppearanceFromSettings];
+  [self startSession];
 }
 
 - (void)didReceiveMemoryWarning
@@ -289,6 +322,16 @@ static NSDictionary *bkModifierMaps = nil;
 {
   NSDictionary *action = [notification userInfo];
   [self assignFunction:action[@"func"] toTriggers:action[@"trigger"]];
+}
+
+- (void)appearanceChanged:(NSNotification *)notification
+{
+//  NSDictionary *action = [notification userInfo];
+  if (self.isViewLoaded && self.view.window) {
+    [self setAppearanceFromSettings];
+  } else {
+    _appearanceChanged = YES;
+  }
 }
 
 @end

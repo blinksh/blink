@@ -31,7 +31,23 @@
 
 #import <Foundation/Foundation.h>
 
-#import "BKResource.h"
 
-@interface BKFont : BKResource
+@interface BKResource : NSObject <NSCoding>
+
+@property (nonatomic, strong) NSString *name;
+@property (nonatomic, strong) NSString *filename;
+
++ (void)initialize;
++ (instancetype)withName:(NSString *)name;
++ (BOOL)saveAll;
++ (instancetype)saveResource:(NSString *)name withContent:(NSData *)content error:(NSError *__autoreleasing *)error;
++ (void)removeResourceAtIndex:(int)index;
++ (NSArray *)all;
++ (NSInteger)count;
+// Funcs to return the default and custom arrays, and then counts on top
++ (NSInteger)defaultResourcesCount;
+
+- (NSString *)fullPath;
+- (NSString *)content;
+
 @end

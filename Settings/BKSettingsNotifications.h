@@ -35,3 +35,4 @@ extern NSString *const BKKeyboardModifierChanged;
 extern NSString *const BKKeyboardCapsAsEscChanged;
 extern NSString *const BKKeyboardShiftAsEscChanged;
 extern NSString *const BKKeyboardFuncTriggerChanged;
+extern NSString *const BKAppearanceChanged;
