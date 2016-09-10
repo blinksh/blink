@@ -394,6 +394,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)showcaseFont:(BKFont *)font
 {
+  [_testTerminal loadTerminalFont:font.name fromCSS:font.fullPath];
 }
 
 @end
