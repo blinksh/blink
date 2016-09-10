@@ -21,15 +21,13 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.931
-	- Map Caps or Shift taps to Esc key.
-	- Cursor keys (Home, End, PgUp, PgDown) with default to Cmd+arrow.
-	- Function keys (F1-F10) with default to Cmd+number.
-	- Change mapping of any function key to a different combination.
+## Version 0.1010
+	- Terminal customization! Customize your terminal with different default themes and fonts. Preview your changes within the Settings Preview section. Save your changes and restore them on each execution. Enjoy!
 
-	- Improved placeholders for Hosts configurations.
+	- Create an id_rsa on first boot as default key.
 
-	- Removed Alt as Esc from initial defaults.
+	- Swipe and pinch conflicts
+	- Copy changes to settings
 
 [View all changes](CHANGELOG.md)
 

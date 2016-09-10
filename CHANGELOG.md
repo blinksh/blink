@@ -1,3 +1,11 @@
+# Version 0.1010
+	- Terminal customization! Customize your terminal with different default themes and fonts. Preview your changes within the Settings Preview section. Save your changes and restore them on each execution. Enjoy!
+
+	- Create an id_rsa on first boot as default key.
+
+	- Swipe and pinch conflicts
+	- Copy changes to settings
+
 # Version 0.931
 	- Map Caps or Shift taps to Esc key.
 	- Cursor keys (Home, End, PgUp, PgDown) with default to Cmd+arrow.
