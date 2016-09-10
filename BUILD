@@ -62,6 +62,9 @@ but we have been also successful plugin other terminals like [Terminal.js](http:
 
 Generate a single term.js file and drop it under the Resources folder.
 
+Font Style uploads requires [webfonts.js](https://github.com/typekit/webfontloader), but it isn't
+needed for Blink to work.
+
 ## Compiling
 Please note that to compile and install Blink in your personal
 devices, you need to comply with Apple Developer Terms and Conditions,
