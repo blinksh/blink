@@ -49,6 +49,7 @@ static NSDictionary *bkModifierMaps = nil;
   MCPSession *_session;
   BOOL _viewIsLocked;
   BOOL _appearanceChanged;
+  BOOL _disableFontSizeSelection;
 }
 
 + (void)initialize
@@ -178,6 +179,11 @@ static NSDictionary *bkModifierMaps = nil;
   if (font) {
     [_terminal loadTerminalFontCSS:font.fullPath];
   }
+
+  if (!_disableFontSizeSelection) {
+    NSNumber *fontSize = [BKDefaults selectedFontSize];
+    [_terminal setFontSize:fontSize];
+  }
 }
 
 - (void)terminate
@@ -236,6 +242,14 @@ static NSDictionary *bkModifierMaps = nil;
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
   [_session sigwinch];
+}
+
+- (void)fontSizeChanged:(NSNumber *)size
+{
+  // Ignore the font size settings in case it was manually changed
+  if (size != [BKDefaults selectedFontSize]) {
+    _disableFontSizeSelection = YES;
+  }
 }
 
 - (void)terminalIsReady

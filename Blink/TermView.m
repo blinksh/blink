@@ -297,9 +297,9 @@ typedef enum {
   [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%d\");", count] completionHandler:nil];
 }
 
-- (void)setFontSize:(NSInteger)size
+- (void)setFontSize:(NSNumber *)size
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%d\");", size] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", size] completionHandler:nil];
 }
 
 - (void)loadTerminal
@@ -446,7 +446,7 @@ typedef enum {
   }
 
   if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-    [_pinchSamplingTimer invalidate];
+    [_pinchSamplingTimer invalidate];    
   }
   //[_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
 

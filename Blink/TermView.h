@@ -59,7 +59,7 @@ extern NSString * const TermViewFFuncSeq;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
 - (void)setColumnNumber:(NSInteger)count;
-- (void)setFontSize:(NSInteger)size;
+- (void)setFontSize:(NSNumber *)size;
 - (void)setInputEnabled:(BOOL)enabled;
 - (void)loadTerminal;
 - (void)write:(NSString *)data;
