@@ -1283,7 +1283,7 @@
                                                 <constraint firstAttribute="width" constant="94" id="Xbi-MQ-gaa"/>
                                             </constraints>
                                             <connections>
-                                                <action selector="stepperButtonPressed:" destination="wNx-Mq-Q3D" eventType="valueChanged" id="sUe-9h-stv"/>
+                                                <action selector="stepperValueChanged:" destination="wNx-Mq-Q3D" eventType="valueChanged" id="reR-xL-0PA"/>
                                             </connections>
                                         </stepper>
                                     </subviews>

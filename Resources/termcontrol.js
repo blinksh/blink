@@ -24,14 +24,14 @@ window.addEventListener('resize', sigwinch);
 
 var increaseTermFontSize = function() {
     var size = t.getFontSize();
-    t.setFontSize(++size);
+    setFontSize(++size);
 }
 var decreaseTermFontSize = function() {
     var size = t.getFontSize();
-    t.setFontSize(--size);
+    setFontSize(--size);
 }
 var resetTermFontSize = function() {
-    t.setFontSize(0);
+    setFontSize(0);
 }
 
 var scaleTermStart = function() {
@@ -40,11 +40,11 @@ var scaleTermStart = function() {
 var scaleTerm = function(scale) {
     if (scale > 2.0) scale = 2.0;
     if (scale < 0.5) scale = 0.5;
-    t.setFontSize(Math.floor(this.fontSize * scale));
-    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {size: t.getFontSize()}});
+    setFontSize(Math.floor(this.fontSize * scale));
 }
 var setFontSize = function(size) {
     t.setFontSize(size);
+    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {size: t.getFontSize()}});
 }
 
 var focusTerm = function() {
@@ -68,4 +68,8 @@ var loadFontFromCSS = function(cssPath, name) {
 	active: function() { t.syncFontFamily() }
     });
     t.prefs_.set('font-family', name);
+}
+
+var clear = function() {
+  t.clear();
 }

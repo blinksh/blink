@@ -57,7 +57,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
-@property (nonatomic, strong) TerminalView *testTerminal;
+@property (weak, nonatomic) TerminalView *testTerminal;
 
 @end
 
@@ -164,14 +164,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)attachTestTerminalToView:(UIView *)view
 {
-  _testTerminal = [[TerminalView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
+  if (!view.subviews.count) {
+    _testTerminal = [[TerminalView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
+    [view addSubview:_testTerminal];
+  } else {
+    _testTerminal = view.subviews[0];
+  }
   _testTerminal.delegate = self;
   _testTerminal.backgroundColor = [UIColor blackColor];
   [_testTerminal setInputEnabled:NO];
-
-  if (!view.subviews.count) {
-    [view addSubview:_testTerminal];
-  }
   [_testTerminal loadTerminal];
 }
 
@@ -228,10 +229,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     _fontSizeField = [cell viewWithTag:FONT_SIZE_FIELD_TAG];
     _fontSizeStepper = [cell viewWithTag:FONT_SIZE_STEPPER_TAG];
     if ([BKDefaults selectedFontSize] != nil) {
-      _fontSizeStepper.value = [BKDefaults selectedFontSize].integerValue;
+      [_fontSizeStepper setValue:[BKDefaults selectedFontSize].integerValue];
       _fontSizeField.text = [NSString stringWithFormat:@"%@ px", [BKDefaults selectedFontSize]];
     } else {
-      _fontSizeField.placeholder = @"10 px";
+      _fontSizeField.placeholder = @"";
     }
     return cell;
   }
@@ -251,8 +252,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _selectedThemeIndexPath = indexPath;
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
-      
-      [self showcaseTheme:[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row]];
+      BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
+      [BKDefaults setThemeName:[theme name]];
+      [self showcaseTheme:theme];
     // }
   } else if (indexPath.section == BKAppearance_Fonts) {
     // if (indexPath.row == [[BKFont all] count]) {
@@ -265,7 +267,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _selectedFontIndexPath = indexPath;
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
-      [self showcaseFont:[[BKFont all] objectAtIndex:_selectedFontIndexPath.row]];
+      BKFont *font = [[BKFont all] objectAtIndex:_selectedFontIndexPath.row];
+      [BKDefaults setFontName:[font name]];
+      [self showcaseFont:font];
+    
     // }
   }
 }
@@ -328,10 +333,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
 }
 
-- (IBAction)stepperButtonPressed:(id)sender
+- (IBAction)stepperValueChanged:(id)sender
 {
   NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
-  _fontSizeField.text = [NSString stringWithFormat:@"%@ px", newSize];
   [_testTerminal setFontSize:newSize];
 }
 
@@ -362,8 +366,24 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)terminalIsReady
 {
+  NSLog(@"reset");
   [_testTerminal setColumnNumber:60];
-// Write content
+  BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
+  if (selectedTheme) {
+    [self showcaseTheme:selectedTheme];
+  }
+  
+  BKFont *selectedFont = [BKFont withName:[BKDefaults selectedFontName]];
+  if (selectedFont) {
+    [self showcaseFont:selectedFont];
+  }
+  
+  [_testTerminal setFontSize:[BKDefaults selectedFontSize]];
+}
+
+- (void)writeColorShowcase
+{
+  // Write content
   NSMutableArray *lines = [[NSMutableArray alloc] init];
   NSArray *fgs = @[@"    m",@"   1m",@"  30m",@"1;30m",@"  31m",@"1;31m",@"  32m",@"1;32m",@"  33m",@"1;33m",@"  34m",@"1;34m",@"  35m",@"1;35m",@"  36m",@"1;36m",@"  37m",@"1;37m"];
   NSArray *bgs = @[@"40m",@"41m",@"42m",@"43m",@"44m",@"45m",@"46m",@"47m"];
@@ -376,24 +396,13 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   NSString *showcase = [lines componentsJoinedByString:@"\r\n"];
   [_testTerminal write:showcase];
-
-  BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (selectedTheme) {
-    [self showcaseTheme:selectedTheme];
-  }
-
-  BKFont *selectedFont = [BKFont withName:[BKDefaults selectedFontName]];
-  if (selectedFont) {
-    [self showcaseFont:selectedFont];
-  }
-
-  [_testTerminal setFontSize:[BKDefaults selectedFontSize]];
 }
 
-- (void)fontSizeChanged:(NSNumber *)size
+- (void)fontSizeChanged:(NSNumber *)newSize
 {
-  _fontSizeStepper.value = size.integerValue;
-  _fontSizeField.text = [NSString stringWithFormat:@"%@ px", size];
+  [BKDefaults setFontSize:newSize];
+  _fontSizeStepper.value = newSize.integerValue;
+  [_fontSizeField setText:[NSString stringWithFormat:@"%@ px", newSize]];
 }
 
 - (void)write:(NSString *)input
@@ -403,7 +412,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)showcaseTheme:(BKTheme *)theme
 {
+  [_testTerminal clear];
   [_testTerminal loadTerminalThemeJS:theme.content];
+  // Wait for the terminal to setup everything internally
+  [self performSelector:@selector(writeColorShowcase) withObject:self afterDelay:0.25];
 }
 
 - (void)showcaseFont:(BKFont *)font

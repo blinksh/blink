@@ -244,10 +244,10 @@ static NSDictionary *bkModifierMaps = nil;
   [_session sigwinch];
 }
 
-- (void)fontSizeChanged:(NSNumber *)size
+- (void)fontSizeChanged:(NSNumber *)newSize
 {
   // Ignore the font size settings in case it was manually changed
-  if (size != [BKDefaults selectedFontSize]) {
+  if (!([newSize isEqualToNumber:[BKDefaults selectedFontSize]])) {
     _disableFontSizeSelection = YES;
   }
 }

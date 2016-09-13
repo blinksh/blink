@@ -295,12 +295,17 @@ typedef enum {
 
 - (void)setColumnNumber:(NSInteger)count
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%d\");", count] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%ld\");", (long)count] completionHandler:nil];
 }
 
-- (void)setFontSize:(NSNumber *)size
+- (void)setFontSize:(NSNumber *)newSize
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", size] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", newSize] completionHandler:nil];
+}
+
+- (void)clear
+{
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"clear();"] completionHandler:nil];
 }
 
 - (void)loadTerminal
