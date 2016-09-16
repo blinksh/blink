@@ -27,7 +27,6 @@
     <script>
       hterm.defaultStorage = new lib.Storage.Memory();
       var t = new hterm.Terminal('blink');
-      t.prefs_.set('user-css', "data:text/css;utf-8,* { font-feature-settings: \"liga\" 0; }");
 
       t.decorate(document.querySelector('#terminal'));
 

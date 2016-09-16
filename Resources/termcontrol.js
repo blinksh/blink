@@ -59,6 +59,8 @@ var setWidth = function(columnCount) {
 }
 
 var loadFontFromCSS = function(cssPath, name) {
+  t.prefs_.set('user-css', "data:text/css;utf-8,* { font-feature-settings: \"liga\" 0; }");
+
     WebFont.load({
 	custom: {
 	    families: [name],
