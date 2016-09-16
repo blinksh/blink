@@ -950,20 +950,20 @@ static void kbd_callback(const char *name, int name_len,
       break;
     }
     
-    rc = poll(pfds, numfds, -1);
+    rc = poll(pfds, numfds, 15000);
     if (-1 == rc) {
       break;
     }
 
     ssize_t towrite = 0;
 
+    if (!_stream.in || feof(_stream.in)) {
+      // Propagate the EOF to the other end
+      libssh2_channel_send_eof(_channel);
+      break;
+    }
+    // Input from stream
     if (pfds[1].revents & POLLIN) {
-      // Input from stream
-      if (feof(_stream.in)) {
-	// Propagate the EOF to the other end
-	libssh2_channel_send_eof(_channel);
-	break;
-      }
       towrite = fread(streambuf, 1, BUFSIZ, _stream.in);
       rc = 0;
       do {
@@ -986,7 +986,9 @@ static void kbd_callback(const char *name, int name_len,
 
   // Free resources and try to cleanup
   [self unset_nonblock:_sock];
-  [self unset_nonblock:fileno(_stream.in)];
+  if (_stream.in) {
+    [self unset_nonblock:fileno(_stream.in)];
+  }
 
   while ((rc = libssh2_channel_close(_channel)) == LIBSSH2_ERROR_EAGAIN)
     waitsocket(_sock, _session);
@@ -1012,6 +1014,14 @@ static void kbd_callback(const char *name, int name_len,
   libssh2_channel_request_pty_size(_channel,
 				   _stream.sz->ws_col,
 				   _stream.sz->ws_row);
+}
+
+- (void)kill
+{
+  if (_stream.in) {
+    fclose(_stream.in);
+    _stream.in = NULL;
+  }
 }
 
 @end
