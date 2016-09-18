@@ -192,6 +192,9 @@ typedef enum {
 @end
 
 @interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
+@property UITapGestureRecognizer *tapBackground;
+@property UILongPressGestureRecognizer *longPressBackground;
+@property UIPinchGestureRecognizer *pinchGesture;
 @end
 
 @implementation TerminalView {
@@ -203,7 +206,6 @@ typedef enum {
   NSMutableArray *_kbdCommands;
   SmartKeys *_smartKeys;
   UIView *cover;
-  UIPinchGestureRecognizer *_pinchGesture;
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
   BOOL _inputEnabled;
@@ -218,46 +220,51 @@ typedef enum {
   self = [super initWithFrame:frame];
 
   if (self) {
-    WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
-    [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
-    
-    _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
-    _webView.opaque = NO;
-    [self resetDefaultControlKeys];
-
-    [self addSubview:_webView];
-
-    UITapGestureRecognizer *tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
-    [tapBackground setNumberOfTapsRequired:1];
-    tapBackground.delegate = self;
-    _dismissInput = YES;
     _inputEnabled = YES;
-    [self addGestureRecognizer:tapBackground];
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+    self.inputAssistantItem.trailingBarButtonGroups = @[];
 
-    UILongPressGestureRecognizer *longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:nil];
-    [longPressBackground setNumberOfTapsRequired:1];
-    longPressBackground.delegate = self;
-    // _dismissInput = YES;
-    [self addGestureRecognizer:tapBackground];
+    [self addWebView];
+    [self resetDefaultControlKeys];
+    [self addGestures];
+    [self configureNotifications];
+  }
+
+  return self;
+}
+
+- (void)addWebView
+{
+  WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
+    
+  _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+  [self addSubview:_webView];
+
+  _webView.opaque = NO;
+  _webView.translatesAutoresizingMaskIntoConstraints = NO;
+  [_webView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
+  [_webView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
+  [_webView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
+  [_webView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+}
+
+- (void)addGestures
+{
+    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
+    [_tapBackground setNumberOfTapsRequired:1];
+    _tapBackground.delegate = self;
+    [self addGestureRecognizer:_tapBackground];
 
     _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGesture.delegate = self;
     [self addGestureRecognizer:_pinchGesture];
+}
 
-    self.inputAssistantItem.leadingBarButtonGroups = @[];
-    self.inputAssistantItem.trailingBarButtonGroups = @[];
-
-    _webView.translatesAutoresizingMaskIntoConstraints = NO;
-
-    [_webView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
-    [_webView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
-    [_webView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
-    [_webView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-  }
-  return self;
+- (void)configureNotifications
+{
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)resetDefaultControlKeys
@@ -398,24 +405,20 @@ typedef enum {
   }
 }
 
-// WKWebView has its own gestures going on, so we have to handle them properly and only use ours when those fail.
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
-  if ([otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-    // Tap should always enable this control too.
-    [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
-    _dismissInput = NO;
-  }
-  if ([otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-    [_webView becomeFirstResponder];
-    [gestureRecognizer requireGestureRecognizerToFail:otherGestureRecognizer];
+  if (gestureRecognizer == self.pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
+    return YES;
   }
   return NO;
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
-  if ([otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]] &&
-      [gestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  if (gestureRecognizer == self.tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+    // We cancel the one from the WebView from executing, as it will wait for this one to fail.
+    // We return yes, to make sure that is understood.
+    [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
     return YES;
   }
 
@@ -463,19 +466,6 @@ typedef enum {
   if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
     [_pinchSamplingTimer invalidate];    
   }
-  //[_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
-
-
-  // _webView.transform = CGAffineTransformScale(gestureRecognizer.view.transform, 1/gestureRecognizer.scale, 1/gestureRecognizer.scale);
-  //  CGFloat scale = round(1.0 - (0.04 * (_lastPinchScale - gestureRecognizer.velocity)) * 100) / 100.0;
-  //
-  //  if (gestureRecognizer.scale < 0.5 || gestureRecognizer.scale > 2.0)
-  //    return;
-  //  if (scale != _lastPinchScale) {
-  //    NSLog(@"%f", scale);
-  //    [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", scale] completionHandler:nil];
-  //    _lastPinchScale = scale;
-  //  }
 }
 
 - (void)pinchSampling:(NSTimer *)timer
@@ -485,25 +475,20 @@ typedef enum {
 
 - (BOOL)canBecomeFirstResponder
 {
+  if (!_inputEnabled) {
+    return NO;
+  }
+
   return YES;
 }
 
 - (BOOL)canResignFirstResponder
 {
-  // Make sure this control cannot resign in favor of the WKWebView during a tap.
-  //    if (!_dismissInput) {
-  //      _dismissInput = YES;
-  //      return NO;
-  //    }
   return YES;
 }
 
 - (BOOL)becomeFirstResponder
 {
-  if (!_inputEnabled) {
-    return NO;
-  }
-
   if (!_smartKeys) {
     _smartKeys = [[SmartKeys alloc] init];
   }
@@ -816,11 +801,11 @@ typedef enum {
 // Cmd+c
 - (void)copy:(id)sender
 {
-  if ([sender isKindOfClass:[UIMenuController class]]) {
-    [_webView copy:sender];
-  } else {
+  // if ([sender isKindOfClass:[UIMenuController class]]) {
+  //   [_webView copy:sender];
+  // } else {
     [_delegate write:[CC CTRL:@"c"]];
-  }
+    //  }
 }
 // Cmd+x
 - (void)cut:(id)sender
@@ -860,7 +845,7 @@ typedef enum {
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
-    // The menu can only perform copy and paste methods
+    // The menu can only perform paste methods
     if (action == @selector(paste:)) {
       return YES;
     }

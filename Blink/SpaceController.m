@@ -38,6 +38,8 @@
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
 
+@property UITapGestureRecognizer *twoFingersTap;
+@property UIPanGestureRecognizer *twoFingersDrag;
 @property (nonatomic, readonly) UIPageViewController *viewportsController;
 @property (nonatomic, readonly) NSMutableArray *viewports;
 @property (readonly) TermController *currentTerm;
@@ -124,25 +126,35 @@
 
 - (void)addGestures
 {
-  UITapGestureRecognizer *twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
-  [twoFingersTap setNumberOfTouchesRequired:2];
-  [twoFingersTap setNumberOfTapsRequired:1];
-  [self.view addGestureRecognizer:twoFingersTap];
+  _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
+  [_twoFingersTap setNumberOfTouchesRequired:2];
+  [_twoFingersTap setNumberOfTapsRequired:1];
+  _twoFingersTap.delegate = self;
+  [self.view addGestureRecognizer:_twoFingersTap];
 
-  UIPanGestureRecognizer *twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
-  [twoFingersDrag setMinimumNumberOfTouches:2];
-  [twoFingersDrag setMaximumNumberOfTouches:2];
-  twoFingersDrag.delegate = self;
-  [self.view addGestureRecognizer:twoFingersDrag];
+  _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
+  [_twoFingersDrag setMinimumNumberOfTouches:2];
+  [_twoFingersDrag setMaximumNumberOfTouches:2];
+  _twoFingersDrag.delegate = self;
+  [self.view addGestureRecognizer:_twoFingersDrag];
 }
 
 #pragma mark Events
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
+{
+  if (gestureRecognizer == self.twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+    return YES;
+  }
+  return NO;
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-  if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]] && [otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
-    return NO;
+  if (gestureRecognizer == _twoFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+    return YES;
   }
-  return YES;
+
+  return NO;
 }
 
 // The Space will be responsible to accommodate the work environment for widgets, adjusting the size, making sure it doesn't overlap content,
