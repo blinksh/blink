@@ -45,6 +45,9 @@
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DB1D0F8219000473B1 /* sauce.css in Resources */ = {isa = PBXBuildFile; fileRef = 079635D91D0F8219000473B1 /* sauce.css */; };
 		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
+		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
+		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
+		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
 		07E4C5211C935E28000C571A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
 		07F670711D05EEE200C0A53C /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
 		07F670721D05EEE200C0A53C /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
@@ -198,6 +201,12 @@
 		079635861D0E6602000473B1 /* fterm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fterm.h; sourceTree = "<group>"; };
 		079635D91D0F8219000473B1 /* sauce.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = sauce.css; sourceTree = "<group>"; };
 		079635DA1D0F8219000473B1 /* webfont.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfont.js; sourceTree = "<group>"; };
+		07E3AEAE1D8F6758007BC086 /* BKFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFeedbackViewController.h; sourceTree = "<group>"; };
+		07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFeedbackViewController.m; sourceTree = "<group>"; };
+		07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSupportViewController.h; sourceTree = "<group>"; };
+		07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSupportViewController.m; sourceTree = "<group>"; };
+		07E3AEB41D8F6E2E007BC086 /* BKLinkActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKLinkActions.h; sourceTree = "<group>"; };
+		07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKLinkActions.m; sourceTree = "<group>"; };
 		07E4C5201C935E28000C571A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		07F670631D05EEE200C0A53C /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
 		07F670641D05EEE200C0A53C /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
@@ -404,6 +413,19 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		07E3AEAA1D8F64C6007BC086 /* GetInTouch */ = {
+			isa = PBXGroup;
+			children = (
+				07E3AEAE1D8F6758007BC086 /* BKFeedbackViewController.h */,
+				07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */,
+				07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */,
+				07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */,
+				07E3AEB41D8F6E2E007BC086 /* BKLinkActions.h */,
+				07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */,
+			);
+			path = GetInTouch;
+			sourceTree = "<group>";
+		};
 		07F670621D05EEE200C0A53C /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
@@ -523,6 +545,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				07E3AEAA1D8F64C6007BC086 /* GetInTouch */,
 				C989E55E1D6CC95A003E0079 /* BKPubKey */,
 				C989E54F1D6CC4A1003E0079 /* Appearance */,
 				C989E53B1D6CC488003E0079 /* BKHosts */,
@@ -749,13 +772,16 @@
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
 				0716B58F1CFFAB9300268B5B /* SmartKeys.m in Sources */,
+				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
+				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
+				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
