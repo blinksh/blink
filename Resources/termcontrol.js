@@ -75,3 +75,7 @@ var loadFontFromCSS = function(cssPath, name) {
 var clear = function() {
   t.clear();
 }
+
+hterm.copySelectionToClipboard = function(document) {
+    window.webkit.messageHandlers.interOp.postMessage({"op": "copy", "data":{"content": document.getSelection().toString()}});
+}

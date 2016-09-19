@@ -359,6 +359,8 @@ typedef enum {
     if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
       [self.delegate fontSizeChanged:data[@"size"]];
     }
+  } else if ([operation isEqualToString:@"copy"]) {
+    [[UIPasteboard generalPasteboard] setString:data[@"content"]];
   }
 }
 
