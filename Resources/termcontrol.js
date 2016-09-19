@@ -44,7 +44,7 @@ var scaleTerm = function(scale) {
 }
 var setFontSize = function(size) {
     t.setFontSize(size);
-    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {size: t.getFontSize()}});
+    window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {"size": t.getFontSize()}});
 }
 
 var focusTerm = function() {
