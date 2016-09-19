@@ -291,7 +291,7 @@
   pages.currentPage = idx;
   _hud.customView = pages;
 
-  [_hud showAnimated:YES];
+  [_hud showAnimated:NO];
   _hud.alpha = 0.6;
 
   [_hud hideAnimated:YES afterDelay:1.f];
