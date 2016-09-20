@@ -256,6 +256,10 @@ typedef enum {
     _tapBackground.delegate = self;
     [self addGestureRecognizer:_tapBackground];
 
+    _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    _longPressBackground.delegate = self;
+    [self addGestureRecognizer:_longPressBackground];
+
     _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGesture.delegate = self;
     [self addGestureRecognizer:_pinchGesture];
@@ -423,8 +427,18 @@ typedef enum {
     [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
     return YES;
   }
+  if (gestureRecognizer == self.longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+    return YES;
+  }
 
   return NO;
+}
+
+- (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer
+{
+  if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+    [_webView becomeFirstResponder];
+  }
 }
 
 - (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
