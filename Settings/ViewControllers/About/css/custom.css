@@ -1,0 +1,22 @@
+body {
+    background-color: #000000;
+    color: #ffffff;
+}
+
+.section {
+    padding: 8rem 0 7rem;
+    text-align:center;
+}
+
+.description {
+    text-align:left;
+}
+
+.hero {
+    background-image: url('../blink.png');
+    background-size: cover;
+    color: #fff;
+    width: 100%;
+    background-position:center;
+    background-repeat:no-repeat;
+}

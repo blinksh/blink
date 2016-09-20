@@ -182,6 +182,9 @@
                                                 </label>
                                             </subviews>
                                         </tableViewCellContentView>
+                                        <connections>
+                                            <segue destination="LXb-gv-s8p" kind="show" id="M8f-uS-SLK"/>
+                                        </connections>
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
@@ -842,6 +845,25 @@
             </objects>
             <point key="canvasLocation" x="3339" y="395"/>
         </scene>
+        <!--About Blink-->
+        <scene sceneID="SLi-md-uj5">
+            <objects>
+                <viewController id="LXb-gv-s8p" customClass="BKAboutViewController" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="pNa-AM-WGc"/>
+                        <viewControllerLayoutGuide type="bottom" id="0HX-e8-BnO"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" id="Zbx-vX-8et">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                    </view>
+                    <navigationItem key="navigationItem" title="About Blink" id="sB3-IJ-4H3"/>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="em8-ay-fc8" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="1093.5999999999999" y="-950.37481259370327"/>
+        </scene>
         <!--Feedback-->
         <scene sceneID="pFT-li-TJD">
             <objects>
@@ -851,7 +873,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection headerTitle="Community" footerTitle="Help us make Blink the best terminal! Send your ideas, feedback, support message, and help improve Blink code!" id="aIu-2b-cch">
+                            <tableViewSection headerTitle="Community" footerTitle="Send us your ideas, feedback or support messages, we would love to hear what you think." id="aIu-2b-cch">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="6z4-a6-46v" detailTextLabel="JQ8-gz-vhd" style="IBUITableViewCellStyleValue1" id="CCa-ag-ZqV">
                                         <rect key="frame" x="0.0" y="120" width="375" height="44"/>
@@ -896,10 +918,10 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection footerTitle="Give us 5 stars and let everyone know about Blink." id="Xlc-gt-OvA">
+                            <tableViewSection footerTitle="Support development by making Blink 5 stars! " id="Xlc-gt-OvA">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="th1-Um-f0k" style="IBUITableViewCellStyleDefault" id="7vC-AT-XAL">
-                                        <rect key="frame" x="0.0" y="288" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="272" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="7vC-AT-XAL" id="C2f-fW-etj">
                                             <frame key="frameInset" width="375" height="43"/>
@@ -1710,76 +1732,6 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="bQN-RA-8jX" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="2620" y="-949"/>
-        </scene>
-        <!--Feedback-->
-        <scene sceneID="8qr-tt-Z5A">
-            <objects>
-                <tableViewController id="IV8-bh-0BK" customClass="BKFeedbackViewController" sceneMemberID="viewController">
-                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="static" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="Gfd-xJ-e5V">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <sections>
-                            <tableViewSection headerTitle="Community" footerTitle="Help us make Blink the best terminal! Send your ideas, feedback, support message, and help improve Blink code!" id="f4T-aw-eVf">
-                                <cells>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="0PJ-Qc-k9O" detailTextLabel="36I-Sc-NTP" style="IBUITableViewCellStyleValue1" id="5id-yD-ubn">
-                                        <rect key="frame" x="0.0" y="56" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="5id-yD-ubn" id="aAw-dy-gFJ">
-                                            <frame key="frameInset" width="375" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Follow us" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="0PJ-Qc-k9O">
-                                                    <frame key="frameInset" minX="15" minY="11" width="72" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="@BlinkShell" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="36I-Sc-NTP">
-                                                    <frame key="frameInset" minX="270" minY="11" width="90" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="kdQ-mE-3aw" style="IBUITableViewCellStyleDefault" id="uK9-a5-Tb4">
-                                        <rect key="frame" x="0.0" y="100" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="uK9-a5-Tb4" id="nBa-S5-c0e">
-                                            <frame key="frameInset" width="375" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Clone Blink" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="kdQ-mE-3aw">
-                                                    <frame key="frameInset" minX="15" width="345" height="43"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <nil key="textColor"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                    </tableViewCell>
-                                </cells>
-                            </tableViewSection>
-                        </sections>
-                        <connections>
-                            <outlet property="dataSource" destination="IV8-bh-0BK" id="RDV-hU-eZE"/>
-                            <outlet property="delegate" destination="IV8-bh-0BK" id="0be-5g-cy9"/>
-                        </connections>
-                    </tableView>
-                    <navigationItem key="navigationItem" title="Feedback" id="hii-bO-uvu"/>
-                    <connections>
-                        <outlet property="githubLinkCell" destination="uK9-a5-Tb4" id="8id-7K-bXk"/>
-                        <outlet property="twitterLinkCell" destination="5id-yD-ubn" id="eOL-Zq-nVT"/>
-                    </connections>
-                </tableViewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="17T-cP-RUL" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1166" y="-949"/>
         </scene>
     </scenes>
     <resources>

@@ -48,6 +48,10 @@
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
 		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
+		07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */; };
+		07E3AECD1D9191B4007BC086 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AEC71D9191B4007BC086 /* about.html */; };
+		07E3AED11D9191B4007BC086 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
+		07E3AED31D919272007BC086 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
 		07E4C5211C935E28000C571A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
 		07F670711D05EEE200C0A53C /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
 		07F670721D05EEE200C0A53C /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
@@ -207,6 +211,11 @@
 		07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSupportViewController.m; sourceTree = "<group>"; };
 		07E3AEB41D8F6E2E007BC086 /* BKLinkActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKLinkActions.h; sourceTree = "<group>"; };
 		07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKLinkActions.m; sourceTree = "<group>"; };
+		07E3AEC41D9190CF007BC086 /* BKAboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAboutViewController.h; sourceTree = "<group>"; };
+		07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAboutViewController.m; sourceTree = "<group>"; };
+		07E3AEC71D9191B4007BC086 /* about.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = about.html; sourceTree = "<group>"; };
+		07E3AECC1D9191B4007BC086 /* blink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blink.png; sourceTree = "<group>"; };
+		07E3AED21D919272007BC086 /* css */ = {isa = PBXFileReference; lastKnownFileType = folder; path = css; sourceTree = "<group>"; };
 		07E4C5201C935E28000C571A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		07F670631D05EEE200C0A53C /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
 		07F670641D05EEE200C0A53C /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
@@ -426,6 +435,18 @@
 			path = GetInTouch;
 			sourceTree = "<group>";
 		};
+		07E3AEBD1D918FBA007BC086 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				07E3AED21D919272007BC086 /* css */,
+				07E3AEC71D9191B4007BC086 /* about.html */,
+				07E3AECC1D9191B4007BC086 /* blink.png */,
+				07E3AEC41D9190CF007BC086 /* BKAboutViewController.h */,
+				07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
 		07F670621D05EEE200C0A53C /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
@@ -545,6 +566,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				07E3AEBD1D918FBA007BC086 /* About */,
 				07E3AEAA1D8F64C6007BC086 /* GetInTouch */,
 				C989E55E1D6CC95A003E0079 /* BKPubKey */,
 				C989E54F1D6CC4A1003E0079 /* Appearance */,
@@ -725,9 +747,11 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07E3AED31D919272007BC086 /* css in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
+				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
@@ -735,6 +759,7 @@
 				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
 				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
+				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
 				079635DC1D0F8219000473B1 /* webfont.js in Resources */,
 				079635DB1D0F8219000473B1 /* sauce.css in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
@@ -773,6 +798,7 @@
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
 				0716B58F1CFFAB9300268B5B /* SmartKeys.m in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
+				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
