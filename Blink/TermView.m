@@ -679,15 +679,14 @@ typedef enum {
 
 - (NSArray *)presetShortcuts
 {
-  return @[ [UIKeyCommand keyCommandWithInput:@"v" modifierFlags:UIKeyModifierControl action:@selector(yank:)],
-            [UIKeyCommand keyCommandWithInput:@"+"
-                                modifierFlags:UIKeyModifierControl
+  return @[ [UIKeyCommand keyCommandWithInput:@"+"
+                                modifierFlags:UIKeyModifierCommand
                                        action:@selector(increaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"-"
-                                modifierFlags:UIKeyModifierControl
+                                modifierFlags:UIKeyModifierCommand
                                        action:@selector(decreaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"0"
-                                modifierFlags:UIKeyModifierControl
+                                modifierFlags:UIKeyModifierCommand
                                        action:@selector(resetFontSize:)] ];
 }
 
