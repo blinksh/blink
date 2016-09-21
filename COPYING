@@ -699,7 +699,19 @@ so, delete this exception statement from your version. If you delete
 this exception statement from all source files in the program, then
 also delete it here.
 
-2. LEGAL NOTICES; NO TRADEMARK LICENSE; ORIGIN.  You must reproduce faithfully all trademark,
+2. The Blink Shell developers are aware that the terms of service that apply to
+apps distributed via Apple's App Store services may conflict with
+rights granted under Blink Shell's license, the GNU General Public License,
+version 3. The Blink Shell copyright holders do not wish this conflict to
+prevent the otherwise-compliant distribution of Blink Shell-derived apps via
+the App Store. Therefore, we have committed not to pursue any license
+violation that results solely from the conflict between the GPLv3 and
+the Apple App Store terms of service. In other words, as long as you
+comply with the GPL in all other respects, including its requirements
+to provide users with source code and the text of the license, we will
+not object to your distribution of Blink Shell through the App Store.
+
+3. LEGAL NOTICES; NO TRADEMARK LICENSE; ORIGIN.  You must reproduce faithfully all trademark,
 copyright and other proprietary and legal notices on any copies of the Program or any other
 required author attributions.  This license does not grant you rights to use any copyright holder
 or any other partys name, logo, or trademarks.  Neither the name of the copyright holder or

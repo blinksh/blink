@@ -21,13 +21,17 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - In an external keyboard, use Cmd or Caps as Ctrl and Alt as meta (Default configuration).
 
 # Changelog
-## Version 0.1010
-	- Terminal customization! Customize your terminal with different default themes and fonts. Preview your changes within the Settings Preview section. Save your changes and restore them on each execution. Enjoy!
+# Version 0.1020
+	This is the RC1, ready to be on the AppStore:
+	- "Get In Touch" and "About" sections completed.
+	- iOS 10 support.
+	- Added exception for iOS distribution.
 
-	- Create an id_rsa on first boot as default key.
-
-	- Swipe and pinch conflicts
-	- Copy changes to settings
+	- Improved gesture support, specially on iPhone and iOS10.
+	- MBProgressHUD updated with patch.
+	- Test Terminal fixes for fonts and updates.
+	- Disable font ligatures.
+	- SSH Session termination fixes.
 
 [View all changes](CHANGELOG.md)
 
