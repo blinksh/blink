@@ -1,5 +1,4 @@
 # Version 0.1020
-	This is the RC1, ready to be on the AppStore:
 	- "Get In Touch" and "About" sections completed.
 	- iOS 10 support.
 	- Added exception for iOS distribution.
