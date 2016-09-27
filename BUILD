@@ -39,7 +39,7 @@ Framework/include and Framework/lib respectively.
 Mosh will output multiple .a library files, and unfortunately we
 didn't find a simple way to just aggregate all of them yet. Please
 copy all the .a library files from the output folder (mosh/output) to lib
-folder and paste the src/frontend/MoshiOSController.h to the header folder.
+folder and paste the src/frontend/terminalbridge.h header to MoshiOSController.h in the header folder.
 
 Blink also makes use of two other projects, but those can be compiled
 within the same project:
