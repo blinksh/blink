@@ -20,14 +20,6 @@
 		0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
-		0732F0B61D062BB300AB5438 /* libmoshcrypto.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0571D062BB300AB5438 /* libmoshcrypto.a */; };
-		0732F0B71D062BB300AB5438 /* libmoshios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0581D062BB300AB5438 /* libmoshios.a */; };
-		0732F0B81D062BB300AB5438 /* libmoshnetwork.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0591D062BB300AB5438 /* libmoshnetwork.a */; };
-		0732F0B91D062BB300AB5438 /* libmoshprotos.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05A1D062BB300AB5438 /* libmoshprotos.a */; };
-		0732F0BA1D062BB300AB5438 /* libmoshstatesync.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05B1D062BB300AB5438 /* libmoshstatesync.a */; };
-		0732F0BB1D062BB400AB5438 /* libmoshterminal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05C1D062BB300AB5438 /* libmoshterminal.a */; };
-		0732F0BC1D062BB400AB5438 /* libmoshutil.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05D1D062BB300AB5438 /* libmoshutil.a */; };
-		0732F0BD1D062BB400AB5438 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05E1D062BB300AB5438 /* libprotobuf.a */; };
 		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
 		0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
 		0732F11D1D062D9D00AB5438 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F11C1D062D9D00AB5438 /* HockeySDK.framework */; };
@@ -41,6 +33,8 @@
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 074F307A1D062A3F00A73445 /* SmartKeys.xib */; };
 		0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
+		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
+		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DB1D0F8219000473B1 /* sauce.css in Resources */ = {isa = PBXBuildFile; fileRef = 079635D91D0F8219000473B1 /* sauce.css */; };
@@ -179,15 +173,6 @@
 		0732F0491D062B9A00AB5438 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
-		0732F0551D062BB300AB5438 /* MoshiOSController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoshiOSController.h; sourceTree = "<group>"; };
-		0732F0571D062BB300AB5438 /* libmoshcrypto.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshcrypto.a; sourceTree = "<group>"; };
-		0732F0581D062BB300AB5438 /* libmoshios.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshios.a; sourceTree = "<group>"; };
-		0732F0591D062BB300AB5438 /* libmoshnetwork.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshnetwork.a; sourceTree = "<group>"; };
-		0732F05A1D062BB300AB5438 /* libmoshprotos.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshprotos.a; sourceTree = "<group>"; };
-		0732F05B1D062BB300AB5438 /* libmoshstatesync.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshstatesync.a; sourceTree = "<group>"; };
-		0732F05C1D062BB300AB5438 /* libmoshterminal.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshterminal.a; sourceTree = "<group>"; };
-		0732F05D1D062BB300AB5438 /* libmoshutil.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libmoshutil.a; sourceTree = "<group>"; };
-		0732F05E1D062BB300AB5438 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
 		0732F05F1D062BB300AB5438 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
 		0732F0841D062BB300AB5438 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBProgressHUD.xcodeproj; path = MBProgressHUD/MBProgressHUD.xcodeproj; sourceTree = "<group>"; };
@@ -199,6 +184,8 @@
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		074F307A1D062A3F00A73445 /* SmartKeys.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SmartKeys.xib; sourceTree = "<group>"; };
 		0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HockeySDKResources.bundle; path = Frameworks/HockeySDK.embeddedframework/HockeySDK.framework/Versions/A/Resources/HockeySDKResources.bundle; sourceTree = SOURCE_ROOT; };
+		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
+		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
@@ -286,20 +273,14 @@
 			files = (
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
+				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
+				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
-				0732F0BC1D062BB400AB5438 /* libmoshutil.a in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
-				0732F0BD1D062BB400AB5438 /* libprotobuf.a in Frameworks */,
-				0732F0B71D062BB300AB5438 /* libmoshios.a in Frameworks */,
-				0732F0B91D062BB300AB5438 /* libmoshprotos.a in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
-				0732F0B61D062BB300AB5438 /* libmoshcrypto.a in Frameworks */,
-				0732F0BB1D062BB400AB5438 /* libmoshterminal.a in Frameworks */,
-				0732F0B81D062BB300AB5438 /* libmoshnetwork.a in Frameworks */,
 				0732F11D1D062D9D00AB5438 /* HockeySDK.framework in Frameworks */,
-				0732F0BA1D062BB300AB5438 /* libmoshstatesync.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -366,6 +347,7 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
 				0732F12A1D06324B00AB5438 /* libstdc++.tbd */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
 				0732F1261D06323A00AB5438 /* libz.tbd */,
@@ -383,7 +365,6 @@
 		0732F0541D062BB300AB5438 /* include */ = {
 			isa = PBXGroup;
 			children = (
-				0732F0551D062BB300AB5438 /* MoshiOSController.h */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -391,14 +372,7 @@
 		0732F0561D062BB300AB5438 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				0732F0571D062BB300AB5438 /* libmoshcrypto.a */,
-				0732F0581D062BB300AB5438 /* libmoshios.a */,
-				0732F0591D062BB300AB5438 /* libmoshnetwork.a */,
-				0732F05A1D062BB300AB5438 /* libmoshprotos.a */,
-				0732F05B1D062BB300AB5438 /* libmoshstatesync.a */,
-				0732F05C1D062BB300AB5438 /* libmoshterminal.a */,
-				0732F05D1D062BB300AB5438 /* libmoshutil.a */,
-				0732F05E1D062BB300AB5438 /* libprotobuf.a */,
+				076FBD511DB6BE1D00F6D997 /* libprotobuf.a */,
 			);
 			path = lib;
 			sourceTree = "<group>";
@@ -971,6 +945,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/**",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -1004,6 +979,7 @@
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/**",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				GCC_PREPROCESSOR_DEFINITIONS = "HOCKEYSDK=0";
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";

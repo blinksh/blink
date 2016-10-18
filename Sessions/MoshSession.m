@@ -33,7 +33,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-#include "MoshiOSController.h"
+#include "libmoshios/moshiosbridge.h"
 
 #import "BKHosts.h"
 #import "MoshSession.h"
