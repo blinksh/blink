@@ -37,7 +37,6 @@
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
-		079635DB1D0F8219000473B1 /* sauce.css in Resources */ = {isa = PBXBuildFile; fileRef = 079635D91D0F8219000473B1 /* sauce.css */; };
 		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
@@ -190,7 +189,6 @@
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
 		079635861D0E6602000473B1 /* fterm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fterm.h; sourceTree = "<group>"; };
-		079635D91D0F8219000473B1 /* sauce.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = sauce.css; sourceTree = "<group>"; };
 		079635DA1D0F8219000473B1 /* webfont.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfont.js; sourceTree = "<group>"; };
 		07E3AEAE1D8F6758007BC086 /* BKFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFeedbackViewController.h; sourceTree = "<group>"; };
 		07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFeedbackViewController.m; sourceTree = "<group>"; };
@@ -335,7 +333,6 @@
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
 				070058EB1D12FA6D00D133E3 /* termcontrol.js */,
-				079635D91D0F8219000473B1 /* sauce.css */,
 				079635DA1D0F8219000473B1 /* webfont.js */,
 				0732F0491D062B9A00AB5438 /* hterm_all.js */,
 				0732F04A1D062B9A00AB5438 /* locales.bundle */,
@@ -735,7 +732,6 @@
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
 				079635DC1D0F8219000473B1 /* webfont.js in Resources */,
-				079635DB1D0F8219000473B1 /* sauce.css in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
 				070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */,
 			);
