@@ -22,7 +22,6 @@
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
 		0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
-		0732F11D1D062D9D00AB5438 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F11C1D062D9D00AB5438 /* HockeySDK.framework */; };
 		0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; };
 		0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
@@ -32,9 +31,75 @@
 		0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F12A1D06324B00AB5438 /* libstdc++.tbd */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 074F307A1D062A3F00A73445 /* SmartKeys.xib */; };
-		0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
 		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
+		076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
+		076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
+		076FBE131DB80AC900F6D997 /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
+		076FBE141DB80AC900F6D997 /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
+		076FBE151DB80AC900F6D997 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
+		076FBE161DB80AC900F6D997 /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
+		076FBE171DB80AC900F6D997 /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		076FBE181DB80AC900F6D997 /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
+		076FBE191DB80AC900F6D997 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		076FBE1A1DB80AC900F6D997 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
+		076FBE1B1DB80AC900F6D997 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
+		076FBE1C1DB80AC900F6D997 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
+		076FBE1D1DB80AC900F6D997 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
+		076FBE1E1DB80AC900F6D997 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
+		076FBE1F1DB80AC900F6D997 /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5551CFFAB9300268B5B /* SmartKeys.m */; };
+		076FBE201DB80AC900F6D997 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
+		076FBE211DB80AC900F6D997 /* BKAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */; };
+		076FBE221DB80AC900F6D997 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
+		076FBE231DB80AC900F6D997 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
+		076FBE241DB80AC900F6D997 /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
+		076FBE251DB80AC900F6D997 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
+		076FBE261DB80AC900F6D997 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
+		076FBE271DB80AC900F6D997 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
+		076FBE281DB80AC900F6D997 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
+		076FBE291DB80AC900F6D997 /* BKPubKeyCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */; };
+		076FBE2A1DB80AC900F6D997 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
+		076FBE2B1DB80AC900F6D997 /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
+		076FBE2C1DB80AC900F6D997 /* BKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5411D6CC488003E0079 /* BKPredictionViewController.m */; };
+		076FBE2D1DB80AC900F6D997 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
+		076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5621CFFAB9300268B5B /* TermController.m */; };
+		076FBE2F1DB80AC900F6D997 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5571CFFAB9300268B5B /* SmartKeysView.m */; };
+		076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
+		076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */; };
+		076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
+		076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9472D551D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m */; };
+		076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */; };
+		076FBE351DB80AC900F6D997 /* BKKeyboardModifierViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */; };
+		076FBE361DB80AC900F6D997 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
+		076FBE371DB80AC900F6D997 /* BKKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */; };
+		076FBE391DB80AC900F6D997 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F12A1D06324B00AB5438 /* libstdc++.tbd */; };
+		076FBE3A1DB80AC900F6D997 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
+		076FBE3B1DB80AC900F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
+		076FBE3C1DB80AC900F6D997 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
+		076FBE3D1DB80AC900F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
+		076FBE3E1DB80AC900F6D997 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; };
+		076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
+		076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
+		076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
+		076FBE421DB80AC900F6D997 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F11C1D062D9D00AB5438 /* HockeySDK.framework */; };
+		076FBE441DB80AC900F6D997 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
+		076FBE451DB80AC900F6D997 /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
+		076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
+		076FBE471DB80AC900F6D997 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
+		076FBE481DB80AC900F6D997 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AEC71D9191B4007BC086 /* about.html */; };
+		076FBE491DB80AC900F6D997 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 074F307A1D062A3F00A73445 /* SmartKeys.xib */; };
+		076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
+		076FBE4B1DB80AC900F6D997 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
+		076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
+		076FBE4D1DB80AC900F6D997 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52E1CFFAB9300268B5B /* Main.storyboard */; };
+		076FBE4E1DB80AC900F6D997 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
+		076FBE4F1DB80AC900F6D997 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
+		076FBE501DB80AC900F6D997 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
+		076FBE511DB80AC900F6D997 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
+		076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
+		076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */ = {isa = PBXBuildFile; fileRef = 070058EB1D12FA6D00D133E3 /* termcontrol.js */; };
+		076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
@@ -128,6 +193,20 @@
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
 		};
+		076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 14796A461C1CD9A500169D09;
+			remoteInfo = UICKeyChainStore;
+		};
+		076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 1D104D791ACA36CC00973364;
+			remoteInfo = "MBProgressHUD Framework";
+		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -138,6 +217,18 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
+		076FBE541DB80AC900F6D997 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */,
+				076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		07A06D8C1D0618FC00ABEAFA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -185,6 +276,7 @@
 		0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HockeySDKResources.bundle; path = Frameworks/HockeySDK.embeddedframework/HockeySDK.framework/Versions/A/Resources/HockeySDKResources.bundle; sourceTree = SOURCE_ROOT; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
+		076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Blink Hockey.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
@@ -265,6 +357,23 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		076FBE381DB80AC900F6D997 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				076FBE391DB80AC900F6D997 /* libstdc++.tbd in Frameworks */,
+				076FBE3A1DB80AC900F6D997 /* libcurses.tbd in Frameworks */,
+				076FBE3B1DB80AC900F6D997 /* libmoshios.framework in Frameworks */,
+				076FBE3C1DB80AC900F6D997 /* libz.tbd in Frameworks */,
+				076FBE3D1DB80AC900F6D997 /* libprotobuf.a in Frameworks */,
+				076FBE3E1DB80AC900F6D997 /* UICKeyChainStore.framework in Frameworks */,
+				076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */,
+				076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */,
+				076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */,
+				076FBE421DB80AC900F6D997 /* HockeySDK.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EA0BA1881C0CC57B00719C1A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -278,7 +387,6 @@
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
-				0732F11D1D062D9D00AB5438 /* HockeySDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -569,6 +677,7 @@
 			children = (
 				EA0BA18B1C0CC57B00719C1A /* Blink.app */,
 				EA0BA1A41C0CC57B00719C1A /* Blink.xctest */,
+				076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -576,6 +685,26 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		076FBE0B1DB80AC900F6D997 /* Blink Hockey */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 076FBE571DB80AC900F6D997 /* Build configuration list for PBXNativeTarget "Blink Hockey" */;
+			buildPhases = (
+				076FBE101DB80AC900F6D997 /* Sources */,
+				076FBE381DB80AC900F6D997 /* Frameworks */,
+				076FBE431DB80AC900F6D997 /* Resources */,
+				076FBE541DB80AC900F6D997 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				076FBE0C1DB80AC900F6D997 /* PBXTargetDependency */,
+				076FBE0E1DB80AC900F6D997 /* PBXTargetDependency */,
+			);
+			name = "Blink Hockey";
+			productName = Blink;
+			productReference = 076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */;
+			productType = "com.apple.product-type.application";
+		};
 		EA0BA18A1C0CC57B00719C1A /* Blink */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EA0BA1AD1C0CC57C00719C1A /* Build configuration list for PBXNativeTarget "Blink" */;
@@ -624,6 +753,9 @@
 				LastUpgradeCheck = 0710;
 				ORGANIZATIONNAME = "Carlos Cabañero Projects SL";
 				TargetAttributes = {
+					076FBE0B1DB80AC900F6D997 = {
+						DevelopmentTeam = HV2S48975V;
+					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = HV2S48975V;
@@ -671,6 +803,7 @@
 			targets = (
 				EA0BA18A1C0CC57B00719C1A /* Blink */,
 				EA0BA1A31C0CC57B00719C1A /* BlinkUITests */,
+				076FBE0B1DB80AC900F6D997 /* Blink Hockey */,
 			);
 		};
 /* End PBXProject section */
@@ -714,6 +847,29 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
+		076FBE431DB80AC900F6D997 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				076FBE441DB80AC900F6D997 /* css in Resources */,
+				076FBE451DB80AC900F6D997 /* Themes in Resources */,
+				076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */,
+				076FBE471DB80AC900F6D997 /* locales.bundle in Resources */,
+				076FBE481DB80AC900F6D997 /* about.html in Resources */,
+				076FBE491DB80AC900F6D997 /* SmartKeys.xib in Resources */,
+				076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */,
+				076FBE4B1DB80AC900F6D997 /* Fonts in Resources */,
+				076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */,
+				076FBE4D1DB80AC900F6D997 /* Main.storyboard in Resources */,
+				076FBE4E1DB80AC900F6D997 /* hterm_all.js in Resources */,
+				076FBE4F1DB80AC900F6D997 /* term.html in Resources */,
+				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
+				076FBE511DB80AC900F6D997 /* webfont.js in Resources */,
+				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
+				076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EA0BA1891C0CC57B00719C1A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -726,7 +882,6 @@
 				074F307B1D062A3F00A73445 /* SmartKeys.xib in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
-				0759A8651D6361D1009CF12F /* HockeySDKResources.bundle in Resources */,
 				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
 				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
@@ -748,6 +903,52 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		076FBE101DB80AC900F6D997 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */,
+				076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */,
+				076FBE131DB80AC900F6D997 /* MoshSession.m in Sources */,
+				076FBE141DB80AC900F6D997 /* MCPSession.m in Sources */,
+				076FBE151DB80AC900F6D997 /* BKPubKey.m in Sources */,
+				076FBE161DB80AC900F6D997 /* BKResource.m in Sources */,
+				076FBE171DB80AC900F6D997 /* SSHSession.m in Sources */,
+				076FBE181DB80AC900F6D997 /* SSHCopyIDSession.m in Sources */,
+				076FBE191DB80AC900F6D997 /* BKSettingsFileDownloader.m in Sources */,
+				076FBE1A1DB80AC900F6D997 /* BKAppearanceViewController.m in Sources */,
+				076FBE1B1DB80AC900F6D997 /* BKHostsViewController.m in Sources */,
+				076FBE1C1DB80AC900F6D997 /* BKFont.m in Sources */,
+				076FBE1D1DB80AC900F6D997 /* main.m in Sources */,
+				076FBE1E1DB80AC900F6D997 /* fterm.m in Sources */,
+				076FBE1F1DB80AC900F6D997 /* SmartKeys.m in Sources */,
+				076FBE201DB80AC900F6D997 /* BKSupportViewController.m in Sources */,
+				076FBE211DB80AC900F6D997 /* BKAboutViewController.m in Sources */,
+				076FBE221DB80AC900F6D997 /* utf8.c in Sources */,
+				076FBE231DB80AC900F6D997 /* BKDefaults.m in Sources */,
+				076FBE241DB80AC900F6D997 /* Session.m in Sources */,
+				076FBE251DB80AC900F6D997 /* BKThemeCreateViewController.m in Sources */,
+				076FBE261DB80AC900F6D997 /* BKLinkActions.m in Sources */,
+				076FBE271DB80AC900F6D997 /* BKHosts.m in Sources */,
+				076FBE281DB80AC900F6D997 /* BKHostsDetailViewController.m in Sources */,
+				076FBE291DB80AC900F6D997 /* BKPubKeyCreateViewController.m in Sources */,
+				076FBE2A1DB80AC900F6D997 /* BKFeedbackViewController.m in Sources */,
+				076FBE2B1DB80AC900F6D997 /* linenoise.c in Sources */,
+				076FBE2C1DB80AC900F6D997 /* BKPredictionViewController.m in Sources */,
+				076FBE2D1DB80AC900F6D997 /* BKTheme.m in Sources */,
+				076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */,
+				076FBE2F1DB80AC900F6D997 /* SmartKeysView.m in Sources */,
+				076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */,
+				076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */,
+				076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */,
+				076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */,
+				076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */,
+				076FBE351DB80AC900F6D997 /* BKKeyboardModifierViewController.m in Sources */,
+				076FBE361DB80AC900F6D997 /* TermView.m in Sources */,
+				076FBE371DB80AC900F6D997 /* BKKeyboardViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		EA0BA1871C0CC57B00719C1A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -815,6 +1016,16 @@
 			name = "MBProgressHUD Framework";
 			targetProxy = 0732F1241D062DDC00AB5438 /* PBXContainerItemProxy */;
 		};
+		076FBE0C1DB80AC900F6D997 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = UICKeyChainStore;
+			targetProxy = 076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */;
+		};
+		076FBE0E1DB80AC900F6D997 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "MBProgressHUD Framework";
+			targetProxy = 076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */;
+		};
 		EA0BA1A61C0CC57B00719C1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EA0BA18A1C0CC57B00719C1A /* Blink */;
@@ -850,6 +1061,74 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		076FBE581DB80AC900F6D997 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = HV2S48975V;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/**",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+					"HOCKEYSDK=1",
+				);
+				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
+				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = Debug;
+		};
+		076FBE591DB80AC900F6D997 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = HV2S48975V;
+				ENABLE_BITCODE = NO;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/**",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				GCC_PREPROCESSOR_DEFINITIONS = "HOCKEYSDK=1";
+				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
+				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
+				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks/lib",
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				PROVISIONING_PROFILE = "";
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
+			};
+			name = Release;
+		};
 		EA0BA1AB1C0CC57C00719C1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -946,7 +1225,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-					"HOCKEYSDK=1",
+					"HOCKEYSDK=0",
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
@@ -1023,6 +1302,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		076FBE571DB80AC900F6D997 /* Build configuration list for PBXNativeTarget "Blink Hockey" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				076FBE581DB80AC900F6D997 /* Debug */,
+				076FBE591DB80AC900F6D997 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		EA0BA1861C0CC57B00719C1A /* Build configuration list for PBXProject "Blink" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
