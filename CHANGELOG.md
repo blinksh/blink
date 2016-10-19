@@ -1,3 +1,7 @@
+# Version 1.019
+	- Simplified build process.
+	- New README and BUILD instructions
+
 # Version 0.1020
 	- "Get In Touch" and "About" sections completed.
 	- iOS 10 support.

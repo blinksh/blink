@@ -1,8 +1,17 @@
 # Building
-Blink is currently in Alpha stage. If you would like to test it,
-please tweet us @BlinkShell. You do not have to compile Blink unless
-you want to make modifications to the code, which is accepted under the
-[GPL License](http://github.com/blinksh/blink/COPYING).
+We provide you with two ways to compile and install Blink Shell. This instructions will refer to assembling
+a full Blink Shell, compiling libraries and resources yourself. Due to the many dependencies that compose 
+Blink Shell, this is the recommended but not shortest method. You can also clone Blink and obtain a "ready to go"
+tar.gz with all the dependencies as described on [home](https://github.com/blinksh/blink)
+
+## Requirements
+Please note that to compile and install Blink in your personal
+devices, you need to comply with Apple Developer Terms and Conditions,
+including obtaining a Developer License for that purpose. You will also
+need all the XCode command line developer tools and SDKs provided under
+a separate license by Apple Inc.
+- XCode > 7.3 and XCode command line tools
+- Autotools for OSX
 
 ## Cloning
 Clone Blink into your local repository and make sure to obtain any submodules:
@@ -13,74 +22,57 @@ git submodule update
 Blink makes use of multiple dependencies that you have to compile
 separately before building Blink itself. There are simple scripts available
 to perform this operation.
-- XCode 9.3
-- ncurses
-- [Libssh2](https://github.com/carloscabanero/libssh2-for-iOS)
-- [OpenSSL](https://github.com/x2on/OpenSSL-for-iPhone/tree/ee4665d089a91d7382fcb22b0b09c85a02935739)
-- [Protobuf](https://gist.github.com/BennettSmith/9487468ae3375d0db0cc)
-- [Mosh](https://github.com/blinksh/build-mosh)
+- [Libssh2 for iOS](https://github.com/carloscabanero/libssh2-for-iOS); Includes OpenSSL.
+- [Mosh for iOS](https://github.com/blinksh/build-mosh); Includes Protobuf.
 
 Please note that Blink currently only supports armv64 and x86_64 (simulator)
 platforms, so compilation for other architectures is not necessary.
+
 ### Installation
 #### Libraries
-All Mosh dependencies must be installed under the Framework folder
-depending on the type of output. We are working on making all the
-dependencies a .framework bundle, but it is a complicated project.
-Framework bundles can be left at the Framework folder root, while
-.a and .h files must go to the corresponding lib and include folder.
+The Blink Shell XCode project will look for Library dependencies under the Framework folder. Libssh2 and Mosh for iOS will
+also build OpenSSL and Protobuf respectively, both required to work.
 
 To install Libssh2 and OpenSSL in your Blink repository, please copy
-the .framework files to the Framework folders.
+the .framework files generated on [Libssh2 for iOS](https://github.com/carloscabanero/libssh2-for-iOS) to the Framework folders.
 
-For Protobuf, please copy the generated .h and .a files to the
-Framework/include and Framework/lib respectively.
+[Mosh for iOS](https://github.com/blinksh/build-mosh) will compile both protobuf and Mosh for iOS.
+After compiling, copy libmoshios.framework AND libprotobuf.a from the build-protobuf/protobuf-version/lib folder.
 
-Mosh will output multiple .a library files, and unfortunately we
-didn't find a simple way to just aggregate all of them yet. Please
-copy all the .a library files from the output folder (mosh/output) to lib
-folder and paste the src/frontend/MoshiOSController.h to the header folder.
-
-Blink also makes use of two other projects, but those can be compiled
+Blink also makes use of two other projects, which should be automatically downloaded using git submodule
 within the same project:
 - UICKeyChainStore
 - MBProgressHUD
 
-Blink uses Linenoise as part of its code for the simple terminal interface.
-It is provided within the project due to the big changes made to it. We will
-change this piece at some point.
+If you would like to use HockeySDK (not required), download the latest version and drop it Frameworks.
 
 #### Resources
+Blink Shell makes use of a web terminal running from JavaScript code and linked at runtime. All the required
+resources to bundle the app, like terminal, fonts and themes, must be included under the Resources folder.
+
+Blink Shell makes use of Chromium's HTerm. To bundle it, start by cloning [Chromium's libapps](https://chromium.googlesource.com/apps/libapps/+/master/hterm), 
+and generate hterm_all.js with the bin/mkdist.sh script (their build instructions are less than clear!). 
+Drop the generated hterm_all.js file into the Resources folder.
+
+Font Style uploads requires [webfonts.js](https://github.com/typekit/webfontloader), but it isn't
+needed for Blink to work. Download the file and drop it into Resources folder.
+
 Blink's Terminal is running from JavaScript code linked at runtime.
 Most of the available open source terminals can be made to work with Blink,
 just by providing a "write" and "signal" functions. An example of this
-is provided in the Resources/term.html file.
-
-You can aggregate any terminal you want to the bundle. We are currently
-using [Chromium's HTerm](https://chromium.googlesource.com/apps/libapps/+/master/hterm),
-but we have been also successful plugin other terminals like [Terminal.js](http://terminal.js.org).
-
-Generate a single term.js file and drop it under the Resources folder.
-
-Font Style uploads requires [webfonts.js](https://github.com/typekit/webfontloader), but it isn't
-needed for Blink to work.
+is provided in the Resources/term.html file. If you use another 
+terminal.js, edit term.html to match. We have been also successful plugging in other
+terminals like [Terminal.js](http://terminal.js.org).
 
 ## Compiling
-Please note that to compile and install Blink in your personal
-devices, you need to comply with Apple Developer Terms and Conditions,
-including obtaining a Developer License for that purpose. You will also
-need all the XCode command line developer tools and SDKs provided under
-a separate license by Apple Inc.
-
 Blink uses a standard .xcodeproj file. Any missing files will be marked in
 red, what can be used to test your installation.
 
 To configure the project:
 1. Under Targets > Blink > General > Identities set a unique Bundle Identifier.
 2. Under Targets > Blink > General > Identities set your Team.
-3. If you do not want to make use of HockeyApp, please set the preprocessor variable
-HOCKEYSDK = 0 under Build Settings.
-4. You might be requested to accept your profile or setup your developer account
+3. You might be requested to accept your profile or setup your developer account
 with XCode, follow the proper Apple Developer documentation in that case.
+4. If you would like to use HockeyApp, change the scheme to Blink Hockey, and add HockeyID with your AppID string to info.plist.
 
-As a standard XCode project, just run it with Cmd-R.
+Make sure "Blink" is the selected Scheme for compilation. As a standard XCode project, just run it with Cmd-R.

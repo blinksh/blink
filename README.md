@@ -13,19 +13,28 @@ But, Blink is much more. Please read on:
 - Configure your Blink connections by adding your own Hosts and RSA Encryption keys. Everything will look familiar and you get to work, fast!
 - We've incorporated SplitView, for those necessary Google searches and chats with coworkers.
 
-For more information, please visit [Blink Shell](www.blink.sh).
+For more information, please visit [Blink Shell](http://blink.sh).
 
 # Obtaining Blink
-Blink is available on the [AppStore](http://itunes.apple.com/app/id1156707581)
+Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
 
-If you would like to participate on its developmente, we would love to have you on board! If you would like to participate, follow and tweet us [@BlinkShell](https://twitter.com/BlinkShell) a little about your interest and usage scenarios. Invitations will be sent out in waves, please be patient if you do not receive yours immediately.
+If you would like to participate on its development, we would love to have you on board! There are two ways to collaborate with the project: you can download and build Blink yourself, or you can request an invitation to help us test future versions (on the raw branch). If you want to participate on the testing, follow and tweet us [@BlinkShell](https://twitter.com/BlinkShell) about your usage scenarios. Invitations will be sent out in waves, please be patient if you do not receive yours immediately.
 
 Bugs should be reported here on GitHub. Crash reports will be automatically reported back to us thanks to HockeyApp. If you have any questions or want to make sure we do not miss on an interesting feature, please send your suggestions to our Twitter account [@BlinkShell](https://twitter.com/BlinkShell). We would love to discuss them with you! Please do not use Twitter to report bugs.
 
 We can't wait to receive your valuable feedback. Enjoy!
 
 ## Build
-Please see [BUILD](https://github.com/blinksh/blink/blob/master/BUILD). Things might be a bit buumpy at the moment, please check also Issue #72.
+We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
+
+```bash
+git clone git@github.com:blinksh/blink.git
+cd blink/Frameworks
+curl -OL https://github.com/blinksh/blink/releases/download/v1.019/Blink-Frameworks.tar.gz
+tar -zxf Blink-Frameworks.tar.gz
+```
+
+Although this is the quickest method to get you up and running, if you would like to compile all libraries and resources yourself, refer to [BUILD](https://github.com/blinksh/blink/blob/master/BUILD). Please let us know if you find any issues. Blink is a complex project with multiple low level dependencies and we are still looking for ways to simplify and autoate the full compilation process.
 
 # Using Blink
 Our UI is very straightforward and optimizes the experience on touch devices for the really important part, the terminal. You will jump right into a very simple shell, so you will know what to do. Here are a few more tricks:
@@ -40,16 +49,9 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 0.1020
-	- "Get In Touch" and "About" sections completed.
-	- iOS 10 support.
-	- Added exception for iOS distribution.
-
-	- Improved gesture support, specially on iPhone and iOS10.
-	- MBProgressHUD updated with patch.
-	- Test Terminal fixes for fonts and updates.
-	- Disable font ligatures.
-	- SSH Session termination fixes.
+## Version 1.019
+	- Simplified build process.
+	- New README and BUILD instructions
 
 [View all changes](CHANGELOG.md)
 
