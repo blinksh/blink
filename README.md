@@ -29,7 +29,10 @@ We made a ton easier to build and install Blink yourself on your iOS devices thr
 
 ```bash
 git clone git@github.com:blinksh/blink.git
-cd blink/Frameworks
+cd blink
+git submodule init
+git submodule update
+cd Frameworks
 curl -OL https://github.com/blinksh/blink/releases/download/v1.019/Blink-Frameworks.tar.gz
 tar -zxf Blink-Frameworks.tar.gz
 ```
