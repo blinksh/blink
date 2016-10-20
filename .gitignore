@@ -21,6 +21,11 @@ xcuserdata/
 Frameworks/include/*
 Frameworks/lib/*
 
+## Precompiled frameworks
+Frameworks/libmoshios.framework
+Frameworks/libssh2.framework
+Frameworks/openssl.framework
+
 ## Other
 *.moved-aside
 *.xcuserstate
