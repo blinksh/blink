@@ -160,11 +160,12 @@ static NSDictionary *bkModifierMaps = nil;
 
 }
 
-- (void) viewDidAppear:(BOOL)animated
+- (void)viewDidAppear:(BOOL)animated
 {
   if (_appearanceChanged) {
     [self setAppearanceFromSettings];
   }
+  [super viewDidAppear:animated];
 }
 
 - (void)setAppearanceFromSettings
