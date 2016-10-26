@@ -854,7 +854,7 @@ static void kbd_callback(const char *name, int name_len,
       char c;
       ssize_t n;
 
-      if ((n = read(fileno(_stream.in), &c, 1)) <= 0) {
+      if ((n = read(fileno(_stream.control.termin), &c, 1)) <= 0) {
 	break;
       }
 
