@@ -554,7 +554,7 @@ typedef enum {
   } else if (modifiers & KbdAltModifier) {
     [_delegate write:[CC ESC:text]];
   } else {
-    [_delegate write:[CC KEY:text]];
+    [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
   }
 }
 
