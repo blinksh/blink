@@ -168,7 +168,7 @@ static void kbd_callback(const char *name, int name_len,
   optind = 1;
 
   while (1) {
-    int c = getopt_long(argc, argv, "p:i:tv", NULL, NULL);
+    int c = getopt_long(argc, argv, "p:i:tvl:", NULL, NULL);
     if (c == -1) {
       break;
     }
@@ -188,6 +188,9 @@ static void kbd_callback(const char *name, int name_len,
 	break;
       case 't':
 	_options.request_tty = REQUEST_TTY_FORCE;
+	break;
+      case 'l':
+	_options.user = optarg;
 	break;
       default:
 	optind = 0;
