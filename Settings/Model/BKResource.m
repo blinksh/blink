@@ -69,6 +69,15 @@ static NSURL *DocumentsDirectory = nil;
   [encoder encodeObject:_filename forKey:@"filename"];
 }
 
+- (BOOL)isCustom
+{
+  if (_fileURL) {
+    return YES;
+  }
+
+  return NO;
+}
+
 - (NSString *)content
 {
   return [NSString stringWithContentsOfFile:self.fullPath encoding:NSUTF8StringEncoding error:nil];
@@ -92,6 +101,11 @@ static NSURL *DocumentsDirectory = nil;
     }
   }
   return nil;
+}
+
++ (NSURL *)resourcesURL
+{
+  return DocumentsDirectory;
 }
 
 + (NSMutableArray *)defaultResources

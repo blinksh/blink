@@ -302,7 +302,8 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   // Save privateKey to storage
   // If the card already exists, then it is replaced
   NSString *privateKeyRef = [ID stringByAppendingString:@".pem"];
-  if (![Keychain setString:privateKey forKey:privateKeyRef]) {
+  NSError *error;
+  if (![Keychain setString:privateKey forKey:privateKeyRef error:&error]) {
     return nil;
   }
 

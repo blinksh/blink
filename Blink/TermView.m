@@ -568,6 +568,18 @@ typedef enum {
   [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
 }
 
+- (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent
+{
+  cssContent = [NSString stringWithFormat:@"data:text/css;utf-8,%@", cssContent];
+
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ cssContent ] options:0 error:nil];
+  NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+  NSString *jsScript = [NSString stringWithFormat:@"loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+  
+  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+}
+
+
 #pragma mark External Keyboard
 
 - (void)setKbdCommands

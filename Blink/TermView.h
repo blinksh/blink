@@ -69,5 +69,6 @@ extern NSString * const TermViewFFuncSeq;
 - (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers;
 - (void)loadTerminalThemeJS:(NSString *)themeContent;
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
+- (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 
 @end

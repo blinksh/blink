@@ -69,7 +69,7 @@ var loadFontFromCSS = function(cssPath, name) {
 	context: t.scrollPort_.iframe_.contentWindow,
 	active: function() { t.syncFontFamily() }
     });
-    t.prefs_.set('font-family', name);
+    t.prefs_.set('font-family', name + ", Menlo");
 }
 
 var clear = function() {

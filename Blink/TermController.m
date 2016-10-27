@@ -177,7 +177,11 @@ static NSDictionary *bkModifierMaps = nil;
 
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
-    [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
+    if (font.isCustom) {
+      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+    } else {
+      [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
+    }
   }
 
   if (!_disableFontSizeSelection) {
