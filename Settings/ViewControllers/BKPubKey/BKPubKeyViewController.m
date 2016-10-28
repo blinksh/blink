@@ -240,8 +240,7 @@
   if ([[segue identifier] isEqualToString:@"keyInfoSegue"]) {
     BKPubKeyDetailsViewController *details = segue.destinationViewController;
 
-    NSIndexPath *indexPath = [[self tableView] indexPathForSelectedRow];
-    BKPubKey *pubkey = [BKPubKey.all objectAtIndex:indexPath.row];
+    BKPubKey *pubkey = [BKPubKey.all objectAtIndex:_currentSelectionIdx.row];
     details.pubkey = pubkey;
     return;
   }
