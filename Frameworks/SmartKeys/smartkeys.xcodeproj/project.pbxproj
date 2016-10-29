@@ -1,0 +1,531 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0700055F1D707F390002B956 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 0700055E1D707F390002B956 /* main.m */; };
+		070005621D707F390002B956 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 070005611D707F390002B956 /* AppDelegate.m */; };
+		070005651D707F390002B956 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 070005641D707F390002B956 /* ViewController.m */; };
+		070005681D707F390002B956 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 070005661D707F390002B956 /* Main.storyboard */; };
+		0700056A1D707F390002B956 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 070005691D707F390002B956 /* Assets.xcassets */; };
+		0700056D1D707F390002B956 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0700056B1D707F390002B956 /* LaunchScreen.storyboard */; };
+		0700057A1D70800F0002B956 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 070005751D70800F0002B956 /* SmartKeysView.m */; };
+		0700057B1D70800F0002B956 /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 070005771D70800F0002B956 /* SmartKeys.m */; };
+		073D264D1DC3F45A00965AB2 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D264C1DC3F45A00965AB2 /* SmartKeys.xib */; };
+		073D26591DC4085E00965AB2 /* SmartKeys.h in Headers */ = {isa = PBXBuildFile; fileRef = 073D26571DC4085E00965AB2 /* SmartKeys.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		073D265C1DC4085E00965AB2 /* SmartKeys.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 073D26551DC4085E00965AB2 /* SmartKeys.framework */; };
+		073D265D1DC4085E00965AB2 /* SmartKeys.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 073D26551DC4085E00965AB2 /* SmartKeys.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		B71EDACF1DC2774D001C3F6A /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B71EDACC1DC2774D001C3F6A /* SKModifierButton.m */; };
+		B71EDAD01DC2774D001C3F6A /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B71EDACE1DC2774D001C3F6A /* SKNonModifierButton.m */; };
+		B71EDAD31DC2775D001C3F6A /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = B71EDAD21DC2775D001C3F6A /* SKButton.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		073D265A1DC4085E00965AB2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 070005521D707F390002B956 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 073D26541DC4085E00965AB2;
+			remoteInfo = SmartKeys;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		073D26611DC4085E00965AB2 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				073D265D1DC4085E00965AB2 /* SmartKeys.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		0700055A1D707F390002B956 /* smartkeys.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = smartkeys.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		0700055E1D707F390002B956 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		070005601D707F390002B956 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		070005611D707F390002B956 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		070005631D707F390002B956 /* ViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ViewController.h; sourceTree = "<group>"; };
+		070005641D707F390002B956 /* ViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ViewController.m; sourceTree = "<group>"; };
+		070005671D707F390002B956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		070005691D707F390002B956 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0700056C1D707F390002B956 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		0700056E1D707F390002B956 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		070005751D70800F0002B956 /* SmartKeysView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysView.m; sourceTree = "<group>"; };
+		070005761D70800F0002B956 /* SmartKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeys.h; sourceTree = "<group>"; };
+		070005771D70800F0002B956 /* SmartKeys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeys.m; sourceTree = "<group>"; };
+		070005781D70800F0002B956 /* SmartKeysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysView.h; sourceTree = "<group>"; };
+		073D264C1DC3F45A00965AB2 /* SmartKeys.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SmartKeys.xib; sourceTree = "<group>"; };
+		073D26551DC4085E00965AB2 /* SmartKeys.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = SmartKeys.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		073D26571DC4085E00965AB2 /* SmartKeys.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SmartKeys.h; sourceTree = "<group>"; };
+		073D26581DC4085E00965AB2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B71EDACB1DC2774D001C3F6A /* SKModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKModifierButton.h; sourceTree = "<group>"; };
+		B71EDACC1DC2774D001C3F6A /* SKModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKModifierButton.m; sourceTree = "<group>"; };
+		B71EDACD1DC2774D001C3F6A /* SKNonModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKNonModifierButton.h; sourceTree = "<group>"; };
+		B71EDACE1DC2774D001C3F6A /* SKNonModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKNonModifierButton.m; sourceTree = "<group>"; };
+		B71EDAD11DC2775D001C3F6A /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
+		B71EDAD21DC2775D001C3F6A /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		070005571D707F390002B956 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				073D265C1DC4085E00965AB2 /* SmartKeys.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		073D26511DC4085E00965AB2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		070005511D707F390002B956 = {
+			isa = PBXGroup;
+			children = (
+				0700055C1D707F390002B956 /* smartkeys */,
+				073D26561DC4085E00965AB2 /* SmartKeys */,
+				0700055B1D707F390002B956 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		0700055B1D707F390002B956 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				0700055A1D707F390002B956 /* smartkeys.app */,
+				073D26551DC4085E00965AB2 /* SmartKeys.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		0700055C1D707F390002B956 /* smartkeys */ = {
+			isa = PBXGroup;
+			children = (
+				073D264C1DC3F45A00965AB2 /* SmartKeys.xib */,
+				070005781D70800F0002B956 /* SmartKeysView.h */,
+				070005751D70800F0002B956 /* SmartKeysView.m */,
+				070005761D70800F0002B956 /* SmartKeys.h */,
+				070005771D70800F0002B956 /* SmartKeys.m */,
+				070005601D707F390002B956 /* AppDelegate.h */,
+				070005611D707F390002B956 /* AppDelegate.m */,
+				070005631D707F390002B956 /* ViewController.h */,
+				070005641D707F390002B956 /* ViewController.m */,
+				070005661D707F390002B956 /* Main.storyboard */,
+				B71EDAC91DC2774D001C3F6A /* CustomViews */,
+				070005691D707F390002B956 /* Assets.xcassets */,
+				0700056B1D707F390002B956 /* LaunchScreen.storyboard */,
+				0700056E1D707F390002B956 /* Info.plist */,
+				0700055D1D707F390002B956 /* Supporting Files */,
+			);
+			path = smartkeys;
+			sourceTree = "<group>";
+		};
+		0700055D1D707F390002B956 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				0700055E1D707F390002B956 /* main.m */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		073D26561DC4085E00965AB2 /* SmartKeys */ = {
+			isa = PBXGroup;
+			children = (
+				073D26571DC4085E00965AB2 /* SmartKeys.h */,
+				073D26581DC4085E00965AB2 /* Info.plist */,
+			);
+			path = SmartKeys;
+			sourceTree = "<group>";
+		};
+		B71EDAC91DC2774D001C3F6A /* CustomViews */ = {
+			isa = PBXGroup;
+			children = (
+				B71EDACA1DC2774D001C3F6A /* Button */,
+			);
+			path = CustomViews;
+			sourceTree = "<group>";
+		};
+		B71EDACA1DC2774D001C3F6A /* Button */ = {
+			isa = PBXGroup;
+			children = (
+				B71EDAD11DC2775D001C3F6A /* SKButton.h */,
+				B71EDAD21DC2775D001C3F6A /* SKButton.m */,
+				B71EDACB1DC2774D001C3F6A /* SKModifierButton.h */,
+				B71EDACC1DC2774D001C3F6A /* SKModifierButton.m */,
+				B71EDACD1DC2774D001C3F6A /* SKNonModifierButton.h */,
+				B71EDACE1DC2774D001C3F6A /* SKNonModifierButton.m */,
+			);
+			path = Button;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		073D26521DC4085E00965AB2 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				073D26591DC4085E00965AB2 /* SmartKeys.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		070005591D707F390002B956 /* smartkeys */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 070005711D707F390002B956 /* Build configuration list for PBXNativeTarget "smartkeys" */;
+			buildPhases = (
+				070005561D707F390002B956 /* Sources */,
+				070005571D707F390002B956 /* Frameworks */,
+				070005581D707F390002B956 /* Resources */,
+				073D26611DC4085E00965AB2 /* Embed Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				073D265B1DC4085E00965AB2 /* PBXTargetDependency */,
+			);
+			name = smartkeys;
+			productName = smartkeys;
+			productReference = 0700055A1D707F390002B956 /* smartkeys.app */;
+			productType = "com.apple.product-type.application";
+		};
+		073D26541DC4085E00965AB2 /* SmartKeys */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 073D265E1DC4085E00965AB2 /* Build configuration list for PBXNativeTarget "SmartKeys" */;
+			buildPhases = (
+				073D26501DC4085E00965AB2 /* Sources */,
+				073D26511DC4085E00965AB2 /* Frameworks */,
+				073D26521DC4085E00965AB2 /* Headers */,
+				073D26531DC4085E00965AB2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = SmartKeys;
+			productName = SmartKeys;
+			productReference = 073D26551DC4085E00965AB2 /* SmartKeys.framework */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		070005521D707F390002B956 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = "CARLOS CABANERO";
+				TargetAttributes = {
+					070005591D707F390002B956 = {
+						CreatedOnToolsVersion = 7.3.1;
+						DevelopmentTeam = HV2S48975V;
+					};
+					073D26541DC4085E00965AB2 = {
+						CreatedOnToolsVersion = 8.0;
+						DevelopmentTeam = HV2S48975V;
+						ProvisioningStyle = Automatic;
+					};
+				};
+			};
+			buildConfigurationList = 070005551D707F390002B956 /* Build configuration list for PBXProject "smartkeys" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 070005511D707F390002B956;
+			productRefGroup = 0700055B1D707F390002B956 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				070005591D707F390002B956 /* smartkeys */,
+				073D26541DC4085E00965AB2 /* SmartKeys */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		070005581D707F390002B956 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				0700056D1D707F390002B956 /* LaunchScreen.storyboard in Resources */,
+				073D264D1DC3F45A00965AB2 /* SmartKeys.xib in Resources */,
+				0700056A1D707F390002B956 /* Assets.xcassets in Resources */,
+				070005681D707F390002B956 /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		073D26531DC4085E00965AB2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		070005561D707F390002B956 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B71EDAD01DC2774D001C3F6A /* SKNonModifierButton.m in Sources */,
+				B71EDACF1DC2774D001C3F6A /* SKModifierButton.m in Sources */,
+				0700057A1D70800F0002B956 /* SmartKeysView.m in Sources */,
+				0700057B1D70800F0002B956 /* SmartKeys.m in Sources */,
+				070005651D707F390002B956 /* ViewController.m in Sources */,
+				070005621D707F390002B956 /* AppDelegate.m in Sources */,
+				0700055F1D707F390002B956 /* main.m in Sources */,
+				B71EDAD31DC2775D001C3F6A /* SKButton.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		073D26501DC4085E00965AB2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		073D265B1DC4085E00965AB2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 073D26541DC4085E00965AB2 /* SmartKeys */;
+			targetProxy = 073D265A1DC4085E00965AB2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		070005661D707F390002B956 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				070005671D707F390002B956 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		0700056B1D707F390002B956 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				0700056C1D707F390002B956 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		0700056F1D707F390002B956 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		070005701D707F390002B956 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		070005721D707F390002B956 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				INFOPLIST_FILE = smartkeys/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.atul.test;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		070005731D707F390002B956 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				INFOPLIST_FILE = smartkeys/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.atul.test;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+		073D265F1DC4085E00965AB2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SmartKeys/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = carloscabanero.SmartKeys;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		073D26601DC4085E00965AB2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_SUSPICIOUS_MOVES = YES;
+				CODE_SIGN_IDENTITY = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = SmartKeys/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = carloscabanero.SmartKeys;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		070005551D707F390002B956 /* Build configuration list for PBXProject "smartkeys" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				0700056F1D707F390002B956 /* Debug */,
+				070005701D707F390002B956 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		070005711D707F390002B956 /* Build configuration list for PBXNativeTarget "smartkeys" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				070005721D707F390002B956 /* Debug */,
+				070005731D707F390002B956 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		073D265E1DC4085E00965AB2 /* Build configuration list for PBXNativeTarget "SmartKeys" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				073D265F1DC4085E00965AB2 /* Debug */,
+				073D26601DC4085E00965AB2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 070005521D707F390002B956 /* Project object */;
+}

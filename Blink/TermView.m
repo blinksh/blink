@@ -46,12 +46,6 @@ NSString *const TermViewEscSeq = @"escSeq:";
 NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
 NSString *const TermViewFFuncSeq = @"fkeySeq:";
 
-typedef enum {
-  SpecialCursorKeyHome = 0,
-  SpecialCursorKeyEnd,
-  SpecialCursorKeyPgUp,
-  SpecialCursorKeyPgDown
-} SpecialCursorKeys;
 
 @interface CC : NSObject
 
@@ -87,7 +81,11 @@ typedef enum {
     UIKeyInputUpArrow : @"A",
     UIKeyInputDownArrow : @"B",
     UIKeyInputRightArrow : @"C",
-    UIKeyInputLeftArrow : @"D"
+    UIKeyInputLeftArrow : @"D",
+    SpecialCursorKeyPgUp: @"5~",
+    SpecialCursorKeyPgDown: @"6~",
+    SpecialCursorKeyHome: @"H",
+    SpecialCursorKeyEnd: @"F"
   };
 
   SS3 = [self ESC:@"O"];
@@ -128,11 +126,13 @@ typedef enum {
 + (NSString *)KEY:(NSString *)c MOD:(NSInteger)m RAW:(BOOL)raw
 {
   NSArray *out;
-
+  
+  BOOL isPageCursorKey = c == SpecialCursorKeyPgUp || c == SpecialCursorKeyPgDown;
+  
   if ([FKeys.allKeys containsObject:c]) {
     if (m) {
       out = @[ CSI, FKeys[c] ];
-    } else if (raw) {
+    } else if (raw && !isPageCursorKey) {
       return [NSString stringWithFormat:@"%@%@", SS3, FKeys[c]];
     } else {
       return [NSString stringWithFormat:@"%@%@", CSI, FKeys[c]];
@@ -149,20 +149,6 @@ typedef enum {
   }
 
   return c;
-}
-
-+ (NSString *)CURSOR:(SpecialCursorKeys)c
-{
-  switch (c) {
-    case SpecialCursorKeyHome:
-      return [NSString stringWithFormat:@"%@H", CSI];
-    case SpecialCursorKeyEnd:
-      return [NSString stringWithFormat:@"%@F", CSI];
-    case SpecialCursorKeyPgUp:
-      return [NSString stringWithFormat:@"%@5~", CSI];
-    case SpecialCursorKeyPgDown:
-      return [NSString stringWithFormat:@"%@6~", CSI];
-  }
 }
 
 + (NSString *)FKEY:(NSInteger)number
@@ -184,6 +170,8 @@ typedef enum {
       return [NSString stringWithFormat:@"%@1%ld~", CSI, number + 1];
     case 9:
     case 10:
+    case 11:
+    case 12:
       return [NSString stringWithFormat:@"%@2%ld~", CSI, number - 9];
     default:
       return nil;
@@ -547,14 +535,26 @@ typedef enum {
   if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
     text = [text lowercaseString];
   }
-
-  NSUInteger modifiers = [(SmartKeysView *)[_smartKeys view] modifiers];
-  if (modifiers & KbdCtrlModifier) {
-    [_delegate write:[CC CTRL:text]];
-  } else if (modifiers & KbdAltModifier) {
-    [_delegate write:[CC ESC:text]];
+  
+  // If the key is a special key, we do not apply modifiers.
+  if (text.length > 1) {
+    // Check if we have a function key
+    NSRange range = [text rangeOfString:@"FKEY"];
+    if (range.location != NSNotFound) {
+      NSString *value = [text substringFromIndex:(range.length)];
+      [_delegate write:[CC FKEY:[value integerValue]]];
+    } else {
+      [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
+    }
   } else {
-    [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
+    NSUInteger modifiers = [[_smartKeys view] modifiers];
+    if (modifiers & KbdCtrlModifier) {
+      [_delegate write:[CC CTRL:text]];
+    } else if (modifiers & KbdAltModifier) {
+      [_delegate write:[CC ESC:text]];
+    } else {
+      [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
+    }
   }
 }
 
@@ -790,33 +790,27 @@ typedef enum {
 - (void)cursorSeq:(UIKeyCommand *)cmd
 {
   if (cmd.input == UIKeyInputUpArrow) {
-    [_delegate write:[CC CURSOR:SpecialCursorKeyPgUp]];
+    [_delegate write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
   }
   if (cmd.input == UIKeyInputDownArrow) {
-    [_delegate write:[CC CURSOR:SpecialCursorKeyPgDown]];
+    [_delegate write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
   }
   if (cmd.input == UIKeyInputLeftArrow) {
-    [_delegate write:[CC CURSOR:SpecialCursorKeyHome]];
+    [_delegate write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
   }
   if (cmd.input == UIKeyInputRightArrow) {
-    [_delegate write:[CC CURSOR:SpecialCursorKeyEnd]];
+    [_delegate write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
   }
 }
 
 - (void)fkeySeq:(UIKeyCommand *)cmd
 {
-  __block NSInteger idx = -1;
-  [_specialFKeysRow enumerateSubstringsInRange:NSMakeRange(0, [_specialFKeysRow length])
-                                       options:NSStringEnumerationByComposedCharacterSequences
-                                    usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                                      if ([cmd.input isEqual:substring]) {
-                                        idx = substringRange.location;
-                                        *stop = YES;
-                                      }
-                                    }];
-
-  if (idx >= 0) {
-    [_delegate write:[CC FKEY:idx + 1]];
+  NSInteger value = [cmd.input integerValue];
+  
+  if (value == 0) {
+    [_delegate write:[CC FKEY:10]];
+  } else {
+    [_delegate write:[CC FKEY:value]];
   }
 }
 

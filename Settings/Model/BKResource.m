@@ -118,19 +118,19 @@ static NSURL *DocumentsDirectory = nil;
     NSArray *properties = [NSArray arrayWithObjects:NSURLLocalizedNameKey, nil];
 
     NSArray *resourceFiles = [[NSFileManager defaultManager]
-        contentsOfDirectoryAtURL:self.defaultResourcesLocation
+	contentsOfDirectoryAtURL:self.defaultResourcesLocation
       includingPropertiesForKeys:properties
-                         options:(NSDirectoryEnumerationSkipsHiddenFiles)
-                           error:&error];
+			 options:(NSDirectoryEnumerationSkipsHiddenFiles)
+			   error:&error];
     NSString *fileExt = [NSString stringWithFormat:@".%@", self.resourcesExtension];
 
     if (resourceFiles != nil) {
       for (NSURL *file in resourceFiles) {
-        NSString *fileName = [file lastPathComponent];
-        BKResource *res = [[self alloc] initWithName:[fileName stringByReplacingOccurrencesOfString:fileExt withString:@""]
-                                         andFileName:fileName
-                                               onURL:self.defaultResourcesLocation];
-        [rscs addObject:res];
+	NSString *fileName = [file lastPathComponent];
+	BKResource *res = [[self alloc] initWithName:[fileName stringByReplacingOccurrencesOfString:fileExt withString:@""]
+					 andFileName:fileName
+					       onURL:self.defaultResourcesLocation];
+	[rscs addObject:res];
       }
     }
     objc_setAssociatedObject(self, &defaultKey, rscs, OBJC_ASSOCIATION_RETAIN);
@@ -179,14 +179,14 @@ static NSURL *DocumentsDirectory = nil;
 + (NSString *)resourcesPathName
 {
   NSAssert(NO, @"The method %@ in %@ must be overridden.",
-           NSStringFromSelector(_cmd), NSStringFromClass([self class]));
+	   NSStringFromSelector(_cmd), NSStringFromClass([self class]));
   return nil;
 }
 
 + (NSString *)resourcesExtension
 {
   NSAssert(NO, @"The method %@ in %@ must be overridden.",
-           NSStringFromSelector(_cmd), NSStringFromClass([self class]));
+	   NSStringFromSelector(_cmd), NSStringFromClass([self class]));
   return nil;
 }
 

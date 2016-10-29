@@ -29,49 +29,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "SmartKeys.h"
-#import "SmartKeysView.h"
+#import <UIKit/UIKit.h>
+
+#include "SmartKeysView.h"
 
 
-@implementation SmartKeys {
-  NSTimer *_timer;
-}
+extern NSString *const SpecialCursorKeyHome;
+extern NSString *const SpecialCursorKeyEnd;
+extern NSString *const SpecialCursorKeyPgUp;
+extern NSString *const SpecialCursorKeyPgDown;
 
-- (IBAction)symbolUp:(UIButton *)sender
-{
-  if (_timer != nil) {
-    [_timer invalidate];
-  }
-}
+@interface SmartKeys : UIViewController <SmartKeysDelegate>
 
-- (IBAction)symbolDown:(UIButton *)sender
-{
-  NSString *key = sender.titleLabel.text;
-  NSString *symbol;
+@property(nonatomic, weak) id< UIKeyInput > textInputDelegate;
+@property(strong, nonatomic) SmartKeysView *view;
 
-  if ([key isEqualToString:KbdUpArrowKey]) {
-    symbol = UIKeyInputUpArrow;
-  } else if ([key isEqualToString:KbdDownArrowKey]) {
-    symbol = UIKeyInputDownArrow;
-  } else if ([key isEqualToString:KbdLeftArrowKey]) {
-    symbol = UIKeyInputLeftArrow;
-  } else if ([key isEqualToString:KbdRightArrowKey]) {
-    symbol = UIKeyInputRightArrow;
-  } else if ([key isEqualToString:KbdTabKey]) {
-    symbol = @"\t";
-  } else if ([key isEqualToString:KbdEscKey]) {
-    symbol = UIKeyInputEscape;
-  } else {
-    symbol = [NSString stringWithString:key];
-  }
-
-  _timer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(symbolEmit:) userInfo:symbol repeats:YES];
-  [_timer fire];
-}
-
-- (void)symbolEmit:(NSTimer *)timer
-{
-  [_textInputDelegate insertText:timer.userInfo];
-}
+-(void)symbolDown:(NSString *)symbol;
+-(void)symbolUp:(NSString *)symbol;
 
 @end
