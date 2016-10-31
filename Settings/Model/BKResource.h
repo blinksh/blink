@@ -38,6 +38,7 @@
 @property (nonatomic, strong) NSString *filename;
 
 + (void)initialize;
++ (NSURL *)resourcesURL;
 + (instancetype)withName:(NSString *)name;
 + (BOOL)saveAll;
 + (instancetype)saveResource:(NSString *)name withContent:(NSData *)content error:(NSError *__autoreleasing *)error;
@@ -47,6 +48,7 @@
 // Funcs to return the default and custom arrays, and then counts on top
 + (NSInteger)defaultResourcesCount;
 
+- (BOOL)isCustom;
 - (NSString *)fullPath;
 - (NSString *)content;
 
