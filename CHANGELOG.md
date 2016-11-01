@@ -1,3 +1,16 @@
+# Version 1.031
+	- NEW On-screen keyboard with more space for modifiers, FKeys and Cursor keys. Redesigned for more space on the modifiers, and with a central scrollable area that handles more keys. Activate the Alternate keys by taping on the Alt key. And now tap on a modifier to activate it as a normal button, or make a long press to chain different combinations.
+	- NEW Add your own Fonts & Themes! More info on (https://github.com/blinksh/fonts) and (https://github.com/blinksh/themes)
+	- NEW Multistep authentication. Servers with google authenticator or similar will now connect without problems :)
+	- NEW Fira Code font with ligatures included.
+
+	- Added -l parameter to ssh for Hosts.
+	- Improved message on how use hosts after adding them.
+	- Fixed on-screen arrows.
+	- Fixed F0 as F10 on external keyboard.
+	- Fixed keys selection problem on settings
+	- Fixed ssh-copy-id issue when accessing the host for the first time
+
 # Version 1.019
 	- Simplified build process.
 	- New README and BUILD instructions
