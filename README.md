@@ -1,10 +1,10 @@
-# Blink Mobile Shell for iOS
-Do Blink! Blink is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool. [Check it out!](www.blink.sh)
+# (Blink Shell for iOS)[http://blink.sh)
+Do Blink! Blink is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool.
 
 We did not create another terminal to fix your website on the go. Blink was built as a professional grade product from the onset. We started by analyzing what the must-haves were and we ended up grounding Blink on these three concepts:
 - Fast rendering: dmesg in your Unix server should be instantaneous. We can't wait even a second to render. We didn't need to reinvent the wheel to make this happen. We simply used Chromium's HTerm to ensure that rendering is perfect and fast, even with those special, tricky encodings.
 - Always on: Mosh transcends SSH's variability. Mosh overcomes the unstable and intermittent connectivity that we all associate with mobile connections. You can check your Safari without fear of having to restart the SSH connection. You can flawlessly jump from home, to the train, and then the office thanks to Mosh. Blink is rock-solid connected all the way. Mosh is readily available and can be easily installed on your server. Go to https://mosh.mit. 
-- Fully configurable: Blink embraces Bluetooth-coupled keyboards with gusto. But there's more, because we want more. Some like Caps as Esc on Vim, others Caps as Ctrl on Emacs. Blink champions them all. During your always-on sessions, you're in your zone. As well, custom themes and fonts are on the way.
+- Fully configurable: Blink embraces Bluetooth-coupled keyboards with gusto. Some like Caps as Esc on Vim, others Caps as Ctrl on Emacs. Blink champions them all. But there's more, because we want more. You can also add your own custom themes and fonts to Blink. During your always-on sessions, you're in your zone.
 
 But, Blink is much more. Please read on:
 - You should command your terminal, not navigate it. Blink will jump you right into a friendly shell and it'll be clear to you how to roll.
@@ -49,9 +49,18 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-## Version 1.019
-	- Simplified build process.
-	- New README and BUILD instructions
+# Version 1.031
+	- NEW On-screen keyboard with more space for modifiers, FKeys and Cursor keys. Redesigned for more space on the modifiers, and with a central scrollable area that handles more keys. Activate the Alternate keys by taping on the Alt key. And now tap on a modifier to activate it as a normal button, or make a long press to chain different combinations.
+	- NEW Add your own Fonts & Themes! More info on (https://github.com/blinksh/fonts) and (https://github.com/blinksh/themes)
+	- NEW Multistep authentication. Servers with google authenticator or similar will now connect without problems :)
+	- NEW Fira Code font with ligatures included.
+
+	- Added -l parameter to ssh for Hosts.
+	- Improved message on how use hosts after adding them.
+	- Fixed on-screen arrows.
+	- Fixed F0 as F10 on external keyboard.
+	- Fixed keys selection problem on settings
+	- Fixed ssh-copy-id issue when accessing the host for the first time
 
 [View all changes](CHANGELOG.md)
 
