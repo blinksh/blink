@@ -53,7 +53,8 @@
 
 static const char *usage_format =
   "usage: ssh [options] [user@]hostname [command]\r\n"
-  "[-i identity_file] [-p port] [-t request_tty] [-v verbose]\r\n"
+  "[-l login_name] [-i identity_file] [-p port]\r\n" 
+  "[-t request_tty] [-v verbose]\r\n"
   "\r\n";
 
 typedef struct {
