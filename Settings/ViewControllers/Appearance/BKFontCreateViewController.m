@@ -32,12 +32,14 @@
 #import "BKFontCreateViewController.h"
 #import "BKFont.h"
 #import "BKSettingsFileDownloader.h"
+#import "BKLinkActions.h"
 
 @interface BKFontCreateViewController ()
 
 @property (weak, nonatomic) IBOutlet UIButton *importButton;
 @property (weak, nonatomic) IBOutlet UITextField *urlTextField;
 @property (weak, nonatomic) IBOutlet UITextField *nameTextField;
+@property (weak, nonatomic) IBOutlet UITableViewCell *galleryLinkCell;
 @property (strong, nonatomic) NSData *tempFileData;
 @property (assign, nonatomic) BOOL downloadCompleted;
 
@@ -181,5 +183,15 @@
   [alertController addAction:ok];
   [self presentViewController:alertController animated:YES completion:nil];
 }
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  UITableViewCell *clickedCell = [self.tableView cellForRowAtIndexPath:indexPath];
+
+  if ([clickedCell isEqual:self.galleryLinkCell]) {
+    [BKLinkActions sendToGitHub:@"fonts"];
+  } 
+}
+
 
 @end
