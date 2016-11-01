@@ -77,4 +77,6 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (NSDictionary *)keyboardFuncTriggers;
 + (BOOL)isCapsAsEsc;
 + (BOOL)isShiftAsEsc;
++ (void)setDefaultUserName:(NSString*)name;
++ (NSString*)defaultUserName;
 @end

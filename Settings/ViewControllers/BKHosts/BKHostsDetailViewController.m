@@ -34,6 +34,7 @@
 #import "BKPredictionViewController.h"
 #import "BKPubKey.h"
 #import "BKPubKeyViewController.h"
+#import "BKDefaults.h"
 
 @interface BKHostsDetailViewController () <UITextFieldDelegate>
 
@@ -67,7 +68,9 @@
     if (_bkHost.port != nil) {
       _sshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.port];
     }
-    _userField.text = _bkHost.user;
+    if(_bkHost.user != nil){
+      _userField.text = _bkHost.user;
+    }
     _passwordField.text = _bkHost.password;
     _hostKeyDetail.text = _bkHost.key;
     _predictionDetail.text = [BKHosts predictionStringForRawValue:_bkHost.prediction.intValue];
@@ -76,6 +79,8 @@
       _moshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.moshPort];
     }
     _startUpCmdField.text = _bkHost.moshStartup;
+  }else{
+    _userField.text = [BKDefaults defaultUserName];
   }
 
   [self.hostKeyDetail addObserver:self forKeyPath:@"text" options:0 context:nil];

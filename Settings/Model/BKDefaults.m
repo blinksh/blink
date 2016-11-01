@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKDefaults.h"
-
+#import "UIDevice+DeviceName.h"
 
 static NSURL *DocumentsDirectory = nil;
 static NSURL *DefaultsURL = nil;
@@ -116,6 +116,9 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   if (!defaults.fontSize) {
     [defaults setFontSize:[NSNumber numberWithInt:10]];
   }
+  if(!defaults.defaultUser){
+    [defaults setDefaultUser:[UIDevice userNameFromDeviceName]];
+  }
 }
 
 - (void)setDefaultKeyboardMaps {
@@ -182,6 +185,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   defaults.fontSize = fontSize;
 }
 
++ (void)setDefaultUserName:(NSString*)name
+{
+  defaults.defaultUser = name;
+}
+
 + (NSString *)selectedFontName
 {
   return defaults.fontName;
@@ -230,6 +238,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)isShiftAsEsc
 {
   return defaults.shiftAsEsc;
+}
+
++ (NSString*)defaultUserName
+{
+  return defaults.defaultUser;
 }
 
 @end
