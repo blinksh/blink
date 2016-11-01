@@ -8,6 +8,8 @@
 
 #import "UIDevice+DeviceName.h"
 
+#define DEFAULT_USER_NAME @"blink"
+
 @implementation UIDevice (DeviceName)
 
 + (NSString*)userNameFromDeviceName
@@ -38,7 +40,11 @@
       [names replaceObjectAtIndex:lastNameIndex withObject:[name substringToIndex:[name length] - 1]];
     }
   }
-  return [names[0]lowercaseString];
+  if(names.count > 0 && [names[0]length] > 0){
+    return [names[0]lowercaseString];
+  }else{
+    return DEFAULT_USER_NAME;
+  }
 }
 
 
