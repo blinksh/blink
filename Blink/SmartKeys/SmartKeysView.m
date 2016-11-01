@@ -45,7 +45,7 @@ NSString *const KbdTabKey = @"⇥";
 //int const kNonModifierCount = 7;
 
 
-@implementation SmartKey  
+@implementation SmartKey
 
 -(id)initWithName:(NSString *)name symbol:(NSString *)symbol
 {
@@ -67,11 +67,11 @@ NSString *const KbdTabKey = @"⇥";
   __weak IBOutlet UIScrollView *_nonModifierScrollView;
   IBOutlet UIStackView *_arrowButtonStackView;
   IBOutlet UIStackView *_cursorButtonStackView;
-    
+
   BOOL isLongPress;
   UIStackView *_nonModifiersStack;
   NSArray <SmartKey *> *_nonModifiersKeys;
-    
+
   UIStackView *_alternateKeysStack;
   NSArray <SmartKey *> *_alternateKeys;
 
@@ -89,34 +89,34 @@ NSString *const KbdTabKey = @"⇥";
 - (void)setupModifierButtons {
 
   UITapGestureRecognizer *ctrlTapGesture = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(modifierButtonTapped:)];
+					     initWithTarget:self
+						     action:@selector(modifierButtonTapped:)];
   ctrlTapGesture.numberOfTapsRequired = 1;
   UILongPressGestureRecognizer *ctrlLongPressGesture =
-      [[UILongPressGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(longPressOnModifierButton:)];
+    [[UILongPressGestureRecognizer alloc]
+	  initWithTarget:self
+		  action:@selector(longPressOnModifierButton:)];
   ctrlLongPressGesture.minimumPressDuration = 0.3;
 
   [_ctrlButton addGestureRecognizer:ctrlTapGesture];
   [_ctrlButton addGestureRecognizer:ctrlLongPressGesture];
 
   UITapGestureRecognizer *altTapGesture = [[UITapGestureRecognizer alloc]
-      initWithTarget:self
-              action:@selector(modifierButtonTapped:)];
+					    initWithTarget:self
+						    action:@selector(modifierButtonTapped:)];
   altTapGesture.numberOfTapsRequired = 1;
   UILongPressGestureRecognizer *altLongPressGesture =
-      [[UILongPressGestureRecognizer alloc]
-          initWithTarget:self
-                  action:@selector(longPressOnModifierButton:)];
+    [[UILongPressGestureRecognizer alloc]
+	  initWithTarget:self
+		  action:@selector(longPressOnModifierButton:)];
   altLongPressGesture.minimumPressDuration = 0.3;
 
   [_altButton addGestureRecognizer:altTapGesture];
   [_altButton addGestureRecognizer:altLongPressGesture];
   // Track the value of the alt button to modify the keys bar, as is changed in different places.
-    [_altButton addObserver:self forKeyPath:@"selected" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
-    
-    //[_rightContainerView addSubview:_arrowButtonStackView];
+  [_altButton addObserver:self forKeyPath:@"selected" options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew context:nil];
+
+  //[_rightContainerView addSubview:_arrowButtonStackView];
 }
 
 - (NSUInteger)modifiers {
@@ -143,38 +143,38 @@ NSString *const KbdTabKey = @"⇥";
 }
 
 - (void)showNonModifierKeySection:(SKNonModifierButtonType)type{
-    [_nonModifiersStack removeFromSuperview];
-    [_alternateKeysStack removeFromSuperview];
-    
-    UIStackView *selectedStackView = nil;
-    
-    if(type == SKNonModifierButtonTypeNormal){        
-        _cursorButtonStackView.hidden = YES;
-        _arrowButtonStackView.hidden = NO;
+  [_nonModifiersStack removeFromSuperview];
+  [_alternateKeysStack removeFromSuperview];
 
-        selectedStackView = _nonModifiersStack;
-        [_nonModifierScrollView addSubview:_nonModifiersStack];
-    }else{
-        _cursorButtonStackView.hidden = NO;
-        _arrowButtonStackView.hidden = YES;
-        
-        selectedStackView = _alternateKeysStack;
-        [_nonModifierScrollView addSubview:_alternateKeysStack];
-    }
+  UIStackView *selectedStackView = nil;
 
-    if ([self.delegate respondsToSelector:@selector(nonModifierKeysSwitched)]) {
-      [self.delegate nonModifierKeysSwitched];
-    }
-  
+  if(type == SKNonModifierButtonTypeNormal){
+    _cursorButtonStackView.hidden = YES;
+    _arrowButtonStackView.hidden = NO;
+
+    selectedStackView = _nonModifiersStack;
+    [_nonModifierScrollView addSubview:_nonModifiersStack];
+  }else{
+    _cursorButtonStackView.hidden = NO;
+    _arrowButtonStackView.hidden = YES;
+
+    selectedStackView = _alternateKeysStack;
+    [_nonModifierScrollView addSubview:_alternateKeysStack];
+  }
+
+  if ([self.delegate respondsToSelector:@selector(nonModifierKeysSwitched)]) {
     [self.delegate nonModifierKeysSwitched];
-    // Constraints
-    selectedStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
 
-    [selectedStackView.topAnchor constraintEqualToAnchor:_nonModifierScrollView.topAnchor].active = YES;
-    [selectedStackView.leadingAnchor constraintEqualToAnchor:_nonModifierScrollView.leadingAnchor].active = YES;
-    [selectedStackView.trailingAnchor constraintEqualToAnchor:_nonModifierScrollView.trailingAnchor].active = YES;
-    [selectedStackView.bottomAnchor constraintEqualToAnchor:_nonModifierScrollView.bottomAnchor].active = YES;
-    [selectedStackView.arrangedSubviews[0].widthAnchor constraintGreaterThanOrEqualToAnchor:_ctrlButton.widthAnchor multiplier:0.8].active = YES;
+  [self.delegate nonModifierKeysSwitched];
+  // Constraints
+  selectedStackView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [selectedStackView.topAnchor constraintEqualToAnchor:_nonModifierScrollView.topAnchor].active = YES;
+  [selectedStackView.leadingAnchor constraintEqualToAnchor:_nonModifierScrollView.leadingAnchor].active = YES;
+  [selectedStackView.trailingAnchor constraintEqualToAnchor:_nonModifierScrollView.trailingAnchor].active = YES;
+  [selectedStackView.bottomAnchor constraintEqualToAnchor:_nonModifierScrollView.bottomAnchor].active = YES;
+  [selectedStackView.arrangedSubviews[0].widthAnchor constraintGreaterThanOrEqualToAnchor:_ctrlButton.widthAnchor multiplier:0.8].active = YES;
 }
 
 - (void)setNonModifiers:(NSArray <SmartKey *> *)keys
@@ -187,10 +187,10 @@ NSString *const KbdTabKey = @"⇥";
 
 - (void)setAlternateKeys:(NSArray <SmartKey *> *)keys
 {
-    // TODO: Detach previous (if any)
-    // Reattach new one
-    _alternateKeysStack = [self smartKeysStackWith:keys];
-    _alternateKeys = keys;
+  // TODO: Detach previous (if any)
+  // Reattach new one
+  _alternateKeysStack = [self smartKeysStackWith:keys];
+  _alternateKeys = keys;
 }
 
 - (UIStackView *)smartKeysStackWith:(NSArray <SmartKey *> *)keys
@@ -211,7 +211,7 @@ NSString *const KbdTabKey = @"⇥";
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchDragExit];
     [button addTarget:nil action:@selector(nonModifierDown:) forControlEvents:UIControlEventTouchDown];
   }
-  
+
   return stack;
 }
 
@@ -251,18 +251,18 @@ NSString *const KbdTabKey = @"⇥";
 # pragma mark - Alt Button Methods
 
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context{
-    if(object == _altButton){
-        if([keyPath isEqualToString:@"selected"]){
-            if([change objectForKey:@"new"]){
-                int newValue = [[change objectForKey:@"new"]intValue];
-                if(newValue == 1){
-                    [self showNonModifierKeySection:SKNonModifierButtonTypeAlternate];
-                }else{
-                    [self showNonModifierKeySection:SKNonModifierButtonTypeNormal];
-                }
-            }
-        }
+  if(object == _altButton){
+    if([keyPath isEqualToString:@"selected"]){
+      if([change objectForKey:@"new"]){
+	int newValue = [[change objectForKey:@"new"]intValue];
+	if(newValue == 1){
+	  [self showNonModifierKeySection:SKNonModifierButtonTypeAlternate];
+	}else{
+	  [self showNonModifierKeySection:SKNonModifierButtonTypeNormal];
+	}
+      }
     }
+  }
 }
 
 - (void)dealloc

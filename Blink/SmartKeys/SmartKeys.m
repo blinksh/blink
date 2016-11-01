@@ -56,62 +56,97 @@ static NSArray *CursorKeys = nil;
 
 @dynamic view;
 
-+ (void)initialize {
++ (void)initialize
+{
   // Make an object. Do not even there to use dicts
   HelperKeys = @[
-		    [[SmartKey alloc] initWithName:KbdTabKey symbol:@"\t"],
-		    [[SmartKey alloc] initWithName:@"-" symbol:@"-"],
-		    [[SmartKey alloc] initWithName:@"_" symbol:@"_"],
-		    [[SmartKey alloc] initWithName:@"~" symbol:@"~"],
-		    [[SmartKey alloc] initWithName:@"@" symbol:@"@"],
-		    [[SmartKey alloc] initWithName:@"*" symbol:@"*"],
-            [[SmartKey alloc] initWithName:@"|" symbol:@"|"],
-            [[SmartKey alloc] initWithName:@"/" symbol:@"/"],
-            [[SmartKey alloc] initWithName:@"\\" symbol:@"\\"],
-            [[SmartKey alloc] initWithName:@"^" symbol:@"^"],
-            [[SmartKey alloc] initWithName:@"[" symbol:@"["],
-            [[SmartKey alloc] initWithName:@"]" symbol:@"]"],
-            [[SmartKey alloc] initWithName:@"{" symbol:@"{"],
-            [[SmartKey alloc] initWithName:@"}" symbol:@"}"]
-		 ];
-  
+    [[SmartKey alloc] initWithName:KbdTabKey
+                            symbol:@"\t"],
+    [[SmartKey alloc] initWithName:@"-"
+                            symbol:@"-"],
+    [[SmartKey alloc] initWithName:@"_"
+                            symbol:@"_"],
+    [[SmartKey alloc] initWithName:@"~"
+                            symbol:@"~"],
+    [[SmartKey alloc] initWithName:@"@"
+                            symbol:@"@"],
+    [[SmartKey alloc] initWithName:@"*"
+                            symbol:@"*"],
+    [[SmartKey alloc] initWithName:@"|"
+                            symbol:@"|"],
+    [[SmartKey alloc] initWithName:@"/"
+                            symbol:@"/"],
+    [[SmartKey alloc] initWithName:@"\\"
+                            symbol:@"\\"],
+    [[SmartKey alloc] initWithName:@"^"
+                            symbol:@"^"],
+    [[SmartKey alloc] initWithName:@"["
+                            symbol:@"["],
+    [[SmartKey alloc] initWithName:@"]"
+                            symbol:@"]"],
+    [[SmartKey alloc] initWithName:@"{"
+                            symbol:@"{"],
+    [[SmartKey alloc] initWithName:@"}"
+                            symbol:@"}"]
+  ];
+
   ArrowKeys = @[
-		[[SmartKey alloc]initWithName:KbdUpArrowKey symbol:UIKeyInputUpArrow],
-		   [[SmartKey alloc]initWithName:KbdDownArrowKey symbol:UIKeyInputDownArrow],
-		   [[SmartKey alloc]initWithName:KbdLeftArrowKey symbol:UIKeyInputLeftArrow],
-		   [[SmartKey alloc]initWithName:KbdRightArrowKey symbol:UIKeyInputRightArrow]
-		];
-    
+    [[SmartKey alloc] initWithName:KbdUpArrowKey
+                            symbol:UIKeyInputUpArrow],
+    [[SmartKey alloc] initWithName:KbdDownArrowKey
+                            symbol:UIKeyInputDownArrow],
+    [[SmartKey alloc] initWithName:KbdLeftArrowKey
+                            symbol:UIKeyInputLeftArrow],
+    [[SmartKey alloc] initWithName:KbdRightArrowKey
+                            symbol:UIKeyInputRightArrow]
+  ];
+
   AlternateKeys = @[
-          [[SmartKey alloc]initWithName:@"F1" symbol:@"FKEY1"],
-          [[SmartKey alloc]initWithName:@"F2" symbol:@"FKEY2"],
-          [[SmartKey alloc]initWithName:@"F3" symbol:@"FKEY3"],
-          [[SmartKey alloc]initWithName:@"F4" symbol:@"FKEY4"],
-          [[SmartKey alloc]initWithName:@"F5" symbol:@"FKEY5"],
-          [[SmartKey alloc]initWithName:@"F6" symbol:@"FKEY6"],
-          [[SmartKey alloc]initWithName:@"F7" symbol:@"FKEY7"],
-          [[SmartKey alloc]initWithName:@"F8" symbol:@"FKEY8"],
-          [[SmartKey alloc]initWithName:@"F9" symbol:@"FKEY9"],
-          [[SmartKey alloc]initWithName:@"F10" symbol:@"FKEY10"],
-          [[SmartKey alloc]initWithName:@"F11" symbol:@"FKEY11"],
-          [[SmartKey alloc]initWithName:@"F12" symbol:@"FKEY12"],
-          ];
-    
+    [[SmartKey alloc] initWithName:@"F1"
+                            symbol:@"FKEY1"],
+    [[SmartKey alloc] initWithName:@"F2"
+                            symbol:@"FKEY2"],
+    [[SmartKey alloc] initWithName:@"F3"
+                            symbol:@"FKEY3"],
+    [[SmartKey alloc] initWithName:@"F4"
+                            symbol:@"FKEY4"],
+    [[SmartKey alloc] initWithName:@"F5"
+                            symbol:@"FKEY5"],
+    [[SmartKey alloc] initWithName:@"F6"
+                            symbol:@"FKEY6"],
+    [[SmartKey alloc] initWithName:@"F7"
+                            symbol:@"FKEY7"],
+    [[SmartKey alloc] initWithName:@"F8"
+                            symbol:@"FKEY8"],
+    [[SmartKey alloc] initWithName:@"F9"
+                            symbol:@"FKEY9"],
+    [[SmartKey alloc] initWithName:@"F10"
+                            symbol:@"FKEY10"],
+    [[SmartKey alloc] initWithName:@"F11"
+                            symbol:@"FKEY11"],
+    [[SmartKey alloc] initWithName:@"F12"
+                            symbol:@"FKEY12"],
+  ];
+
   CursorKeys = @[
-         [[SmartKey alloc]initWithName:KbdPageUpKey symbol:SpecialCursorKeyPgUp],
-         [[SmartKey alloc]initWithName:KbdPageDownKey symbol:SpecialCursorKeyPgDown],
-         [[SmartKey alloc]initWithName:KbdHomeKey symbol:SpecialCursorKeyHome],
-         [[SmartKey alloc]initWithName:KbdEndKey symbol:SpecialCursorKeyEnd],
-         ];
+    [[SmartKey alloc] initWithName:KbdPageUpKey
+                            symbol:SpecialCursorKeyPgUp],
+    [[SmartKey alloc] initWithName:KbdPageDownKey
+                            symbol:SpecialCursorKeyPgDown],
+    [[SmartKey alloc] initWithName:KbdHomeKey
+                            symbol:SpecialCursorKeyHome],
+    [[SmartKey alloc] initWithName:KbdEndKey
+                            symbol:SpecialCursorKeyEnd],
+  ];
 }
 
-- (void)viewDidLoad 
+- (void)viewDidLoad
 {
-    [self.view setNonModifiers:HelperKeys];
-    [self.view setAlternateKeys:AlternateKeys];
-    [self.view showNonModifierKeySection:SKNonModifierButtonTypeNormal];
-    self.view.delegate = self;
-  
+  [self.view setNonModifiers:HelperKeys];
+  [self.view setAlternateKeys:AlternateKeys];
+  [self.view showNonModifierKeySection:SKNonModifierButtonTypeNormal];
+  self.view.delegate = self;
+
   self.allKeys = [NSMutableArray array];
   [self.allKeys addObjectsFromArray:HelperKeys];
   [self.allKeys addObjectsFromArray:ArrowKeys];
@@ -138,17 +173,12 @@ static NSArray *CursorKeys = nil;
       return;
     }
   }
-//    //Handling Esc key separately as it does not logically belong to either of the above arrays
-//    if ([KbdEscKey isEqualToString:symbol]) {
-//        _timer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(symbolEmit:) userInfo:UIKeyInputEscape repeats:YES];
-//        [_timer fire];
-//    }
 }
 
 - (void)symbolEmit:(NSTimer *)timer
 {
   [_textInputDelegate insertText:timer.userInfo];
-  
+
   if ([_timer isValid]) {
     _timer.fireDate = [NSDate dateWithTimeIntervalSinceNow:0.1];
   }
