@@ -247,7 +247,7 @@
                             <tableViewSection headerTitle="Key" footerTitle="Default key must be named 'id_rsa'" id="3pW-Nu-m2w">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="LTa-O0-NNA">
-                                        <rect key="frame" x="0.0" y="119.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="120" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="LTa-O0-NNA" id="A4A-w4-esJ">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -275,7 +275,7 @@
                             <tableViewSection headerTitle="Size" id="eDD-be-e2c">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="blue" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="QvW-9b-tHM">
-                                        <rect key="frame" x="0.0" y="231.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="233" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="QvW-9b-tHM" id="qZs-5A-KuO">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -300,7 +300,7 @@
                             <tableViewSection headerTitle="Passphrase (optional)" id="eZM-We-CzZ">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="6Nz-le-rMS">
-                                        <rect key="frame" x="0.0" y="331.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="334" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="6Nz-le-rMS" id="z2x-5K-9dm">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -321,7 +321,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="IQB-3s-IMG">
-                                        <rect key="frame" x="0.0" y="375.5" width="375" height="44"/>
+                                        <rect key="frame" x="0.0" y="378" width="375" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="IQB-3s-IMG" id="cas-hk-2yq">
                                             <frame key="frameInset" width="375" height="43.5"/>
@@ -338,6 +338,31 @@
                                                 <constraint firstItem="DSU-73-1Kq" firstAttribute="centerY" secondItem="cas-hk-2yq" secondAttribute="centerY" id="r6C-ag-MVx"/>
                                                 <constraint firstItem="DSU-73-1Kq" firstAttribute="leading" secondItem="cas-hk-2yq" secondAttribute="leadingMargin" id="sbm-QH-Eqw"/>
                                                 <constraint firstItem="DSU-73-1Kq" firstAttribute="centerX" secondItem="cas-hk-2yq" secondAttribute="centerX" id="vib-eb-NZX"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
+                            <tableViewSection headerTitle="Comments (optional)" id="L8N-Q0-6tt">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="T3B-ae-i11">
+                                        <rect key="frame" x="0.0" y="479" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="T3B-ae-i11" id="rO8-Xm-z0D">
+                                            <frame key="frameInset" width="375" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="user@blink" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fct-sq-5ie">
+                                                    <frame key="frameInset" minX="15" width="570" height="44"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="centerX" secondItem="rO8-Xm-z0D" secondAttribute="centerX" id="WpM-6e-cdJ"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="top" secondItem="rO8-Xm-z0D" secondAttribute="top" id="exL-2H-n6l"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="leading" secondItem="rO8-Xm-z0D" secondAttribute="leadingMargin" id="h27-11-T0u"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="centerY" secondItem="rO8-Xm-z0D" secondAttribute="centerY" id="jFB-rB-Jva"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
@@ -361,6 +386,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="commentsField" destination="Fct-sq-5ie" id="cX2-zT-RFk"/>
                         <outlet property="createButton" destination="8fJ-je-lw5" id="GFP-ZI-ljG"/>
                         <outlet property="nameField" destination="Nz9-83-8He" id="UfP-2N-rnp"/>
                         <outlet property="passphraseField" destination="0Yg-Nm-JyN" id="uW3-mA-FDD"/>
@@ -1835,7 +1861,7 @@
         <image name="keyboard" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="dMC-e1-GtW"/>
         <segue reference="y9I-rB-ZKT"/>
+        <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>
 </document>
