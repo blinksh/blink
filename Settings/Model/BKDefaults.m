@@ -42,11 +42,13 @@ NSString const *BKKeyboardModifierAlt  = @"⌥ Alt";
 NSString const *BKKeyboardModifierCmd  = @"⌘ Cmd";
 NSString const *BKKeyboardModifierCaps = @"⇪ CapsLock";
 NSString const *BKKeyboardModifierShift = @"⇧ Shift";
+NSString const *BKKeyboardModifierAutoRepeat = @"AutoRepeatKeys";
 
 NSString const *BKKeyboardSeqNone = @"None";
 NSString const *BKKeyboardSeqCtrl = @"Ctrl";
 NSString const *BKKeyboardSeqEsc  = @"Esc";
 NSString const *BKKeyboardSeqMeta = @"Meta";
+NSString const *BKKeyboardSeqAutoRepeat = @"AutoRepeat";
 
 NSString const *BKKeyboardFuncFTriggers = @"Function Keys";
 NSString const *BKKeyboardFuncCursorTriggers = @"Cursor Keys";
@@ -127,6 +129,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
                            BKKeyboardSeqNone, BKKeyboardModifierAlt,
                            BKKeyboardSeqNone, BKKeyboardModifierCmd,
                            BKKeyboardSeqNone, BKKeyboardModifierCaps,
+                       BKKeyboardSeqAutoRepeat, BKKeyboardModifierAutoRepeat,
                            nil];
 }
 
@@ -216,7 +219,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 + (NSArray *)keyboardKeyList
 {
-  return @[BKKeyboardModifierCtrl, BKKeyboardModifierAlt,
+  return @[BKKeyboardModifierAutoRepeat, BKKeyboardModifierCtrl, BKKeyboardModifierAlt,
 			 BKKeyboardModifierCmd, BKKeyboardModifierCaps];
 }
 

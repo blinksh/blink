@@ -36,11 +36,14 @@ extern NSString const *BKKeyboardModifierAlt;
 extern NSString const *BKKeyboardModifierCmd;
 extern NSString const *BKKeyboardModifierCaps;
 extern NSString const *BKKeyboardModifierShift;
+extern NSString const *BKKeyboardModifierAutoRepeat;
 
 extern NSString const *BKKeyboardSeqNone;
 extern NSString const *BKKeyboardSeqCtrl;
 extern NSString const *BKKeyboardSeqEsc;
 extern NSString const *BKKeyboardSeqMeta;
+extern NSString const *BKKeyboardSeqAutoRepeat;
+
 
 extern NSString const *BKKeyboardFuncFTriggers;
 extern NSString const *BKKeyboardFuncCursorTriggers;
