@@ -9629,7 +9629,6 @@ hterm.ScrollPort.prototype.resize = function() {
  */
 hterm.ScrollPort.prototype.syncRowNodesDimensions_ = function() {
   var screenSize = this.getScreenSize();
-
   this.lastScreenWidth_ = screenSize.width;
   this.lastScreenHeight_ = screenSize.height;
 
@@ -11550,16 +11549,16 @@ hterm.Terminal.prototype.decorate = function(div) {
   screenNode.addEventListener('mousemove', onMouse);
   this.scrollPort_.onScrollWheel = onMouse;
 
-  screenNode.addEventListener(
-      'focus', this.onFocusChange_.bind(this, true));
-  // Listen for mousedown events on the screenNode as in FF the focus
-  // events don't bubble.
-  screenNode.addEventListener('mousedown', function() {
-    setTimeout(this.onFocusChange_.bind(this, true));
-  }.bind(this));
-
-  screenNode.addEventListener(
-      'blur', this.onFocusChange_.bind(this, false));
+//  screenNode.addEventListener(
+//      'focus', this.onFocusChange_.bind(this, true));
+//  // Listen for mousedown events on the screenNode as in FF the focus
+//  // events don't bubble.
+//  screenNode.addEventListener('mousedown', function() {
+//    setTimeout(this.onFocusChange_.bind(this, true));
+//  }.bind(this));
+//
+//  screenNode.addEventListener(
+//      'blur', this.onFocusChange_.bind(this, false));
 
   var style = this.document_.createElement('style');
   style.textContent =
@@ -13056,7 +13055,7 @@ hterm.Terminal.prototype.copySelectionToClipboard = function() {
 };
 
 hterm.Terminal.prototype.overlaySize = function() {
-  //this.showOverlay(this.screenSize.width + 'x' + this.screenSize.height);
+  this.showOverlay(this.screenSize.width + 'x' + this.screenSize.height);
 };
 
 /**
@@ -13260,8 +13259,8 @@ hterm.Terminal.prototype.onResize_ = function() {
   this.realizeSize_(columnCount, rowCount);
   this.showZoomWarning_(this.scrollPort_.characterSize.zoomFactor != 1);
 
-  if (isNewSize)
-    this.overlaySize();
+  //if (isNewSize)
+  //  this.overlaySize();
 
   this.restyleCursor_();
   this.scheduleSyncCursorPosition_();
@@ -16926,7 +16925,7 @@ lib.resource.add('hterm/audio/bell', 'audio/ogg;base64',
 );
 
 lib.resource.add('hterm/concat/date', 'text/plain',
-'Tue, 18 Oct 2016 21:09:05 +0000' +
+'Tue, 05 Apr 2016 11:19:45 +0000' +
 ''
 );
 
