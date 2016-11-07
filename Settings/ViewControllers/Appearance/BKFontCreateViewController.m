@@ -120,7 +120,7 @@
                             }
                           }];
   } else {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"URL error" message:@"Please enter valid .css URL" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"URL error" message:@"Fonts are assigned using valid .css files. Please open the gallery for more information." preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
     [alertController addAction:ok];
     [self presentViewController:alertController animated:YES completion:nil];
