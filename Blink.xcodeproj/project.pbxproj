@@ -103,6 +103,12 @@
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
+		07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
+		07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
+		07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
+		07C92B7A1DD3BCE6002AA282 /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B81DC4137000965AB2 /* SmartKeys.m */; };
+		07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26BB1DC4137000965AB2 /* SmartKeysView.m */; };
+		07C92B7C1DD3BD55002AA282 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D26B91DC4137000965AB2 /* SmartKeys.xib */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
 		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
@@ -801,6 +807,12 @@
 							com.apple.Keychain = {
 								enabled = 1;
 							};
+							com.apple.Push = {
+								enabled = 1;
+							};
+							com.apple.iCloud = {
+								enabled = 0;
+							};
 						};
 					};
 					EA0BA1A31C0CC57B00719C1A = {
@@ -894,6 +906,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07C92B7C1DD3BD55002AA282 /* SmartKeys.xib in Resources */,
 				076FBE441DB80AC900F6D997 /* css in Resources */,
 				076FBE451DB80AC900F6D997 /* Themes in Resources */,
 				076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */,
@@ -949,6 +962,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */,
+				07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */,
+				07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */,
+				07C92B7A1DD3BCE6002AA282 /* SmartKeys.m in Sources */,
+				07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */,
 				076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */,
 				076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */,
 				076FBE131DB80AC900F6D997 /* MoshSession.m in Sources */,
@@ -1132,7 +1150,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1164,7 +1182,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1280,7 +1298,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1312,7 +1330,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.Blink;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
