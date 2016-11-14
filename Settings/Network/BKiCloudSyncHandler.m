@@ -108,8 +108,33 @@ static NSMutableDictionary *syncItems = nil;
   }];
 }
 
-- (void)mergeHosts:(NSArray*)hosts{
-  
+- (void)mergeHosts:(NSArray*)hostRecords{
+  for (CKRecord *hostRecord in hostRecords) {
+    if([hostRecord valueForKey:@"host"]){
+      NSString *host = [hostRecord valueForKey:@"host"];
+      //If a host with same name exists in iCloud and local it could be either of the following 2 cases
+      //1. An update to an existing Host
+      //2. A duplicate has been created
+      BKHosts *hosts = [BKHosts withHost:host];
+      if(hosts){
+        if(hosts.iCloudRecordId){
+          //Check last updated time
+          if(hosts.lastModifiedTime > hostRecord.modificationDate){
+            //TODO: Local is new...Update iCloud to Local values
+            
+          }else{
+            //TODO: iCloud value is new. Update local to iCloud values
+            
+          }
+        }else{
+          [BKHosts markHost:host withConflict:YES];
+        }
+      }else{
+        //
+        //TODO: New items add to local
+      }
+    }
+  }
 }
 
 - (void)deleteHostWithId:(CKRecordID*)recordId{

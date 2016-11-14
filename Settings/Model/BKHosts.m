@@ -186,6 +186,14 @@ static UICKeyChainStore *Keychain = nil;
   [BKHosts saveHosts];
 }
 
++ (void)markHost:(NSString*)host withConflict:(BOOL)hasConflict{
+  BKHosts *bkHost = [BKHosts withHost:host];
+  if(bkHost){
+    bkHost.iCloudConflictDetected = [NSNumber numberWithBool:hasConflict];
+  }
+  [BKHosts saveHosts];
+}
+
 + (void)loadHosts
 {
   if (DocumentsDirectory == nil) {
