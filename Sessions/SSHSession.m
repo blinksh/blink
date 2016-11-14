@@ -710,6 +710,11 @@ static void kbd_callback(const char *name, int name_len,
   [self debugMsg:@"ssh_session_start: channel created"];
 
   if (_tty_flag) {
+    [self debugMsg:[NSString stringWithFormat:@"Sending env LC_CTYPE = UTF-8"]];    
+    while ((rc = libssh2_channel_setenv(_channel, "LC_CTYPE", "UTF-8")) == LIBSSH2_ERROR_EAGAIN) {
+      waitsocket(_sock, _session);
+    }
+
     while ((rc = libssh2_channel_request_pty(_channel, TERM)) == LIBSSH2_ERROR_EAGAIN) {
       waitsocket(_sock, _session);
     }

@@ -136,8 +136,14 @@ static int closefn(void *handler)
   NSString *output;
   if (_splitChar) {
     output = [[NSString alloc] initWithBytes:[data bytes] length:(len - [_splitChar length]) encoding:NSUTF8StringEncoding];
+    if (!output) {
+      output = [[NSString alloc] initWithBytes:[data bytes] length:(len - [_splitChar length]) encoding:NSASCIIStringEncoding];
+    }
   } else {
     output = [[NSString alloc] initWithBytes:[data bytes] length:(len) encoding:NSUTF8StringEncoding];
+    if (!output) {
+      output = [[NSString alloc] initWithBytes:[data bytes] length:(len) encoding:NSASCIIStringEncoding];
+    }
   }
 
   [_wv write:output];
