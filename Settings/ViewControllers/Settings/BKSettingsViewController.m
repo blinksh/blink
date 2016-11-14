@@ -8,6 +8,7 @@
 
 #import "BKSettingsViewController.h"
 #import "BKDefaults.h"
+#import "BKiCloudSyncHandler.h"
 @interface BKSettingsViewController ()
 
 @property (nonatomic, weak) IBOutlet UILabel *userNameLabel;
@@ -18,6 +19,7 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
+  [[BKiCloudSyncHandler sharedManager]fetchFromiCloud];
     // Uncomment the following line to preserve selection between presentations.
     // self.clearsSelectionOnViewWillAppear = NO;
     
