@@ -11,11 +11,16 @@
 #import "Reachability.h"
 @import CloudKit;
 
-@interface BKiCloudSyncHandler ()
+NSString const *BKiCloudSyncDeletedHosts = @"deletedHosts";
+NSString const *BKiCloudSyncUpdatedHosts = @"updatedHosts";
 
+static NSURL *DocumentsDirectory = nil;
+static NSURL *syncItemsURL = nil;
+static NSMutableDictionary *syncItems = nil;
+
+@interface BKiCloudSyncHandler ()
 @property (nonatomic, strong) NSMutableArray *deletedHosts;
 @property (nonatomic, strong) NSMutableArray *updatedHosts;
-
 @end
 
 @implementation BKiCloudSyncHandler
@@ -29,8 +34,26 @@
   return sharedHandler;
 }
 
++ (void)loadSyncItems
+{
+  if (DocumentsDirectory == nil) {
+    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+    syncItemsURL = [DocumentsDirectory URLByAppendingPathComponent:@"syncItems"];
+  }
+  // Load IDs from file
+  if ((syncItems = [NSKeyedUnarchiver unarchiveObjectWithFile:syncItemsURL.path]) == nil) {
+    // Initialize the structure if it doesn't exist
+    syncItems = [[NSMutableDictionary alloc] init];
+  }
+}
+
 + (void)initialize{
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability) name:kReachabilityChangedNotification object:nil];
+  [self loadSyncItems];
+}
+
++ (BOOL)saveSyncItems{
+    return [NSKeyedArchiver archiveRootObject:syncItems toFile:syncItemsURL.path];
 }
 
 - (void)checkForReachability{
@@ -46,18 +69,11 @@
 }
 
 - (void)deleteAllItems{
-  for (CKRecordID *recordId in _deletedHosts) {
+  NSMutableArray *deletedHosts = [NSMutableArray arrayWithArray:[syncItems objectForKey:BKiCloudSyncDeletedHosts]];
+  for (CKRecordID *recordId in deletedHosts) {
     [self deleteHostWithId:recordId];
   }
-}
-
-- (void)deleteHostWithId:(CKRecordID*)recordId{
-    CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
-  [database deleteRecordWithID:recordId completionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
-    if(error){
-      [_deletedHosts addObject:recordId];
-    }
-  }];
+  [syncItems removeObjectForKey:BKiCloudSyncDeletedHosts];
 }
 
 - (void)fetchFromiCloud{
@@ -94,6 +110,20 @@
 
 - (void)mergeHosts:(NSArray*)hosts{
   
+}
+
+- (void)deleteHostWithId:(CKRecordID*)recordId{
+  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+  [database deleteRecordWithID:recordId completionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
+    if(error){
+      NSMutableArray *deletedHosts = [NSMutableArray array];
+      if([syncItems objectForKey:BKiCloudSyncDeletedHosts]){
+        deletedHosts = [NSMutableArray arrayWithArray:[syncItems objectForKey:BKiCloudSyncDeletedHosts]];
+      }
+      [deletedHosts addObject:recordId];
+      [syncItems setObject:deletedHosts forKey:BKiCloudSyncDeletedHosts];
+    }
+  }];
 }
 
 - (void)mergeKeys:(NSArray*)keys{

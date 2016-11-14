@@ -10,6 +10,9 @@
 @class BKHosts;
 @class CKRecordID;
 
+extern NSString const *BKiCloudSyncDeletedHosts;
+extern NSString const *BKiCloudSyncUpdatedHosts;
+
 @interface BKiCloudSyncHandler : NSObject
 + (id)sharedHandler;
 - (void)fetchFromiCloud;
