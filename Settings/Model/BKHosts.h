@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-
+@import CloudKit;
 enum BKMoshPrediction {
   BKMoshPredictionAdaptive,
   BKMoshPredictionAlways,
@@ -52,11 +52,15 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSNumber *moshPort;
 @property (nonatomic, strong) NSString *moshStartup;
 @property (nonatomic, strong) NSNumber *prediction;
+@property (nonatomic, strong) CKRecordID *iCloudRecordId;
+@property (nonatomic, strong) NSDate *lastModifiedTime;
+@property (nonatomic, strong) NSNumber *iCloudConflictDetected;
 
 + (void)initialize;
 + (instancetype)withHost:(NSString *)ID;
 + (BOOL)saveHosts;
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction;
++ (void)saveHost:(NSString*)host withiCloudId:(CKRecordID*)iCloudId andLastModifiedTime:(NSDate*)lastModifiedTime;
 + (NSMutableArray *)all;
 + (NSInteger)count;
 + (NSString *)predictionStringForRawValue:(int)rawValue;

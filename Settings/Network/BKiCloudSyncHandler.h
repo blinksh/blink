@@ -7,8 +7,14 @@
 //
 
 #import <Foundation/Foundation.h>
+@class BKHosts;
+@class CKRecordID;
 
 @interface BKiCloudSyncHandler : NSObject
-+ (id)sharedManager;
++ (id)sharedHandler;
 - (void)fetchFromiCloud;
+
+- (void)createNewHost:(BKHosts*)host;
+- (void)deleteHostWithId:(CKRecordID*)recordId;
+
 @end

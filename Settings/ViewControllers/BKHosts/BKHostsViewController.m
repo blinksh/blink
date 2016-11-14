@@ -32,6 +32,7 @@
 #import "BKHostsViewController.h"
 #import "BKHosts.h"
 #import "BKHostsDetailViewController.h"
+#import "BKiCloudSyncHandler.h"
 
 @implementation BKHostsViewController
 
@@ -69,6 +70,10 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
+    CKRecordID *recordId = [[BKHosts.all objectAtIndex:indexPath.row]iCloudRecordId];
+    if(recordId != nil){
+      [[BKiCloudSyncHandler sharedHandler]deleteHostWithId:recordId];
+    }
     [BKHosts.all removeObjectAtIndex:indexPath.row];
     [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
     [BKHosts saveHosts];

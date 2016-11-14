@@ -31,7 +31,7 @@
 
 #import "BKHosts.h"
 #import "UICKeyChainStore/UICKeyChainStore.h"
-
+#import "BKiCloudSyncHandler.h"
 NSMutableArray *Hosts;
 
 static NSURL *DocumentsDirectory = nil;
@@ -52,7 +52,9 @@ static UICKeyChainStore *Keychain = nil;
   _moshPort = [coder decodeObjectForKey:@"moshPort"];
   _moshStartup = [coder decodeObjectForKey:@"moshStartup"];
   _prediction = [coder decodeObjectForKey:@"prediction"];
-
+  _lastModifiedTime = [coder decodeObjectForKey:@"lastModifiedTime"];
+  _iCloudRecordId = [coder decodeObjectForKey:@"iCloudRecordId"];
+  _iCloudConflictDetected = [coder decodeObjectForKey:@"iCloudConflictDetected"];
   return self;
 }
 
@@ -68,6 +70,9 @@ static UICKeyChainStore *Keychain = nil;
   [encoder encodeObject:_moshPort forKey:@"moshPort"];
   [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
   [encoder encodeObject:_prediction forKey:@"prediction"];
+  [encoder encodeObject:_lastModifiedTime forKey:@"lastModifiedTime"];
+  [encoder encodeObject:_iCloudRecordId forKey:@"iCloudRecordId"];
+  [encoder encodeObject:_iCloudConflictDetected forKey:@"iCloudConflictDetected"];
 }
 
 - (id)initWithHost:(NSString *)host hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user passwordRef:(NSString *)passwordRef hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
@@ -168,7 +173,17 @@ static UICKeyChainStore *Keychain = nil;
   if (![BKHosts saveHosts]) {
     return nil;
   }
+  [[BKiCloudSyncHandler sharedHandler]createNewHost:bkHost];
   return bkHost;
+}
+
++ (void)saveHost:(NSString*)host withiCloudId:(CKRecordID*)iCloudId andLastModifiedTime:(NSDate*)lastModifiedTime{
+  BKHosts *bkHost = [BKHosts withHost:host];
+  if(bkHost){
+    bkHost.iCloudRecordId = iCloudId;
+    bkHost.lastModifiedTime = lastModifiedTime;
+  }
+  [BKHosts saveHosts];
 }
 
 + (void)loadHosts
