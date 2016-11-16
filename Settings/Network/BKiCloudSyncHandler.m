@@ -90,51 +90,63 @@ static NSMutableDictionary *syncItems = nil;
 
 - (void)createNewHost:(BKHosts*)host{
   CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
-  CKRecord *hostRecord = [[CKRecord alloc]initWithRecordType:@"BKHost"];
-  [hostRecord setValue:host.host forKey:@"host"];
-  [hostRecord setValue:host.hostName forKey:@"hostName"];
-  [hostRecord setValue:host.key forKey:@"key"];
-  [hostRecord setValue:host.moshPort forKey:@"moshPort"];
-  [hostRecord setValue:host.moshServer forKey:@"moshServer"];
-  [hostRecord setValue:host.moshStartup forKey:@"moshStartup"];
-  [hostRecord setValue:host.password forKey:@"password"];
-  [hostRecord setValue:host.passwordRef forKey:@"passwordRef"];
-  [hostRecord setValue:host.port forKey:@"port"];
-  [hostRecord setValue:host.prediction forKey:@"prediction"];
-  [hostRecord setValue:host.user forKey:@"user"];
-
+  CKRecord *hostRecord = [BKHosts recordFromHost:host];
   [database saveRecord:hostRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
     [BKHosts saveHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
   }];
 }
 
+
 - (void)mergeHosts:(NSArray*)hostRecords{
   for (CKRecord *hostRecord in hostRecords) {
     if([hostRecord valueForKey:@"host"]){
       NSString *host = [hostRecord valueForKey:@"host"];
-      //If a host with same name exists in iCloud and local it could be either of the following 2 cases
-      //1. An update to an existing Host
-      //2. A duplicate has been created
-      BKHosts *hosts = [BKHosts withHost:host];
+      BKHosts *hosts = [BKHosts withiCloudId:hostRecord.recordID];
+      //If host exists in system, Find which is new
       if(hosts){
-        if(hosts.iCloudRecordId){
-          //Check last updated time
-          if(hosts.lastModifiedTime > hostRecord.modificationDate){
-            //TODO: Local is new...Update iCloud to Local values
+        if([hosts.lastModifiedTime compare:hostRecord.modificationDate] == NSOrderedDescending){
+          //Local is new...Update iCloud to Local values
+          CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+          CKRecord *udpatedRecord = [BKHosts recordFromHost:hosts];
+          CKModifyRecordsOperation *updateOperation = [[CKModifyRecordsOperation alloc]initWithRecordsToSave:@[udpatedRecord] recordIDsToDelete:nil];
+          updateOperation.savePolicy = CKRecordSaveAllKeys;
+          updateOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+          updateOperation.modifyRecordsCompletionBlock = ^(NSArray<CKRecord *> * _Nullable savedRecords, NSArray<CKRecordID *> * _Nullable deletedRecordIDs, NSError * _Nullable operationError){
             
-          }else{
-            //TODO: iCloud value is new. Update local to iCloud values
             
-          }
+          };
+          [database addOperation:updateOperation];
         }else{
-          [BKHosts markHost:host withConflict:YES];
+          //iCloud is new, update local to reflect iCLoud values
+          [self saveHostRecord:hostRecord withHost:host];
         }
       }else{
-        //
-        //TODO: New items add to local
+        //If hosts is new, see if it exists
+        //Check if name exists, if YES, Mark as conflict else, add to local
+        BKHosts *existingHost = [BKHosts withHost:host];
+        if(existingHost){
+          [BKHosts markHost:host withConflict:YES];
+        }else{
+          [self saveHostRecord:hostRecord withHost:host];
+        }
       }
     }
   }
+  //Save all local records to iCloud
+  for (BKHosts *hosts in [BKHosts all]) {
+    if(hosts.iCloudRecordId == nil && !hosts.iCloudConflictDetected){
+      [self createNewHost:hosts];
+    }else{
+      NSLog(@"Conflict detected Hence not saving to iCloud");
+    }
+  }
+}
+
+- (void)saveHostRecord:(CKRecord*)hostRecord withHost:(NSString*)host{
+  BKHosts *updatedHost = [BKHosts hostFromRecord:hostRecord];
+  [BKHosts saveHost:host withNewHost:updatedHost.host hostName:updatedHost.hostName sshPort:updatedHost.port.stringValue user:updatedHost.user password:updatedHost.password hostKey:updatedHost.key moshServer:updatedHost.moshServer moshPort:updatedHost.moshPort.stringValue startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue];
+  [BKHosts saveHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
+
 }
 
 - (void)deleteHostWithId:(CKRecordID*)recordId{

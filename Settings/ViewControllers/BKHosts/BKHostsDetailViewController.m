@@ -35,6 +35,7 @@
 #import "BKPubKey.h"
 #import "BKPubKeyViewController.h"
 #import "BKDefaults.h"
+#import "BKiCloudSyncHandler.h"
 
 @interface BKHostsDetailViewController () <UITextFieldDelegate>
 
@@ -154,6 +155,9 @@
       errorMsg = @"Spaces are not permitted in the User.";
     } else {
       _bkHost = [BKHosts saveHost:self.bkHost.host withNewHost:_hostField.text hostName:_hostNameField.text sshPort:_sshPortField.text user:_userField.text password:_passwordField.text hostKey:_hostKeyDetail.text moshServer:_moshServerField.text moshPort:_moshPortField.text startUpCmd:_startUpCmdField.text prediction:[BKHosts predictionValueForString:_predictionDetail.text]];
+      [BKHosts saveHost:_bkHost.host withiCloudId:_bkHost.iCloudRecordId andLastModifiedTime:[NSDate date]];
+      [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
+      
       if (!_bkHost) {
         errorMsg = @"Could not create new host.";
       }

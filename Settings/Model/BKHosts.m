@@ -124,6 +124,16 @@ static UICKeyChainStore *Keychain = nil;
   return nil;
 }
 
++ (instancetype)withiCloudId:(CKRecordID *)record
+{
+  for (BKHosts *host in Hosts) {
+    if ([host->_iCloudRecordId isEqual:record]) {
+      return host;
+    }
+  }
+  return nil;
+}
+
 + (NSMutableArray *)all
 {
   return Hosts;
@@ -169,11 +179,9 @@ static UICKeyChainStore *Keychain = nil;
     bkHost.moshStartup = startUpCmd;
     bkHost.prediction = [NSNumber numberWithInt:prediction];
   }
-
   if (![BKHosts saveHosts]) {
     return nil;
   }
-  [[BKiCloudSyncHandler sharedHandler]createNewHost:bkHost];
   return bkHost;
 }
 
@@ -250,4 +258,33 @@ static UICKeyChainStore *Keychain = nil;
 {
   return [NSMutableArray arrayWithObjects:@"Adaptive", @"Always", @"Never", @"Experimental", nil];
 }
+
++ (CKRecord*)recordFromHost:(BKHosts*)host{
+  
+  CKRecord *hostRecord = nil;
+  if(host.iCloudRecordId){
+    hostRecord = [[CKRecord alloc]initWithRecordType:@"BKHost" recordID:host.iCloudRecordId];
+  }else{
+    hostRecord = [[CKRecord alloc]initWithRecordType:@"BKHost"];
+  }
+  [hostRecord setValue:host.host forKey:@"host"];
+  [hostRecord setValue:host.hostName forKey:@"hostName"];
+  [hostRecord setValue:host.key forKey:@"key"];
+  [hostRecord setValue:host.moshPort forKey:@"moshPort"];
+  [hostRecord setValue:host.moshServer forKey:@"moshServer"];
+  [hostRecord setValue:host.moshStartup forKey:@"moshStartup"];
+  [hostRecord setValue:host.password forKey:@"password"];
+  [hostRecord setValue:host.passwordRef forKey:@"passwordRef"];
+  [hostRecord setValue:host.port forKey:@"port"];
+  [hostRecord setValue:host.prediction forKey:@"prediction"];
+  [hostRecord setValue:host.user forKey:@"user"];
+  return hostRecord;
+}
+
++ (BKHosts*)hostFromRecord:(CKRecord*)hostRecord{
+  BKHosts *host = [[BKHosts alloc]initWithHost:[hostRecord valueForKey:@"host"] hostName:[hostRecord valueForKey:@"hostName"] sshPort:[[hostRecord valueForKey:@"port"]stringValue] user:[hostRecord valueForKey:@"user"] passwordRef:[hostRecord valueForKey:@"passwordRef"] hostKey:[hostRecord valueForKey:@"key"] moshServer:[hostRecord valueForKey:@"moshServer"] moshPort:[hostRecord valueForKey:@"moshPort"] startUpCmd:[hostRecord valueForKey:@"moshStartup"] prediction:[[hostRecord valueForKey:@"prediction"]intValue]];
+  return host;
+  
+}
+
 @end

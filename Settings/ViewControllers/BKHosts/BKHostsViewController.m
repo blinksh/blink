@@ -55,6 +55,11 @@
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
   BKHosts *pk = [BKHosts.all objectAtIndex:pkIdx];
 
+  if(pk.iCloudConflictDetected){
+    cell.textLabel.textColor = [UIColor redColor];
+  }else{
+    cell.textLabel.textColor = [UIColor blackColor];
+  }
   // Configure the cell...
   cell.textLabel.text = pk.host;
   cell.detailTextLabel.text = @"";

@@ -67,4 +67,7 @@ enum BKMoshPrediction {
 + (NSString *)predictionStringForRawValue:(int)rawValue;
 + (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString;
 + (NSMutableArray *)predictionStringList;
++ (CKRecord*)recordFromHost:(BKHosts*)host;
++ (BKHosts*)hostFromRecord:(CKRecord*)hostRecord;
++ (instancetype)withiCloudId:(CKRecordID *)record;
 @end
