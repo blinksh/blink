@@ -87,7 +87,6 @@
   [self.hostKeyDetail addObserver:self forKeyPath:@"text" options:0 context:nil];
   [self.predictionDetail addObserver:self forKeyPath:@"text" options:0 context:nil];
 
-
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
 
@@ -142,6 +141,9 @@
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
+  if(_bkHost.iCloudConflictDetected.boolValue){
+    return NO;
+  }
   NSString *errorMsg;
   if ([identifier isEqualToString:@"unwindFromCreate"]) {
     //An existing host with same name should not exist, but while editing an existing Host, it should not show error
@@ -184,6 +186,13 @@
   [self.predictionDetail removeObserver:self forKeyPath:@"text"];
 }
 
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
+  if(_bkHost.iCloudConflictDetected.boolValue){
+    return NO;
+  }
+  return YES;
+}
+
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
   if (textField == _sshPortField || textField == _moshPortField) {
@@ -212,6 +221,70 @@
     if ([keyPath isEqualToString:@"text"]) {
       [self textFieldDidChange:nil];
     }
+  }
+}
+
+# pragma mark - UITableView Delegates
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
+  if(indexPath.section == 1){
+    if(indexPath.row == 0){
+      BKHostsDetailViewController *iCloudCopyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"createHost"];
+      iCloudCopyViewController.bkHost = _bkHost.iCloudConflictCopy;
+      [self.navigationController pushViewController:iCloudCopyViewController animated:YES];
+    }
+  }
+}
+
+- (BOOL)showConflictSection{
+  return (_bkHost.iCloudConflictDetected.boolValue && _bkHost.iCloudConflictCopy);
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+  if (section == 1 && ![self showConflictSection]) {
+    //header height for selected section
+    return 0.1;
+  } else {
+    //keeps all other Headers unaltered
+    return [super tableView:tableView heightForHeaderInSection:section];
+  }
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+  if (section == 1 && ![self showConflictSection]) {
+    //header height for selected section
+    return 0.1;
+  } else {
+    // keeps all other footers unaltered
+    return [super tableView:tableView heightForFooterInSection:section];
+  }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+  if (section == 1) { //Index number of interested section
+    if (![self showConflictSection]) {
+      return 0; //number of row in section when you click on hide
+    } else {
+      return 3; //number of row in section when you click on show (if it's higher than rows in Storyboard, app will crash)
+    }
+  } else {
+    return [super tableView:tableView numberOfRowsInSection:section]; //keeps inalterate all other rows
+  }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
+  if(section == 1 && ![self showConflictSection]){
+    return @"";
+  }else{
+    return [super tableView:tableView titleForHeaderInSection:section];
+  }
+}
+
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
+  if(section == 1 && ![self showConflictSection]){
+    return @"";
+  }else{
+    return [super tableView:tableView titleForFooterInSection:section];
   }
 }
 
