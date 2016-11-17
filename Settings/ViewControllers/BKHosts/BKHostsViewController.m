@@ -38,8 +38,10 @@
 
 - (void)viewDidLoad{
   [super viewDidLoad];
+  [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:YES];
   [[BKiCloudSyncHandler sharedHandler]setMergeHostCompletionBlock:^{
     dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:NO];
       [self.tableView reloadData];
     });
   }];
