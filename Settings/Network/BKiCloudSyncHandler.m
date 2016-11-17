@@ -164,7 +164,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
         //Check if name exists, if YES, Mark as conflict else, add to local
         BKHosts *existingHost = [BKHosts withHost:host];
         if(existingHost){
-          [BKHosts markHost:host withConflict:YES];
+          [BKHosts markHost:host forRecord:hostRecord withConflict:YES];
         }else{
           [self saveHostRecord:hostRecord withHost:host];
         }
