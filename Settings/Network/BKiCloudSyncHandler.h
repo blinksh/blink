@@ -19,10 +19,13 @@ extern NSString const *BKiCloudSyncDeletedHosts;
 extern NSString const *BKiCloudSyncUpdatedHosts;
 
 @interface BKiCloudSyncHandler : NSObject
+
+@property (nonatomic, copy) void (^mergeHostCompletionBlock) (void);
+
 + (id)sharedHandler;
+- (void)checkForReachability:(NSNotification*)notification;
 - (void)fetchFromiCloud;
 - (void)deleteRecord:(CKRecordID*)recordId ofType:(BKiCloudRecordType)recordType;
-
 - (void)createNewHost:(BKHosts*)host;
 
 @end

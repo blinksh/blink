@@ -55,7 +55,7 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) CKRecordID *iCloudRecordId;
 @property (nonatomic, strong) NSDate *lastModifiedTime;
 @property (nonatomic, strong) NSNumber *iCloudConflictDetected;
-@property (nonatomic, weak) BKHosts *iCloudConflictCopy;
+@property (nonatomic, strong) BKHosts *iCloudConflictCopy;
 
 + (void)initialize;
 + (instancetype)withHost:(NSString *)ID;

@@ -179,6 +179,9 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       NSLog(@"Conflict detected Hence not saving to iCloud");
     }
   }
+  if(_mergeHostCompletionBlock != nil){
+    _mergeHostCompletionBlock();
+  }
 }
 
 - (void)saveHostRecord:(CKRecord*)hostRecord withHost:(NSString*)host{

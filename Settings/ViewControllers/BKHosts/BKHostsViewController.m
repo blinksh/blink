@@ -36,6 +36,16 @@
 
 @implementation BKHostsViewController
 
+- (void)viewDidLoad{
+  [super viewDidLoad];
+  [[BKiCloudSyncHandler sharedHandler]setMergeHostCompletionBlock:^{
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.tableView reloadData];
+    });
+  }];
+  [[BKiCloudSyncHandler sharedHandler]checkForReachability:nil];
+}
+
 #pragma mark - UITable View delegates
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
