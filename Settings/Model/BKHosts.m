@@ -282,7 +282,7 @@ static UICKeyChainStore *Keychain = nil;
 }
 
 + (BKHosts*)hostFromRecord:(CKRecord*)hostRecord{
-  BKHosts *host = [[BKHosts alloc]initWithHost:[hostRecord valueForKey:@"host"] hostName:[hostRecord valueForKey:@"hostName"] sshPort:[[hostRecord valueForKey:@"port"]stringValue] user:[hostRecord valueForKey:@"user"] passwordRef:[hostRecord valueForKey:@"passwordRef"] hostKey:[hostRecord valueForKey:@"key"] moshServer:[hostRecord valueForKey:@"moshServer"] moshPort:[hostRecord valueForKey:@"moshPort"] startUpCmd:[hostRecord valueForKey:@"moshStartup"] prediction:[[hostRecord valueForKey:@"prediction"]intValue]];
+  BKHosts *host = [[BKHosts alloc]initWithHost:[hostRecord valueForKey:@"host"] hostName:[hostRecord valueForKey:@"hostName"] sshPort:[[hostRecord valueForKey:@"port"]stringValue] user:[hostRecord valueForKey:@"user"] passwordRef:[hostRecord valueForKey:@"passwordRef"] hostKey:[hostRecord valueForKey:@"key"] moshServer:[hostRecord valueForKey:@"moshServer"] moshPort:[[hostRecord valueForKey:@"moshPort"]stringValue] startUpCmd:[hostRecord valueForKey:@"moshStartup"] prediction:[[hostRecord valueForKey:@"prediction"]intValue]];
   return host;
   
 }

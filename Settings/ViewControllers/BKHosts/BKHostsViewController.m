@@ -77,7 +77,7 @@
   if (editingStyle == UITableViewCellEditingStyleDelete) {
     CKRecordID *recordId = [[BKHosts.all objectAtIndex:indexPath.row]iCloudRecordId];
     if(recordId != nil){
-      [[BKiCloudSyncHandler sharedHandler]deleteHostWithId:recordId];
+      [[BKiCloudSyncHandler sharedHandler]deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
     }
     [BKHosts.all removeObjectAtIndex:indexPath.row];
     [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];

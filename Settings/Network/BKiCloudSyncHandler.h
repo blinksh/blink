@@ -10,14 +10,19 @@
 @class BKHosts;
 @class CKRecordID;
 
+typedef enum{
+  BKiCloudRecordTypeHosts,
+  BKiCloudRecordTypeKeys
+}BKiCloudRecordType;
+
 extern NSString const *BKiCloudSyncDeletedHosts;
 extern NSString const *BKiCloudSyncUpdatedHosts;
 
 @interface BKiCloudSyncHandler : NSObject
 + (id)sharedHandler;
 - (void)fetchFromiCloud;
+- (void)deleteRecord:(CKRecordID*)recordId ofType:(BKiCloudRecordType)recordType;
 
 - (void)createNewHost:(BKHosts*)host;
-- (void)deleteHostWithId:(CKRecordID*)recordId;
 
 @end
