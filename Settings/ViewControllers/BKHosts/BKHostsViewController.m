@@ -67,7 +67,7 @@
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
   BKHosts *pk = [BKHosts.all objectAtIndex:pkIdx];
 
-  if(pk.iCloudConflictDetected){
+  if(pk.iCloudConflictDetected == [NSNumber numberWithBool:YES]){
     cell.textLabel.textColor = [UIColor redColor];
   }else{
     cell.textLabel.textColor = [UIColor blackColor];

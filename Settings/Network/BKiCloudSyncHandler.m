@@ -173,7 +173,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   }
   //Save all local records to iCloud
   for (BKHosts *hosts in [BKHosts all]) {
-    if(hosts.iCloudRecordId == nil && !hosts.iCloudConflictDetected){
+    if(hosts.iCloudRecordId == nil && (!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])){
       [self createNewHost:hosts];
     }else{
       NSLog(@"Conflict detected Hence not saving to iCloud");

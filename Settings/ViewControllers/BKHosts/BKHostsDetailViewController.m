@@ -232,6 +232,15 @@
       BKHostsDetailViewController *iCloudCopyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"createHost"];
       iCloudCopyViewController.bkHost = _bkHost.iCloudConflictCopy;
       [self.navigationController pushViewController:iCloudCopyViewController animated:YES];
+    } else if (indexPath.row == 1){
+      if(_bkHost.iCloudRecordId){
+        [[BKiCloudSyncHandler sharedHandler]deleteRecord:_bkHost.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
+      }
+      [BKHosts saveHost:_bkHost.host withNewHost:_bkHost.iCloudConflictCopy.host hostName:_bkHost.iCloudConflictCopy.hostName sshPort:_bkHost.iCloudConflictCopy.port.stringValue user:_bkHost.iCloudConflictCopy.user password:_bkHost.iCloudConflictCopy.password hostKey:_bkHost.iCloudConflictCopy.key moshServer:_bkHost.iCloudConflictCopy.moshServer moshPort:_bkHost.iCloudConflictCopy.moshPort.stringValue startUpCmd:_bkHost.iCloudConflictCopy.moshStartup prediction:_bkHost.iCloudConflictCopy.prediction.intValue];
+      [BKHosts saveHost:_bkHost.iCloudConflictCopy.host withiCloudId:_bkHost.iCloudConflictCopy.iCloudRecordId andLastModifiedTime:_bkHost.iCloudConflictCopy.lastModifiedTime];
+      [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
+      [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
+      [self.navigationController popViewControllerAnimated:YES];
     }
   }
 }
