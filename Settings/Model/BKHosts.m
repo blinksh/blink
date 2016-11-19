@@ -203,6 +203,9 @@ static UICKeyChainStore *Keychain = nil;
       conflictCopy.lastModifiedTime = record.modificationDate;
       bkHost.iCloudConflictCopy = conflictCopy;
     }
+    if(!hasConflict){
+      bkHost.iCloudConflictCopy = nil;  
+    }
     bkHost.iCloudConflictDetected = [NSNumber numberWithBool:hasConflict];
   }
   [BKHosts saveHosts];

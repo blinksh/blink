@@ -241,6 +241,13 @@
       [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
       [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
       [self.navigationController popViewControllerAnimated:YES];
+    } else if(indexPath.row == 2){
+      [[BKiCloudSyncHandler sharedHandler]deleteRecord:_bkHost.iCloudConflictCopy.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
+      if(!_bkHost.iCloudRecordId){
+        [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
+      }
+      [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
+      [self.navigationController popViewControllerAnimated:YES];
     }
   }
 }
