@@ -11,7 +11,7 @@
 #import "BKPubKey.h"
 #import "Reachability.h"
 @import CloudKit;
-
+@import UIKit;
 
 
 NSString const *BKiCloudSyncDeletedHosts = @"deletedHosts";
@@ -43,6 +43,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   self = [super init];
   if(self){
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:UIApplicationDidBecomeActiveNotification object:nil];
     _internetReachable = [Reachability reachabilityForInternetConnection];
     [_internetReachable startNotifier];
     [self loadSyncItems];
@@ -194,6 +195,10 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 - (void)mergeKeys:(NSArray*)keys{
   
+}
+
+- (void)dealloc{
+  [[NSNotificationCenter defaultCenter]removeObserver:self];
 }
 
 //- (void)createNewKey:(BKPubKey*)key{
