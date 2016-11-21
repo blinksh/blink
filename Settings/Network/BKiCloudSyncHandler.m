@@ -42,13 +42,32 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 - (instancetype)init{
   self = [super init];
   if(self){
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:kReachabilityChangedNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:UIApplicationDidBecomeActiveNotification object:nil];
-    _internetReachable = [Reachability reachabilityForInternetConnection];
-    [_internetReachable startNotifier];
-    [self loadSyncItems];
+    [self initSyncHandler];
   }
   return self;
+}
+
+- (void)initSyncHandler{
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:kReachabilityChangedNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:UIApplicationDidBecomeActiveNotification object:nil];
+  _internetReachable = [Reachability reachabilityForInternetConnection];
+  [_internetReachable startNotifier];
+  [self loadSyncItems];
+  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+  CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:@"DefaultZone"];
+  [database saveRecordZone:zone
+         completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
+           
+         }];
+  NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
+  CKQuerySubscription *subscripton = [[CKQuerySubscription alloc]initWithRecordType:@"BKHost" predicate:predicate options:(CKQuerySubscriptionOptionsFiresOnRecordCreation|CKQuerySubscriptionOptionsFiresOnRecordUpdate|CKQuerySubscriptionOptionsFiresOnRecordDeletion)];
+  CKNotificationInfo *info = [[CKNotificationInfo alloc]init];
+  info.alertBody = @"Host update";
+  subscripton.notificationInfo = info;
+  
+  [database saveSubscription:subscripton completionHandler:^(CKSubscription * _Nullable subscription, NSError * _Nullable error) {
+    
+  }];
 }
 
 - (void)loadSyncItems
@@ -75,7 +94,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   if(remoteHostStatus == NotReachable) {
 
   }else{
-    [self deleteAllItems];
     [self fetchFromiCloud];
   }
 }
@@ -95,6 +113,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 }
 
 - (void)fetchFromiCloud{
+  [self deleteAllItems];
   CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
   CKQuery *hostQuery = [[CKQuery alloc]initWithRecordType:@"BKHost" predicate:[NSPredicate predicateWithValue:YES]];
   [database performQuery:hostQuery inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {

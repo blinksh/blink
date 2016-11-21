@@ -30,6 +30,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
+#import "BKiCloudSyncHandler.h"
+@import UserNotifications;
+@import CloudKit;
 
 #if HOCKEYSDK
 @import HockeySDK;
@@ -56,6 +59,10 @@
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
 #endif
   
+  [[UNUserNotificationCenter currentNotificationCenter]requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+    
+  }];
+  [application registerForRemoteNotifications];
   return YES;
 }
 
@@ -86,4 +93,7 @@
   // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+  [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
+}
 @end
