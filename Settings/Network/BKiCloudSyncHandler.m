@@ -191,14 +191,26 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       }
     }
   }
+  NSMutableArray *itemsDeletedFromiCloud = [NSMutableArray array];
   //Save all local records to iCloud
   for (BKHosts *hosts in [BKHosts all]) {
     if(hosts.iCloudRecordId == nil && (!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])){
       [self createNewHost:hosts];
     }else{
       NSLog(@"Conflict detected Hence not saving to iCloud");
+      //Find items deleted from iCloud
+      NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@",hosts.iCloudRecordId.recordName];
+      NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
+      if(filteredAray.count <= 0){
+        [itemsDeletedFromiCloud addObject:hosts];
+      }
     }
   }
+  if(itemsDeletedFromiCloud.count > 0){
+    [[BKHosts all]removeObjectsInArray:itemsDeletedFromiCloud];
+  }
+  
+  
   if(_mergeHostCompletionBlock != nil){
     _mergeHostCompletionBlock();
   }
@@ -206,6 +218,10 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 - (void)saveHostRecord:(CKRecord*)hostRecord withHost:(NSString*)host{
   BKHosts *updatedHost = [BKHosts hostFromRecord:hostRecord];
+  BKHosts *oldHost = [BKHosts withiCloudId:hostRecord.recordID];
+  if(![updatedHost.host isEqualToString:oldHost.host]){
+    [[BKHosts all]removeObject:oldHost];
+  }
   [BKHosts saveHost:host withNewHost:updatedHost.host hostName:updatedHost.hostName sshPort:updatedHost.port.stringValue user:updatedHost.user password:updatedHost.password hostKey:updatedHost.key moshServer:updatedHost.moshServer moshPort:updatedHost.moshPort.stringValue startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue];
   [BKHosts saveHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
 }
