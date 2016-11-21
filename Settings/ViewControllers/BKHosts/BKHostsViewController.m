@@ -68,7 +68,12 @@
   BKHosts *pk = [BKHosts.all objectAtIndex:pkIdx];
 
   if(pk.iCloudConflictDetected == [NSNumber numberWithBool:YES]){
-    cell.textLabel.textColor = [UIColor redColor];
+    if((pk.iCloudConflictDetected.boolValue && pk.iCloudConflictCopy)){
+      cell.textLabel.textColor = [UIColor redColor];
+    }else{
+      cell.textLabel.textColor = [UIColor blackColor];
+      [BKHosts markHost:pk.host forRecord:[BKHosts recordFromHost:pk] withConflict:NO];
+    }
   }else{
     cell.textLabel.textColor = [UIColor blackColor];
   }

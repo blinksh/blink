@@ -86,7 +86,7 @@
 
   [self.hostKeyDetail addObserver:self forKeyPath:@"text" options:0 context:nil];
   [self.predictionDetail addObserver:self forKeyPath:@"text" options:0 context:nil];
-
+  //If the conflict record has been deleted from the other device
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
 

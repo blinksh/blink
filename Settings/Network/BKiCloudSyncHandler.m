@@ -199,10 +199,12 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     }else{
       NSLog(@"Conflict detected Hence not saving to iCloud");
       //Find items deleted from iCloud
-      NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@",hosts.iCloudRecordId.recordName];
-      NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
-      if(filteredAray.count <= 0){
-        [itemsDeletedFromiCloud addObject:hosts];
+      if((!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])){
+        NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@",hosts.iCloudRecordId.recordName];
+        NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
+        if(filteredAray.count <= 0){
+          [itemsDeletedFromiCloud addObject:hosts];
+        }
       }
     }
   }
