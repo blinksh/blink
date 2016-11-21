@@ -94,6 +94,6 @@
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
-  [[BKiCloudSyncHandler sharedHandler]fetchFromiCloud];
+  [[BKiCloudSyncHandler sharedHandler]checkForReachability:nil];
 }
 @end
