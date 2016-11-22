@@ -32,10 +32,9 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 @implementation BKiCloudSyncHandler
 
 + (id)sharedHandler{
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
+  if(sharedHandler == nil){
     sharedHandler = [[self alloc] init];
-  });
+  }
   return sharedHandler;
 }
 
