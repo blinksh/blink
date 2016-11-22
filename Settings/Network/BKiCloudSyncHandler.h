@@ -25,8 +25,8 @@ extern NSString const *BKiCloudZoneName;
 @property (nonatomic, copy) void (^mergeHostCompletionBlock) (void);
 
 + (id)sharedHandler;
-- (void)checkForReachability:(NSNotification*)notification;
-- (void)fetchFromiCloud;
+- (void)checkForReachabilityAndSync:(NSNotification*)notification;
+- (void)syncFromiCloud;
 - (void)deleteRecord:(CKRecordID*)recordId ofType:(BKiCloudRecordType)recordType;
 - (void)createNewHost:(BKHosts*)host;
 

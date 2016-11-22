@@ -49,8 +49,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 }
 
 - (void)initSyncHandler{
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:kReachabilityChangedNotification object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachability:) name:UIApplicationDidBecomeActiveNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:kReachabilityChangedNotification object:nil];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:UIApplicationDidBecomeActiveNotification object:nil];
   _internetReachable = [Reachability reachabilityForInternetConnection];
   [_internetReachable startNotifier];
   [self loadSyncItems];
@@ -88,14 +88,14 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     return [NSKeyedArchiver archiveRootObject:syncItems toFile:syncItemsURL.path];
 }
 
-- (void)checkForReachability:(NSNotification*)notification{
+- (void)checkForReachabilityAndSync:(NSNotification*)notification{
   Reachability *reachability = [Reachability reachabilityForInternetConnection];
   [reachability startNotifier];
   NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
   if(remoteHostStatus == NotReachable) {
 
   }else{
-    [self fetchFromiCloud];
+    [self syncFromiCloud];
   }
 }
 
@@ -113,7 +113,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   [syncItems removeObjectForKey:BKiCloudSyncDeletedKeys];
 }
 
-- (void)fetchFromiCloud{
+- (void)syncFromiCloud{
   [self deleteAllItems];
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
   CKQuery *hostQuery = [[CKQuery alloc]initWithRecordType:@"BKHost" predicate:[NSPredicate predicateWithValue:YES]];

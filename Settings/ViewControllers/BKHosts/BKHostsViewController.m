@@ -45,7 +45,7 @@
       [self.tableView reloadData];
     });
   }];
-  [[BKiCloudSyncHandler sharedHandler]checkForReachability:nil];
+  [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
 }
 
 #pragma mark - UITable View delegates
