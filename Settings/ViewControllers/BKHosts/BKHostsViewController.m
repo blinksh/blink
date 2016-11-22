@@ -130,4 +130,8 @@
   }
 }
 
+- (void)dealloc{
+  [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:NO];
+}
+
 @end

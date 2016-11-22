@@ -7,6 +7,7 @@
 //
 
 #import "BKiCloudSyncHandler.h"
+#import "BKUserConfigurationViewController.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #import "Reachability.h"
@@ -34,10 +35,16 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 @implementation BKiCloudSyncHandler
 
 + (id)sharedHandler{
-  if(sharedHandler == nil){
-    sharedHandler = [[self alloc] init];
+  if([BKUserConfigurationViewController userSettingsValueForKey:@"iCloudSync"]){
+    if(sharedHandler == nil){
+      sharedHandler = [[self alloc] init];
+    }
+    return sharedHandler;
+  }else{
+    //If user settings is turned off, return nil, so that all messages are ignored
+    [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:NO];
+    return nil;
   }
-  return sharedHandler;
 }
 
 - (instancetype)init{
@@ -89,14 +96,12 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 }
 
 - (void)checkForReachabilityAndSync:(NSNotification*)notification{
-  Reachability *reachability = [Reachability reachabilityForInternetConnection];
-  [reachability startNotifier];
-  NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
-  if(remoteHostStatus == NotReachable) {
-
-  }else{
-    [self syncFromiCloud];
-  }
+    Reachability *reachability = [Reachability reachabilityForInternetConnection];
+    [reachability startNotifier];
+    NetworkStatus remoteHostStatus = [reachability currentReachabilityStatus];
+    if(!(remoteHostStatus == NotReachable)) {
+      [self syncFromiCloud];
+    }
 }
 
 - (void)deleteAllItems{
