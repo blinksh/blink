@@ -16,6 +16,8 @@
 
 NSString const *BKiCloudSyncDeletedHosts = @"deletedHosts";
 NSString const *BKiCloudSyncDeletedKeys = @"deletedKeys";
+NSString *BKiCloudContainerIdentifier = @"iCloud.com.carloscabanero.blinkshell";
+NSString *BKiCloudZoneName = @"DefaultZone";
 
 static NSURL *DocumentsDirectory = nil;
 static NSURL *syncItemsURL = nil;
@@ -52,8 +54,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   _internetReachable = [Reachability reachabilityForInternetConnection];
   [_internetReachable startNotifier];
   [self loadSyncItems];
-  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
-  CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:@"DefaultZone"];
+  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
+  CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:BKiCloudZoneName];
   [database saveRecordZone:zone
          completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
            
@@ -113,7 +115,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 - (void)fetchFromiCloud{
   [self deleteAllItems];
-  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
   CKQuery *hostQuery = [[CKQuery alloc]initWithRecordType:@"BKHost" predicate:[NSPredicate predicateWithValue:YES]];
   [database performQuery:hostQuery inZoneWithID:nil completionHandler:^(NSArray<CKRecord *> * _Nullable results, NSError * _Nullable error) {
     [self mergeHosts:results];
@@ -131,7 +133,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   }else{
     key = BKiCloudSyncDeletedKeys;
   }
-  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
   [database deleteRecordWithID:recordId completionHandler:^(CKRecordID * _Nullable recordID, NSError * _Nullable error) {
     if(error){
       NSMutableArray *deletedItems = [NSMutableArray array];
@@ -147,7 +149,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 # pragma mark - Host Methods
 
 - (void)createNewHost:(BKHosts*)host{
-  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
   CKRecord *hostRecord = [BKHosts recordFromHost:host];
   [database saveRecord:hostRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
     [BKHosts saveHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
@@ -164,7 +166,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       if(hosts){
         if([hosts.lastModifiedTime compare:hostRecord.modificationDate] == NSOrderedDescending){
           //Local is new...Update iCloud to Local values
-          CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
+          CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
           CKRecord *udpatedRecord = [BKHosts recordFromHost:hosts];
           CKModifyRecordsOperation *updateOperation = [[CKModifyRecordsOperation alloc]initWithRecordsToSave:@[udpatedRecord] recordIDsToDelete:nil];
           updateOperation.savePolicy = CKRecordSaveAllKeys;

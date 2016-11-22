@@ -17,6 +17,8 @@ typedef enum{
 
 extern NSString const *BKiCloudSyncDeletedHosts;
 extern NSString const *BKiCloudSyncUpdatedHosts;
+extern NSString const *BKiCloudContainerIdentifier;
+extern NSString const *BKiCloudZoneName;
 
 @interface BKiCloudSyncHandler : NSObject
 
