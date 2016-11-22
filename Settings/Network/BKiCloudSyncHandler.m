@@ -65,7 +65,10 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:BKiCloudZoneName];
   [database saveRecordZone:zone
          completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
-           
+           if(error){
+             //Reset shared handler so that init is called again.
+             sharedHandler = nil;
+           }
          }];
   NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
   CKQuerySubscription *subscripton = [[CKQuerySubscription alloc]initWithRecordType:@"BKHost" predicate:predicate options:(CKQuerySubscriptionOptionsFiresOnRecordCreation|CKQuerySubscriptionOptionsFiresOnRecordUpdate|CKQuerySubscriptionOptionsFiresOnRecordDeletion)];
@@ -74,7 +77,10 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   subscripton.notificationInfo = info;
   
   [database saveSubscription:subscripton completionHandler:^(CKSubscription * _Nullable subscription, NSError * _Nullable error) {
-    
+    if(error){
+      //Reset shared handler so that init is called again.
+      sharedHandler = nil;
+    }
   }];
 }
 
