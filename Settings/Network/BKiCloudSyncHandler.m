@@ -152,7 +152,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
   CKRecord *hostRecord = [BKHosts recordFromHost:host];
   [database saveRecord:hostRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-    [BKHosts saveHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
+    [BKHosts updateHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
   }];
 }
 
@@ -226,7 +226,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     [[BKHosts all]removeObject:oldHost];
   }
   [BKHosts saveHost:host withNewHost:updatedHost.host hostName:updatedHost.hostName sshPort:updatedHost.port.stringValue user:updatedHost.user password:updatedHost.password hostKey:updatedHost.key moshServer:updatedHost.moshServer moshPort:updatedHost.moshPort.stringValue startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue];
-  [BKHosts saveHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
+  [BKHosts updateHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
 }
 
 # pragma mark - Keys Method

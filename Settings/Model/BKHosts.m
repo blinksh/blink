@@ -185,7 +185,7 @@ static UICKeyChainStore *Keychain = nil;
   return bkHost;
 }
 
-+ (void)saveHost:(NSString*)host withiCloudId:(CKRecordID*)iCloudId andLastModifiedTime:(NSDate*)lastModifiedTime{
++ (void)updateHost:(NSString*)host withiCloudId:(CKRecordID*)iCloudId andLastModifiedTime:(NSDate*)lastModifiedTime{
   BKHosts *bkHost = [BKHosts withHost:host];
   if(bkHost){
     bkHost.iCloudRecordId = iCloudId;

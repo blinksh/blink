@@ -157,7 +157,7 @@
       errorMsg = @"Spaces are not permitted in the User.";
     } else {
       _bkHost = [BKHosts saveHost:self.bkHost.host withNewHost:_hostField.text hostName:_hostNameField.text sshPort:_sshPortField.text user:_userField.text password:_passwordField.text hostKey:_hostKeyDetail.text moshServer:_moshServerField.text moshPort:_moshPortField.text startUpCmd:_startUpCmdField.text prediction:[BKHosts predictionValueForString:_predictionDetail.text]];
-      [BKHosts saveHost:_bkHost.host withiCloudId:_bkHost.iCloudRecordId andLastModifiedTime:[NSDate date]];
+      [BKHosts updateHost:_bkHost.host withiCloudId:_bkHost.iCloudRecordId andLastModifiedTime:[NSDate date]];
       [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
       if (!_bkHost) {
         errorMsg = @"Could not create new host.";
@@ -236,7 +236,7 @@
         [[BKiCloudSyncHandler sharedHandler]deleteRecord:_bkHost.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
       }
       [BKHosts saveHost:_bkHost.host withNewHost:_bkHost.iCloudConflictCopy.host hostName:_bkHost.iCloudConflictCopy.hostName sshPort:_bkHost.iCloudConflictCopy.port.stringValue user:_bkHost.iCloudConflictCopy.user password:_bkHost.iCloudConflictCopy.password hostKey:_bkHost.iCloudConflictCopy.key moshServer:_bkHost.iCloudConflictCopy.moshServer moshPort:_bkHost.iCloudConflictCopy.moshPort.stringValue startUpCmd:_bkHost.iCloudConflictCopy.moshStartup prediction:_bkHost.iCloudConflictCopy.prediction.intValue];
-      [BKHosts saveHost:_bkHost.iCloudConflictCopy.host withiCloudId:_bkHost.iCloudConflictCopy.iCloudRecordId andLastModifiedTime:_bkHost.iCloudConflictCopy.lastModifiedTime];
+      [BKHosts updateHost:_bkHost.iCloudConflictCopy.host withiCloudId:_bkHost.iCloudConflictCopy.iCloudRecordId andLastModifiedTime:_bkHost.iCloudConflictCopy.lastModifiedTime];
       [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
       [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
       [self.navigationController popViewControllerAnimated:YES];
