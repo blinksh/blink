@@ -67,7 +67,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
            completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
              if(error){
                //Reset shared handler so that init is called again.
-               sharedHandler = nil;
              }
            }];
     //If Query Subscription class is available ie. iOS 10+
@@ -84,7 +83,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       [database saveSubscription:subscripton completionHandler:^(CKSubscription * _Nullable subscription, NSError * _Nullable error) {
         if(error){
           //Reset shared handler so that init is called again.
-          sharedHandler = nil;
         }
       }];
     }

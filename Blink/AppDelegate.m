@@ -31,7 +31,6 @@
 
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
-@import UserNotifications;
 @import CloudKit;
 
 #if HOCKEYSDK
@@ -57,12 +56,7 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif
-  
-  [[UNUserNotificationCenter currentNotificationCenter]requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
-    
-  }];
-  [application registerForRemoteNotifications];
+#endif  
   return YES;
 }
 

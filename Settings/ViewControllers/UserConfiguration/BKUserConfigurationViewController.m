@@ -7,6 +7,8 @@
 //
 
 @import CloudKit;
+@import UserNotifications;
+
 #import "BKUserConfigurationViewController.h"
 
 @interface BKUserConfigurationViewController ()
@@ -53,6 +55,14 @@
          [_toggleiCloudSync setOn:NO];
        });
      } else {
+       
+       if(_toggleiCloudSync.isOn){
+         [[UNUserNotificationCenter currentNotificationCenter]requestAuthorizationWithOptions:(UNAuthorizationOptionAlert) completionHandler:^(BOOL granted, NSError * _Nullable error) {
+           
+         }];
+         [[UIApplication sharedApplication] registerForRemoteNotifications];
+       }
+       
        [BKUserConfigurationViewController setUserSettingsValue:_toggleiCloudSync.isOn forKey:@"iCloudSync"];
      }
    }];
