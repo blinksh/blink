@@ -50,38 +50,46 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 - (instancetype)init{
   self = [super init];
   if(self){
-    [self initSyncHandler];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:kReachabilityChangedNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:UIApplicationDidBecomeActiveNotification object:nil];
+    _internetReachable = [Reachability reachabilityForInternetConnection];
+    [_internetReachable startNotifier];
+    [self loadSyncItems];
+    CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
+    if(!database){
+      return nil;
+    }
+    CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:BKiCloudZoneName];
+    if(!zone){
+      return nil;
+    }
+    [database saveRecordZone:zone
+           completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
+             if(error){
+               //Reset shared handler so that init is called again.
+               sharedHandler = nil;
+             }
+           }];
+    //If Query Subscription class is available ie. iOS 10+
+    if([CKQuerySubscription class]){
+      NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
+      CKQuerySubscription *subscripton = [[CKQuerySubscription alloc]initWithRecordType:@"BKHost" predicate:predicate options:(CKQuerySubscriptionOptionsFiresOnRecordCreation|CKQuerySubscriptionOptionsFiresOnRecordUpdate|CKQuerySubscriptionOptionsFiresOnRecordDeletion)];
+      if(!subscripton){
+        return nil;
+      }
+      CKNotificationInfo *info = [[CKNotificationInfo alloc]init];
+      info.alertBody = @"Host update";
+      subscripton.notificationInfo = info;
+      
+      [database saveSubscription:subscripton completionHandler:^(CKSubscription * _Nullable subscription, NSError * _Nullable error) {
+        if(error){
+          //Reset shared handler so that init is called again.
+          sharedHandler = nil;
+        }
+      }];
+    }
   }
   return self;
-}
-
-- (void)initSyncHandler{
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:kReachabilityChangedNotification object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:UIApplicationDidBecomeActiveNotification object:nil];
-  _internetReachable = [Reachability reachabilityForInternetConnection];
-  [_internetReachable startNotifier];
-  [self loadSyncItems];
-  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier]privateCloudDatabase];
-  CKRecordZone *zone = [[CKRecordZone alloc]initWithZoneName:BKiCloudZoneName];
-  [database saveRecordZone:zone
-         completionHandler:^(CKRecordZone * _Nullable zone, NSError * _Nullable error) {
-           if(error){
-             //Reset shared handler so that init is called again.
-             sharedHandler = nil;
-           }
-         }];
-  NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
-  CKQuerySubscription *subscripton = [[CKQuerySubscription alloc]initWithRecordType:@"BKHost" predicate:predicate options:(CKQuerySubscriptionOptionsFiresOnRecordCreation|CKQuerySubscriptionOptionsFiresOnRecordUpdate|CKQuerySubscriptionOptionsFiresOnRecordDeletion)];
-  CKNotificationInfo *info = [[CKNotificationInfo alloc]init];
-  info.alertBody = @"Host update";
-  subscripton.notificationInfo = info;
-  
-  [database saveSubscription:subscripton completionHandler:^(CKSubscription * _Nullable subscription, NSError * _Nullable error) {
-    if(error){
-      //Reset shared handler so that init is called again.
-      sharedHandler = nil;
-    }
-  }];
 }
 
 - (void)loadSyncItems
