@@ -39,7 +39,7 @@ extern NSString *const SpecialCursorKeyEnd;
 extern NSString *const SpecialCursorKeyPgUp;
 extern NSString *const SpecialCursorKeyPgDown;
 
-@interface SmartKeys : UIViewController <SmartKeysDelegate>
+@interface SmartKeysController : UIViewController <SmartKeysDelegate>
 
 @property(nonatomic, weak) id< UIKeyInput > textInputDelegate;
 @property(strong, nonatomic) SmartKeysView *view;

@@ -50,7 +50,7 @@
 @property (readonly) FILE *termin;
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
-@property (strong, nonatomic) TerminalView *terminal;
+@property (strong, nonatomic) TermView *terminal;
 @property (strong, nonatomic) UIScrollView *containerView;
 @property (weak) id<TermControlDelegate> delegate;
 

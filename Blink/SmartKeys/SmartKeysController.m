@@ -29,7 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "SmartKeys.h"
+#import "SmartKeysController.h"
 
 
 NSString *const SpecialCursorKeyHome = @"SpecialCursorKeyHome";
@@ -44,13 +44,13 @@ static NSArray *AlternateKeys = nil; // To hold Function Keys F1 - F12
 static NSArray *CursorKeys = nil;
 
 
-@interface SmartKeys ()
+@interface SmartKeysController ()
 
 @property NSMutableArray *allKeys;
 
 @end
 
-@implementation SmartKeys {
+@implementation SmartKeysController {
   NSTimer *_timer;
 }
 

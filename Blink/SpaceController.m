@@ -31,7 +31,7 @@
 
 #import "SpaceController.h"
 #import "MBProgressHUD/MBProgressHUD.h"
-#import "SmartKeys.h"
+#import "SmartKeysController.h"
 #import "TermController.h"
 
 
