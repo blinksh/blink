@@ -48,7 +48,7 @@ extern NSString * const TermViewFFuncSeq;
 - (void)fontSizeChanged:(NSNumber *)size;
 @end
 
-@interface TerminalView : UIView
+@interface TermView : UIView
 
 @property (nonatomic) WKWebView *webView;
 @property (weak) id<TerminalDelegate> delegate;

@@ -53,7 +53,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
-@property (weak, nonatomic) TerminalView *testTerminal;
+@property (weak, nonatomic) TermView *testTerminal;
 
 @end
 
@@ -161,7 +161,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (void)attachTestTerminalToView:(UIView *)view
 {
   if (!view.subviews.count) {
-    _testTerminal = [[TerminalView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
+    _testTerminal = [[TermView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
     [view addSubview:_testTerminal];
   } else {
     _testTerminal = view.subviews[0];

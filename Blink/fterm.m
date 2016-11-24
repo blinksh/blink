@@ -40,15 +40,15 @@ static int closefn(void *handler);
 
 @interface FUTF8Term ()
 
-@property (readonly) TerminalView *wv;
+@property (readonly) TermView *wv;
 
-- (id)initOnTermView:(TerminalView *)term;
+- (id)initOnTermView:(TermView *)term;
 - (void)write:(const char *)buf length:(int)len;
 
 @end
 
 
-FILE *fterm_open(TerminalView *wv, unsigned int size)
+FILE *fterm_open(TermView *wv, unsigned int size)
 {
   FUTF8Term *fTerm = [[FUTF8Term alloc] initOnTermView:wv];
   FILE *desc = funopen(CFBridgingRetain(fTerm), NULL, writefn, NULL, closefn);
@@ -80,7 +80,7 @@ static int closefn(void *handler)
   NSData *_splitChar;
 }
 
-- (id)initOnTermView:(TerminalView *)term
+- (id)initOnTermView:(TermView *)term
 {
   self = [super init];
 

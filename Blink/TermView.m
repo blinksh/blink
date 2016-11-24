@@ -31,7 +31,7 @@
 
 #include <sys/ioctl.h>
 
-#import "SmartKeys.h"
+#import "SmartKeysController.h"
 #import "SmartKeysView.h"
 #import "TermView.h"
 
@@ -179,20 +179,20 @@ NSString *const TermViewFFuncSeq = @"fkeySeq:";
 }
 @end
 
-@interface TerminalView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
+@interface TermView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @property UITapGestureRecognizer *tapBackground;
 @property UILongPressGestureRecognizer *longPressBackground;
 @property UIPinchGestureRecognizer *pinchGesture;
 @end
 
-@implementation TerminalView {
+@implementation TermView {
   WKWebView *_webView;
   // option + e on iOS lets introduce an accented character, that we override
   BOOL _disableAccents;
   BOOL _dismissInput;
   BOOL _pasteMenu;
   NSMutableArray *_kbdCommands;
-  SmartKeys *_smartKeys;
+  SmartKeysController *_smartKeys;
   UIView *cover;
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
@@ -494,7 +494,7 @@ NSString *const TermViewFFuncSeq = @"fkeySeq:";
 - (BOOL)becomeFirstResponder
 {
   if (!_smartKeys) {
-    _smartKeys = [[SmartKeys alloc] init];
+    _smartKeys = [[SmartKeysController alloc] init];
   }
 
   _smartKeys.textInputDelegate = self;

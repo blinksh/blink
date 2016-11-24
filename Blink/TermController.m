@@ -73,7 +73,7 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)loadView
 {
   [super loadView];
-  _terminal = [[TerminalView alloc] initWithFrame:self.view.frame];
+  _terminal = [[TermView alloc] initWithFrame:self.view.frame];
   _terminal.delegate = self;
 
   self.view = _terminal;
