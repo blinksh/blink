@@ -186,7 +186,7 @@
 }
 
 - (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
-  if(_bkHost.iCloudConflictDetected.boolValue){
+  if(_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy){
     return NO;
   }
   return YES;
@@ -207,7 +207,7 @@
 
 - (IBAction)textFieldDidChange:(id)sender
 {
-  if (_hostField.text.length && _hostNameField.text.length && _userField.text.length) {
+  if (_hostField.text.length && _hostNameField.text.length && _userField.text.length && !_bkHost.iCloudConflictDetected.boolValue && !_isConflictCopy) {
     self.saveButton.enabled = YES;
   } else {
     self.saveButton.enabled = NO;
@@ -229,6 +229,7 @@
   if(indexPath.section == 1){
     if(indexPath.row == 0){
       BKHostsDetailViewController *iCloudCopyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"createHost"];
+      iCloudCopyViewController.isConflictCopy = YES;
       iCloudCopyViewController.bkHost = _bkHost.iCloudConflictCopy;
       [self.navigationController pushViewController:iCloudCopyViewController animated:YES];
     } else if (indexPath.row == 1){
