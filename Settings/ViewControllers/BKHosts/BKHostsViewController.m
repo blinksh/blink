@@ -112,7 +112,11 @@
     NSIndexPath *newIdx = [NSIndexPath indexPathForRow:(BKHosts.count - 1) inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
   } else {
-    [self.tableView reloadRowsAtIndexPaths:@[ [[self tableView] indexPathForSelectedRow] ] withRowAnimation:UITableViewRowAnimationBottom];
+    
+    NSUInteger lastRow = [self.tableView numberOfRowsInSection:0];
+    if( [self.tableView indexPathForSelectedRow] && lastRow > [[self.tableView indexPathForSelectedRow]row]){
+      [self.tableView reloadRowsAtIndexPaths:@[ [[self tableView] indexPathForSelectedRow] ] withRowAnimation:UITableViewRowAnimationBottom];
+    }
   }
 }
 
