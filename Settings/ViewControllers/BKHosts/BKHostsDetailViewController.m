@@ -141,7 +141,7 @@
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
-  if(_bkHost.iCloudConflictDetected.boolValue){
+  if(_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy){
     return NO;
   }
   NSString *errorMsg;
