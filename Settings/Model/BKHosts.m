@@ -152,9 +152,9 @@ static UICKeyChainStore *Keychain = nil;
 
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
 {
-  NSString *pwdRef;
+  NSString *pwdRef = @"";
   if (password) {
-    pwdRef = [host stringByAppendingString:@".pwd"];
+    pwdRef = [newHost stringByAppendingString:@".pwd"];
     [Keychain setString:password forKey:pwdRef];
   }
 
