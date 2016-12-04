@@ -383,4 +383,47 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
     return NO;
 }
 
+// UIActivityItemSource methods
+- (id)activityViewControllerPlaceholderItem:(UIActivityViewController *)activityViewController
+{
+  return _publicKey;
+}
+
+- (id)activityViewController:(UIActivityViewController *)activityViewController itemForActivityType:(UIActivityType)activityType
+{
+  if ([activityType  isEqualToString:UIActivityTypeMail] || [activityType isEqualToString:UIActivityTypeAirDrop]) {
+    // Create a file to return if sharing through Mail or AirDrop
+    NSString *tempFilename = [NSString stringWithFormat:@"%@.pub", _ID];
+    NSString *publicKeyString = _publicKey;
+    
+    NSURL *url = [NSURL fileURLWithPath:[NSTemporaryDirectory() stringByAppendingString:tempFilename]];
+    NSData *data = [publicKeyString dataUsingEncoding:NSUTF8StringEncoding];
+    
+    [data writeToURL:url atomically:NO];
+    
+    [activityViewController setCompletionWithItemsHandler:^(NSString *activityType, BOOL completed, NSArray *returnedItems, NSError *activityError) {
+      // Delete the file when
+      NSError *errorBlock;
+      if([[NSFileManager defaultManager] removeItemAtURL:url error:&errorBlock] == NO) {
+        NSLog(@"Error deleting temporary public key file %@",errorBlock);
+        return;
+      }
+    }];
+    
+    return url;
+  }
+  return _publicKey;
+}
+
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController
+              subjectForActivityType:(UIActivityType)activityType
+{
+  return [NSString stringWithFormat:@"Blink Public Key: %@", _ID];
+}
+
+- (NSString *)activityViewController:(UIActivityViewController *)activityViewController dataTypeIdentifierForActivityType:(UIActivityType)activityType
+{
+  return @"public.text";
+}
+
 @end

@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 
 @interface SshRsa : NSObject
@@ -42,7 +43,7 @@
 
 @end
 
-@interface BKPubKey : NSObject <NSCoding>
+@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
 
 @property NSString *ID;
 @property (readonly) NSString *privateKey;
