@@ -570,7 +570,13 @@
                             <outlet property="delegate" destination="pXM-Xm-FZf" id="NdJ-hH-77a"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="Key Info" id="qhd-NB-qh5"/>
+                    <navigationItem key="navigationItem" title="Key Info" id="qhd-NB-qh5">
+                        <barButtonItem key="rightBarButtonItem" systemItem="action" id="OeI-ix-a5m">
+                            <connections>
+                                <action selector="sharePublicKey:" destination="pXM-Xm-FZf" id="ZaW-8r-kcV"/>
+                            </connections>
+                        </barButtonItem>
+                    </navigationItem>
                     <connections>
                         <outlet property="name" destination="r3k-R8-kUF" id="1wI-wk-6Hj"/>
                         <segue destination="dez-Wo-FoG" kind="unwind" identifier="unwindFromDetails" unwindAction="unwindFromDetails:" id="WUW-4L-MSF"/>
