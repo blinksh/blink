@@ -32,8 +32,9 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
-#import "BKUserConfigurationViewController.h"
+#import "BKUserConfigurationManager.h"
 #import "Reachability.h"
+
 @import CloudKit;
 @import UIKit;
 
@@ -59,7 +60,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 + (id)sharedHandler
 {
-  if ([BKUserConfigurationViewController userSettingsValueForKey:@"iCloudSync"]) {
+  if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud]) {
     if (sharedHandler == nil) {
       sharedHandler = [[self alloc] init];
     }
@@ -169,12 +170,15 @@ static BKiCloudSyncHandler *sharedHandler = nil;
        completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
 	 [self mergeHosts:results];
        }];
-  CKQuery *pubKeyQuery = [[CKQuery alloc] initWithRecordType:@"BKPubKey" predicate:[NSPredicate predicateWithValue:YES]];
-  [database performQuery:pubKeyQuery
-	    inZoneWithID:nil
-       completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
-	 [self mergeKeys:results];
-       }];
+
+  if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloudKeys]) {
+    CKQuery *pubKeyQuery = [[CKQuery alloc] initWithRecordType:@"BKPubKey" predicate:[NSPredicate predicateWithValue:YES]];
+    [database performQuery:pubKeyQuery
+	      inZoneWithID:nil
+	 completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
+	   [self mergeKeys:results];
+	 }];
+  }
 }
 
 - (void)deleteRecord:(CKRecordID *)recordId ofType:(BKiCloudRecordType)recordType

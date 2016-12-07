@@ -29,40 +29,28 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "BKSettingsViewController.h"
-#import "BKDefaults.h"
+#import "BKSecurityConfigurationViewController.h"
 #import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
-#import "BKiCloudConfigurationViewController.h"
-#import "BKiCloudSyncHandler.h"
+#import "Blink-swift.h"
 
+@interface BKSecurityConfigurationViewController () <UINavigationControllerDelegate>
 
-@interface BKSettingsViewController ()
-
-@property (nonatomic, weak) IBOutlet UILabel *userNameLabel;
-@property (nonatomic, weak) IBOutlet UILabel *iCloudSyncStatusLabel;
-@property (nonatomic, weak) IBOutlet UILabel *autoLockStatusLabel;
+@property (nonatomic, weak) IBOutlet UISwitch *toggleAppLock;
 
 @end
 
-@implementation BKSettingsViewController
+@implementation BKSecurityConfigurationViewController
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-  // Uncomment the following line to preserve selection between presentations.
-  // self.clearsSelectionOnViewWillAppear = NO;
-
-  // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-  // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+  self.navigationController.delegate = self;
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (void)setupUI
 {
-  [super viewWillAppear:animated];
-  self.userNameLabel.text = [BKDefaults defaultUserName];
-  self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] == true ? @"On" : @"Off";
-  self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] == true ? @"On" : @"Off";
+  [_toggleAppLock setOn:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock]];
 }
 
 - (void)didReceiveMemoryWarning
@@ -71,8 +59,31 @@
   // Dispose of any resources that can be recreated.
 }
 
-
-- (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
+- (IBAction)didToggleSwitch:(id)sender
 {
+  UISwitch *toggleSwitch = (UISwitch *)sender;
+  if (toggleSwitch == _toggleAppLock) {
+    NSString *state = nil;
+    if ([toggleSwitch isOn]) {
+      state = @"SetPasscode";
+    } else {
+      state = @"RemovePasscode";
+    }
+    PasscodeLockViewController *lockViewController = [[PasscodeLockViewController alloc] initWithStateString:state];
+    lockViewController.completionCallback = ^{
+      [BKUserConfigurationManager setUserSettingsValue:!_toggleAppLock.isOn forKey:BKUserConfigAutoLock];
+      [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
+      [self setupUI];
+    };
+    [self.navigationController pushViewController:lockViewController animated:YES];
+  }
 }
+
+
+- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
+{
+  [self setupUI];
+}
+
+
 @end

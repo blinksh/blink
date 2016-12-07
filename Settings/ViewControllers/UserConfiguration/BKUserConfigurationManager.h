@@ -29,8 +29,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@interface BKUserConfigurationViewController : UITableViewController
+extern NSString *const BKUserConfigiCloud;
+extern NSString *const BKUserConfigiCloudKeys;
+extern NSString *const BKUserConfigAutoLock;
+
+@interface BKUserConfigurationManager : NSObject
+
++ (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key;
 + (BOOL)userSettingsValueForKey:(NSString *)key;
+
 @end

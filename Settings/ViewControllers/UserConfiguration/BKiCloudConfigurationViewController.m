@@ -32,15 +32,19 @@
 @import CloudKit;
 @import UserNotifications;
 
-#import "BKUserConfigurationViewController.h"
+#import "BKiCloudConfigurationViewController.h"
+#import "BKUserConfigurationManager.h"
+#import "Blink-swift.h"
 
-@interface BKUserConfigurationViewController ()
+@interface BKiCloudConfigurationViewController ()
 
 @property (nonatomic, weak) IBOutlet UISwitch *toggleiCloudSync;
+@property (nonatomic, weak) IBOutlet UISwitch *toggleiCloudKeysSync;
+@property (nonatomic, weak) IBOutlet UISwitch *toggleAppLock;
 
 @end
 
-@implementation BKUserConfigurationViewController
+@implementation BKiCloudConfigurationViewController
 
 - (void)viewDidLoad
 {
@@ -56,7 +60,8 @@
 
 - (void)setupUI
 {
-  [_toggleiCloudSync setOn:[BKUserConfigurationViewController userSettingsValueForKey:@"iCloudSync"]];
+  [_toggleiCloudSync setOn:[BKUserConfigurationManager userSettingsValueForKey:@"iCloudSync"]];
+  [_toggleiCloudKeysSync setOn:[BKUserConfigurationManager userSettingsValueForKey:@"iCloudKeysSync"]];
 }
 
 #pragma mark - Action Method
@@ -66,6 +71,18 @@
   UISwitch *toggleSwitch = (UISwitch *)sender;
   if (toggleSwitch == _toggleiCloudSync) {
     [self checkiCloudStatusAndToggle];
+    [self.tableView reloadData];
+  } else if (toggleSwitch == _toggleiCloudKeysSync) {
+    [BKUserConfigurationManager setUserSettingsValue:_toggleiCloudKeysSync.isOn forKey:@"iCloudKeysSync"];
+  } else if (toggleSwitch == _toggleAppLock) {
+    NSString *state = nil;
+    if ([toggleSwitch isOn]) {
+      state = @"SetPasscode";
+    } else {
+      state = @"RemovePasscode";
+    }
+    PasscodeLockViewController *lockViewController = [[PasscodeLockViewController alloc] initWithStateString:state];
+    [self.navigationController pushViewController:lockViewController animated:YES];
   }
 }
 
@@ -90,36 +107,18 @@
 													      }];
 					  [[UIApplication sharedApplication] registerForRemoteNotifications];
 					}
-
-					[BKUserConfigurationViewController setUserSettingsValue:_toggleiCloudSync.isOn forKey:@"iCloudSync"];
+					[BKUserConfigurationManager setUserSettingsValue:_toggleiCloudSync.isOn forKey:@"iCloudSync"];
 				      }
 				    }];
 }
 
-+ (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  NSMutableDictionary *userSettings = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"userSettings"]];
-  if (userSettings == nil) {
-    userSettings = [NSMutableDictionary dictionary];
-  }
-  [userSettings setObject:[NSNumber numberWithBool:value] forKey:key];
-  [[NSUserDefaults standardUserDefaults] setObject:userSettings forKey:@"userSettings"];
-}
-
-+ (BOOL)userSettingsValueForKey:(NSString *)key
-{
-  NSDictionary *userSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"userSettings"];
-  if (userSettings != nil) {
-    if ([userSettings objectForKey:key]) {
-      NSNumber *value = [userSettings objectForKey:key];
-      return value.boolValue;
-    } else {
-      return NO;
-    }
+  if (_toggleiCloudSync.isOn) {
+    return [super numberOfSectionsInTableView:tableView];
   } else {
-    return NO;
+    return 1;
   }
-  return NO;
 }
 
 
