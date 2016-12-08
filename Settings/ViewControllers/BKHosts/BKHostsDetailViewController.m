@@ -67,7 +67,9 @@
     if (_bkHost.port != nil) {
       _sshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.port];
     }
-    _userField.text = _bkHost.user;
+    if(_bkHost.user != nil){
+      _userField.text = _bkHost.user;
+    }
     _passwordField.text = _bkHost.password;
     _hostKeyDetail.text = _bkHost.key;
     _predictionDetail.text = [BKHosts predictionStringForRawValue:_bkHost.prediction.intValue];
@@ -190,7 +192,7 @@
 
 - (IBAction)textFieldDidChange:(id)sender
 {
-  if (_hostField.text.length && _hostNameField.text.length && _userField.text.length) {
+  if (_hostField.text.length && _hostNameField.text.length) {
     self.saveButton.enabled = YES;
   } else {
     self.saveButton.enabled = NO;

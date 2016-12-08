@@ -39,6 +39,7 @@
 #include <stdlib.h>
 #include <sys/socket.h>
 
+#import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #import "SSHSession.h"
@@ -218,7 +219,8 @@ static void kbd_callback(const char *name, int name_len,
   [self processHostSettings];
 
   if (!_options.user) {
-    return [self dieMsg:@"Missing user to establish connection."];
+    // If no user provided, use the default
+    _options.user = [[BKDefaults defaultUserName] UTF8String];
   }
 
   NSMutableArray *command_args = [[NSMutableArray alloc] init];
