@@ -171,7 +171,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 }
 
 // Generate OpenSSH public key
-- (NSString *)publicKey
+- (NSString *)publicKeyWithComment:(NSString*)comment
 {
   int nLen = 0, eLen = 0;
   int index = 0;
@@ -231,7 +231,8 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   // Free the BIO key memory
   BIO_free(fpub);
 
-  return key;
+  NSString *commentedKey = [NSString stringWithFormat:@"%@ %@",key, comment];
+  return commentedKey;
 }
 
 - (void)dealloc
@@ -290,7 +291,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
     // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
     SshRsa *defaultKey = [[SshRsa alloc] initWithLength:4096];
-    [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:defaultKey.publicKey];
+    [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
   }
 }
 

@@ -346,6 +346,31 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
+                            <tableViewSection headerTitle="Comments (optional)" id="L8N-Q0-6tt">
+                                <cells>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" id="T3B-ae-i11">
+                                        <rect key="frame" x="0.0" y="479" width="375" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="T3B-ae-i11" id="rO8-Xm-z0D">
+                                            <frame key="frameInset" width="375" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="user@blink" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fct-sq-5ie">
+                                                    <frame key="frameInset" minX="15" width="570" height="44"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                                    <textInputTraits key="textInputTraits"/>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="centerX" secondItem="rO8-Xm-z0D" secondAttribute="centerX" id="WpM-6e-cdJ"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="top" secondItem="rO8-Xm-z0D" secondAttribute="top" id="exL-2H-n6l"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="leading" secondItem="rO8-Xm-z0D" secondAttribute="leadingMargin" id="h27-11-T0u"/>
+                                                <constraint firstItem="Fct-sq-5ie" firstAttribute="centerY" secondItem="rO8-Xm-z0D" secondAttribute="centerY" id="jFB-rB-Jva"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
+                                </cells>
+                            </tableViewSection>
                             <tableViewSection headerTitle="Information" id="fCj-T8-GrE">
                                 <string key="footerTitle">Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use "ssh-copy-id [name]" to copy the public key to the server.</string>
                                 <cells/>
@@ -364,6 +389,7 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="commentsField" destination="Fct-sq-5ie" id="cX2-zT-RFk"/>
                         <outlet property="createButton" destination="8fJ-je-lw5" id="GFP-ZI-ljG"/>
                         <outlet property="nameField" destination="Nz9-83-8He" id="UfP-2N-rnp"/>
                         <outlet property="passphraseField" destination="0Yg-Nm-JyN" id="uW3-mA-FDD"/>

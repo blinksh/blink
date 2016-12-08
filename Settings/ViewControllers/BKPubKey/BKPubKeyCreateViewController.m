@@ -30,6 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKPubKeyCreateViewController.h"
+#import "BKDefaults.h"
+#import "UIDevice+DeviceName.h"
 
 @interface BKPubKeyCreateViewController () <UITextFieldDelegate>
 
@@ -38,6 +40,7 @@
 @property (weak, nonatomic) IBOutlet UITextField *passphraseField;
 @property (weak, nonatomic) IBOutlet UITextField *repassphraseField;
 @property (weak, nonatomic) IBOutlet UIBarButtonItem *createButton;
+@property (weak, nonatomic) IBOutlet UITextField *commentsField;
 
 @end
 
@@ -47,6 +50,7 @@
 {
   [super viewDidLoad];
   _nameField.delegate = self;
+  _commentsField.text = [NSString stringWithFormat:@"%@@%@", [BKDefaults defaultUserName] , [UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeDeviceName]];
   if (_key) {
     _nameField.text = @"Name your key";
     _passphraseField.text = _passphrase;
@@ -99,7 +103,7 @@
       int length = [[_sizeField titleForSegmentAtIndex:selectedIndex] intValue];
       // Create and return
       SshRsa *key = _key ? _key : [[SshRsa alloc] initWithLength:length];
-      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKey]];
+      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKeyWithComment:_commentsField.text]];
       if (!_pubkey) {
         errorMsg = @"OpenSSL error. Could not create Public Key.";
       }

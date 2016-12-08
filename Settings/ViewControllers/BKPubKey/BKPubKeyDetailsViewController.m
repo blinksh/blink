@@ -30,12 +30,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKPubKeyDetailsViewController.h"
-
+#import "UIDevice+DeviceName.h"
+#import "BKDefaults.h"
 
 @interface BKPubKeyDetailsViewController () <UITextFieldDelegate>
 
 @property (weak, nonatomic) IBOutlet UITextField *name;
-
+@property (weak, nonatomic) IBOutlet UITextField *comments;
 @end
 
 @implementation BKPubKeyDetailsViewController
@@ -45,6 +46,7 @@
   [super viewDidLoad];
 
   _name.text = _pubkey.ID;
+  _comments.text = [NSString stringWithFormat:@"%@@%@", [BKDefaults defaultUserName] , [UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeDeviceName]];
 }
 
 - (void)didReceiveMemoryWarning
