@@ -36,7 +36,7 @@ extern NSString * const TermViewCtrlSeq;
 extern NSString * const TermViewEscSeq;
 extern NSString * const TermViewCursorFuncSeq;
 extern NSString * const TermViewFFuncSeq;
-
+extern NSString * const TermViewAutoRepeateSeq;
 
 @protocol TerminalDelegate <NSObject>
 

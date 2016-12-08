@@ -84,6 +84,8 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)configureTerminal
 {
+  [_terminal assignSequence:TermViewAutoRepeateSeq toModifier:0];
+
   for (NSString *key in [BKDefaults keyboardKeyList]) {
     NSString *sequence = [BKDefaults keyboardMapping][key];
     [self assignSequence:sequence toModifier:[bkModifierMaps[key] integerValue]];

@@ -45,6 +45,7 @@ NSString *const TermViewCtrlSeq = @"ctrlSeq:";
 NSString *const TermViewEscSeq = @"escSeq:";
 NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
 NSString *const TermViewFFuncSeq = @"fkeySeq:";
+NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 
 @interface CC : NSObject
@@ -581,10 +582,10 @@ NSString *const TermViewFFuncSeq = @"fkeySeq:";
 
 
 #pragma mark External Keyboard
-
 - (void)setKbdCommands
 {
   _kbdCommands = [NSMutableArray array];
+  
   [_kbdCommands addObjectsFromArray:self.presetShortcuts];
   for (NSNumber *modifier in _controlKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
@@ -608,7 +609,10 @@ NSString *const TermViewFFuncSeq = @"fkeySeq:";
       charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
     } else if (seq == TermViewEscSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
-    } else {
+    } else if (seq == TermViewAutoRepeateSeq){
+      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
+    }
+    else {
       return;
     }
 
@@ -813,6 +817,14 @@ NSString *const TermViewFFuncSeq = @"fkeySeq:";
     [_delegate write:[CC FKEY:value]];
   }
 }
+
+- (void)autoRepeatSeq:(id)sender
+{
+  UIKeyCommand *command = (UIKeyCommand*)sender;
+  [_delegate write:command.input];
+}
+
+
 
 // This are all key commands capture by UIKeyInput and triggered
 // straight to the handler. A different firstresponder than UIKeyInput could
