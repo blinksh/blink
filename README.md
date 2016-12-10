@@ -47,18 +47,14 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 1.031
-	- NEW On-screen keyboard with more space for modifiers, FKeys and Cursor keys. Redesigned for more space on the modifiers, and with a central scrollable area that handles more keys. Activate the Alternate keys by taping on the Alt key. And now tap on a modifier to activate it as a normal button, or make a long press to chain different combinations.
-	- NEW Add your own Fonts & Themes! More info on (https://github.com/blinksh/fonts) and (https://github.com/blinksh/themes)
-	- NEW Multistep authentication. Servers with google authenticator or similar will now connect without problems :)
-	- NEW Fira Code font with ligatures included.
+# Version 2.109
+	- NEW Autorepeat for normal keys on external keyboard. Vim users rejoice!
+	- NEW Default User for connections based on device.
+	- NEW Comments for Public Keys.
 
-	- Added -l parameter to ssh for Hosts.
-	- Improved message on how use hosts after adding them.
-	- Fixed on-screen arrows.
-	- Fixed F0 as F10 on external keyboard.
-	- Fixed keys selection problem on settings
-	- Fixed ssh-copy-id issue when accessing the host for the first time
+	- Security updates to libraries.
+
+	- Fixed critical bugs affecting ssh connections.
 
 [View all changes](CHANGELOG.md)
 
