@@ -1,7 +1,7 @@
 #!/bin/bash
 
 LIBSSH2_VER="1.7.0"
-OPENSSL_VER="1.0.2e"
+OPENSSL_VER="1.0.2j"
 LIBMOSH_VER="1.2.5-a1286a8"
 PROTOBF_VER="2.6.1"
 
