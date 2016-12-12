@@ -53,6 +53,8 @@ extern NSString * const TermViewFFuncSeq;
 @property (nonatomic) WKWebView *webView;
 @property (weak) id<TerminalDelegate> delegate;
 @property (nonatomic, readonly, weak) NSString *title;
+@property (readwrite, copy) UITextRange *selectedTextRange;
+@property (nonatomic, readonly) UITextRange *markedTextRange;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
