@@ -30,6 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
+#import "BKiCloudSyncHandler.h"
+@import CloudKit;
 
 #if HOCKEYSDK
 @import HockeySDK;
@@ -54,8 +56,7 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif
-  
+#endif  
   return YES;
 }
 
@@ -86,4 +87,7 @@
   // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+  [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+}
 @end

@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-
+@import CloudKit;
 enum BKMoshPrediction {
   BKMoshPredictionAdaptive,
   BKMoshPredictionAlways,
@@ -52,14 +52,23 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSNumber *moshPort;
 @property (nonatomic, strong) NSString *moshStartup;
 @property (nonatomic, strong) NSNumber *prediction;
+@property (nonatomic, strong) CKRecordID *iCloudRecordId;
+@property (nonatomic, strong) NSDate *lastModifiedTime;
+@property (nonatomic, strong) NSNumber *iCloudConflictDetected;
+@property (nonatomic, strong) BKHosts *iCloudConflictCopy;
 
 + (void)initialize;
 + (instancetype)withHost:(NSString *)ID;
 + (BOOL)saveHosts;
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction;
++ (void)updateHost:(NSString*)host withiCloudId:(CKRecordID*)iCloudId andLastModifiedTime:(NSDate*)lastModifiedTime;
++ (void)markHost:(NSString*)host forRecord:(CKRecord*)record withConflict:(BOOL)hasConflict;
 + (NSMutableArray *)all;
 + (NSInteger)count;
 + (NSString *)predictionStringForRawValue:(int)rawValue;
 + (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString;
 + (NSMutableArray *)predictionStringList;
++ (CKRecord*)recordFromHost:(BKHosts*)host;
++ (BKHosts*)hostFromRecord:(CKRecord*)hostRecord;
++ (instancetype)withiCloudId:(CKRecordID *)record;
 @end

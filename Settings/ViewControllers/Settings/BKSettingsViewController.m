@@ -31,9 +31,12 @@
 
 #import "BKSettingsViewController.h"
 #import "BKDefaults.h"
+#import "BKiCloudSyncHandler.h"
+#import "BKUserConfigurationViewController.h"
 @interface BKSettingsViewController ()
 
 @property (nonatomic, weak) IBOutlet UILabel *userNameLabel;
+@property (nonatomic, weak) IBOutlet UILabel *iCloudSyncStatusLabel;
 
 @end
 
@@ -51,6 +54,7 @@
 - (void)viewWillAppear:(BOOL)animated{
   [super viewWillAppear:animated];
   self.userNameLabel.text = [BKDefaults defaultUserName];
+  self.iCloudSyncStatusLabel.text = [BKUserConfigurationViewController userSettingsValueForKey:@"iCloudSync"] == true ? @"On" : @"Off";
 }
 
 - (void)didReceiveMemoryWarning {
