@@ -354,7 +354,7 @@ static void kbd_callback(const char *name, int name_len,
   char ntop[NI_MAXHOST], strport[NI_MAXSERV];
 
   for (ai = aitop; ai; ai = ai->ai_next) {
-    if (ai->ai_family != AF_INET) {
+    if (ai->ai_family != AF_INET && ai->ai_family != AF_INET6) {
       continue;
     }
 
