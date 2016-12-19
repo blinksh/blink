@@ -99,11 +99,16 @@
 
 - (IBAction)importButtonClicked:(id)sender
 {
-  if (_urlTextField.text.length > 4 && [[_urlTextField.text substringFromIndex:[_urlTextField.text length] - 4] isEqualToString:@".css"]) {
+  NSString *fontUrl = _urlTextField.text;
+  if (fontUrl.length > 4 && [[fontUrl substringFromIndex:[fontUrl length] - 4] isEqualToString:@".css"]) {
+    if ([fontUrl rangeOfString:@"github.com"].location != NSNotFound && [fontUrl rangeOfString:@"/raw/"].location == NSNotFound) {
+      // Replace HTML versions of fonts with the raw version
+      fontUrl = [fontUrl stringByReplacingOccurrencesOfString:@"/blob/" withString:@"/raw/"];
+    }
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     [self configureImportButtonForCancel];
     self.urlTextField.enabled = NO;
-    [BKSettingsFileDownloader downloadFileAtUrl:_urlTextField.text
+    [BKSettingsFileDownloader downloadFileAtUrl:fontUrl
                           withCompletionHandler:^(NSData *fileData, NSError *error) {
                             if (error == nil) {
                               [self performSelectorOnMainThread:@selector(downloadCompletedWithFilePath:) withObject:fileData waitUntilDone:NO];

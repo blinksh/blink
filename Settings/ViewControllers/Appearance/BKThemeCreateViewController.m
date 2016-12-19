@@ -99,11 +99,16 @@
 
 - (IBAction)importButtonClicked:(id)sender
 {
-  if (_urlTextField.text.length > 4 && [[_urlTextField.text substringFromIndex:[_urlTextField.text length] - 3] isEqualToString:@".js"]) {
+  NSString *themeUrl = _urlTextField.text;
+  if (themeUrl.length > 4 && [[themeUrl substringFromIndex:[themeUrl length] - 3] isEqualToString:@".js"]) {
+    if ([themeUrl rangeOfString:@"github.com"].location != NSNotFound && [themeUrl rangeOfString:@"/raw/"].location == NSNotFound) {
+      // Replace HTML versions of themes with the raw version
+      themeUrl = [themeUrl stringByReplacingOccurrencesOfString:@"/blob/" withString:@"/raw/"];
+    }
     [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
     self.urlTextField.enabled = NO;
     [self configureImportButtonForCancel];
-    [BKSettingsFileDownloader downloadFileAtUrl:_urlTextField.text
+    [BKSettingsFileDownloader downloadFileAtUrl:themeUrl
                           withCompletionHandler:^(NSData *fileData, NSError *error) {
                             if (error == nil) {
                               [self performSelectorOnMainThread:@selector(downloadCompletedWithFilePath:) withObject:fileData waitUntilDone:NO];
