@@ -30,11 +30,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKHostsDetailViewController.h"
+#import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPredictionViewController.h"
 #import "BKPubKey.h"
 #import "BKPubKeyViewController.h"
-#import "BKDefaults.h"
 #import "BKiCloudSyncHandler.h"
 
 
@@ -70,7 +70,7 @@
     if (_bkHost.port != nil) {
       _sshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.port];
     }
-    if(_bkHost.user != nil){
+    if (_bkHost.user != nil) {
       _userField.text = _bkHost.user;
     }
     _passwordField.text = _bkHost.password;
@@ -140,7 +140,7 @@
 
 - (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
 {
-  if(_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy){
+  if (_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy) {
     return NO;
   }
   NSString *errorMsg;
@@ -157,9 +157,9 @@
     } else {
       _bkHost = [BKHosts saveHost:self.bkHost.host withNewHost:_hostField.text hostName:_hostNameField.text sshPort:_sshPortField.text user:_userField.text password:_passwordField.text hostKey:_hostKeyDetail.text moshServer:_moshServerField.text moshPort:_moshPortField.text startUpCmd:_startUpCmdField.text prediction:[BKHosts predictionValueForString:_predictionDetail.text]];
       [BKHosts updateHost:_bkHost.host withiCloudId:_bkHost.iCloudRecordId andLastModifiedTime:[NSDate date]];
-      [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+      [[BKiCloudSyncHandler sharedHandler] checkForReachabilityAndSync:nil];
       if (!_bkHost) {
-        errorMsg = @"Could not create new host.";
+	errorMsg = @"Could not create new host.";
       }
     }
     if (errorMsg) {
@@ -184,8 +184,9 @@
   [self.predictionDetail removeObserver:self forKeyPath:@"text"];
 }
 
-- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField{
-  if(_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy){
+- (BOOL)textFieldShouldBeginEditing:(UITextField *)textField
+{
+  if (_bkHost.iCloudConflictDetected.boolValue || _isConflictCopy) {
     return NO;
   }
   return YES;
@@ -222,40 +223,43 @@
   }
 }
 
-# pragma mark - UITableView Delegates
+#pragma mark - UITableView Delegates
 
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath{
-  if(indexPath.section == 1){
-    if(indexPath.row == 0){
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  if (indexPath.section == 1) {
+    if (indexPath.row == 0) {
       BKHostsDetailViewController *iCloudCopyViewController = [self.storyboard instantiateViewControllerWithIdentifier:@"createHost"];
       iCloudCopyViewController.isConflictCopy = YES;
       iCloudCopyViewController.bkHost = _bkHost.iCloudConflictCopy;
       [self.navigationController pushViewController:iCloudCopyViewController animated:YES];
-    } else if (indexPath.row == 1){
-      if(_bkHost.iCloudRecordId){
-        [[BKiCloudSyncHandler sharedHandler]deleteRecord:_bkHost.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
+    } else if (indexPath.row == 1) {
+      if (_bkHost.iCloudRecordId) {
+	[[BKiCloudSyncHandler sharedHandler] deleteRecord:_bkHost.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
       }
       [BKHosts saveHost:_bkHost.host withNewHost:_bkHost.iCloudConflictCopy.host hostName:_bkHost.iCloudConflictCopy.hostName sshPort:_bkHost.iCloudConflictCopy.port ? _bkHost.iCloudConflictCopy.port.stringValue : @"" user:_bkHost.iCloudConflictCopy.user password:_bkHost.iCloudConflictCopy.password hostKey:_bkHost.iCloudConflictCopy.key moshServer:_bkHost.iCloudConflictCopy.moshServer moshPort:_bkHost.iCloudConflictCopy.moshPort ? _bkHost.iCloudConflictCopy.moshPort.stringValue : @"" startUpCmd:_bkHost.iCloudConflictCopy.moshStartup prediction:_bkHost.iCloudConflictCopy.prediction.intValue];
       [BKHosts updateHost:_bkHost.iCloudConflictCopy.host withiCloudId:_bkHost.iCloudConflictCopy.iCloudRecordId andLastModifiedTime:_bkHost.iCloudConflictCopy.lastModifiedTime];
       [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
-      [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+      [[BKiCloudSyncHandler sharedHandler] checkForReachabilityAndSync:nil];
       [self.navigationController popViewControllerAnimated:YES];
-    } else if(indexPath.row == 2){
-      [[BKiCloudSyncHandler sharedHandler]deleteRecord:_bkHost.iCloudConflictCopy.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
-      if(!_bkHost.iCloudRecordId){
-        [BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
+    } else if (indexPath.row == 2) {
+      [[BKiCloudSyncHandler sharedHandler] deleteRecord:_bkHost.iCloudConflictCopy.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
+      if (!_bkHost.iCloudRecordId) {
+	[BKHosts markHost:_bkHost.iCloudConflictCopy.host forRecord:[BKHosts recordFromHost:_bkHost] withConflict:NO];
       }
-      [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+      [[BKiCloudSyncHandler sharedHandler] checkForReachabilityAndSync:nil];
       [self.navigationController popViewControllerAnimated:YES];
     }
   }
 }
 
-- (BOOL)showConflictSection{
+- (BOOL)showConflictSection
+{
   return (_bkHost.iCloudConflictDetected.boolValue && _bkHost.iCloudConflictCopy);
 }
 
-- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
   if (section == 1 && ![self showConflictSection]) {
     //header height for selected section
     return 0.1;
@@ -265,7 +269,8 @@
   }
 }
 
--(CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section {
+- (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
+{
   if (section == 1 && ![self showConflictSection]) {
     //header height for selected section
     return 0.1;
@@ -275,7 +280,8 @@
   }
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
   if (section == 1) { //Index number of interested section
     if (![self showConflictSection]) {
       return 0; //number of row in section when you click on hide
@@ -287,18 +293,20 @@
   }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section{
-  if(section == 1 && ![self showConflictSection]){
+- (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+  if (section == 1 && ![self showConflictSection]) {
     return @"";
-  }else{
+  } else {
     return [super tableView:tableView titleForHeaderInSection:section];
   }
 }
 
-- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section{
-  if(section == 1 && ![self showConflictSection]){
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section
+{
+  if (section == 1 && ![self showConflictSection]) {
     return @"";
-  }else{
+  } else {
     return [super tableView:tableView titleForFooterInSection:section];
   }
 }

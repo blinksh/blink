@@ -36,16 +36,17 @@
 
 @implementation BKHostsViewController
 
-- (void)viewDidLoad{
+- (void)viewDidLoad
+{
   [super viewDidLoad];
-  [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:YES];
-  [[BKiCloudSyncHandler sharedHandler]setMergeHostCompletionBlock:^{
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:YES];
+  [[BKiCloudSyncHandler sharedHandler] setMergeHostCompletionBlock:^{
     dispatch_async(dispatch_get_main_queue(), ^{
-      [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:NO];
+      [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
       [self.tableView reloadData];
     });
   }];
-  [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+  [[BKiCloudSyncHandler sharedHandler] checkForReachabilityAndSync:nil];
 }
 
 #pragma mark - UITable View delegates
@@ -62,19 +63,18 @@
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
   NSInteger pkIdx = indexPath.row;
   UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"Cell" forIndexPath:indexPath];
   BKHosts *pk = [BKHosts.all objectAtIndex:pkIdx];
 
-  if(pk.iCloudConflictDetected == [NSNumber numberWithBool:YES]){
-    if((pk.iCloudConflictDetected.boolValue && pk.iCloudConflictCopy)){
+  if (pk.iCloudConflictDetected == [NSNumber numberWithBool:YES]) {
+    if ((pk.iCloudConflictDetected.boolValue && pk.iCloudConflictCopy)) {
       cell.textLabel.textColor = [UIColor redColor];
-    }else{
+    } else {
       cell.textLabel.textColor = [UIColor blackColor];
       [BKHosts markHost:pk.host forRecord:[BKHosts recordFromHost:pk] withConflict:NO];
     }
-  }else{
+  } else {
     cell.textLabel.textColor = [UIColor blackColor];
   }
   // Configure the cell...
@@ -92,9 +92,9 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    CKRecordID *recordId = [[BKHosts.all objectAtIndex:indexPath.row]iCloudRecordId];
-    if(recordId != nil){
-      [[BKiCloudSyncHandler sharedHandler]deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
+    CKRecordID *recordId = [[BKHosts.all objectAtIndex:indexPath.row] iCloudRecordId];
+    if (recordId != nil) {
+      [[BKiCloudSyncHandler sharedHandler] deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
     }
     [BKHosts.all removeObjectAtIndex:indexPath.row];
     [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
@@ -112,9 +112,9 @@
     NSIndexPath *newIdx = [NSIndexPath indexPathForRow:(BKHosts.count - 1) inSection:0];
     [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
   } else {
-    
+
     NSUInteger lastRow = [self.tableView numberOfRowsInSection:0];
-    if( [self.tableView indexPathForSelectedRow] && lastRow > [[self.tableView indexPathForSelectedRow]row]){
+    if ([self.tableView indexPathForSelectedRow] && lastRow > [[self.tableView indexPathForSelectedRow] row]) {
       [self.tableView reloadRowsAtIndexPaths:@[ [[self tableView] indexPathForSelectedRow] ] withRowAnimation:UITableViewRowAnimationBottom];
     }
   }
@@ -134,8 +134,9 @@
   }
 }
 
-- (void)dealloc{
-  [[UIApplication sharedApplication]setNetworkActivityIndicatorVisible:NO];
+- (void)dealloc
+{
+  [[UIApplication sharedApplication] setNetworkActivityIndicatorVisible:NO];
 }
 
 @end

@@ -31,8 +31,8 @@
 
 #import "BKSettingsViewController.h"
 #import "BKDefaults.h"
-#import "BKiCloudSyncHandler.h"
 #import "BKUserConfigurationViewController.h"
+#import "BKiCloudSyncHandler.h"
 @interface BKSettingsViewController ()
 
 @property (nonatomic, weak) IBOutlet UILabel *userNameLabel;
@@ -42,28 +42,31 @@
 
 @implementation BKSettingsViewController
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    // Uncomment the following line to preserve selection between presentations.
-    // self.clearsSelectionOnViewWillAppear = NO;
-    
-    // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-    // self.navigationItem.rightBarButtonItem = self.editButtonItem;
+- (void)viewDidLoad
+{
+  [super viewDidLoad];
+  // Uncomment the following line to preserve selection between presentations.
+  // self.clearsSelectionOnViewWillAppear = NO;
+
+  // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
+  // self.navigationItem.rightBarButtonItem = self.editButtonItem;
 }
 
-- (void)viewWillAppear:(BOOL)animated{
+- (void)viewWillAppear:(BOOL)animated
+{
   [super viewWillAppear:animated];
   self.userNameLabel.text = [BKDefaults defaultUserName];
   self.iCloudSyncStatusLabel.text = [BKUserConfigurationViewController userSettingsValueForKey:@"iCloudSync"] == true ? @"On" : @"Off";
 }
 
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
+- (void)didReceiveMemoryWarning
+{
+  [super didReceiveMemoryWarning];
+  // Dispose of any resources that can be recreated.
 }
 
 
-- (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender{
-  
+- (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
+{
 }
 @end

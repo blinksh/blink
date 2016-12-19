@@ -25,7 +25,7 @@
 // You should have received a copy of these additional terms immediately
 // following the terms and conditions of the GNU General Public License
 // which accompanied the Blink Source Code. If not, see
-// <http://www.github.com/blinksh/blink>. 
+// <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
 
