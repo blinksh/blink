@@ -267,6 +267,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="iCloudSyncStatusLabel" destination="Z6a-cl-7ZU" id="V0d-WH-2Yp"/>
+                        <outlet property="userNameLabel" destination="FGa-k6-d9u" id="Z5Y-ry-1OA"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="vXa-F7-lwO" userLabel="First Responder" sceneMemberID="firstResponder"/>
