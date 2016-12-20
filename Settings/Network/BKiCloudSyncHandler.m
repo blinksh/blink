@@ -102,8 +102,9 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       if (!subscripton) {
 	return nil;
       }
-      CKNotificationInfo *info = [[CKNotificationInfo alloc] init];
-      info.alertBody = @"Host update";
+
+      CKNotificationInfo *info = [[CKNotificationInfo alloc]init];
+      info.shouldSendContentAvailable = YES;
       subscripton.notificationInfo = info;
 
       [database saveSubscription:subscripton
