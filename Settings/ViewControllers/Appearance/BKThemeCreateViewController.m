@@ -109,11 +109,12 @@
     self.urlTextField.enabled = NO;
     [self configureImportButtonForCancel];
     [BKSettingsFileDownloader downloadFileAtUrl:themeUrl
+			       expectedMIMETypes:@[@"application/javascript", @"text/plain"]
                           withCompletionHandler:^(NSData *fileData, NSError *error) {
                             if (error == nil) {
                               [self performSelectorOnMainThread:@selector(downloadCompletedWithFilePath:) withObject:fileData waitUntilDone:NO];
                             } else {
-                              UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Network error" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
+                              UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Download error" message:error.localizedDescription preferredStyle:UIAlertControllerStyleAlert];
                               UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
                               [alertController addAction:ok];
                               dispatch_async(dispatch_get_main_queue(), ^{
