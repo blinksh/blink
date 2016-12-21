@@ -59,7 +59,7 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 [View all changes](CHANGELOG.md)
 
 # Attributions
-- [Mosh](https://mosh.mit.edu) was written by Keith Winstein, along with Anders Kaseorg, Quentin Smith, Richard Tibbetts, Keegan McAllister, and John Hood.
+- [Mosh](https://mosh.org) was written by Keith Winstein, along with Anders Kaseorg, Quentin Smith, Richard Tibbetts, Keegan McAllister, and John Hood.
 - This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (http://www.openssl.org/).
 - [Libssh2](https://www.libssh2.org)
