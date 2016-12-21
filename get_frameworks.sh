@@ -2,7 +2,7 @@
 
 LIBSSH2_VER="1.7.0"
 OPENSSL_VER="1.0.2j"
-LIBMOSH_VER="1.2.5-a1286a8"
+LIBMOSH_VER="1.2.5-dd1d82e"
 PROTOBF_VER="2.6.1"
 
 GHROOT="https://github.com/blinksh"
