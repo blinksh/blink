@@ -1516,7 +1516,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Debug;
 		};
@@ -1551,7 +1551,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 2.3;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Release;
 		};
