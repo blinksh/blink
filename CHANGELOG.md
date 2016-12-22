@@ -1,4 +1,18 @@
-# Version 2.109
+# Version 3.021.2
+	- iCloud Hosts sync. Synchronize hosts between devices. If a Host already has been synced, it provides conflict resolution. No critical data like passwords is saved.
+	- Auto Lock. If enabled, when you lock/unlock your device, Blink will also be locked. Passcode and TouchID will be required to unlock the app.
+	- Added ARMv7 support. Support for 32 bit devices like iPad 2, 3, iPhone 5, etc... We will publish depending on how well it performs!
+	- Added IPv6 support for hosts.
+	- Share Public Encryption Keys. You can now share the public key from the Keys section to other apps, like Mail.
+
+	- Updated Fira Code font to v1.204.
+	- Improved error checking on Themes and Font uploads. Auto correct if the GH URL is not a raw one.
+
+	- Fixed bug with password not getting saved on host creation.
+	- Fixed crash when hitting arrows with landscape keyboard on Plus devices.
+	- Rolled back LC_CTYPE enforcement on server.
+
+# Version 2.109 / 3.0
 	- NEW Autorepeat for normal keys on external keyboard. Vim users rejoice!
 	- NEW Default User for connections based on device.
 	- NEW Comments for Public Keys.
