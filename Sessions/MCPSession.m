@@ -181,12 +181,12 @@
     @"  ssh-copy-id: Copy an identity to the server.",
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  help: Prints this.",
-    @"  exit: Close this window.",
+    @"  exit: Close this shell.",
     @"",
-    @"Available gestures:",
-    @"  two fingers tap: New window.",
-    @"  two fingers swipe down: Close window.",
-    @"  one finger swipe left/right: Switch between windows.",
+    @"Available gestures and keyboard shortcuts:",
+    @"  two fingers tap or cmd+t: New shell.",
+    @"  two fingers swipe down or cmd+w: Close shell.",
+    @"  one finger swipe left/right or cmd+shift+[/]: Switch between shells.",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];
