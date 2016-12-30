@@ -187,6 +187,7 @@
     @"  two fingers tap or cmd+t: New shell.",
     @"  two fingers swipe down or cmd+w: Close shell.",
     @"  one finger swipe left/right or cmd+shift+[/]: Switch between shells.",
+    @"  cmd+alt+N: Switch to shell number N.",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];
