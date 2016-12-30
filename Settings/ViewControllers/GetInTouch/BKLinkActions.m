@@ -40,10 +40,11 @@
   NSURL *twitterApp = [NSURL URLWithString:@"twitter:///BlinkShell?screen_name=PAGE"];
   NSURL *twitterURL = [NSURL URLWithString:@"https://twitter.com/BlinkShell"];
 
-  if ([[UIApplication sharedApplication] canOpenURL:twitterApp]) {
-    [[UIApplication sharedApplication] openURL:twitterApp];
+  UIApplication *app = [UIApplication sharedApplication];
+  if ([app canOpenURL:twitterApp]) {
+    [app openURL:twitterApp];
   } else {
-    [[UIApplication sharedApplication] openURL:twitterURL];
+    [app openURL:twitterURL];
   }
 }
 
@@ -58,6 +59,12 @@
 
 + (void)sendToAppStore
 {
+  // This link will open app Details tab in app store
+//  NSURL *appStoreLink = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1156707581"];
+  
+  // This link will open Reviews tab in app store
+  NSURL *appStoreLink = [NSURL URLWithString:@"itms-apps://itunes.apple.com/WebObjects/MZStore.woa/wa/viewContentsUserReviews?type=Purple+Software&id=1156707581"];
+  [[UIApplication sharedApplication] openURL:appStoreLink];
 }
 
 + (void)sendToEmailApp
