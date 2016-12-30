@@ -53,6 +53,8 @@
   
   UIPageControl *_pageControl;
   MBProgressHUD *_hud;
+
+  NSMutableArray<UIKeyCommand *> *_kbdCommands;
 }
 
 #pragma mark Setup
@@ -108,9 +110,17 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
+
   [self createShellAnimated:NO completion:nil];
   [self addGestures];
   [self registerForKeyboardNotifications];
+  [self setKbdCommands];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -120,15 +130,17 @@
 
 - (void)registerForKeyboardNotifications
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(keyboardWasShown:)
-					       name:UIKeyboardDidShowNotification
-					     object:nil];
+  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(keyboardWillBeHidden:)
-					       name:UIKeyboardWillHideNotification
-					     object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWasShown:)
+                        name:UIKeyboardDidShowNotification
+                      object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWillBeHidden:)
+                        name:UIKeyboardWillHideNotification
+                      object:nil];
 }
 
 - (void)addGestures
@@ -319,9 +331,7 @@
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
     [self.viewports removeObjectAtIndex:0];
-    [self createShellAnimated:NO
-		   completion:^(BOOL didComplete) {
-		   }];
+    [self createShellAnimated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
     [self.viewports removeLastObject];
@@ -330,9 +340,9 @@
 				    animated:NO
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
-				    if (didComplete) {
-		[weakSelf displayHUD];
-		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+            if (didComplete) {
+              [weakSelf displayHUD];
+              [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 				    }
 				  }];
   } else {
@@ -397,6 +407,123 @@
   if (self.currentTerm == control) {
     [self closeCurrentSpace];
   }
+}
+
+#pragma mark External Keyboard
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return _kbdCommands;
+}
+
+- (void)setKbdCommands
+{
+  
+  _kbdCommands = [[NSMutableArray alloc] initWithObjects:
+   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags: UIKeyModifierCommand
+                              action: @selector(newShell:)
+                discoverabilityTitle:@"New shell"],
+   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: UIKeyModifierCommand
+                              action: @selector(closeShell:)
+                discoverabilityTitle:@"Close shell"],
+   [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(nextShell:)
+                discoverabilityTitle:@"Next shell"],
+   [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(prevShell:)
+                discoverabilityTitle:@"Previous shell"],
+  nil];
+  
+  for (NSInteger i = 1; i < 11; i++) {
+    NSInteger keyN = i % 10;
+    NSString *input = [NSString stringWithFormat:@"%li", (long)keyN];
+    NSString *title = [NSString stringWithFormat:@"Switch to shell %li", (long)i];
+    UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: input
+                                             modifierFlags: UIKeyModifierCommand | UIKeyModifierAlternate
+                                                    action: @selector(switchToShellN:)
+                                      discoverabilityTitle: title];
+    
+    [_kbdCommands addObject:cmd];
+  }
+}
+
+- (void)newShell:(UIKeyCommand *)cmd
+{
+  [self createShellAnimated:YES completion:nil];
+}
+
+- (void)closeShell:(UIKeyCommand *)cmd
+{
+  [self closeCurrentSpace];
+}
+
+- (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
+{
+  if (idx < 0 || idx >= _viewports.count) {
+    // TODO: Shake?
+    return;
+  }
+  
+  UIViewController *ctrl = _viewports[idx];
+  
+  __weak typeof(self) weakSelf = self;
+  [_viewportsController setViewControllers:@[ ctrl ]
+				 direction:direction
+				  animated:animated
+				completion:^(BOOL didComplete) {
+				  if (didComplete) {
+				    [weakSelf displayHUD];
+				    // Still not in view hierarchy, so calling through selector. There should be a way...
+				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+				  }
+				}];
+  
+}
+
+- (void)nextShell:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+ 
+  [self switchShellIdx:idx + 1 direction:UIPageViewControllerNavigationDirectionForward animated:YES];
+}
+
+- (void)prevShell:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+ 
+  [self switchShellIdx:idx - 1 direction:UIPageViewControllerNavigationDirectionReverse animated:YES];
+}
+
+- (void)switchToShellN:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+  
+  NSInteger targetIdx = [cmd.input integerValue];
+  if (targetIdx <= 0) {
+    targetIdx = 9;
+  } else {
+    targetIdx -= 1;
+  }
+  
+  if (idx == targetIdx) {
+    // We are on this page already.
+    return;
+  }
+
+  UIPageViewControllerNavigationDirection direction =
+    idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
+  
+  
+  [self switchShellIdx:targetIdx direction:direction animated:YES];
 }
 
 @end

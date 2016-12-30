@@ -192,7 +192,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   BOOL _disableAccents;
   BOOL _dismissInput;
   BOOL _pasteMenu;
-  NSMutableArray *_kbdCommands;
+  NSMutableArray<UIKeyCommand *> *_kbdCommands;
   SmartKeysController *_smartKeys;
   UIView *cover;
   NSTimer *_pinchSamplingTimer;
@@ -884,8 +884,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
     return NO;
   }
-  // From the keyboard we validate everything
-  return YES;
+  
+  return [super canPerformAction:action withSender:sender];
 }
 
 @end
