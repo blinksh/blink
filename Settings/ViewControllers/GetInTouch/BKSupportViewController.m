@@ -42,26 +42,15 @@
 
 @implementation BKSupportViewController
 
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  UITableViewCell *clickedCell = [self.tableView cellForRowAtIndexPath:indexPath];
+  UITableViewCell *clickedCell = [tableView cellForRowAtIndexPath:indexPath];
 
-  if ([clickedCell isEqual:self.issuesCell]) {
+  if (clickedCell == self.issuesCell) {
     [BKLinkActions sendToGitHub:@"blink/issues"];
-  } else if ([clickedCell isEqual:self.reportCell]) {
+  } else if (clickedCell == self.reportCell) {
     [BKLinkActions sendToGitHub:@"blink/issues/new"];
-  } else if ([clickedCell isEqual:self.emailCell]) {
+  } else if (clickedCell == self.emailCell) {
     [BKLinkActions sendToEmailApp];
   }
 }
