@@ -39,35 +39,26 @@
 @implementation BKAboutViewController
 
 - (void)viewDidLoad {
-    [super viewDidLoad];
-    // Do any additional setup after loading the view.
+  [super viewDidLoad];
+
   WKWebViewConfiguration *theConfiguration = [[WKWebViewConfiguration alloc] init];
   WKWebView *webView = [[WKWebView alloc] initWithFrame:self.view.frame configuration:theConfiguration];
-  NSString *path = [[NSBundle mainBundle] pathForResource:@"about" ofType:@"html"];
-  NSURL *nsurl = [NSURL fileURLWithPath:path];
-  NSURLRequest *nsrequest=[NSURLRequest requestWithURL:nsurl];
-  [webView loadRequest:nsrequest];
-  [self.view addSubview:webView];
   webView.translatesAutoresizingMaskIntoConstraints = NO;
-  [webView.topAnchor constraintEqualToAnchor:self.view.topAnchor].active = YES;
-  [webView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor].active = YES;
-  [webView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor].active = YES;
-  [webView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor].active = YES;
+  
+  [self.view addSubview:webView];
+  
+  [NSLayoutConstraint activateConstraints:
+  @[
+    [webView.topAnchor constraintEqualToAnchor:self.view.topAnchor],
+    [webView.leadingAnchor constraintEqualToAnchor:self.view.leadingAnchor],
+    [webView.trailingAnchor constraintEqualToAnchor:self.view.trailingAnchor],
+    [webView.bottomAnchor constraintEqualToAnchor:self.view.bottomAnchor]
+  ]];
+  
+  NSString *path = [[NSBundle mainBundle] pathForResource:@"about" ofType:@"html"];
+  NSURL *url = [NSURL fileURLWithPath:path];
+  NSURLRequest *request=[NSURLRequest requestWithURL:url];
+  [webView loadRequest:request];
 }
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
-}
-
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 
 @end
