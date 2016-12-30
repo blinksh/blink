@@ -38,8 +38,6 @@
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
 
-@property UITapGestureRecognizer *twoFingersTap;
-@property UIPanGestureRecognizer *twoFingersDrag;
 @property (nonatomic, readonly) UIPageViewController *viewportsController;
 @property (nonatomic, readonly) NSMutableArray *viewports;
 @property (readonly) TermController *currentTerm;
@@ -47,8 +45,12 @@
 @end
 
 @implementation SpaceController {
-  NSLayoutConstraint *bottomConstraint;
+  UITapGestureRecognizer *_twoFingersTap;
+  UIPanGestureRecognizer *_twoFingersDrag;
+  
   NSLayoutConstraint *_topConstraint;
+  NSLayoutConstraint *_bottomConstraint;
+  
   UIPageControl *_pageControl;
   MBProgressHUD *_hud;
 }
@@ -76,13 +78,18 @@
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
 
 
+  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
+  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor];
+  
   // Container view fills out entire root view.
-  _topConstraint = [NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-  [self.view addConstraint:_topConstraint];
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1 constant:0]];
-  [self.view addConstraint:[NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1 constant:0]];
-  self->bottomConstraint = [NSLayoutConstraint constraintWithItem:_viewportsController.view attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.bottomLayoutGuide attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-  [self.view addConstraint:self->bottomConstraint];
+  [NSLayoutConstraint activateConstraints:
+    @[
+      _topConstraint,
+      [_viewportsController.view.leftAnchor constraintEqualToAnchor:self.view.leftAnchor],
+      [_viewportsController.view.rightAnchor constraintEqualToAnchor:self.view.rightAnchor],
+      _bottomConstraint
+      ]
+   ];
 
   // Termination notification
   UIApplication *app = [UIApplication sharedApplication];
@@ -142,7 +149,7 @@
 #pragma mark Events
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
-  if (gestureRecognizer == self.twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+  if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
     return YES;
   }
   return NO;
@@ -164,18 +171,18 @@
 {
   CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-  self->bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame);
+  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame);
 
   UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
   if ([termAccessory isHidden]) {
-    self->bottomConstraint.constant += termAccessory.frame.size.height;
+    _bottomConstraint.constant += termAccessory.frame.size.height;
   }
 
   [self.view setNeedsUpdateConstraints];
 }
 - (void)keyboardWillBeHidden:(NSNotification *)aNotification
 {
-  self->bottomConstraint.constant = 0;
+  _bottomConstraint.constant = 0;
   [self.view updateConstraintsIfNeeded];
   [self.view setNeedsUpdateConstraints];
 }
