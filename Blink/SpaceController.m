@@ -39,13 +39,14 @@
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
 
-@property (nonatomic, readonly) UIPageViewController *viewportsController;
-@property (nonatomic, readonly) NSMutableArray *viewports;
 @property (readonly) TermController *currentTerm;
 
 @end
 
 @implementation SpaceController {
+  UIPageViewController *_viewportsController;
+  NSMutableArray *_viewports;
+  
   UITapGestureRecognizer *_twoFingersTap;
   UIPanGestureRecognizer *_twoFingersDrag;
   
@@ -349,11 +350,11 @@
   __weak typeof(self) weakSelf = self;
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
-    [self.viewports removeObjectAtIndex:0];
+    [_viewports removeObjectAtIndex:0];
     [self createShellAnimated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
-    [self.viewports removeLastObject];
+    [_viewports removeLastObject];
     [_viewportsController setViewControllers:@[ _viewports[idx - 1] ]
 				   direction:UIPageViewControllerNavigationDirectionReverse
 				    animated:NO
@@ -365,7 +366,7 @@
 				    }
 				  }];
   } else {
-    [self.viewports removeObjectAtIndex:idx];
+    [_viewports removeObjectAtIndex:idx];
     [_viewportsController setViewControllers:@[ _viewports[idx] ]
 				   direction:UIPageViewControllerNavigationDirectionForward
 				    animated:NO
