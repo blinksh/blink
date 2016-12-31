@@ -239,9 +239,9 @@
       _topConstraint.constant = 0;
       _viewportsController.view.alpha = 1;
       [UIView animateWithDuration:0.25
-		       animations:^{
-			 [self.view layoutIfNeeded];
-		       }];
+                       animations:^{
+                         [self.view layoutIfNeeded];
+                       }];
     }
   }
 }
