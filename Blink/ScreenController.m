@@ -76,19 +76,17 @@
 - (void)setupWindowForScreen:(UIScreen *)screen
 {
   UIWindow *window = [[UIWindow alloc] initWithFrame:[screen bounds]];
+  [_windows addObject:window];
   
   window.screen = screen;
   window.rootViewController = [self createSpaceController];
   window.hidden = NO;
-  
-  [_windows addObject:window];
 }
 
 - (SpaceController *)createSpaceController
 {
   UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-  SpaceController *spaceController = [storyboard instantiateViewControllerWithIdentifier:@"SpaceController"];
-  return spaceController;
+  return [storyboard instantiateViewControllerWithIdentifier:@"SpaceController"];
 }
 
 - (void)screenDidConnect:(NSNotification *) notification
@@ -132,10 +130,8 @@
   
   UIWindow *willBeKeyWindow = [self nonKeyWindow];
   
-  SpaceController *spaceCtrl = [willBeKeyWindow spaceController];
+  [[willBeKeyWindow spaceController] displayHUD];
  
-  [spaceCtrl displayHUD];
-  
   [willBeKeyWindow makeKeyAndVisible];
 }
 
