@@ -116,10 +116,6 @@
   [self createShellAnimated:NO completion:nil];
   [self setKbdCommands];
 
-  if (self.view.window.screen == [UIScreen mainScreen]) {
-    [self addGestures];
-    [self registerForKeyboardNotifications];
-  }
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -135,6 +131,8 @@
 - (void)registerForKeyboardNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+  
+  [defaultCenter removeObserver:self];
 
   [defaultCenter addObserver:self
                     selector:@selector(keyboardWasShown:)
@@ -147,19 +145,32 @@
                       object:nil];
 }
 
+- (void)viewDidAppear:(BOOL)animated
+{
+  [super viewDidAppear:animated];
+  if (self.view.window.screen == [UIScreen mainScreen]) {
+    [self addGestures];
+    [self registerForKeyboardNotifications];
+  }
+}
+
 - (void)addGestures
 {
-  _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
-  [_twoFingersTap setNumberOfTouchesRequired:2];
-  [_twoFingersTap setNumberOfTapsRequired:1];
-  _twoFingersTap.delegate = self;
-  [self.view addGestureRecognizer:_twoFingersTap];
+  if (!_twoFingersTap) {
+    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
+    [_twoFingersTap setNumberOfTouchesRequired:2];
+    [_twoFingersTap setNumberOfTapsRequired:1];
+    _twoFingersTap.delegate = self;
+    [self.view addGestureRecognizer:_twoFingersTap];
+  }
 
-  _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
-  [_twoFingersDrag setMinimumNumberOfTouches:2];
-  [_twoFingersDrag setMaximumNumberOfTouches:2];
-  _twoFingersDrag.delegate = self;
-  [self.view addGestureRecognizer:_twoFingersDrag];
+  if (!_twoFingersDrag) {
+    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
+    [_twoFingersDrag setMinimumNumberOfTouches:2];
+    [_twoFingersDrag setMaximumNumberOfTouches:2];
+    _twoFingersDrag.delegate = self;
+    [self.view addGestureRecognizer:_twoFingersDrag];
+  }
 }
 
 #pragma mark Events
