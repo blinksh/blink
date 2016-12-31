@@ -34,7 +34,7 @@
 
 @interface SpaceController : UIViewController
 
-- (void)displayHUD;
+- (void)viewScreenWillBecomeActive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
 

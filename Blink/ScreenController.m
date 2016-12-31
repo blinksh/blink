@@ -130,7 +130,7 @@
   
   UIWindow *willBeKeyWindow = [self nonKeyWindow];
   
-  [[willBeKeyWindow spaceController] displayHUD];
+  [[willBeKeyWindow spaceController] viewScreenWillBecomeActive];
  
   [willBeKeyWindow makeKeyAndVisible];
 }

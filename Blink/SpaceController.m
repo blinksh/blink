@@ -571,4 +571,9 @@
   [self displayHUD];
 }
 
+- (void)viewScreenWillBecomeActive
+{
+  [self displayHUD];
+}
+
 @end
