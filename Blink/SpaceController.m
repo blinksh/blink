@@ -533,10 +533,10 @@
   
   NSInteger targetIdx = [cmd.input integerValue];
   if (targetIdx <= 0) {
-    targetIdx = 9;
-  } else {
-    targetIdx -= 1;
+    targetIdx = 10;
   }
+  
+  targetIdx -= 1;
   
   if (idx == targetIdx) {
     // We are on this page already.
