@@ -61,9 +61,7 @@
 #endif 
   
   [[ScreenController shared] setup];
-  
-  
-  
+
   return YES;
 }
 

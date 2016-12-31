@@ -45,7 +45,7 @@
   return self;
 }
 
-- (void)subscribeForScreenChanges
+- (void)subscribeForScreenNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   
@@ -61,7 +61,7 @@
 
 - (void)setup
 {
-  [self subscribeForScreenChanges];
+  [self subscribeForScreenNotifications];
   
   [self setupWindowForScreen:[UIScreen mainScreen]];
   
