@@ -522,7 +522,9 @@
     return;
   }
  
-  [self switchShellIdx:idx + 1 direction:UIPageViewControllerNavigationDirectionForward animated:YES];
+  [self switchShellIdx: idx + 1
+             direction: UIPageViewControllerNavigationDirectionForward
+              animated: YES];
 }
 
 - (void)prevShell:(UIKeyCommand *)cmd
@@ -532,7 +534,9 @@
     return;
   }
  
-  [self switchShellIdx:idx - 1 direction:UIPageViewControllerNavigationDirectionReverse animated:YES];
+  [self switchShellIdx: idx - 1
+             direction: UIPageViewControllerNavigationDirectionReverse
+              animated: YES];
 }
 
 - (void)switchToShellN:(UIKeyCommand *)cmd
@@ -558,7 +562,9 @@
     idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
   
   
-  [self switchShellIdx:targetIdx direction:direction animated:YES];
+  [self switchShellIdx: targetIdx
+             direction: direction
+              animated: YES];
 }
 
 # pragma moving spaces
