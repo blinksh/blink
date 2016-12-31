@@ -188,6 +188,8 @@
     @"  two fingers swipe down or cmd+w: Close shell.",
     @"  one finger swipe left/right or cmd+shift+[/]: Switch between shells.",
     @"  cmd+alt+N: Switch to shell number N.",
+    @"  cmd+o: Switch to other screen (Airplay mode).",
+    @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];
