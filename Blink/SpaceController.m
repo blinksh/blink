@@ -33,6 +33,7 @@
 #import "MBProgressHUD/MBProgressHUD.h"
 #import "SmartKeysController.h"
 #import "TermController.h"
+#import "ScreenController.h"
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
@@ -113,9 +114,12 @@
   [super viewDidLoad];
 
   [self createShellAnimated:NO completion:nil];
-  [self addGestures];
-  [self registerForKeyboardNotifications];
   [self setKbdCommands];
+
+  if (self.view.window.screen == [UIScreen mainScreen]) {
+    [self addGestures];
+    [self registerForKeyboardNotifications];
+  }
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -318,14 +322,18 @@
 
 - (void)closeCurrentSpace
 {
+  [self.currentTerm terminate];
+  [self removeCurrentSpace];
+}
+
+- (void)removeCurrentSpace {
+  
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   if(idx == NSNotFound) {
     return;
   }
 
   NSInteger numViewports = [_viewports count];
-
-  [self.currentTerm terminate];
 
   __weak typeof(self) weakSelf = self;
   if (idx == 0 && numViewports == 1) {
@@ -418,7 +426,6 @@
 
 - (void)setKbdCommands
 {
-  
   _kbdCommands = [[NSMutableArray alloc] initWithObjects:
    [UIKeyCommand keyCommandWithInput: @"t" modifierFlags: UIKeyModifierCommand
                               action: @selector(newShell:)
@@ -432,6 +439,13 @@
    [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
                               action: @selector(prevShell:)
                 discoverabilityTitle:@"Previous shell"],
+
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand
+                              action: @selector(otherScreen:)
+                discoverabilityTitle:@"Other Screen"],
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(moveToOtherScreen:)
+                discoverabilityTitle:@"Move schell to other Screen"],
   nil];
   
   for (NSInteger i = 1; i < 11; i++) {
@@ -447,6 +461,11 @@
   }
 }
 
+- (void)otherScreen:(UIKeyCommand *)cmd
+{
+  [[ScreenController shared] switchToOtherScreen];
+}
+
 - (void)newShell:(UIKeyCommand *)cmd
 {
   [self createShellAnimated:YES completion:nil];
@@ -455,6 +474,11 @@
 - (void)closeShell:(UIKeyCommand *)cmd
 {
   [self closeCurrentSpace];
+}
+
+- (void)moveToOtherScreen:(UIKeyCommand *)cmd
+{
+  [[ScreenController shared] moveCurrentShellToOtherScreen];
 }
 
 - (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
@@ -524,6 +548,27 @@
   
   
   [self switchShellIdx:targetIdx direction:direction animated:YES];
+}
+
+# pragma moving spaces
+
+- (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController
+{
+  for (TermController *ctrl in spaceController->_viewports) {
+    ctrl.delegate = self;
+    [_viewports addObject:ctrl];
+  }
+
+  [self displayHUD];
+}
+
+- (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController
+{
+  TermController *term = spaceController.currentTerm;
+  term.delegate = self;
+  [_viewports addObject:term];
+  [spaceController removeCurrentSpace];
+  [self displayHUD];
 }
 
 @end
