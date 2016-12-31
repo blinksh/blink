@@ -440,23 +440,23 @@
   _kbdCommands = [[NSMutableArray alloc] initWithObjects:
    [UIKeyCommand keyCommandWithInput: @"t" modifierFlags: UIKeyModifierCommand
                               action: @selector(newShell:)
-                discoverabilityTitle:@"New shell"],
+                discoverabilityTitle: @"New shell"],
    [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: UIKeyModifierCommand
                               action: @selector(closeShell:)
-                discoverabilityTitle:@"Close shell"],
+                discoverabilityTitle: @"Close shell"],
    [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
                               action: @selector(nextShell:)
-                discoverabilityTitle:@"Next shell"],
+                discoverabilityTitle: @"Next shell"],
    [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
                               action: @selector(prevShell:)
-                discoverabilityTitle:@"Previous shell"],
+                discoverabilityTitle: @"Previous shell"],
 
    [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand
                               action: @selector(otherScreen:)
-                discoverabilityTitle:@"Other Screen"],
+                discoverabilityTitle: @"Other Screen"],
    [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
                               action: @selector(moveToOtherScreen:)
-                discoverabilityTitle:@"Move schell to other Screen"],
+                discoverabilityTitle: @"Move schell to other Screen"],
   nil];
   
   for (NSInteger i = 1; i < 11; i++) {
@@ -495,7 +495,7 @@
 - (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
 {
   if (idx < 0 || idx >= _viewports.count) {
-    // TODO: Shake?
+    [self displayHUD];
     return;
   }
   
