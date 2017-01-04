@@ -190,6 +190,7 @@
     @"  cmd+alt+N: Switch to shell number N.",
     @"  cmd+o: Switch to other screen (Airplay mode).",
     @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
+    @"  cmd+,: Open config.",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];
