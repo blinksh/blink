@@ -458,6 +458,9 @@
    [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
                               action: @selector(moveToOtherScreen:)
                 discoverabilityTitle: @"Move schell to other Screen"],
+   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(showConfig:)
+                discoverabilityTitle: @"Show config"],
   nil];
   
   for (NSInteger i = 1; i < 11; i++) {
@@ -491,6 +494,14 @@
 - (void)moveToOtherScreen:(UIKeyCommand *)cmd
 {
   [[ScreenController shared] moveCurrentShellToOtherScreen];
+}
+
+- (void)showConfig:(UIKeyCommand *)cmd 
+{
+  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Settings" bundle:nil];
+  UINavigationController *vc = [sb instantiateViewControllerWithIdentifier:@"NavSettingsController"];
+
+  [self presentViewController:vc animated:YES completion:nil];
 }
 
 - (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
