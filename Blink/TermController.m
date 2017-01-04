@@ -197,6 +197,10 @@ static NSDictionary *bkModifierMaps = nil;
     NSNumber *fontSize = [BKDefaults selectedFontSize];
     [_terminal setFontSize:fontSize];
   }
+  
+  [_terminal setCursorBlink:[BKDefaults isCursorBlink]];
+
+  [_terminal reset];
 }
 
 - (void)terminate
