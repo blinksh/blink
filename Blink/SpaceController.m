@@ -116,7 +116,6 @@
 
   [self createShellAnimated:NO completion:nil];
   [self setKbdCommands];
-
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -127,6 +126,11 @@
 - (BOOL)prefersStatusBarHidden
 {
   return YES;
+}
+
+- (void)focusOnShell
+{
+  [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 }
 
 - (void)registerForKeyboardNotifications
@@ -279,7 +283,7 @@
 {
   if (completed) {
     [self displayHUD];
-    [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+    [self focusOnShell];
   }
 }
 
@@ -362,7 +366,7 @@
 				    // Remove viewport from the list after animation
             if (didComplete) {
               [weakSelf displayHUD];
-              [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+              [weakSelf focusOnShell];
 				    }
 				  }];
   } else {
@@ -374,7 +378,7 @@
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
 		[weakSelf displayHUD];
-		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+		[weakSelf focusOnShell];
 				    }
 				  }];
   }
@@ -414,7 +418,7 @@
 				  if (didComplete) {
 				    [weakSelf displayHUD];
 				    // Still not in view hierarchy, so calling through selector. There should be a way...
-				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+				    [weakSelf focusOnShell];
 				  }
 				}];
 }
@@ -520,8 +524,7 @@
 				completion:^(BOOL didComplete) {
 				  if (didComplete) {
 				    [weakSelf displayHUD];
-				    // Still not in view hierarchy, so calling through selector. There should be a way...
-				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+            [weakSelf focusOnShell];
 				  }
 				}];
   
