@@ -50,7 +50,11 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
   if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
-    [self performSegueWithIdentifier:@"unwindFromKeyboardFuncTriggers" sender:self];
+    if([self.function isEqualToString:(NSString*)BKKeyboardFuncShortcutTriggers]){
+      [self performSegueWithIdentifier:@"unwindFromKeyboardShortcutsFuncTriggers" sender:self];
+    } else {
+      [self performSegueWithIdentifier:@"unwindFromKeyboardFuncTriggers" sender:self];
+    }
   }
   [super viewWillDisappear:animated];
 }

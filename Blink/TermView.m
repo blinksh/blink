@@ -34,6 +34,7 @@
 #import "SmartKeysController.h"
 #import "SmartKeysView.h"
 #import "TermView.h"
+#import "BKUserConfigurationManager.h"
 
 static NSDictionary *CTRLCodes = nil;
 static NSDictionary *FModifiers = nil;
@@ -713,13 +714,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (NSArray *)presetShortcuts
 {
   return @[ [UIKeyCommand keyCommandWithInput:@"+"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(increaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"-"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(decreaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"0"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(resetFontSize:)] ];
 }
 
