@@ -111,17 +111,33 @@ static void displayStatusChanged(CFNotificationCenterRef center, void *observer,
 
 - (void)authenticateUser
 {
-  if (_lockViewController == nil) {
-    _lockViewController = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];
-    __weak BKTouchIDAuthManager *weakSelf = self;
-    _lockViewController.dismissCompletionCallback = ^{
-      authRequired = NO;
-      [[[UIApplication sharedApplication] keyWindow] setRootViewController:weakSelf.rootViewController];
-      weakSelf.lockViewController = nil;
-    };
-    _rootViewController = [[[UIApplication sharedApplication] keyWindow] rootViewController];
-    [[[UIApplication sharedApplication] keyWindow] setRootViewController:_lockViewController];
+  
+  if (_lockViewController != nil) {
+    return;
   }
+  
+  UIApplication *app = [UIApplication sharedApplication];
+  
+  _lockViewController = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];
+
+  __weak BKTouchIDAuthManager *weakSelf = self;
+  
+  _lockViewController.dismissCompletionCallback = ^{
+    authRequired = NO;
+    [[app keyWindow] setRootViewController:weakSelf.rootViewController];
+    
+    weakSelf.lockViewController = nil;
+    weakSelf.rootViewController = nil;
+    
+    // HACK: focusOnShell is an action. so no type dependency here. But still action dependency.
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      [[[app keyWindow] rootViewController] becomeFirstResponder];
+      [app sendAction:NSSelectorFromString(@"focusOnShell") to:nil from:nil forEvent:nil];
+    }];
+  };
+  
+  _rootViewController = [[app keyWindow] rootViewController];
+  [[app keyWindow] setRootViewController:_lockViewController];
 }
 
 

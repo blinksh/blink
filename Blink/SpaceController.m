@@ -33,18 +33,20 @@
 #import "MBProgressHUD/MBProgressHUD.h"
 #import "SmartKeysController.h"
 #import "TermController.h"
+#import "ScreenController.h"
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
 
-@property (nonatomic, readonly) UIPageViewController *viewportsController;
-@property (nonatomic, readonly) NSMutableArray *viewports;
 @property (readonly) TermController *currentTerm;
 
 @end
 
 @implementation SpaceController {
+  UIPageViewController *_viewportsController;
+  NSMutableArray *_viewports;
+  
   UITapGestureRecognizer *_twoFingersTap;
   UIPanGestureRecognizer *_twoFingersDrag;
   
@@ -53,6 +55,8 @@
   
   UIPageControl *_pageControl;
   MBProgressHUD *_hud;
+
+  NSMutableArray<UIKeyCommand *> *_kbdCommands;
 }
 
 #pragma mark Setup
@@ -108,9 +112,15 @@
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
+
   [self createShellAnimated:NO completion:nil];
-  [self addGestures];
-  [self registerForKeyboardNotifications];
+  [self setKbdCommands];
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
 }
 
 - (BOOL)prefersStatusBarHidden
@@ -118,32 +128,54 @@
   return YES;
 }
 
+- (void)focusOnShell
+{
+  [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+}
+
 - (void)registerForKeyboardNotifications
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(keyboardWasShown:)
-					       name:UIKeyboardDidShowNotification
-					     object:nil];
+  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+  
+  [defaultCenter removeObserver:self];
 
-  [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(keyboardWillBeHidden:)
-					       name:UIKeyboardWillHideNotification
-					     object:nil];
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWasShown:)
+                        name:UIKeyboardDidShowNotification
+                      object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(keyboardWillBeHidden:)
+                        name:UIKeyboardWillHideNotification
+                      object:nil];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+  [super viewDidAppear:animated];
+  if (self.view.window.screen == [UIScreen mainScreen]) {
+    [self addGestures];
+    [self registerForKeyboardNotifications];
+  }
 }
 
 - (void)addGestures
 {
-  _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
-  [_twoFingersTap setNumberOfTouchesRequired:2];
-  [_twoFingersTap setNumberOfTapsRequired:1];
-  _twoFingersTap.delegate = self;
-  [self.view addGestureRecognizer:_twoFingersTap];
+  if (!_twoFingersTap) {
+    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
+    [_twoFingersTap setNumberOfTouchesRequired:2];
+    [_twoFingersTap setNumberOfTapsRequired:1];
+    _twoFingersTap.delegate = self;
+    [self.view addGestureRecognizer:_twoFingersTap];
+  }
 
-  _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
-  [_twoFingersDrag setMinimumNumberOfTouches:2];
-  [_twoFingersDrag setMaximumNumberOfTouches:2];
-  _twoFingersDrag.delegate = self;
-  [self.view addGestureRecognizer:_twoFingersDrag];
+  if (!_twoFingersDrag) {
+    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
+    [_twoFingersDrag setMinimumNumberOfTouches:2];
+    [_twoFingersDrag setMaximumNumberOfTouches:2];
+    _twoFingersDrag.delegate = self;
+    [self.view addGestureRecognizer:_twoFingersDrag];
+  }
 }
 
 #pragma mark Events
@@ -212,9 +244,9 @@
       _topConstraint.constant = 0;
       _viewportsController.view.alpha = 1;
       [UIView animateWithDuration:0.25
-		       animations:^{
-			 [self.view layoutIfNeeded];
-		       }];
+                       animations:^{
+                         [self.view layoutIfNeeded];
+                       }];
     }
   }
 }
@@ -251,7 +283,7 @@
 {
   if (completed) {
     [self displayHUD];
-    [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+    [self focusOnShell];
   }
 }
 
@@ -306,6 +338,12 @@
 
 - (void)closeCurrentSpace
 {
+  [self.currentTerm terminate];
+  [self removeCurrentSpace];
+}
+
+- (void)removeCurrentSpace {
+  
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   if(idx == NSNotFound) {
     return;
@@ -313,30 +351,26 @@
 
   NSInteger numViewports = [_viewports count];
 
-  [self.currentTerm terminate];
-
   __weak typeof(self) weakSelf = self;
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
-    [self.viewports removeObjectAtIndex:0];
-    [self createShellAnimated:NO
-		   completion:^(BOOL didComplete) {
-		   }];
+    [_viewports removeObjectAtIndex:0];
+    [self createShellAnimated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
-    [self.viewports removeLastObject];
+    [_viewports removeLastObject];
     [_viewportsController setViewControllers:@[ _viewports[idx - 1] ]
 				   direction:UIPageViewControllerNavigationDirectionReverse
 				    animated:NO
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
-				    if (didComplete) {
-		[weakSelf displayHUD];
-		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+            if (didComplete) {
+              [weakSelf displayHUD];
+              [weakSelf focusOnShell];
 				    }
 				  }];
   } else {
-    [self.viewports removeObjectAtIndex:idx];
+    [_viewports removeObjectAtIndex:idx];
     [_viewportsController setViewControllers:@[ _viewports[idx] ]
 				   direction:UIPageViewControllerNavigationDirectionForward
 				    animated:NO
@@ -344,7 +378,7 @@
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
 		[weakSelf displayHUD];
-		[weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+		[weakSelf focusOnShell];
 				    }
 				  }];
   }
@@ -384,7 +418,7 @@
 				  if (didComplete) {
 				    [weakSelf displayHUD];
 				    // Still not in view hierarchy, so calling through selector. There should be a way...
-				    [weakSelf.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+				    [weakSelf focusOnShell];
 				  }
 				}];
 }
@@ -397,6 +431,181 @@
   if (self.currentTerm == control) {
     [self closeCurrentSpace];
   }
+}
+
+#pragma mark External Keyboard
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return _kbdCommands;
+}
+
+- (void)setKbdCommands
+{
+  _kbdCommands = [[NSMutableArray alloc] initWithObjects:
+   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags: UIKeyModifierCommand
+                              action: @selector(newShell:)
+                discoverabilityTitle: @"New shell"],
+   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: UIKeyModifierCommand
+                              action: @selector(closeShell:)
+                discoverabilityTitle: @"Close shell"],
+   [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(nextShell:)
+                discoverabilityTitle: @"Next shell"],
+   [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(prevShell:)
+                discoverabilityTitle: @"Previous shell"],
+
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand
+                              action: @selector(otherScreen:)
+                discoverabilityTitle: @"Other Screen"],
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(moveToOtherScreen:)
+                discoverabilityTitle: @"Move schell to other Screen"],
+   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: UIKeyModifierCommand | UIKeyModifierShift
+                              action: @selector(showConfig:)
+                discoverabilityTitle: @"Show config"],
+  nil];
+  
+  for (NSInteger i = 1; i < 11; i++) {
+    NSInteger keyN = i % 10;
+    NSString *input = [NSString stringWithFormat:@"%li", (long)keyN];
+    NSString *title = [NSString stringWithFormat:@"Switch to shell %li", (long)i];
+    UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: input
+                                             modifierFlags: UIKeyModifierCommand | UIKeyModifierAlternate
+                                                    action: @selector(switchToShellN:)
+                                      discoverabilityTitle: title];
+    
+    [_kbdCommands addObject:cmd];
+  }
+}
+
+- (void)otherScreen:(UIKeyCommand *)cmd
+{
+  [[ScreenController shared] switchToOtherScreen];
+}
+
+- (void)newShell:(UIKeyCommand *)cmd
+{
+  [self createShellAnimated:YES completion:nil];
+}
+
+- (void)closeShell:(UIKeyCommand *)cmd
+{
+  [self closeCurrentSpace];
+}
+
+- (void)moveToOtherScreen:(UIKeyCommand *)cmd
+{
+  [[ScreenController shared] moveCurrentShellToOtherScreen];
+}
+
+- (void)showConfig:(UIKeyCommand *)cmd 
+{
+  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Settings" bundle:nil];
+  UINavigationController *vc = [sb instantiateViewControllerWithIdentifier:@"NavSettingsController"];
+
+  [self presentViewController:vc animated:YES completion:nil];
+}
+
+- (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
+{
+  if (idx < 0 || idx >= _viewports.count) {
+    [self displayHUD];
+    return;
+  }
+  
+  UIViewController *ctrl = _viewports[idx];
+  
+  __weak typeof(self) weakSelf = self;
+  [_viewportsController setViewControllers:@[ ctrl ]
+				 direction:direction
+				  animated:animated
+				completion:^(BOOL didComplete) {
+				  if (didComplete) {
+				    [weakSelf displayHUD];
+            [weakSelf focusOnShell];
+				  }
+				}];
+  
+}
+
+- (void)nextShell:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+ 
+  [self switchShellIdx: idx + 1
+             direction: UIPageViewControllerNavigationDirectionForward
+              animated: YES];
+}
+
+- (void)prevShell:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+ 
+  [self switchShellIdx: idx - 1
+             direction: UIPageViewControllerNavigationDirectionReverse
+              animated: YES];
+}
+
+- (void)switchToShellN:(UIKeyCommand *)cmd
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
+  
+  NSInteger targetIdx = [cmd.input integerValue];
+  if (targetIdx <= 0) {
+    targetIdx = 10;
+  }
+  
+  targetIdx -= 1;
+  
+  if (idx == targetIdx) {
+    // We are on this page already.
+    return;
+  }
+
+  UIPageViewControllerNavigationDirection direction =
+    idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
+  
+  
+  [self switchShellIdx: targetIdx
+             direction: direction
+              animated: YES];
+}
+
+# pragma moving spaces
+
+- (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController
+{
+  for (TermController *ctrl in spaceController->_viewports) {
+    ctrl.delegate = self;
+    [_viewports addObject:ctrl];
+  }
+
+  [self displayHUD];
+}
+
+- (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController
+{
+  TermController *term = spaceController.currentTerm;
+  term.delegate = self;
+  [_viewports addObject:term];
+  [spaceController removeCurrentSpace];
+  [self displayHUD];
+}
+
+- (void)viewScreenWillBecomeActive
+{
+  [self displayHUD];
 }
 
 @end

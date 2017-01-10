@@ -174,6 +174,8 @@
 		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
+		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 /* End PBXBuildFile section */
 
@@ -430,6 +432,8 @@
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
+		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
+		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -497,6 +501,8 @@
 				0716B5621CFFAB9300268B5B /* TermController.m */,
 				079635831D0E6602000473B1 /* TermView.h */,
 				079635841D0E6602000473B1 /* TermView.m */,
+				D20A28BC1E185BDB00055791 /* ScreenController.h */,
+				D20A28BD1E185BDB00055791 /* ScreenController.m */,
 				079635851D0E6602000473B1 /* fterm.m */,
 				079635861D0E6602000473B1 /* fterm.h */,
 			);
@@ -1174,6 +1180,7 @@
 				076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */,
 				076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */,
 				076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */,
+				D20A28C21E185BFF00055791 /* ScreenController.m in Sources */,
 				076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */,
 				076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */,
@@ -1216,6 +1223,7 @@
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
+				D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */,
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,

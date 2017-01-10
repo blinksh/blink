@@ -192,7 +192,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   BOOL _disableAccents;
   BOOL _dismissInput;
   BOOL _pasteMenu;
-  NSMutableArray *_kbdCommands;
+  NSMutableArray<UIKeyCommand *> *_kbdCommands;
   SmartKeysController *_smartKeys;
   UIView *cover;
   NSTimer *_pinchSamplingTimer;
@@ -215,11 +215,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
     [self addWebView];
     [self resetDefaultControlKeys];
-    [self addGestures];
-    [self configureNotifications];
   }
 
   return self;
+}
+
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  
+  if (self.window && self.window.screen == [UIScreen mainScreen]) {
+    [self addGestures];
+    [self configureNotifications];
+  }
 }
 
 - (void)addWebView
@@ -240,24 +248,33 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)addGestures
 {
+  if (!_tapBackground) {
     _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
     [_tapBackground setNumberOfTapsRequired:1];
     _tapBackground.delegate = self;
     [self addGestureRecognizer:_tapBackground];
+  }
 
+  if (!_longPressBackground) {
     _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
     _longPressBackground.delegate = self;
     [self addGestureRecognizer:_longPressBackground];
+  }
 
+  if (!_pinchGesture) {
     _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGesture.delegate = self;
     [self addGestureRecognizer:_pinchGesture];
+  }
 }
 
 - (void)configureNotifications
 {
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
+  [defaultCenter removeObserver:self];
+  
+  [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
+  [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
 
 - (void)resetDefaultControlKeys
@@ -491,7 +508,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   return YES;
 }
-
+  
 - (BOOL)becomeFirstResponder
 {
   if (!_smartKeys) {
@@ -895,8 +912,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
     return NO;
   }
-  // From the keyboard we validate everything
-  return YES;
+  
+  return [super canPerformAction:action withSender:sender];
 }
 
 @end

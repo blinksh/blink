@@ -32,14 +32,11 @@
 #import "BKKeyboardModifierViewController.h"
 #import "BKDefaults.h"
 
-@interface BKKeyboardModifierViewController ()
-
-@property (nonatomic, strong) NSIndexPath *currentSelectionIdx;
-@property (nonatomic, strong) NSMutableArray *items;
-
-@end
-
 @implementation BKKeyboardModifierViewController
+{
+  NSArray *_items;
+  NSIndexPath *_currentSelectionIdx;
+}
 
 - (void)viewDidLoad
 {

@@ -32,6 +32,7 @@
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
+#import "ScreenController.h"
 @import CloudKit;
 
 #if HOCKEYSDK
@@ -57,7 +58,10 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif  
+#endif 
+  
+  [[ScreenController shared] setup];
+
   return YES;
 }
 
