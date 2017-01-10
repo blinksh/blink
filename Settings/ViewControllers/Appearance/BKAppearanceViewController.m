@@ -37,6 +37,7 @@
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
+#define CURSOR_BLINK_TAG 2003
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -57,7 +58,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 @end
 
-@implementation BKAppearanceViewController
+@implementation BKAppearanceViewController {
+  UISwitch *_cursorBlinkSwitch;
+  BOOL _cursorBlinkValue;
+}
 
 - (void)viewDidLoad
 {
@@ -65,11 +69,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [super viewDidLoad];
 }
 
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -90,6 +89,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (selectedFont != nil) {
     _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:BKAppearance_Fonts];
   }
+  _cursorBlinkValue = [BKDefaults isCursorBlink];
 }
 
 - (void)saveDefaultValues
@@ -103,6 +103,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (_selectedThemeIndexPath != nil) {
     [BKDefaults setThemeName:[[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row] name]];
   }
+  
+  [BKDefaults setCursorBlink:_cursorBlinkValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -124,7 +126,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
   } else {
-    return 1;
+    return 2;
   }
 }
 
@@ -172,22 +174,27 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [_testTerminal loadTerminal];
 }
 
-- (NSString *)cellIdentifierForSection:(NSInteger)section
+- (NSString *)cellIdentifierForIndexPath:(NSIndexPath *)indexPath
 {
+  NSInteger section = indexPath.section;
   static NSString *cellIdentifier;
   if (section == BKAppearance_Terminal) {
     cellIdentifier = @"testTerminalCell";
   } else if (section == BKAppearance_Themes || section == BKAppearance_Fonts) {
     cellIdentifier = @"themeFontCell";
   } else if (section == BKAppearance_FontSize) {
-    cellIdentifier = @"fontSizeCell";
+    if (indexPath.row == 0) {
+      cellIdentifier = @"fontSizeCell";
+    } else {
+      cellIdentifier = @"cursorBlinkCell";
+    }
   }
   return cellIdentifier;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[self cellIdentifierForSection:indexPath.section]];
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:[self cellIdentifierForIndexPath:indexPath]];
   return cell.bounds.size.height;
 }
 
@@ -207,21 +214,19 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  NSString *cellIdentifier = [self cellIdentifierForSection:indexPath.section];
+  NSString *cellIdentifier = [self cellIdentifierForIndexPath:indexPath];
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+  
   if (indexPath.section == BKAppearance_Terminal) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     [self attachTestTerminalToView:cell.contentView];
-    return cell;
   } else if (indexPath.section == BKAppearance_Themes || indexPath.section == BKAppearance_Fonts) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
     if (indexPath.section == BKAppearance_Themes) {
       [self setThemesUIForCell:cell atIndexPath:indexPath];
     } else {
       [self setFontsUIForCell:cell atIndexPath:indexPath];
     }
     return cell;
-  } else if(indexPath.section == BKAppearance_FontSize) {
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
+  } else if(indexPath.section == BKAppearance_FontSize && indexPath.row == 0) {
     _fontSizeField = [cell viewWithTag:FONT_SIZE_FIELD_TAG];
     _fontSizeStepper = [cell viewWithTag:FONT_SIZE_STEPPER_TAG];
     if ([BKDefaults selectedFontSize] != nil) {
@@ -230,9 +235,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     } else {
       _fontSizeField.placeholder = @"";
     }
-    return cell;
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
+    _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
+    _cursorBlinkSwitch.on = _cursorBlinkValue;
   }
-  return nil;
+  return cell;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -299,6 +306,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
 }
 
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
+{
+  return indexPath.section != BKAppearance_FontSize;
+}
+
 // Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -334,19 +346,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [_testTerminal setFontSize:newSize];
 }
 
-/*
-// Override to support rearranging the table view.
-- (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath {
+- (IBAction)cursorBlinkSwitchChanged:(id)sender
+{
+  _cursorBlinkValue = _cursorBlinkSwitch.on;
 }
-*/
-
-/*
-// Override to support conditional rearranging of the table view.
-- (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath {
-    // Return NO if you do not want the item to be re-orderable.
-    return YES;
-}
-*/
 
 
 #pragma mark - Navigation

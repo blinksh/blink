@@ -580,6 +580,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView evaluateJavaScript:jsScript completionHandler:nil];
 }
 
+- (void)setCursorBlink:(BOOL)state
+{
+  NSString *jsScript = [NSString stringWithFormat:@"setCursorBlink(%@)", state ? @"true" : @"false"];
+  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+}
+
+- (void)reset
+{
+  [_webView evaluateJavaScript:@"reset" completionHandler:nil];
+}
+
 
 #pragma mark External Keyboard
 - (void)setKbdCommands

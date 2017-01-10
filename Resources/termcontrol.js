@@ -47,6 +47,11 @@ var setFontSize = function(size) {
     window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {"size": t.getFontSize()}});
 }
 
+var setCursorBlink = function(state) {
+  t.prefs_.set('cursor-blink', state);
+}
+
+
 var focusTerm = function() {
     t.onFocusChange_(true);
 }
@@ -74,6 +79,10 @@ var loadFontFromCSS = function(cssPath, name) {
 
 var clear = function() {
   t.clear();
+}
+
+var reset = function() {
+  t.reset();
 }
 
 hterm.copySelectionToClipboard = function(document) {
