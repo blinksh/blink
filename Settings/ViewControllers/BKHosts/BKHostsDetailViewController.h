@@ -37,5 +37,6 @@
 
 @property (weak, nonatomic) BKHosts *bkHost;
 @property (assign, nonatomic) BOOL isExistingHost;
+@property (assign, nonatomic) BOOL isConflictCopy;
 
 @end

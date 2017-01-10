@@ -4,3 +4,6 @@
 [submodule "Frameworks/MBProgressHUD"]
 	path = Frameworks/MBProgressHUD
 	url = https://github.com/blinksh/MBProgressHUD.git
+[submodule "Frameworks/PasscodeLock"]
+	path = Frameworks/PasscodeLock
+	url = https://github.com/blinksh/SwiftPasscodeLock.git

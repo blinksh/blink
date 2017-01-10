@@ -48,11 +48,13 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)fontSizeChanged:(NSNumber *)size;
 @end
 
-@interface TerminalView : UIView
+@interface TermView : UIView
 
 @property (nonatomic) WKWebView *webView;
 @property (weak) id<TerminalDelegate> delegate;
 @property (nonatomic, readonly, weak) NSString *title;
+@property (readwrite, copy) UITextRange *selectedTextRange;
+@property (nonatomic, readonly) UITextRange *markedTextRange;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;

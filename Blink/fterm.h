@@ -33,7 +33,7 @@
 
 #import "TermController.h"
 
-FILE *fterm_open(TerminalView *wv, unsigned int size);
+FILE *fterm_open(TermView *wv, unsigned int size);
 
 @interface FUTF8Term : NSObject
 

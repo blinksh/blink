@@ -30,39 +30,27 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+@class BKHosts;
+@class CKRecordID;
 
+typedef enum {
+  BKiCloudRecordTypeHosts,
+  BKiCloudRecordTypeKeys
+} BKiCloudRecordType;
 
-@interface SshRsa : NSObject
+extern NSString const *BKiCloudSyncDeletedHosts;
+extern NSString const *BKiCloudSyncUpdatedHosts;
+extern NSString const *BKiCloudContainerIdentifier;
+extern NSString const *BKiCloudZoneName;
 
-- (SshRsa *)initWithLength:(int)bits;
-- (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
-- (NSString *)privateKey;
-- (NSString *)privateKeyWithPassphrase:(NSString *)passphrase;
-- (NSString *)publicKeyWithComment:(NSString*)comment;
+@interface BKiCloudSyncHandler : NSObject
 
-@end
+@property (nonatomic, copy) void (^mergeHostCompletionBlock)(void);
 
-@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
-
-@property NSString *ID;
-@property (readonly) NSString *privateKey;
-@property (readonly) NSString *publicKey;
-
-+ (void)initialize;
-+ (instancetype)withID:(NSString *)ID;
-+ (BOOL)saveIDS;
-+ (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
-+ (NSMutableArray *)all;
-+ (NSInteger)count;
-
-- (NSString *)publicKey;
-- (NSString *)privateKey;
-- (BOOL)isEncrypted;
++ (id)sharedHandler;
+- (void)checkForReachabilityAndSync:(NSNotification *)notification;
+- (void)syncFromiCloud;
+- (void)deleteRecord:(CKRecordID *)recordId ofType:(BKiCloudRecordType)recordType;
+- (void)createNewHost:(BKHosts *)host;
 
 @end
-
-// Responsible of the lifecycle of the IDCards within the system.
-// Offers a directory to the rest, in the same way that you wouldn't offer everything in a file interface.
-// Class methods can give us this, then we can connect the TableViewController for rendering, extending them with
-// a Decorator (or in this case maybe a custom View that represents the Cell)

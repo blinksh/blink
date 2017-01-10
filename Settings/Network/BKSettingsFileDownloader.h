@@ -34,6 +34,7 @@
 @interface BKSettingsFileDownloader : NSObject
 
 + (void)downloadFileAtUrl:(NSString *)urlString withCompletionHandler:(void (^)(NSData *fileData, NSError *error))completionHandler;
++ (void)downloadFileAtUrl:(NSString *)urlString expectedMIMETypes:(NSArray *)mimeType withCompletionHandler:(void (^)(NSData *fileData, NSError *error))completionHandler;
 + (void)cancelRunningDownloads;
 
 @end

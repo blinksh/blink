@@ -29,22 +29,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-#include "SmartKeysView.h"
+extern NSString *const BKUserConfigiCloud;
+extern NSString *const BKUserConfigiCloudKeys;
+extern NSString *const BKUserConfigAutoLock;
 
+@interface BKUserConfigurationManager : NSObject
 
-extern NSString *const SpecialCursorKeyHome;
-extern NSString *const SpecialCursorKeyEnd;
-extern NSString *const SpecialCursorKeyPgUp;
-extern NSString *const SpecialCursorKeyPgDown;
-
-@interface SmartKeys : UIViewController <SmartKeysDelegate>
-
-@property(nonatomic, weak) id< UIKeyInput > textInputDelegate;
-@property(strong, nonatomic) SmartKeysView *view;
-
--(void)symbolDown:(NSString *)symbol;
--(void)symbolUp:(NSString *)symbol;
++ (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key;
++ (BOOL)userSettingsValueForKey:(NSString *)key;
 
 @end

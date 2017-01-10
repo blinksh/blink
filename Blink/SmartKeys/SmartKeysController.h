@@ -29,40 +29,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#include "SmartKeysView.h"
 
-@interface SshRsa : NSObject
 
-- (SshRsa *)initWithLength:(int)bits;
-- (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
-- (NSString *)privateKey;
-- (NSString *)privateKeyWithPassphrase:(NSString *)passphrase;
-- (NSString *)publicKeyWithComment:(NSString*)comment;
+extern NSString *const SpecialCursorKeyHome;
+extern NSString *const SpecialCursorKeyEnd;
+extern NSString *const SpecialCursorKeyPgUp;
+extern NSString *const SpecialCursorKeyPgDown;
 
-@end
+@interface SmartKeysController : UIViewController <SmartKeysDelegate>
 
-@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
+@property(nonatomic, weak) id< UIKeyInput > textInputDelegate;
+@property(strong, nonatomic) SmartKeysView *view;
 
-@property NSString *ID;
-@property (readonly) NSString *privateKey;
-@property (readonly) NSString *publicKey;
-
-+ (void)initialize;
-+ (instancetype)withID:(NSString *)ID;
-+ (BOOL)saveIDS;
-+ (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
-+ (NSMutableArray *)all;
-+ (NSInteger)count;
-
-- (NSString *)publicKey;
-- (NSString *)privateKey;
-- (BOOL)isEncrypted;
+-(void)symbolDown:(NSString *)symbol;
+-(void)symbolUp:(NSString *)symbol;
 
 @end
-
-// Responsible of the lifecycle of the IDCards within the system.
-// Offers a directory to the rest, in the same way that you wouldn't offer everything in a file interface.
-// Class methods can give us this, then we can connect the TableViewController for rendering, extending them with
-// a Decorator (or in this case maybe a custom View that represents the Cell)

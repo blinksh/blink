@@ -29,40 +29,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
-#import <UIKit/UIKit.h>
+#import "BKUserConfigurationManager.h"
 
+NSString *const BKUserConfigiCloud = @"iCloudSync";
+NSString *const BKUserConfigiCloudKeys = @"iCloudKeysSync";
+NSString *const BKUserConfigAutoLock = @"autoLock";
 
-@interface SshRsa : NSObject
+@implementation BKUserConfigurationManager
 
-- (SshRsa *)initWithLength:(int)bits;
-- (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
-- (NSString *)privateKey;
-- (NSString *)privateKeyWithPassphrase:(NSString *)passphrase;
-- (NSString *)publicKeyWithComment:(NSString*)comment;
++ (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key
+{
+  NSMutableDictionary *userSettings = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] objectForKey:@"userSettings"]];
+  if (userSettings == nil) {
+    userSettings = [NSMutableDictionary dictionary];
+  }
+  [userSettings setObject:[NSNumber numberWithBool:value] forKey:key];
+  [[NSUserDefaults standardUserDefaults] setObject:userSettings forKey:@"userSettings"];
+}
+
++ (BOOL)userSettingsValueForKey:(NSString *)key
+{
+  NSDictionary *userSettings = [[NSUserDefaults standardUserDefaults] objectForKey:@"userSettings"];
+  if (userSettings != nil) {
+    if ([userSettings objectForKey:key]) {
+      NSNumber *value = [userSettings objectForKey:key];
+      return value.boolValue;
+    } else {
+      return NO;
+    }
+  } else {
+    return NO;
+  }
+  return NO;
+}
 
 @end
-
-@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
-
-@property NSString *ID;
-@property (readonly) NSString *privateKey;
-@property (readonly) NSString *publicKey;
-
-+ (void)initialize;
-+ (instancetype)withID:(NSString *)ID;
-+ (BOOL)saveIDS;
-+ (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
-+ (NSMutableArray *)all;
-+ (NSInteger)count;
-
-- (NSString *)publicKey;
-- (NSString *)privateKey;
-- (BOOL)isEncrypted;
-
-@end
-
-// Responsible of the lifecycle of the IDCards within the system.
-// Offers a directory to the rest, in the same way that you wouldn't offer everything in a file interface.
-// Class methods can give us this, then we can connect the TableViewController for rendering, extending them with
-// a Decorator (or in this case maybe a custom View that represents the Cell)
