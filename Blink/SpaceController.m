@@ -321,9 +321,9 @@
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   NSString *title = self.currentTerm.terminal.title;
   if (title.length == 0) {
-    title = @"blink";
+    title = [NSString stringWithFormat:@"blink\n%d x %d",self.currentTerm.terminal.rowCount, self.currentTerm.terminal.columnCount];
   }
-
+  _hud.label.numberOfLines = 2;
   _hud.label.text = title;
 
 
@@ -431,6 +431,11 @@
   if (self.currentTerm == control) {
     [self closeCurrentSpace];
   }
+}
+
+- (void)terminalDidResize:(TermController*)control
+{
+  [self displayHUD];
 }
 
 #pragma mark External Keyboard

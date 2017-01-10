@@ -359,6 +359,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   if ([operation isEqualToString:@"sigwinch"]) {
     if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
+      self.rowCount = (int)[data[@"rows"]integerValue];
+      self.columnCount = (int)[data[@"columns"]integerValue];
       [self.delegate updateTermRows:data[@"rows"] Cols:data[@"columns"]];
     }
   } else if ([operation isEqualToString:@"terminalReady"]) {

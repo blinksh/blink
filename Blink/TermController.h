@@ -36,11 +36,12 @@
 
 @class TermController;
 
-@protocol TermControlDelegate
+@protocol TermControlDelegate <NSObject>
 
 // terminalReady to start a specific session from the delegate, instead of inside the class.
 //- (void)terminalReady:(TermStream *)stream;
 - (void)terminalHangup:(TermController *)control;
+- (void)terminalDidResize:(TermController*)control;
 
 @end
 
