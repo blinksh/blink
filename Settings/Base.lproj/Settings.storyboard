@@ -186,37 +186,6 @@
                                             <segue destination="T62-qM-o7n" kind="show" id="aEn-Nu-S4P"/>
                                         </connections>
                                     </tableViewCell>
-                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="Cell" textLabel="i83-1S-4Ub" detailTextLabel="5tg-aa-ELS" imageView="2J7-Y2-fhV" style="IBUITableViewCellStyleValue1" id="IRS-ev-TBi">
-                                        <rect key="frame" x="0.0" y="434" width="375" height="44"/>
-                                        <autoresizingMask key="autoresizingMask"/>
-                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="IRS-ev-TBi" id="Pfv-Vu-5kK">
-                                            <rect key="frame" x="0.0" y="0.0" width="342" height="43"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <subviews>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Auto Lock" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="i83-1S-4Ub">
-                                                    <rect key="frame" x="52" y="11" width="77" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Status" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="5tg-aa-ELS">
-                                                    <rect key="frame" x="290" y="11" width="50" height="21"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="0.0"/>
-                                                    <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                                    <nil key="highlightedColor"/>
-                                                </label>
-                                                <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" image="finger" id="2J7-Y2-fhV">
-                                                    <rect key="frame" x="15" y="10" width="22" height="22"/>
-                                                    <autoresizingMask key="autoresizingMask"/>
-                                                </imageView>
-                                            </subviews>
-                                        </tableViewCellContentView>
-                                        <connections>
-                                            <segue destination="E6Z-DH-ycr" kind="show" id="ScZ-VR-EGz"/>
-                                        </connections>
-                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Get In Touch" id="NXV-Pf-9vR" userLabel="Get In Touch">
@@ -297,7 +266,6 @@
                         </barButtonItem>
                     </navigationItem>
                     <connections>
-                        <outlet property="autoLockStatusLabel" destination="5tg-aa-ELS" id="CJ8-KR-RKX"/>
                         <outlet property="iCloudSyncStatusLabel" destination="Z6a-cl-7ZU" id="V0d-WH-2Yp"/>
                         <outlet property="userNameLabel" destination="FGa-k6-d9u" id="Z5Y-ry-1OA"/>
                     </connections>
@@ -2167,7 +2135,6 @@
     <resources>
         <image name="appearance" width="22" height="22"/>
         <image name="cloud" width="22" height="22"/>
-        <image name="finger" width="22" height="22"/>
         <image name="host" width="22" height="22"/>
         <image name="key" width="22" height="22"/>
         <image name="keyboard" width="22" height="22"/>
