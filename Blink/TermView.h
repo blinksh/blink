@@ -55,6 +55,8 @@ extern NSString * const TermViewAutoRepeateSeq;
 @property (nonatomic, readonly, weak) NSString *title;
 @property (readwrite, copy) UITextRange *selectedTextRange;
 @property (nonatomic, readonly) UITextRange *markedTextRange;
+@property (nonatomic, assign) int rowCount;
+@property (nonatomic, assign) int columnCount;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;

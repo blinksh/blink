@@ -258,6 +258,9 @@ static NSDictionary *bkModifierMaps = nil;
 {
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
+  if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
+    [self.delegate terminalDidResize:self];
+  }
   [_session sigwinch];
 }
 
