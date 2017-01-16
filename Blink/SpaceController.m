@@ -319,13 +319,11 @@
   UIPageControl *pages = [self pageControl];
 
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
-  NSString *title = self.currentTerm.terminal.title;
-  if (title.length == 0) {
-    title = [NSString stringWithFormat:@"blink\n%d x %d",self.currentTerm.terminal.rowCount, self.currentTerm.terminal.columnCount];
-  }
-  _hud.label.numberOfLines = 2;
-  _hud.label.text = title;
+  NSString *title = self.currentTerm.terminal.title.length ? self.currentTerm.terminal.title : @"blink";
+  NSString *geometry = [NSString stringWithFormat:@"%d x %d", self.currentTerm.terminal.rowCount, self.currentTerm.terminal.columnCount];
 
+  _hud.label.numberOfLines = 2;
+  _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];
 
   pages.currentPage = idx;
   _hud.customView = pages;
