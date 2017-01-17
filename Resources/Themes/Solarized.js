@@ -1,5 +1,5 @@
-base03 =     "#001E27";
-base02 =     "#415257";
+base03 =     "#002b36";
+base02 =     "#073642";
 base01 =     "#586e75";
 base00 =     "#657b83";
 base0 =      "#839496";
@@ -16,9 +16,9 @@ cyan =       "#2aa198";
 green =      "#859900";
 
 t.prefs_.set('color-palette-overrides',
-		 [ base03 , red     , green  , yellow,
+		 [ base02 , red     , green  , yellow,
 		   blue     , magenta , cyan   , base2,
-		   base02   , orange  , base01 , base00,
+		   base03   , orange  , base01 , base00,
 		   base0    , violet  , base1  , base3 ]);
 
 t.prefs_.set('cursor-color', 'rgba(255, 255, 255, 0.3)');
