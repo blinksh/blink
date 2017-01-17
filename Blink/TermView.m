@@ -34,6 +34,7 @@
 #import "SmartKeysController.h"
 #import "SmartKeysView.h"
 #import "TermView.h"
+#import "BKUserConfigurationManager.h"
 
 static NSDictionary *CTRLCodes = nil;
 static NSDictionary *FModifiers = nil;
@@ -412,7 +413,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   // If the intersection is only the accesoryView, we have a external keyboard
   if (intersection.size.height == [iaView frame].size.height) {
-    iaView.hidden = YES;
+    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
+      iaView.hidden = NO;
+    } else {
+      iaView.hidden = YES;
+    }
   } else {
     //_capsMapped = NO;
     iaView.hidden = NO;
