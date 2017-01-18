@@ -34,7 +34,7 @@
 #import "SmartKeysController.h"
 #import "TermController.h"
 #import "ScreenController.h"
-
+#import "BKDefaults.h"
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
@@ -57,6 +57,7 @@
   MBProgressHUD *_hud;
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
+  NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
 }
 
 #pragma mark Setup
@@ -440,6 +441,10 @@
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
+  NSMutableDictionary *kbMapping = [NSMutableDictionary dictionaryWithDictionary:[BKDefaults keyboardMapping]];
+  if([kbMapping objectForKey:@"⌘ Cmd"] && ![[kbMapping objectForKey:@"⌘ Cmd"]isEqualToString:@"None"]){
+    return _kbdCommandsWithoutDiscoverability;
+  }
   return _kbdCommands;
 }
 
@@ -481,6 +486,13 @@
     
     [_kbdCommands addObject:cmd];
   }
+  
+  for (UIKeyCommand *command in _kbdCommands) {
+    UIKeyCommand *commandWithoutDiscoverability = [command copy];
+    commandWithoutDiscoverability.discoverabilityTitle = nil;
+    [_kbdCommandsWithoutDiscoverability addObject:commandWithoutDiscoverability];
+  }
+  
 }
 
 - (void)otherScreen:(UIKeyCommand *)cmd
