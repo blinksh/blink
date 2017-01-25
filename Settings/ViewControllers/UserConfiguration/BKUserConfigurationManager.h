@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
+@import UIKit;
 
 extern NSString *const BKUserConfigiCloud;
 extern NSString *const BKUserConfigiCloudKeys;
@@ -40,5 +41,6 @@ extern NSString *const BKUserConfigShowSmartKeysWithXKeyBoard;
 
 + (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key;
 + (BOOL)userSettingsValueForKey:(NSString *)key;
++ (UIKeyModifierFlags)shortCutModifierFlags;
 
 @end

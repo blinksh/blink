@@ -731,13 +731,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (NSArray *)presetShortcuts
 {
   return @[ [UIKeyCommand keyCommandWithInput:@"+"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(increaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"-"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(decreaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"0"
-                                modifierFlags:UIKeyModifierCommand
+                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
                                        action:@selector(resetFontSize:)] ];
 }
 

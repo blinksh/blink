@@ -29,13 +29,11 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <UIKit/UIKit.h>
 
-@interface BKKeyboardFuncTriggersViewController : UITableViewController
+@interface BKKeyboardShortcutsViewController : UITableViewController
 
-@property (nonatomic, strong) NSString *function;
-
-- (void)performInitialSelection:(NSArray *)selectedPrediction;
-- (NSArray *)selectedObjects;
+@property (nonatomic, strong) NSArray *selectedObjects;
 
 @end

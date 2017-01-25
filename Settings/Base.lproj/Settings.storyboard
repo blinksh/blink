@@ -1401,9 +1401,6 @@
                                         </label>
                                     </subviews>
                                 </tableViewCellContentView>
-                                <connections>
-                                    <segue destination="IfA-0a-fov" kind="show" identifier="keyboardFuncTriggers" id="ouj-DI-irO"/>
-                                </connections>
                             </tableViewCell>
                         </prototypes>
                         <sections/>
@@ -1416,6 +1413,8 @@
                     <connections>
                         <outlet property="capsAsEscSwitch" destination="36q-3k-F54" id="62w-1s-LUB"/>
                         <outlet property="shiftAsEscSwitch" destination="KOT-ej-LV9" id="veT-Ug-U8C"/>
+                        <segue destination="IfA-0a-fov" kind="show" identifier="selectTriggersSegue" id="dlZ-04-Kay"/>
+                        <segue destination="geg-3D-Cnz" kind="show" identifier="keyboardShortcutsSegue" id="GMX-Xp-kGO"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="pmZ-mt-jCF" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -1479,7 +1478,82 @@
                 <placeholder placeholderIdentifier="IBFirstResponder" id="j4a-94-VX5" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <exit id="1h4-w0-hJP" userLabel="Exit" sceneMemberID="exit"/>
             </objects>
-            <point key="canvasLocation" x="2645" y="1189"/>
+            <point key="canvasLocation" x="2690" y="1099"/>
+        </scene>
+        <!--Keyboard Shortcuts View Controller-->
+        <scene sceneID="ZRO-1z-XgC">
+            <objects>
+                <tableViewController id="geg-3D-Cnz" customClass="BKKeyboardShortcutsViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="grouped" separatorStyle="default" rowHeight="44" sectionHeaderHeight="18" sectionFooterHeight="18" id="6Ka-fc-Cj3">
+                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="shortcutSelectionCell" textLabel="VAm-Qa-Pu1" detailTextLabel="bQd-vF-G8q" style="IBUITableViewCellStyleValue1" id="YtR-Cs-fnj">
+                                <rect key="frame" x="0.0" y="120" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="YtR-Cs-fnj" id="xnU-ZW-QpO">
+                                    <frame key="frameInset" width="342" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Shortcuts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="VAm-Qa-Pu1">
+                                            <frame key="frameInset" minX="15" minY="12" width="71" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Modifiers" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="bQd-vF-G8q">
+                                            <frame key="frameInset" minX="272" minY="12" width="68" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <segue destination="IfA-0a-fov" kind="show" identifier="keyboardFuncShortcutTriggers" id="Qg1-8I-Klb"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" indentationWidth="10" reuseIdentifier="shortcutsDisplayCell" textLabel="5J7-F1-Qtf" detailTextLabel="T1f-uN-Kuy" style="IBUITableViewCellStyleValue1" id="yfN-FC-wBi">
+                                <rect key="frame" x="0.0" y="164" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="yfN-FC-wBi" id="HO8-bj-48u">
+                                    <frame key="frameInset" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Shortcuts" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="5J7-F1-Qtf">
+                                            <frame key="frameInset" minX="15" minY="12" width="71" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Modifiers" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="T1f-uN-Kuy">
+                                            <frame key="frameInset" minX="292" minY="12" width="68" height="19.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.5568627451" green="0.5568627451" blue="0.57647058819999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="geg-3D-Cnz" id="ZSH-Xi-gxb"/>
+                            <outlet property="delegate" destination="geg-3D-Cnz" id="DMw-oi-LNk"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <segue destination="VKx-Gl-LYN" kind="unwind" identifier="unwindFromKeyboardFuncTriggers" unwindAction="unwindFromKeyboardFuncTriggers:" id="tWk-gb-jj7"/>
+                    </connections>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="nbg-hS-yu6" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <exit id="VKx-Gl-LYN" userLabel="Exit" sceneMemberID="exit"/>
+            </objects>
+            <point key="canvasLocation" x="3444" y="1215"/>
         </scene>
         <!--Smart Keys-->
         <scene sceneID="8pc-5F-4GF">
@@ -1987,6 +2061,7 @@
                     <simulatedToolbarMetrics key="simulatedBottomBarMetrics"/>
                     <connections>
                         <segue destination="eC9-Im-5Cr" kind="unwind" identifier="unwindFromKeyboardFuncTriggers" unwindAction="unwindFromKeyboardFuncTriggers:" id="fm3-ZN-TWI"/>
+                        <segue destination="eC9-Im-5Cr" kind="unwind" identifier="unwindFromKeyboardShortcutsFuncTriggers" unwindAction="unwindFromKeyboardShortcutsFuncTriggers:" id="ZHK-Tn-4BQ"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="97n-oT-6GB" userLabel="First Responder" sceneMemberID="firstResponder"/>
