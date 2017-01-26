@@ -738,7 +738,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                        action:@selector(decreaseFontSize:)],
             [UIKeyCommand keyCommandWithInput:@"0"
                                 modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(resetFontSize:)] ];
+                                       action:@selector(resetFontSize:)],
+	    [UIKeyCommand keyCommandWithInput: @"v" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+                                          action: @selector(yank:)
+                            discoverabilityTitle: @"Paste"]];
 }
 
 - (NSArray *)functionModifierKeys
