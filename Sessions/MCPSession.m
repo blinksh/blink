@@ -128,11 +128,8 @@
 
 - (void)showConfig
 {
-  UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Settings" bundle:nil];
-  UINavigationController *vc = [sb instantiateViewControllerWithIdentifier:@"NavSettingsController"];
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [_stream.control presentViewController:vc animated:YES completion:NULL];
-  });
+  [[UIApplication sharedApplication]
+    sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
 }
 
 - (void)runSSHCopyIDWithArgs:(NSString *)args

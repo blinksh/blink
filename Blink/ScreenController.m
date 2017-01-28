@@ -45,6 +45,10 @@
   return self;
 }
 
+- (UIViewController *)mainScreenRootViewController {
+  return [[_windows firstObject] rootViewController];
+}
+
 - (void)subscribeForScreenNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
@@ -146,5 +150,6 @@
   
   [nonKeySpaceCtrl moveCurrentShellFromSpaceController:keySpaceCtrl];
 }
+
 
 @end
