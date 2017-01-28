@@ -12,6 +12,8 @@
 
 + (ScreenController *)shared;
 
+@property (nonatomic, readonly, strong) UIViewController *mainScreenRootViewController;
+
 - (void)setup;
 - (void)switchToOtherScreen;
 - (void)moveCurrentShellToOtherScreen;
