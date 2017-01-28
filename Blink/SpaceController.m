@@ -539,7 +539,10 @@
   UIStoryboard *sb = [UIStoryboard storyboardWithName:@"Settings" bundle:nil];
   UINavigationController *vc = [sb instantiateViewControllerWithIdentifier:@"NavSettingsController"];
 
-  [self presentViewController:vc animated:YES completion:nil];
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    UIViewController *rootVC = ScreenController.shared.mainScreenRootViewController;
+    [rootVC presentViewController:vc animated:YES completion:NULL];
+  }];
 }
 
 - (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
