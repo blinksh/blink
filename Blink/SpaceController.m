@@ -323,6 +323,8 @@
     [self.view addSubview:_hud];
   }
 
+  _hud.center = CGPointMake(_hud.center.x, self.currentTerm.terminal.frame.size.height/2);
+
   _hud.userInteractionEnabled = NO;
 
   UIPageControl *pages = [self pageControl];
