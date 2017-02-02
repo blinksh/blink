@@ -168,6 +168,8 @@ static UICKeyChainStore *Keychain = nil;
     bkHost.hostName = hostName;
     if (![sshPort isEqualToString:@""]) {
       bkHost.port = [NSNumber numberWithInt:sshPort.intValue];
+    } else {
+      bkHost.port = nil;
     }
     bkHost.user = user;
     bkHost.passwordRef = pwdRef;
@@ -175,6 +177,8 @@ static UICKeyChainStore *Keychain = nil;
     bkHost.moshServer = moshServer;
     if (![moshPort isEqualToString:@""]) {
       bkHost.moshPort = [NSNumber numberWithInt:moshPort.intValue];
+    }else{
+      bkHost.moshPort = nil;
     }
     bkHost.moshStartup = startUpCmd;
     bkHost.prediction = [NSNumber numberWithInt:prediction];
