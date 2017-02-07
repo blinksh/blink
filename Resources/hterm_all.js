@@ -12719,7 +12719,8 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
   if (this.options_.cursorBlink) {
     if (this.timeouts_.cursorBlink)
       return;
-
+    // Switch the cursor off, so that the manual (first) blink trigger sets it on again
+    this.cursorNode_.style.opacity = '0';
     this.onCursorBlink_();
   } else {
     if (this.timeouts_.cursorBlink) {
