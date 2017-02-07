@@ -121,7 +121,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-  if (section == BKAppearance_Themes) {
+  if (section == BKAppearance_Terminal) {
+    return 1;
+  } else if (section == BKAppearance_Themes) {
     return [[BKTheme all] count] + 1;
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
