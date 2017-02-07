@@ -1,11 +1,14 @@
-# Version 4.024.1
-	- Remote AirPlay screen! Have a complete Blink on your remote AirDisplay :)
+# Version 4.024.2
+	- AirTerminals! Put a terminal on your remote AirPlay screen :)
 	- Blink shortcuts. Use your external keyboard to move, create, or remove terminals. Configure the trigger too! View settings > Keyboard > Shortcuts for more info.
 	- Want to use SmartKeys when an external keyboard is connected? Now you can switch them on and off from configuration.
 	- View geometry of the screen from the overlay with each resize.
 	- Switch cursor blinking on/off from Appearance settings.
 
 	- Fixed TouchID issues when returning to the app.
+	- Fixed cursor blink sequence so that it always starts as ON.
+	- Fixed Host Port not resetting properly.
+	- Fixed overlay getting covered in landscape mode.
 
 	- Smoother experience thanks to cleanups and improvements.
 
