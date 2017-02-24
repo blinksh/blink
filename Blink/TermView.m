@@ -199,6 +199,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSTimer *_pinchSamplingTimer;
   BOOL _raw;
   BOOL _inputEnabled;
+  BOOL _cmdAsModifier;
   NSMutableDictionary *_controlKeys;
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
@@ -650,6 +651,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     else {
       return;
     }
+    
+    // Cmd is default for iOS shortcuts, so we control whether or not we are re-mapping those ourselves.
+    if (modifier == UIKeyModifierCommand) {
+      _cmdAsModifier = YES;
+    }
 
     NSUInteger length = charset.length;
     unichar buffer[length + 1];
@@ -670,6 +676,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
     [_controlKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   } else {
+    if (modifier == UIKeyModifierCommand) {
+      _cmdAsModifier = NO;
+    }
+
     [_controlKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
   }
   [self setKbdCommands];
@@ -886,7 +896,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+v
 - (void)paste:(id)sender
 {
-  if ([sender isKindOfClass:[UIMenuController class]]) {
+  if ([sender isKindOfClass:[UIMenuController class]] || !_cmdAsModifier) {
     [self yank:sender];
   } else {
     [_delegate write:[CC CTRL:@"v"]];
