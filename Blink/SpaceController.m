@@ -237,21 +237,23 @@
 {
   CGFloat y = [sender translationInView:self.view].y;
   CGFloat height = self.view.frame.size.height;
+  CGRect frame = self.view.frame;
 
   if (y > 0) {
-    _topConstraint.constant = y;
+    [self.view setFrame:CGRectMake(frame.origin.x, y, frame.size.width, frame.size.height)];
     _viewportsController.view.alpha = 1 - (y * 2/ height);
   }
+
   if (sender.state == UIGestureRecognizerStateEnded) {
     CGPoint velocity = [sender velocityInView:self.view];
+    [self.view setFrame:CGRectMake(frame.origin.x, 0, frame.size.width, frame.size.height)];
+
     if (velocity.y > height * 2) {
       _viewportsController.view.alpha = 1;
-      _topConstraint.constant = 0;
-      [self.view layoutIfNeeded];
       [self closeCurrentSpace];
     } else {
-      _topConstraint.constant = 0;
       _viewportsController.view.alpha = 1;
+      // Rollback up animated
       [UIView animateWithDuration:0.25
                        animations:^{
                          [self.view layoutIfNeeded];
@@ -321,9 +323,16 @@
     _hud.bezelView.color = [UIColor darkGrayColor];
     _hud.contentColor = [UIColor whiteColor];
     [self.view addSubview:_hud];
+  } else {
+    // Add some tolerance before changing the center of the HUD.
+    CGPoint newCenter = CGPointMake(_hud.center.x, self.currentTerm.terminal.frame.size.height/2);
+    UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
+    if (fabs(_hud.center.y - newCenter.y) > termAccessory.frame.size.height) {
+      [UIView animateWithDuration:0.25 animations:^{
+        _hud.center = newCenter;
+      }];
+    }
   }
-
-  _hud.center = CGPointMake(_hud.center.x, self.currentTerm.terminal.frame.size.height/2);
 
   _hud.userInteractionEnabled = NO;
 
@@ -444,7 +453,9 @@
 
 - (void)terminalDidResize:(TermController*)control
 {
-  [self displayHUD];
+  if ([control.view isFirstResponder]) {
+    [self displayHUD];
+  }
 }
 
 #pragma mark External Keyboard
