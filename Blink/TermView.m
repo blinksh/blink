@@ -742,13 +742,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   return @[ [UIKeyCommand keyCommandWithInput:@"+"
                                 modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(increaseFontSize:)],
+                                       action:@selector(increaseFontSize:)
+             discoverabilityTitle:@"Zoom In"],
             [UIKeyCommand keyCommandWithInput:@"-"
                                 modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(decreaseFontSize:)],
-            [UIKeyCommand keyCommandWithInput:@"0"
+                                       action:@selector(decreaseFontSize:)
+             discoverabilityTitle:@"Zoom Out"],
+            [UIKeyCommand keyCommandWithInput:@"="
                                 modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(resetFontSize:)],
+                                       action:@selector(resetFontSize:)
+             discoverabilityTitle:@"Reset Zoom"],
 	    [UIKeyCommand keyCommandWithInput: @"v" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
                                           action: @selector(yank:)
                             discoverabilityTitle: @"Paste"]];
