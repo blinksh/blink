@@ -1,3 +1,11 @@
+# Version 5.028.1
+	- Fixed Cmd+v shortcut
+	- HostKey fingerprint as base64 encoding
+	- Smoothing the HUD on resize or SplitView
+	- Empty default user configuration bugs.
+	- Zoom shortcuts changed.
+	- Solarized theme fixes.
+	
 # Version 4.024.2
 	- AirTerminals! Put a terminal on your remote AirPlay screen :)
 	- Blink shortcuts. Use your external keyboard to move, create, or remove terminals. Configure the trigger too! View settings > Keyboard > Shortcuts for more info.
