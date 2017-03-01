@@ -306,7 +306,9 @@ static void kbd_callback(const char *name, int name_len,
 
   _options.hostname = host.hostName ? [host.hostName UTF8String] : _options.hostname;
   _options.port = _options.port ? _options.port : [host.port intValue];
-  _options.user = _options.user ? _options.user : [host.user UTF8String];
+  if (!_options.user && [host.user length]) {
+    _options.user = [host.user UTF8String];
+  }
   _options.identity_file = _options.identity_file ? _options.identity_file : [host.key UTF8String];
   _options.password = host.password ? [host.password UTF8String] : NULL;
 }

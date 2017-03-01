@@ -70,8 +70,10 @@
     if (_bkHost.port != nil) {
       _sshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.port];
     }
-    if (_bkHost.user != nil) {
+    if (_bkHost.user != nil && ![_bkHost.user isEqualToString:@""]) {
       _userField.text = _bkHost.user;
+    } else {
+      _userField.text = [BKDefaults defaultUserName];
     }
     _passwordField.text = _bkHost.password;
     _hostKeyDetail.text = _bkHost.key;
@@ -81,6 +83,8 @@
       _moshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.moshPort];
     }
     _startUpCmdField.text = _bkHost.moshStartup;
+  } else {
+    _userField.text = [BKDefaults defaultUserName];
   }
 
   [self.hostKeyDetail addObserver:self forKeyPath:@"text" options:0 context:nil];

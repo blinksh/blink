@@ -2191,7 +2191,10 @@
                                                         <constraint firstAttribute="width" constant="294" id="aCY-zv-Ftj"/>
                                                     </constraints>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                                                    <textInputTraits key="textInputTraits"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                    <connections>
+                                                        <outlet property="delegate" destination="oCY-N8-jaj" id="yzG-Ob-K2E"/>
+                                                    </connections>
                                                 </textField>
                                             </subviews>
                                             <constraints>
