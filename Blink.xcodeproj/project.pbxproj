@@ -141,6 +141,8 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		A4E5A88D1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E5A88C1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m */; };
+		A4E5A88E1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A4E5A88C1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m */; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
@@ -371,6 +373,8 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		A4E5A88B1E92E2DE00C84591 /* BKPubKeyQRScanViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyQRScanViewController.h; sourceTree = "<group>"; };
+		A4E5A88C1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyQRScanViewController.m; sourceTree = "<group>"; };
 		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
@@ -820,6 +824,8 @@
 				C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */,
 				C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */,
 				C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */,
+				A4E5A88B1E92E2DE00C84591 /* BKPubKeyQRScanViewController.h */,
+				A4E5A88C1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m */,
 			);
 			path = BKPubKey;
 			sourceTree = "<group>";
@@ -1175,6 +1181,7 @@
 				076FBE1E1DB80AC900F6D997 /* fterm.m in Sources */,
 				076FBE201DB80AC900F6D997 /* BKSupportViewController.m in Sources */,
 				076FBE211DB80AC900F6D997 /* BKAboutViewController.m in Sources */,
+				A4E5A88E1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m in Sources */,
 				076FBE221DB80AC900F6D997 /* utf8.c in Sources */,
 				076FBE231DB80AC900F6D997 /* BKDefaults.m in Sources */,
 				076FBE241DB80AC900F6D997 /* Session.m in Sources */,
@@ -1232,6 +1239,7 @@
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
+				A4E5A88D1E92E2DE00C84591 /* BKPubKeyQRScanViewController.m in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,

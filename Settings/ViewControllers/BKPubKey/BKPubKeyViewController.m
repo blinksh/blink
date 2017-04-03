@@ -152,12 +152,20 @@
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                    // ImportKey flow
-                                                   [self importKey];
+                                                   [self importKeyFromClipboard];
 
                                                    if (_clipboardKey) {
                                                      [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
                                                    }
                                                  }];
+  UIAlertAction *scanQR = [UIAlertAction actionWithTitle:@"Scan QR code"
+                                                     style:UIAlertActionStyleDefault
+                                                   handler:^(UIAlertAction *_Nonnull action) {
+                                                       // ImportKey flow
+                                                       NSLog(@"Scan QR!");
+//                                                       [self importKey];
+                                                       [self performSegueWithIdentifier:@"scanQRKeySegue" sender:sender];
+                                                   }];
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
                                                  handler:^(UIAlertAction *_Nonnull action){
@@ -166,16 +174,22 @@
 
   [keySourceController addAction:generate];
   [keySourceController addAction:import];
+  [keySourceController addAction:scanQR];
   [keySourceController addAction:cancel];
   [[keySourceController popoverPresentationController] setBarButtonItem:sender];
   [self presentViewController:keySourceController animated:YES completion:nil];
 }
 
-- (void)importKey
+- (void)importKeyFromClipboard
 {
-  // Check if key is encrypted.
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  NSString *pbkey = pb.string;
+    // Check if key is encrypted.
+    UIPasteboard *pb = [UIPasteboard generalPasteboard];
+    NSString *pbkey = pb.string;
+    [self importKey:pbkey];
+}
+
+- (void)importKey:(NSString *)pbkey
+{
 
   // Ask for passphrase if it is encrypted.
   if (([pbkey rangeOfString:@"ENCRYPTED"
@@ -196,7 +210,7 @@
                                                  SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey passphrase:passphrase.text];
                                                  if (key == nil) {
                                                    // Retry
-                                                   [self importKey];
+                                                     [self importKey:pbkey];
                                                  } else {
                                                    _clipboardKey = key;
                                                    _clipboardPassphrase = passphrase.text;
