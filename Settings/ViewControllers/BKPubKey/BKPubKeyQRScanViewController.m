@@ -14,6 +14,8 @@
 
 @implementation BKPubKeyQRScanViewController
 
+@synthesize delegate;
+
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
@@ -35,7 +37,8 @@
 */
 
 - (IBAction)cancelQRScan:(id)sender {
-    [self dismissViewControllerAnimated:YES completion:nil];
+  [self dismissViewControllerAnimated:YES completion:nil];
+  [delegate importKey:@"test"];
 }
 
 @end

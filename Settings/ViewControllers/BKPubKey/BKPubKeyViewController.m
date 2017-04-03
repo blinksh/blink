@@ -35,7 +35,7 @@
 #import "BKPubKeyCreateViewController.h"
 #import "BKPubKeyDetailsViewController.h"
 #import "BKPubKeyViewController.h"
-
+#import "BKPubKeyQRScanViewController.h"
 
 @interface BKPubKeyViewController ()
 
@@ -266,6 +266,11 @@
       create.passphrase = _clipboardPassphrase;
     }
 
+    return;
+  }
+  if ([[segue identifier] isEqualToString:@"scanQRKeySegue"]) {
+    BKPubKeyQRScanViewController * scan = segue.destinationViewController;
+    [scan setDelegate:self];
     return;
   }
 }

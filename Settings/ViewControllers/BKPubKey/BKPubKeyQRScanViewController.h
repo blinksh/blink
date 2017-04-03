@@ -8,6 +8,14 @@
 
 #import <UIKit/UIKit.h>
 
+@protocol importKeyProtocol <NSObject>
+
+- (void)importKey:(NSString *)pbkey;
+
+@end
+
 @interface BKPubKeyQRScanViewController : UIViewController
+
+@property(nonatomic,assign)id delegate;
 
 @end
