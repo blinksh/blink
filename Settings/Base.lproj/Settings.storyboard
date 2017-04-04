@@ -348,8 +348,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a name for the key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Nz9-83-8He">
-                                                    <rect key="frame" x="15" y="0.0" width="570" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter a name for the key" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Nz9-83-8He">
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                     <connections>
@@ -401,8 +401,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0Yg-Nm-JyN">
-                                                    <rect key="frame" x="15" y="0.0" width="570" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="0Yg-Nm-JyN">
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                                 </textField>
@@ -422,8 +422,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Re-enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DSU-73-1Kq">
-                                                    <rect key="frame" x="15" y="0.0" width="570" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Re-enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DSU-73-1Kq">
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" secureTextEntry="YES"/>
                                                 </textField>
@@ -447,8 +447,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="user@blink" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fct-sq-5ie">
-                                                    <rect key="frame" x="15" y="0.0" width="570" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="user@blink" placeholder="Enter passphrase" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Fct-sq-5ie">
+                                                    <rect key="frame" x="15" y="0.0" width="345" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                 </textField>
@@ -518,8 +518,8 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r3k-R8-kUF">
-                                                    <rect key="frame" x="292" y="0.0" width="294" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" textAlignment="right" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="r3k-R8-kUF">
+                                                    <rect key="frame" x="67" y="0.0" width="294" height="44"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="294" id="BaP-8V-mWK"/>
                                                     </constraints>
@@ -547,8 +547,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qao-Pi-yvz">
-                                                    <rect key="frame" x="8" y="0.0" width="584" height="44"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qao-Pi-yvz">
+                                                    <rect key="frame" x="8" y="0.0" width="359" height="44"/>
                                                     <state key="normal" title="Copy Public Key"/>
                                                     <connections>
                                                         <action selector="copyPublicKey:" destination="pXM-Xm-FZf" eventType="touchUpInside" id="lyh-2L-JM2"/>
@@ -570,8 +570,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P4O-97-2fF">
-                                                    <rect key="frame" x="8" y="0.0" width="584" height="44"/>
+                                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P4O-97-2fF">
+                                                    <rect key="frame" x="8" y="0.0" width="359" height="44"/>
                                                     <state key="normal" title="Copy Private Key"/>
                                                     <connections>
                                                         <action selector="copyPrivateKey:" destination="pXM-Xm-FZf" eventType="touchUpInside" id="2j5-IO-JMS"/>
@@ -913,7 +913,7 @@
                                                     <nil key="highlightedColor"/>
                                                 </label>
                                                 <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="UDP port" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5He-rQ-CdM">
-                                                    <rect key="frame" x="106" y="12" width="268" height="20"/>
+                                                    <rect key="frame" x="113" y="12" width="254" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad"/>
                                                     <connections>
@@ -964,7 +964,7 @@
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" horizontalHuggingPriority="249" text="Startup Command" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="MBw-jJ-6Uq">
-                                                    <rect key="frame" x="8" y="12" width="136" height="20"/>
+                                                    <rect key="frame" x="15" y="12" width="136" height="20"/>
                                                     <constraints>
                                                         <constraint firstAttribute="width" constant="136" id="uNJ-Ci-hHz"/>
                                                     </constraints>
@@ -972,8 +972,8 @@
                                                     <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Execute on remote host" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mXI-j0-XM4">
-                                                    <rect key="frame" x="170" y="12" width="415" height="20"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Execute on remote host" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="mXI-j0-XM4">
+                                                    <rect key="frame" x="170" y="12" width="190" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                                     <connections>
@@ -1098,6 +1098,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="lUn-zc-3zP">
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                            </view>
                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="fWQ-x5-LHc">
                                 <rect key="frame" x="312" y="617" width="48" height="30"/>
                                 <state key="normal" title="Cancel"/>
@@ -1108,14 +1112,21 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="lUn-zc-3zP" firstAttribute="centerX" secondItem="WL4-4L-2cE" secondAttribute="centerX" id="2PI-UK-ZAW"/>
                             <constraint firstItem="CQs-8C-8Gl" firstAttribute="top" secondItem="fWQ-x5-LHc" secondAttribute="bottom" constant="20" id="4U3-Oy-2Y7"/>
                             <constraint firstAttribute="trailingMargin" secondItem="fWQ-x5-LHc" secondAttribute="trailing" constant="-1" id="Qlf-0A-Sth"/>
+                            <constraint firstItem="lUn-zc-3zP" firstAttribute="centerY" secondItem="WL4-4L-2cE" secondAttribute="centerY" id="ZF7-nH-ZyP"/>
+                            <constraint firstItem="lUn-zc-3zP" firstAttribute="width" secondItem="WL4-4L-2cE" secondAttribute="width" id="caK-bH-W3x"/>
+                            <constraint firstItem="lUn-zc-3zP" firstAttribute="height" secondItem="WL4-4L-2cE" secondAttribute="height" id="eND-PX-jP3"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="videoView" destination="lUn-zc-3zP" id="F77-pc-mX1"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="gE4-XA-qYv" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1924" y="-950"/>
+            <point key="canvasLocation" x="1924" y="-950.37481259370327"/>
         </scene>
         <!--Feedback-->
         <scene sceneID="pFT-li-TJD">
@@ -1669,8 +1680,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" placeholder="Required" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="c4a-eE-Iap">
-                                                    <rect key="frame" x="17" y="0.0" width="575" height="43"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" placeholder="Required" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="c4a-eE-Iap">
+                                                    <rect key="frame" x="17" y="0.0" width="350" height="43"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits"/>
                                                     <connections>
@@ -1697,8 +1708,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter URL address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gYp-oT-cuB">
-                                                    <rect key="frame" x="17" y="0.0" width="575" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter URL address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="gYp-oT-cuB">
+                                                    <rect key="frame" x="17" y="0.0" width="350" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                                     <connections>
@@ -1722,8 +1733,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gOA-o9-poV">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="gOA-o9-poV">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                                     <state key="normal" title="Import"/>
                                                     <connections>
                                                         <action selector="importButtonClicked:" destination="lav-FK-npF" eventType="touchUpInside" id="XjM-S2-2wl"/>
@@ -1827,8 +1838,8 @@
                                             <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <nil key="highlightedColor"/>
                                         </label>
-                                        <textField opaque="NO" clipsSubviews="YES" tag="2001" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10 px" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="f5x-Ei-09Y">
-                                            <rect key="frame" x="427" y="0.0" width="56" height="44"/>
+                                        <textField opaque="NO" clipsSubviews="YES" tag="2001" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="10 px" textAlignment="center" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="f5x-Ei-09Y">
+                                            <rect key="frame" x="202" y="0.0" width="56" height="44"/>
                                             <constraints>
                                                 <constraint firstAttribute="width" constant="56" id="Dck-MA-RIS"/>
                                                 <constraint firstAttribute="height" constant="44" id="dJT-aE-RUP"/>
@@ -1840,8 +1851,8 @@
                                                 <outlet property="delegate" destination="wNx-Mq-Q3D" id="BcV-sH-e0Y"/>
                                             </connections>
                                         </textField>
-                                        <stepper opaque="NO" tag="2002" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" misplaced="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Mmq-zw-ejP">
-                                            <rect key="frame" x="487" y="8" width="94" height="29"/>
+                                        <stepper opaque="NO" tag="2002" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" maximumValue="100" translatesAutoresizingMaskIntoConstraints="NO" id="Mmq-zw-ejP">
+                                            <rect key="frame" x="262" y="8" width="94" height="29"/>
                                             <constraints>
                                                 <constraint firstAttribute="height" constant="29" id="SjN-qT-hXy"/>
                                                 <constraint firstAttribute="width" constant="94" id="Xbi-MQ-gaa"/>
@@ -1968,8 +1979,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter URL address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DcL-Sx-nU8">
-                                                    <rect key="frame" x="17" y="0.0" width="575" height="44"/>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="Enter URL address" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DcL-Sx-nU8">
+                                                    <rect key="frame" x="17" y="0.0" width="350" height="44"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                     <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
                                                     <connections>
@@ -1992,8 +2003,8 @@
                                             <rect key="frame" x="0.0" y="0.0" width="375" height="44"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <button opaque="NO" contentMode="scaleToFill" misplaced="YES" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A4V-pb-aQj">
-                                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43"/>
+                                                <button opaque="NO" contentMode="scaleToFill" enabled="NO" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="A4V-pb-aQj">
+                                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43"/>
                                                     <state key="normal" title="Import"/>
                                                     <connections>
                                                         <action selector="importButtonClicked:" destination="KGQ-4q-oYw" eventType="touchUpInside" id="RpM-N0-WOI"/>

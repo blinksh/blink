@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import <AVFoundation/AVFoundation.h>
 
 @protocol importKeyProtocol <NSObject>
 
@@ -17,5 +18,7 @@
 @interface BKPubKeyQRScanViewController : UIViewController
 
 @property(nonatomic,assign)id delegate;
+
+@property (weak, nonatomic) IBOutlet UIView *videoView;
 
 @end

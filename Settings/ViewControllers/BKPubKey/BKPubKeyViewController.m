@@ -154,16 +154,10 @@
                                                    // ImportKey flow
                                                    [self importKeyFromClipboard];
 
-                                                   if (_clipboardKey) {
-                                                     [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
-                                                   }
                                                  }];
   UIAlertAction *scanQR = [UIAlertAction actionWithTitle:@"Scan QR code"
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                       // ImportKey flow
-                                                       NSLog(@"Scan QR!");
-//                                                       [self importKey];
                                                        [self performSegueWithIdentifier:@"scanQRKeySegue" sender:sender];
                                                    }];
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
@@ -240,6 +234,7 @@
     } else {
       _clipboardKey = key;
       _clipboardPassphrase = nil;
+      [self performSegueWithIdentifier:@"createKeySegue" sender:nil];
     }
   }
 }
