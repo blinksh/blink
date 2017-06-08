@@ -20,7 +20,10 @@ var sigwinch = function() {
     t.scrollPort_.onResize_(null);
 }
 
-window.addEventListener('resize', sigwinch);
+window.onresize = function(){
+  clearTimeout(window.resizedFinished);
+  window.resizedFinished = setTimeout(sigwinch, 100);
+};
 
 var increaseTermFontSize = function() {
     var size = t.getFontSize();
