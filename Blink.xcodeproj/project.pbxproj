@@ -991,7 +991,7 @@
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = HV2S48975V;
-						LastSwiftMigration = 0800;
+						LastSwiftMigration = 0830;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 1;
@@ -1534,7 +1534,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 arm64";
 			};
@@ -1569,7 +1569,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = "armv7 arm64";
 			};
