@@ -1,1 +1,0 @@
-char *xgethostname (void);
