@@ -1,0 +1,131 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+ 15.1   FF-Test: FF's in Text                      V
+ 16.2   Options -n;
+ 17.3   numbering lines with skiped pages;
+ 18.4   numbering blanc lines (no. 5,12,13,23,28)
+ 19.
+ 20.6 3456789 123456789 123456789 123456789 12345678
+ 21.7   3 Columns downwards ..., <= 5 lines per page
+ 22.8   
+ 23.9   
+ 24.10  zzzzzzzzzzzzzzzzzzzzzzzzzz123456789
+ 25.1                                       12345678
+ 26.          
+ 27.
+ 28.14 456789 123456789 123456789 123456789
+
+
+-- Date/Time --                         x                         Page 2
+
+
+
+
+
+-- Date/Time --                         x                         Page 3
+
+
+ 29.15 xyzxyzxyz XYZXYZXYZ abcabcab
+ 30.16 456789 123456789 xyzxyzxyz XYZXYZXYZ
+ 31.7                                       12345678
+ 32.8                                       12345678
+ 33.9 3456789 ab
+ 34.20 DEFGHI 123
+ 35.1                                       12345678
+ 36.
+ 37.
+ 38.4                                       12345678
+ 39.5                                       12345678
+ 40.6                                       12345678
+ 41.27 no truncation before FF; (r_l-test):
+ 42.
+
+
+-- Date/Time --                         x                         Page 4
+
+
+
+
+
+-- Date/Time --                         x                         Page 5
+
+
+ 43.29 xyzxyzxyz XYZXYZXYZ abcabcab
+ 44.30 456789 123456789 xyzxyzxyz XYZXYZXYZ
+ 45.1                                       12345678
+ 46.2 3456789 abcdefghi
+ 47.3                                       12345678
+ 48.4                                       12345678
+ 49.
+ 50.6                                       12345678
+ 51.7                                       12345678
+ 52.8                                       12345678
+ 53.9 3456789 abcdefghi
+ 54.40 DEFGHI 123456789
+ 55.41 yzxyzxyz XYZXYZXYZ abcabcab 
+ 56.42 456789 123456789 abcdefghi ABCDEDFHI
+
+
+-- Date/Time --                         x                         Page 6
+
+
+
+
+
+-- Date/Time --                         x                         Page 7
+
+
+
+
+
+-- Date/Time --                         x                         Page 8
+
+
+ 57.43 xyzxyzxyz XYZXYZXYZ abcabcab
+ 58.44 456789 123456789 xyzxyzxyz XYZXYZXYZ
+ 59.5                                       12345678
+ 60.6                                       12345678
+ 61.7                                       12345678
+ 62.8                                       12345678
+ 63.9                                       12345678
+ 64.50                                      12345678
+ 65.1                                       12345678
+ 66.
+ 67.
+ 68.
+ 69.55 yzxyzxyz XYZXYZXYZ abcabcab 
+ 70.56 456789 123456789 abcdefghi ABCDEDFHI
+
+
+-- Date/Time --                         x                         Page 9
+
+
+ 71. 
+ 72.58 456789 123456789 xyzxyzxyz XYZXYZXYZ
+ 73.9                                       12345678
+ 74.60 DEFGHI 123456789
+ 75.61 yzxyzxyz XYZXYZXYZ abcabcab 
+ 76.62 456789 123456789 abcdefghi ABCDEDFHI
+ 77.63 xyzxyzxyz XYZXYZXYZ abcabcab
+ 78.64 456789 123456789 xyzxyzxyz XYZXYZXYZ
+ 79.5                                       12345678
+ 80.6                                       12345678
+ 81.7                                       12345678
+ 82.8                                       12345678
+ 83.9                                       12345678
+ 84.70  456789 123456789 abcdefghi ABCDEDFHI
+
+
+-- Date/Time --                        x                         Page 10
+
+
+ 85.1                                       12345678
+ 86.
+ 87.
+ 88.
+ 89.74 yzxyzxyz XYZXYZXYZ abcabcab 
+ 90.75 456789 123456789 abcdefghi ABCDEDFHI
+

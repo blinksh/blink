@@ -1,0 +1,69 @@
+#!/usr/bin/python
+# Exit 0 if "." and "./tempfile" have useful d_type information, else 1.
+# Intended to exit 0 only on Linux/GNU systems.
+import os
+import sys
+import tempfile
+
+fail = 1
+fname = None
+
+try:
+  import ctypes.util
+
+  (DT_UNKNOWN, DT_DIR, DT_REG) = (0, 4, 8)
+
+  class dirent(ctypes.Structure):
+    _fields_ = [
+      ("d_ino", ctypes.c_long),
+      ("d_off", ctypes.c_long),
+      ("d_reclen", ctypes.c_ushort),
+      ("d_type", ctypes.c_ubyte),
+      ("d_name", ctypes.c_char*256)]
+
+  # Pass NULL to dlopen, assuming the python
+  # interpreter is linked with the C runtime
+  libc = ctypes.CDLL(None)
+
+  # Setup correct types for all args and returns
+  # even if only passing, to avoid truncation etc.
+  dirp = ctypes.c_void_p
+  direntp = ctypes.POINTER(dirent)
+
+  libc.readdir.argtypes = [dirp]
+  libc.readdir.restype = direntp
+
+  libc.opendir.restype = dirp
+
+  # Ensure a file is present
+  f, fname = tempfile.mkstemp(dir='.')
+  fname = os.path.basename(fname)
+
+  dirp = libc.opendir(".")
+  if dirp:
+    while True:
+      ep = libc.readdir(dirp)
+      if not ep: break
+      d_type = ep.contents.d_type
+      name = ep.contents.d_name
+      if name == "." or name == "..":
+        if d_type != DT_DIR: break
+      # Check files too since on XFS, only dirs have DT_DIR
+      # while everything else has DT_UNKNOWN
+      elif name == fname:
+        if d_type == DT_REG:
+          fail = 0
+        break
+      elif d_type != DT_DIR and d_type != DT_UNKNOWN:
+        fail = 0
+        break
+except:
+  pass
+
+try:
+  if fname:
+    os.unlink(fname);
+except:
+  pass
+
+sys.exit(fail)

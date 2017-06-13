@@ -1,0 +1,63 @@
+1   Test-INPUT: "Without FF set by Hand"       V
+2   Options -b -3 [+2|+3] [-l 15|8] [-f]
+3   Options -a -3 [+2|+3] [-l 15|8] [-f]
+4   Options       [+2|+3] [-l 24|17] [-f]
+5
+6   --------------------------------------------
+7 3456789 123456789 123456789 123456789 12345678
+8   3 Columns downwards, across, ...:
+9   With columns use  <= 5 text lines/page,
+10  without -f e.g.:  -l 15 = total lines/page,
+1   with -f e.g.   :  -l 8 -f
+2   
+3 line truncation before new page; r_r_o_l-test:
+14 456789 123456789 123456789 123456789
+15 xyzxyzxyz XYZXYZXYZ abcabcab
+16 456789 123456789 xyzxyzxyz XYZXYZXYZ
+7                                       12345678
+8                                       12345678
+9 3456789 ab
+20 DEFGHI 123
+1                                       12345678
+2                                       12345678
+3                                       12345678
+4                                       12345678
+5                                       12345678
+6                                       12345678
+27 no truncation before nwe page; (r_l-test):
+28 no trunc
+29 xyzxyzxyz XYZXYZXYZ abcabcab
+30 456789 123456789 xyzxyzxyz XYZXYZXYZ
+1                                       12345678
+2 3456789 abcdefghi
+3                                       12345678
+4                                       12345678
+5                                       12345678
+6                                       12345678
+7                                       12345678
+8                                       12345678
+9 3456789 abcdefghi
+40 DEFGHI 123456789
+41 yzxyzxyz XYZXYZXYZ abcabcab 
+42 456789 123456789 abcdefghi ABCDEDFHI
+43 xyzxyzxyz XYZXYZXYZ abcabcab
+44 456789 123456789 xyzxyzxyz XYZXYZXYZ
+5                                       12345678
+6                                       12345678
+7                                       12345678
+8                                       12345678
+9                                       12345678
+50                                      12345678
+1                                       12345678
+2                                       12345678
+3                                       12345678
+4                                       12345678
+55 yzxyzxyz XYZXYZXYZ abcabcab 
+56 456789 123456789 abcdefghi ABCDEDFHI
+57 xyzxyzxyz XYZXYZXYZ abcabcab
+58 456789 123456789 xyzxyzxyz XYZXYZXYZ
+9                                       12345678
+60 DEFGHI 123456789
+1
+2
+3  ------- EOF -------- EOF -------- EOF -------

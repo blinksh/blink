@@ -1,0 +1,55 @@
+#!/bin/sh
+
+# Use stat to find a writable directory on a file system different from that
+# of the current directory.  If one is found, create a temporary directory
+# inside it.
+
+# Copyright (C) 1998-2017 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+test "${CANDIDATE_TMP_DIRS+set}" = set \
+  || CANDIDATE_TMP_DIRS="$TMPDIR /tmp /dev/shm /var/tmp /usr/tmp $HOME"
+
+other_partition_tmpdir=
+
+dot_mount_point=$(stat -c %d .)
+for d in $CANDIDATE_TMP_DIRS; do
+
+  # Skip nonexistent directories.
+  test -d "$d" || continue
+
+  d_mount_point=$(stat -L -c %d "$d")
+
+  # Same partition?  Skip it.
+  test "x$d_mount_point" = "x$dot_mount_point" && continue
+
+  # See if we can create a directory in it.
+  if mkdir "$d/tmp$$" > /dev/null 2>&1; then
+    other_partition_tmpdir="$d/tmp$$"
+    break
+  fi
+
+done
+
+if test -z "$other_partition_tmpdir"; then
+  skip_ \
+"requires a writable directory on a different disk partition,
+and I couldn't find one.  I tried these:
+  $CANDIDATE_TMP_DIRS
+Set your environment variable CANDIDATE_TMP_DIRS to make
+this test use a different list."
+fi
+
+test "$VERBOSE" = yes && set -x

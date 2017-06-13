@@ -1,0 +1,16 @@
+#!/usr/bin/perl -nl
+# Use Perl's multi-byte alignment code, via sprintf, while
+# performing a rudimentary check for duplicate names and
+# removing duplicate name,email pairs.
+use Encode;
+
+BEGIN { my (%seen, %name) }
+
+chomp;
+my ($name, $email) = split '\0', decode ('UTF-8', $_);
+
+$seen{$name}++
+  and warn "$0: THANKS.in: duplicate name: $name\n";
+
+print encode ('UTF-8', sprintf ('%-36s', $name)), $email
+  unless $seen{"$name\0$email"}++;

@@ -1,0 +1,136 @@
+   
+
+   -- Date/Time --                         x                         Page 1
+
+
+   1<<<	 -Test: FF's in Text			>>>	1:::  Test-INPUT: "Without FF set by Hand"	  :::
+   2<<<	 -b -3 / -a -3 / ...  >>>	2:::	Options -b -3 [+2|+3] [-l 15|8] [-f]   :::
+   3<<<	 >>>	3:::  Options -a -3 [+2|+3] [-l 15|8] [-f]	  :::
+   4<<<	 123456789 123456789 123456789 12345678	 >>>	4:::  Options	 [+2|+3] [-l 24|17] [-f]   :::
+   	5:::  :::
+   6<<<	 -Arangements: One Empty Page  >>>	6:::	 --------------------------------------------	:::
+   7<<<	 \f\f\n; text\f\n\ftext; \f\ftext;  >>>	7:::  789 123456789 123456789 123456789 123456789 123456789 123456789 1234567890   :::
+   8<<<	 f\f\n; \f\n\f\n;  >>>	8:::  3 Columns downwards, across, ...:	:::
+   9<<<	 >>> 	9:::  With columns use  <= 5 text lines/page,  :::
+   10<<<  >>>	10:::  without -f e.g.:  -l 15 = total lines/page,  :::
+   1<<<	 >>>	1:::  with -f e.g.	  :  -l 8 -f  :::
+   2<<<	 >>>	2:::  :::
+   3<<<	 truncation before FF; r_r_o_l-test:  >>>	3:::	line truncation before new page; r_r_o_l-test:	:::
+   14<<<  123456789 123456789 123456789	 >>>	14:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   
+
+   -- Date/Time --                         x                         Page 2
+
+
+   	15:::  xyzxyzxyz XYZXYZXYZ abcabcab	 :::
+   	16:::  456789 123456789 xyzxyzxyz XYZXYZXYZ	 :::
+   	7:::  12345678  :::
+   	8:::  12345678  :::
+   	9:::  3456789 ab  :::
+   	20:::  DEFGHI 123  :::
+   	21:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   	2:::  12345678  :::
+   	3:::  12345678  :::
+   	4:::  12345678  :::
+   	5:::  12345678  :::
+   	6:::  12345678  :::
+   	27:::  no truncation before nwe page; (r_l-test):  :::
+   	28:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   
+
+   -- Date/Time --                         x                         Page 3
+
+
+   15<<<  xyzxyzxyz XYZXYZXYZ abcabcab	>>>	29:::  xyzxyzxyz XYZXYZXYZ abcabcab	 :::
+   16<<<  123456789 xyzxyzxyz XYZXYZXYZ	 >>>	30:::  456789 123456789 xyzxyzxyz XYZXYZXYZ  :::
+   7<<<	 >>>	1:::  12345678  :::
+   8<<<	 >>>	2:::  3456789 abcdefghi  :::
+   9<<<	 >>>	3:::  12345678  :::
+   20<<<  >>>	4:::  12345678  :::
+   1<<<	 >>>	35:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   	6:::  12345678  :::
+   	7:::  12345678  :::
+   4<<<	 >>>	8:::  12345678  :::
+   5<<<	 >>>	9:::  3456789 abcdefghi  :::
+   6<<<	 >>>	40:::  DEFGHI 123456789  :::
+   27<<<  truncation before FF; (r_l-test):  >>>	41:::	yzxyzxyz XYZXYZXYZ abcabcab   :::
+   28<<<  trunc	42:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   
+
+   -- Date/Time --                         x                         Page 4
+
+
+   	43:::  xyzxyzxyz XYZXYZXYZ abcabcab	 :::
+   	44:::  456789 123456789 xyzxyzxyz XYZXYZXYZ	 :::
+   	5:::  12345678  :::
+   	6:::  12345678  :::
+   	7:::  12345678  :::
+   	8:::  12345678  :::
+   	49:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   	50:::  12345678  :::
+   	1:::  12345678  :::
+   	2:::  12345678  :::
+   	3:::  12345678  :::
+   	4:::  12345678  :::
+   	55:::  yzxyzxyz XYZXYZXYZ abcabcab	 :::
+   	56:::  89 123456789 123456789 123456789 123456789 123456789 123456789 1234567890  :::
+   
+
+   -- Date/Time --                         x                         Page 5
+
+
+   29<<<xyzxyzxyz XYZXYZXYZ abcabcab  >>>	57:::	 xyzxyzxyz XYZXYZXYZ abcabcab  :::
+   30<<<  123456789 xyzxyzxyz XYZXYZXYZ	 >>>	58:::  456789 123456789 xyzxyzxyz XYZXYZXYZ  :::
+   1<<<	 >>>	9:::  12345678  :::
+   2<<<	 abcdefghi  >>>	60:::  DEFGHI 123456789	 :::
+   3<<<	 >>>	1:::    :::
+   4<<<	 >>>	2:::    :::
+   5<<<	 >>>	3:::  ------- EOF -------- EOF -------- EOF ------- EOF ------- EOF ------- EOF   :::
+   6<<<	 >>>	
+   7<<<	 >>>	
+   8<<<	 >>>	
+   9<<<	 abcdefghi  >>>	
+   40<<<  123456789  >>>	
+   41<<<  XYZXYZXYZ abcabcab   >>>	
+   42<<<  123456789 abcdefghi ABCDEDFHI	 >>>
+   
+
+   -- Date/Time --                         x                         Page 6
+
+
+
+   
+
+   -- Date/Time --                         x                         Page 7
+
+
+
+   
+
+   -- Date/Time --                         x                         Page 8
+
+
+   43<<<  xyzxyzxyz XYZXYZXYZ abcabcab	>>>	
+   44<<<  123456789 xyzxyzxyz XYZXYZXYZ	 >>>	
+   5<<<	 >>>	
+   6<<<	 >>>	
+   7<<<	 >>>	
+   8<<<	 >>>	
+   9<<<	 >>>	
+   50<<<  >>>	
+   1<<<	 >>>	
+   2<<<	 >>>	
+   3<<<	 >>>	
+   4<<<	 >>>	
+   55<<<  XYZXYZXYZ abcabcab  >>>	
+   56<<<  123456789 abcdefghi ABCDEDFHI	 >>>
+   
+
+   -- Date/Time --                         x                         Page 9
+
+
+   57<<<  xyzxyzxyz XYZXYZXYZ abcabcab	>>>	
+   58<<<  123456789 xyzxyzxyz XYZXYZXYZ	 >>>	
+   9<<<	 >>>	
+   60<<<  123456789  >>>	
+

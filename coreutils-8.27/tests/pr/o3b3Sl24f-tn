@@ -1,0 +1,32 @@
+   
+
+   -- Date/Time --                         x                         Page 1
+
+
+   1   Test-INPUT: "With:--:15 xyzxyzxyz XYZXYZXY:--:29 xyzxyzxyz XYZXYZXY
+   2   Options -b -3 [+2:--:16 456789 123456789 x:--:30 456789 123456789 x
+   3   Options -a -3 [+2:--:7			 :--:1
+   4   Options	     [+2:--:8			 :--:2 3456789 abcdefghi
+   5			:--:9 3456789 ab	 :--:3
+   6   -----------------:--:20 DEFGHI 123	 :--:4
+   7 3456789 123456789 1:--:1			 :--:5
+   8   3 Columns downwar:--:2			 :--:6
+   9   With columns use :--:3			 :--:7
+   10  without -f e.g.: :--:4			 :--:8
+   1   with -f e.g.   : :--:5			 :--:9 3456789 abcdefghi
+   2			:--:6			 :--:40 DEFGHI 123456789
+   3 line truncation bef:--:27 no truncation befo:--:41 yzxyzxyz XYZXYZXYZ
+   14 456789 123456789 1:--:28 no trunc		 :--:42 456789 123456789 a
+   
+
+   -- Date/Time --                         x                         Page 2
+
+
+   43 xyzxyzxyz XYZXYZXY:--:50			 :--:57 xyzxyzxyz XYZXYZXY
+   44 456789 123456789 x:--:1			 :--:58 456789 123456789 x
+   5			:--:2			 :--:9
+   6			:--:3			 :--:60 DEFGHI 123456789
+   7			:--:4			 :--:1
+   8			:--:55 yzxyzxyz XYZXYZXYZ:--:2
+   9			:--:56 456789 123456789 a:--:3	------- EOF ------
+

@@ -1,0 +1,10 @@
+#!/bin/sh
+# Set locale-related environment variables so we get consistent
+# message translations, time formats, sort orderings, etc.
+
+LC_ALL=C
+export LC_ALL
+unset LANGUAGE NLSPATH
+
+# These settings shouldn't matter, but unset them anyway just in case.
+unset LANG LC_COLLATE LC_CTYPE LC_MESSAGES LC_MONETARY LC_NUMERIC LC_TIME

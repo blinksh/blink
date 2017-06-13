@@ -1,0 +1,55 @@
+#!/usr/bin/perl -w
+# dcgen -- convert dircolors.hin to dircolors.h.
+
+# Copyright (C) 1996-2017 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+# written by Jim Meyering
+
+require 5.002;
+use strict;
+(my $ME = $0) =~ s|.*/||;
+
+# A global destructor to close standard output with error checking.
+sub END
+{
+  defined fileno STDOUT
+    or return;
+  close STDOUT
+    and return;
+  warn "$ME: closing standard output: $!\n";
+  $? ||= 1;
+}
+
+my @line;
+while (<>)
+  {
+    chomp;
+    s/[[:blank:]]+/ /g;
+    $_
+      and push @line, $_;
+  }
+
+my $indent = '  ';
+
+print "static char const G_line[] =\n{\n";
+foreach (@line)
+  {
+    s/./'$&',/g;
+    s/'\\'/'\\\\'/g;
+    s/'''/'\\''/g;
+    print "$indent${_}0,\n";
+  }
+print "};\n";

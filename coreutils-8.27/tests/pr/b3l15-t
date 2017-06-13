@@ -1,0 +1,75 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+1   Test-INPUT: "Withou 6   ------------------- 1   with -f e.g.   :  -
+2   Options -b -3 [+2|+ 7 3456789 123456789 123 2
+3   Options -a -3 [+2|+ 8   3 Columns downwards 3 line truncation befor
+4   Options	  [+2|+ 9   With columns use  < 14 456789 123456789 123
+5			10  without -f e.g.:  - 15 xyzxyzxyz XYZXYZXYZ
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 2
+
+
+16 456789 123456789 xyz 1			6
+7			2			27 no truncation before
+8			3			28 no trunc
+9 3456789 ab		4			29 xyzxyzxyz XYZXYZXYZ
+20 DEFGHI 123		5			30 456789 123456789 xyz
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 3
+
+
+1			6			41 yzxyzxyz XYZXYZXYZ a
+2 3456789 abcdefghi	7			42 456789 123456789 abc
+3			8			43 xyzxyzxyz XYZXYZXYZ
+4			9 3456789 abcdefghi	44 456789 123456789 xyz
+5			40 DEFGHI 123456789	5
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 4
+
+
+6			1			56 456789 123456789 abc
+7			2			57 xyzxyzxyz XYZXYZXYZ
+8			3			58 456789 123456789 xyz
+9			4			9
+50			55 yzxyzxyz XYZXYZXYZ a 60 DEFGHI 123456789
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 5
+
+
+1			2			3  ------- EOF --------
+
+
+
+
+
+
+
+
+

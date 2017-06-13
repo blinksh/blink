@@ -1,0 +1,160 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+  1.1	Test-INPUT: "Wit:--:1	Test-INPUT: "Wit:--:1	FF-Test: FF's in
+  2.2	Options -b -3 [+:--:2	Options -b -3 [+:--:2	Options -b -3 /
+  3.3	Options -a -3 [+:--:3	Options -a -3 [+:--:3	----------------
+  4.4	Options	      [+:--:4	Options	      [+:--:4 3456789 123456789
+  5.5			:--:5			:--:5	3 Columns downwa
+  6.6	----------------:--:6	----------------:--:6	FF-Arangements:
+  7.7 3456789 123456789 :--:7 3456789 123456789 :--:7	text\f\f\n; text
+  8.8	3 Columns downwa:--:8	3 Columns downwa:--:8	\f\f\n; \f\n\f\n
+  9.9	With columns use:--:9	With columns use:--:9
+ 10.10	without -f e.g.::--:10	without -f e.g.::--:10	zzzzzzzzzzzzzzzz
+
+
+-- Date/Time --                         x                         Page 2
+
+
+ 11.1	with -f e.g.   ::--:1	with -f e.g.   ::--:1
+ 12.2			:--:2			:--:2
+ 13.3 line truncation be:--:3 line truncation be:--:3 line truncation be
+ 14.14 456789 123456789 :--:14 456789 123456789 :--:14 456789 123456789
+ 15.15 xyzxyzxyz XYZXYZX:--:15 xyzxyzxyz XYZXYZX:--:
+ 16.16 456789 123456789 :--:16 456789 123456789 :--:
+ 17.7			:--:7			:--:
+ 18.8			:--:8			:--:
+ 19.9 3456789 ab	:--:9 3456789 ab	:--:
+ 20.20 DEFGHI 123	:--:20 DEFGHI 123	:--:
+
+
+-- Date/Time --                         x                         Page 3
+
+
+ 21.1			:--:1			:--:
+ 22.2			:--:2			:--:
+ 23.3			:--:3			:--:
+ 24.4			:--:4			:--:
+ 25.5			:--:5			:--:
+ 26.6			:--:6			:--:
+ 27.27 no truncation bef:--:27 no truncation bef:--:
+ 28.28 no trunc		:--:28 no trunc		:--:
+ 29.29 xyzxyzxyz XYZXYZX:--:29 xyzxyzxyz XYZXYZX:--:
+ 30.30 456789 123456789 :--:30 456789 123456789 :--:
+
+
+-- Date/Time --                         x                         Page 4
+
+
+ 31.1			:--:1			:--:15 xyzxyzxyz XYZXYZX
+ 32.2 3456789 abcdefghi :--:2 3456789 abcdefghi :--:16 456789 123456789
+ 33.3			:--:3			:--:7
+ 34.4			:--:4			:--:8
+ 35.5			:--:5			:--:9 3456789 ab
+ 36.6			:--:6			:--:20 DEFGHI 123
+ 37.7			:--:7			:--:1
+ 38.8			:--:8			:--:2
+ 39.9 3456789 abcdefghi :--:9 3456789 abcdefghi :--:3
+ 40.40 DEFGHI 123456789 :--:40 DEFGHI 123456789 :--:4
+
+
+-- Date/Time --                         x                         Page 5
+
+
+ 41.41 yzxyzxyz XYZXYZXY:--:41 yzxyzxyz XYZXYZXY:--:5
+ 42.42 456789 123456789 :--:42 456789 123456789 :--:6
+ 43.43 xyzxyzxyz XYZXYZX:--:43 xyzxyzxyz XYZXYZX:--:27 no truncation bef
+ 44.44 456789 123456789 :--:44 456789 123456789 :--:28 no trunc
+ 45.5			:--:5			:--:
+ 46.6			:--:6			:--:
+ 47.7			:--:7			:--:
+ 48.8			:--:8			:--:
+ 49.9			:--:9			:--:
+ 50.50			:--:50			:--:
+
+
+-- Date/Time --                         x                         Page 6
+
+
+ 51.1			:--:1			:--:
+ 52.2			:--:2			:--:
+ 53.3			:--:3			:--:
+ 54.4			:--:4			:--:
+ 55.55 yzxyzxyz XYZXYZXY:--:55 yzxyzxyz XYZXYZXY:--:
+ 56.56 456789 123456789 :--:56 456789 123456789 :--:
+ 57.57 xyzxyzxyz XYZXYZX:--:57 xyzxyzxyz XYZXYZX:--:
+ 58.58 456789 123456789 :--:58 456789 123456789 :--:
+ 59.9			:--:9			:--:
+ 60.60 DEFGHI 123456789 :--:60 DEFGHI 123456789 :--:
+
+
+-- Date/Time --                         x                         Page 7
+
+
+ 61.1			:--:1			:--:29 xyzxyzxyz XYZXYZX
+ 62.2			:--:2			:--:30 456789 123456789
+ 63.3  ------- EOF -----:--:3  ------- EOF -----:--:1
+ 64.			:--:			:--:2 3456789 abcdefghi
+ 65.			:--:			:--:3
+ 66.			:--:			:--:4
+ 67.			:--:			:--:5
+ 68.			:--:			:--:6
+ 69.			:--:			:--:7
+ 70.			:--:			:--:8
+
+
+-- Date/Time --                         x                         Page 8
+
+
+ 71.			:--:			:--:9 3456789 abcdefghi
+ 72.			:--:			:--:40 DEFGHI 123456789
+ 73.			:--:			:--:41 yzxyzxyz XYZXYZXY
+ 74.			:--:			:--:42 456789 123456789
+
+
+-- Date/Time --                         x                         Page 9
+
+
+
+
+
+-- Date/Time --                        x                         Page 10
+
+
+
+
+
+-- Date/Time --                        x                         Page 11
+
+
+ 75.			:--:			:--:43 xyzxyzxyz XYZXYZX
+ 76.			:--:			:--:44 456789 123456789
+ 77.			:--:			:--:5
+ 78.			:--:			:--:6
+ 79.			:--:			:--:7
+ 80.			:--:			:--:8
+ 81.			:--:			:--:9
+ 82.			:--:			:--:50
+ 83.			:--:			:--:1
+ 84.			:--:			:--:2
+
+
+-- Date/Time --                        x                         Page 12
+
+
+ 85.			:--:			:--:3
+ 86.			:--:			:--:4
+ 87.			:--:			:--:55 yzxyzxyz XYZXYZXY
+ 88.			:--:			:--:56 456789 123456789
+
+
+-- Date/Time --                        x                         Page 13
+
+
+ 89.			:--:			:--:57 xyzxyzxyz XYZXYZX
+ 90.			:--:			:--:58 456789 123456789
+ 91.			:--:			:--:9
+ 92.			:--:			:--:60 DEFGHI 123456789
+
