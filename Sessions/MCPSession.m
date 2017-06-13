@@ -41,7 +41,14 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 
+#include "coreutils.h"
+
 #define MCP_MAX_LINE 4096
+
+// If you have enabled a shared directory between apps, this is where you put its name
+// For sideloading, it will be your developer name
+// Remember to also activate it in the other app (e.g. vimIOS) 
+#define appGroupFiles @"group.Nicolas-Holzschuch"
 
 @implementation MCPSession {
   Session *childSession;
@@ -71,8 +78,25 @@
   argc = 0;
   argv = nil;
 
+  // Path for application files, including history.txt and keys
+  // TODO: give them a name / position
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
+  
+#ifdef appGroupFiles
+  // Path for access to App Group files (also accessed by Vim)
+  NSURL *groupURL = [[NSFileManager defaultManager]
+                     containerURLForSecurityApplicationGroupIdentifier:
+                     appGroupFiles];
+  NSURL *sharedURL = [NSURL URLWithString:@"Documents/" relativeToURL:groupURL];
+#else
+  NSURL *sharedURL = docsPath;
+#endif
+  setenv("SHARED", sharedURL.path.UTF8String, 0);
+  // iOS already defines "HOME" as the home dir of the application
+  
+  // Current working directory == shared directory
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
 
   const char *history = [filePath UTF8String];
 
@@ -85,7 +109,7 @@
   linenoiseHistoryLoad(history);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
-    if (line[0] != '\0' && line[0] != '/') {
+    if (line[0] != '\0' /* && line[0] != '/' */) {
       linenoiseHistoryAdd(line);
       linenoiseHistorySave(history);
 
@@ -112,7 +136,94 @@
       } else if ([cmd isEqualToString:@"config"]) {
         [self showConfig];
       } else {
-        [self out:"Unknown command. Type 'help' for a list of available operations"];
+        // Shell commands for more interactions.
+        // ls, rm, rmdir, touch...
+        // 1) convert command line to argc / argv
+        // 1a) split into elements
+        NSArray *listArgv = [cmdline componentsSeparatedByString:@" "];
+        // 1b) convert to argc / argv
+        unsigned argc = [listArgv count];
+        char **argv = (char **)malloc((argc + 1) * sizeof(char*));
+        for (unsigned i = 0; i < argc; i++)
+        {
+          argv[i] = strdup([[listArgv objectAtIndex:i] UTF8String]);
+          // Expand arguments that are environment variables
+          if (argv[i][0] == '$') {
+            int length = 1;
+            for (; length < strlen(argv[i]); length++) if (argv[i][length] == '/') break;
+            char* variable_name = strndup(argv[i] + 1, length - 1);
+            char* expanded = getenv(variable_name);
+            if (expanded) argv[i] = strcat(strdup(expanded), argv[i] + length);
+            // free(variable_name);
+          }
+          // TODO: expand wildcards (* and ?). A lot harder.
+        }
+        argv[argc] = NULL;
+        // 2) re-initialize for getopt:
+        optind = 1;
+        opterr = 1;
+        optreset = 1;
+        // 3) call specific commands
+        // Redirect all output to console:
+        stdout = _stream.control.termout;
+        stderr = _stream.control.termout;
+        // Commands from GNU coreutils: ls, rm, cp...
+        if ([cmd isEqualToString:@"ls"]) {
+          ls_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"touch"]) {
+          touch_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"rm"]) {
+          rm_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"cp"]) {
+          cp_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"id"]) {
+          id_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"groups"]) {
+          groups_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"ln"]) {
+          ln_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"realpath"]) {
+          realpath_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"mv"]) {
+            mv_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"mkdir"]) {
+            mkdir_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"rmdir"]) {
+            rmdir_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"uname"]) {
+            uname_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"pwd"]) {
+          pwd_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"env"]) {
+          env_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"printenv"]) {
+          printenv_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"whoami"]) {
+          whoami_main(argc, argv);
+          // Commands that have to be inside the "shell"
+        } else if  ([cmd isEqualToString:@"setenv"]) {
+          // setenv VARIABLE value
+          setenv(argv[1], argv[2], 1);
+        } else if  ([cmd isEqualToString:@"cd"]) {
+          if (argc > 1) {
+            BOOL isDir;
+            if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
+              if (isDir)
+               [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
+              else  fprintf(_stream.out, "cd: %s: not a directory\r\n", argv[1]);
+            } else {
+              fprintf(_stream.out, "cd: %s: no such file or directory\r\n", argv[1]);
+            }
+          } else // Help, I'm lost, bring me back home
+            [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
+        } else {
+          [self out:"Unknown command. Type 'help' for a list of available operations"];
+        }
+        for (unsigned i = 0; i < argc; i++)
+        {
+          free(argv[i]);
+        }
+        free(argv);
       }
     }
 
@@ -179,6 +290,7 @@
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
+    @"  Plus the Unix utilities: cp, ln, ls, mv, rm, mkdir, rmdir, id, whoami, groups, realpath, uname, touch, pwd, env, printenv.",
     @"",
     @"Available gestures and keyboard shortcuts:",
     @"  two fingers tap or cmd+t: New shell.",

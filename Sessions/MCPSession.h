@@ -33,7 +33,6 @@
 
 #import "Session.h"
 
-
 @interface MCPSession : Session
 
 - (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
