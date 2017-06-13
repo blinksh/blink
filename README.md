@@ -1,4 +1,4 @@
-# Blink Shell for iOS
+# Blink Shell for iOS (edited for more shell utils)
 Do Blink! [Blink](http://blink.sh) is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool.
 
 We did not create another terminal to fix your website on the go. Blink was built as a professional grade product from the onset. We started by analyzing what the must-haves were and we ended up grounding Blink on these three concepts:
@@ -14,6 +14,31 @@ But, Blink is much more. Please read on:
 - We've incorporated SplitView, for those necessary Google searches and chats with coworkers.
 
 For more information, please visit [Blink Shell](http://blink.sh).
+
+# Additions: 
+
+This fork also contains a subset of GNU coreutils, so you can add / remove files, list them, etc.
+
+Specifically, the commands available are:
+
+cd ln ls cp  mv rm mkdir rmdir touch pwd
+setenv env printenv
+id groups realpath uname 
+
+You will need to compile coreutils using the XCode project (blink/coreutils-8.27/coreutils/coreutils.xcodeproj
+
+It creates a static library (coreutils.Framework), which you will have to copy in the blink/Frameworks directory. You also need to copy coreutils/coreutils.h to the blink/Frameworks directory. 
+
+Since you are sideloading, you can also compile VimIOS (https://github.com/larki/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
+
+If you do that, there are 3 directories: 
+- one that can only be accessed by Vim
+- one that can only be accessed by Blink
+- one that is accessed by both applications. 
+
+In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of the shared directory. There are two environment variables: $HOME links to the Blink-specific directory, $SHARED links to the shared directory. 
+
+From Vim, you can open the files in $SHARED. 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
