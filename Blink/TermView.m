@@ -235,6 +235,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
     
   _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
