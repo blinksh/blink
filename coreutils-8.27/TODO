@@ -1,0 +1,162 @@
+If you're interested in helping, here are some tasks that we've considered
+over the years.  Beware: some are quite old and no longer valid.  To avoid
+wasting your time by duplicating work or by working on a task that is no
+longer pertinent, please search the mailing list and post your intent
+before embarking on a big project.
+
+==================================================
+Modify chmod so that it does not change an inode's st_ctime
+  when the selected operation would have no other effect.
+  First suggested by Hans Ecke <http://hans.ecke.ws> in
+    http://thread.gmane.org/gmane.comp.gnu.coreutils.bugs/2920
+  Discussed more recently on <http://bugs.debian.org/497514>.
+
+document the following in coreutils.texi:
+  [
+  pinky
+
+Suggestion from Paul Eggert:
+  More generally, there's not that much use for imaxtostr nowadays,
+  since the inttypes module and newer versions of gettext allow things
+  like _("truncating %s at %" PRIdMAX " bytes") to work portably.
+  I suspect that (if someone cares to take the time) we can remove
+  all instances of imaxtostr and umaxtostr in coreutils and gnulib.
+
+cp --recursive: use fts and *at functions to perform directory traversals
+  in source and destination hierarchy rather than forming full file names.
+  The latter (current) approach fails unnecessarily when the names
+  become very long, and requires space and time that is quadratic in the
+  depth of the hierarchy.  [Bo Borgerson is working on this]
+
+printf:
+  Now that gnulib supports *printf("%a"), import one of the
+  *printf-posix modules so that printf(1) will support %a even on
+  platforms where the native *printf(3) is deficient.
+  Suggestion from Eric Blake.
+
+consider adding some implementation of the "col" utility
+  Suggested by Karl Berry.
+
+doc/coreutils.texi:
+  Address this comment: FIXME: mv's behavior in this case is system-dependent
+  Better still: fix the code so it's *not* system-dependent.
+
+ls: add --format=FORMAT option that controls how each line is printed.
+
+copy.c: Address the FIXME-maybe comment in copy_internal.
+And once that's done, add an exclusion so that 'cp --link'
+no longer incurs the overhead of saving src. dev/ino and dest. filename
+in the hash table.
+
+Write an autoconf test to work around build failure in HPUX's 64-bit mode.
+See notes in README -- and remove them once there's a work-around.
+
+Integrate use of sendfile, suggested here:
+  http://mail.gnu.org/archive/html/bug-fileutils/2003-03/msg00030.html
+I don't plan to do that, since a few tests demonstrate no significant benefit.
+
+printf: consider adapting builtins/printf.def from bash
+
+tail: don't use xlseek; it *exits*.
+  Instead, maybe use a macro and return nonzero.
+
+tr: support nontrivial equivalence classes, e.g. [=e=] with LC_COLLATE=fr_FR
+
+lib/strftime.c: Since %N is the only format that we need but that
+  glibc's strftime doesn't support, consider using a wrapper that
+  would expand /%(-_)?\d*N/ to the desired string and then pass the
+  resulting string to glibc's strftime.
+
+sort: Investigate better sorting algorithms; see Knuth vol. 3.
+
+  We tried list merge sort, but it was about 50% slower than the
+  recursive algorithm currently used by sortlines, and it used more
+  comparisons.  We're not sure why this was, as the theory suggests it
+  should do fewer comparisons, so perhaps this should be revisited.
+  List merge sort was implemented in the style of Knuth algorithm
+  5.2.4L, with the optimization suggested by exercise 5.2.4-22.  The
+  test case was 140,213,394 bytes, 426,4424 lines, text taken from the
+  GCC 3.3 distribution, sort.c compiled with GCC 2.95.4 and running on
+  Debian 3.0r1 GNU/Linux, 2.4GHz Pentium 4, single pass with no
+  temporary files and plenty of RAM.
+
+  Since comparisons seem to be the bottleneck, perhaps the best
+  algorithm to try next should be merge insertion.  See Knuth section
+  5.3.1, who credits Lester Ford, Jr. and Selmer Johnson, American
+  Mathematical Monthly 66 (1959), 387-389.
+
+shred: Update shred as described here to conform to DoD 5220 rules:
+http://lists.gnu.org/archive/html/bug-coreutils/2007-05/msg00075.html
+
+Remove suspicious uses of alloca (ones that may allocate more than
+   about 4k)
+
+Adapt these contribution guidelines for coreutils:
+  http://sources.redhat.com/automake/contribute.html
+
+Improve test coverage.
+  See HACKING for instructions on generating an html test coverage report.
+  Find a program that has poor coverage and improve.
+
+Changes expected to go in, someday.
+======================================
+
+  dd patch from Olivier Delhomme
+
+  test/mv/*: clean up $other_partition_tmpdir in all cases
+
+  ls: when both -l and --dereference-command-line-symlink-to-dir are
+  specified, consider whether to let the latter select whether to
+  dereference command line symlinks to directories.  Since -l has
+  an implicit --NO-dereference-command-line-symlink-to-dir meaning.
+  Pointed out by Karl Berry.
+
+  Pending copyright papers:
+  ------------------------
+  getpwnam from Bruce Korb
+
+  pb (progress bar) from Miika Pekkarinen
+
+  ------------------------------
+
+Remove long-deprecated options.  Search case-insensitive for
+'deprecated' and 'remove in '.  Automate this.
+
+Add a distcheck-time test to ensure that every distributed
+file is either read-only(indicating generated) or is
+version-controlled and up to date.
+
+remove all uses of the 'register' keyword: Done.  add a maint.mk rule
+  for this, too.
+
+remove or adjust chown's --changes option, since it
+  can't always do what it currently says it does.
+
+Support arbitrary-precision arithmetic in those tools for which it
+makes sense.  Factor and expr already support this via libgmp.
+The "test" program is covered via its string-based comparison of
+integers.  To be converted: seq.
+
+Adapt tools like wc, tr, fmt, etc. (most of the textutils) to be
+  multibyte aware.  The problem is that I want to avoid duplicating
+  significant blocks of logic, yet I also want to incur only minimal
+  (preferably 'no') cost when operating in single-byte mode.
+
+pr's use of nstrftime can make it malloc a very large (up to SIZE_MAX) buffer
+
+-----
+
+Copyright (C) 2002-2017 Free Software Foundation, Inc.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.

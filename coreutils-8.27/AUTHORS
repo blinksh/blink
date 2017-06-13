@@ -1,0 +1,114 @@
+Here are the names of the programs in this package,
+each followed by the name(s) of its author(s).
+
+arch: David MacKenzie, Karel Zak
+b2sum: Padraig Brady, Samuel Neves
+base32: Simon Josefsson
+base64: Simon Josefsson
+basename: David MacKenzie
+cat: Torbjorn Granlund, Richard M. Stallman
+chcon: Russell Coker, Jim Meyering
+chgrp: David MacKenzie, Jim Meyering
+chmod: David MacKenzie, Jim Meyering
+chown: David MacKenzie, Jim Meyering
+chroot: Roland McGrath
+cksum: Q. Frank Xia
+comm: Richard M. Stallman, David MacKenzie
+coreutils: Alex Deymo
+cp: Torbjorn Granlund, David MacKenzie, Jim Meyering
+csplit: Stuart Kemp, David MacKenzie
+cut: David M. Ihnat, David MacKenzie, Jim Meyering
+date: David MacKenzie
+dd: Paul Rubin, David MacKenzie, Stuart Kemp
+df: Torbjorn Granlund, David MacKenzie, Paul Eggert
+dir: Richard M. Stallman, David MacKenzie
+dircolors: H. Peter Anvin
+dirname: David MacKenzie, Jim Meyering
+du: Torbjorn Granlund, David MacKenzie, Paul Eggert, Jim Meyering
+echo: Brian Fox, Chet Ramey
+env: Richard Mlynarik, David MacKenzie
+expand: David MacKenzie
+expr: Mike Parker, James Youngman, Paul Eggert
+factor: Paul Rubin, Torbjörn Granlund, Niels Möller
+false: Jim Meyering
+fmt: Ross Paterson
+fold: David MacKenzie
+ginstall: David MacKenzie
+groups: David MacKenzie, James Youngman
+head: David MacKenzie, Jim Meyering
+hostid: Jim Meyering
+hostname: Jim Meyering
+id: Arnold Robbins, David MacKenzie
+join: Mike Haertel
+kill: Paul Eggert
+link: Michael Stone
+ln: Mike Parker, David MacKenzie
+logname: FIXME: unknown
+ls: Richard M. Stallman, David MacKenzie
+md5sum: Ulrich Drepper, Scott Miller, David Madore
+mkdir: David MacKenzie
+mkfifo: David MacKenzie
+mknod: David MacKenzie
+mktemp: Jim Meyering, Eric Blake
+mv: Mike Parker, David MacKenzie, Jim Meyering
+nice: David MacKenzie
+nl: Scott Bartram, David MacKenzie
+nohup: Jim Meyering
+nproc: Giuseppe Scrivano
+numfmt: Assaf Gordon
+od: Jim Meyering
+paste: David M. Ihnat, David MacKenzie
+pathchk: Paul Eggert, David MacKenzie, Jim Meyering
+pinky: Joseph Arceneaux, David MacKenzie, Kaveh Ghazi
+pr: Pete TerMaat, Roland Huebner
+printenv: David MacKenzie, Richard Mlynarik
+printf: David MacKenzie
+ptx: François Pinard
+pwd: Jim Meyering
+readlink: Dmitry V. Levin
+realpath: Padraig Brady
+rm: Paul Rubin, David MacKenzie, Richard M. Stallman, Jim Meyering
+rmdir: David MacKenzie
+runcon: Russell Coker
+seq: Ulrich Drepper
+sha1sum: Ulrich Drepper, Scott Miller, David Madore
+sha224sum: Ulrich Drepper, Scott Miller, David Madore
+sha256sum: Ulrich Drepper, Scott Miller, David Madore
+sha384sum: Ulrich Drepper, Scott Miller, David Madore
+sha512sum: Ulrich Drepper, Scott Miller, David Madore
+shred: Colin Plumb
+shuf: Paul Eggert
+sleep: Jim Meyering, Paul Eggert
+sort: Mike Haertel, Paul Eggert
+split: Torbjorn Granlund, Richard M. Stallman
+stat: Michael Meskes
+stdbuf: Padraig Brady
+stty: David MacKenzie
+sum: Kayvan Aghaiepour, David MacKenzie
+sync: Jim Meyering, Giuseppe Scrivano
+tac: Jay Lepreau, David MacKenzie
+tail: Paul Rubin, David MacKenzie, Ian Lance Taylor, Jim Meyering
+tee: Mike Parker, Richard M. Stallman, David MacKenzie
+test: Kevin Braunsdorf, Matthew Bradburn
+timeout: Padraig Brady
+touch: Paul Rubin, Arnold Robbins, Jim Kingdon, David MacKenzie, Randy Smith
+tr: Jim Meyering
+true: Jim Meyering
+truncate: Padraig Brady
+tsort: Mark Kettenis
+tty: David MacKenzie
+uname: David MacKenzie
+unexpand: David MacKenzie
+uniq: Richard M. Stallman, David MacKenzie
+unlink: Michael Stone
+uptime: Joseph Arceneaux, David MacKenzie, Kaveh Ghazi
+users: Joseph Arceneaux, David MacKenzie
+vdir: Richard M. Stallman, David MacKenzie
+wc: Paul Rubin, David MacKenzie
+who: Joseph Arceneaux, David MacKenzie, Michael Stone
+whoami: Richard Mlynarik
+yes: David MacKenzie
+
+;; Local Variables:
+;; coding: utf-8
+;; End:
