@@ -14,14 +14,13 @@
 		0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
 		0716B5961CFFAB9300268B5B /* TermController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5621CFFAB9300268B5B /* TermController.m */; };
 		0716B5A71CFFABB000268B5B /* BlinkUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5A51CFFABB000268B5B /* BlinkUITests.m */; };
-		0716B5A81CFFABB000268B5B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0716B5A61CFFABB000268B5B /* Info.plist */; };
 		0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728A1D91E0AE80400ABD31B /* SmartKeysController.m */; };
 		0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
 		0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
-		0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; };
+		0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (Required, ); }; };
 		0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -141,7 +140,10 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
+		2231E64A1EEC7B0700C964AD /* libcoreutils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2231E6491EEC7B0700C964AD /* libcoreutils.framework */; };
+		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
+		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
+		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
 		B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */; };
@@ -371,7 +373,10 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
-		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		2231E6491EEC7B0700C964AD /* libcoreutils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libcoreutils.framework; sourceTree = "<group>"; };
+		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		22C6715B1EEC370D00A44443 /* libc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc.tbd; path = usr/lib/libc.tbd; sourceTree = SDKROOT; };
+		22C6715F1EEC3C8400A44443 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
 		B752EE291DFEF19D00E305C8 /* BKUserConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKUserConfigurationManager.h; sourceTree = "<group>"; };
@@ -468,13 +473,16 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */,
+				22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */,
+				2231E64A1EEC7B0700C964AD /* libcoreutils.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
-				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
+				225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
 				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
@@ -542,8 +550,11 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				2231E6491EEC7B0700C964AD /* libcoreutils.framework */,
+				22C6715F1EEC3C8400A44443 /* libiconv.tbd */,
+				22C6715B1EEC370D00A44443 /* libc.tbd */,
+				225C53C21EEAB0C900395C6F /* CloudKit.framework */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
-				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
 				0732F12A1D06324B00AB5438 /* libstdc++.tbd */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
@@ -982,19 +993,26 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = "";
-				LastUpgradeCheck = 0710;
+				LastUpgradeCheck = 0830;
 				ORGANIZATIONNAME = "Carlos Cabañero Projects SL";
 				TargetAttributes = {
 					076FBE0B1DB80AC900F6D997 = {
-						DevelopmentTeam = HV2S48975V;
+						DevelopmentTeam = FCX3DQP2U9;
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = HV2S48975V;
+						DevelopmentTeam = VG8Z23C8YL;
 						LastSwiftMigration = 0830;
+						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
-							com.apple.Keychain = {
+							com.apple.ApplicationGroups.iOS = {
 								enabled = 1;
+							};
+							com.apple.BackgroundModes = {
+								enabled = 0;
+							};
+							com.apple.Keychain = {
+								enabled = 0;
 							};
 							com.apple.Push = {
 								enabled = 1;
@@ -1006,7 +1024,9 @@
 					};
 					EA0BA1A31C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = FCX3DQP2U9;
 						LastSwiftMigration = 0800;
+						ProvisioningStyle = Automatic;
 						TestTargetID = EA0BA18A1C0CC57B00719C1A;
 					};
 				};
@@ -1144,7 +1164,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0716B5A81CFFABB000268B5B /* Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1358,7 +1377,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = FCX3DQP2U9;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1372,14 +1391,14 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1393,7 +1412,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = FCX3DQP2U9;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1404,14 +1423,14 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1423,6 +1442,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1432,10 +1452,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
@@ -1453,7 +1476,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -1465,6 +1488,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
@@ -1474,10 +1498,13 @@
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
@@ -1493,9 +1520,11 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
 			};
@@ -1505,12 +1534,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1524,14 +1554,14 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
@@ -1544,11 +1574,12 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1559,14 +1590,15 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
+				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
@@ -1579,10 +1611,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = FCX3DQP2U9;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;
 				PRODUCT_NAME = Blink;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Blink;
 				USES_XCTRUNNER = YES;
@@ -1593,10 +1628,13 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEVELOPMENT_TEAM = FCX3DQP2U9;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;
 				PRODUCT_NAME = Blink;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Blink;
 				USES_XCTRUNNER = YES;
