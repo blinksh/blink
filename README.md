@@ -17,17 +17,17 @@ For more information, please visit [Blink Shell](http://blink.sh).
 
 # Additions: 
 
-This fork also contains a subset of GNU coreutils, so you can add / remove files, list them, etc.
+This fork also contains a subset of shell utilities, so you can add / remove files, list them, etc.
 
 Specifically, the commands available are:
 
-cd ln ls cp  mv rm mkdir rmdir touch pwd
-setenv env printenv
-id groups realpath uname 
+ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
+du, chksum, chmod, chflags, chgrp, stat, 
+cd setenv 
 
-You will need to compile coreutils using the XCode project (blink/coreutils-8.27/coreutils/coreutils.xcodeproj
+You will need to compile the framework blink/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (not  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
 
-It creates a static library (coreutils.Framework), which you will have to copy in the blink/Frameworks directory. You also need to copy coreutils/coreutils.h to the blink/Frameworks directory. 
+It creates a static library (file_cmds_ios.framework), which you will have to copy in the blink/Frameworks directory. You also need to copy file_cmds_ios/file_cmds_ios.h to the blink/Frameworks directory. 
 
 Since you are sideloading, you can also compile VimIOS (https://github.com/larki/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
 
