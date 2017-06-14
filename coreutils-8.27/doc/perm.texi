@@ -1,0 +1,639 @@
+@c File mode bits
+
+@c Copyright (C) 1994-2017 Free Software Foundation, Inc.
+
+@c Permission is granted to copy, distribute and/or modify this document
+@c under the terms of the GNU Free Documentation License, Version 1.3 or
+@c any later version published by the Free Software Foundation; with no
+@c Invariant Sections, with no Front-Cover Texts, and with no Back-Cover
+@c Texts.  A copy of the license is included in the ``GNU Free
+@c Documentation License'' file as part of this distribution.
+
+Each file has a set of @dfn{file mode bits} that control the kinds of
+access that users have to that file.  They can be represented either in
+symbolic form or as an octal number.
+
+@menu
+* Mode Structure::              Structure of file mode bits.
+* Symbolic Modes::              Mnemonic representation of file mode bits.
+* Numeric Modes::               File mode bits as octal numbers.
+* Operator Numeric Modes::      ANDing, ORing, and setting modes octally.
+* Directory Setuid and Setgid:: Set-user-ID and set-group-ID on directories.
+@end menu
+
+@node Mode Structure
+@section Structure of File Mode Bits
+
+The file mode bits have two parts: the @dfn{file permission bits},
+which control ordinary access to the file, and @dfn{special mode
+bits}, which affect only some files.
+
+There are three kinds of permissions that a user can have for a file:
+
+@enumerate
+@item
+@cindex read permission
+permission to read the file.  For directories, this means permission to
+list the contents of the directory.
+@item
+@cindex write permission
+permission to write to (change) the file.  For directories, this means
+permission to create and remove files in the directory.
+@item
+@cindex execute/search permission
+permission to execute the file (run it as a program).  For directories,
+this means permission to access files in the directory.
+@end enumerate
+
+There are three categories of users who may have different permissions
+to perform any of the above operations on a file:
+
+@enumerate
+@item
+the file's owner;
+@item
+other users who are in the file's group;
+@item
+everyone else.
+@end enumerate
+
+@cindex owner, default
+@cindex group owner, default
+Files are given an owner and group when they are created.  Usually the
+owner is the current user and the group is the group of the directory
+the file is in, but this varies with the operating system, the
+file system the file is created on, and the way the file is created.  You
+can change the owner and group of a file by using the @command{chown} and
+@command{chgrp} commands.
+
+In addition to the three sets of three permissions listed above, the
+file mode bits have three special components, which affect only
+executable files (programs) and, on most systems, directories:
+
+@enumerate
+@item
+@cindex set-user-ID
+@cindex setuid
+Set the process's effective user ID to that of the file upon execution
+(called the @dfn{set-user-ID bit}, or sometimes the @dfn{setuid bit}).
+For directories on a few systems, give files created in the directory
+the same owner as the directory, no matter who creates them, and set
+the set-user-ID bit of newly-created subdirectories.
+@item
+@cindex set-group-ID
+@cindex setgid
+Set the process's effective group ID to that of the file upon execution
+(called the @dfn{set-group-ID bit}, or sometimes the @dfn{setgid bit}).
+For directories on most systems, give files created in the directory
+the same group as the directory, no matter what group the user who
+creates them is in, and set the set-group-ID bit of newly-created
+subdirectories.
+@item
+@cindex sticky
+@cindex swap space, saving text image in
+@cindex text image, saving in swap space
+@cindex restricted deletion flag
+Prevent unprivileged users from removing or renaming a file in a directory
+unless they own the file or the directory; this is called the
+@dfn{restricted deletion flag} for the directory, and is commonly
+found on world-writable directories like @file{/tmp}.
+
+For regular files on some older systems, save the program's text image on the
+swap device so it will load more quickly when run; this is called the
+@dfn{sticky bit}.
+@end enumerate
+
+In addition to the file mode bits listed above, there may be file attributes
+specific to the file system, e.g., access control lists (ACLs), whether a
+file is compressed, whether a file can be modified (immutability), and whether
+a file can be dumped.  These are usually set using programs
+specific to the file system.  For example:
+@c should probably say a lot more about ACLs... someday
+
+@table @asis
+@item ext2
+On GNU and GNU/Linux the file attributes specific to
+the ext2 file system are set using @command{chattr}.
+
+@item FFS
+On FreeBSD the file flags specific to the FFS
+file system are set using @command{chflags}.
+@end table
+
+Even if a file's mode bits allow an operation on that file,
+that operation may still fail, because:
+
+@itemize
+@item
+the file-system-specific attributes or flags do not permit it; or
+
+@item
+the file system is mounted as read-only.
+@end itemize
+
+For example, if the immutable attribute is set on a file,
+it cannot be modified, regardless of the fact that you
+may have just run @code{chmod a+w FILE}.
+
+@node Symbolic Modes
+@section Symbolic Modes
+
+@cindex symbolic modes
+@dfn{Symbolic modes} represent changes to files' mode bits as
+operations on single-character symbols.  They allow you to modify either
+all or selected parts of files' mode bits, optionally based on
+their previous values, and perhaps on the current @code{umask} as well
+(@pxref{Umask and Protection}).
+
+The format of symbolic modes is:
+
+@example
+@r{[}ugoa@dots{}@r{][}-+=@r{]}@var{perms}@dots{}@r{[},@dots{}@r{]}
+@end example
+
+@noindent
+where @var{perms} is either zero or more letters from the set
+@samp{rwxXst}, or a single letter from the set @samp{ugo}.
+
+The following sections describe the operators and other details of
+symbolic modes.
+
+@menu
+* Setting Permissions::          Basic operations on permissions.
+* Copying Permissions::          Copying existing permissions.
+* Changing Special Mode Bits::   Special mode bits.
+* Conditional Executability::    Conditionally affecting executability.
+* Multiple Changes::             Making multiple changes.
+* Umask and Protection::              The effect of the umask.
+@end menu
+
+@node Setting Permissions
+@subsection Setting Permissions
+
+The basic symbolic operations on a file's permissions are adding,
+removing, and setting the permission that certain users have to read,
+write, and execute or search the file.  These operations have the following
+format:
+
+@example
+@var{users} @var{operation} @var{permissions}
+@end example
+
+@noindent
+The spaces between the three parts above are shown for readability only;
+symbolic modes cannot contain spaces.
+
+The @var{users} part tells which users' access to the file is changed.
+It consists of one or more of the following letters (or it can be empty;
+@pxref{Umask and Protection}, for a description of what happens then).  When
+more than one of these letters is given, the order that they are in does
+not matter.
+
+@table @code
+@item u
+@cindex owner of file, permissions for
+the user who owns the file;
+@item g
+@cindex group, permissions for
+other users who are in the file's group;
+@item o
+@cindex other permissions
+all other users;
+@item a
+all users; the same as @samp{ugo}.
+@end table
+
+The @var{operation} part tells how to change the affected users' access
+to the file, and is one of the following symbols:
+
+@table @code
+@item +
+@cindex adding permissions
+to add the @var{permissions} to whatever permissions the @var{users}
+already have for the file;
+@item -
+@cindex removing permissions
+@cindex subtracting permissions
+to remove the @var{permissions} from whatever permissions the
+@var{users} already have for the file;
+@item =
+@cindex setting permissions
+to make the @var{permissions} the only permissions that the @var{users}
+have for the file.
+@end table
+
+The @var{permissions} part tells what kind of access to the file should
+be changed; it is normally zero or more of the following letters.  As with the
+@var{users} part, the order does not matter when more than one letter is
+given.  Omitting the @var{permissions} part is useful only with the
+@samp{=} operation, where it gives the specified @var{users} no access
+at all to the file.
+
+@table @code
+@item r
+@cindex read permission, symbolic
+the permission the @var{users} have to read the file;
+@item w
+@cindex write permission, symbolic
+the permission the @var{users} have to write to the file;
+@item x
+@cindex execute/search permission, symbolic
+the permission the @var{users} have to execute the file,
+or search it if it is a directory.
+@end table
+
+For example, to give everyone permission to read and write a regular file,
+but not to execute it, use:
+
+@example
+a=rw
+@end example
+
+To remove write permission for all users other than the file's
+owner, use:
+
+@example
+go-w
+@end example
+
+@noindent
+The above command does not affect the access that the owner of
+the file has to it, nor does it affect whether other users can
+read or execute the file.
+
+To give everyone except a file's owner no permission to do anything with
+that file, use the mode below.  Other users could still remove the file,
+if they have write permission on the directory it is in.
+
+@example
+go=
+@end example
+
+@noindent
+Another way to specify the same thing is:
+
+@example
+og-rwx
+@end example
+
+@node Copying Permissions
+@subsection Copying Existing Permissions
+
+@cindex copying existing permissions
+@cindex permissions, copying existing
+You can base a file's permissions on its existing permissions.  To do
+this, instead of using a series of @samp{r}, @samp{w}, or @samp{x}
+letters after the
+operator, you use the letter @samp{u}, @samp{g}, or @samp{o}.  For
+example, the mode
+
+@example
+o+g
+@end example
+
+@noindent
+adds the permissions for users who are in a file's group to the
+permissions that other users have for the file.  Thus, if the file
+started out as mode 664 (@samp{rw-rw-r--}), the above mode would change
+it to mode 666 (@samp{rw-rw-rw-}).  If the file had started out as mode
+741 (@samp{rwxr----x}), the above mode would change it to mode 745
+(@samp{rwxr--r-x}).  The @samp{-} and @samp{=} operations work
+analogously.
+
+@node Changing Special Mode Bits
+@subsection Changing Special Mode Bits
+
+@cindex changing special mode bits
+In addition to changing a file's read, write, and execute/search permissions,
+you can change its special mode bits.  @xref{Mode Structure}, for a
+summary of these special mode bits.
+
+To change the file mode bits to set the user ID on execution, use
+@samp{u} in the @var{users} part of the symbolic mode and
+@samp{s} in the @var{permissions} part.
+
+To change the file mode bits to set the group ID on execution, use
+@samp{g} in the @var{users} part of the symbolic mode and
+@samp{s} in the @var{permissions} part.
+
+To set both user and group ID on execution, omit the @var{users} part
+of the symbolic mode (or use @samp{a}) and use @samp{s} in the
+@var{permissions} part.
+
+To change the file mode bits to set the restricted deletion flag or sticky bit,
+omit the @var{users} part of the symbolic mode (or use @samp{a}) and use
+@samp{t} in the @var{permissions} part.
+
+For example, to set the set-user-ID mode bit of a program,
+you can use the mode:
+
+@example
+u+s
+@end example
+
+To remove both set-user-ID and set-group-ID mode bits from
+it, you can use the mode:
+
+@example
+a-s
+@end example
+
+To set the restricted deletion flag or sticky bit, you can use
+the mode:
+
+@example
++t
+@end example
+
+The combination @samp{o+s} has no effect.  On GNU systems
+the combinations @samp{u+t} and @samp{g+t} have no effect, and
+@samp{o+t} acts like plain @samp{+t}.
+
+The @samp{=} operator is not very useful with special mode bits.
+For example, the mode:
+
+@example
+o=t
+@end example
+
+@noindent
+does set the restricted deletion flag or sticky bit, but it also
+removes all read, write, and execute/search permissions that users not in the
+file's group might have had for it.
+
+@xref{Directory Setuid and Setgid}, for additional rules concerning
+set-user-ID and set-group-ID bits and directories.
+
+@node Conditional Executability
+@subsection Conditional Executability
+
+@cindex conditional executability
+There is one more special type of symbolic permission: if you use
+@samp{X} instead of @samp{x}, execute/search permission is affected only if the
+file is a directory or already had execute permission.
+
+For example, this mode:
+
+@example
+a+X
+@end example
+
+@noindent
+gives all users permission to search directories, or to execute files if
+anyone could execute them before.
+
+@node Multiple Changes
+@subsection Making Multiple Changes
+
+@cindex multiple changes to permissions
+The format of symbolic modes is actually more complex than described
+above (@pxref{Setting Permissions}).  It provides two ways to make
+multiple changes to files' mode bits.
+
+The first way is to specify multiple @var{operation} and
+@var{permissions} parts after a @var{users} part in the symbolic mode.
+
+For example, the mode:
+
+@example
+og+rX-w
+@end example
+
+@noindent
+gives users other than the owner of the file read permission and, if
+it is a directory or if someone already had execute permission
+to it, gives them execute/search permission; and it also denies them write
+permission to the file.  It does not affect the permission that the
+owner of the file has for it.  The above mode is equivalent to
+the two modes:
+
+@example
+og+rX
+og-w
+@end example
+
+The second way to make multiple changes is to specify more than one
+simple symbolic mode, separated by commas.  For example, the mode:
+
+@example
+a+r,go-w
+@end example
+
+@noindent
+gives everyone permission to read the file and removes write
+permission on it for all users except its owner.  Another example:
+
+@example
+u=rwx,g=rx,o=
+@end example
+
+@noindent
+sets all of the permission bits for the file explicitly.  (It
+gives users who are not in the file's group no permission at all for
+it.)
+
+The two methods can be combined.  The mode:
+
+@example
+a+r,g+x-w
+@end example
+
+@noindent
+gives all users permission to read the file, and gives users who are in
+the file's group permission to execute/search it as well, but not permission
+to write to it.  The above mode could be written in several different
+ways; another is:
+
+@example
+u+r,g+rx,o+r,g-w
+@end example
+
+@node Umask and Protection
+@subsection The Umask and Protection
+
+@cindex umask and modes
+@cindex modes and umask
+If the @var{users} part of a symbolic mode is omitted, it defaults to
+@samp{a} (affect all users), except that any permissions that are
+@emph{set} in the system variable @code{umask} are @emph{not affected}.
+The value of @code{umask} can be set using the
+@code{umask} command.  Its default value varies from system to system.
+
+@cindex giving away permissions
+Omitting the @var{users} part of a symbolic mode is generally not useful
+with operations other than @samp{+}.  It is useful with @samp{+} because
+it allows you to use @code{umask} as an easily customizable protection
+against giving away more permission to files than you intended to.
+
+As an example, if @code{umask} has the value 2, which removes write
+permission for users who are not in the file's group, then the mode:
+
+@example
++w
+@end example
+
+@noindent
+adds permission to write to the file to its owner and to other users who
+are in the file's group, but @emph{not} to other users.  In contrast,
+the mode:
+
+@example
+a+w
+@end example
+
+@noindent
+ignores @code{umask}, and @emph{does} give write permission for
+the file to all users.
+
+@node Numeric Modes
+@section Numeric Modes
+
+@cindex numeric modes
+@cindex file mode bits, numeric
+@cindex octal numbers for file modes
+As an
+alternative to giving a symbolic mode, you can give an octal (base 8)
+number that represents the mode.
+This number is always interpreted in octal; you do not have to add a
+leading @samp{0}, as you do in C.  Mode @samp{0055} is the same as
+mode @samp{55}.  (However, modes of five digits or more, such as
+@samp{00055}, are sometimes special.  @xref{Directory Setuid and Setgid}.)
+
+A numeric mode is usually shorter than the corresponding symbolic
+mode, but it is limited in that normally it cannot take into account the
+previous file mode bits; it can only set them absolutely.
+The set-user-ID and set-group-ID bits of directories are an exception
+to this general limitation.  @xref{Directory Setuid and Setgid}.
+Also, operator numeric modes can take previous file mode bits into
+account.  @xref{Operator Numeric Modes}.
+
+The permissions granted to the user,
+to other users in the file's group,
+and to other users not in the file's group each require three
+bits, which are represented as one octal digit.  The three special
+mode bits also require one bit each, and they are as a group
+represented as another octal digit.  Here is how the bits are arranged,
+starting with the lowest valued bit:
+
+@example
+Value in  Corresponding
+Mode      Mode Bit
+
+          Other users not in the file's group:
+   1      Execute/search
+   2      Write
+   4      Read
+
+          Other users in the file's group:
+  10      Execute/search
+  20      Write
+  40      Read
+
+          The file's owner:
+ 100      Execute/search
+ 200      Write
+ 400      Read
+
+          Special mode bits:
+1000      Restricted deletion flag or sticky bit
+2000      Set group ID on execution
+4000      Set user ID on execution
+@end example
+
+For example, numeric mode @samp{4755} corresponds to symbolic mode
+@samp{u=rwxs,go=rx}, and numeric mode @samp{664} corresponds to symbolic mode
+@samp{ug=rw,o=r}.  Numeric mode @samp{0} corresponds to symbolic mode
+@samp{a=}.
+
+@node Operator Numeric Modes
+@section Operator Numeric Modes
+
+An operator numeric mode is a numeric mode that is prefixed by a
+@samp{-}, @samp{+}, or @samp{=} operator, which has the same
+interpretation as in symbolic modes.  For example, @samp{+440} enables
+read permission for the file's owner and group, @samp{-1} disables
+execute permission for other users, and @samp{=600} clears all
+permissions except for enabling read-write permissions for the file's
+owner.  Operator numeric modes can be combined with symbolic modes by
+separating them with a comma; for example, @samp{=0,u+r} clears all
+permissions except for enabling read permission for the file's owner.
+
+The commands @samp{chmod =755 @var{dir}} and @samp{chmod 755
+@var{dir}} differ in that the former clears the directory @var{dir}'s
+setuid and setgid bits, whereas the latter preserves them.
+@xref{Directory Setuid and Setgid}.
+
+Operator numeric modes are a GNU extension.
+
+@node Directory Setuid and Setgid
+@section Directories and the Set-User-ID and Set-Group-ID Bits
+
+On most systems, if a directory's set-group-ID bit is set, newly
+created subfiles inherit the same group as the directory, and newly
+created subdirectories inherit the set-group-ID bit of the parent
+directory.  On a few systems, a directory's set-user-ID bit has a
+similar effect on the ownership of new subfiles and the set-user-ID
+bits of new subdirectories.  These mechanisms let users share files
+more easily, by lessening the need to use @command{chmod} or
+@command{chown} to share new files.
+
+These convenience mechanisms rely on the set-user-ID and set-group-ID
+bits of directories.  If commands like @command{chmod} and
+@command{mkdir} routinely cleared these bits on directories, the
+mechanisms would be less convenient and it would be harder to share
+files.  Therefore, a command like @command{chmod} does not affect the
+set-user-ID or set-group-ID bits of a directory unless the user
+specifically mentions them in a symbolic mode, or uses an operator
+numeric mode such as @samp{=755}, or sets them in a numeric mode, or
+clears them in a numeric mode that has five or more octal digits.
+For example, on systems that support
+set-group-ID inheritance:
+
+@example
+# These commands leave the set-user-ID and
+# set-group-ID bits of the subdirectories alone,
+# so that they retain their default values.
+mkdir A B C
+chmod 755 A
+chmod 0755 B
+chmod u=rwx,go=rx C
+mkdir -m 755 D
+mkdir -m 0755 E
+mkdir -m u=rwx,go=rx F
+@end example
+
+If you want to try to set these bits, you must mention them
+explicitly in the symbolic or numeric modes, e.g.:
+
+@example
+# These commands try to set the set-user-ID
+# and set-group-ID bits of the subdirectories.
+mkdir G
+chmod 6755 G
+chmod +6000 G
+chmod u=rwx,go=rx,a+s G
+mkdir -m 6755 H
+mkdir -m +6000 I
+mkdir -m u=rwx,go=rx,a+s J
+@end example
+
+If you want to try to clear these bits, you must mention them
+explicitly in a symbolic mode, or use an operator numeric mode, or
+specify a numeric mode with five or more octal digits, e.g.:
+
+@example
+# These commands try to clear the set-user-ID
+# and set-group-ID bits of the directory D.
+chmod a-s D
+chmod -6000 D
+chmod =755 D
+chmod 00755 D
+@end example
+
+This behavior is a GNU extension.  Portable scripts should
+not rely on requests to set or clear these bits on directories, as
+POSIX allows implementations to ignore these requests.
+The GNU behavior with numeric modes of four or fewer digits
+is intended for scripts portable to systems that preserve these bits;
+the behavior with numeric modes of five or more digits is for scripts
+portable to systems that do not preserve the bits.

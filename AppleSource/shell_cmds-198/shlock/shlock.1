@@ -1,0 +1,147 @@
+.\"	$NetBSD: shlock.1,v 1.11 2008/04/30 13:11:01 martin Exp $
+.\"
+.\" Copyright (c) 2006 The NetBSD Foundation, Inc.
+.\" All rights reserved.
+.\"
+.\" This code is derived from software contributed to The NetBSD Foundation
+.\" by Erik E. Fair.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE NETBSD FOUNDATION, INC. AND CONTRIBUTORS
+.\" ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+.\" TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED.  IN NO EVENT SHALL THE FOUNDATION OR CONTRIBUTORS
+.\" BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+.\" INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+.\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+.\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.\"
+.Dd June 29, 1997
+.Dt SHLOCK 1
+.Os
+.Sh NAME
+.Nm shlock
+.Nd create or verify a lock file for shell scripts
+.Sh SYNOPSIS
+.Nm
+.Op Fl du
+.Op Fl p Ar PID
+.Fl f
+.Ar lockfile
+.Sh DESCRIPTION
+The
+.Nm
+command can create or verify a lock file on behalf of a shell or
+other script program.
+When it attempts to create a lock file, if one already exists,
+.Nm
+verifies that it is or is not valid.
+If valid,
+.Nm
+will exit with a non-zero exit code.
+If invalid,
+.Nm
+will remove the lock file, and
+create a new one.
+.Pp
+.Nm
+uses the
+.Xr link 2
+system call to make the final target lock file, which is an atomic
+operation (i.e. "dot locking", so named for this mechanism's original
+use for locking system mailboxes).
+It puts the process ID ("PID") from the command line into the
+requested lock file.
+.Pp
+.Nm
+verifies that an extant lock file is still valid by
+using
+.Xr kill 2
+with a zero signal to check for the existence of the process that
+holds the lock.
+.Pp
+The
+.Fl d
+option causes
+.Nm
+to be verbose about what it is doing.
+.Pp
+The
+.Fl f
+argument with
+.Ar lockfile
+is always required.
+.Pp
+The
+.Fl p
+option with
+.Ar PID
+is given when the program is to create a lock file; when absent,
+.Nm
+will simply check for the validity of the lock file.
+.Pp
+The
+.Fl u
+option causes
+.Nm
+to read and write the PID as a binary pid_t, instead of as ASCII,
+to be compatible with the locks created by UUCP.
+.Sh EXIT STATUS
+A zero exit code indicates a valid lock file.
+.Sh EXAMPLES
+.Ss BOURNE SHELL
+.Bd -literal
+#!/bin/sh
+lckfile=/tmp/foo.lock
+if shlock -f ${lckfile} -p $$
+then
+#	do what required the lock
+	rm ${lckfile}
+else
+	echo Lock ${lckfile} already held by `cat ${lckfile}`
+fi
+.Ed
+.Ss C SHELL
+.Bd -literal
+#!/bin/csh -f
+set lckfile=/tmp/foo.lock
+shlock -f ${lckfile} -p $$
+if ($status == 0) then
+#	do what required the lock
+	rm ${lckfile}
+else
+	echo Lock ${lckfile} already held by `cat ${lckfile}`
+endif
+.Ed
+.Pp
+The examples assume that the file system where the lock file is to
+be created is writable by the user, and has space available.
+.Sh HISTORY
+.Nm
+was written for the first Network News Transfer Protocol (NNTP)
+software distribution, released in March 1986.
+The algorithm was suggested by Peter Honeyman,
+from work he did on HoneyDanBer UUCP.
+.Sh AUTHORS
+.An Erik E. Fair Aq fair@clock.org
+.Sh BUGS
+Does not work on NFS or other network file system on different
+systems because the disparate systems have disjoint PID spaces.
+.Pp
+Cannot handle the case where a lock file was not deleted, the
+process that created it has exited, and the system has created a
+new process with the same PID as in the dead lock file.
+The lock file will appear to be valid even though the process is
+unrelated to the one that created the lock in the first place.
+Always remove your lock files after you're done.

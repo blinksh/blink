@@ -1,0 +1,20 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>script</string>
+		<key>OpenSourceVersion</key>
+		<string>2014-01-17</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/usr.bin/script/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/usr.bin/script/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2014-09-22</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Use OSByteOrder swap functions.</string>
+			<string>Include util.h instead of libutil.h.</string>
+			<string>Disable -f (filemon) feature, guarded with ENABLE_FILEMON.</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

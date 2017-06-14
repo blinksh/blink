@@ -1,0 +1,22 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>sh</string>
+		<key>OpenSourceVersion</key>
+		<string>2015-07-11</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/bin/sh/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/bin/sh/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2015-08-13</string>
+		<key>OpenSourceModifications</key>
+		<array>
+		    <string>exec.c: eaccess</string>
+		    <string>input.c: remove multiple definition</string>
+		    <string>miscbltin.c: warning fix</string>
+		    <string>mknodes.c: __printf0like</string>
+		    <string>trap.c: sys_nsig</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

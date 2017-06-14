@@ -1,0 +1,27 @@
+
+
+-- Date/Time --                         x                         Page 4
+
+
+
+
+
+-- Date/Time --                         x                         Page 5
+
+
+ 15.15 xyzxyzxyz XYZXYZXYZ abcabcab  22.2
+ 16.16 456789 123456789 xyzxyzxyz X  23.3
+ 17.7				     24.4
+ 18.8				     25.5
+ 19.9 3456789 ab		     26.6
+ 20.20 DEFGHI 123		     27.27 no truncation before FF; (r_
+ 21.1				     28.28 no trunc
+
+
+-- Date/Time --                         x                         Page 6
+
+
+ 29.29 xyzxyzxyz XYZXYZXYZ abcabcab  32.2 3456789 abcdefghi
+ 30.30 456789 123456789 xyzxyzxyz X  33.3
+ 31.1
+

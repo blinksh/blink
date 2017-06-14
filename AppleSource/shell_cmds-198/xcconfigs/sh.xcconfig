@@ -1,0 +1,33 @@
+#include "base.xcconfig"
+
+// TODO: change to /bin, sh, /usr
+SH_INSTALL_PATH = /usr/local/bin
+SH_PRODUCT_NAME = ash
+SH_MAN_PREFIX = /usr/local
+
+// Architectures
+SUPPORTED_PLATFORMS = iphoneos iphonesimulator macosx
+
+// Deployment
+INSTALL_PATH = $(SH_INSTALL_PATH)
+
+// Linking
+OTHER_LDFLAGS = -ledit
+
+// Packaging
+PRODUCT_NAME = $(SH_PRODUCT_NAME)
+
+// Search Paths
+USER_HEADER_SEARCH_PATHS = $(BUILT_PRODUCTS_DIR) $(SRCROOT)/sh
+
+// Preprocessing
+GCC_PREPROCESSOR_DEFINITIONS = SHELL
+
+// Warnings - All languages
+GCC_WARN_64_TO_32_BIT_CONVERSION = NO
+GCC_WARN_UNINITIALIZED_AUTOS = YES
+GCC_WARN_UNUSED_VARIABLE = NO
+CLANG_WARN_ASSIGN_ENUM = NO
+CLANG_WARN_EMPTY_BODY = NO
+CLANG_WARN_IMPLICIT_SIGN_CONVERSION = NO
+CLANG_WARN_SUSPICIOUS_IMPLICIT_CONVERSION = NO

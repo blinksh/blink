@@ -1,0 +1,30 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>find</string>
+		<key>OpenSourceVersion</key>
+		<string>2011-12-10</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/usr.bin/find/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/usr.bin/find/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2012-01-06</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Add -xattr and -xattrname options.</string>
+			<string>execplus conformance fixes.</string>
+			<string>Man page fix (4772561).</string>
+			<string>Adjust FTS usage due to API differences.</string>
+			<string>Avoid searching unsearchable directories (3849245).</string>
+			<string>Add missing call to fts_close (4608460).</string>
+			<string>Conformance fixes related to F_EXACTTIME.</string>
+			<string>Apple-specific implementation of -acl primary.</string>
+			<string>Conformance fix for f_name (6591280).</string>
+			<string>setmode conformance fix (3936046).</string>
+			<string>Use a saner MAXLOGNAME definition.</string>
+			<string>Workaround for lack of rpmatch function.</string>
+			<string>FreeBSD revisions 260336, 260355.</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

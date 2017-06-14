@@ -1,0 +1,43 @@
+# Map git author names and email addresses to canonical/preferred form.
+<jim@meyering.net> <meyering@fb.com>
+<jim@meyering.net> <meyering@iou.iou>
+<jim@meyering.net> <meyering@redhat.com>
+<jim@meyering.net> <meyering@rho.meyering.net>
+<jim@meyering.net> <meyering@vm.meyering.net.localdomain>
+Paul Eggert <eggert@cs.ucla.edu> <eggert@penguin.cs.ucla.edu>
+Paul Eggert <eggert@cs.ucla.edu> <eggert@CS.UCLA.EDU>
+<eggert@cs.ucla.edu> <eggert@twinsun.com>
+
+# Evan's two changes listed my email address.
+Evan Hunt <ethanol@armory.com> Evan Hunt <jim@meyering.net>
+
+<P@draigBrady.com> <P@draigBrady.com  (trivial change)>
+Pádraig Brady <P@draigBrady.com>
+<chen.guo.0625@gmail.com> <chenguo4@yahoo.com>
+<chen.guo.0625@gmail.com> <chenguo4@ucla.edu>
+<schwab@linux-m68k.org> <schwab@suse.de>
+<aurel32@debian.org> <aurelien@aurel32.net>
+<bob@proulx.com> <rwp@fc.hp.com>
+<bkorb@gnu.org> <bkorb@veritas.com>
+<bruno@clisp.org> <haible@clisp.cons.org>
+<eblake@redhat.com> <ebb9@byu.net>
+<jrv@debian.org> <jrvz@comcast.net>
+<dave.anglin@nrc.ca> <dave@hiauly1.hia.nrc.ca>
+<psfales@alcatel-lucent.com> <psfales@lucent.com>
+<karl@gnu.org> <karl@freefriends.org>
+<stephane.raimbault@gmail.com> <stephane.raimbault@makina-corpus.com>
+<jarkko.sakkinen@iki.fi> <jarkko.sakkinen@linux.intel.com>
+<tobias@stoeckmann.org> <tobias@bugol.de>
+
+# Prefer spelled-out middle name and its address.
+Arne Henrik Juul <arnej@imf.unit.no> Arne H. Juul <arnej@solan.unit.no>
+
+# Had email as name.
+Dan Jacobson <jidanni@jidanni.org> jidanni@jidanni.org <jidanni@jidanni.org>
+
+# Consolidate names of same email address.
+Jeff Liu <jeff.liu@oracle.com> jeff.liu <jeff.liu@oracle.com>
+Jeff Liu <jeff.liu@oracle.com> Jie Liu <jeff.liu@oracle.com>
+
+# Convert to latin1 for a better 'THANKS' sort order.
+Aleksej Shilin <rootlexx@mail.ru> Алексей Шилин <rootlexx@mail.ru>

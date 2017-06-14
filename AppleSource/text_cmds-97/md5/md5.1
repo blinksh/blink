@@ -1,0 +1,95 @@
+.\" $FreeBSD: src/sbin/md5/md5.1,v 1.24 2005/03/10 09:56:39 cperciva Exp $
+.Dd June 6, 2004
+.Dt MD5 1
+.Os
+.Sh NAME
+.Nm md5
+.Nd calculate a message-digest fingerprint (checksum) for a file
+.Sh SYNOPSIS
+.Nm md5
+.Op Fl pqrtx
+.Op Fl s Ar string
+.Op Ar
+.Sh DESCRIPTION
+The
+.Nm
+utility takes as input a message of arbitrary length and produces as
+output a
+.Dq fingerprint
+or
+.Dq message digest
+of the input.
+It is conjectured that it is computationally infeasible to
+produce two messages having the same message digest, or to produce any
+message having a given prespecified target message digest.
+The
+.Tn MD5
+algorithm is intended for digital signature applications, where a
+large file must be
+.Dq compressed
+in a secure manner before being encrypted with a private
+(secret)
+key under a public-key cryptosystem such as
+.Tn RSA .
+.Pp
+.Tn MD5's
+designer Ron Rivest has stated "md5 and sha1 are both clearly broken (in terms
+of collision-resistance)".     
+So
+.Tn MD5
+should be avoided when creating new protocols, or implementing protocols with better options.
+.Tn SHA256
+and 
+.Tn SHA512
+are better options as they have been more resilient to attacks (as of 2009).
+.Pp
+The following options may be used in any combination and must
+precede any files named on the command line.
+The hexadecimal checksum of each file listed on the command line is printed
+after the options are processed.
+.Bl -tag -width indent
+.It Fl s Ar string
+Print a checksum of the given
+.Ar string .
+.It Fl p
+Echo stdin to stdout and append the checksum to stdout.
+.It Fl q
+Quiet mode - only the checksum is printed out.
+Overrides the
+.Fl r
+option.
+.It Fl r
+Reverses the format of the output.
+This helps with visual diffs.
+Does nothing
+when combined with the
+.Fl ptx
+options.
+.It Fl t
+Run a built-in time trial.
+.It Fl x
+Run a built-in test script.
+.El
+.Sh EXIT STATUS
+The
+.Nm
+utility exits 0 on success,
+and 1 if at least one of the input files could not be read.
+.Sh SEE ALSO
+.Xr cksum 1 ,
+.Xr md5 3 ,
+.Xr ripemd 3 ,
+.Xr sha 3 ,
+.Xr CC_SHA256_Init 3
+.Rs
+.%A R. Rivest
+.%T The MD5 Message-Digest Algorithm
+.%O RFC1321
+.Rs
+.%A Vlastimil Klima
+.%T Finding MD5 Collisions - a Toy For a Notebook
+.%O Cryptology ePrint Archive: Report 2005/075
+.Re
+.Sh ACKNOWLEDGMENTS
+This program is placed in the public domain for free general use by
+RSA Data Security.

@@ -1,0 +1,7 @@
+# su: auth account session
+auth       sufficient     pam_rootok.so 
+auth       required       pam_opendirectory.so
+account    required       pam_group.so no_warn group=admin,wheel ruser root_only fail_safe
+account    required       pam_opendirectory.so no_check_shell
+password   required       pam_opendirectory.so
+session    required       pam_launchd.so

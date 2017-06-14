@@ -1,0 +1,63 @@
+# -*- sh -*-
+# Check environment variables for sane values while testing.
+
+# Copyright (C) 2000-2017 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+if (FOO=FOO; unset FOO) >/dev/null 2>&1; then
+  as_unset=unset
+else
+  as_unset=false
+fi
+
+envvar_check_fail=0
+vars='
+  _POSIX2_VERSION
+  _STDBUF_E
+  _STDBUF_I
+  _STDBUF_O
+  BASH_ENV
+  BLOCKSIZE
+  BLOCK_SIZE
+  CDPATH
+  COLUMNS
+  DF_BLOCK_SIZE
+  DU_BLOCK_SIZE
+  ENV
+  LANGUAGE
+  LS_BLOCK_SIZE
+  LS_COLORS
+  OMP_NUM_THREADS
+  POSIXLY_CORRECT
+  QUOTING_STYLE
+  SIMPLE_BACKUP_SUFFIX
+  TABSIZE
+  TERM
+  COLORTERM
+  TIME_STYLE
+  TMPDIR
+  VERSION_CONTROL
+'
+for var in $vars
+do
+  $as_unset $var
+  if eval test \"\${$var+set}\" = set; then
+    echo "$0: the $var environment variable is set --" \
+      ' unset it and rerun this test' >&2
+    envvar_check_fail=1
+  fi
+done
+
+test "$envvar_check_fail" = 1 && exit 1

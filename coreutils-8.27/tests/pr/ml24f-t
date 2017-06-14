@@ -1,0 +1,89 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+1   Test-INPUT: "Without FF set by  1	Test-INPUT: "Without FF set by
+2   Options -b -3 [+2|+3] [-l 15|8] 2	Options -b -3 [+2|+3] [-l 15|8]
+3   Options -a -3 [+2|+3] [-l 15|8] 3	Options -a -3 [+2|+3] [-l 15|8]
+4   Options	  [+2|+3] [-l 24|17 4	Options	      [+2|+3] [-l 24|17
+5				    5
+6   ------------------------------- 6	-------------------------------
+7 3456789 123456789 123456789 12345 7 3456789 123456789 123456789 12345
+8   3 Columns downwards, across, .. 8	3 Columns downwards, across, ..
+9   With columns use  <= 5 text lin 9	With columns use  <= 5 text lin
+10  without -f e.g.:  -l 15 = total 10	without -f e.g.:  -l 15 = total
+1   with -f e.g.   :  -l 8 -f	    1	with -f e.g.   :  -l 8 -f
+2				    2
+3 line truncation before new page;  3 line truncation before new page;
+14 456789 123456789 123456789 12345 14 456789 123456789 123456789 12345
+
+
+-- Date/Time --                         x                         Page 2
+
+
+15 xyzxyzxyz XYZXYZXYZ abcabcab	    15 xyzxyzxyz XYZXYZXYZ abcabcab
+16 456789 123456789 xyzxyzxyz XYZXY 16 456789 123456789 xyzxyzxyz XYZXY
+7				    7
+8				    8
+9 3456789 ab			    9 3456789 ab
+20 DEFGHI 123			    20 DEFGHI 123
+1				    1
+2				    2
+3				    3
+4				    4
+5				    5
+6				    6
+27 no truncation before nwe page; ( 27 no truncation before nwe page; (
+28 no trunc			    28 no trunc
+
+
+-- Date/Time --                         x                         Page 3
+
+
+29 xyzxyzxyz XYZXYZXYZ abcabcab	    29 xyzxyzxyz XYZXYZXYZ abcabcab
+30 456789 123456789 xyzxyzxyz XYZXY 30 456789 123456789 xyzxyzxyz XYZXY
+1				    1
+2 3456789 abcdefghi		    2 3456789 abcdefghi
+3				    3
+4				    4
+5				    5
+6				    6
+7				    7
+8				    8
+9 3456789 abcdefghi		    9 3456789 abcdefghi
+40 DEFGHI 123456789		    40 DEFGHI 123456789
+41 yzxyzxyz XYZXYZXYZ abcabcab	    41 yzxyzxyz XYZXYZXYZ abcabcab
+42 456789 123456789 abcdefghi ABCDE 42 456789 123456789 abcdefghi ABCDE
+
+
+-- Date/Time --                         x                         Page 4
+
+
+43 xyzxyzxyz XYZXYZXYZ abcabcab	    43 xyzxyzxyz XYZXYZXYZ abcabcab
+44 456789 123456789 xyzxyzxyz XYZXY 44 456789 123456789 xyzxyzxyz XYZXY
+5				    5
+6				    6
+7				    7
+8				    8
+9				    9
+50				    50
+1				    1
+2				    2
+3				    3
+4				    4
+55 yzxyzxyz XYZXYZXYZ abcabcab	    55 yzxyzxyz XYZXYZXYZ abcabcab
+56 456789 123456789 abcdefghi ABCDE 56 456789 123456789 abcdefghi ABCDE
+
+
+-- Date/Time --                         x                         Page 5
+
+
+57 xyzxyzxyz XYZXYZXYZ abcabcab	    57 xyzxyzxyz XYZXYZXYZ abcabcab
+58 456789 123456789 xyzxyzxyz XYZXY 58 456789 123456789 xyzxyzxyz XYZXY
+9				    9
+60 DEFGHI 123456789		    60 DEFGHI 123456789
+1				    1
+2				    2
+3  ------- EOF -------- EOF ------- 3  ------- EOF -------- EOF -------
+

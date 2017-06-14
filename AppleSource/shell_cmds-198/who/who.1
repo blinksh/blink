@@ -1,0 +1,130 @@
+.\"	$NetBSD: who.1,v 1.22 2007/01/18 00:15:05 wiz Exp $
+.\"
+.\" Copyright (c) 1986, 1991, 1993
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"     @(#)who.1	8.2 (Berkeley) 12/30/93
+.\"
+.Dd January 17, 2007
+.Dt WHO 1
+.Os
+.Sh NAME
+.Nm who
+.Nd display who is logged in
+.Sh SYNOPSIS
+.Nm
+.Op Fl abdHlmpqrsTtu
+.Op Ar file
+.Nm
+.Ar am i
+.Sh DESCRIPTION
+The
+.Nm
+utility displays a list of all users currently logged on, showing for
+each user the login name, tty name, the date and time of login, and
+hostname if not local.
+.Pp
+Available options:
+.Pp
+.Bl -tag -width file
+.It Fl a
+Same as
+.Fl bdlprTtu .
+.It Fl b
+Time of last system boot.
+.It Fl d
+Print dead processes.
+.It Fl H
+Write column headings above the regular output.
+.It Fl l
+Print system login processes (unsupported).
+.It Fl m
+Only print information about the current terminal.
+This is the
+.Tn POSIX
+way of saying
+.Nm
+.Ar am i .
+.It Fl p
+Print active processes spawned by
+.Xr launchd 8
+(unsupported).
+.It Fl q
+.Dq Quick mode :
+List only the names and the number of users currently logged on.
+When this option is used, all other options are ignored.
+.It Fl r
+Print the current runlevel.
+This is meaningless on Mac OS X.
+.It Fl s
+List only the name, line and time fields.
+This is the default.
+.It Fl T
+Print a character after the user name indicating the state of the
+terminal line:
+.Sq +
+if the terminal is writable;
+.Sq -
+if it is not;
+and
+.Sq \&?
+if a bad line is encountered.
+.It Fl t
+Print last system clock change (unsupported).
+.It Fl u
+Print the idle time for each user, and the associated process ID.
+.It Ar \&am I
+Returns the invoker's real user name.
+.It Ar file
+By default,
+.Nm
+gathers information from the file
+.Pa /var/run/utmpx .
+An alternative
+.Ar file
+may be specified.
+.El
+.Sh FILES
+.Bl -tag -width /var/run/utmpx -compact
+.It Pa /var/run/utmpx
+.El
+.Sh SEE ALSO
+.Xr last 1 ,
+.Xr mesg 1 ,
+.Xr users 1 ,
+.Xr getuid 2 ,
+.Xr utmpx 5
+.Sh STANDARDS
+The
+.Nm
+utility conforms to
+.St -p1003.1-2001 .
+.Sh HISTORY
+A
+.Nm
+utility appeared in
+.At v6 .

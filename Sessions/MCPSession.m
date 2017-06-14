@@ -41,7 +41,7 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 
-#include "coreutils.h"
+#include "freebsd_utils.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -168,7 +168,7 @@
         stdout = _stream.control.termout;
         stderr = _stream.control.termout;
         // Commands from GNU coreutils: ls, rm, cp...
-        if ([cmd isEqualToString:@"ls"]) {
+        /* if ([cmd isEqualToString:@"ls"]) {
           ls_main(argc, argv);
         } else if  ([cmd isEqualToString:@"touch"]) {
           touch_main(argc, argv);
@@ -201,7 +201,7 @@
         } else if  ([cmd isEqualToString:@"whoami"]) {
           whoami_main(argc, argv);
           // Commands that have to be inside the "shell"
-        } else if  ([cmd isEqualToString:@"setenv"]) {
+        } else */ if  ([cmd isEqualToString:@"setenv"]) {
           // setenv VARIABLE value
           setenv(argv[1], argv[2], 1);
         } else if  ([cmd isEqualToString:@"cd"]) {

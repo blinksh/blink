@@ -1,0 +1,14 @@
+# Suppress a valgrind message about use of uninitialized memory in memchr2().
+# Like memchr, it is safe to overestimate the length when the terminator
+# is guaranteed to be found.  In this case, we may end up reading a word
+# that is partially uninitialized, but this use is OK for a speedup.
+{
+    memchr2-value4
+    Memcheck:Value4
+    fun:memchr2
+}
+{
+    memchr2-value8
+    Memcheck:Value8
+    fun:memchr2
+}

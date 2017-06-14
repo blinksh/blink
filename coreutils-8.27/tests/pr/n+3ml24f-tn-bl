@@ -1,0 +1,119 @@
+
+
+-- Date/Time --                         x                         Page 3
+
+
+ 29.29 xyzxyzxyz XYZXYZXYZ abcabcab   15 xyzxyzxyz XYZXYZXYZ abcabcab
+ 30.30 456789 123456789 xyzxyzxyz XYZ 16 456789 123456789 xyzxyzxyz XYZ
+ 31.1				      7
+ 32.2 3456789 abcdefghi		      8
+ 33.3				      9 3456789 ab
+ 34.4				      20 DEFGHI 123
+ 35.5				      1
+ 36.6				      
+ 37.7				      
+ 38.8				      4
+ 39.9 3456789 abcdefghi		      5
+ 40.40 DEFGHI 123456789		      6
+ 41.41 yzxyzxyz XYZXYZXYZ abcabcab    27 no truncation before FF; (r_l-
+ 42.42 456789 123456789 abcdefghi ABC 
+
+
+-- Date/Time --                         x                         Page 4
+
+
+ 43.43 xyzxyzxyz XYZXYZXYZ abcabcab   
+ 44.44 456789 123456789 xyzxyzxyz XYZ 
+ 45.5				      
+ 46.6				      
+ 47.7				      
+ 48.8				      
+ 49.9				      
+ 50.50				      
+ 51.1				      
+ 52.2				      
+ 53.3				      
+ 54.4				      
+ 55.55 yzxyzxyz XYZXYZXYZ abcabcab    
+ 56.56 456789 123456789 abcdefghi ABC 
+
+
+-- Date/Time --                         x                         Page 5
+
+
+ 57.57 xyzxyzxyz XYZXYZXYZ abcabcab   29 xyzxyzxyz XYZXYZXYZ abcabcab
+ 58.58 456789 123456789 xyzxyzxyz XYZ 30 456789 123456789 xyzxyzxyz XYZ
+ 59.9				      1
+ 60.60 DEFGHI 123456789		      2 3456789 abcdefghi
+ 61.1				      3
+ 62.2				      4
+ 63.3  ------- EOF -------- EOF ----- 
+ 64.				      6
+ 65.				      7
+ 66.				      8
+ 67.				      9 3456789 abcdefghi
+ 68.				      40 DEFGHI 123456789
+ 69.				      41 yzxyzxyz XYZXYZXYZ abcabcab
+ 70.				      42 456789 123456789 abcdefghi ABC
+
+
+-- Date/Time --                         x                         Page 6
+
+
+
+
+
+-- Date/Time --                         x                         Page 7
+
+
+
+
+
+-- Date/Time --                         x                         Page 8
+
+
+ 71.				      43 xyzxyzxyz XYZXYZXYZ abcabcab
+ 72.				      44 456789 123456789 xyzxyzxyz XYZ
+ 73.				      5
+ 74.				      6
+ 75.				      7
+ 76.				      8
+ 77.				      9
+ 78.				      50
+ 79.				      1
+ 80.				      
+ 81.				      
+ 82.				      
+ 83.				      55 yzxyzxyz XYZXYZXYZ abcabcab
+ 84.				      56 456789 123456789 abcdefghi ABC
+
+
+-- Date/Time --                         x                         Page 9
+
+
+ 85.				      
+ 86.				      58 456789 123456789 xyzxyzxyz XYZ
+ 87.				      9
+ 88.				      60 DEFGHI 123456789
+ 89.				      61 yzxyzxyz XYZXYZXYZ abcabcab
+ 90.				      62 456789 123456789 abcdefghi ABC
+ 91.				      63 xyzxyzxyz XYZXYZXYZ abcabcab
+ 92.				      64 456789 123456789 xyzxyzxyz XYZ
+ 93.				      5
+ 94.				      6
+ 95.				      7
+ 96.				      8
+ 97.				      9
+ 98.				      70  456789 123456789 abcdefghi AB
+
+
+-- Date/Time --                        x                         Page 10
+
+
+ 99.				      1
+100.				      
+101.				      
+102.				      
+103.				      74 yzxyzxyz XYZXYZXYZ abcabcab
+104.				      75 456789 123456789 abcdefghi ABC
+

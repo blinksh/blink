@@ -1,0 +1,76 @@
+.\"
+.\" Copyright (c) 2007 Apple Inc.  All rights reserved.
+.\"
+.\" @APPLE_LICENSE_HEADER_START@
+.\" 
+.\" This file contains Original Code and/or Modifications of Original Code
+.\" as defined in and that are subject to the Apple Public Source License
+.\" Version 2.0 (the 'License'). You may not use this file except in
+.\" compliance with the License. Please obtain a copy of the License at
+.\" http://www.opensource.apple.com/apsl/ and read it before using this
+.\" file.
+.\" 
+.\" The Original Code and all software distributed under the License are
+.\" distributed on an 'AS IS' basis, WITHOUT WARRANTY OF ANY KIND, EITHER
+.\" EXPRESS OR IMPLIED, AND APPLE HEREBY DISCLAIMS ALL SUCH WARRANTIES,
+.\" INCLUDING WITHOUT LIMITATION, ANY WARRANTIES OF MERCHANTABILITY,
+.\" FITNESS FOR A PARTICULAR PURPOSE, QUIET ENJOYMENT OR NON-INFRINGEMENT.
+.\" Please see the License for the specific language governing rights and
+.\" limitations under the License.
+.\" 
+.\" @APPLE_LICENSE_HEADER_END@
+.\"
+.Dd March 15, 2007
+.Dt path_helper 8
+.Os "Mac OS X"
+.Sh NAME
+.Nm path_helper
+.Nd helper for constructing PATH environment variable
+.Sh SYNOPSIS
+.Nm
+.Op Fl c | Fl s
+.Sh DESCRIPTION
+The
+.Nm
+utility reads the contents of the files in the directories
+.Pa /etc/paths.d
+and
+.Pa /etc/manpaths.d
+and appends their contents to the
+.Ev PATH
+and
+.Ev MANPATH
+environment variables respectively.
+(The
+.Ev MANPATH
+environment variable will not be modified unless it is already set
+in the environment.)
+.Pp
+Files in these directories should contain one path element per line.
+.Pp
+Prior to reading these directories, default
+.Ev PATH
+and
+.Ev MANPATH
+values are obtained from the files
+.Pa /etc/paths
+and
+.Pa /etc/manpaths
+respectively.
+.Pp
+Options:
+.Bl -tag -width Ds
+.It Fl c
+Generate C-shell commands on stdout.  This is the default if
+.Ev SHELL
+ends with "csh".
+.It Fl s
+Generate Bourne shell commands on stdout.  This is the default if
+.Ev SHELL
+does not end with "csh".
+.El
+.Sh NOTE
+The
+.Nm 
+utility should not be invoked directly.
+It is intended only for use by the shell profile.

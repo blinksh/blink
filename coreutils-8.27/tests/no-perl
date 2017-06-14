@@ -1,0 +1,6 @@
+#!/bin/sh
+# Perl is not available, the test should be considered skipped.
+# FD 9 should have been opened by the test suite harness, pointing
+# to the original stderr (usually, the user's terminal).
+echo "test skipped: no usable version of Perl found" >&9
+exit 77

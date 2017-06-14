@@ -1,0 +1,17 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>printf</string>
+		<key>OpenSourceVersion</key>
+		<string>2015-03-01</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/usr.bin/printf/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/usr.bin/printf/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2015-07-23</string>
+		<key>OpenSourceModifications</key>
+		<array>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

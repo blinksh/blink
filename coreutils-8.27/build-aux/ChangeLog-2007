@@ -1,0 +1,241 @@
+2007-09-29  Eric Blake  <ebb9@byu.net>
+
+	* check.mk (%.log): Also allow suffix-less tests, on platforms
+	where $(EXEEXT) is not empty.
+
+2007-09-15  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: Remove mercurial support.
+	Check for CVS first.  Adjust comments.
+
+2007-01-30  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: Select column 2, not 3 (hg-0.9.3's manifest format
+	now has only two columns).
+
+2006-10-14  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: Don't filter git-ls-files output through cut.
+	Add a comment about cvsu.
+
+2006-08-22  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* .cvsignore: New file.
+
+2006-08-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* compile, config.guess, config.rpath, config.sub, depcomp:
+	* install-sh, mdate-sh, missing, texinfo.tex:
+	Remove from CVS, since ../bootstrap generates them automatically.
+
+2006-08-15  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* ChangeLog: Add copyright notice.
+	* vc-list-files: Likewise.
+	* mkinstalldirs: Remove; no longer needed.
+
+2006-08-09  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* texinfo.tex: Update from gnulib.
+
+2006-07-25  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: Handle git repositories, too.
+
+2006-07-19  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: Command line args correspond to an "include"
+	list, not an exclude list.
+
+2006-07-14  Jim Meyering  <jim@meyering.net>
+
+	* vc-list-files: New file.
+
+2006-07-08  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, install-sh, texinfo.tex:
+	Update from gnulib.
+
+2006-05-29  Jim Meyering  <jim@meyering.net>
+
+	* config.guess, config.rpath, config.sub, install-sh:
+	* mkinstalldirs, texinfo.tex: Update from gnulib.
+
+2006-02-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* install-sh: Update from gnulib.
+
+2006-01-31  Jim Meyering  <jim@meyering.net>
+
+	* config.guess, missing, texinfo.tex: Update from gnulib.
+
+2006-01-10  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, depcomp, texinfo.tex: Sync from gnulib.
+
+2005-12-13  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess: Sync from gnulib.
+
+2005-12-07  Jim Meyering  <jim@meyering.net>
+
+	* cvsu: New file.
+
+2005-11-12  Jim Meyering  <jim@meyering.net>
+
+	* config.guess, install-sh: Update from gnulib.
+
+2005-10-23  Jim Meyering  <jim@meyering.net>
+
+	* compile: New file, used to build sha* programs from md5sum.c.
+
+2005-10-13  Jim Meyering  <jim@meyering.net>
+
+	* texinfo.tex: Sync from gnulib.
+
+2005-09-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* install-sh, config.guess: Sync from gnulib.
+
+2005-07-01  Jim Meyering  <jim@meyering.net>
+
+	* config.guess, config.sub, mdate-sh, missing, mkinstalldirs:
+	* texinfo.tex: Update from gnulib.
+
+2005-06-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, texinfo.tex: Sync from gnulib.
+
+2005-05-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess: Sync from gnulib.
+
+2005-05-15  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* depcomp, install-sh, mdate-sh, missing, pmkinstalldirs:
+	Sync from gnulib (scriptversion change only).
+
+2005-05-14  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub: Sync from gnulib.
+
+2005-05-01  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, texinfo.tex: Sync from gnulib.
+
+2005-03-20  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.rpath: Sync from gnulib.
+
+2005-02-25  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, depcomp, install-sh, mdate-sh, missing,
+	mkinstalldirs: Sync from gnulib.
+
+2005-01-21  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.sub: Sync from gnulib.
+
+2004-12-17  Jim Meyering  <jim@meyering.net>
+
+	* install-sh: Sync from gnulib.
+
+2004-12-16  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* mdate-sh: Sync from gnulib.
+
+2004-11-23  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.sub, texinfo.tex: Sync from gnulib.
+
+2004-11-17  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub: Sync from gnulib.
+
+2004-11-10  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* texinfo.tex: Sync from gnulib.
+
+2004-11-02  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* texinfo.tex: Sync from gnulib.
+
+2004-10-29  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, install-sh, texinfo.tex: Sync from gnulib.
+
+2004-10-03  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, install-sh, missing, texinfo.tex:
+	Sync from gnulib.
+
+2004-09-24  Jim Meyering  <jim@meyering.net>
+
+	* cvsu: Remove file.  The version of cvsu from the cvsutils package
+	does the same job with --find --type=... options.
+	* cvsu: New file, used by rules in coreutils' Makefile.maint.
+
+2004-08-05  Paul Eggert  <eggert@cs.ucla.edu>
+
+	* config.guess, config.sub, install-sh, texinfo.tex: Sync from gnulib.
+
+2004-03-30  Paul Eggert  <eggert@twinsun.com>
+
+	* config.guess, config.sub, install-sh, texinfo.tex: Sync from gnulib.
+
+2003-08-16  Paul Eggert  <eggert@twinsun.com>
+
+	* config.rpath, texinfo.tex: Sync with gnulib.
+
+2003-04-21  Jim Meyering  <jim@meyering.net>
+
+	* depcomp: New version, now that this file is on the list
+	in ../Makefile.cfg.
+
+2003-01-12  Jim Meyering  <jim@meyering.net>
+
+	Lots of syntactic clean-up, mostly from Karl Berry.
+	* install-sh: Use consistent indentation, two spaces per level.
+	(scriptversion): New variable.
+	Change initializations like `variable=""' to `variable='.
+	(usage): New variable.
+	Use `test', not `['.
+	Use `test -z "$var"', not `[ x"$var" = x ]'.
+	Use `test -n "$var"', not `[ x"$var" != x ]'.
+	Alphabetize case entries.
+	Accept --help and --version options.
+	Remove unnecessary `else :' clauses.
+	Add a `Local variables' eval block to help emacs users update
+	the time-stamp variable added above.
+
+2002-12-20  Jim Meyering  <jim@meyering.net>
+
+	* install-sh: Set the execute bit on this file.
+	Reported by Vin Shelton.
+
+2002-11-09  Jim Meyering  <jim@meyering.net>
+
+	Make it work even when names contain spaces or shell metachars.
+	* install-sh: Write diagnostics to stderr, not stdout.
+	Normalize spacing in diagnostics: use one space (not two, and not a TAB)
+	after the leading `install:'.
+	Add double quotes around `$src' here: $doit $instcmd "$src" "$dsttmp"
+
+	Merge in some changes from the version in automake.
+	* install-sh: Remove unnecessary quotes around `case' argument.
+	Use `[ cond1 ] || [ cond2 ]' rather than `[ cond1 -o cond2 ]'.
+	Use `:' rather than `true'.
+
+2002-02-17  Jim Meyering  <jim@meyering.net>
+
+	* config.guess (main): Don't use `head -1'; it's no longer portable.
+	Use `sed 1q' instead.
+
+
+	-----
+
+	Copyright (C) 2002-2017 Free Software Foundation, Inc.
+
+	Copying and distribution of this file, with or without
+	modification, are permitted provided the copyright notice
+	and this notice are preserved.

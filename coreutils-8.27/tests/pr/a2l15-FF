@@ -1,0 +1,195 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+1   FF-Test: FF's in Text	    2	Options -b -3 / -a -3 / ...
+3   ------------------------------- 4 3456789 123456789 123456789 12345
+5   3 Columns downwards ..., <= 5 l 6	FF-Arangements: One Empty Page
+7   text\f\f\n; text\f\n\ftext; \f\ 8	\f\f\n; \f\n\f\n;
+9				    10	zzzzzzzzzzzzzzzzzzzzzzzzzz12345
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 2
+
+
+1				    2
+3 line truncation before FF; r_r_o_ 14 456789 123456789 123456789 12345
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 3
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 4
+
+
+15 xyzxyzxyz XYZXYZXYZ abcabcab	    16 456789 123456789 xyzxyzxyz XYZXY
+7				    8
+9 3456789 ab			    20 DEFGHI 123
+1				    2
+3				    4
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 5
+
+
+5				    6
+27 no truncation before FF; (r_l-te 28 no trunc
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 6
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 7
+
+
+29 xyzxyzxyz XYZXYZXYZ abcabcab	    30 456789 123456789 xyzxyzxyz XYZXY
+1				    2 3456789 abcdefghi
+3				    4
+5				    6
+7				    8
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 8
+
+
+9 3456789 abcdefghi		    40 DEFGHI 123456789
+41 yzxyzxyz XYZXYZXYZ abcabcab	    42 456789 123456789 abcdefghi ABCDE
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                         x                         Page 9
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                        x                         Page 10
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                        x                         Page 11
+
+
+43 xyzxyzxyz XYZXYZXYZ abcabcab	    44 456789 123456789 xyzxyzxyz XYZXY
+5				    6
+7				    8
+9				    50
+1				    2
+
+
+
+
+
+
+
+-- Date/Time --                        x                         Page 12
+
+
+3				    4
+55 yzxyzxyz XYZXYZXYZ abcabcab	    56 456789 123456789 abcdefghi ABCDE
+
+
+
+
+
+
+
+
+
+
+-- Date/Time --                        x                         Page 13
+
+
+57 xyzxyzxyz XYZXYZXYZ abcabcab	    58 456789 123456789 xyzxyzxyz XYZXY
+9				    60 DEFGHI 123456789
+
+
+
+
+
+
+
+

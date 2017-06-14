@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>OpenSourceImportDate</key>
+	<string>2012-10-25</string>
+	<key>OpenSourceLicense</key>
+	<string>bsd</string>
+	<key>OpenSourceLicenseFile</key>
+	<string>gzip.txt</string>
+	<key>OpenSourceModifications</key>
+	<array>
+		<string>gzip.c: adjust --version output</string>
+		<string>gzip.c: timespec portability fixes</string>
+		<string>gzip.c: preserve ACLs/EAs (3753276)</string>
+		<string>gzip.c: clear type/creator (4123341)</string>
+		<string>gzip.c, gzip.1: zcat conformance (3675040)</string>
+		<string>zmore: work as zless or zmore</string>
+	</array>
+	<key>OpenSourceProject</key>
+	<string>gzip</string>
+	<key>OpenSourceSCM</key>
+	<string>cvs -d :pserver:anoncvs@anoncvs.fr.FreeBSD.org:/home/ncvs co src/usr.bin/gzip</string>
+	<key>OpenSourceVersion</key>
+	<string>2012-10-19</string>
+	<key>OpenSourceWebsiteURL</key>
+	<string>http://svnweb.freebsd.org/base/head/usr.bin/gzip/</string>
+</dict>
+</plist>

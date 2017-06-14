@@ -1,0 +1,14 @@
+bg
+cd
+command
+fc
+fg
+getopts
+hash
+jobs
+read
+type
+ulimit
+umask
+unalias
+wait

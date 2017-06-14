@@ -140,7 +140,6 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		2231E64A1EEC7B0700C964AD /* libcoreutils.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2231E6491EEC7B0700C964AD /* libcoreutils.framework */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
@@ -373,7 +372,6 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
-		2231E6491EEC7B0700C964AD /* libcoreutils.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libcoreutils.framework; sourceTree = "<group>"; };
 		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		22C6715B1EEC370D00A44443 /* libc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc.tbd; path = usr/lib/libc.tbd; sourceTree = SDKROOT; };
 		22C6715F1EEC3C8400A44443 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
@@ -475,7 +473,6 @@
 			files = (
 				22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */,
 				22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */,
-				2231E64A1EEC7B0700C964AD /* libcoreutils.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
@@ -550,7 +547,6 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2231E6491EEC7B0700C964AD /* libcoreutils.framework */,
 				22C6715F1EEC3C8400A44443 /* libiconv.tbd */,
 				22C6715B1EEC370D00A44443 /* libc.tbd */,
 				225C53C21EEAB0C900395C6F /* CloudKit.framework */,
@@ -1012,10 +1008,10 @@
 								enabled = 0;
 							};
 							com.apple.Keychain = {
-								enabled = 0;
+								enabled = 1;
 							};
 							com.apple.Push = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.iCloud = {
 								enabled = 1;

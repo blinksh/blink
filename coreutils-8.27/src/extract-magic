@@ -1,0 +1,162 @@
+#!/usr/bin/perl -w
+# Derive #define directives from specially formatted 'case ...:' statements.
+
+# Copyright (C) 2003-2017 Free Software Foundation, Inc.
+
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+
+use strict;
+
+use Getopt::Long;
+
+(my $VERSION = '$Revision: 1.5 $ ') =~ tr/[0-9].//cd;
+(my $ME = $0) =~ s|.*/||;
+
+END
+{
+  # Nobody ever checks the status of print()s.  That's okay, because
+  # if any do fail, we're guaranteed to get an indicator when we close()
+  # the filehandle.
+  #
+  # Close stdout now, and if there were no errors, return happy status.
+  # If stdout has already been closed by the script, though, do nothing.
+  defined fileno STDOUT
+    or return;
+  close STDOUT
+    and return;
+
+  # Errors closing stdout.  Indicate that, and hope stderr is OK.
+  warn "$ME: closing standard output: $!\n";
+
+  # Don't be so arrogant as to assume that we're the first END handler
+  # defined, and thus the last one invoked.  There may be others yet
+  # to come.  $? will be passed on to them, and to the final _exit().
+  #
+  # If it isn't already an error, make it one (and if it _is_ an error,
+  # preserve the value: it might be important).
+  $? ||= 1;
+}
+
+sub usage ($)
+{
+  my ($exit_code) = @_;
+  my $STREAM = ($exit_code == 0 ? *STDOUT : *STDERR);
+  if ($exit_code != 0)
+    {
+      print $STREAM "Try '$ME --help' for more information.\n";
+    }
+  else
+    {
+      print $STREAM <<EOF;
+Usage: $ME [OPTIONS] FILE
+
+FIXME: describe
+
+OPTIONS:
+
+  There are two modes of operation, the default, which is to emit
+  #define directives derived from specially formatted 'case' statements,
+  and that with --local, which is to emit a static inline function
+  mapping S_MAGIC_* values to 1, 0, -1, corresponding to known-local,
+  known-remote/distributed/network and unknown, respectively.
+
+   --local    emit an is_local_fs_type function
+   --help     display this help and exit
+   --version  output version information and exit
+
+EOF
+    }
+  exit $exit_code;
+}
+
+{
+  # The default is to print S_MAGIC_* definitions.
+  my $emit_magic = 1;
+
+  GetOptions
+    (
+     local => sub { $emit_magic = 0 },
+     help => sub { usage 0 },
+     version => sub { print "$ME version $VERSION\n"; exit },
+    ) or usage 1;
+
+  my $fail = 0;
+
+  @ARGV < 1
+    and (warn "$ME: missing FILE arguments\n"), $fail = 1;
+  1 < @ARGV
+    and (warn "$ME: too many arguments\n"), $fail = 1;
+  $fail
+    and usage 1;
+
+  my $file = $ARGV[0];
+
+  open FH, $file
+    or die "$ME: can't open '$file' for reading: $!\n";
+
+  # For each line like this:
+  #   case S_MAGIC_ROMFS: /* 0x7275 */
+  # emit one like this:
+  #   # define S_MAGIC_ROMFS 0x7275
+  # Fail if there is a 'case S_MAGIC_.*' line without
+  # a properly formed comment.
+
+  my $map_comment = <<EOF;
+/* Map each S_MAGIC_* value to 1, 0 or -1.
+   1 if it is known to be a remote file system type,
+   0 if it is known to be a local file system type, or -1 otherwise.  */
+EOF
+  my $magic_comment = <<EOF;
+/* Define the magic numbers as given by statfs(2).
+   Please send additions to bug-coreutils\@gnu.org and meskes\@debian.org.
+   This file is generated automatically from $file. */
+EOF
+  print $emit_magic ? $magic_comment : $map_comment;
+
+  $emit_magic
+    and print "\n#if defined __linux__\n";
+  $emit_magic
+    or print "static inline int\n"
+      . "is_local_fs_type (unsigned long int magic)\n"
+      . "{\n  switch (magic)\n    {\n";
+
+  while (defined (my $line = <FH>))
+    {
+      $line =~ /^[ \t]+case S_MAGIC_/
+        or next;
+      $line =~
+        m!^[ \t]+case (S_MAGIC_\w+): /\* (0x[0-9A-Fa-f]+) (local|remote) \*/!
+        or (warn "$ME:$file:$.: malformed case S_MAGIC_... line"),
+          $fail = 1, next;
+      my $name = $1;
+      my $magic = $2;
+      my $local = $3 eq 'local' ? 1 : 0;
+      print $emit_magic
+        ? "# define $name $magic\n"
+        : "      case $name: return $local;\n";
+    }
+
+  $emit_magic
+    and print <<\EOF;
+#elif defined __GNU__
+# include <hurd/hurd_types.h>
+#endif
+EOF
+  $emit_magic
+    or printf "      default: return -1;\n    }\n}\n";
+
+  close FH;
+
+  exit $fail;
+}

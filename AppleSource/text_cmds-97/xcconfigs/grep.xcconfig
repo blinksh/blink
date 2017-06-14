@@ -1,0 +1,18 @@
+#include "base.xcconfig"
+
+// Architectures
+SDKROOT = macosx.internal
+
+// Linking
+OTHER_LDFLAGS = -lbz2 -llzma -lz
+
+// Packaging
+PRODUCT_NAME = grep
+
+// Preprocessing
+GCC_PREPROCESSOR_DEFINITIONS = WITHOUT_FASTMATCH WITHOUT_NLS
+
+// Warnings - All languages
+CLANG_WARN_IMPLICIT_SIGN_CONVERSION = NO
+GCC_WARN_64_TO_32_BIT_CONVERSION = NO
+GCC_WARN_SHADOW = NO

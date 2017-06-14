@@ -36,9 +36,9 @@ If you do that, there are 3 directories:
 - one that can only be accessed by Blink
 - one that is accessed by both applications. 
 
-In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of the shared directory. There are two environment variables: $HOME links to the Blink-specific directory, $SHARED links to the shared directory. 
+In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of the shared directory (it will be related to your Apple ID). There are two environment variables: $HOME links to the Blink-specific directory, $SHARED links to the shared directory. 
 
-From Vim, you can open the files in $SHARED. 
+From Vim, you can open the files in $SHARED. You can also edit Vim so it opens by default in the shared directory. 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!

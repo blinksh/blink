@@ -1,0 +1,136 @@
+
+
+-- Date/Time --                         x                         Page 1
+
+
+1<<<  -Test: FF's in Text	    1:::  Test-INPUT: "Without FF set b
+2<<<  -b -3 / -a -3 / ...  >>>	    2:::  Options -b -3 [+2|+3] [-l 15|
+3<<<  >>>			    3:::  Options -a -3 [+2|+3] [-l 15|
+4<<<  123456789 123456789 123456789 4:::  Options	[+2|+3] [-l 24|
+				    5:::  :::
+6<<<  -Arangements: One Empty Page  6:::  -----------------------------
+7<<<  \f\f\n; text\f\n\ftext; \f\ft 7:::  789 123456789 123456789 12345
+8<<<  f\f\n; \f\n\f\n;	>>>	    8:::  3 Columns downwards, across,
+9<<<  >>>			    9:::  With columns use  <= 5 text l
+10<<<  >>>			    10:::  without -f e.g.:  -l 15 = to
+1<<<  >>>			    1:::  with -f e.g.	 :  -l 8 -f  ::
+2<<<  >>>			    2:::  :::
+3<<<  truncation before FF; r_r_o_l 3:::  line truncation before new pa
+14<<<  123456789 123456789 12345678 14:::  89 123456789 123456789 12345
+
+
+-- Date/Time --                         x                         Page 2
+
+
+				    15:::  xyzxyzxyz XYZXYZXYZ abcabcab
+				    16:::  456789 123456789 xyzxyzxyz X
+				    7:::  12345678  :::
+				    8:::  12345678  :::
+				    9:::  3456789 ab  :::
+				    20:::  DEFGHI 123  :::
+				    21:::  89 123456789 123456789 12345
+				    2:::  12345678  :::
+				    3:::  12345678  :::
+				    4:::  12345678  :::
+				    5:::  12345678  :::
+				    6:::  12345678  :::
+				    27:::  no truncation before nwe pag
+				    28:::  89 123456789 123456789 12345
+
+
+-- Date/Time --                         x                         Page 3
+
+
+15<<<  xyzxyzxyz XYZXYZXYZ abcabcab 29:::  xyzxyzxyz XYZXYZXYZ abcabcab
+16<<<  123456789 xyzxyzxyz XYZXYZXY 30:::  456789 123456789 xyzxyzxyz X
+7<<<  >>>			    1:::  12345678  :::
+8<<<  >>>			    2:::  3456789 abcdefghi  :::
+9<<<  >>>			    3:::  12345678  :::
+20<<<  >>>			    4:::  12345678  :::
+1<<<  >>>			    35:::  89 123456789 123456789 12345
+				    6:::  12345678  :::
+				    7:::  12345678  :::
+4<<<  >>>			    8:::  12345678  :::
+5<<<  >>>			    9:::  3456789 abcdefghi  :::
+6<<<  >>>			    40:::  DEFGHI 123456789  :::
+27<<<  truncation before FF; (r_l-t 41:::  yzxyzxyz XYZXYZXYZ abcabcab
+28<<<  trunc			    42:::  89 123456789 123456789 12345
+
+
+-- Date/Time --                         x                         Page 4
+
+
+				    43:::  xyzxyzxyz XYZXYZXYZ abcabcab
+				    44:::  456789 123456789 xyzxyzxyz X
+				    5:::  12345678  :::
+				    6:::  12345678  :::
+				    7:::  12345678  :::
+				    8:::  12345678  :::
+				    49:::  89 123456789 123456789 12345
+				    50:::  12345678  :::
+				    1:::  12345678  :::
+				    2:::  12345678  :::
+				    3:::  12345678  :::
+				    4:::  12345678  :::
+				    55:::  yzxyzxyz XYZXYZXYZ abcabcab
+				    56:::  89 123456789 123456789 12345
+
+
+-- Date/Time --                         x                         Page 5
+
+
+29<<<xyzxyzxyz XYZXYZXYZ abcabcab   57:::  xyzxyzxyz XYZXYZXYZ abcabcab
+30<<<  123456789 xyzxyzxyz XYZXYZXY 58:::  456789 123456789 xyzxyzxyz X
+1<<<  >>>			    9:::  12345678  :::
+2<<<  abcdefghi	 >>>		    60:::  DEFGHI 123456789  :::
+3<<<  >>>			    1:::    :::
+4<<<  >>>			    2:::    :::
+5<<<  >>>			    3:::  ------- EOF -------- EOF ----
+6<<<  >>>			    
+7<<<  >>>			    
+8<<<  >>>			    
+9<<<  abcdefghi	 >>>		    
+40<<<  123456789  >>>		    
+41<<<  XYZXYZXYZ abcabcab   >>>	    
+42<<<  123456789 abcdefghi ABCDEDFH
+
+
+-- Date/Time --                         x                         Page 6
+
+
+
+
+
+-- Date/Time --                         x                         Page 7
+
+
+
+
+
+-- Date/Time --                         x                         Page 8
+
+
+43<<<  xyzxyzxyz XYZXYZXYZ abcabcab 
+44<<<  123456789 xyzxyzxyz XYZXYZXY 
+5<<<  >>>			    
+6<<<  >>>			    
+7<<<  >>>			    
+8<<<  >>>			    
+9<<<  >>>			    
+50<<<  >>>			    
+1<<<  >>>			    
+2<<<  >>>			    
+3<<<  >>>			    
+4<<<  >>>			    
+55<<<  XYZXYZXYZ abcabcab  >>>	    
+56<<<  123456789 abcdefghi ABCDEDFH
+
+
+-- Date/Time --                         x                         Page 9
+
+
+57<<<  xyzxyzxyz XYZXYZXYZ abcabcab 
+58<<<  123456789 xyzxyzxyz XYZXYZXY 
+9<<<  >>>			    
+60<<<  123456789  >>>		    
+

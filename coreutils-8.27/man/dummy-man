@@ -1,0 +1,72 @@
+#!/bin/sh
+# Poor man's placeholder for help2man invocation on systems lacking perl;
+# it generates a dummy man page stating that a proper one could not be
+# generated, and redirecting the user back to either the info
+# documentation or the '--help' output.
+
+set -e; set -u
+
+fatal_ ()
+{
+  printf '%s: %s\n' "$0" "$*" >&2
+  exit 1
+}
+
+basename_ ()
+{
+  printf '%s\n' "$1" | sed 's,.*/,,'
+}
+
+output=
+source="GNU coreutils"
+while test $# -gt 0; do
+  case $1 in
+    # Help2man options we recognize and handle.
+    --output=*) output=`expr x"$1" : x'--output=\(.*\)'`;;
+    --output) shift; output=$1;;
+    --source=*) source=`expr x"$1" : x'--source=\(.*\)'`;;
+    --source) shift; source=$1;;
+    # Recognize (as no-op) other help2man options that might be used
+    # in the makefile.
+    --include=*);;
+    --include) shift;;
+    --info-page=*);;
+    -*) fatal_ "invalid or unrecognized help2man option '$1'";;
+    --) shift; break;;
+     *) break;;
+  esac
+  shift
+done
+
+test $# -gt 0 || fatal_ "missing argument"
+test $# -le 1 || fatal_ "too many non-option arguments"
+
+baseout=`basename_ "$output"`
+sed 's/^/WARNING: /' >&2 <<END
+Cannot create proper '$baseout' man page, since perl is missing or
+inadequate on this system.  Creating a stub man page instead.
+END
+
+progname=`basename_ "$1"`
+bs='\'
+
+cat >"$output" <<END
+.TH "$progname" 1 "$source" "User Commands"
+.SH NAME
+$progname $bs- a $source program
+.SH DESCRIPTION
+.B OOOPS!
+Due to the lack of perl on the build system, we were
+unable to create a proper manual page for
+.B $progname.
+For concise option descriptions, run
+.IP
+.B env $progname --help
+.PP
+The full documentation for
+.B $progname
+is maintained as a Texinfo manual, which should be accessible
+on your system via the command
+.IP
+.B info $bs(aq(coreutils) $progname invocation$bs(aq
+END

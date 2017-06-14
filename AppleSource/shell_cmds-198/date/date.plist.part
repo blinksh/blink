@@ -1,0 +1,22 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>date</string>
+		<key>OpenSourceVersion</key>
+		<string>2015-05-07</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/bin/date/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/bin/date/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2015-11-06</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>date.1: discuss conformance changes</string>
+			<string>date.1: remove bogus utmpx path</string>
+		    <string>date.c: conformance changes for date format and exit value</string>
+		    <string>date.c: fix crash on invalid dates (7999711)</string>
+			<string>date.c: st_mtim compatibility</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

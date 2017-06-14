@@ -1,0 +1,76 @@
+.Dd April 24, 2012
+.Dt systime 1
+.Os Darwin
+.Sh NAME
+.Nm systime
+.Nd gather system-wide time during program execution
+.Sh SYNOPSIS
+.Nm
+.Op Fl P
+.Op Fl r
+.Op Fl t Ar sleep_time
+.Ar utility Op Ar argument ...
+.Nm
+.Fl p
+.Op Fl r
+.Op Fl t Ar sleep_time
+.Nm
+.Op Fl P
+.Fl u Ar user
+.Fl s Ar sys
+.Fl i Ar idle
+.Nm
+.Op Fl P
+.Op Fl r
+.Op Fl t Ar sleep_time
+.Fl T Ar target_pid
+.Sh DESCRIPTION
+.Nm
+is similar to
+.Xr time 1
+in that it allows you to execute a utility program. However after execution
+completes, it reports the system-wide time that was spent
+during that time period, instead of just the portion directly caused
+by the utility. This can be used to gather information about CPU
+utilization by kernel threads (AIO, networking) and interrupt routines
+on behalf of a program, but not directly attributed to it.
+.Pp
+The
+.Nm
+program can also be used to snapshot counters with
+.Fl p
+and then later used with
+.Fl u Fl s Fl i
+to calculate time spent during a time interval that doesn't correlate
+to a specific command execution. For example:
+.Pp
+.Bd -ragged -offset indent
+$ eval `systime -p`
+.Pp
+$ ... time passes ...
+.Pp
+$ systime -u $systime_user -s $systime_sys -i $systime_idle
+.Pp
+18.79 real 2.03 user 1.04 sys
+.Ed
+.Pp
+The
+.Nm
+program can also be used to print the usage of a process with
+.Fl T Ar target_pid
+, also printing the system wide usage
+.Pp
+.Fl P
+can be used to print time spent as a percentage of overall CPU capacity
+of the system (capped at 100%)
+.Pp
+.Fl r
+can be used to print the usage iteratively with
+.Ar sleep_time
+seconds sleep between iterations
+.Pp
+.Fl t Ar sleep_time
+can be used to specify sleep_time between iterations, defaults to 1 second if not specified.
+.Sh SEE ALSO
+.Xr time 1 ,
+.Xr top 1

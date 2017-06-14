@@ -1,0 +1,19 @@
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>test</string>
+		<key>OpenSourceVersion</key>
+		<string>2013-12-05</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/bin/test/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/bin/test/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2015-07-31</string>
+		<key>OpenSourceModifications</key>
+		<array>
+		    <string>4689479</string>
+		    <string>compatibility for eaccess, st_mtim</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>

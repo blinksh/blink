@@ -1,0 +1,583 @@
+.\" Copyright (c) 1989, 1990, 1993, 1994
+.\"	The Regents of the University of California.  All rights reserved.
+.\"
+.\" This code is derived from software contributed to Berkeley by
+.\" the Institute of Electrical and Electronics Engineers, Inc.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\" 1. Redistributions of source code must retain the above copyright
+.\"    notice, this list of conditions and the following disclaimer.
+.\" 2. Redistributions in binary form must reproduce the above copyright
+.\"    notice, this list of conditions and the following disclaimer in the
+.\"    documentation and/or other materials provided with the distribution.
+.\" 3. All advertising materials mentioning features or use of this software
+.\"    must display the following acknowledgement:
+.\"	This product includes software developed by the University of
+.\"	California, Berkeley and its contributors.
+.\" 4. Neither the name of the University nor the names of its contributors
+.\"    may be used to endorse or promote products derived from this software
+.\"    without specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE REGENTS AND CONTRIBUTORS ``AS IS'' AND
+.\" ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+.\" IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+.\" ARE DISCLAIMED.  IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE LIABLE
+.\" FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+.\" DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+.\" OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+.\" HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+.\" LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+.\" OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+.\" SUCH DAMAGE.
+.\"
+.\"	@(#)chmod.1	8.4 (Berkeley) 3/31/94
+.\" $FreeBSD: src/bin/chmod/chmod.1,v 1.33 2002/10/01 20:32:59 trhodes Exp $
+.\"
+.Dd July 08, 2004
+.Dt CHMOD 1
+.Os
+.Sh NAME
+.Nm chmod
+.Nd change file modes or Access Control Lists
+.Sh SYNOPSIS
+.Nm chmod
+.Op Fl fv
+.Op Fl R Op Fl H | L | P
+.Ar mode
+.Ar
+.Nm chmod
+.Op Fl fv
+.Op Fl R Op Fl H | L | P 
+.Op -a | +a | =a
+.Ar ACE
+.Ar
+.Nm chmod
+.Op Fl fhv
+.Op Fl R Op Fl H | L | P 
+.Op Fl E
+.Ar
+.Nm chmod
+.Op Fl fhv
+.Op Fl R Op Fl H | L | P 
+.Op Fl C
+.Ar
+.Nm chmod
+.Op Fl fhv
+.Op Fl R Op Fl H | L | P 
+.Op Fl N
+.Ar
+.Sh DESCRIPTION
+The
+.Nm chmod
+utility modifies the file mode bits of the listed files
+as specified by the
+.Ar mode
+operand. It may also be used to modify the Access Control
+Lists (ACLs) associated with the listed files.
+.Pp
+The generic options are as follows:
+.Bl -tag -width Ds
+.It Fl f
+Do not display a diagnostic message if
+.Nm chmod
+could not modify the mode for
+.Va file .
+.It Fl H
+If the
+.Fl R
+option is specified, symbolic links on the command line are followed.
+(Symbolic links encountered in the tree traversal are not followed by
+default.)
+.It Fl h
+If the file is a symbolic link, change the mode of the link itself
+rather than the file that the link points to.
+.It Fl L
+If the
+.Fl R
+option is specified, all symbolic links are followed.
+.It Fl P
+If the
+.Fl R
+option is specified, no symbolic links are followed.
+This is the default.
+.It Fl R
+Change the modes of the file hierarchies rooted in the files
+instead of just the files themselves.
+.It Fl v
+Cause
+.Nm chmod
+to be verbose, showing filenames as the mode is modified.
+If the
+.Fl v
+flag is specified more than once, the old and new modes of the file
+will also be printed, in both octal and symbolic notation.
+.El
+.Pp
+The
+.Fl H ,
+.Fl L
+and
+.Fl P
+options are ignored unless the
+.Fl R
+option is specified.
+In addition, these options override each other and the
+command's actions are determined by the last one specified.
+.Pp
+Only the owner of a file or the super-user is permitted to change
+the mode of a file.
+.Sh DIAGNOSTICS
+.Ex -std
+.Sh MODES
+Modes may be absolute or symbolic.
+An absolute mode is an octal number constructed from the sum of
+one or more of the following values:
+.Pp
+.Bl -tag -width 6n -compact -offset indent
+.It Li 4000
+(the set-user-ID-on-execution bit) Executable files with this bit set
+will run with effective uid set to the uid of the file owner.
+Directories with the set-user-id bit set will force all files and
+sub-directories created in them to be owned by the directory owner
+and not by the uid of the creating process, if the underlying file
+system supports this feature: see
+.Xr chmod 2
+and the
+.Ar suiddir
+option to
+.Xr mount 8 .
+.It Li 2000
+(the set-group-ID-on-execution bit) Executable files with this bit set
+will run with effective gid set to the gid of the file owner.
+.It Li 1000
+(the sticky bit)
+See
+.Xr chmod 2
+and
+.Xr sticky 8 .
+.It Li 0400
+Allow read by owner.
+.It Li 0200
+Allow write by owner.
+.It Li 0100
+For files, allow execution by owner.
+For directories, allow the owner to
+search in the directory.
+.It Li 0040
+Allow read by group members.
+.It Li 0020
+Allow write by group members.
+.It Li 0010
+For files, allow execution by group members.
+For directories, allow
+group members to search in the directory.
+.It Li 0004
+Allow read by others.
+.It Li 0002
+Allow write by others.
+.It Li 0001
+For files, allow execution by others.
+For directories allow others to
+search in the directory.
+.El
+.Pp
+For example, the absolute mode that permits read, write and execute by
+the owner, read and execute by group members, read and execute by
+others, and no set-uid or set-gid behaviour is 755
+(400+200+100+040+010+004+001).
+.Pp
+The symbolic mode is described by the following grammar:
+.Bd -literal -offset indent
+mode         ::= clause [, clause ...]
+clause       ::= [who ...] [action ...] action
+action       ::= op [perm ...]
+who          ::= a | u | g | o
+op           ::= + | \- | =
+perm         ::= r | s | t | w | x | X | u | g | o
+.Ed
+.Pp
+The
+.Ar who
+symbols ``u'', ``g'', and ``o'' specify the user, group, and other parts
+of the mode bits, respectively.
+The
+.Ar who
+symbol ``a'' is equivalent to ``ugo''.
+.Pp
+The
+.Ar perm
+symbols represent the portions of the mode bits as follows:
+.Pp
+.Bl -tag -width Ds -compact -offset indent
+.It r
+The read bits.
+.It s
+The set-user-ID-on-execution and set-group-ID-on-execution bits.
+.It t
+The sticky bit.
+.It w
+The write bits.
+.It x
+The execute/search bits.
+.It X
+The execute/search bits if the file is a directory or any of the
+execute/search bits are set in the original (unmodified) mode.
+Operations with the
+.Ar perm
+symbol ``X'' are only meaningful in conjunction with the
+.Ar op
+symbol ``+'', and are ignored in all other cases.
+.It u
+The user permission bits in the original mode of the file.
+.It g
+The group permission bits in the original mode of the file.
+.It o
+The other permission bits in the original mode of the file.
+.El
+.Pp
+The
+.Ar op
+symbols represent the operation performed, as follows:
+.Bl -tag -width 4n
+.It +
+If no value is supplied for
+.Ar perm ,
+the ``+'' operation has no effect.
+If no value is supplied for
+.Ar who ,
+each permission bit specified in
+.Ar perm ,
+for which the corresponding bit in the file mode creation mask
+is clear, is set.
+Otherwise, the mode bits represented by the specified
+.Ar who
+and
+.Ar perm
+values are set.
+.It \&\-
+If no value is supplied for
+.Ar perm ,
+the ``\-'' operation has no effect.
+If no value is supplied for
+.Ar who ,
+each permission bit specified in
+.Ar perm ,
+for which the corresponding bit in the file mode creation mask
+is clear, is cleared.
+Otherwise, the mode bits represented by the specified
+.Ar who
+and
+.Ar perm
+values are cleared.
+.It =
+The mode bits specified by the
+.Ar who
+value are cleared, or, if no who value is specified, the owner, group
+and other mode bits are cleared.
+Then, if no value is supplied for
+.Ar who ,
+each permission bit specified in
+.Ar perm ,
+for which the corresponding bit in the file mode creation mask
+is clear, is set.
+Otherwise, the mode bits represented by the specified
+.Ar who
+and
+.Ar perm
+values are set.
+.El
+.Pp
+Each
+.Ar clause
+specifies one or more operations to be performed on the mode
+bits, and each operation is applied to the mode bits in the
+order specified.
+.Pp
+Operations upon the other permissions only (specified by the symbol
+``o'' by itself), in combination with the
+.Ar perm
+symbols ``s'' or ``t'', are ignored.
+.Sh EXAMPLES OF VALID MODES
+.Bl -tag -width "u=rwx,go=u-w" -compact
+.It Li 644
+make a file readable by anyone and writable by the owner only.
+.Pp
+.It Li go-w
+deny write permission to group and others.
+.Pp
+.It Li =rw,+X
+set the read and write permissions to the usual defaults, but
+retain any execute permissions that are currently set.
+.Pp
+.It Li +X
+make a directory or file searchable/executable by everyone if it is
+already searchable/executable by anyone.
+.Pp
+.It Li 755
+.It Li u=rwx,go=rx
+.It Li u=rwx,go=u-w
+make a file readable/executable by everyone and writable by the owner only.
+.Pp
+.It Li go=
+clear all mode bits for group and others.
+.Pp
+.It Li g=u-w
+set the group bits equal to the user bits, but clear the group write bit.
+.El
+.Sh ACL MANIPULATION OPTIONS
+ACLs are manipulated using extensions to the symbolic mode
+grammar.  Each file has one ACL, containing an ordered list of entries.
+Each entry refers to a user or group, and grants or denies a set of
+permissions.
+In cases where a user and a group exist with the same name, the
+user/group name can be prefixed with "user:" or "group:" in order to
+specify the type of name.
+.Pp
+If the user or group name contains spaces you can use ':' as the delimiter
+between name and permission.
+.Pp
+The following permissions are applicable to all filesystem objects:
+.Bl -tag -width 6n -compact -offset indent
+.It delete
+Delete the item.  Deletion may be granted by either this permission
+on an object or the delete_child right on the containing directory.
+.It readattr
+Read an objects basic attributes.  This is implicitly granted if 
+the object can be looked up and not explicitly denied.
+.It writeattr
+Write an object's basic attributes.
+.It readextattr
+Read extended attributes.
+.It writeextattr
+Write extended attributes.
+.It readsecurity
+Read an object's extended security information (ACL).
+.It writesecurity
+Write an object's security information (ownership, mode, ACL).
+.It chown
+Change an object's ownership.
+.El
+.Pp
+The following permissions are applicable to directories:
+.Bl -tag -width 6n -compact -offset indent
+.It list
+List entries.
+.It search
+Look up files by name.
+.It add_file
+Add a file.
+.It add_subdirectory
+Add a subdirectory.
+.It delete_child
+Delete a contained object.  See the file delete permission above.
+.El
+.Pp
+The following permissions are applicable to non-directory filesystem objects:
+.Bl -tag -width 6n -compact -offset indent
+.It read
+Open for reading.
+.It write
+Open for writing.
+.It append
+Open for writing, but in a fashion that only allows writes into areas of 
+the file not previously written.
+.It execute
+Execute the file as a script or program.
+.El
+.Pp
+ACL inheritance is controlled with the following permissions words, which
+may only be applied to directories:
+.Bl -tag -width 6n -compact -offset indent
+.It file_inherit
+Inherit to files.
+.It directory_inherit
+Inherit to directories.
+.It limit_inherit
+This flag is only relevant to entries inherited by subdirectories; it
+causes the directory_inherit flag to be cleared in the entry that is
+inherited, preventing further nested subdirectories from also
+inheriting the entry.
+.It only_inherit
+The entry is inherited by created items but not considered when processing
+the ACL.
+.El
+.Pp
+The ACL manipulation options are as follows:
+.Bl -tag -width Ds
+.It \fB+a\fR
+The +a mode parses a new ACL entry from the next argument on
+the commandline and inserts it into the canonical location in the
+ACL. If the supplied entry refers to an identity already listed, the
+two entries are combined.
+.Pp
+\fBExamples\fR
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+ # chmod +a "admin allow write" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: admin allow write
+ # chmod +a "guest deny read" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write
+ # chmod +a "admin allow delete" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write,delete
+ # chmod +a "User 1:allow:read" file
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: User 1 allow read
+   3: admin allow write,delete
+.Pp
+The +a mode strives to maintain correct canonical form for the ACL.
+                 local deny
+                 local allow
+                 inherited deny
+                 inherited allow
+.Pp
+By default, chmod adds entries to the top of the local deny and local
+allow lists. Inherited entries are added by using the +ai mode.
+.Pp
+\fBExamples\fR
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write,delete
+   3: juser inherited deny delete
+   4: admin inherited allow delete
+   5: backup inherited deny read
+   6: admin inherited allow write-security
+ # chmod +ai "others allow read" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write,delete
+   3: juser inherited deny delete
+   4: others inherited allow read
+   5: admin inherited allow delete
+   6: backup inherited deny read
+   7: admin inherited allow write-security
+.It \fB+a#\fR
+When a specific ordering is required, the exact location at which an
+entry will be inserted is specified with the +a# mode.
+.Pp
+\fBExamples\fR
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write
+ # chmod +a# 2 "others deny read" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: others deny read
+   3: admin allow write
+.Pp
+The +ai# mode may be used to insert inherited entries at a specific
+location. Note that these modes allow non-canonical ACL ordering to
+be constructed.
+.It Fl a
+The -a mode is used to delete ACL entries. All entries exactly
+matching the supplied entry will be deleted. If the entry lists a
+subset of rights granted by an entry, only the rights listed are
+removed. Entries may also be deleted by index using the -a# mode.
+.Pp
+\fBExamples\fR
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: guest deny read
+   2: admin allow write,delete
+ # chmod -a# 1 file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: admin allow write,delete
+ # chmod -a "admin allow write" file1
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: admin allow delete
+.Pp
+Inheritance is not considered when processing the -a mode; rights and
+entries will be removed regardless of their inherited state.
+.Pp
+If the user or group name contains spaces you can use ':' as the delimiter
+.Pp
+\fBExample\fR
+ # chmod +a "User 1:allow:read" file
+.It \fB=a#\fR
+Individual entries are rewritten using the =a# mode.
+.Pp
+\fBExamples\fR
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: admin allow delete
+ # chmod =a# 1 "admin allow write,chown"
+ # ls -le
+ -rw-r--r--+ 1 juser  wheel  0 Apr 28 14:06 file1
+   owner: juser
+   1: admin allow write,chown
+.Pp
+This mode may not be used to add new entries.
+.It Fl E    
+Reads the ACL information from stdin, as a sequential list
+of ACEs, separated by newlines.  If the information parses correctly,
+the existing information is replaced.
+.It Fl C
+Returns false if any of the named files have ACLs in non-canonical order.
+.It Fl i
+Removes the 'inherited' bit from all entries in the named file(s) ACLs.
+.It Fl I
+Removes all inherited entries from the named file(s) ACL(s).
+.It Fl N
+Removes the ACL from the named file(s).
+.El
+.Sh COMPATIBILITY
+The
+.Fl v
+option is non-standard and its use in scripts is not recommended.
+.Sh SEE ALSO
+.Xr chflags 1 ,
+.Xr fsaclctl 1 ,
+.Xr install 1 ,
+.Xr chmod 2 ,
+.Xr stat 2 ,
+.Xr umask 2 ,
+.Xr fts 3 ,
+.Xr setmode 3 ,
+.Xr symlink 7 ,
+.Xr chown 8 ,
+.Xr mount 8 ,
+.Xr sticky 8
+.Sh STANDARDS
+The
+.Nm chmod
+utility is expected to be
+.St -p1003.2
+compatible with the exception of the
+.Ar perm
+symbol
+.Dq t
+which is not included in that standard.
+.Sh HISTORY
+A
+.Nm chmod
+command appeared in
+.At v1 .

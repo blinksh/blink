@@ -1,0 +1,597 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>banner</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/banner/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co banner</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Compile fix (needs sys/types.h).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>cat</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/bin/cat/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co cat</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>cksum</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/cksum/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co cksum</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Compile fix (needs stdint.h).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>col</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/col/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co col</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>colrm</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/colrm/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co colrm</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>column</string>
+		<key>OpenSourceVersion</key>
+		<string>2011-11-06</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/column/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co column</string>
+		<key>OpenSourceImportDate</key>
+		<string>2012-10-23</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>comm</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/comm/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co comm</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>csplit</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/csplit/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co csplit</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Rename getline to csplit_getline (7556902).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>cut</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/cut/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co cut</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>ed</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/bin/ed/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co ed</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Conformance fixes (3676514, 3738526, 3741027, 3751351, 3754089, 3936064, 3936075).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>ee</string>
+		<key>OpenSourceVersion</key>
+		<string>2011-12-17</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://svnweb.freebsd.org/base/head/contrib/ee/</string>
+		<key>OpenSourceSCM</key>
+		<string>svn co http://svn.freebsd.org/base/head/contrib/ee/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2015-08-04</string>
+		<key>OpenSourceModifications</key>
+		<array>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>bsd</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>expand</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/expand/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co expand</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Clarify -t option in manpage (3973603).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>fmt</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/fmt/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co fmt</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>fold</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/fold/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co fold</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>bsdgrep</string>
+		<key>OpenSourceVersion</key>
+		<string>2012-01-15</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://wiki.freebsd.org/BSDgrep</string>
+		<key>OpenSourceSCM</key>
+		<string>cvs -d anoncvs@anoncvs1.FreeBSD.org:/home/ncvs co src/usr.bin/grep</string>
+		<key>OpenSourceImportDate</key>
+		<string>2012-01-23</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>9510115 (grep.c, util.c)</string>
+			<string>WITHOUT_FASTMATCH (grep.h, grep.c, util.c)</string>
+			<string>WITHOUT_LZMA (file.c, grep.c)</string>
+			<string>file.c: casts in grep_fgetln to fix warnings</string>
+			<string>file.c: adjust mmap flags</string>
+			<string>grep.c: enable REG_ENHANCED (except for -F mode)</string>
+			<string>grep.c: disable FILE_MMAP options</string>
+			<string>util.c: basename expects char *</string>
+			<string>util.c: ignore locale for binary files (10462853)</string>
+			<string>util.c: recursive stdin warning (10290183)</string>
+			<string>util.c: -w fix (10593340)</string>
+			<string>util.c: -c -q fix (10680370)</string>
+			<string>util.c, grep.h: avoid MAX_LINE_MATCHES limitation (10511988)</string>
+			<string>grep.c: Remove -P from usage statement (13475367)</string>
+			<string>util.c: Use mbtowc instead of sscanf (20248554)</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+		<key>OpenSourceLicenseFile</key>
+		<string>bsdgrep.txt</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>head</string>
+		<key>OpenSourceVersion</key>
+		<string>2007-01-11</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/head/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co head</string>
+		<key>OpenSourceImportDate</key>
+		<string>2010-05-10</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Check ferror (6555390).</string>
+		</array>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>join</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/join/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co join</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Conformance fixes (3853584).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>lam</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/lam/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co lam</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>look</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/look/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co look</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>md5</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/sbin/md5/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co md5</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>XXX NOT MERGED YET XXX</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>nl</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/nl/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co nl</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Conformance fix in filter() (3849850).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>paste</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/paste/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co paste</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>pr</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/pr/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co pr</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Conformance fixes (3743086, 3936126).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>rev</string>
+		<key>OpenSourceVersion</key>
+		<string>2009-12-13</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/rev/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d anoncvs@anoncvs1.FreeBSD.org:/home/ncvs co rev</string>
+		<key>OpenSourceImportDate</key>
+		<string>2010-04-07</string>
+		<key>OpenSourceModifications</key>
+		<array/>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>rs</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/rs/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co rs</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Rename getline to rs_getline (7556902).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>sed</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/sed/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co sed</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Correctly document -y option (4134578).</string>
+			<string>Rewind stdin before exit (3681024).</string>
+			<string>Handle &apos;[&apos; delimiter (3733839).</string>
+			<string>Handle backslash with &apos;y&apos;, remove handy warning (3733839).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>coreutils/sort</string>
+		<key>OpenSourceVersion</key>
+		<string>coreutils-5.93</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.gnu.org/software/coreutils/</string>
+		<key>OpenSourceImportDate</key>
+		<string>2006-02-01</string>
+		<key>OpenSourceLicense</key>
+		<string>GPL</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>split</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/split/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co split</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>tail</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/tail/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co tail</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Don&apos;t read directories (3849683).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>tr</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/tr/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co tr</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Add missing character classes to man page (4115259).</string>
+			<string>Handle tr -s &apos;[a*]&apos; (3673947).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>ul</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/ul/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co ul</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>unexpand</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/unexpand/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co unexpand</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>uniq</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/uniq/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co uniq</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceModifications</key>
+		<array>
+			<string>Rename getline to uniq_getline (7556902).</string>
+		</array>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>unvis</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/unvis/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co unvis</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>vis</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/vis/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co vis</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+	<dict>
+		<key>OpenSourceProject</key>
+		<string>wc</string>
+		<key>OpenSourceVersion</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceWebsiteURL</key>
+		<string>http://www.freebsd.org/cgi/cvsweb.cgi/src/usr.bin/wc/</string>
+		<key>OpenSourceCVS</key>
+		<string>cvs -d freebsdanoncvs@anoncvs.FreeBSD.org:/home/ncvs co wc</string>
+		<key>OpenSourceImportDate</key>
+		<string>2005-09-16</string>
+		<key>OpenSourceLicense</key>
+		<string>BSD</string>
+	</dict>
+</array>
+</plist>
