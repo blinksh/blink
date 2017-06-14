@@ -202,8 +202,6 @@
           compress_main(argc, argv);
         } else if  (([cmd isEqualToString:@"gzip"]) || ([cmd isEqualToString:@"gunzip"])) {
           gzip_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"mtree"]) {
-          mtree_main(argc, argv);
         } else /* if  ([cmd isEqualToString:@"uname"]) {
             uname_main(argc, argv);
         } else if  ([cmd isEqualToString:@"pwd"]) {

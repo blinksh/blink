@@ -22,7 +22,8 @@ This fork also contains a subset of shell utilities, so you can add / remove fil
 Specifically, the commands available (as of now) are:
 
 ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
-du, chksum, chmod, chflags, chgrp, stat, 
+df, du, chksum, chmod, chflags, chgrp, stat, readlink, 
+compress, uncompress, gzip, gunzip,
 cd, setenv 
 
 You will need to compile the framework blink/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
