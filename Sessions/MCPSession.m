@@ -192,10 +192,18 @@
           chmod_main(argc, argv);
         } else if  ([cmd isEqualToString:@"du"]) {
           du_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"df"]) {
+          df_main(argc, argv);
         } else if  (([cmd isEqualToString:@"chksum"]) || ([cmd isEqualToString:@"sum"])) {
           chksum_main(argc, argv);
         } else if  (([cmd isEqualToString:@"stat"]) || ([cmd isEqualToString:@"readlink"])) {
           stat_main(argc, argv);
+        } else if  (([cmd isEqualToString:@"compress"]) || ([cmd isEqualToString:@"uncompress"])) {
+          compress_main(argc, argv);
+        } else if  (([cmd isEqualToString:@"gzip"]) || ([cmd isEqualToString:@"gunzip"])) {
+          gzip_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"mtree"]) {
+          mtree_main(argc, argv);
         } else /* if  ([cmd isEqualToString:@"uname"]) {
             uname_main(argc, argv);
         } else if  ([cmd isEqualToString:@"pwd"]) {
@@ -230,11 +238,14 @@
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }
-        for (unsigned i = 0; i < argc; i++)
-        {
-          free(argv[i]);
-        }
-        free(argv);
+        // Some commands free argv
+        // if (![cmd isEqualToString:@"du"]) {
+          for (unsigned i = 0; i < argc; i++)
+          {
+            free(argv[i]);
+          }
+          free(argv);
+        //}
       }
     }
 
