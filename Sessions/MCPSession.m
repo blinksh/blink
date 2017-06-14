@@ -41,7 +41,7 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 
-#include "freebsd_utils.h"
+#include "file_cmds_ios.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -168,7 +168,7 @@
         stdout = _stream.control.termout;
         stderr = _stream.control.termout;
         // Commands from GNU coreutils: ls, rm, cp...
-        /* if ([cmd isEqualToString:@"ls"]) {
+        if ([cmd isEqualToString:@"ls"]) {
           ls_main(argc, argv);
         } else if  ([cmd isEqualToString:@"touch"]) {
           touch_main(argc, argv);
@@ -176,21 +176,27 @@
           rm_main(argc, argv);
         } else if  ([cmd isEqualToString:@"cp"]) {
           cp_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"id"]) {
-          id_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"groups"]) {
-          groups_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"ln"]) {
+        } else if  (([cmd isEqualToString:@"ln"]) || ([cmd isEqualToString:@"link"])) {
           ln_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"realpath"]) {
-          realpath_main(argc, argv);
         } else if  ([cmd isEqualToString:@"mv"]) {
             mv_main(argc, argv);
         } else if  ([cmd isEqualToString:@"mkdir"]) {
             mkdir_main(argc, argv);
         } else if  ([cmd isEqualToString:@"rmdir"]) {
             rmdir_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"uname"]) {
+        } else if  (([cmd isEqualToString:@"chown"]) || ([cmd isEqualToString:@"chgrp"])) {
+          chown_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"chflags"]) {
+          chflags_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"chmod"]) {
+          chmod_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"du"]) {
+          du_main(argc, argv);
+        } else if  (([cmd isEqualToString:@"chksum"]) || ([cmd isEqualToString:@"sum"])) {
+          chksum_main(argc, argv);
+        } else if  (([cmd isEqualToString:@"stat"]) || ([cmd isEqualToString:@"readlink"])) {
+          stat_main(argc, argv);
+        } else /* if  ([cmd isEqualToString:@"uname"]) {
             uname_main(argc, argv);
         } else if  ([cmd isEqualToString:@"pwd"]) {
           pwd_main(argc, argv);
@@ -200,8 +206,13 @@
           printenv_main(argc, argv);
         } else if  ([cmd isEqualToString:@"whoami"]) {
           whoami_main(argc, argv);
-          // Commands that have to be inside the "shell"
-        } else */ if  ([cmd isEqualToString:@"setenv"]) {
+        } else if  ([cmd isEqualToString:@"id"]) {
+            id_main(argc, argv);
+          } else if  ([cmd isEqualToString:@"groups"]) {
+              groups_main(argc, argv);
+          } else
+                // Commands that have to be inside the "shell"
+                */ if  ([cmd isEqualToString:@"setenv"]) {
           // setenv VARIABLE value
           setenv(argv[1], argv[2], 1);
         } else if  ([cmd isEqualToString:@"cd"]) {
