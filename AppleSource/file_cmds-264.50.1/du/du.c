@@ -111,11 +111,11 @@ struct ignentry {
 static int	linkchk(FTSENT *);
 static int	dirlinkchk(FTSENT *);
 static void	usage(void);
-void		prthumanval(double);
-unit_t		unit_adjust(double *);
-void		ignoreadd(const char *);
-void		ignoreclean(void);
-int		ignorep(FTSENT *);
+static void		prthumanval(double);
+static unit_t		unit_adjust(double *);
+static void		ignoreadd(const char *);
+static void		ignoreclean(void);
+static int		ignorep(FTSENT *);
 
 int
 du_main(int argc, char *argv[])

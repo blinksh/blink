@@ -39,8 +39,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1980, 1990, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1980, 1990, 1993, 1994\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #ifndef lint
@@ -74,8 +74,8 @@ __used static const char rcsid[] =
 #include <libutil.h>
 
 #ifdef __APPLE__
-#include "get_compat.h"
-#else
+// #include "get_compat.h"
+// #else
 #define COMPAT_MODE(func, mode) 1
 #endif
 
@@ -118,19 +118,20 @@ typedef enum { NONE, KILO, MEGA, GIGA, TERA, PETA, UNIT_MAX } unit_t;
 
 unit_t unitp [] = { NONE, KILO, MEGA, GIGA, TERA, PETA };
 
-int	  bread(off_t, void *, int);
+static int	  bread(off_t, void *, int);
 int	  checkvfsname(const char *, char **);
-char	 *getmntpt(char *);
-int	  int64width(int64_t);
-char	 *makenetvfslist(void);
+static char	 *getmntpt(char *);
+static int	  int64width(int64_t);
+static char	 *makenetvfslist(void);
 char	**makevfslist(const char *);
-void	  prthuman(struct statfs *, uint64_t);
-void	  prthumanval(int64_t);
-void	  prtstat(struct statfs *, struct maxwidths *);
-long	  regetmntinfo(struct statfs **, long, char **);
-unit_t	  unit_adjust(double *);
-void	  update_maxwidths(struct maxwidths *, struct statfs *);
-void	  usage(void);
+static void	  prthuman(struct statfs *, uint64_t);
+static void	  prthumanval(int64_t);
+static void	  prtstat(struct statfs *, struct maxwidths *);
+static long	  regetmntinfo(struct statfs **, long, char **);
+static unit_t	  unit_adjust(double *);
+static void	  update_maxwidths(struct maxwidths *, struct statfs *);
+static void	  usage(void);
+#define exit return
 
 int	aflag = 0, hflag, iflag, nflag;
 
@@ -140,7 +141,7 @@ static __inline int imax(int a, int b)
 }
 
 int
-main(int argc, char *argv[])
+df_main(int argc, char *argv[])
 {
 	struct stat stbuf;
 	struct statfs statfsbuf, *mntbuf;
@@ -149,6 +150,10 @@ main(int argc, char *argv[])
 	long mntsize;
 	int ch, i, rv, tflag = 0, kludge_tflag = 0;
 	int kflag = 0;
+    
+    // always init the flags:
+    aflag = hflag = iflag = nflag = 0;
+    
 	const char *options = "abgHhiklmnPt:T:";
 	if (COMPAT_MODE("bin/df", "unix2003")) {
 		/* Unix2003 requires -t be "include total capacity". which df
@@ -204,8 +209,12 @@ main(int argc, char *argv[])
 			hflag = 0;
 			break;
 		case 'l':
-			if (tflag)
-				errx(1, "-l and -T are mutually exclusive.");
+            if (tflag) {
+				//errx(1, "-l and -T are mutually exclusive.");
+                warnx("-l and -T are mutually exclusive.");
+                fprintf(stderr, "\r");
+                return 0;
+            }
 			if (vfslist != NULL)
 				break;
 			vfslist = makevfslist(makenetvfslist());
@@ -225,10 +234,18 @@ main(int argc, char *argv[])
 			}
 		case 'T':
 			if (vfslist != NULL) {
-				if (tflag)
-					errx(1, "only one -%c option may be specified", ch);
-				else
-					errx(1, "-l and -%c are mutually exclusive.", ch);
+                if (tflag) {
+					// errx(1, "only one -%c option may be specified", ch);
+                    warnx("only one -%c option may be specified", ch);
+                    fprintf(stderr, "\r");
+                    return 0;
+                }
+                else {
+					// errx(1, "-l and -%c are mutually exclusive.", ch);
+                    warnx("-l and -%c are mutually exclusive.", ch);
+                    fprintf(stderr, "\r");
+                    return 0;
+                }
 			}
 			tflag++;
 			vfslist = makevfslist(optarg);
@@ -236,6 +253,7 @@ main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
+            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -270,11 +288,13 @@ main(int argc, char *argv[])
 		if (stat(*argv, &stbuf) < 0) {
 			if ((mntpt = getmntpt(*argv)) == 0) {
 				warn("%s", *argv);
+                fprintf(stderr, "\r");
 				rv = 1;
 				continue;
 			}
 		} else if (S_ISCHR(stbuf.st_mode) || S_ISBLK(stbuf.st_mode)) {
 			warnx("%s: Raw devices not supported", *argv);
+            fprintf(stderr, "\r");
 			rv = 1;
 			continue;
 		} else
@@ -285,6 +305,7 @@ main(int argc, char *argv[])
 		 */
 		if (statfs(mntpt, &statfsbuf) < 0) {
 			warn("%s", mntpt);
+            fprintf(stderr, "\r");
 			rv = 1;
 			continue;
 		}
@@ -419,6 +440,7 @@ static intmax_t fsbtoblk(int64_t num, uint64_t fsbs, u_long bs, char *fs)
 {
 	if (num < 0) {
 		warnx("negative filesystem block count/size from fs %s", fs);
+        fprintf(stderr, "\r");
 		return 0;
 	} else if ((fsbs != 0) && (fsbs < bs)) {
 		return (num / (intmax_t) (bs / fsbs));
@@ -465,7 +487,7 @@ prtstat(struct statfs *sfsp, struct maxwidths *mwp)
 			(void)printf(" %*s %*s %%iused", mwp->iused - 2,
 			    "iused", mwp->ifree, "ifree");
 		}
-		(void)printf("  Mounted on\n");
+		(void)printf("  Mounted on\n\r");
 	}
 
 	(void)printf("%-*s", mwp->mntfrom, sfsp->f_mntfromname);
@@ -505,7 +527,7 @@ prtstat(struct statfs *sfsp, struct maxwidths *mwp)
 		    (double)used / (double)inodes * 100.0);
 	} else
 		(void)printf("  ");
-	(void)printf("  %s\n", sfsp->f_mntonname);
+	(void)printf("  %s\n\r", sfsp->f_mntonname);
 }
 
 /*
@@ -559,8 +581,8 @@ usage(void)
 
 	char *t_flag = COMPAT_MODE("bin/df", "unix2003") ? "[-t]" : "[-t type]";
 	(void)fprintf(stderr,
-	    "usage: df [-b | -H | -h | -k | -m | -g | -P] [-ailn] [-T type] %s [filesystem ...]\n", t_flag);
-	exit(EX_USAGE);
+	    "\rusage: df [-b | -H | -h | -k | -m | -g | -P] [-ailn] [-T type] %s [filesystem ...]\n\r", t_flag);
+	// exit(EX_USAGE);
 }
 
 char *
@@ -582,11 +604,13 @@ makenetvfslist(void)
 	if (sysctl(mib, 3,
 	    &maxvfsconf, &miblen, NULL, 0)) {
 		warn("sysctl failed");
+        fprintf(stderr, "\r");
 		return (NULL);
 	}
 
 	if ((listptr = malloc(sizeof(char*) * maxvfsconf)) == NULL) {
 		warnx("malloc failed");
+        fprintf(stderr, "\r");
 		return (NULL);
 	}
 
@@ -596,6 +620,7 @@ makenetvfslist(void)
 			listptr[cnt++] = strdup(ptr->vfc_name);
 			if (listptr[cnt-1] == NULL) {
 				warnx("malloc failed");
+                fprintf(stderr, "\r");
 				return (NULL);
 			}
 		}
@@ -610,6 +635,7 @@ makenetvfslist(void)
 	                        if (listptr[cnt-1] == NULL) {
 					free(listptr);
 	                                warnx("malloc failed");
+                                    fprintf(stderr, "\r");
 	                                return (NULL);
 	                        }
 	                }
@@ -619,8 +645,10 @@ makenetvfslist(void)
 
 	if (cnt == 0 ||
 	    (str = malloc(sizeof(char) * (32 * cnt + cnt + 2))) == NULL) {
-		if (cnt > 0)
+        if (cnt > 0) {
 			warnx("malloc failed");
+            fprintf(stderr, "\r");
+        }
 		free(listptr);
 		return (NULL);
 	}

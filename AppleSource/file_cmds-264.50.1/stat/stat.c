@@ -217,7 +217,8 @@ stat_main(int argc, char *argv[])
 	statfmt = NULL;
 	timefmt = NULL;
 
-	if (strcmp(getprogname(), "readlink") == 0) {
+    // if (strcmp(getprogname(), "readlink") == 0) {
+	if (strcmp(argv[0], "readlink") == 0) {
 		am_readlink = 1;
 		options = "n";
 		synopsis = "[-n] [file ...]";

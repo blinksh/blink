@@ -1,4 +1,4 @@
-#include <CommonCrypto/CommonDigestSPI.h>
+// #include <CommonCrypto/CommonDigestSPI.h>
 
 #define kNone "none"
 
@@ -9,7 +9,7 @@ extern const int kSHA256NullTerminatedBuffLen;
 #define RIPEMD160_File(f, b) Digest_File(kCCDigestRMD160, f, b)
 #define SHA256_File(f, b)    Digest_File(kCCDigestSHA256, f, b)
 
-char *Digest_File(CCDigestAlg algorithm, const char *filename, char *buf);
+// char *Digest_File(CCDigestAlg algorithm, const char *filename, char *buf);
 
-char *SHA256_Path_XATTRs(char *path, char *buf);
-char *SHA256_Path_ACL(char *path, char *buf);
+// char *SHA256_Path_XATTRs(char *path, char *buf);
+// char *SHA256_Path_ACL(char *path, char *buf);

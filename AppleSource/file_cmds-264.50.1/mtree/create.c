@@ -100,10 +100,10 @@ cwalk(void)
 		(void)time(&cl);
 		(void)gethostname(host, sizeof(host));
 		(void)printf(
-		    "#\t   user: %s\n#\tmachine: %s\n",
+		    "#\t   user: %s\n\r#\tmachine: %s\n\r",
 		    getlogin(), host);
 		(void)printf(
-		    "#\t   tree: %s\n#\t   date: %s",
+		    "#\t   tree: %s\n\r#\t   date: %s",
 		    fullpath, ctime(&cl));
 	}
 
@@ -121,10 +121,10 @@ cwalk(void)
 		switch(p->fts_info) {
 		case FTS_D:
 			if (!dflag)
-				(void)printf("\n");
+				(void)printf("\n\r");
 			if (!nflag) {
 				path = escape_path(p->fts_path);
-				(void)printf("# %s\n", path);
+				(void)printf("# %s\n\r", path);
 				free(path);
 			}
 			statd(t, p, &uid, &gid, &mode, &flags, &xattrs, &acl);
@@ -133,12 +133,12 @@ cwalk(void)
 		case FTS_DP:
 			if (!nflag && (p->fts_level > 0)) {
 				path = escape_path(p->fts_path);
-				(void)printf("%*s# %s\n", indent, "", path);
+				(void)printf("%*s# %s\n\r", indent, "", path);
 				free(path);
 			}
-			(void)printf("%*s..\n", indent, "");
+			(void)printf("%*s..\n\r", indent, "");
 			if (!dflag)
-				(void)printf("\n");
+				(void)printf("\n\r");
 			break;
 		case FTS_DNR:
 		case FTS_ERR:
@@ -319,7 +319,7 @@ statf(int indent, FTSENT *p)
 	if (keys & F_XATTRS) {
 		char *digest, buf[kSHA256NullTerminatedBuffLen];
 		
-		digest = SHA256_Path_XATTRs(p->fts_accpath, buf);
+		// digest = SHA256_Path_XATTRs(p->fts_accpath, buf);
 		if (digest && (strcmp(digest, xattrs) != 0)) {
 			output(indent, &offset, "xattrsdigest=%s", digest);
 		}
@@ -330,13 +330,13 @@ statf(int indent, FTSENT *p)
 	if (keys & F_ACL) {
 		char *digest, buf[kSHA256NullTerminatedBuffLen];
 		
-		digest = SHA256_Path_ACL(p->fts_accpath, buf);
+		// digest = SHA256_Path_ACL(p->fts_accpath, buf);
 		if (digest && (strcmp(digest, acl) != 0)) {
 			output(indent, &offset, "acldigest=%s", digest);
 		}
 	}
 	
-	(void)putchar('\n');
+	(void)putchar('\n\r');
 }
 
 #define	MAXGID	5000
@@ -467,7 +467,7 @@ statd(FTS *t, FTSENT *parent, uid_t *puid, gid_t *pgid, mode_t *pmode, u_long *p
 			(void)printf(" xattrsdigest=%s", savexattrs);
 		if (keys & F_ACL)
 			(void)printf(" acldigest=%s", saveacl);
-		(void)printf("\n");
+		(void)printf("\n\r");
 		*puid = saveuid;
 		*pgid = savegid;
 		*pmode = savemode;
@@ -501,7 +501,7 @@ output(int indent, int *offset, const char *fmt, ...)
 	va_end(ap);
 
 	if (*offset + strlen(buf) > MAXLINELEN - 3) {
-		(void)printf(" \\\n%*s", INDENTNAMELEN + indent, "");
+		(void)printf(" \\\n\r%*s", INDENTNAMELEN + indent, "");
 		*offset = INDENTNAMELEN + indent;
 	}
 	*offset += printf(" %s", buf) + 1;

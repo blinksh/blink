@@ -73,13 +73,13 @@ __used static const char rcsid[] =
 int dflag, eval, fflag, iflag, Pflag, vflag, Wflag, stdin_ok;
 uid_t uid;
 
-int	check __P((char *, char *, struct stat *));
-int checkdir __P((char *));
-int		yes_or_no __P((void));
-void	checkdot __P((char **));
-void	rm_file __P((char **));
-void	rm_overwrite __P((char *, struct stat *));
-void	rm_tree __P((char **));
+static int	check __P((char *, char *, struct stat *));
+static int checkdir __P((char *));
+static int		yes_or_no __P((void));
+static void	checkdot __P((char **));
+static void	rm_file __P((char **));
+static void	rm_overwrite __P((char *, struct stat *));
+static void	rm_tree __P((char **));
 static void	usage __P((void));
 
 /*

@@ -28,7 +28,10 @@ extern int rmdir_main(int argc, char *argv[]);
 
 // Might be useful
 extern int du_main(int argc, char *argv[]);
+extern int df_main(int argc, char *argv[]);
 extern int chksum_main(int argc, char *argv[]);
+extern int compress_main(int argc, char *argv[]);
+extern int gzip_main(int argc, char *argv[]);
 
 // Most likely useless in a sandboxed environment, but provided nevertheless
 extern int chmod_main(int argc, char *argv[]);
@@ -37,6 +40,8 @@ extern int chown_main(int argc, char *argv[]);
 extern int stat_main(int argc, char *argv[]);
 
 // ??? Really useless in a sandboxed environment ???
-// ipcrm, ipcs, mkfifo, mknod, pathchk,
-// rmt (remote magtape protocol)
+// install, ipcrm, ipcs, mkfifo, mknod, pathchk, mtree
+// rmt (remote magtape protocol),
+// dd, zcat, gzcat (because it takes stdin / stdout)
+// pax, shar,
 // But feasible on request (please provide scenario and explanations)

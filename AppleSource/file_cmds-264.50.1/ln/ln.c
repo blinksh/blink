@@ -60,10 +60,10 @@ int	iflag;				/* Interactive mode. */
 int	sflag;				/* Symbolic, not hard, link. */
 int	vflag;				/* Verbose output. */
 					/* System link call. */
-int (*linkf)(const char *, const char *);
+static int (*linkf)(const char *, const char *);
 char	linkch;
 
-int	linkit(const char *, const char *, int);
+static int	linkit(const char *, const char *, int);
 static void	usage(void);
 
 int

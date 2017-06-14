@@ -30,8 +30,8 @@
 #if 0
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1989, 1990, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1989, 1990, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #ifndef lint
@@ -60,14 +60,17 @@ char fullpath[MAXPATHLEN];
 static void usage(void);
 
 int
-main(int argc, char *argv[])
+mtree_main(int argc, char *argv[])
 {
 	int ch;
 	char *dir, *p;
 	int status;
 	FILE *spec1, *spec2;
 
-	dir = NULL;
+    // initialize all flags:
+    cflag = dflag = eflag = iflag = nflag = qflag = rflag = sflag = uflag = Uflag = wflag = 0;
+
+    dir = NULL;
 	keys = KEYDEFAULT;
 	init_excludes();
 	spec1 = stdin;
@@ -87,14 +90,23 @@ main(int argc, char *argv[])
 		case 'f':
 			if (spec1 == stdin) {
 				spec1 = fopen(optarg, "r");
-				if (spec1 == NULL)
-					err(1, "%s", optarg);
+                if (spec1 == NULL) {
+					// err(1, "%s", optarg);
+                    warn("%s", optarg);
+                    fprintf(stderr, "\r");
+                    return 0;
+                }
 			} else if (spec2 == NULL) {
 				spec2 = fopen(optarg, "r");
-				if (spec2 == NULL)
-					err(1, "%s", optarg);
-			} else
-				usage();
+                if (spec2 == NULL) {
+                    // err(1, "%s", optarg);
+                    warn("%s", optarg);
+                    fprintf(stderr, "\r");
+                    return 0;
+                }
+            } else {
+                usage(); return 0;
+            }
 			break;
 		case 'i':
 			iflag = 1;
@@ -133,8 +145,12 @@ main(int argc, char *argv[])
 		case 's':
 			sflag = 1;
 			crc_total = (uint32_t)~strtoul(optarg, &p, 0);
-			if (*p)
-				errx(1, "illegal seed value -- %s", optarg);
+                if (*p) {
+                    //errx(1, "illegal seed value -- %s", optarg);
+                    warn("illegal seed value -- %s", optarg);
+                    fprintf(stderr, "\r");
+                    return 0;
+                }
 			break;
 		case 'U':
 			Uflag = 1;
@@ -154,23 +170,31 @@ main(int argc, char *argv[])
 			break;
 		case '?':
 		default:
-			usage();
+            usage(); return 0;
 		}
 	argc -= optind;
 //	argv += optind;
 
-	if (argc)
-		usage();
+    if (argc) {
+		usage(); return 0;
+    }
 
-	if (dir && chdir(dir))
+    if (dir && chdir(dir)) {
 		err(1, "%s", dir);
-
-	if ((cflag || sflag) && !getwd(fullpath))
-		errx(1, "%s", fullpath);
+        warn("%s", dir);
+        fprintf(stderr, "\r");
+        return 0;
+    }
+    if ((cflag || sflag) && !getwd(fullpath)) {
+		// errx(1, "%s", fullpath);
+        warnx("%s", fullpath);
+        fprintf(stderr, "\r");
+        return 0;
+    }
 
 	if (cflag) {
 		cwalk();
-		exit(0);
+		return(0);
 	}
 	if (spec2 != NULL)
 		status = mtree_specspec(spec1, spec2);
@@ -178,14 +202,14 @@ main(int argc, char *argv[])
 		status = mtree_verifyspec(spec1);
 	if (Uflag & (status == MISMATCHEXIT))
 		status = 0;
-	exit(status);
+	return (status);
 }
 
 static void
 usage(void)
 {
 	(void)fprintf(stderr,
-"usage: mtree [-LPUcdeinqruxw] [-f spec] [-f spec] [-K key] [-k key] [-p path] [-s seed]\n"
-"\t[-X excludes]\n");
-	exit(1);
+"\rusage: mtree [-LPUcdeinqruxw] [-f spec] [-f spec] [-K key] [-k key] [-p path] [-s seed]\n\r"
+"\t[-X excludes]\n\r");
+	// exit(1);
 }
