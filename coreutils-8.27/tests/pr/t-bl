@@ -1,77 +1,0 @@
-1   FF-Test: FF's in Text                      V
-2   Options -n;
-3   numbering lines with skiped pages;
-4   numbering blanc lines (no. 5,12,13,23,28)
-
-6 3456789 123456789 123456789 123456789 12345678
-7   3 Columns downwards ..., <= 5 lines per page
-8   
-9   
-10  zzzzzzzzzzzzzzzzzzzzzzzzzz123456789
-1                                       12345678
-          
-
-14 456789 123456789 123456789 123456789
-15 xyzxyzxyz XYZXYZXYZ abcabcab
-16 456789 123456789 xyzxyzxyz XYZXYZXYZ
-7                                       12345678
-8                                       12345678
-9 3456789 ab
-20 DEFGHI 123
-1                                       12345678
-
-
-4                                       12345678
-5                                       12345678
-6                                       12345678
-27 no truncation before FF; (r_l-test):
-
-29 xyzxyzxyz XYZXYZXYZ abcabcab
-30 456789 123456789 xyzxyzxyz XYZXYZXYZ
-1                                       12345678
-2 3456789 abcdefghi
-3                                       12345678
-4                                       12345678
-
-6                                       12345678
-7                                       12345678
-8                                       12345678
-9 3456789 abcdefghi
-40 DEFGHI 123456789
-41 yzxyzxyz XYZXYZXYZ abcabcab 
-42 456789 123456789 abcdefghi ABCDEDFHI
-43 xyzxyzxyz XYZXYZXYZ abcabcab
-44 456789 123456789 xyzxyzxyz XYZXYZXYZ
-5                                       12345678
-6                                       12345678
-7                                       12345678
-8                                       12345678
-9                                       12345678
-50                                      12345678
-1                                       12345678
-
-
-
-55 yzxyzxyz XYZXYZXYZ abcabcab 
-56 456789 123456789 abcdefghi ABCDEDFHI
- 
-58 456789 123456789 xyzxyzxyz XYZXYZXYZ
-9                                       12345678
-60 DEFGHI 123456789
-61 yzxyzxyz XYZXYZXYZ abcabcab 
-62 456789 123456789 abcdefghi ABCDEDFHI
-63 xyzxyzxyz XYZXYZXYZ abcabcab
-64 456789 123456789 xyzxyzxyz XYZXYZXYZ
-5                                       12345678
-6                                       12345678
-7                                       12345678
-8                                       12345678
-9                                       12345678
-70  456789 123456789 abcdefghi ABCDEDFHI
-1                                       12345678
-
-
-
-74 yzxyzxyz XYZXYZXYZ abcabcab 
-75 456789 123456789 abcdefghi ABCDEDFHI
-

@@ -1,72 +1,0 @@
-
-
--- Date/Time --                         x                         Page 1
-
-
-1<<<  -Test: FF's in Text		     >>>	6<<<  -Arangements: One Empty Page  >>>	1<<<  >>>
-2<<<  -b -3 / -a -3 / ...  >>>	7<<<  \f\f\n; text\f\n\ftext; \f\ftext;	>>>	2<<<  >>>
-3<<<  >>>	8<<<	f\f\n; \f\n\f\n;  >>>	3<<<  truncation before FF; r_r_o_l-test:  >>>
-4<<<  123456789 123456789 123456789 12345678  >>>	9<<<	>>> 	14<<<  123456789 123456789 123456789  >>>
-	10<<<	>>>
-
-
--- Date/Time --                         x                         Page 2
-
-
-
-
-
--- Date/Time --                         x                         Page 3
-
-
-15<<<  xyzxyzxyz XYZXYZXYZ abcabcab  >>>	20<<<	>>>	5<<<	 >>>
-16<<<  123456789 xyzxyzxyz XYZXYZXYZ  >>>	1<<<	>>>	6<<<	>>>
-7<<<  >>>		27<<<	truncation before FF; (r_l-test):  >>>
-8<<<  >>>		28<<<	trunc
-9<<<  >>>	4<<<	>>>
-
-
--- Date/Time --                         x                         Page 4
-
-
-
-
-
--- Date/Time --                         x                         Page 5
-
-
-29<<<xyzxyzxyz XYZXYZXYZ abcabcab  >>>	4<<<  >>>	9<<<	abcdefghi  >>>
-30<<<  123456789 xyzxyzxyz XYZXYZXYZ  >>>	5<<<	>>>	40<<<	 123456789  >>>
-1<<<  >>>	6<<<	>>>	41<<<	 XYZXYZXYZ abcabcab   >>>
-2<<<  abcdefghi	 >>>	7<<<  >>>	42<<<	 123456789 abcdefghi ABCDEDFHI	>>>
-3<<<  >>>	8<<<	>>>
-
-
--- Date/Time --                         x                         Page 6
-
-
-
-
-
--- Date/Time --                         x                         Page 7
-
-
-
-
-
--- Date/Time --                         x                         Page 8
-
-
-43<<<  xyzxyzxyz XYZXYZXYZ abcabcab  >>>	8<<<  >>>	3<<<	>>>
-44<<<  123456789 xyzxyzxyz XYZXYZXYZ  >>>	9<<<	>>>	4<<<	>>>
-5<<<  >>>	50<<<	 >>>	55<<<  XYZXYZXYZ abcabcab  >>>
-6<<<  >>>	1<<<	>>>	56<<<	 123456789 abcdefghi ABCDEDFHI	>>>
-7<<<  >>>	2<<<	>>>
-
-
--- Date/Time --                         x                         Page 9
-
-
-57<<<  xyzxyzxyz XYZXYZXYZ abcabcab  >>>	9<<<  >>>	60<<<	 123456789  >>>
-58<<<  123456789 xyzxyzxyz XYZXYZXYZ  >>>
-

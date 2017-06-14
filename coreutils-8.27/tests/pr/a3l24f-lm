@@ -1,72 +1,0 @@
-
-
--- Date/Time --                         x                         Page 1
-
-
-1<<<  -Test: FF's in Te 2<<<  -b -3 / -a -3 / . 3<<<  >>>
-4<<<  123456789 1234567 			6<<<  -Arangements: One
-7<<<  \f\f\n; text\f\n\ 8<<<  f\f\n; \f\n\f\n;	9<<<  >>>
-10<<<  >>>		1<<<  >>>		2<<<  >>>
-3<<<  truncation before 14<<<  123456789 123456
-
-
--- Date/Time --                         x                         Page 2
-
-
-
-
-
--- Date/Time --                         x                         Page 3
-
-
-15<<<  xyzxyzxyz XYZXYZ 16<<<  123456789 xyzxyz 7<<<  >>>
-8<<<  >>>		9<<<  >>>		20<<<  >>>
-1<<<  >>>					
-4<<<  >>>		5<<<  >>>		6<<<  >>>
-27<<<  truncation befor 28<<<  trunc
-
-
--- Date/Time --                         x                         Page 4
-
-
-
-
-
--- Date/Time --                         x                         Page 5
-
-
-29<<<xyzxyzxyz XYZXYZXY 30<<<  123456789 xyzxyz 1<<<  >>>
-2<<<  abcdefghi	 >>>	3<<<  >>>		4<<<  >>>
-5<<<  >>>		6<<<  >>>		7<<<  >>>
-8<<<  >>>		9<<<  abcdefghi	 >>>	40<<<  123456789  >>>
-41<<<  XYZXYZXYZ abcabc 42<<<  123456789 abcdef
-
-
--- Date/Time --                         x                         Page 6
-
-
-
-
-
--- Date/Time --                         x                         Page 7
-
-
-
-
-
--- Date/Time --                         x                         Page 8
-
-
-43<<<  xyzxyzxyz XYZXYZ 44<<<  123456789 xyzxyz 5<<<  >>>
-6<<<  >>>		7<<<  >>>		8<<<  >>>
-9<<<  >>>		50<<<  >>>		1<<<  >>>
-2<<<  >>>		3<<<  >>>		4<<<  >>>
-55<<<  XYZXYZXYZ abcabc 56<<<  123456789 abcdef
-
-
--- Date/Time --                         x                         Page 9
-
-
-57<<<  xyzxyzxyz XYZXYZ 58<<<  123456789 xyzxyz 9<<<  >>>
-60<<<  123456789  >>>
-

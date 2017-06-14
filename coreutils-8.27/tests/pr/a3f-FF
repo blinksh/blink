@@ -1,72 +1,0 @@
-
-
--- Date/Time --                         x                         Page 1
-
-
-1   FF-Test: FF's in Te 2   Options -b -3 / -a	3   -------------------
-4 3456789 123456789 123 5   3 Columns downwards 6   FF-Arangements: One
-7   text\f\f\n; text\f\ 8   \f\f\n; \f\n\f\n;	9
-10  zzzzzzzzzzzzzzzzzzz 1			2
-3 line truncation befor 14 456789 123456789 123
-
-
--- Date/Time --                         x                         Page 2
-
-
-
-
-
--- Date/Time --                         x                         Page 3
-
-
-15 xyzxyzxyz XYZXYZXYZ	16 456789 123456789 xyz 7
-8			9 3456789 ab		20 DEFGHI 123
-1			2			3
-4			5			6
-27 no truncation before 28 no trunc
-
-
--- Date/Time --                         x                         Page 4
-
-
-
-
-
--- Date/Time --                         x                         Page 5
-
-
-29 xyzxyzxyz XYZXYZXYZ	30 456789 123456789 xyz 1
-2 3456789 abcdefghi	3			4
-5			6			7
-8			9 3456789 abcdefghi	40 DEFGHI 123456789
-41 yzxyzxyz XYZXYZXYZ a 42 456789 123456789 abc
-
-
--- Date/Time --                         x                         Page 6
-
-
-
-
-
--- Date/Time --                         x                         Page 7
-
-
-
-
-
--- Date/Time --                         x                         Page 8
-
-
-43 xyzxyzxyz XYZXYZXYZ	44 456789 123456789 xyz 5
-6			7			8
-9			50			1
-2			3			4
-55 yzxyzxyz XYZXYZXYZ a 56 456789 123456789 abc
-
-
--- Date/Time --                         x                         Page 9
-
-
-57 xyzxyzxyz XYZXYZXYZ	58 456789 123456789 xyz 9
-60 DEFGHI 123456789
-
