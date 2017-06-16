@@ -42,6 +42,7 @@
 #import "SSHSession.h"
 
 #include "file_cmds_ios.h"
+#include "shell_cmds_ios.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -202,23 +203,24 @@
           compress_main(argc, argv);
         } else if  (([cmd isEqualToString:@"gzip"]) || ([cmd isEqualToString:@"gunzip"])) {
           gzip_main(argc, argv);
-        } else /* if  ([cmd isEqualToString:@"uname"]) {
-            uname_main(argc, argv);
+          // Commands from Apple shell_cmds:
+        } else if  ([cmd isEqualToString:@"printenv"]) {
+            printenv_main(argc, argv);
         } else if  ([cmd isEqualToString:@"pwd"]) {
           pwd_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"uname"]) {
+          uname_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"date"]) {
+          date_main(argc, argv);
         } else if  ([cmd isEqualToString:@"env"]) {
           env_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"printenv"]) {
-          printenv_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"whoami"]) {
-          whoami_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"id"]) {
+        } else if  (([cmd isEqualToString:@"id"])  || ([cmd isEqualToString:@"groups"]) || ([cmd isEqualToString:@"whoami"])) {
             id_main(argc, argv);
-          } else if  ([cmd isEqualToString:@"groups"]) {
-              groups_main(argc, argv);
+          } else if  (([cmd isEqualToString:@"uptime"]) || ([cmd isEqualToString:@"w"])) {
+              w_main(argc, argv);
           } else
                 // Commands that have to be inside the "shell"
-                */ if  ([cmd isEqualToString:@"setenv"]) {
+                 if  ([cmd isEqualToString:@"setenv"]) {
           // setenv VARIABLE value
           setenv(argv[1], argv[2], 1);
         } else if  ([cmd isEqualToString:@"cd"]) {

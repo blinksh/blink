@@ -140,6 +140,7 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		222A8B9A1EF3DE01005D3D23 /* shell_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
 		22AEF8391EF147B300798591 /* file_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AEF8381EF147B300798591 /* file_cmds_ios.framework */; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
@@ -373,6 +374,8 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		222A8B931EF3DD6F005D3D23 /* shell_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shell_cmds_ios.h; sourceTree = "<group>"; };
+		222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = shell_cmds_ios.framework; sourceTree = "<group>"; };
 		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		22AEF8381EF147B300798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = file_cmds_ios.framework; path = "../../../../Library/Developer/Xcode/DerivedData/file_cmds_ios-andyvlctanwgigdnzqwxnwojkidn/Build/Products/Debug-iphoneos/file_cmds_ios.framework"; sourceTree = "<group>"; };
 		22AEF83D1EF147C400798591 /* file_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = file_cmds_ios.h; path = "AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios/file_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
@@ -478,6 +481,7 @@
 				22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
+				222A8B9A1EF3DE01005D3D23 /* shell_cmds_ios.framework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
@@ -552,9 +556,11 @@
 			isa = PBXGroup;
 			children = (
 				22AEF83D1EF147C400798591 /* file_cmds_ios.h */,
+				222A8B931EF3DD6F005D3D23 /* shell_cmds_ios.h */,
 				22C6715F1EEC3C8400A44443 /* libiconv.tbd */,
 				22C6715B1EEC370D00A44443 /* libc.tbd */,
 				22AEF8381EF147B300798591 /* file_cmds_ios.framework */,
+				222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */,
 				225C53C21EEAB0C900395C6F /* CloudKit.framework */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
