@@ -167,7 +167,7 @@
         // Redirect all output to console:
         stdout = _stream.control.termout;
         stderr = _stream.control.termout;
-        // Commands from GNU coreutils: ls, rm, cp...
+        // Commands from Apple file_cmds: ls, rm, cp...
         if ([cmd isEqualToString:@"ls"]) {
           ls_main(argc, argv);
         } else if  ([cmd isEqualToString:@"touch"]) {
