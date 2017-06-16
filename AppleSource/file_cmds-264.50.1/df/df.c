@@ -110,13 +110,13 @@ struct maxwidths {
 	int ifree;
 };
 
-unsigned long long vals_si [] = {1, KILO_SI_SZ, MEGA_SI_SZ, GIGA_SI_SZ, TERA_SI_SZ, PETA_SI_SZ};
-unsigned long long vals_base2[] = {1, KILO_2_SZ, MEGA_2_SZ, GIGA_2_SZ, TERA_2_SZ, PETA_2_SZ};
-unsigned long long *valp;
+static unsigned long long vals_si [] = {1, KILO_SI_SZ, MEGA_SI_SZ, GIGA_SI_SZ, TERA_SI_SZ, PETA_SI_SZ};
+static unsigned long long vals_base2[] = {1, KILO_2_SZ, MEGA_2_SZ, GIGA_2_SZ, TERA_2_SZ, PETA_2_SZ};
+static unsigned long long *valp;
 
 typedef enum { NONE, KILO, MEGA, GIGA, TERA, PETA, UNIT_MAX } unit_t;
 
-unit_t unitp [] = { NONE, KILO, MEGA, GIGA, TERA, PETA };
+static unit_t unitp [] = { NONE, KILO, MEGA, GIGA, TERA, PETA };
 
 static int	  bread(off_t, void *, int);
 int	  checkvfsname(const char *, char **);
@@ -133,7 +133,8 @@ static void	  update_maxwidths(struct maxwidths *, struct statfs *);
 static void	  usage(void);
 #define exit return
 
-int	aflag = 0, hflag, iflag, nflag;
+static int	aflag = 0, hflag, iflag, nflag;
+static int headerlen, timesthrough;
 
 static __inline int imax(int a, int b)
 {
@@ -153,6 +154,7 @@ df_main(int argc, char *argv[])
     
     // always init the flags:
     aflag = hflag = iflag = nflag = 0;
+    headerlen = 0; timesthrough = 0; 
     
 	const char *options = "abgHhiklmnPt:T:";
 	if (COMPAT_MODE("bin/df", "unix2003")) {
@@ -161,7 +163,8 @@ df_main(int argc, char *argv[])
 		  *not* expect a string after -t (we provide -T in both cases
 		  to cover the old use of -t) */
 		options = "abgHhiklmnPtT:";
-		iflag = 1;
+		// iflag = 1;
+        iflag = 0;
 	}
 
 	vfslist = NULL;
@@ -456,7 +459,6 @@ void
 prtstat(struct statfs *sfsp, struct maxwidths *mwp)
 {
 	static long blocksize;
-	static int headerlen, timesthrough;
 	static const char *header;
 	uint64_t used, availblks, inodes;
 	char * avail_str;

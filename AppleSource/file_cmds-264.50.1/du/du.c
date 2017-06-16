@@ -94,13 +94,13 @@ __FBSDID("$FreeBSD: src/usr.bin/du/du.c,v 1.38 2005/04/09 14:31:40 stefanf Exp $
 
 #define TWO_TB  (2LL * 1024LL * 1024LL * 1024LL * 1024LL)
 
-unsigned long long vals_si [] = {1, KILO_SI_SZ, MEGA_SI_SZ, GIGA_SI_SZ, TERA_SI_SZ, PETA_SI_SZ};
-unsigned long long vals_base2[] = {1, KILO_2_SZ, MEGA_2_SZ, GIGA_2_SZ, TERA_2_SZ, PETA_2_SZ};
-unsigned long long *valp;
+static unsigned long long vals_si [] = {1, KILO_SI_SZ, MEGA_SI_SZ, GIGA_SI_SZ, TERA_SI_SZ, PETA_SI_SZ};
+static unsigned long long vals_base2[] = {1, KILO_2_SZ, MEGA_2_SZ, GIGA_2_SZ, TERA_2_SZ, PETA_2_SZ};
+static unsigned long long *valp;
 
 typedef enum { NONE, KILO, MEGA, GIGA, TERA, PETA, UNIT_MAX } unit_t;
 
-int unitp [] = { NONE, KILO, MEGA, GIGA, TERA, PETA };
+static int unitp [] = { NONE, KILO, MEGA, GIGA, TERA, PETA };
 
 SLIST_HEAD(ignhead, ignentry) ignores;
 struct ignentry {
