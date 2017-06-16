@@ -21,14 +21,20 @@ This fork also contains a subset of shell utilities, so you can add / remove fil
 
 Specifically, the commands available (as of now) are:
 
+* From file_cmds:
 ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
 df, du, chksum, chmod, chflags, chgrp, stat, readlink, 
 compress, uncompress, gzip, gunzip,
-cd, setenv 
+* From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
+* Builtin: cd, setenv 
 
-You will need to compile the framework blink/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
 
-It creates a static library (file_cmds_ios.framework), which you will have to copy in the blink/Frameworks directory. You also need to copy file_cmds_ios/file_cmds_ios.h to the blink/Frameworks directory. 
+You will need to compile the following frameworks:
+* blink/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
+* shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
+
+These create two static libraries: file_cmds_ios.framework and shell_cmds_ios.framewok, which you will have to copy in the blink/Frameworks directory. You will also need to copy the header files: file_cmds_ios/file_cmds_ios.h and shell_cmds_ios/shell_cmds_ios.h to the blink/Frameworks directory. 
+
 
 Since you are sideloading, you can also compile VimIOS (https://github.com/larki/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
 
