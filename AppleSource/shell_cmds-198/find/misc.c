@@ -51,6 +51,7 @@ __FBSDID("$FreeBSD: src/usr.bin/find/misc.c,v 1.13 2010/12/11 08:32:16 joel Exp 
 #include <string.h>
 
 #include "find.h"
+#include "error.h"
 
 /*
  * brace_subst --
@@ -66,8 +67,10 @@ brace_subst(char *orig, char **store, char *path, int len)
 	for (p = *store; (ch = *orig) != '\0'; ++orig)
 		if (ch == '{' && orig[1] == '}') {
 			while ((p - *store) + plen > len)
-				if (!(*store = realloc(*store, len *= 2)))
+                if (!(*store = realloc(*store, len *= 2))) {
 					err(1, NULL);
+                    return;
+                }
 			memmove(p, path, plen);
 			p += plen;
 			++orig;

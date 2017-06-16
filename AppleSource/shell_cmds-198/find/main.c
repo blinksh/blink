@@ -32,8 +32,8 @@
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1990, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1990, 1993, 1994\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #ifndef lint
@@ -60,6 +60,7 @@ __FBSDID("$FreeBSD: src/usr.bin/find/main.c,v 1.23 2011/12/10 18:11:06 ed Exp $"
 #include <unistd.h>
 
 #include "find.h"
+#include "error.h"
 
 time_t now;			/* time find was run */
 int dotfd;			/* starting directory */
@@ -75,7 +76,7 @@ int regexp_flags = REG_BASIC;	/* use the "basic" regexp by default*/
 static void usage(void);
 
 int
-main(int argc, char *argv[])
+find_main(int argc, char *argv[])
 {
 	char **p, **start;
 	int Hflag, Lflag, ch;
@@ -83,7 +84,11 @@ main(int argc, char *argv[])
 	(void)setlocale(LC_ALL, "");
 
 	(void)time(&now);	/* initialize the time-of-day */
-
+    // Initialize all flags
+    dotfd = ftsoptions = isdeprecated = isdepth = isoutput = issort = isxargs = 0;
+    mindepth = maxdepth = -1; /* minimum and maximum depth */
+    regexp_flags = REG_BASIC;	/* use the "basic" regexp by default*/
+    
 	p = start = argv;
 	Hflag = Lflag = 0;
 	ftsoptions = FTS_NOSTAT | FTS_PHYSICAL;
@@ -120,7 +125,7 @@ main(int argc, char *argv[])
 			break;
 		case '?':
 		default:
-			usage();
+			usage(); return 0;
 		}
 
 	argc -= optind;
@@ -146,21 +151,24 @@ main(int argc, char *argv[])
 			break;
 	}
 
-	if (p == start)
-		usage();
+    if (p == start) {
+		usage(); return 0;
+    }
 	*p = NULL;
 
-	if ((dotfd = open(".", O_RDONLY, 0)) < 0)
-		err(1, ".");
+    if ((dotfd = open(".", O_RDONLY, 0)) < 0) {
+		myerr(1, ".");
+        return 0;
+    }
 
-	exit(find_execute(find_formplan(argv), start));
+ 	exit(find_execute(find_formplan(argv), start));
 }
 
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "%s\n%s\n",
+	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
 "usage: find [-H | -L | -P] [-EXdsx] [-f path] path ... [expression]",
 "       find [-H | -L | -P] [-EXdsx] -f path [path ...] [expression]");
-	exit(1);
+	// exit(1);
 }

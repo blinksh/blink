@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <libproc.h>
+// #include <libproc.h>
 #include <mach/mach_time.h>
 
 static void usage(void);
@@ -41,7 +41,7 @@ static kern_return_t get_processor_count(int *ncpu);
 static mach_timebase_info_data_t timebase_info;
 
 int
-main(int argc, char *argv[])
+systime_main(int argc, char *argv[])
 {
 	int ch;
 	const char *optu = NULL;

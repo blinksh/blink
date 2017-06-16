@@ -38,13 +38,16 @@ static char sccsid[] = "@(#)proc_compare.c	8.2 (Berkeley) 9/23/93";
 __FBSDID("$FreeBSD: src/usr.bin/w/proc_compare.c,v 1.9 2004/04/14 09:34:17 bde Exp $");
 #endif
 
+#define HAVE_UTMPX 1
+
 #include <sys/param.h>
 #ifdef __APPLE__
 #include <sys/time.h>
 #endif
 #include <sys/proc.h>
 #include <sys/time.h>
-#include <sys/user.h>
+// #include <sys/user.h>
+#include <sys/sysctl.h>
 
 #include "extern.h"
 

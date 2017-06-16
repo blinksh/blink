@@ -35,8 +35,8 @@
 
 #include <sys/cdefs.h>
 #ifndef lint
-__COPYRIGHT("@(#) Copyright (c) 1987, 1988, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n");
+__COPYRIGHT("@(#) Copyright (c) 1987, 1988, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r");
 #endif /* not lint */
 
 #ifndef lint
@@ -56,13 +56,14 @@ __RCSID("$NetBSD: time.c,v 1.9 1997/10/20 03:28:21 lukem Exp $");
 #include <unistd.h>
 #include <errno.h>
 
-int lflag;
-int portableflag;
+static int lflag;
+static int portableflag;
+#define exit return
 
-int	main __P((int, char **));
+// int	time_main __P((int, char **));
 
 int
-main(argc, argv)
+time_main(argc, argv)
 	int argc;
 	char **argv;
 {
@@ -85,7 +86,7 @@ main(argc, argv)
 			break;
 		case '?':
 		default:
-			fprintf(stderr, "usage: time [-lp] command.\n");
+			fprintf(stderr, "usage: time [-lp] command.\n\r");
 			exit(1);
 		}
 
@@ -112,15 +113,15 @@ main(argc, argv)
 	while (wait3(&status, 0, &ru) != pid);
 	gettimeofday(&after, (struct timezone *)NULL);
 	if (!WIFEXITED(status))
-		fprintf(stderr, "Command terminated abnormally.\n");
+		fprintf(stderr, "Command terminated abnormally.\n\r");
 	timersub(&after, &before, &after);
 
 	if (portableflag) {
-		fprintf (stderr, "real %9ld.%02ld\n", 
+		fprintf (stderr, "real %9ld.%02ld\n\r", 
 			(long)after.tv_sec, (long)after.tv_usec/10000);
-		fprintf (stderr, "user %9ld.%02ld\n",
+		fprintf (stderr, "user %9ld.%02ld\n\r",
 			(long)ru.ru_utime.tv_sec, (long)ru.ru_utime.tv_usec/10000);
-		fprintf (stderr, "sys  %9ld.%02ld\n",
+		fprintf (stderr, "sys  %9ld.%02ld\n\r",
 			(long)ru.ru_stime.tv_sec, (long)ru.ru_stime.tv_usec/10000);
 	} else {
 
@@ -128,7 +129,7 @@ main(argc, argv)
 			(long)after.tv_sec, (long)after.tv_usec/10000);
 		fprintf(stderr, "%9ld.%02ld user ",
 			(long)ru.ru_utime.tv_sec, (long)ru.ru_utime.tv_usec/10000);
-		fprintf(stderr, "%9ld.%02ld sys\n",
+		fprintf(stderr, "%9ld.%02ld sys\n\r",
 			(long)ru.ru_stime.tv_sec, (long)ru.ru_stime.tv_usec/10000);
 	}
 
@@ -139,33 +140,33 @@ main(argc, argv)
 		ticks = hz * (ru.ru_utime.tv_sec + ru.ru_stime.tv_sec) +
 		     hz * (ru.ru_utime.tv_usec + ru.ru_stime.tv_usec) / 1000000;
 
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_maxrss, "maximum resident set size");
-		fprintf(stderr, "%10ld  %s\n", ticks ? ru.ru_ixrss / ticks : 0,
+		fprintf(stderr, "%10ld  %s\n\r", ticks ? ru.ru_ixrss / ticks : 0,
 			"average shared memory size");
-		fprintf(stderr, "%10ld  %s\n", ticks ? ru.ru_idrss / ticks : 0,
+		fprintf(stderr, "%10ld  %s\n\r", ticks ? ru.ru_idrss / ticks : 0,
 			"average unshared data size");
-		fprintf(stderr, "%10ld  %s\n", ticks ? ru.ru_isrss / ticks : 0,
+		fprintf(stderr, "%10ld  %s\n\r", ticks ? ru.ru_isrss / ticks : 0,
 			"average unshared stack size");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_minflt, "page reclaims");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_majflt, "page faults");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_nswap, "swaps");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_inblock, "block input operations");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_oublock, "block output operations");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_msgsnd, "messages sent");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_msgrcv, "messages received");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_nsignals, "signals received");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_nvcsw, "voluntary context switches");
-		fprintf(stderr, "%10ld  %s\n",
+		fprintf(stderr, "%10ld  %s\n\r",
 			ru.ru_nivcsw, "involuntary context switches");
 	}
 

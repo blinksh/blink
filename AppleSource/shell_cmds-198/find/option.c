@@ -50,6 +50,7 @@ __FBSDID("$FreeBSD: src/usr.bin/find/option.c,v 1.32 2011/05/27 22:14:49 jilles 
 #include <string.h>
 
 #include "find.h"
+#include "error.h"
 
 static int typecompare(const void *, const void *);
 
@@ -175,8 +176,10 @@ find_create(char ***argvp)
 
 	argv = *argvp;
 
-	if ((p = lookup_option(*argv)) == NULL)
-		errx(1, "%s: unknown primary or operator", *argv);
+    if ((p = lookup_option(*argv)) == NULL) {
+		myerrx(1, "%s: unknown primary or operator", *argv);
+        return NULL;
+    }
 	++argv;
 
 	new = (p->create)(p, &argv);

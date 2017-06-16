@@ -44,7 +44,7 @@ static char sccsid[] = "@(#)who.c	8.1 (Berkeley) 6/6/93";
 #endif
 __RCSID("$NetBSD: who.c,v 1.23 2008/07/24 15:35:41 christos Exp $");
 #endif /* not lint */
-
+#define SUPPORT_UTMPX 1
 #include <sys/types.h>
 #include <sys/stat.h>
 
@@ -69,6 +69,7 @@ __RCSID("$NetBSD: who.c,v 1.23 2008/07/24 15:35:41 christos Exp $");
 #endif /* __APPLE__ */
 
 #include "utmpentry.h"
+#include "error.h"
 
 #ifdef __APPLE__
 #define __UNCONST(a)	((void *)(unsigned long)(const void *)(a))
@@ -113,7 +114,7 @@ struct ut_type_names {
 };
 
 int
-main(int argc, char *argv[])
+who_main(int argc, char *argv[])
 {
 	int c, only_current_term, show_labels, quick_mode, default_mode;
 	int et = 0;
@@ -287,7 +288,7 @@ process(const char *fname, int show_labels)
 		eprint(ep);
 #ifdef __APPLE__
 	if ((etype & (1 << RUN_LVL)) != 0) {
-		printf("   .       run-level 3\n");
+		printf("   .       run-level 3\n\r");
 	}
 #endif /* __APPLE__ */
 }
@@ -399,6 +400,7 @@ print(const char *name, const char *line, time_t t, const char *host,
 	if (*host)
 		(void)printf("\t(%.*s)", maxhost, host);
 	(void)putchar('\n');
+    (void)putchar('\r');
 }
 
 static void
@@ -420,6 +422,7 @@ output_labels(void)
 	}		
 
 	(void)putchar('\n');
+    (void)putchar('\r');
 }
 
 static void
@@ -431,23 +434,27 @@ quick(const char *fname)
 	(void)getutentries(fname, &ehead);
 	for (ep = ehead; ep != NULL; ep = ep->next) {
 		(void)printf("%-*s ", maxname, ep->name);
-		if ((++num % 8) == 0)
+        if ((++num % 8) == 0) {
 			(void)putchar('\n');
+            (void)putchar('\r');
+        }
 	}
-	if (num % 8)
+    if (num % 8) {
 		(void)putchar('\n');
+        (void)putchar('\r');
+    }
 
-	(void)printf("# users = %d\n", num);
+	(void)printf("# users = %d\n\r", num);
 }
 
 static void
 usage(void)
 {
 #ifdef __APPLE__
-	(void)fprintf(stderr, "Usage: %s [-abdHlmpqrsTtu] [file]\n\t%s am i\n",
+	(void)fprintf(stderr, "\rUsage: %s [-abdHlmpqrsTtu] [file]\n\r\t%s am i\n\r",
 #else /* !__APPLE__ */
-	(void)fprintf(stderr, "Usage: %s [-abdHlmqrsTtuv] [file]\n\t%s am i\n",
+	(void)fprintf(stderr, "\rUsage: %s [-abdHlmqrsTtuv] [file]\n\r\t%s am i\n\r",
 #endif /* __APPLE__ */
 	    getprogname(), getprogname());
-	exit(EXIT_FAILURE);
+	// exit(EXIT_FAILURE);
 }

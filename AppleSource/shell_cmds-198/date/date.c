@@ -29,8 +29,8 @@
 
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1985, 1987, 1988, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1985, 1987, 1988, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #if 0
@@ -57,8 +57,8 @@ __FBSDID("$FreeBSD$");
 #include <utmpx.h>
 
 #ifdef __APPLE__
-#include <get_compat.h>
-#else
+// #include <get_compat.h>
+// #else
 #define COMPAT_MODE(a,b) (1)
 #endif /* __APPLE__ */
 
@@ -82,9 +82,10 @@ static void badformat(void);
 static void usage(void);
 
 static const char *rfc2822_format = "%a, %d %b %Y %T %z";
+#define exit return
 
 int
-main(int argc, char *argv[])
+date_main(int argc, char *argv[])
 {
 	struct timezone tz;
 	int ch, rflag;
@@ -112,8 +113,10 @@ main(int argc, char *argv[])
 		switch((char)ch) {
 		case 'd':		/* daylight savings time */
 			tz.tz_dsttime = strtol(optarg, &endptr, 10) ? 1 : 0;
-			if (endptr == optarg || *endptr != '\0')
-				usage();
+                if (endptr == optarg || *endptr != '\0') {
+                    usage();
+                    return 0;
+                }
 			set_timezone = 1;
 			break;
 		case 'f':
@@ -134,15 +137,19 @@ main(int argc, char *argv[])
 			if (*tmp != 0) {
 				if (stat(optarg, &sb) == 0)
 					tval = sb.st_mtim.tv_sec;
-				else
+                else {
 					usage();
+                    return 0;
+                }
 			}
 			break;
 		case 't':		/* minutes west of UTC */
 					/* error check; don't allow "PST" */
 			tz.tz_minuteswest = strtol(optarg, &endptr, 10);
-			if (endptr == optarg || *endptr != '\0')
+            if (endptr == optarg || *endptr != '\0') {
 				usage();
+                return 0;
+            }
 			set_timezone = 1;
 			break;
 		case 'u':		/* do everything in UTC */
@@ -153,6 +160,7 @@ main(int argc, char *argv[])
 			break;
 		default:
 			usage();
+            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -161,11 +169,19 @@ main(int argc, char *argv[])
 	 * If -d or -t, set the timezone or daylight savings time; this
 	 * doesn't belong here; the kernel should not know about either.
 	 */
-	if (set_timezone && settimeofday(NULL, &tz) != 0)
-		err(1, "settimeofday (timezone)");
+    if (set_timezone && settimeofday(NULL, &tz) != 0) {
+		// err(1, "settimeofday (timezone)");
+        warn("settimeofday (timezone)");
+        fprintf(stderr, "\r");
+        return 0;
+    }
 
-	if (!rflag && time(&tval) == -1)
-		err(1, "time");
+    if (!rflag && time(&tval) == -1) {
+		// err(1, "time");
+        warn("time");
+        fprintf(stderr, "\r");
+        return 0;
+    }
 
 	format = "%+";
 
@@ -181,8 +197,10 @@ main(int argc, char *argv[])
 	if (*argv) {
 		setthetime(fmt, *argv, jflag, nflag);
 		++argv;
-	} else if (fmt != NULL)
+    } else if (fmt != NULL) {
 		usage();
+        return 0;
+    }
 
 	if (*argv && **argv == '+')
 		format = *argv + 1;
@@ -191,7 +209,10 @@ main(int argc, char *argv[])
 	/* 7999711 */
 	struct tm *ltp = localtime(&tval);
 	if (ltp == NULL) {
-		err(1, "localtime");
+		// err(1, "localtime");
+        warn("localtime");
+        fprintf(stderr, "\r");
+        return 0;
 	}
 	lt = *ltp;
 #else
@@ -199,10 +220,11 @@ main(int argc, char *argv[])
 #endif
 	badv = vary_apply(v, &lt);
 	if (badv) {
-		fprintf(stderr, "%s: Cannot apply date adjustment\n",
+		fprintf(stderr, "%s: Cannot apply date adjustment\n\r",
 			badv->arg);
 		vary_destroy(v);
 		usage();
+        return 0;
 	}
 	vary_destroy(v);
 
@@ -214,9 +236,13 @@ main(int argc, char *argv[])
 		setlocale(LC_TIME, "C");
 
 	(void)strftime(buf, sizeof(buf), format, &lt);
-	(void)printf("%s\n", buf);
-	if (fflush(stdout))
-		err(1, "stdout");
+	(void)printf("%s\n\r", buf);
+    if (fflush(stdout)) {
+		// err(1, "stdout");
+        warn("stdout");
+        fprintf(stderr, "\r");
+        return 0;
+    }
 	/*
 	 * If date/time could not be set/notified in the other hosts as
 	 * determined by netsetval(), a return value 2 is set, which is
@@ -247,11 +273,12 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
 		t = strptime(p, fmt, lt);
 		if (t == NULL) {
 			fprintf(stderr, "Failed conversion of ``%s''"
-				" using format ``%s''\n", p, fmt);
+				" using format ``%s''\n\r", p, fmt);
 			badformat();
+            return;
 		} else if (*t != '\0')
 			fprintf(stderr, "Warning: Ignoring %ld extraneous"
-				" characters in date string (%s)\n",
+				" characters in date string (%s)\n\r",
 				(long) strlen(t), t);
 	} else {
 		for (t = p, dot = NULL; *t; ++t) {
@@ -262,15 +289,20 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
 				continue;
 			}
 			badformat();
+            return;
 		}
 
 		if (dot != NULL) {			/* .ss */
 			dot++; /* *dot++ = '\0'; */
-			if (strlen(dot) != 2)
+            if (strlen(dot) != 2) {
 				badformat();
+                return;
+            }
 			lt->tm_sec = ATOI2(dot);
-			if (lt->tm_sec > 61)
+            if (lt->tm_sec > 61) {
 				badformat();
+                return;
+            }
 		} else
 			lt->tm_sec = 0;
 
@@ -294,44 +326,61 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
 			/* FALLTHROUGH */
 		case 8:					/* mm */
 			lt->tm_mon = ATOI2(p);
-			if (lt->tm_mon > 12)
+            if (lt->tm_mon > 12) {
 				badformat();
+                return;
+            }
 			--lt->tm_mon;		/* time struct is 0 - 11 */
 			/* FALLTHROUGH */
 		case 6:					/* dd */
 			lt->tm_mday = ATOI2(p);
-			if (lt->tm_mday > 31)
+            if (lt->tm_mday > 31) {
 				badformat();
+                return;
+            }
 			/* FALLTHROUGH */
 		case 4:					/* HH */
 			lt->tm_hour = ATOI2(p);
-			if (lt->tm_hour > 23)
+            if (lt->tm_hour > 23) {
 				badformat();
+                return;
+            }
 			/* FALLTHROUGH */
 		case 2:					/* MM */
 			lt->tm_min = ATOI2(p);
-			if (lt->tm_min > 59)
+            if (lt->tm_min > 59) {
 				badformat();
+                return;
+            }
 			break;
 		default:
 			badformat();
+            return;
 		}
 	}
 
 	/* convert broken-down time to GMT clock time */
-	if ((tval = mktime(lt)) == -1)
-		errx(1, "nonexistent time");
+    if ((tval = mktime(lt)) == -1) {
+		// errx(1, "nonexistent time");
+        warn("nonexistent time");
+        fprintf(stderr, "\r");
+        return;
+    }
 
 	if (!jflag) {
 		/* set the time */
-		if (nflag || netsettime(tval)) {
+		if (nflag /* || netsettime(tval)*/ ) {
 			utx.ut_type = OLD_TIME;
 			(void)gettimeofday(&utx.ut_tv, NULL);
 			pututxline(&utx);
 			tv.tv_sec = tval;
 			tv.tv_usec = 0;
-			if (settimeofday(&tv, NULL) != 0)
-				err(1, "settimeofday (timeval)");
+            if (settimeofday(&tv, NULL) != 0) {
+				// err(1, "settimeofday (timeval)");
+                warn("settimeofday (timeval)");
+                fprintf(stderr, "\r");
+                return;
+            }
 			utx.ut_type = NEW_TIME;
 			(void)gettimeofday(&utx.ut_tv, NULL);
 			pututxline(&utx);
@@ -347,13 +396,14 @@ static void
 badformat(void)
 {
 	warnx("illegal time format");
+    fprintf(stderr, "\r");
 	usage();
 }
 
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "%s\n%s\n",
+	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
 	    "usage: date [-jnRu] [-d dst] [-r seconds] [-t west] "
 	    "[-v[+|-]val[ymwdHMS]] ... ",
 	    unix2003_std ?
@@ -361,5 +411,5 @@ usage(void)
 	    "[-f fmt date | [[[mm]dd]HH]MM[[cc]yy][.ss]] [+format]" :
 	    "            "
 	    "[-f fmt date | [[[[[cc]yy]mm]dd]HH]MM[.ss]] [+format]");
-	exit(1);
+//	exit(1);
 }

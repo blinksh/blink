@@ -33,6 +33,7 @@
 #ifndef lint
 __RCSID("$NetBSD: utmpentry.c,v 1.15 2008/07/13 20:07:48 dholland Exp $");
 #endif
+#define SUPPORT_UTMPX 1
 
 #include <sys/stat.h>
 
@@ -141,10 +142,10 @@ setup(const char *fname)
 #ifdef SUPPORT_UTMPX
 	if (what & 1) {
 		sfname = fname ? fname : _PATH_UTMPX;
-		if (stat(sfname, &st) == -1) {
+		/* if (stat(sfname, &st) == -1) {
 			warn("Cannot stat `%s'", sfname);
 			what &= ~1;
-		} else {
+		} else */ {
 			if (timespeccmp(&st.st_mtimespec, &utmpxtime, >))
 			    utmpxtime = st.st_mtimespec;
 			else
@@ -319,7 +320,7 @@ getentry(struct utmpentry *e, struct utmp *up)
 static void
 getentryx(struct utmpentry *e, struct utmpx *up)
 {
-	COMPILE_ASSERT(sizeof(e->name) > sizeof(up->ut_name));
+	COMPILE_ASSERT(sizeof(e->name) > sizeof(up->ut_user));
 	COMPILE_ASSERT(sizeof(e->line) > sizeof(up->ut_line));
 	COMPILE_ASSERT(sizeof(e->host) > sizeof(up->ut_host));
 
@@ -331,7 +332,7 @@ getentryx(struct utmpentry *e, struct utmpx *up)
 	 * reason we use the size of the _source_ as the length
 	 * argument.
 	 */
-	(void)strncpy(e->name, up->ut_name, sizeof(up->ut_name));
+	(void)strncpy(e->name, up->ut_user, sizeof(up->ut_user));
 	(void)strncpy(e->line, up->ut_line, sizeof(up->ut_line));
 	(void)strncpy(e->host, up->ut_host, sizeof(up->ut_host));
 

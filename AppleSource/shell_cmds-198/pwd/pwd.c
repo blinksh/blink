@@ -30,8 +30,8 @@
 #if 0
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1991, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1991, 1993, 1994\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #ifndef lint
@@ -52,10 +52,11 @@ __FBSDID("$FreeBSD: src/bin/pwd/pwd.c,v 1.25 2005/02/09 17:37:38 ru Exp $");
 #include <unistd.h>
 
 static char *getcwd_logical(void);
-void usage(void);
+static void usage(void);
+#define exit return
 
 int
-main(int argc, char *argv[])
+pwd_main(int argc, char *argv[])
 {
 	int physical;
 	int ch;
@@ -74,12 +75,15 @@ main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
+            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
-	if (argc != 0)
+    if (argc != 0) {
 		usage();
+        return 0;
+    }
 
 	/*
 	 * If we're trying to find the logical current directory and that
@@ -90,9 +94,11 @@ main(int argc, char *argv[])
 	 */
 	if ((!physical && (p = getcwd_logical()) != NULL) ||
 	    ((physical || errno == ENOENT) && (p = getcwd(NULL, 0)) != NULL))
-		printf("%s\n", p);
-	else
-		err(1, ".");
+		printf("%s\n\r", p);
+    else {
+		// err(1, ".");
+        warn(".");
+    }
 
 	exit(0);
 }
@@ -101,8 +107,8 @@ void
 usage(void)
 {
 
-	(void)fprintf(stderr, "usage: pwd [-L | -P]\n");
-  	exit(1);
+	(void)fprintf(stderr, "\rusage: pwd [-L | -P]\n\r");
+//  	exit(1);
 }
 
 static char *

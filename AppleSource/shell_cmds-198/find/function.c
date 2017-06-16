@@ -66,12 +66,13 @@ __FBSDID("$FreeBSD: src/usr.bin/find/function.c,v 1.71 2011/06/13 05:22:07 avata
 #include <sys/sysctl.h>
 #include <sys/xattr.h>
 #include <libgen.h>
-#include <get_compat.h>
-#else
+// #include <get_compat.h>
+// #else
 #define COMPAT_MODE(func, mode) 1
 #endif
 
 #include "find.h"
+#include "error.h"
 
 static PLAN *palloc(OPTION *);
 static long long find_parsenum(PLAN *, const char *, char *, char *);
@@ -101,8 +102,10 @@ palloc(OPTION *option)
 {
 	PLAN *new;
 
-	if ((new = malloc(sizeof(PLAN))) == NULL)
-		err(1, NULL);
+    if ((new = malloc(sizeof(PLAN))) == NULL) {
+		myerr(1, NULL);
+        return 0;
+    }
 	new->execute = option->execute;
 	new->flags = option->flags;
 	new->next = NULL;
@@ -141,10 +144,14 @@ find_parsenum(PLAN *plan, const char *option, char *vp, char *endch)
 	 * a syntax error.
 	 */
 	value = strtoq(str, &endchar, 10);
-	if (value == 0 && endchar == str)
-		errx(1, "%s: %s: illegal numeric value", option, vp);
-	if (endchar[0] && endch == NULL)
-		errx(1, "%s: %s: illegal trailing character", option, vp);
+    if (value == 0 && endchar == str) {
+		myerrx(1, "%s: %s: illegal numeric value", option, vp);
+        return 0;
+    }
+    if (endchar[0] && endch == NULL) {
+		myerrx(1, "%s: %s: illegal trailing character", option, vp);
+        return 0;
+    }
 	if (endch)
 		*endch = endchar[0];
 	return value;
@@ -178,7 +185,8 @@ find_parsetime(PLAN *plan, const char *option, char *vp)
 
 	value = strtoq(str, &unit, 10);
 	if (value == 0 && unit == str) {
-		errx(1, "%s: %s: illegal time value", option, vp);
+		myerrx(1, "%s: %s: illegal time value", option, vp);
+        return 0;
 		/* NOTREACHED */
 	}
 	if (*unit == '\0')
@@ -204,7 +212,8 @@ find_parsetime(PLAN *plan, const char *option, char *vp)
 			secs += value * 604800;
 			break;
 		default:
-			errx(1, "%s: %s: bad unit '%c'", option, vp, *unit);
+			myerrx(1, "%s: %s: bad unit '%c'", option, vp, *unit);
+            return 0;
 			/* NOTREACHED */
 		}
 		str = unit + 1;
@@ -212,11 +221,13 @@ find_parsetime(PLAN *plan, const char *option, char *vp)
 			break;
 		value = strtoq(str, &unit, 10);
 		if (value == 0 && unit == str) {
-			errx(1, "%s: %s: illegal time value", option, vp);
+			myerrx(1, "%s: %s: illegal time value", option, vp);
+            return 0;
 			/* NOTREACHED */
 		}
 		if (*unit == '\0') {
-			errx(1, "%s: %s: missing trailing unit", option, vp);
+			myerrx(1, "%s: %s: missing trailing unit", option, vp);
+            return 0;
 			/* NOTREACHED */
 		}
 	}
@@ -234,8 +245,10 @@ nextarg(OPTION *option, char ***argvp)
 {
 	char *arg;
 
-	if ((arg = **argvp) == 0)
-		errx(1, "%s: requires additional arguments", option->name);
+    if ((arg = **argvp) == 0) {
+		myerrx(1, "%s: requires additional arguments", option->name);
+        return 0;
+    }
 	(*argvp)++;
 	return arg;
 } /* nextarg() */
@@ -356,9 +369,11 @@ c_mXXdepth(OPTION *option, char ***argvp)
 	PLAN *new;
 
 	dstr = nextarg(option, argvp);
-	if (dstr[0] == '-')
+    if (dstr[0] == '-') {
 		/* all other errors handled by find_parsenum() */
-		errx(1, "%s: %s: value must be positive", option->name, dstr);
+		myerrx(1, "%s: %s: value must be positive", option->name, dstr);
+        return NULL;
+    }
 
 	new = palloc(option);
 	if (option->flags & F_MAXDEPTH)
@@ -493,18 +508,21 @@ f_delete(PLAN *plan __unused, FTSENT *entry)
 
 	/* sanity check */
 	if (isdepth == 0 ||			/* depth off */
-	    (ftsoptions & FTS_NOSTAT))		/* not stat()ing */
-		errx(1, "-delete: insecure options got turned on");
-
+        (ftsoptions & FTS_NOSTAT))	{	/* not stat()ing */
+		myerrx(1, "-delete: insecure options got turned on");
+        return 0;
+    }
 	if (!(ftsoptions & FTS_PHYSICAL) ||	/* physical off */
-	    (ftsoptions & FTS_LOGICAL))		/* or finally, logical on */
-		errx(1, "-delete: forbidden when symlinks are followed");
-
+        (ftsoptions & FTS_LOGICAL))	{	/* or finally, logical on */
+		myerrx(1, "-delete: forbidden when symlinks are followed");
+        return 0;
+    }
 	/* Potentially unsafe - do not accept relative paths whatsoever */
-	if (strchr(entry->fts_accpath, '/') != NULL)
-		errx(1, "-delete: %s: relative path potentially not safe",
+    if (strchr(entry->fts_accpath, '/') != NULL) {
+		myerrx(1, "-delete: %s: relative path potentially not safe",
 			entry->fts_accpath);
-
+        return 0;
+    }
 	/* Turn off user immutable bits if running as root */
 	if ((entry->fts_statp->st_flags & (UF_APPEND|UF_IMMUTABLE)) &&
 	    !(entry->fts_statp->st_flags & (SF_APPEND|SF_IMMUTABLE)) &&
@@ -512,14 +530,16 @@ f_delete(PLAN *plan __unused, FTSENT *entry)
 		lchflags(entry->fts_accpath,
 		       entry->fts_statp->st_flags &= ~(UF_APPEND|UF_IMMUTABLE));
 
-	/* rmdir directories, unlink everything else */
-	if (S_ISDIR(entry->fts_statp->st_mode)) {
-		if (rmdir(entry->fts_accpath) < 0 && errno != ENOTEMPTY)
-			warn("-delete: rmdir(%s)", entry->fts_path);
-	} else {
-		if (unlink(entry->fts_accpath) < 0)
-			warn("-delete: unlink(%s)", entry->fts_path);
-	}
+    /* rmdir directories, unlink everything else */
+    if (S_ISDIR(entry->fts_statp->st_mode)) {
+        if (rmdir(entry->fts_accpath) < 0 && errno != ENOTEMPTY) {
+            warn("-delete: rmdir(%s)", entry->fts_path);
+        }
+    } else {
+        if (unlink(entry->fts_accpath) < 0) {
+            warn("-delete: unlink(%s)", entry->fts_path);
+        }
+    }
 
 	/* "succeed" */
 	return 1;
@@ -676,8 +696,10 @@ f_exec(PLAN *plan, FTSENT *entry)
 		file = entry->fts_path;
 
 	if (plan->flags & F_EXECPLUS) {
-		if ((plan->e_argv[plan->e_ppos] = strdup(file)) == NULL)
-			err(1, NULL);
+        if ((plan->e_argv[plan->e_ppos] = strdup(file)) == NULL) {
+			myerr(1, NULL);
+            return 0;
+        }
 		plan->e_len[plan->e_ppos] = strlen(file);
 		plan->e_psize += plan->e_len[plan->e_ppos];
 		if (++plan->e_ppos < plan->e_pnummax &&
@@ -701,7 +723,8 @@ doexec:	if ((plan->flags & F_NEEDOK) && !queryuser(plan->e_argv))
 
 	switch (pid = fork()) {
 	case -1:
-		err(1, "fork");
+		myerr(1, "fork");
+        return 0;
 		/* NOTREACHED */
 	case 0:
 		/* change dir back from where we started */
@@ -751,9 +774,10 @@ c_exec(OPTION *option, char ***argvp)
 	new = palloc(option);
 
 	for (ap = argv = *argvp;; ++ap) {
-		if (!*ap)
-			errx(1,
-			    "%s: no terminating \";\" or \"+\"", option->name);
+        if (!*ap) {
+			myerrx(1, "%s: no terminating \";\" or \"+\"", option->name);
+            return NULL;
+        }
 		if (**ap == ';')
 			break;
 		if (**ap == '+' && ap != argv && strcmp(*(ap - 1), "{}") == 0) {
@@ -762,8 +786,10 @@ c_exec(OPTION *option, char ***argvp)
 		}
 	}
 
-	if (ap == argv)
-		errx(1, "%s: no command specified", option->name);
+    if (ap == argv) {
+        myerrx(1, "%s: no command specified", option->name);
+        return NULL;
+    }
 
 	cnt = ap - *argvp + 1;
 	if (new->flags & F_EXECPLUS) {
@@ -778,21 +804,28 @@ c_exec(OPTION *option, char ***argvp)
 		argmax -= 1 + sizeof(*ep);
 		new->e_pnummax = argmax / 16;
 		argmax -= sizeof(char *) * new->e_pnummax;
-		if (argmax <= 0)
-			errx(1, "no space for arguments");
+        if (argmax <= 0) {
+			myerrx(1, "no space for arguments");
+            return NULL;
+        }
 		new->e_psizemax = argmax;
 		new->e_pbsize = 0;
 		cnt += new->e_pnummax + 1;
 		new->e_next = lastexecplus;
 		lastexecplus = new;
 	}
-	if ((new->e_argv = malloc(cnt * sizeof(char *))) == NULL)
-		err(1, NULL);
-	if ((new->e_orig = malloc(cnt * sizeof(char *))) == NULL)
-		err(1, NULL);
-	if ((new->e_len = malloc(cnt * sizeof(int))) == NULL)
-		err(1, NULL);
-
+    if ((new->e_argv = malloc(cnt * sizeof(char *))) == NULL) {
+		myerr(1, NULL);
+        return NULL;
+    }
+    if ((new->e_orig = malloc(cnt * sizeof(char *))) == NULL) {
+		myerr(1, NULL);
+        return NULL;
+    }
+    if ((new->e_len = malloc(cnt * sizeof(int))) == NULL) {
+        myerr(1, NULL);
+        return NULL;
+    }
 	for (argv = *argvp, cnt = 0; argv < ap; ++argv, ++cnt) {
 		new->e_orig[cnt] = *argv;
 		if (new->flags & F_EXECPLUS)
@@ -801,8 +834,10 @@ c_exec(OPTION *option, char ***argvp)
 			if (!(new->flags & F_EXECPLUS) && p[0] == '{' &&
 			    p[1] == '}') {
 				if ((new->e_argv[cnt] =
-				    malloc(MAXPATHLEN)) == NULL)
-					err(1, NULL);
+                     malloc(MAXPATHLEN)) == NULL) {
+					myerr(1, NULL);
+                    return NULL;
+                }
 				new->e_len[cnt] = MAXPATHLEN;
 				break;
 			}
@@ -877,8 +912,10 @@ c_flags(OPTION *option, char ***argvp)
 		new->flags |= F_ANY;
 		flags_str++;
 	}
-	if (strtofflags(&flags_str, &flags, &notflags) == 1)
-		errx(1, "%s: %s: illegal flags string", option->name, flags_str);
+    if (strtofflags(&flags_str, &flags, &notflags) == 1) {
+		myerrx(1, "%s: %s: illegal flags string", option->name, flags_str);
+        return NULL;
+    }
 
 	new->fl_flags = flags;
 	new->fl_notflags = notflags;
@@ -939,8 +976,10 @@ f_fstype(PLAN *plan, FTSENT *entry)
 		} else
 			p = NULL;
 
-		if (statfs(entry->fts_accpath, &sb))
-			err(1, "%s", entry->fts_accpath);
+        if (statfs(entry->fts_accpath, &sb)) {
+			myerr(1, "%s", entry->fts_accpath);
+            return 0;
+        }
 
 		if (p) {
 			p[0] = save[0];
@@ -1029,8 +1068,10 @@ c_group(OPTION *option, char ***argvp)
 		if (gname[0] == '-' || gname[0] == '+')
 			gname++;
 		gid = atoi(gname);
-		if (gid == 0 && gname[0] != '0')
-			errx(1, "%s: %s: no such group", option->name, gname);
+        if (gid == 0 && gname[0] != '0') {
+			myerrx(1, "%s: %s: no such group", option->name, gname);
+            return 0;
+        }
 		gid = find_parsenum(new, option->name, cp, NULL);
 	} else
 		gid = g->gr_gid;
@@ -1082,8 +1123,10 @@ c_samefile(OPTION *option, char ***argvp)
 	ftsoptions &= ~FTS_NOSTAT;
 
 	new = palloc(option);
-	if (stat(fn, &sb))
+    if (stat(fn, &sb)) {
 		err(1, "%s", fn);
+        return NULL;
+    }
 	new->i_data = sb.st_ino;
 	return new;
 }
@@ -1217,11 +1260,15 @@ c_newer(OPTION *option, char ***argvp)
 	/* compare against what */
 	if (option->flags & F_TIME2_T) {
 		new->t_data = get_date(fn_or_tspec);
-		if (new->t_data == (time_t) -1)
-			errx(1, "Can't parse date/time: %s", fn_or_tspec);
+        if (new->t_data == (time_t) -1) {
+			myerrx(1, "Can't parse date/time: %s", fn_or_tspec);
+            return NULL;
+        }
 	} else {
-		if (stat(fn_or_tspec, &sb))
-			err(1, "%s", fn_or_tspec);
+        if (stat(fn_or_tspec, &sb)) {
+			myerr(1, "%s", fn_or_tspec);
+            return NULL;
+        }
 		if (option->flags & F_TIME2_C)
 			new->t_data = sb.st_ctime;
 		else if (option->flags & F_TIME2_A)
@@ -1335,8 +1382,10 @@ c_perm(OPTION *option, char ***argvp)
 		}
 	}
 
-	if ((set = setmode(perm)) == NULL)
-		errx(1, "%s: %s: illegal mode string", option->name, perm);
+    if ((set = setmode(perm)) == NULL) {
+		myerrx(1, "%s: %s: illegal mode string", option->name, perm);
+        return NULL;
+    }
 
 	new->m_data = getmode(set, 0);
 	free(set);
@@ -1388,8 +1437,10 @@ f_print0(PLAN *plan __unused, FTSENT *entry)
 int
 f_prune(PLAN *plan __unused, FTSENT *entry)
 {
-	if (fts_set(tree, entry, FTS_SKIP))
-		err(1, "%s", entry->fts_path);
+    if (fts_set(tree, entry, FTS_SKIP)) {
+		myerr(1, "%s", entry->fts_path);
+        return 0;
+    }
 	return 1;
 }
 
@@ -1424,8 +1475,9 @@ f_regex(PLAN *plan, FTSENT *entry)
 
 	if (errcode != 0 && errcode != REG_NOMATCH) {
 		regerror(errcode, pre, errbuf, sizeof errbuf);
-		errx(1, "%s: %s",
+		myerrx(1, "%s: %s",
 		     plan->flags & F_IGNCASE ? "-iregex" : "-regex", errbuf);
+        return 0;
 	}
 
 	if (errcode == 0 && pmatch.rm_so == 0 && pmatch.rm_eo == len)
@@ -1443,17 +1495,20 @@ c_regex(OPTION *option, char ***argvp)
 	int errcode;
 	char errbuf[LINE_MAX];
 
-	if ((pre = malloc(sizeof(regex_t))) == NULL)
-		err(1, NULL);
+    if ((pre = malloc(sizeof(regex_t))) == NULL) {
+		myerr(1, NULL);
+        return NULL;
+    }
 
 	pattern = nextarg(option, argvp);
 
 	if ((errcode = regcomp(pre, pattern,
 	    regexp_flags | (option->flags & F_IGNCASE ? REG_ICASE : 0))) != 0) {
 		regerror(errcode, pre, errbuf, sizeof errbuf);
-		errx(1, "%s: %s: %s",
+		myerrx(1, "%s: %s: %s",
 		     option->flags & F_IGNCASE ? "-iregex" : "-regex",
 		     pattern, errbuf);
+        return NULL;
 	}
 
 	new = palloc(option);
@@ -1528,13 +1583,16 @@ c_size(OPTION *option, char ***argvp)
 			scale = 0x4000000000000LL;
 			break;
 		default:
-			errx(1, "%s: %s: illegal trailing character",
+			myerrx(1, "%s: %s: illegal trailing character",
 				option->name, size_str);
+            return 0;
 			break;
 		}
-		if (new->o_data > QUAD_MAX / scale)
-			errx(1, "%s: %s: value too large",
+        if (new->o_data > QUAD_MAX / scale) {
+			myerrx(1, "%s: %s: value too large",
 				option->name, size_str);
+            return new;
+        }
 		new->o_data *= scale;
 	}
 	return new;
@@ -1592,7 +1650,8 @@ c_type(OPTION *option, char ***argvp)
 		break;
 #endif /* FTS_WHITEOUT */
 	default:
-		errx(1, "%s: %s: unknown type", option->name, typestring);
+        myerrx(1, "%s: %s: unknown type", option->name, typestring);
+        return NULL;
 	}
 
 	new = palloc(option);
@@ -1631,8 +1690,10 @@ c_user(OPTION *option, char ***argvp)
 		if( username[0] == '-' || username[0] == '+' )
 			username++;
 		uid = atoi(username);
-		if (uid == 0 && username[0] != '0')
-			errx(1, "%s: %s: no such user", option->name, username);
+        if (uid == 0 && username[0] != '0') {
+			myerrx(1, "%s: %s: no such user", option->name, username);
+            return new;
+        }
 		uid = find_parsenum(new, option->name, cp, NULL);
 	} else
 		uid = p->pw_uid;

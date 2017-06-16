@@ -52,13 +52,14 @@ __FBSDID("$FreeBSD: src/usr.bin/find/find.c,v 1.23 2010/12/11 08:32:16 joel Exp 
 #include <string.h>
 
 #ifdef __APPLE__
-#include <get_compat.h>
+//#include <get_compat.h>
 #include <unistd.h>
-#else
+//#else
 #define COMPAT_MODE(func, mode) 1
 #endif
 
 #include "find.h"
+#include "error.h"
 
 #ifdef __APPLE__
 static int find_compare(const FTSENT **s1, const FTSENT **s2);
@@ -186,14 +187,18 @@ static char **addPath(char **array, char *newPath)
 	static int pathCounter = 0;
 	
 	if (newPath == NULL) {	/* initialize array */
-		if ((array = malloc(sizeof(char *))) == NULL)
-			err(2, "out of memory");
+        if ((array = malloc(sizeof(char *))) == NULL) {
+			myerr(2, "out of memory");
+            return 0;
+        }
 		array[0] = NULL;
 	}
 	else {
 		array = realloc(array, (++pathCounter + 1) * sizeof(char *));
-		if (array == NULL)
-			err(2, "out of memory");
+        if (array == NULL) {
+            myerr(2, "out of memory");
+            return 0;
+        }
 		else {
 			array[pathCounter - 1] = newPath;
 			array[pathCounter] = NULL;	/* ensure array is null terminated */
@@ -234,7 +239,8 @@ find_execute(PLAN *plan, char *paths[])
 		int stat_errno = errno;
 		if (strict_symlinks && stat_ret < 0) {
 		    if (stat_errno == ELOOP) {
-			errx(1, "Symlink loop resolving %s", paths[pathIndex]);
+                myerrx(1, "Symlink loop resolving %s", paths[pathIndex]);
+                return 0;
 		    }
 		}
 
@@ -247,7 +253,7 @@ find_execute(PLAN *plan, char *paths[])
 				myPaths = addPath(myPaths, paths[pathIndex]);
 			} else {
 				if (stat_errno != ENAMETOOLONG) {	/* if name is too long, just let existing logic handle it */
-					warnx("%s: Permission denied", paths[pathIndex]);
+					mywarnx("%s: Permission denied", paths[pathIndex]);
 					nonSearchableDirFound = 1;
 				}
 			}
@@ -262,13 +268,16 @@ find_execute(PLAN *plan, char *paths[])
 	}
 
 	tree = fts_open(myPaths, ftsoptions, (issort ? find_compare : NULL));
-	if (tree == NULL)
-		err(1, "ftsopen");
-
+    if (tree == NULL) {
+		myerr(1, "ftsopen");
+        return 0;
+    }
 	for (rval = nonSearchableDirFound; (entry = fts_read(tree)) != NULL;) {
 		if (maxdepth != -1 && entry->fts_level >= maxdepth) {
-			if (fts_set(tree, entry, FTS_SKIP))
-				err(1, "%s", entry->fts_path);
+            if (fts_set(tree, entry, FTS_SKIP)) {
+				myerr(1, "%s", entry->fts_path);
+                return 0;
+            }
 		}
 
 		switch (entry->fts_info) {
@@ -284,7 +293,7 @@ find_execute(PLAN *plan, char *paths[])
 		case FTS_ERR:
 		case FTS_NS:
 			(void)fflush(stdout);
-			warnx("%s: %s",
+			mywarnx("%s: %s",
 			    entry->fts_path, strerror(entry->fts_errno));
 			rval = 1;
 			continue;
@@ -296,7 +305,7 @@ find_execute(PLAN *plan, char *paths[])
 #define	BADCH	" \t\n\\'\""
 		if (isxargs && strpbrk(entry->fts_path, BADCH)) {
 			(void)fflush(stdout);
-			warnx("%s: illegal path", entry->fts_path);
+			mywarnx("%s: illegal path", entry->fts_path);
 			rval = 1;
 			continue;
 		}
@@ -316,8 +325,10 @@ find_execute(PLAN *plan, char *paths[])
 	if (execplus_error) {
 		exit(execplus_error);
 	}
-	if (errno)
-		err(1, "fts_read");
+    if (errno) {
+		myerr(1, "fts_read");
+        return 0;
+    }
 	fts_close(tree);
 	return (rval);
 }

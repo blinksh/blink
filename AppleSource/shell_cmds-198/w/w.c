@@ -36,8 +36,8 @@ __FBSDID("$FreeBSD: src/usr.bin/w/w.c,v 1.58 2005/06/04 23:40:09 gad Exp $");
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1980, 1991, 1993, 1994\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1980, 1991, 1993, 1994\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif
 
 #ifndef lint
@@ -50,15 +50,16 @@ static const char sccsid[] = "@(#)w.c	8.4 (Berkeley) 4/16/94";
  * This program is similar to the systat command on Tenex/Tops 10/20
  *
  */
+#define HAVE_UTMPX 1
 #include <sys/param.h>
 #include <sys/time.h>
 #include <sys/stat.h>
 #include <sys/sysctl.h>
 #include <sys/proc.h>
-#include <sys/user.h>
+// #include <sys/user.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
-#include <sys/tty.h>
+// #include <sys/tty.h>
 
 #ifndef __APPLE__
 #include <machine/cpu.h>
@@ -79,13 +80,13 @@ static const char sccsid[] = "@(#)w.c	8.4 (Berkeley) 4/16/94";
 #include <limits.h>
 #include <locale.h>
 #include <netdb.h>
-#include <nlist.h>
+#include <mach-o/nlist.h>
 #include <paths.h>
 #include <resolv.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <timeconv.h>
+// #include <timeconv.h>
 #include <unistd.h>
 #if HAVE_UTMPX
 #include <utmpx.h>
@@ -100,6 +101,7 @@ static const char sccsid[] = "@(#)w.c	8.4 (Berkeley) 4/16/94";
 #include <TargetConditionals.h>
 
 #include "extern.h"
+#include "error.h"
 
 struct timeval	boottime;
 #if !HAVE_UTMPX
@@ -127,8 +129,8 @@ char	      **sel_users;	/* login array of particular users selected */
 /*
  * One of these per active utmp entry.
  */
-struct	entry {
-	struct	entry *next;
+struct	utmp_entry {
+	struct	utmp_entry *next;
 #if HAVE_UTMPX
 	struct	utmpx utmp;
 #else
@@ -161,7 +163,7 @@ static void		 w_getargv(void);
 char *fmt_argv(char **, char *, int);	/* ../../bin/ps/fmt.c */
 
 int
-main(int argc, char *argv[])
+w_main(int argc, char *argv[])
 {
 	struct kinfo_proc *kp;
 	struct kinfo_proc *kprocbuf;
@@ -324,8 +326,10 @@ main(int argc, char *argv[])
 			if (!usermatch)
 				continue;
 		}
-		if ((ep = calloc(1, sizeof(struct entry))) == NULL)
+        if ((ep = calloc(1, sizeof(struct utmp_entry))) == NULL) {
 			errx(1, "calloc");
+            return 0;
+        }
 		*nextp = ep;
 		nextp = &ep->next;
 #if HAVE_UTMPX
@@ -383,7 +387,7 @@ main(int argc, char *argv[])
 #define HEADER_TTY		"TTY"
 #define HEADER_FROM		"FROM"
 #define HEADER_LOGIN_IDLE	"LOGIN@  IDLE "
-#define HEADER_WHAT		"WHAT\n"
+#define HEADER_WHAT		"WHAT\n\r"
 #define WUSED  (UT_NAMESIZE + UT_LINESIZE + W_DISPHOSTSIZE + \
 		sizeof(HEADER_LOGIN_IDLE) + 3)	/* header width incl. spaces */ 
 		(void)printf("%-*.*s %-*.*s %-*.*s  %s", 
@@ -484,12 +488,14 @@ main(int argc, char *argv[])
 #else
 		w_getargv();
 #endif /* HAVE_KVM */
-		if (ep->args == NULL)
+        if (ep->args == NULL) {
 			err(1, NULL);
+            return 0;
+        }
 	}
 	/* sort by idle time */
 	if (sortidle && ehead != NULL) {
-		struct entry *from, *save;
+		struct utmp_entry *from, *save;
 
 		from = ehead;
 		ehead = NULL;
@@ -561,7 +567,7 @@ main(int argc, char *argv[])
 				    dkp->ki_comm, MAXCOMLEN);
 				if (ptr == NULL)
 					ptr = "-";
-				(void)printf("\t\t%-9d %s\n",
+				(void)printf("\t\t%-9d %s\n\r",
 				    dkp->ki_pid, ptr);
 			}
 		}
@@ -585,7 +591,7 @@ main(int argc, char *argv[])
 		pr_attime(&t, &now);
 #endif
 		longidle = pr_idle(ep->idle);
-		(void)printf("%.*s\n", argwidth - longidle, ep->args);
+		(void)printf("%.*s\n\r", argwidth - longidle, ep->args);
 #ifdef __APPLE__
 		free(ep->args);
 #endif
@@ -652,7 +658,7 @@ pr_header(time_t *nowp, int nusers)
 	 * Print 1, 5, and 15 minute load averages.
 	 */
 	if (getloadavg(avenrun, sizeof(avenrun) / sizeof(avenrun[0])) == -1)
-		(void)printf(", no load average information available\n");
+		(void)printf(", no load average information available\n\r");
 	else {
 		(void)printf(", load averages:");
 		for (i = 0; i < (int)(sizeof(avenrun) / sizeof(avenrun[0])); i++) {
@@ -660,7 +666,7 @@ pr_header(time_t *nowp, int nusers)
 				(void)printf(",");
 			(void)printf(" %.2f", avenrun[i]);
 		}
-		(void)printf("\n");
+		(void)printf("\n\r");
 	}
 }
 
@@ -684,10 +690,10 @@ usage(int wcmd)
 {
 	if (wcmd)
 		(void)fprintf(stderr,
-		    "usage: w [hi] [user ...]\n");
+		    "\rusage: w [hi] [user ...]\n\r");
 	else
-		(void)fprintf(stderr, "usage: uptime\n");
-	exit(1);
+		(void)fprintf(stderr, "\rusage: uptime\n\r");
+	// exit(1);
 }
 
 static int 

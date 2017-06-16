@@ -57,6 +57,7 @@ __FBSDID("$FreeBSD: src/usr.bin/find/ls.c,v 1.23 2011/09/28 18:53:36 ed Exp $");
 #endif /* __APPLE__ */
 
 #include "find.h"
+#include "error.h"
 
 /* Derived from the print routines in the ls(1) source code. */
 

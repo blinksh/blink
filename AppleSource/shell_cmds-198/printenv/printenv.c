@@ -29,8 +29,8 @@
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1987, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1987, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #if 0
@@ -49,8 +49,9 @@ __FBSDID("$FreeBSD$");
 #include <string.h>
 #include <unistd.h>
 
-void	usage(void);
+static void	usage(void);
 extern char **environ;
+#define exit return
 
 /*
  * printenv
@@ -59,7 +60,7 @@ extern char **environ;
  * February, 1979
  */
 int
-main(int argc, char *argv[])
+printenv_main(int argc, char *argv[])
 {
 	char *cp, **ep;
 	size_t len;
@@ -70,13 +71,14 @@ main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
+            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
 	if (argc == 0) {
 		for (ep = environ; *ep; ep++)
-			(void)printf("%s\n", *ep);
+			(void)printf("%s\n\r", *ep);
 		exit(0);
 	}
 	len = strlen(*argv);
@@ -84,7 +86,7 @@ main(int argc, char *argv[])
 		if (!memcmp(*ep, *argv, len)) {
 			cp = *ep + len;
 			if (!*cp || *cp == '=') {
-				(void)printf("%s\n", *cp ? cp + 1 : cp);
+				(void)printf("%s\n\r", *cp ? cp + 1 : cp);
 				exit(0);
 			}
 		}
@@ -94,6 +96,6 @@ main(int argc, char *argv[])
 void
 usage(void)
 {
-	(void)fprintf(stderr, "usage: printenv [name]\n");
-	exit(1);
+	(void)fprintf(stderr, "\rusage: printenv [name]\n\r");
+	// exit(1);
 }

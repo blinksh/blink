@@ -46,6 +46,7 @@ __FBSDID("$FreeBSD: src/usr.bin/find/operator.c,v 1.17 2010/12/11 08:32:16 joel 
 #include <stdio.h>
 
 #include "find.h"
+#include "error.h"
 
 static PLAN *yanknode(PLAN **);
 static PLAN *yankexpr(PLAN **);
@@ -92,8 +93,10 @@ yankexpr(PLAN **planp)
 	 */
 	if (node->execute == f_openparen)
 		for (tail = subplan = NULL;;) {
-			if ((next = yankexpr(planp)) == NULL)
-				errx(1, "(: missing closing ')'");
+            if ((next = yankexpr(planp)) == NULL) {
+				myerrx(1, "(: missing closing ')'");
+                return NULL;
+            }
 			/*
 			 * If we find a closing ')' we store the collected
 			 * subplan in our '(' node and convert the node to
@@ -102,8 +105,10 @@ yankexpr(PLAN **planp)
 			 * subplan.
 			 */
 			if (next->execute == f_closeparen) {
-				if (subplan == NULL)
-					errx(1, "(): empty inner expression");
+                if (subplan == NULL) {
+					myerrx(1, "(): empty inner expression");
+                    return NULL;
+                }
 				node->p_data[0] = subplan;
 				node->execute = f_expr;
 				break;
@@ -142,8 +147,10 @@ paren_squish(PLAN *plan)
 		 * if we find an unclaimed ')' it means there is a missing
 		 * '(' someplace.
 		 */
-		if (expr->execute == f_closeparen)
-			errx(1, "): no beginning '('");
+        if (expr->execute == f_closeparen) {
+			myerrx(1, "): no beginning '('");
+            return NULL;
+        }
 
 		/* add the expression to our result plan */
 		if (result == NULL)
@@ -192,10 +199,14 @@ not_squish(PLAN *plan)
 				++notlevel;
 				node = yanknode(&plan);
 			}
-			if (node == NULL)
-				errx(1, "!: no following expression");
-			if (node->execute == f_or)
-				errx(1, "!: nothing between ! and -o");
+            if (node == NULL) {
+				myerrx(1, "!: no following expression");
+                return NULL;
+            }
+            if (node->execute == f_or) {
+				myerrx(1, "!: nothing between ! and -o");
+                return NULL;
+            }
 			/*
 			 * If we encounter ! ( expr ) then look for nots in
 			 * the expr subplan.
@@ -251,12 +262,16 @@ or_squish(PLAN *plan)
 		 * remaining stuff into the second subplan and return the or.
 		 */
 		if (next->execute == f_or) {
-			if (result == NULL)
-				errx(1, "-o: no expression before -o");
+            if (result == NULL) {
+				myerrx(1, "-o: no expression before -o");
+                return NULL;
+            }
 			next->p_data[0] = result;
 			next->p_data[1] = or_squish(plan);
-			if (next->p_data[1] == NULL)
-				errx(1, "-o: no expression after -o");
+            if (next->p_data[1] == NULL) {
+				myerrx(1, "-o: no expression after -o");
+                return NULL;
+            }
 			return (next);
 		}
 

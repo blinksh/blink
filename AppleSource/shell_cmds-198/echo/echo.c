@@ -69,7 +69,7 @@ errexit(const char *prog, const char *reason)
 }
 	
 int
-main(int argc, char *argv[])
+echo_main(int argc, char *argv[])
 {
 	int nflag;	/* if not set, output a trailing newline. */
 	int veclen;	/* number of writev arguments. */

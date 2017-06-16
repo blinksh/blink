@@ -51,12 +51,13 @@ __RCSID("$NetBSD: uname.c,v 1.10 1998/11/09 13:24:05 kleink Exp $");
 #include <sys/utsname.h>
 
 #ifdef __APPLE__
-#include <get_compat.h>
-#else  /* !__APPLE__ */
+// #include <get_compat.h>
+// #else  /* !__APPLE__ */
 #define COMPAT_MODE(a,b) (1)
 #endif /* __APPLE__ */
+#define exit return 
 
-int	main __P((int, char **));
+int	uname_main __P((int, char **));
 static void usage __P((void));
 
 /* Note that PRINT_MACHINE_ARCH is excluded from PRINT_ALL! */
@@ -70,7 +71,7 @@ static void usage __P((void));
     (PRINT_SYSNAME|PRINT_NODENAME|PRINT_RELEASE|PRINT_VERSION|PRINT_MACHINE)
 
 int
-main(argc, argv) 
+uname_main(argc, argv)
 	int argc;
 	char **argv;
 {
@@ -89,9 +90,9 @@ main(argc, argv)
 		case 'a':
 			print_mask |= PRINT_ALL;
 #ifdef __APPLE__
-			if (!COMPAT_MODE("bin/uname", "Unix2003")) {
+			// if (!COMPAT_MODE("bin/uname", "Unix2003")) {
 				print_mask |= PRINT_MACHINE_ARCH;
-			}
+			// }
 #endif /* __APPLE__ */
 			break;
 		case 'm':
@@ -114,12 +115,14 @@ main(argc, argv)
 			break;
 		default:
 			usage();
+            return 0;
 			/* NOTREACHED */
 		}
 	}
 	
 	if (optind != argc) {
 		usage();
+        return 0;
 		/* NOTREACHED */
 	}
 
@@ -128,7 +131,9 @@ main(argc, argv)
 	}
 
 	if (uname(&u) != 0) {
-		err(EXIT_FAILURE, "uname");
+		// err(EXIT_FAILURE, "uname");
+        warn("uname");
+        return 0;
 		/* NOTREACHED */
 	}
 #ifndef __APPLE__
@@ -195,6 +200,7 @@ main(argc, argv)
 #endif /* __APPLE__ */
 	}
 	putchar('\n');
+    putchar('\r');
 
 	exit(EXIT_SUCCESS);
 	/* NOTREACHED */
@@ -203,6 +209,6 @@ main(argc, argv)
 static void
 usage()
 {
-	fprintf(stderr, "usage: uname [-amnprsv]\n");
-	exit(EXIT_FAILURE);
+	fprintf(stderr, "\rusage: uname [-amnprsv]\n\r");
+	// exit(EXIT_FAILURE);
 }
