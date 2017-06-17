@@ -72,19 +72,20 @@ static BOOL authRequired = NO;
 - (void)registerforDeviceLockNotif
 {
   //Screen lock notifications
-  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-				  NULL,                                        // observer
-				  displayStatusChanged,                        // callback
-				  CFSTR("com.apple.springboard.lockcomplete"), // event name
-				  NULL,                                        // object
-				  CFNotificationSuspensionBehaviorDeliverImmediately);
-
-  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-				  NULL,                                        // observer
-				  displayStatusChanged,                        // callback
-				  CFSTR("com.apple.springboard.lockstate"),    // event name
-				  NULL,                                        // object
-				  CFNotificationSuspensionBehaviorDeliverImmediately);
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayStatusChanged:) name:UIApplicationProtectedDataWillBecomeUnavailable object:nil];
+//  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+//				  NULL,                                        // observer
+//				  displayStatusChanged,                        // callback
+//				  CFSTR("com.apple.springboard.lockcomplete"), // event name
+//				  NULL,                                        // object
+//				  CFNotificationSuspensionBehaviorDeliverImmediately);
+//
+//  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+//				  NULL,                                        // observer
+//				  displayStatusChanged,                        // callback
+//				  CFSTR("com.apple.springboard.lockstate"),    // event name
+//				  NULL,                                        // object
+//				  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
@@ -98,7 +99,8 @@ static BOOL authRequired = NO;
 }
 
 //call back
-static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+//static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+- (void) displayStatusChanged:(NSNotification *)notification
 {
   // the "com.apple.springboard.lockcomplete" notification will always come after the "com.apple.springboard.lockstate" notification
   authRequired = YES;
