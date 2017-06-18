@@ -32,6 +32,9 @@
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/usr.bin/grep/grep.c,v 1.16 2012/01/15 17:01:28 eadler Exp $");
 
+#define WITHOUT_FASTMATCH
+#define WITHOUT_LZMA
+
 #include <sys/stat.h>
 #include <sys/types.h>
 
@@ -59,6 +62,8 @@ __FBSDID("$FreeBSD: src/usr.bin/grep/grep.c,v 1.16 2012/01/15 17:01:28 eadler Ex
 nl_catd	 catalog;
 #endif
 
+#include "error.h"
+
 /*
  * Default messags to use when NLS is disabled or no catalogue
  * is found.
@@ -69,15 +74,15 @@ const char	*errstr[] = {
 /* 2*/	"cannot read bzip2 compressed file",
 /* 3*/	"unknown %s option",
 #ifdef __APPLE__
-/* 4*/	"usage: %s [-abcDEFGHhIiJLlmnOoqRSsUVvwxZ] [-A num] [-B num] [-C[num]]\n",
+/* 4*/	"\rusage: %s [-abcDEFGHhIiJLlmnOoqRSsUVvwxZ] [-A num] [-B num] [-C[num]]\n\r",
 #else
-/* 4*/	"usage: %s [-abcDEFGHhIiJLlmnOoPqRSsUVvwxZ] [-A num] [-B num] [-C[num]]\n",
+/* 4*/	"\rusage: %s [-abcDEFGHhIiJLlmnOoPqRSsUVvwxZ] [-A num] [-B num] [-C[num]]\n\r",
 #endif
-/* 5*/	"\t[-e pattern] [-f file] [--binary-files=value] [--color=when]\n",
-/* 6*/	"\t[--context[=num]] [--directories=action] [--label] [--line-buffered]\n",
-/* 7*/	"\t[--null] [pattern] [file ...]\n",
-/* 8*/	"Binary file %s matches\n",
-/* 9*/	"%s (BSD grep) %s\n",
+/* 5*/	"\t[-e pattern] [-f file] [--binary-files=value] [--color=when]\n\r",
+/* 6*/	"\t[--context[=num]] [--directories=action] [--label] [--line-buffered]\n\r",
+/* 7*/	"\t[--null] [pattern] [file ...]\n\r",
+/* 8*/	"Binary file %s matches\n\r",
+/* 9*/	"%s (BSD grep) %s\n\r",
 };
 
 /* Flags passed to regcomp() and regexec() */
@@ -168,7 +173,7 @@ usage(void)
 	fprintf(stderr, "%s", getstr(5));
 	fprintf(stderr, "%s", getstr(6));
 	fprintf(stderr, "%s", getstr(7));
-	exit(2);
+	// exit(2);
 }
 
 static const char	*optstr = "0123456789A:B:C:D:EFGHIJMLOPSRUVZabcd:e:f:hilm:nopqrsuvwxXy";
@@ -328,8 +333,10 @@ read_patterns(const char *fn)
 	char *line;
 	size_t len;
 
-	if ((f = fopen(fn, "r")) == NULL)
-		err(2, "%s", fn);
+    if ((f = fopen(fn, "r")) == NULL) {
+		myerr(2, "%s", fn);
+        return;
+    }
 	if ((fstat(fileno(f), &st) == -1) || (S_ISDIR(st.st_mode))) {
 		fclose(f);
 		return;
@@ -337,7 +344,7 @@ read_patterns(const char *fn)
         while ((line = fgetln(f, &len)) != NULL)
 		add_pattern(line, line[0] == '\n' ? 0 : len);
 	if (ferror(f))
-		err(2, "%s", fn);
+		myerr(2, "%s", fn);
 	fclose(f);
 }
 
@@ -351,7 +358,7 @@ init_color(const char *d)
 }
 
 int
-main(int argc, char *argv[])
+grep_main(int argc, char *argv[])
 {
 	char **aargv, **eargv, *eopts;
 	char *ep;
@@ -362,6 +369,36 @@ main(int argc, char *argv[])
 
 	setlocale(LC_ALL, "");
 
+    // Initialize all variables and flags:
+    patterns = pattern_sz = 0;
+    fpatterns = fpattern_sz = 0;
+    dpatterns = dpattern_sz = 0;
+    
+    pattern = NULL;
+    dpattern = NULL;
+    fpattern = NULL;
+
+    cflags = REG_NOSUB;
+    eflags = REG_STARTEND;
+    
+    matchall = false;
+    
+    Aflag = Bflag = 0;
+    Hflag = Lflag = bflag = cflag = hflag = iflag = lflag = mflag = false;
+    mcount = 0;
+    nflag = oflag = qflag = sflag = vflag = wflag = xflag = lbflag = nullflag = false;
+    label = NULL;
+    grepbehave = GREP_BASIC;
+    binbehave = BINFILE_BIN;
+    filebehave = FILE_STDIO;
+    devbehave = DEV_READ;
+    dirbehave = DIR_READ;
+    linkbehave = LINK_READ;
+    
+    dexclude = dinclude = false;
+    fexclude = finclude = false;
+
+    
 #ifndef WITHOUT_NLS
 	catalog = catopen("grep", NL_CAT_LOCALE);
 #endif
@@ -441,7 +478,8 @@ main(int argc, char *argv[])
 				Aflag = 0;
 			else if (Aflag > LLONG_MAX / 10) {
 				errno = ERANGE;
-				err(2, NULL);
+				myerr(2, NULL);
+                return 0;
 			}
 			Aflag = Bflag = (Aflag * 10) + (c - '0');
 			break;
@@ -457,11 +495,14 @@ main(int argc, char *argv[])
 			errno = 0;
 			l = strtoull(optarg, &ep, 10);
 			if (((errno == ERANGE) && (l == ULLONG_MAX)) ||
-			    ((errno == EINVAL) && (l == 0)))
-				err(2, NULL);
+                ((errno == EINVAL) && (l == 0))) {
+				myerr(2, NULL);
+                return 0;
+            }
 			else if (ep[0] != '\0') {
 				errno = EINVAL;
-				err(2, NULL);
+				myerr(2, NULL);
+                return 0;
 			}
 			if (c == 'A')
 				Aflag = l;
@@ -484,8 +525,10 @@ main(int argc, char *argv[])
 				devbehave = DEV_SKIP;
 			else if (strcasecmp(optarg, "read") == 0)
 				devbehave = DEV_READ;
-			else
-				errx(2, getstr(3), "--devices");
+            else {
+				myerrx(2, getstr(3), "--devices");
+                return 0;
+            }
 			break;
 		case 'd':
 			if (strcasecmp("recurse", optarg) == 0) {
@@ -495,8 +538,10 @@ main(int argc, char *argv[])
 				dirbehave = DIR_SKIP;
 			else if (strcasecmp("read", optarg) == 0)
 				dirbehave = DIR_READ;
-			else
-				errx(2, getstr(3), "--directories");
+            else {
+				myerrx(2, getstr(3), "--directories");
+                return 0;
+            }
 			break;
 		case 'E':
 			grepbehave = GREP_EXTENDED;
@@ -533,7 +578,8 @@ main(int argc, char *argv[])
 		case 'J':
 #ifdef WITHOUT_BZIP2
 			errno = EOPNOTSUPP;
-			err(2, "bzip2 support was disabled at compile-time");
+			myerr(2, "bzip2 support was disabled at compile-time");
+            return 0;
 #endif
 			filebehave = FILE_BZIP;
 			break;
@@ -550,17 +596,20 @@ main(int argc, char *argv[])
 			errno = 0;
 			mcount = strtoll(optarg, &ep, 10);
 			if (((errno == ERANGE) && (mcount == LLONG_MAX)) ||
-			    ((errno == EINVAL) && (mcount == 0)))
-				err(2, NULL);
-			else if (ep[0] != '\0') {
+                ((errno == EINVAL) && (mcount == 0))) {
+				myerr(2, NULL);
+                return 0;
+            } else if (ep[0] != '\0') {
 				errno = EINVAL;
-				err(2, NULL);
+				myerr(2, NULL);
+                return 0;
 			}
 			break;
 		case 'M':
 #ifdef WITHOUT_LZMA
 			errno = EOPNOTSUPP;
-			err(2, "lzma support was disabled at compile-time");
+			myerr(2, "lzma support was disabled at compile-time");
+            return 0;
 #endif
 			filebehave = FILE_LZMA;
 			break;
@@ -618,7 +667,8 @@ main(int argc, char *argv[])
 		case 'X':
 #ifdef WITHOUT_LZMA
 			errno = EOPNOTSUPP;
-			err(2, "xz support was disabled at compile-time");
+			myerr(2, "xz support was disabled at compile-time");
+            return 0;
 #endif
 			filebehave = FILE_XZ;
 			break;
@@ -632,8 +682,10 @@ main(int argc, char *argv[])
 				binbehave = BINFILE_SKIP;
 			else if (strcasecmp("text", optarg) == 0)
 				binbehave = BINFILE_TEXT;
-			else
-				errx(2, getstr(3), "--binary-files");
+            else {
+				myerrx(2, getstr(3), "--binary-files");
+                return 0;
+            }
 			break;
 		case COLOR_OPT:
 			color = NULL;
@@ -652,8 +704,10 @@ main(int argc, char *argv[])
 				color = init_color("01;31");
 			} else if (strcasecmp("never", optarg) != 0 &&
 			    strcasecmp("none", optarg) != 0 &&
-			    strcasecmp("no", optarg) != 0)
-				errx(2, getstr(3), "--color");
+                       strcasecmp("no", optarg) != 0) {
+				myerrx(2, getstr(3), "--color");
+                return 0;
+            }
 			cflags &= ~REG_NOSUB;
 			break;
 		case LABEL_OPT:
@@ -684,6 +738,7 @@ main(int argc, char *argv[])
 		case HELP_OPT:
 		default:
 			usage();
+            return 0;
 		}
 		lastc = c;
 		newarg = optind != prevoptind;
@@ -701,8 +756,10 @@ main(int argc, char *argv[])
 		exit(1);
 
 	/* Fail if we don't have any pattern */
-	if (aargc == 0 && needpattern)
+    if (aargc == 0 && needpattern) {
 		usage();
+        return 0;
+    }
 
 	/* Process patterns from command line */
 	if (aargc != 0 && needpattern) {
@@ -711,6 +768,9 @@ main(int argc, char *argv[])
 		++aargv;
 	}
 
+    // We have the options, initialize.
+    optarg = NULL; opterr = 0; optind = 0;
+    
 	switch (grepbehave) {
 	case GREP_BASIC:
 #ifdef __APPLE__
@@ -730,6 +790,7 @@ main(int argc, char *argv[])
 	default:
 		/* NOTREACHED */
 		usage();
+        return 0;
 	}
 
 #ifndef WITHOUT_FASTMATCH
@@ -748,7 +809,8 @@ main(int argc, char *argv[])
 			if (c != 0) {
 				regerror(c, &r_pattern[i], re_error,
 				    RE_ERROR_BUF);
-				errx(2, "%s", re_error);
+				myerrx(2, "%s", re_error);
+                return 0;
 			}
 #ifndef WITHOUT_FASTMATCH
 		}

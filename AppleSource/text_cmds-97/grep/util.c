@@ -55,6 +55,10 @@ __FBSDID("$FreeBSD: src/usr.bin/grep/util.c,v 1.19 2011/12/07 12:25:28 gabor Exp
 #include <wchar.h>
 #include <wctype.h>
 
+#define WITHOUT_FASTMATCH
+#define WITHOUT_LZMA
+#include "error.h"
+
 #ifndef WITHOUT_FASTMATCH
 #include "fastmatch.h"
 #endif
@@ -135,8 +139,10 @@ grep_tree(char **argv)
 
 	fts_flags |= FTS_NOSTAT | FTS_NOCHDIR;
 
-	if (!(fts = fts_open(argv, fts_flags, NULL)))
-		err(2, "fts_open");
+    if (!(fts = fts_open(argv, fts_flags, NULL))) {
+		myerr(2, "fts_open");
+        return 0;
+    }
 	while ((p = fts_read(fts)) != NULL) {
 		switch (p->fts_info) {
 		case FTS_DNR:
@@ -144,7 +150,7 @@ grep_tree(char **argv)
 		case FTS_ERR:
 			file_err = true;
 			if(!sflag)
-				warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
+				mywarnx("%s: %s", p->fts_path, strerror(p->fts_errno));
 			break;
 		case FTS_D:
 			/* FALLTHROUGH */
@@ -156,7 +162,7 @@ grep_tree(char **argv)
 			break;
 		case FTS_DC:
 			/* Print a warning for recursive directory loop */
-			warnx("warning: %s: recursive directory loop",
+			mywarnx("warning: %s: recursive directory loop",
 				p->fts_path);
 			break;
 		default:
@@ -195,7 +201,7 @@ procfile(const char *fn)
 #ifdef __APPLE__
 		/* 4053512, 10290183 */
 		if (dirbehave == DIR_RECURSE && isatty(STDIN_FILENO)) {
-			warnx("warning: recursive search of stdin");
+			mywarnx("warning: recursive search of stdin");
 		}
 #endif
 		fn = label != NULL ? label : getstr(1);
@@ -215,7 +221,7 @@ procfile(const char *fn)
 	if (f == NULL) {
 		file_err = true;
 		if (!sflag)
-			warn("%s", fn);
+			mywarn("%s", fn);
 		return (0);
 	}
 
@@ -267,12 +273,12 @@ procfile(const char *fn)
 #endif
 		if (!hflag)
 			printf("%s:", ln.file);
-		printf("%u\n", c);
+		printf("%u\n\r", c);
 	}
 	if (lflag && !qflag && c != 0)
-		printf("%s%c", fn, nullflag ? 0 : '\n');
+		printf("%s%s", fn, nullflag ? 0 : "\n\r");
 	if (Lflag && !qflag && c == 0)
-		printf("%s%c", fn, nullflag ? 0 : '\n');
+		printf("%s%s", fn, nullflag ? 0 : "\n\r");
 	if (c && !cflag && !lflag && !Lflag &&
 	    binbehave == BINFILE_BIN && f->binary && !qflag)
 		printf(getstr(8), fn);
@@ -459,11 +465,11 @@ procline(struct str *l, int nottext)
 	if ((tail || c) && !cflag && !qflag && !lflag && !Lflag) {
 		if (c) {
 			if (!first && !prev && !tail && Aflag)
-				printf("--\n");
+				printf("--\n\r");
 			tail = Aflag;
 			if (Bflag > 0) {
 				if (!first && !prev)
-					printf("--\n");
+					printf("--\n\r");
 				printqueue();
 			}
 			linesqueued = 0;
@@ -494,8 +500,10 @@ grep_malloc(size_t size)
 {
 	void *ptr;
 
-	if ((ptr = malloc(size)) == NULL)
-		err(2, "malloc");
+    if ((ptr = malloc(size)) == NULL) {
+		myerr(2, "malloc");
+        return NULL;
+    }
 	return (ptr);
 }
 
@@ -507,8 +515,10 @@ grep_calloc(size_t nmemb, size_t size)
 {
 	void *ptr;
 
-	if ((ptr = calloc(nmemb, size)) == NULL)
-		err(2, "calloc");
+    if ((ptr = calloc(nmemb, size)) == NULL) {
+		myerr(2, "calloc");
+        return NULL;
+    }
 	return (ptr);
 }
 
@@ -519,8 +529,10 @@ void *
 grep_realloc(void *ptr, size_t size)
 {
 
-	if ((ptr = realloc(ptr, size)) == NULL)
-		err(2, "realloc");
+    if ((ptr = realloc(ptr, size)) == NULL) {
+		myerr(2, "realloc");
+        return NULL;
+    }
 	return (ptr);
 }
 
@@ -532,8 +544,10 @@ grep_strdup(const char *str)
 {
 	char *ret;
 
-	if ((ret = strdup(str)) == NULL)
-		err(2, "strdup");
+    if ((ret = strdup(str)) == NULL) {
+		myerr(2, "strdup");
+        return NULL;
+    }
 	return (ret);
 }
 
@@ -584,16 +598,20 @@ printline(struct str *line, int sep, regmatch_t *matches, int m)
 			if (color) 
 				fprintf(stdout, "\33[m\33[K");
 			a = matches[i].rm_eo;
-			if (oflag)
+            if (oflag) {
 				putchar('\n');
+                putchar('\r');
+            }
 		}
 		if (!oflag) {
 			if (line->len - a > 0)
 				fwrite(line->dat + a, line->len - a, 1, stdout);
 			putchar('\n');
+            putchar('\r');
 		}
 	} else {
 		fwrite(line->dat, line->len, 1, stdout);
 		putchar('\n');
+        putchar('\r');
 	}
 }

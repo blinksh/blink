@@ -34,6 +34,9 @@
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/usr.bin/grep/queue.c,v 1.5 2011/04/07 13:03:35 gabor Exp $");
+#define WITHOUT_FASTMATCH
+#define WITHOUT_LZMA
+
 
 #include <sys/param.h>
 #include <sys/queue.h>

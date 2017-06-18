@@ -55,6 +55,7 @@ struct rlimit { size_t rlim_cur; };
 #if HAVE_LANGINFO_CODESET
 # include <langinfo.h>
 #endif
+#include "error.h"
 
 /* Use SA_NOCLDSTOP as a proxy for whether the sigaction machinery is
    present.  */
@@ -270,27 +271,27 @@ die (char const *message, char const *file)
   exit (SORT_FAILURE);
 }
 
-void
+static void
 usage (int status)
 {
   if (status != EXIT_SUCCESS)
-    fprintf (stderr, _("Try `%s --help' for more information.\n"),
+    fprintf (stderr, _("\rTry `%s --help' for more information.\n"),
 	     program_name);
   else
     {
       printf (_("\
-Usage: %s [OPTION]... [FILE]...\n\
+\rUsage: %s [OPTION]... [FILE]...\n\
 "),
 	      program_name);
       fputs (_("\
-Write sorted concatenation of all FILE(s) to standard output.\n\
+\rWrite sorted concatenation of all FILE(s) to standard output.\n\
 \n\
 "), stdout);
       fputs (_("\
-Mandatory arguments to long options are mandatory for short options too.\n\
+\rMandatory arguments to long options are mandatory for short options too.\n\
 "), stdout);
       fputs (_("\
-Ordering options:\n\
+\rOrdering options:\n\
 \n\
 "), stdout);
       fputs (_("\
@@ -2101,7 +2102,7 @@ new_key (void)
 }
 
 int
-main (int argc, char **argv)
+sort_main (int argc, char **argv)
 {
   struct keyfield *key;
   struct keyfield gkey;

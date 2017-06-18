@@ -43,6 +43,7 @@
 
 #include "file_cmds_ios.h"
 #include "shell_cmds_ios.h"
+#include "text_cmds_ios.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -218,6 +219,13 @@
             id_main(argc, argv);
           } else if  (([cmd isEqualToString:@"uptime"]) || ([cmd isEqualToString:@"w"])) {
               w_main(argc, argv);
+            // Commands from Apple text_cmds:
+          } else if  ([cmd isEqualToString:@"cat"]) {
+            cat_main(argc, argv);
+          } else if  ([cmd isEqualToString:@"wc"]) {
+            wc_main(argc, argv);
+          } else if  (([cmd isEqualToString:@"grep"]) || ([cmd isEqualToString:@"egrep"]) || ([cmd isEqualToString:@"fgrep"])){
+            grep_main(argc, argv);
           } else
                 // Commands that have to be inside the "shell"
                  if  ([cmd isEqualToString:@"setenv"]) {
@@ -238,14 +246,11 @@
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }
-        // Some commands free argv
-        // if (![cmd isEqualToString:@"du"]) {
-          for (unsigned i = 0; i < argc; i++)
-          {
-            free(argv[i]);
-          }
-          free(argv);
-        //}
+        for (unsigned i = 0; i < argc; i++)
+        {
+          free(argv[i]);
+        }
+        free(argv);
       }
     }
 
@@ -312,8 +317,9 @@
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
-    @"  Plus the Unix utilities: cp, ln, ls, mv, rm, mkdir, rmdir, id, whoami, groups, realpath, uname, touch, pwd, env, printenv.",
-    @"",
+    @"  Plus the Unix utilities: cd, pwd, ls, cp, ln, mv, rm, touch, mkdir, rmdir, setenv, env, printenv, ",
+    @"      compress, uncompress, gzip, gunzip, cat, wc, grep, egrep, fgrep, date, ",
+    @"      df, du, chksum, chmod, chflags, chgrp, stat, readlink, uname, id, groups, whoami, uptime.",
     @"Available gestures and keyboard shortcuts:",
     @"  two fingers tap or cmd+t: New shell.",
     @"  two fingers swipe down or cmd+w: Close shell.",

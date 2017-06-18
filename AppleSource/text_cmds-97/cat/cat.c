@@ -33,8 +33,8 @@
 #if 0
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1989, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1989, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 #endif
 
@@ -77,12 +77,18 @@ static void raw_cat(int);
 static int udom_open(const char *path, int flags);
 #endif
 
+// porting to iOS:
+#include "error.h"
+
 int
-main(int argc, char *argv[])
+cat_main(int argc, char *argv[])
 {
 	int ch;
 
 	setlocale(LC_CTYPE, "");
+    // Initialize all flags
+    bflag = eflag = nflag = sflag = tflag = vflag = 0; rval = 0;
+
 
 	while ((ch = getopt(argc, argv, "benstuv")) != -1)
 		switch (ch) {
@@ -109,6 +115,7 @@ main(int argc, char *argv[])
 			break;
 		default:
 			usage();
+            return 0;
 		}
 	argv += optind;
 
@@ -116,8 +123,8 @@ main(int argc, char *argv[])
 		scanfiles(argv, 1);
 	else
 		scanfiles(argv, 0);
-	if (fclose(stdout))
-		err(1, "stdout");
+	// if (fclose(stdout)) myerr(1, "stdout");
+    optarg = NULL; opterr = 0; optind = 0;
 	exit(rval);
 	/* NOTREACHED */
 }
@@ -125,8 +132,8 @@ main(int argc, char *argv[])
 static void
 usage(void)
 {
-	fprintf(stderr, "usage: cat [-benstuv] [file ...]\n");
-	exit(1);
+	fprintf(stderr, "\rusage: cat [-benstuv] [file ...]\n\r");
+	// exit(1);
 	/* NOTREACHED */
 }
 
@@ -152,7 +159,7 @@ scanfiles(char *argv[], int cooked)
 #endif
 		}
 		if (fd < 0) {
-			warn("%s", path);
+			mywarn("%s", path);
 			rval = 1;
 		} else if (cooked) {
 			if (fd == STDIN_FILENO)
@@ -226,12 +233,11 @@ cook_cat(FILE *fp)
 			break;
 	}
 	if (ferror(fp)) {
-		warn("%s", filename);
+		mywarn("%s", filename);
 		rval = 1;
 		clearerr(fp);
 	}
-	if (ferror(stdout))
-		err(1, "stdout");
+	// if (ferror(stdout)) myerr(1, "stdout");
 }
 
 static void
@@ -243,20 +249,28 @@ raw_cat(int rfd)
 	static char *buf = NULL;
 	struct stat sbuf;
 
-	wfd = fileno(stdout);
+	// wfd = fileno(stdout);
 	if (buf == NULL) {
 		if (fstat(wfd, &sbuf))
-			err(1, "%s", filename);
+			myerr(1, "%s", filename);
 		bsize = MAX(sbuf.st_blksize, 1024);
 		if ((buf = malloc(bsize)) == NULL)
-			err(1, "buffer");
+			myerr(1, "buffer");
 	}
 	while ((nr = read(rfd, buf, bsize)) > 0)
-		for (off = 0; nr; nr -= nw, off += nw)
-			if ((nw = write(wfd, buf + off, (size_t)nr)) < 0)
-				err(1, "stdout");
+        for (off = 0; nr; nr -= nw, off += nw) {
+            // We can't write to the fd of stdout, so we write to stdout
+            // add \r to every \n
+            nw = 0; // number of bytes written
+            for (int i = 0; i < nr; i++) {
+                fputc(*(buf+off+nw), stdout);
+                if (*(buf+off+nw) == '\n') fputc('\r', stdout);
+                nw += 1;
+            }
+			// if ((nw = write(wfd, buf + off, (size_t)nr)) < 0) myerr(1, "stdout");
+        }
 	if (nr < 0) {
-		warn("%s", filename);
+		mywarn("%s", filename);
 		rval = 1;
 	}
 }
@@ -298,11 +312,11 @@ udom_open(const char *path, int flags)
 		switch(flags & O_ACCMODE) {
 		case O_RDONLY:
 			if (shutdown(fd, SHUT_WR) == -1)
-				warn(NULL);
+				mywarn(NULL);
 			break;
 		case O_WRONLY:
 			if (shutdown(fd, SHUT_RD) == -1)
-				warn(NULL);
+				mywarn(NULL);
 			break;
 		default:
 			break;

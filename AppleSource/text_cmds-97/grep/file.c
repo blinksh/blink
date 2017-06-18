@@ -33,6 +33,10 @@
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD: src/usr.bin/grep/file.c,v 1.7 2011/10/11 22:27:23 gabor Exp $");
 
+#define WITHOUT_FASTMATCH
+#define WITHOUT_LZMA
+#define WITHOUT_BZIP2
+
 #include <sys/param.h>
 #include <sys/mman.h>
 #include <sys/stat.h>

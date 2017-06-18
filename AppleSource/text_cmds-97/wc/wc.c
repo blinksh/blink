@@ -33,8 +33,8 @@
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1980, 1987, 1991, 1993\n\
-	The Regents of the University of California.  All rights reserved.\n";
+"@(#) Copyright (c) 1980, 1987, 1991, 1993\n\r\
+	The Regents of the University of California.  All rights reserved.\n\r";
 #endif /* not lint */
 
 #if 0
@@ -63,23 +63,29 @@ __FBSDID("$FreeBSD: src/usr.bin/wc/wc.c,v 1.21 2004/12/27 22:27:56 josef Exp $")
 #include <wchar.h>
 #include <wctype.h>
 
+#include "error.h"
+
 /* We allocte this much memory statically, and use it as a fallback for
   malloc failure, or statfs failure.  So it should be small, but not
   "too small" */
 #define SMALL_BUF_SIZE (1024 * 8)
 
-uintmax_t tlinect, twordct, tcharct;
-int doline, doword, dochar, domulti;
+static uintmax_t tlinect, twordct, tcharct;
+static int doline, doword, dochar, domulti;
 
 static int	cnt(const char *);
 static void	usage(void);
 
 int
-main(int argc, char *argv[])
+wc_main(int argc, char *argv[])
 {
 	int ch, errors, total;
 
 	(void) setlocale(LC_CTYPE, "");
+    
+    // Initialize flags:
+    doline = doword = dochar =  domulti = 0;
+    tlinect = twordct = tcharct = 0;
 
 	while ((ch = getopt(argc, argv, "clmw")) != -1)
 		switch((char)ch) {
@@ -110,17 +116,20 @@ main(int argc, char *argv[])
 
 	errors = 0;
 	total = 0;
+    
+    // for (int i = 0; i < argc ; i++) fprintf("Need to open: %s \n\r", argv[i]);
+    
 	if (!*argv) {
 		if (cnt((char *)NULL) != 0)
 			++errors;
 		else
-			(void)printf("\n");
+			(void)printf("\n\r");
 	}
 	else do {
 		if (cnt(*argv) != 0)
 			++errors;
 		else
-			(void)printf(" %s\n", *argv);
+			(void)printf(" %s\n\r", *argv);
 		++total;
 	} while(*++argv);
 
@@ -131,8 +140,10 @@ main(int argc, char *argv[])
 			(void)printf(" %7ju", twordct);
 		if (dochar || domulti)
 			(void)printf(" %7ju", tcharct);
-		(void)printf(" total\n");
+		(void)printf(" total\n\r");
 	}
+    
+    optarg = NULL; opterr = 0; optind = 0;
 	exit(errors == 0 ? 0 : 1);
 }
 
@@ -159,7 +170,7 @@ cnt(const char *file)
 		fd = STDIN_FILENO;
 	} else {
 		if ((fd = open(file, O_RDONLY, 0)) < 0) {
-			warn("%s: open", file);
+			mywarn("%s: open", file);
 			return (1);
 		}
 	}
@@ -189,7 +200,7 @@ cnt(const char *file)
 	if (doline) {
 		while ((len = read(fd, buf, buf_size))) {
 			if (len == -1) {
-				warn("%s: read", file);
+				mywarn("%s: read", file);
 				(void)close(fd);
 				return (1);
 			}
@@ -213,7 +224,7 @@ cnt(const char *file)
 	 */
 	if (dochar || domulti) {
 		if (fstat(fd, &sb)) {
-			warn("%s: fstat", file);
+			mywarn("%s: fstat", file);
 			(void)close(fd);
 			return (1);
 		}
@@ -231,7 +242,7 @@ word:	gotsp = 1;
 	memset(&mbs, 0, sizeof(mbs));
 	while ((len = read(fd, buf, buf_size)) != 0) {
 		if (len == -1) {
-			warn("%s: read", file);
+			mywarn("%s: read", file);
 			(void)close(fd);
 			return (1);
 		}
@@ -244,7 +255,7 @@ word:	gotsp = 1;
 			    (size_t)-1) {
 				if (!warned) {
 					errno = EILSEQ;
-					warn("%s", file);
+					mywarn("%s", file);
 					warned = 1;
 				}
 				memset(&mbs, 0, sizeof(mbs));
@@ -269,7 +280,7 @@ word:	gotsp = 1;
 	}
 	if (domulti && MB_CUR_MAX > 1)
 		if (mbrtowc(NULL, NULL, 0, &mbs) == (size_t)-1 && !warned)
-			warn("%s", file);
+			mywarn("%s", file);
 	if (doline) {
 		tlinect += linect;
 		(void)printf(" %7ju", linect);
@@ -289,6 +300,6 @@ word:	gotsp = 1;
 static void
 usage()
 {
-	(void)fprintf(stderr, "usage: wc [-clmw] [file ...]\n");
-	exit(1);
+	(void)fprintf(stderr, "\rusage: wc [-clmw] [file ...]\n\r");
+	// exit(1);
 }
