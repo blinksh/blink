@@ -95,4 +95,9 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
 }
+
+- (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
+  // Just basic launching from blinkshell:// for now.
+  return YES;
+}
 @end
