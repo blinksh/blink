@@ -42,6 +42,8 @@ These create four static libraries:
 * shell_cmds_ios.framewok
 * text_cmds_ios.framework
 * curl_ios.framework
+
+
 You will have to copy all of them the blink/Frameworks directory. You will also need to copy the header files: 
 * file_cmds_ios/file_cmds_ios.h 
 * shell_cmds_ios/shell_cmds_ios.h 
