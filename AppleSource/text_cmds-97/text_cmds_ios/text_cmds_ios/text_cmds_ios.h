@@ -19,10 +19,7 @@ FOUNDATION_EXPORT const unsigned char text_cmds_iosVersionString[];
 // Most useful text commands
 extern int cat_main(int argc, char *argv[]);
 extern int grep_main(int argc, char *argv[]);    
-extern int sort_main(int argc, char *argv[]);
 extern int wc_main(int argc, char *argv[]);
-extern int md5_main(int argc, char *argv[]); // ??? if it works
-
 
 
 // Useless or meaningless in a sandboxed environment

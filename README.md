@@ -21,19 +21,33 @@ This fork also contains a subset of shell utilities, so you can add / remove fil
 
 Specifically, the commands available (as of now) are:
 
+* Builtin: cd, setenv 
 * From file_cmds:
 ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
 df, du, chksum, chmod, chflags, chgrp, stat, readlink, 
 compress, uncompress, gzip, gunzip,
 * From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
-* Builtin: cd, setenv 
+* From text_cmds: cat, grep, wc
+* From curl: curl (includes http, https, scp, sftp...) 
 
 
 You will need to compile the following frameworks:
-* blink/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
-* shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
+* blink/AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
+* blink/AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
+* blinkAppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
+* blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj
 
-These create two static libraries: file_cmds_ios.framework and shell_cmds_ios.framewok, which you will have to copy in the blink/Frameworks directory. You will also need to copy the header files: file_cmds_ios/file_cmds_ios.h and shell_cmds_ios/shell_cmds_ios.h to the blink/Frameworks directory. 
+These create four static libraries: 
+* file_cmds_ios.framework 
+* shell_cmds_ios.framewok
+* text_cmds_ios.framework
+* curl_ios.framework
+You will have to copy all of them the blink/Frameworks directory. You will also need to copy the header files: 
+* file_cmds_ios/file_cmds_ios.h 
+* shell_cmds_ios/shell_cmds_ios.h 
+* text_cmds_ios/text_cmds_ios.h 
+* curl_ios/curl_ios.h
+to the blink/Frameworks/include directory. 
 
 
 Since you are sideloading, you can also compile VimIOS (https://github.com/larki/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
@@ -46,6 +60,10 @@ If you do that, there are 3 directories:
 In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of the shared directory (it will be related to your Apple ID). There are two environment variables: $HOME links to the Blink-specific directory, $SHARED links to the shared directory. 
 
 From Vim, you can open the files in $SHARED. You can also edit Vim so it opens by default in the shared directory. 
+
+curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). For scp and sftp, it requires SSH keys. Create them with Blink key mechanism creation, copy the public key to the machine you want to connect to and you're set. 
+
+SSH keys are stores in $HOME/Documents/.ssh 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
