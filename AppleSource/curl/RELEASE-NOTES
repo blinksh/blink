@@ -1,0 +1,40 @@
+Curl and libcurl 7.55.0
+
+ Public curl releases:         167
+ Command line options:         207
+ curl_easy_setopt() options:   245
+ Public functions in libcurl:  61
+ Contributors:                 1571
+
+This release includes the following changes:
+
+ o 
+
+This release includes the following bugfixes:
+
+ o includes: remove curl/curlbuild.h and curl/curlrules.h [1]
+ o dist: make the hugehelp.c not get regenerated unnecessarily [2]
+ o timers: store internal time stamps as time_t instead of doubles [3]
+ o progress: let "current speed" be UL + DL speeds combined [4]
+ o http-proxy: do the HTTP CONNECT process entirely non-blocking [5]
+
+This release includes the following known bugs:
+
+ o see docs/KNOWN_BUGS (https://curl.haxx.se/docs/knownbugs.html)
+
+This release would not have looked like this without help, code, reports and
+advice from friends like these:
+
+  Daniel Stenberg, Marcel Raad, Paul Harris, Ray Satiro, Simon Warta,
+  (5 contributors)
+
+        Thanks! (and sorry if I forgot to mention someone)
+
+References to bug reports and discussions on issues:
+
+ [1] = https://daniel.haxx.se/blog/2017/06/15/target-independent-libcurl-headers/
+ [2] = https://curl.haxx.se/bug/?i=1565
+ [3] = https://curl.haxx.se/bug/?i=1531
+ [4] = https://curl.haxx.se/bug/?i=1556
+ [5] = https://curl.haxx.se/bug/?i=1547
+

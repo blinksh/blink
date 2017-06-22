@@ -1,0 +1,144 @@
+
+<!doctype html>
+<html lang="en">
+ 
+<head>
+<meta charset="utf-8">
+<title>Shuang Zhao's Homepage</title>
+<meta name="author" content="Shuang Zhao">
+<meta name="copyright" content="Shuang Zhao's Homepage">
+<meta name="keywords" content="Shuang Zhao, Computer Graphics, Research">
+<!--[if lt IE 9]>
+    <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+ 
+<script type="text/javascript">
+//<![CDATA[
+var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-1609128-3']);_gaq.push(['_trackPageview']);(function() {var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);})();(function(b){(function(a){"__CF"in b&&"DJS"in b.__CF?b.__CF.DJS.push(a):"addEventListener"in b?b.addEventListener("load",a,!1):b.attachEvent("onload",a)})(function(){"FB"in b&&"Event"in FB&&"subscribe"in FB.Event&&(FB.Event.subscribe("edge.create",function(a){_gaq.push(["_trackSocial","facebook","like",a])}),FB.Event.subscribe("edge.remove",function(a){_gaq.push(["_trackSocial","facebook","unlike",a])}),FB.Event.subscribe("message.send",function(a){_gaq.push(["_trackSocial","facebook","send",a])}));"twttr"in b&&"events"in twttr&&"bind"in twttr.events&&twttr.events.bind("tweet",function(a){if(a){var b;if(a.target&&a.target.nodeName=="IFRAME")a:{if(a=a.target.src){a=a.split("#")[0].match(/[^?=&]+=([^&]*)?/g);b=0;for(var c;c=a[b];++b)if(c.indexOf("url")===0){b=unescape(c.split("=")[1]);break a}}b=void 0}_gaq.push(["_trackSocial","twitter","tweet",b])}})})})(window);//]]>
+</script><script type="text/javascript">
+//<![CDATA[
+try{if (!window.CloudFlare) {var CloudFlare=[{verbose:0,p:0,byc:0,owlid:"cf",bag2:1,mirage2:0,oracle:0,paths:{cloudflare:"/cdn-cgi/nexp/dok3v=1613a3a185/"},atok:"975ecaaef7f66fccfe4efe30a4e214df",petok:"6e8ad2a5133d116fe39f1dae40eb8a81634ba424-1497943658-1800",zone:"shuangz.com",rocket:"0",apps:{"abetterbrowser":{"ie":"7","opera":null,"chrome":null,"safari":null,"firefox":null},"ga_key":{"ua":"UA-1609128-3","ga_bs":"2"}}}];!function(a,b){a=document.createElement("script"),b=document.getElementsByTagName("script")[0],a.async=!0,a.src="//ajax.cloudflare.com/cdn-cgi/nexp/dok3v=85b614c0f6/cloudflare.min.js",b.parentNode.insertBefore(a,b)}()}}catch(e){};
+//]]>
+</script>
+<link rel="stylesheet" type="text/css" href="style2.css">
+<script type="text/JavaScript" src="js/jquery-1.11.3.min.js"></script>
+<script type="text/javascript" src="js/velocity.min.js"></script>
+<script type="text/javascript" src="js/jquery.smoothState.js"></script>
+<script type="text/JavaScript" src="js/aes.js"></script>
+<script type="text/JavaScript" src="code2.js"></script>
+</head>
+<body>
+<div id="wrap" class="animated fadeIn">
+<div id='home'>
+<noscript>
+<div class="warning">
+<b style="color:#a00">Warning:</b> Please enable <b>Javascript</b> for full functionality of this page
+</div>
+</noscript>
+<div id="wrap_header">
+<header>
+<div style="float:left" class="valign">
+<div style="font-size:13pt" class="valign_child">
+<h1>Shuang Zhao</h1>
+Assistant Professor
+</div>
+</div>
+<img style="float:right" alt="UCI logo" src="images/logo_UCI.png">
+<div style="float:right; margin-right:15px" class="valign">
+<div class="valign_child">
+<p style="margin-bottom:5px">
+<a href="http://www.cs.uci.edu/">Department of Computer Science</a><br>
+<a href="http://www.ics.uci.edu/">Donald Bren School of Computer &amp; Information Sciences</a>
+</p>
+<p>
+<a href="http://www.uci.edu/" style="font-size:14pt; font-weight:bold">University of California, Irvine</a>
+</p>
+</div>
+</div>
+</header>
+<nav>
+<ul>
+<li><a id="nav_home" href="./"><span></span>Home</a></li>
+<li><a id="nav_pub" href="./publications.htm"><span></span>Publications</a></li>
+<li><a id="nav_research" href="./research.htm"><span></span>Research</a></li>
+<li><a id="nav_teach" href="./teaching.htm"><span></span>Teaching</a></li>
+<li><a id="nav_contact" href="./contact.htm"><span></span>Contact</a></li>
+<li><a id="nav_misc" href="./personal.htm"><span></span>Personal</a></li>
+</ul>
+</nav>
+</div>
+<div id="icon_loading" class="hidden">Loading...</div>
+<div id="wrap0_main"></div>
+<div id="wrap1_main">
+<div class="contents">
+ 
+<div class="valign">
+<div style="margin:0 10px 0 0">
+<img src="images/me/self_170.jpg" alt="Photo of me" width="140">
+<dl id="dl_self">
+<dt><img src="images/addr-128.png" alt=""></dt>
+<dd>DBH 4214</dd>
+<dt><img src="images/mail-128.png" alt=""></dt>
+<dd class="ihatespam"><img src="images/mail_UCI.png" alt="" class="mail"></dd>
+</dl>
+</div>
+<div class="valign_child">
+<div class="title" id="about"><span>About Me</span></div>
+<p style="margin-top:0">
+I am an assistant professor in the <a href="http://www.cs.uci.edu/">Department of Computer Science</a> at <a href="http://www.uci.edu/">University of California, Irvine</a>.
+Before joining UCI, I was a postdoctoral associate at <a href="http://www.mit.edu">MIT</a>, supervised by <a href="http://people.csail.mit.edu/fredo/">Frédo Durand</a>.
+I received my Ph.D. in computer science from <a href="http://www.cornell.edu">Cornell University</a> in 2014, advised by <a href="http://www.cs.cornell.edu/~kb">Kavita Bala</a>.
+</p>
+<p>
+I work in computer graphics with a focus on material appearance modeling and physically-based rendering.
+My research aims to computationally reproduce the appearance of the real world using physically based models, allowing the prediction of object appearance under a wide range of conditions.
+</p>
+<p>
+More broadly, I am interested in modeling and solving light transport problems in complex and realistic configurations.
+We draw inspirations from optics, material science, and computational statistics to develop new techniques for computer graphics &amp; vision, industrial design, and medical imaging applications.
+</p>
+</div>
+</div>
+<div class="title"><span>Recent News</span></div>
+<div class="section">
+<div class="secimg">
+<img src="images/icon_news.jpg" alt="news">
+</div>
+<div class="secwrap">
+ 
+<dl class="newslist">
+<dt>05/2017</dt>
+<dd>Our papers "<a href="./publications.htm#proccloth-egsr17">Fiber-Level On-the-Fly Procedural Textiles</a>" and "<a href="./publications.htm#nmfilter-egsr17">Real-Time Linear BRDF MIP-Mapping</a>" have been accepted to Eurographics Symposium on Rendering 2017.</dd>
+<dt>03/2017</dt>
+<dd>Our paper "<a href="./publications.htm#curveopt-tvcg17">Inverse Diffusion Curves using Shape Optimization</a>" has been accepted to IEEE Transactions on Visualization and Computer Graphics.</dd>
+<dt>07/2016</dt>
+<dd>Our paper "<a href="./publications.htm#multires-sa16">Downsampling Scattering Parameters for Rendering Anisotropic Media</a>" has been accepted to ACM SIGGRAPH Asia 2016.</dd>
+<dt>04/2016</dt>
+<dd>Our paper "<a href="./publications.htm#ctcloth-sg16">Fitting Procedural Yarn Models for Realistic Cloth Rendering</a>" has been accepted to ACM SIGGRAPH 2016.</dd>
+<dt></dt>
+<dd><a href="./archived_news.htm" style="font-weight:bold">Archived...</a></dd>
+</dl>
+</div>
+</div>
+ 
+</div>  
+<footer>
+<div style="float:left; padding-left:20px" class="container">
+<div class="valign_child">
+Copyright &copy; 2013&#8211;2017 <a href="http://shuangz.com" style="font-weight:bold">Shuang Zhao</a>.<br>
+Last updated: May 2017.
+</div>
+</div>
+<div style="float:right; padding-right:20px" class="container">
+<div class="valign_child">
+<a href="http://validator.w3.org/check?uri=referer"><img src="./images/valid-html5.png" style="margin:10px -8px 0 0;opacity:0.6" alt="Valid HTML 5"></a>
+ 
+</div>
+</div>
+</footer>
+</div>  
+</div>  
+</div>  
+</body>
+ 
+</html>
