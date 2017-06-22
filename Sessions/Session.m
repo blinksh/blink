@@ -47,6 +47,7 @@ int makeargs(const char *args, char ***aa)
 
   argv[0] = buf;
 
+  // TODO: this breaks when there are extra spaces in the command 
   while ((delim = strchr(argv[c - 1], ' '))) {
     argv = realloc(argv, (c + 1) * sizeof(char *));
     argv[c] = delim + 1;

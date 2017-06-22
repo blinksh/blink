@@ -273,6 +273,8 @@ raw_cat(int rfd)
 		mywarn("%s", filename);
 		rval = 1;
 	}
+    free(buf);
+    buf = NULL;
 }
 
 #ifndef NO_UDOM_SUPPORT

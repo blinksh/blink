@@ -44,6 +44,7 @@
 #include "file_cmds_ios.h"
 #include "shell_cmds_ios.h"
 #include "text_cmds_ios.h"
+#include "curl_ios.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -95,6 +96,9 @@
   NSURL *sharedURL = docsPath;
 #endif
   setenv("SHARED", sharedURL.path.UTF8String, 0);
+  // We can't write in $HOME so for ssh & curl to work, we need other homes:
+  setenv("SSH_HOME", docsPath.UTF8String, 0);
+  setenv("CURL_HOME", docsPath.UTF8String, 0);
   // iOS already defines "HOME" as the home dir of the application
   
   // Current working directory == shared directory
@@ -143,20 +147,24 @@
         // 1) convert command line to argc / argv
         // 1a) split into elements
         NSArray *listArgv = [cmdline componentsSeparatedByString:@" "];
-        // 1b) convert to argc / argv
+        // 1b) expand environment variables, + "~" (not wildcards ? and *)
+        // 1c) convert to argc / argv
         unsigned argc = [listArgv count];
         char **argv = (char **)malloc((argc + 1) * sizeof(char*));
         for (unsigned i = 0; i < argc; i++)
         {
           argv[i] = strdup([[listArgv objectAtIndex:i] UTF8String]);
           // Expand arguments that are environment variables
+          // TODO: do this extension using NSStrings, then convert
           if (argv[i][0] == '$') {
             int length = 1;
             for (; length < strlen(argv[i]); length++) if (argv[i][length] == '/') break;
             char* variable_name = strndup(argv[i] + 1, length - 1);
-            char* expanded = getenv(variable_name);
-            if (expanded) argv[i] = strcat(strdup(expanded), argv[i] + length);
-            // free(variable_name);
+            if (getenv(variable_name)) {
+              char* expanded = strdup(getenv(variable_name));
+              argv[i] = strcat(expanded, argv[i] + length);
+            }
+            free(variable_name);
           }
           // TODO: expand wildcards (* and ?). A lot harder.
         }
@@ -168,7 +176,7 @@
         // 3) call specific commands
         // Redirect all output to console:
         stdout = _stream.control.termout;
-        stderr = _stream.control.termout;
+        stderr = _stream.control.termout; 
         // Commands from Apple file_cmds: ls, rm, cp...
         if ([cmd isEqualToString:@"ls"]) {
           ls_main(argc, argv);
@@ -243,6 +251,43 @@
             }
           } else // Help, I'm lost, bring me back home
             [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
+          // Higher level commands, not from system: curl, tar, scp, sftp
+        } else if  ([cmd isEqualToString:@"curl"]) {
+          curl_main(argc, argv);
+        } else if  (([cmd isEqualToString:@"scp"]) || ([cmd isEqualToString:@"sftp"])) {
+          // We have an scp / sftp command. We convert it into a curl command:
+          // scp user@host:~/data/file . is equivalent to
+          // curl scp://user@host/~/data/file -O
+          for (int i = 1; i < argc; i++) {
+            NSString *scp_option = [listArgv objectAtIndex:i];
+            // if it begins with a "-" it's a parameter
+            if ([scp_option characterAtIndex:0] == '-') continue;
+            // If we're copying into current dir:
+            if ([scp_option isEqualToString:@"."]) scp_option = @"-O" ;
+            // TODO: what if file exists + is a directory?
+            if (![scp_option containsString:@":"]) continue;
+            // [scp_option rangeOfCharacterFromSet:[':'] ]
+            
+            
+          }
+          free(argv[0]);
+          argv[0] = strdup([@"curl" UTF8String]);
+          for (unsigned i = 1; i < argc; i++)
+          {
+            free(argv[i]);
+            argv[i] = strdup([[listArgv objectAtIndex:i] UTF8String]);
+            // Expand arguments that are environment variables
+            if (argv[i][0] == '$') {
+              int length = 1;
+              for (; length < strlen(argv[i]); length++) if (argv[i][length] == '/') break;
+              char* variable_name = strndup(argv[i] + 1, length - 1);
+              char* expanded = getenv(variable_name);
+              if (expanded) argv[i] = strcat(strdup(expanded), argv[i] + length);
+              // free(variable_name);
+            }
+          }
+
+          curl_main(argc, argv);
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }
@@ -259,6 +304,7 @@
     free(line);
   }
 
+  
   [self out:"Bye!"];
 
   return 0;
