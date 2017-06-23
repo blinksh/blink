@@ -41,6 +41,9 @@
 
 #include "strcase.h"
 
+// Blinkshell:
+#import <Foundation/Foundation.h>
+
 #define ENABLE_CURLX_PRINTF
 /* use our own printf() functions */
 #include "curlx.h"
@@ -1186,13 +1189,17 @@ static CURLcode operate_do(struct GlobalConfig *global,
             result = CURLE_OUT_OF_MEMORY;
             home = homedir();
             if(home) {
+                // Blinkshell: read the known_hosts stored by Blink:
+                NSURL *dd = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+                NSURL *khURL = [dd URLByAppendingPathComponent:@"known_hosts"];
+                file = [khURL.path UTF8String];
 //              file = aprintf("%s/%sssh/known_hosts", home, DOT_CHAR);
                 // iOS specifics: ~/.ssh is unreadable (sandbox), blink stores known_hosts in ~/Documents/
-                file = aprintf("%s/known_hosts", home);
+                // file = aprintf("%s/known_hosts", home);
               if(file) {
                 /* new in curl 7.19.6 */
                 result = res_setopt_str(curl, CURLOPT_SSH_KNOWNHOSTS, file);
-                curl_free(file);
+                // curl_free(file);
                 if(result == CURLE_UNKNOWN_OPTION)
                   /* libssh2 version older than 1.1.1 */
                   result = CURLE_OK;

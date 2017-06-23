@@ -234,7 +234,6 @@ static void kbd_callback(const char *name, int name_len,
       [command_args addObject:[NSString stringWithFormat:@"%s", command[i]]];
     }
     _command = [[command_args componentsJoinedByString:@" "] UTF8String];
-    fprintf(stdout, "We have a command:%s--\n\r", _command);
   } else {
     _options.request_tty = REQUEST_TTY_YES;
   }

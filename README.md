@@ -63,9 +63,9 @@ In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of th
 
 From Vim, you can open the files in $SHARED. You can also edit Vim so it opens by default in the shared directory. 
 
-curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). For scp and sftp, it requires SSH keys. Create them with Blink key mechanism creation, copy the public key to the machine you want to connect to and you're set. 
+curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 
-SSH keys are stores in $HOME/Documents/.ssh 
+curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!

@@ -26,6 +26,12 @@
 
 #ifdef USE_LIBSSH2
 
+// Blinkshellss
+#import "BKDefaults.h"
+#import "BKHosts.h"
+#import "BKPubKey.h"
+
+
 #ifdef HAVE_LIMITS_H
 #  include <limits.h>
 #endif
@@ -715,7 +721,24 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
   int err;
   int seekerr = CURL_SEEKFUNC_OK;
   *block = 0; /* we're not blocking by default */
+  // Blinkshell: did we find the keys in the KeyChain?
+  char *publicKeyMemory = NULL;
+  char *privateKeyMemory = NULL;
+  BKHosts *host;
+  BKPubKey *pk;
+    
+  if (host = [BKHosts withHost:[NSString stringWithUTF8String:conn->host.name]]) {
+      // Extract private key, username, etc associated with this host:
+      if (host.hostName) conn->host.name = [host.hostName UTF8String];
+      if ((!conn->user || (strlen(conn->user) == 0))
+          && [host.user length]) {
+          Curl_safefree(conn->user);
+          conn->user = strdup([host.user UTF8String]);
+      }
+  }
 
+    
+    
   do {
 
     switch(sshc->state) {
@@ -815,10 +838,57 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           home = curl_getenv("SSH_HOME");
           if (!home) home = curl_getenv("HOME");
 
+          // iOS secure storing options (key, username, password)
+          // Find the private key:
+          // a) if the user specified a private key, use it:
         if(data->set.str[STRING_SSH_PRIVATE_KEY])
+            // if the user specified a private key, use it (it's a string)
           sshc->rsa = strdup(data->set.str[STRING_SSH_PRIVATE_KEY]);
-        else {
-          /* If no private key file is specified, try some common paths. */
+          // b) get from options the preferences associated with this host:
+        if (host) {
+            if (!sshc->passphrase && host.password) sshc->passphrase = [host.password UTF8String];
+            
+            // Find the stored key that corresponds to the key name:
+            publicKeyMemory = NULL; privateKeyMemory = NULL;
+            if (data->set.str[STRING_SSH_PRIVATE_KEY]) {
+                // Priority 1: user specified a key name, different from default
+                // key associated with this hostname
+                if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:data->set.str[STRING_SSH_PRIVATE_KEY]]]) != nil) {
+                    publicKeyMemory = [pk.publicKey UTF8String];
+                    privateKeyMemory = [pk.privateKey UTF8String];
+                    sshc->rsa = data->set.str[STRING_SSH_PRIVATE_KEY];
+                }
+            }
+            if (!(privateKeyMemory && publicKeyMemory)) {
+                // Priority 2: default key associated with the host
+                if (host.key) {
+                    if ((pk = [BKPubKey withID:host.key]) != nil) {
+                        publicKeyMemory = [pk.publicKey UTF8String];
+                        privateKeyMemory = [pk.privateKey UTF8String];
+                        sshc->rsa = strdup(host.key.UTF8String);
+                    }
+                }
+            }
+            if (!(privateKeyMemory && publicKeyMemory)) {
+                // Priority 2: key named id_rsa:
+                if ((pk = [BKPubKey withID:@"id_rsa"]) != nil) {
+                    publicKeyMemory = [pk.publicKey UTF8String];
+                    privateKeyMemory = [pk.privateKey UTF8String];
+                    sshc->rsa = strdup("id_rsa");
+                }
+            }
+            if (!(privateKeyMemory && publicKeyMemory)) {
+                // Still no luck, try with id_dsa:
+                if ((pk = [BKPubKey withID:@"id_dsa"]) != nil) {
+                    publicKeyMemory = [pk.publicKey UTF8String];
+                    privateKeyMemory = [pk.privateKey UTF8String];
+                    sshc->rsa = strdup("id_dsa");
+                }
+            }
+        }
+        /* c) No private key file specified, did not find keys in storage, try some common paths. */
+        /* Note that storage can still have been used for username and password. */
+        if (!sshc->rsa) {
           if(home) {
             /* Try ~/.ssh first. */
             sshc->rsa = aprintf("%s/.ssh/id_rsa", home);
@@ -855,12 +925,14 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
          * libssh2 extract the public key from the private key file.
          * This is done by simply passing sshc->rsa_pub = NULL.
          */
-        if(data->set.str[STRING_SSH_PUBLIC_KEY]
-            /* treat empty string the same way as NULL */
-            && data->set.str[STRING_SSH_PUBLIC_KEY][0]) {
-          sshc->rsa_pub = strdup(data->set.str[STRING_SSH_PUBLIC_KEY]);
-          if(!sshc->rsa_pub)
-            out_of_memory = TRUE;
+        if (!(privateKeyMemory && publicKeyMemory)) {
+              if(data->set.str[STRING_SSH_PUBLIC_KEY]
+                 /* treat empty string the same way as NULL */
+                 && data->set.str[STRING_SSH_PUBLIC_KEY][0]) {
+                  sshc->rsa_pub = strdup(data->set.str[STRING_SSH_PUBLIC_KEY]);
+                  if(!sshc->rsa_pub)
+                      out_of_memory = TRUE;
+              }
         }
 
         if(out_of_memory || sshc->rsa == NULL) {
@@ -872,15 +944,18 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           break;
         }
 
-        sshc->passphrase = data->set.ssl.key_passwd;
-        if(!sshc->passphrase)
-          sshc->passphrase = "";
+        if(!sshc->passphrase) sshc->passphrase = data->set.ssl.key_passwd;
+        if(!sshc->passphrase) sshc->passphrase = "";
 
         free(home);
 
-        if(sshc->rsa_pub)
-          infof(data, "Using SSH public key file '%s'\n", sshc->rsa_pub);
-        infof(data, "Using SSH private key file '%s'\n", sshc->rsa);
+        if (!(privateKeyMemory && publicKeyMemory)) {
+            if(sshc->rsa_pub)
+                infof(data, "Using SSH public key file '%s'\n", sshc->rsa_pub);
+            infof(data, "Using SSH private key file '%s'\n", sshc->rsa);
+        } else {
+            infof(data, "Using private key stored in BlinkShell keys: '%s'\n", sshc->rsa);
+        }
 
         state(conn, SSH_AUTH_PKEY);
       }
@@ -892,12 +967,23 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
     case SSH_AUTH_PKEY:
       /* The function below checks if the files exists, no need to stat() here.
        */
-      rc = libssh2_userauth_publickey_fromfile_ex(sshc->ssh_session,
+      if (!(privateKeyMemory && publicKeyMemory))
+         while ((rc = libssh2_userauth_publickey_fromfile_ex(sshc->ssh_session,
                                                   conn->user,
                                                   curlx_uztoui(
                                                     strlen(conn->user)),
                                                   sshc->rsa_pub,
-                                                  sshc->rsa, sshc->passphrase);
+                                                  sshc->rsa, sshc->passphrase)) == LIBSSH2_ERROR_EAGAIN) ;
+     else
+         while ((rc = libssh2_userauth_publickey_frommemory(sshc->ssh_session,
+                                                            conn->user,
+                                                            curlx_uztoui(
+                                                            strlen(conn->user)),
+                                                            publicKeyMemory, strlen(publicKeyMemory),
+                                                            privateKeyMemory, strlen(privateKeyMemory),
+                                                    sshc->passphrase)) == LIBSSH2_ERROR_EAGAIN);
+            
+
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;
       }
