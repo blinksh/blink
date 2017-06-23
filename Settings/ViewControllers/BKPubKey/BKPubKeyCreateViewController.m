@@ -107,17 +107,6 @@
       _pubkey = [BKPubKey saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKeyWithComment:_commentsField.text]];
       if (!_pubkey) {
         errorMsg = @"OpenSSL error. Could not create Public Key.";
-      } else {
-        NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *keyPath = [docsPath stringByAppendingPathComponent:@".ssh/"];
-        NSString *filePath = [keyPath stringByAppendingPathComponent:_pubkey.ID];
-        FILE* key_save = fopen(filePath.UTF8String, "w");
-        fwrite(_pubkey.privateKey.UTF8String, 1, _pubkey.privateKey.length, key_save);
-        fclose(key_save);
-        filePath = [filePath stringByAppendingString:@".pub"];
-        key_save = fopen(filePath.UTF8String, "w");
-        fwrite(_pubkey.publicKey.UTF8String, 1, _pubkey.publicKey.length, key_save);
-        fclose(key_save);
       }
     }
 
