@@ -96,7 +96,7 @@
   NSURL *sharedURL = docsPath;
 #endif
   setenv("SHARED", sharedURL.path.UTF8String, 0);
-  // We can't write in $HOME so for ssh & curl to work, we need other homes:
+  // We can't write in $HOME so for ssh & curl to work, we need other homes for config files:
   setenv("SSH_HOME", docsPath.UTF8String, 0);
   setenv("CURL_HOME", docsPath.UTF8String, 0);
   // iOS already defines "HOME" as the home dir of the application
@@ -123,6 +123,9 @@
       NSArray *arr = [self splitCommandAndArgs:cmdline];
       NSString *cmd = arr[0];
 
+      // Separate arr into arguments and parse:
+      
+      
       if ([cmd isEqualToString:@"help"]) {
         [self showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {

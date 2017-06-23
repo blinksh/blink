@@ -52,7 +52,7 @@ You will have to copy all of them the blink/Frameworks directory. You will also 
 to the blink/Frameworks/include directory. 
 
 
-Since you are sideloading, you can also compile VimIOS (https://github.com/larki/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
+Since you are sideloading, you can also compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
 
 If you do that, there are 3 directories: 
 - one that can only be accessed by Vim
