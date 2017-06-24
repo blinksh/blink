@@ -75,6 +75,97 @@
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
+
+- (NSArray *) makeargs:(NSString*) cmdline
+{
+  // splits the command line into strings, removes empty strings,
+  // does some conversions (~ --> home directory, for example,
+  // plus environment variables)
+#ifdef appGroupFiles
+  // Path for access to App Group files (also accessed by Vim)
+  NSURL *groupURL = [[NSFileManager defaultManager]
+                     containerURLForSecurityApplicationGroupIdentifier:
+                     appGroupFiles];
+  NSURL *sharedURL = [NSURL URLWithString:@"Documents/" relativeToURL:groupURL];
+#else
+  NSURL *sharedURL = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+#endif
+
+  // Separate arr into arguments and parse (env vars, ~, ~shared)
+  NSArray *listArgvMaybeEmptyStrings = [cmdline componentsSeparatedByString:@" "];
+  // Remove empty strings (extra spaces)
+  NSArray *listArgv = [listArgvMaybeEmptyStrings filteredArrayUsingPredicate:
+                       [NSPredicate predicateWithFormat:@"length > 0"]];
+  
+  // 1) convert command line to argc / argv
+  // 1a) split into elements
+  for (unsigned i = 0; i < [listArgv count]; i++)
+  {
+    // Operations on individual arguments
+    NSString *argument = [listArgv objectAtIndex:i];
+    // 1b) expand environment variables, + "~" (not wildcards ? and *)
+    while ([argument containsString:@"$"]) {
+      // It has environment variables inside. Work on them one by one.
+      NSRange r1 = [argument rangeOfString:@"$"];
+      NSRange r2 = [argument rangeOfString:@"/" options:NULL range:NSMakeRange(r1.location + r1.length, [argument length] - r1.location - r1.length)];
+      if (r2.location == NSNotFound) r2.location = [argument length];
+      NSRange  rSub = NSMakeRange(r1.location + r1.length, r2.location - r1.location - r1.length);
+      NSString *variable_string = [argument substringWithRange:rSub];
+      const char* variable = getenv([variable_string UTF8String]);
+      if (variable) {
+        // Okay, so this one exists.
+        NSString* replacement_string = [NSString stringWithCString:variable encoding:NSASCIIStringEncoding];
+        variable_string = [[NSString stringWithCString:"$" encoding:NSASCIIStringEncoding] stringByAppendingString:variable_string];
+        argument = [argument stringByReplacingOccurrencesOfString:variable_string withString:replacement_string];
+      }
+    }
+    // Bash spec: only convert "~" if: at the beginning of argument, after a ":" or the first "="
+    // ("=" scenario for export, but we use setenv, so no "=").
+    // Only 2 possibilities: "~" (same as $HOME) and "~shared" (same as $SHARED)
+    if([argument hasPrefix:@"~"]) {
+      // So it begins with "~"
+      NSString* test_string = @"~shared";
+      NSString* replacement_string;
+      if (sharedURL && [argument hasPrefix:@"~shared"]) {
+        replacement_string = sharedURL.path;
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 7)];
+      }
+      if (getenv("HOME") && [argument hasPrefix:@"~/"]) {
+        test_string = @"~/";
+        replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
+        replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 2)];
+      } else if (getenv("HOME") && ([argument isEqual:@"~"] || [argument hasPrefix:@"~:"])) {
+        test_string = @"~";
+        replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 1)];
+      }
+    }
+    // Also convert ":~something" in PATH style variables
+    // We don't use these yet, but we could.
+    if ([argument containsString:@":~"]) {
+      // Only 2 possibilities: ":~" (same as $HOME) and ":~shared" (same as $SHARED)
+      if ([argument containsString:@":~shared"] && sharedURL) {
+        NSString* test_string = @":~shared";
+        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:sharedURL.path];
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
+      }
+      if ([argument containsString:@":~/"] && getenv("HOME")) {
+        NSString* test_string = @":~/";
+        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
+        replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
+      }
+      if (getenv("HOME") && [argument hasSuffix:@":~"]) {
+        NSString* test_string = @":~";
+        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
+        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange([argument length] - 2, 2)];
+      }
+    }
+  }
+  return listArgv;
+}
+
 - (int)main:(int)argc argv:(char **)argv
 {
   char *line;
@@ -120,11 +211,20 @@
       linenoiseHistorySave(history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
-      NSArray *arr = [self splitCommandAndArgs:cmdline];
-      NSString *cmd = arr[0];
 
-      // Separate arr into arguments and parse:
-      
+      NSArray* listArgv = [self makeargs:cmdline];
+      argc = [listArgv count];
+      argv = (char **)malloc((argc + 1) * sizeof(char*));
+      for (unsigned i = 0; i < argc; i++)
+      {
+        argv[i] = [[listArgv objectAtIndex:i] UTF8String];
+      }
+      argv[argc] = NULL;
+      NSString *cmd = [listArgv objectAtIndex:0];
+
+      // TODO: recreate key on iPad, move to bastion and Mac, authorize.
+      // TODO: move all sessions to receive listArgv instead of cmdline
+      // TODO: parsing scp / sftp commands
       
       if ([cmd isEqualToString:@"help"]) {
         [self showHelp];
@@ -147,31 +247,6 @@
       } else {
         // Shell commands for more interactions.
         // ls, rm, rmdir, touch...
-        // 1) convert command line to argc / argv
-        // 1a) split into elements
-        NSArray *listArgv = [cmdline componentsSeparatedByString:@" "];
-        // 1b) expand environment variables, + "~" (not wildcards ? and *)
-        // 1c) convert to argc / argv
-        unsigned argc = [listArgv count];
-        char **argv = (char **)malloc((argc + 1) * sizeof(char*));
-        for (unsigned i = 0; i < argc; i++)
-        {
-          argv[i] = strdup([[listArgv objectAtIndex:i] UTF8String]);
-          // Expand arguments that are environment variables
-          // TODO: do this extension using NSStrings, then convert
-          if (argv[i][0] == '$') {
-            int length = 1;
-            for (; length < strlen(argv[i]); length++) if (argv[i][length] == '/') break;
-            char* variable_name = strndup(argv[i] + 1, length - 1);
-            if (getenv(variable_name)) {
-              char* expanded = strdup(getenv(variable_name));
-              argv[i] = strcat(expanded, argv[i] + length);
-            }
-            free(variable_name);
-          }
-          // TODO: expand wildcards (* and ?). A lot harder.
-        }
-        argv[argc] = NULL;
         // 2) re-initialize for getopt:
         optind = 1;
         opterr = 1;
@@ -252,7 +327,7 @@
             } else {
               fprintf(_stream.out, "cd: %s: no such file or directory\r\n", argv[1]);
             }
-          } else // Help, I'm lost, bring me back home
+          } else // [cd] Help, I'm lost, bring me back home
             [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
           // Higher level commands, not from system: curl, tar, scp, sftp
         } else if  ([cmd isEqualToString:@"curl"]) {
@@ -262,7 +337,7 @@
           // scp user@host:~/data/file . is equivalent to
           // curl scp://user@host/~/data/file -O
           for (int i = 1; i < argc; i++) {
-            NSString *scp_option = [listArgv objectAtIndex:i];
+            /*NSString *scp_option = [listArgv objectAtIndex:i];
             // if it begins with a "-" it's a parameter
             if ([scp_option characterAtIndex:0] == '-') continue;
             // If we're copying into current dir:
@@ -270,33 +345,15 @@
             // TODO: what if file exists + is a directory?
             if (![scp_option containsString:@":"]) continue;
             // [scp_option rangeOfCharacterFromSet:[':'] ]
-            
+            */
             
           }
           free(argv[0]);
           argv[0] = strdup([@"curl" UTF8String]);
-          for (unsigned i = 1; i < argc; i++)
-          {
-            free(argv[i]);
-            argv[i] = strdup([[listArgv objectAtIndex:i] UTF8String]);
-            // Expand arguments that are environment variables
-            if (argv[i][0] == '$') {
-              int length = 1;
-              for (; length < strlen(argv[i]); length++) if (argv[i][length] == '/') break;
-              char* variable_name = strndup(argv[i] + 1, length - 1);
-              char* expanded = getenv(variable_name);
-              if (expanded) argv[i] = strcat(strdup(expanded), argv[i] + length);
-              // free(variable_name);
-            }
-          }
 
           curl_main(argc, argv);
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
-        }
-        for (unsigned i = 0; i < argc; i++)
-        {
-          free(argv[i]);
         }
         free(argv);
       }

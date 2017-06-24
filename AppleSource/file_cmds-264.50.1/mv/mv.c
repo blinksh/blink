@@ -285,7 +285,7 @@ do_move(char *from, char *to)
 		}
 		if (ask) {
 			first = ch = getchar();
-			while (ch != '\n\r' && ch != EOF)
+			while (ch != '\n' && ch != EOF)
 				ch = getchar();
 			if (first != 'y' && first != 'Y') {
 				(void)fprintf(stderr, "not overwritten\n\r");

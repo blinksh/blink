@@ -80,6 +80,7 @@ __RCSID("$FreeBSD: src/bin/ls/ls.c,v 1.66 2002/09/21 01:28:36 wollman Exp $");
 #endif /* __APPLE__ */
 #include "ls.h"
 #include "extern.h"
+#include "error.h"
 
 /*
  * Upward approximation of the maximum number of characters needed to
@@ -561,7 +562,7 @@ traverse(int argc, char *argv[], int options)
 
 	if ((ftsp =
 	    fts_open(argv, options, f_nosort ? NULL : mastercmp)) == NULL)
-		err(1, "fts_open");
+		myerr(1, "fts_open");
 
 	display(NULL, fts_children(ftsp, 0));
 	if (f_listdir) {
@@ -637,7 +638,7 @@ traverse(int argc, char *argv[], int options)
 	errno = error;
 
 	if (errno)
-		err(1, "fts_read");
+		myerr(1, "fts_read");
 }
 
 /*
@@ -836,7 +837,7 @@ display(FTSENT *p, FTSENT *list)
 						flags = strdup("-");
 					}
 					if (flags == NULL)
-						err(1, "fflagstostr");
+						myerr(1, "fflagstostr");
 					flen = strlen(flags);
 					if (flen > (size_t)maxflags)
 						maxflags = flen;
@@ -847,7 +848,7 @@ display(FTSENT *p, FTSENT *list)
 				
 				if ((np = calloc(1, sizeof(NAMES) + lattrlen +
 				    ulen + glen + flen + 4)) == NULL)
-					err(1, "malloc");
+					myerr(1, "malloc");
 
 				np->user = &np->data[0];
 				(void)strcpy(np->user, user);

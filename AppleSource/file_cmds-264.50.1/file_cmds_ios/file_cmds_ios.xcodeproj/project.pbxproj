@@ -13,6 +13,7 @@
 		227BBD7B1EF1C3D3009D10BF /* df.c in Sources */ = {isa = PBXBuildFile; fileRef = 227BBD791EF1C3D3009D10BF /* df.c */; };
 		227BBD7C1EF1C3D3009D10BF /* vfslist.c in Sources */ = {isa = PBXBuildFile; fileRef = 227BBD7A1EF1C3D3009D10BF /* vfslist.c */; };
 		227BBD7F1EF1CA2B009D10BF /* gzip.c in Sources */ = {isa = PBXBuildFile; fileRef = 227BBD7E1EF1CA2B009D10BF /* gzip.c */; };
+		228FBDFF1EFF011600501D9F /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 228FBDFE1EFF011600501D9F /* error.h */; };
 		22AEF8091EF123EB00798591 /* file_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AEF7FF1EF123EA00798591 /* file_cmds_ios.framework */; };
 		22AEF80E1EF123EB00798591 /* file_cmds_iosTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 22AEF80D1EF123EB00798591 /* file_cmds_iosTests.m */; };
 		22AEF8101EF123EB00798591 /* file_cmds_ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 22AEF8021EF123EA00798591 /* file_cmds_ios.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -71,6 +72,7 @@
 		227BBD791EF1C3D3009D10BF /* df.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = df.c; path = ../df/df.c; sourceTree = "<group>"; };
 		227BBD7A1EF1C3D3009D10BF /* vfslist.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = vfslist.c; path = ../df/vfslist.c; sourceTree = "<group>"; };
 		227BBD7E1EF1CA2B009D10BF /* gzip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gzip.c; path = ../gzip/gzip.c; sourceTree = "<group>"; };
+		228FBDFE1EFF011600501D9F /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = "<group>"; };
 		22AEF7FF1EF123EA00798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = file_cmds_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		22AEF8021EF123EA00798591 /* file_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = file_cmds_ios.h; sourceTree = "<group>"; };
 		22AEF8031EF123EA00798591 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -209,6 +211,7 @@
 		22AEF8191EF123FA00798591 /* ls */ = {
 			isa = PBXGroup;
 			children = (
+				228FBDFE1EFF011600501D9F /* error.h */,
 				22AEF81A1EF1240800798591 /* cmp.c */,
 				22AEF81B1EF1240800798591 /* extern.h */,
 				22AEF81D1EF1240800798591 /* ls.c */,
@@ -302,6 +305,7 @@
 				22AEF8311EF13B2700798591 /* libutil.h in Headers */,
 				227BBD751EF1BA83009D10BF /* zopen.h in Headers */,
 				22AEF8101EF123EB00798591 /* file_cmds_ios.h in Headers */,
+				228FBDFF1EFF011600501D9F /* error.h in Headers */,
 				22AEF8611EF1843000798591 /* chmod_acl.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

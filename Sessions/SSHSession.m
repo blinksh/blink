@@ -572,20 +572,28 @@ static void kbd_callback(const char *name, int name_len,
       return 0;
     }
 
-    char *passphrase = NULL;
-
-    // Request passphrase from user
-    if ([pk isEncrypted]) {
-      fprintf(_stream.control.termout, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
-      [self promptUser:&passphrase];
-      fprintf(_stream.control.termout, "\r\n");
+    if (_options.password)
+      while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
+                                                         pub, strlen(pub), // or sizeof_publickey methods
+                                                         priv, strlen(priv),
+                                                         _options.password)) == LIBSSH2_ERROR_EAGAIN)
+        ;
+    if (rc != 0) {
+      char *passphrase = NULL;
+      
+      // Request passphrase from user
+      if ([pk isEncrypted]) {
+        fprintf(_stream.control.termout, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
+        [self promptUser:&passphrase];
+        fprintf(_stream.control.termout, "\r\n");
+      }
+      
+      while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
+                                                         pub, strlen(pub), // or sizeof_publickey methods
+                                                         priv, strlen(priv),
+                                                         passphrase)) == LIBSSH2_ERROR_EAGAIN)
+        ;
     }
-
-    while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
-						       pub, strlen(pub), // or sizeof_publickey methods
-						       priv, strlen(priv),
-						       passphrase)) == LIBSSH2_ERROR_EAGAIN)
-      ;
     if (rc == 0) {
       [self debugMsg:@"Authentication succeeded."];
       return 1;
