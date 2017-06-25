@@ -49,6 +49,7 @@ You will have to copy all of them the blink/Frameworks directory. You will also 
 * shell_cmds_ios/shell_cmds_ios.h 
 * text_cmds_ios/text_cmds_ios.h 
 * curl_ios/curl_ios.h
+
 to the blink/Frameworks/include directory. 
 
 
@@ -68,7 +69,9 @@ curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp.
 curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
 
 You can also use the scp and sftp commands:
+
 scp user@host.name.edu:filename . 
+
 sftp localFilename user@host.name.edu:~/ 
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
