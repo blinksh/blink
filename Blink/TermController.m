@@ -241,7 +241,7 @@ static NSDictionary *bkModifierMaps = nil;
 
   _session = [[MCPSession alloc] initWithStream:stream];
   _session.delegate = self;
-  [_session executeWithArgs:@""];
+  [_session executeWithArgs:0 argv:NULL];
 }
 
 - (void)setRawMode:(BOOL)raw

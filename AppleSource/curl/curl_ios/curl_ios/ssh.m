@@ -729,6 +729,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
     
   if (host = [BKHosts withHost:[NSString stringWithUTF8String:conn->host.name]]) {
       // Extract private key, username, etc associated with this host:
+      // This won't work, we've used conn->host.name several times before
       if (host.hostName) conn->host.name = [host.hostName UTF8String];
       if ((!conn->user || (strlen(conn->user) == 0))
           && [host.user length]) {
@@ -737,10 +738,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
       }
   }
 
-    
-    
   do {
-
     switch(sshc->state) {
     case SSH_INIT:
       sshc->secondCreateDirs = 0;
