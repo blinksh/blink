@@ -65,14 +65,14 @@ In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of th
 From Vim, you can open the files in $SHARED. You can also edit Vim so it opens by default in the shared directory. 
 
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
-
+```
 curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
-
+```
 You can also use the scp and sftp commands:
-
+```
 scp user@host.name.edu:filename . 
-
 sftp localFilename user@host.name.edu:~/ 
+```
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
