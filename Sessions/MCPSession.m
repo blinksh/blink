@@ -68,6 +68,8 @@
   // splits the command line into strings, removes empty strings,
   // does some conversions (~ --> home directory, for example,
   // plus environment variables)
+  // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
+  // edit the arguments for curl syntax.
 #ifdef appGroupFiles
   // Path for access to App Group files (also accessed by Vim)
   NSURL *groupURL = [[NSFileManager defaultManager]
@@ -86,6 +88,9 @@
   
   *argc = [listArgv count];
   char** argv = (char **)malloc((*argc + 1) * sizeof(char*));
+  NSString* cmd = [listArgv objectAtIndex:0];
+  NSString *fileName = NULL;
+  int mustAddMinusTPosition = -1;
   // 1) convert command line to argc / argv
   // 1a) split into elements
   for (unsigned i = 0; i < [listArgv count]; i++)
@@ -111,6 +116,51 @@
     // Bash spec: only convert "~" if: at the beginning of argument, after a ":" or the first "="
     // ("=" scenario for export, but we use setenv, so no "=").
     // Only 2 possibilities: "~" (same as $HOME) and "~shared" (same as $SHARED)
+    // If the command is scp or sftp, do not apply this on remote directories
+    if (([cmd isEqualToString:@"scp"] || [cmd isEqualToString:@"sftp"]) && (i >= 1)) {
+      if ([argument containsString:@":"]) {
+        // remote host: [user@]host:[/][~]filepath --> scp://[user@]host/
+        // if filepath relative, add ~
+        NSRange r1 = [argument rangeOfString:@":"];
+        NSRange  rSub = NSMakeRange(0, r1.location);
+        NSString* userAndHost = [argument substringWithRange:rSub];
+        rSub = NSMakeRange(r1.location + 1, [argument length] - r1.location - 1);
+        NSString* fileLocation = [argument substringWithRange:rSub];
+        if(![fileLocation hasPrefix:@"/"]) {
+          // relative path
+          if([fileLocation hasPrefix:@"~"]) {
+            fileLocation = [[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]  stringByAppendingString:fileLocation];
+          } else {
+            fileLocation = [[NSString stringWithCString:"/~/" encoding:NSASCIIStringEncoding]  stringByAppendingString:fileLocation];
+          }
+          if (![fileLocation hasSuffix:@"/"]) fileName = fileLocation.lastPathComponent;
+          else fileName = @"result.txt";
+        }
+        NSString *prefix = [cmd stringByAppendingString:[NSString stringWithCString:"://" encoding:NSASCIIStringEncoding]];
+        argument = [[prefix stringByAppendingString:userAndHost] stringByAppendingString:fileLocation];
+        // avoid ~ conversion:
+        argv[i] = [argument UTF8String];
+        continue;
+      }
+      if (![argument hasPrefix:@"-"]) {
+        // Not beginning with "-", not containing ":", must be a local filename
+        // if it's ".", replace with -O
+        // if it's a directory, add name of file from previous argument at the end.
+        if (!fileName) {
+          // local file before remote file: upload
+          mustAddMinusTPosition = i;
+        } else if ([argument isEqualToString:@"."]) argument = @"-O";
+        else if ([argument hasSuffix:@"/"]) argument = [argument stringByAppendingString:fileName];
+        else {
+          BOOL isDir;
+          if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir]) {
+            if (isDir)
+              argument = [argument stringByAppendingString:fileName];
+          }
+        }
+      }
+    }
+    // Tilde conversion:
     if([argument hasPrefix:@"~"]) {
       // So it begins with "~"
       NSString* test_string = @"~shared";
@@ -124,7 +174,7 @@
         replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
         replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 2)];
-      } else if (getenv("HOME") && ([argument isEqual:@"~"] || [argument hasPrefix:@"~:"])) {
+      } else if (getenv("HOME") && ([argument isEqualToString:@"~"] || [argument hasPrefix:@"~:"])) {
         test_string = @"~";
         replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 1)];
@@ -153,6 +203,17 @@
     }
     argv[i] = [argument UTF8String];
   }
+  
+  if (mustAddMinusTPosition > 0) {
+    // For scp uploads
+    // Need to add parameter "-T" before parameter number i.
+    *argc += 1;
+    argv = (char **)realloc(argv, (*argc + 1) * sizeof(char*));
+    for (int i = *argc; i > mustAddMinusTPosition; i--)
+      argv[i - 1] = strdup(argv[i - 2]);
+    argv[mustAddMinusTPosition] = [@"-T" UTF8String];
+  }
+  
   argv[*argc] = NULL;
   return argv;
 }
@@ -207,7 +268,6 @@
 
       NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
 
-      // TODO: move all sessions to receive listArgv instead of cmdline
       // TODO: parsing scp / sftp commands
       
       if ([cmd isEqualToString:@"help"]) {
@@ -317,24 +377,8 @@
         } else if  ([cmd isEqualToString:@"curl"]) {
           curl_main(argc, argv);
         } else if  (([cmd isEqualToString:@"scp"]) || ([cmd isEqualToString:@"sftp"])) {
-          // We have an scp / sftp command. We convert it into a curl command:
-          // scp user@host:~/data/file . is equivalent to
-          // curl scp://user@host/~/data/file -O
-          for (int i = 1; i < argc; i++) {
-            /*NSString *scp_option = [listArgv objectAtIndex:i];
-            // if it begins with a "-" it's a parameter
-            if ([scp_option characterAtIndex:0] == '-') continue;
-            // If we're copying into current dir:
-            if ([scp_option isEqualToString:@"."]) scp_option = @"-O" ;
-            // TODO: what if file exists + is a directory?
-            if (![scp_option containsString:@":"]) continue;
-            // [scp_option rangeOfCharacterFromSet:[':'] ]
-            */
-            
-          }
-          free(argv[0]);
-          argv[0] = strdup([@"curl" UTF8String]);
-
+          // We have an scp / sftp command. We converted it into a curl command in makeargs
+          argv[0] = "curl";
           curl_main(argc, argv);
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
