@@ -37,7 +37,7 @@
 
 - (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
 - (int)main:(int)argc argv:(char **)argv;
-- (void)executeWithArgs:(NSString *)args;
+- (void)executeWithArgs:(int)argc argv:(char **)argv;
 - (void)sigwinch;
 - (void)close;
 

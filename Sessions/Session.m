@@ -68,10 +68,7 @@ void *run_session(void *params)
   SessionParams *p = (SessionParams *)params;
   // Object back to ARC
   Session *session = (Session *)CFBridgingRelease(p->session);
-  char **argv;
-  int argc = makeargs(p->args, &argv);
-  [session main:argc argv:argv];
-  free(argv);
+  [session main:p->argc argv:p->argv];
   free(params);
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
@@ -136,9 +133,9 @@ void *run_session(void *params)
   return dupe;
 }
 
-- (void)executeWithArgs:(NSString *)args
+- (void)executeWithArgs:(int)argc argv:(char **)argv
 {
-  SessionParams *params = [self createSessionParams:args];
+  SessionParams *params = [self createSessionParams:argc argv:argv];
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -146,20 +143,21 @@ void *run_session(void *params)
   pthread_create(&_tid, &attr, run_session, params);
 }
 
-- (void)executeAttachedWithArgs:(NSString *)args
+- (void)executeAttachedWithArgs:(int)argc argv:(char **)argv
 {
-  SessionParams *params = [self createSessionParams:args];
+  SessionParams *params = [self createSessionParams:argc argv:argv];
 
   pthread_create(&_tid, NULL, run_session, params);
   pthread_join(_tid, NULL);
 }
 
-- (SessionParams *)createSessionParams:(NSString *)args
+- (SessionParams *)createSessionParams:(int)argc argv:(char **)argv
 {
   SessionParams *params = malloc(sizeof(SessionParams));
   // Pointer to our struct, we are responsible of release
   params->session = CFBridgingRetain(self);
-  params->args = [args UTF8String];
+  params->argc = argc;
+  params->argv = argv;
   params->attached = false;
 
   return params;

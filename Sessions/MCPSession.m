@@ -57,26 +57,13 @@
   Session *childSession;
 }
 
-- (NSArray *)splitCommandAndArgs:(NSString *)cmdline
-{
-  NSRange rng = [cmdline rangeOfString:@" "];
-  if (rng.location == NSNotFound) {
-    return @[ cmdline, @"" ];
-  } else {
-    return @[
-      [cmdline substringToIndex:rng.location],
-      [cmdline substringFromIndex:rng.location + 1]
-    ];
-  }
-}
-
 - (void)setTitle
 {
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
 
-- (NSArray *) makeargs:(NSString*) cmdline
+- (char **) makeargs:(NSString*) cmdline argc:(int*) argc
 {
   // splits the command line into strings, removes empty strings,
   // does some conversions (~ --> home directory, for example,
@@ -97,6 +84,8 @@
   NSArray *listArgv = [listArgvMaybeEmptyStrings filteredArrayUsingPredicate:
                        [NSPredicate predicateWithFormat:@"length > 0"]];
   
+  *argc = [listArgv count];
+  char** argv = (char **)malloc((*argc + 1) * sizeof(char*));
   // 1) convert command line to argc / argv
   // 1a) split into elements
   for (unsigned i = 0; i < [listArgv count]; i++)
@@ -162,8 +151,10 @@
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange([argument length] - 2, 2)];
       }
     }
+    argv[i] = [argument UTF8String];
   }
-  return listArgv;
+  argv[*argc] = NULL;
+  return argv;
 }
 
 - (int)main:(int)argc argv:(char **)argv
@@ -212,17 +203,10 @@
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
 
-      NSArray* listArgv = [self makeargs:cmdline];
-      argc = [listArgv count];
-      argv = (char **)malloc((argc + 1) * sizeof(char*));
-      for (unsigned i = 0; i < argc; i++)
-      {
-        argv[i] = [[listArgv objectAtIndex:i] UTF8String];
-      }
-      argv[argc] = NULL;
-      NSString *cmd = [listArgv objectAtIndex:0];
+      argv = [self makeargs:cmdline argc:&argc];
 
-      // TODO: recreate key on iPad, move to bastion and Mac, authorize.
+      NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
+
       // TODO: move all sessions to receive listArgv instead of cmdline
       // TODO: parsing scp / sftp commands
       
@@ -232,16 +216,16 @@
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
 
-        [self runMoshWithArgs:cmdline];
+        [self runMoshWithArgs:argc argv:argv];
       } else if ([cmd isEqualToString:@"ssh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
 
-        [self runSSHWithArgs:cmdline];
+        [self runSSHWithArgs:argc argv:argv];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-        [self runSSHCopyIDWithArgs:cmdline];
+        [self runSSHCopyIDWithArgs:argc argv:argv];
       } else if ([cmd isEqualToString:@"config"]) {
         [self showConfig];
       } else {
@@ -355,12 +339,12 @@
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }
-        free(argv);
       }
+      free(argv);
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
-
+    
     free(line);
   }
 
@@ -376,24 +360,24 @@
     sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
 }
 
-- (void)runSSHCopyIDWithArgs:(NSString *)args
+- (void)runSSHCopyIDWithArgs:(int)argc argv:(char **)argv;
 {
   childSession = [[SSHCopyIDSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:args];
+  [childSession executeAttachedWithArgs:argc argv:argv];
   childSession = nil;
 }
 
-- (void)runMoshWithArgs:(NSString *)args
+- (void)runMoshWithArgs:(int)argc argv:(char **)argv;
 {
   childSession = [[MoshSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:args];
+  [childSession executeAttachedWithArgs:argc argv:argv];
   childSession = nil;
 }
 
-- (void)runSSHWithArgs:(NSString *)args
+- (void)runSSHWithArgs:(int)argc argv:(char **)argv;
 {
   childSession = [[SSHSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:args];
+  [childSession executeAttachedWithArgs:argc argv:argv];
   childSession = nil;
 }
 

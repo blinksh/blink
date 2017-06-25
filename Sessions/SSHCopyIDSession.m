@@ -70,8 +70,21 @@ static const char *usage_format =
   close(pinput[1]);
 
   NSString *ssh_command = [NSString stringWithFormat:@"ssh -v %s -- %s", argv[2], copy_command];
-  [sshSession executeAttachedWithArgs:ssh_command];
+  NSArray *listArgvMaybeEmptyStrings = [ssh_command componentsSeparatedByString:@" "];
+  // Remove empty strings (extra spaces)
+  NSArray *listArgv = [listArgvMaybeEmptyStrings filteredArrayUsingPredicate:
+                       [NSPredicate predicateWithFormat:@"length > 0"]];
+  int local_argc = [listArgv count];
+  char** local_argv = (char **)malloc((argc + 1) * sizeof(char*));
+  for (unsigned i = 0; i < argc; i++)
+  {
+    local_argv[i] = [[listArgv objectAtIndex:i] UTF8String];
+  }
+  local_argv[argc] = NULL;
+  
+  [sshSession executeAttachedWithArgs:local_argc argv:local_argv];
 
+  free(local_argv);
   close(pinput[0]);
 
   return 0;

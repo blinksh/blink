@@ -571,13 +571,16 @@ static void kbd_callback(const char *name, int name_len,
       [self debugMsg:@"Could not find public key files."];
       return 0;
     }
-
-    if (_options.password)
+    
+    if (_options.password) {
+      [self debugMsg:@"Trying authentification with stored passphrase."];
       while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
                                                          pub, strlen(pub), // or sizeof_publickey methods
                                                          priv, strlen(priv),
                                                          _options.password)) == LIBSSH2_ERROR_EAGAIN)
         ;
+      if (rc != 0) [self debugMsg:@"Authentification failure with stored passphrase."];
+    }
     if (rc != 0) {
       char *passphrase = NULL;
       
