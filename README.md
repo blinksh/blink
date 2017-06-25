@@ -28,7 +28,7 @@ df, du, chksum, chmod, chflags, chgrp, stat, readlink,
 compress, uncompress, gzip, gunzip,
 * From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
 * From text_cmds: cat, grep, wc
-* From curl: curl (includes http, https, scp, sftp...) 
+* From curl: curl (includes http, https, scp, sftp...), scp, sftp
 
 
 You will need to compile the following frameworks:
@@ -66,6 +66,12 @@ From Vim, you can open the files in $SHARED. You can also edit Vim so it opens b
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 
 curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
+
+You can also use the scp and sftp commands:
+scp user@host.name.edu:filename . 
+sftp localFilename user@host.name.edu:~/ 
+
+scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
