@@ -44,6 +44,7 @@ static NSString *CSI = nil;
 
 NSString *const TermViewCtrlSeq = @"ctrlSeq:";
 NSString *const TermViewEscSeq = @"escSeq:";
+NSString *const TermViewMetaSeq = @"metaSeq:";
 NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
 NSString *const TermViewFFuncSeq = @"fkeySeq:";
 NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
@@ -643,6 +644,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     NSString *charset;
     if (seq == TermViewCtrlSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
+    } else if (seq == TermViewMetaSeq) {
+      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
     } else if (seq == TermViewEscSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
     } else if (seq == TermViewAutoRepeateSeq){
@@ -836,7 +839,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)metaSeq:(UIKeyCommand *)cmd
 {
   if ([cmd.input isEqual:@"e"]) {
-    //_disableAccents = YES;
+    _disableAccents = YES;
   }
 
   [_delegate write:[CC ESC:cmd.input]];

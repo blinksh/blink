@@ -114,6 +114,8 @@ static NSDictionary *bkModifierMaps = nil;
     [_terminal assignSequence:TermViewCtrlSeq toModifier:modifier];
   } else if ([seq isEqual:BKKeyboardSeqEsc]) {
     [_terminal assignSequence:TermViewEscSeq toModifier:modifier];
+  }else if ([seq isEqual:BKKeyboardSeqMeta]) {
+    [_terminal assignSequence:TermViewMetaSeq toModifier:modifier];
   }
 }
 
