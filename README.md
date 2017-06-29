@@ -32,7 +32,7 @@ compress, uncompress, gzip, gunzip,
 
 
 You will need to compile the following frameworks:
-* blink/AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj using XCode project (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for the OSX version of the commands).
+* blink/AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj  (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for OSX).
 * blink/AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
 * blinkAppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
 * blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj

@@ -6,6 +6,43 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Blink</string>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>/Users/holzschu/src/Xcode_iPad/blink/Media.xcassets/Settings/appearance.imageset/appearance.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>all files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.item</string>
+			</array>
+		</dict>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array/>
+			<key>CFBundleTypeName</key>
+			<string>all files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>LSHandlerRank</key>
+			<string>Alternate</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.content</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -41,6 +78,40 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.item</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>all files</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.item</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>all files</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.content</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
 	</array>
 </dict>
 </plist>

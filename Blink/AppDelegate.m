@@ -35,19 +35,35 @@
 #import "ScreenController.h"
 @import CloudKit;
 
+#define appGroupFiles @"group.Nicolas-Holzschuch-blinkshell"
+#undef HOCKEYSDK
 #if HOCKEYSDK
 @import HockeySDK;
 #endif
 
 @interface AppDelegate ()
-
 @end
 
-@implementation AppDelegate
+@implementation AppDelegate {
+  NSString *storagePath;
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
+  
+#ifdef appGroupFiles
+  // Path for access to App Group files
+  NSURL *groupURL = [[NSFileManager defaultManager]
+                     containerURLForSecurityApplicationGroupIdentifier:
+                     appGroupFiles];
+  NSString *groupPath = [groupURL path];
+  storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
+#else
+  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  storagePath = docsPath;
+#endif
+  
   // Override point for customization after application launch.
 #if HOCKEYSDK
   NSString *hockeyID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"HockeyID"];
@@ -95,4 +111,18 @@
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
 }
+
+
+- (BOOL)application:(UIApplication *)app
+            openURL:(NSURL *)url
+            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  NSData *data = [NSData dataWithContentsOfURL:url];
+  NSString* filename = [url lastPathComponent];
+  
+  NSString* path = [storagePath stringByAppendingPathComponent:filename];
+  [data writeToFile:path atomically:YES];
+  return YES;
+}
+
+
 @end

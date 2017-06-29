@@ -51,7 +51,8 @@
 // If you have enabled a shared directory between apps, this is where you put its name
 // For sideloading, it will be your developer name
 // Remember to also activate it in the other app (e.g. vimIOS) 
-#define appGroupFiles @"group.Nicolas-Holzschuch"
+#define appGroupFiles @"group.Nicolas-Holzschuch-blinkshell"
+#include "FileProvider.h"
 
 @implementation MCPSession {
   Session *childSession;
@@ -75,9 +76,10 @@
   NSURL *groupURL = [[NSFileManager defaultManager]
                      containerURLForSecurityApplicationGroupIdentifier:
                      appGroupFiles];
-  NSURL *sharedURL = [NSURL URLWithString:@"Documents/" relativeToURL:groupURL];
+  NSString *groupPath = [groupURL path];
+  NSString *storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
 #else
-  NSURL *sharedURL = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  NSString *storagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] path];
 #endif
 
   // Separate arr into arguments and parse (env vars, ~, ~shared)
@@ -165,8 +167,8 @@
       // So it begins with "~"
       NSString* test_string = @"~shared";
       NSString* replacement_string;
-      if (sharedURL && [argument hasPrefix:@"~shared"]) {
-        replacement_string = sharedURL.path;
+      if (storagePath && [argument hasPrefix:@"~shared"]) {
+        replacement_string = storagePath;
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 7)];
       }
       if (getenv("HOME") && [argument hasPrefix:@"~/"]) {
@@ -184,9 +186,9 @@
     // We don't use these yet, but we could.
     if ([argument containsString:@":~"]) {
       // Only 2 possibilities: ":~" (same as $HOME) and ":~shared" (same as $SHARED)
-      if ([argument containsString:@":~shared"] && sharedURL) {
+      if ([argument containsString:@":~shared"] && storagePath) {
         NSString* test_string = @":~shared";
-        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:sharedURL.path];
+        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:storagePath];
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
       }
       if ([argument containsString:@":~/"] && getenv("HOME")) {
@@ -230,22 +232,24 @@
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   
 #ifdef appGroupFiles
-  // Path for access to App Group files (also accessed by Vim)
+  // Path for access to App Group files
   NSURL *groupURL = [[NSFileManager defaultManager]
                      containerURLForSecurityApplicationGroupIdentifier:
                      appGroupFiles];
-  NSURL *sharedURL = [NSURL URLWithString:@"Documents/" relativeToURL:groupURL];
+  NSString *groupPath = [groupURL path];
+  NSString *storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
 #else
-  NSURL *sharedURL = docsPath;
+  NSString *storagePath = docsPath;
 #endif
-  setenv("SHARED", sharedURL.path.UTF8String, 0);
+  setenv("SHARED", storagePath.UTF8String, 0);
   // We can't write in $HOME so for ssh & curl to work, we need other homes for config files:
   setenv("SSH_HOME", docsPath.UTF8String, 0);
   setenv("CURL_HOME", docsPath.UTF8String, 0);
   // iOS already defines "HOME" as the home dir of the application
   
   // Current working directory == shared directory
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
+  if (![[NSFileManager defaultManager] changeCurrentDirectoryPath:storagePath])
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
   const char *history = [filePath UTF8String];
 
@@ -372,7 +376,7 @@
               fprintf(_stream.out, "cd: %s: no such file or directory\r\n", argv[1]);
             }
           } else // [cd] Help, I'm lost, bring me back home
-            [[NSFileManager defaultManager] changeCurrentDirectoryPath:sharedURL.path];
+            [[NSFileManager defaultManager] changeCurrentDirectoryPath:storagePath];
           // Higher level commands, not from system: curl, tar, scp, sftp
         } else if  ([cmd isEqualToString:@"curl"]) {
           curl_main(argc, argv);
@@ -380,6 +384,16 @@
           // We have an scp / sftp command. We converted it into a curl command in makeargs
           argv[0] = "curl";
           curl_main(argc, argv);
+        } else if ([cmd isEqualToString:@"vim"]) {
+          NSString* fileLocation = @(argv[1]);
+          if (! [fileLocation hasPrefix:@"/"]) {
+            // relative path. The most likely.
+            fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
+          }
+          NSURL *fileURL = [NSURL fileURLWithPath:fileLocation];
+          fileLocation = [@"vim://" stringByAppendingString:fileLocation];
+          NSURL *myURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+           [[UIApplication sharedApplication] openURL:myURL];
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }
