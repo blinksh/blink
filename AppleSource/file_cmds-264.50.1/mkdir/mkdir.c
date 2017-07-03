@@ -60,7 +60,7 @@ __RCSID("$FreeBSD: src/bin/mkdir/mkdir.c,v 1.26 2002/06/30 05:13:54 obrien Exp $
 
 static void	usage(void);
 
-int vflag;
+static int vflag;
 
 int
 mkdir_main(int argc, char *argv[])

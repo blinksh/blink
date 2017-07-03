@@ -102,7 +102,7 @@ chksum_main(int argc, char **argv)
 					cfncn = csum2;
 					pfncn = psum2;
 				} else if (!strcmp(optarg, "3")) {
-					cfncn = crc32;
+					cfncn = chksum_crc32;
 					pfncn = pcrc;
 				} else {
 					warnx("illegal argument to -o option");

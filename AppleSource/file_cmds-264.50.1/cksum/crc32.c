@@ -98,7 +98,7 @@ static const uint32_t crctab[256] = {
 uint32_t crc32_total = 0;
 
 int
-crc32(int fd, uint32_t *cval, off_t *clen)
+chksum_crc32(int fd, uint32_t *cval, off_t *clen)
 {
     uint32_t lcrc = ~0;
     ssize_t nr;

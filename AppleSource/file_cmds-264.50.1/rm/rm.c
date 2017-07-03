@@ -70,8 +70,8 @@ __used static const char rcsid[] =
 #define COMPAT_MODE(func, mode) 1
 #endif
 
-int dflag, eval, fflag, iflag, Pflag, vflag, Wflag, stdin_ok;
-uid_t uid;
+static int dflag, eval, fflag, iflag, Pflag, vflag, Wflag, stdin_ok;
+static uid_t uid;
 
 static int	check __P((char *, char *, struct stat *));
 static int checkdir __P((char *));

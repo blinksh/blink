@@ -53,15 +53,15 @@ __FBSDID("$FreeBSD: src/bin/ln/ln.c,v 1.34 2006/02/14 11:08:05 glebius Exp $");
 #include <string.h>
 #include <unistd.h>
 
-int	fflag;				/* Unlink existing files. */
-int	Fflag;				/* Remove empty directories also. */
-int	hflag;				/* Check new name for symlink first. */
-int	iflag;				/* Interactive mode. */
-int	sflag;				/* Symbolic, not hard, link. */
-int	vflag;				/* Verbose output. */
+static int	fflag;				/* Unlink existing files. */
+static int	Fflag;				/* Remove empty directories also. */
+static int	hflag;				/* Check new name for symlink first. */
+static int	iflag;				/* Interactive mode. */
+static int	sflag;				/* Symbolic, not hard, link. */
+static int	vflag;				/* Verbose output. */
 					/* System link call. */
 static int (*linkf)(const char *, const char *);
-char	linkch;
+static char	linkch;
 
 static int	linkit(const char *, const char *, int);
 static void	usage(void);
@@ -182,7 +182,7 @@ ln_main(int argc, char *argv[])
 	// exit(exitval);
 }
 
-int
+static int
 linkit(const char *target, const char *source, int isdir)
 {
 	struct stat sb;
@@ -279,7 +279,7 @@ linkit(const char *target, const char *source, int isdir)
 	return (0);
 }
 
-void
+static void
 usage(void)
 {
 	(void)fprintf(stderr, "\r%s\n\r%s\n\r%s\n\r",

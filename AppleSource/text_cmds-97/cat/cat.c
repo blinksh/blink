@@ -64,8 +64,8 @@ __FBSDID("$FreeBSD: src/bin/cat/cat.c,v 1.32 2005/01/10 08:39:20 imp Exp $");
 #include <unistd.h>
 #include <stddef.h>
 
-int bflag, eflag, nflag, sflag, tflag, vflag;
-int rval;
+static int bflag, eflag, nflag, sflag, tflag, vflag;
+static int rval;
 const char *filename;
 
 static void usage(void);

@@ -53,8 +53,6 @@
 		22AEF86E1EF18CE100798591 /* print.c in Sources */ = {isa = PBXBuildFile; fileRef = 22AEF8691EF18CE100798591 /* print.c */; };
 		22AEF8711EF18CE800798591 /* sum1.c in Sources */ = {isa = PBXBuildFile; fileRef = 22AEF86F1EF18CE800798591 /* sum1.c */; };
 		22AEF8721EF18CE800798591 /* sum2.c in Sources */ = {isa = PBXBuildFile; fileRef = 22AEF8701EF18CE800798591 /* sum2.c */; };
-		22F01ED01F0AD0300086C089 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F01ECF1F0AD02A0086C089 /* libz.tbd */; };
-		22F01ED21F0AD0420086C089 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F01ED11F0AD03D0086C089 /* libbz2.tbd */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -117,8 +115,6 @@
 		22AEF8691EF18CE100798591 /* print.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = print.c; path = ../cksum/print.c; sourceTree = "<group>"; };
 		22AEF86F1EF18CE800798591 /* sum1.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sum1.c; path = ../cksum/sum1.c; sourceTree = "<group>"; };
 		22AEF8701EF18CE800798591 /* sum2.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = sum2.c; path = ../cksum/sum2.c; sourceTree = "<group>"; };
-		22F01ECF1F0AD02A0086C089 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
-		22F01ED11F0AD03D0086C089 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -126,8 +122,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22F01ED21F0AD0420086C089 /* libbz2.tbd in Frameworks */,
-				22F01ED01F0AD0300086C089 /* libz.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -184,7 +178,6 @@
 				22AEF8011EF123EA00798591 /* file_cmds_ios */,
 				22AEF80C1EF123EB00798591 /* file_cmds_iosTests */,
 				22AEF8001EF123EA00798591 /* Products */,
-				22F01ECE1F0AD02A0086C089 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -292,15 +285,6 @@
 				22AEF8701EF18CE800798591 /* sum2.c */,
 			);
 			name = chksum;
-			sourceTree = "<group>";
-		};
-		22F01ECE1F0AD02A0086C089 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				22F01ED11F0AD03D0086C089 /* libbz2.tbd */,
-				22F01ECF1F0AD02A0086C089 /* libz.tbd */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -522,7 +506,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				MACH_O_TYPE = mh_dylib;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -569,7 +552,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
-				MACH_O_TYPE = mh_dylib;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -591,7 +573,7 @@
 				INFOPLIST_FILE = file_cmds_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "Acube.file-cmds-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -610,7 +592,7 @@
 				INFOPLIST_FILE = file_cmds_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "Acube.file-cmds-ios";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

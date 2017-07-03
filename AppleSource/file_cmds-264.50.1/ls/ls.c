@@ -213,7 +213,8 @@ ls_main(int argc, char *argv[])
 	(void)setlocale(LC_ALL, "");
 
 	/* Terminal defaults to -Cq, non-terminal defaults to -1. */
-	if (isatty(STDOUT_FILENO)) {
+    // iOS: we *are* a terminal, but STDOUT_FILENO doesn't exist
+	if (isatty(STDOUT_FILENO) || 1) {
 		termwidth = 80;
 		if ((p = getenv("COLUMNS")) != NULL && *p != '\0')
 			termwidth = atoi(p);

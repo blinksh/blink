@@ -256,9 +256,6 @@
 		227C4D7E1EF9445D00968772 /* smb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb.c; sourceTree = "<group>"; };
 		227C4D801EF944D100968772 /* hostcheck.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hostcheck.c; sourceTree = "<group>"; };
 		229557E81EFD0FF800C54B16 /* tool_operate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tool_operate.m; sourceTree = "<group>"; };
-		22F01EEB1F0ADCE70086C089 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = ../../../Frameworks/openssl.framework; sourceTree = "<group>"; };
-		22F01EEC1F0ADCE80086C089 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libssh2.framework; path = ../../../Frameworks/libssh2.framework; sourceTree = "<group>"; };
-		22F01EEF1F0ADDAB0086C089 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -277,7 +274,6 @@
 			children = (
 				222A8EBB1EF7BC27005D3D23 /* curl_ios */,
 				222A8EBA1EF7BC27005D3D23 /* Products */,
-				22F01EEA1F0ADCE40086C089 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -425,16 +421,6 @@
 				227C4D801EF944D100968772 /* hostcheck.c */,
 			);
 			name = libcurl;
-			sourceTree = "<group>";
-		};
-		22F01EEA1F0ADCE40086C089 /* Frameworks */ = {
-			isa = PBXGroup;
-			children = (
-				22F01EEF1F0ADDAB0086C089 /* libz.tbd */,
-				22F01EEC1F0ADCE80086C089 /* libssh2.framework */,
-				22F01EEB1F0ADCE70086C089 /* openssl.framework */,
-			);
-			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -752,11 +738,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = ../../../Frameworks/;
 				INFOPLIST_FILE = curl_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "Acube.curl-ios";
@@ -775,11 +758,8 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
-				ENABLE_BITCODE = YES;
-				FRAMEWORK_SEARCH_PATHS = ../../../Frameworks/;
 				INFOPLIST_FILE = curl_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				MACH_O_TYPE = staticlib;
 				PRODUCT_BUNDLE_IDENTIFIER = "Acube.curl-ios";

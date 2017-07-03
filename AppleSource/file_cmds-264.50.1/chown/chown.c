@@ -73,9 +73,9 @@ static void	chownerr(const char *);
 static uid_t	id(const char *, const char *);
 static void	usage(void);
 
-uid_t uid;
-gid_t gid;
-int ischown;
+static uid_t uid;
+static gid_t gid;
+static int ischown;
 const char *gname;
 
 int

@@ -66,7 +66,7 @@ static void	setfile(const char *, struct stat *);
 static void	usage(int);
 #define exit return
 
-int eval, force, verbose, cat;
+static int eval, force, verbose, cat;
 
 int
 compress_main(int argc, char *argv[])

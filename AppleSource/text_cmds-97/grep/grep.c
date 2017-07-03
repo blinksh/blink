@@ -97,7 +97,7 @@ unsigned int	 patterns, pattern_sz;
 struct pat	*pattern;
 regex_t		*r_pattern;
 #ifndef WITHOUT_FASTMATCH
-fastmatch_t	*fg_pattern;
+static fastmatch_t	*fg_pattern;
 #endif
 
 /* Filename exclusion/inclusion patterns */

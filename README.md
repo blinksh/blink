@@ -72,6 +72,8 @@ sftp localFilename user@host.name.edu:~/
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
+Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. If you don't have an Apple Developer ID, it may complicate your signing process. If that is the case, use the ..._static.xcodeproj versions in each subdirectory. 
+
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
 

@@ -63,7 +63,7 @@ __RCSID("$FreeBSD: src/bin/chmod/chmod.c,v 1.27 2002/08/04 05:29:13 obrien Exp $
 
 #endif /*__APPLE__*/
 
-int fflag = 0;
+static int fflag = 0;
 
 int chmod_main(int, char *[]);
 void chmod_usage(void);

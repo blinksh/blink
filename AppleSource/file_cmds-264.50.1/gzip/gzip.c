@@ -74,7 +74,7 @@ __FBSDID("$FreeBSD: src/usr.bin/gzip/gzip.c,v 1.25 2011/10/10 06:37:32 delphij E
 #endif /* __APPLE__ */
 #include <stdbool.h> // for booleans
 #define exit return
-// Until someone install the libraries
+// iOS: Until someone install the header file (the library exists)
 #define NO_XZ_SUPPORT
 
 /* what type of file are we dealing with */

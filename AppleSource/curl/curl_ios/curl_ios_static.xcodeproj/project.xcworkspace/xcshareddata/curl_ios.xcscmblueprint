@@ -1,0 +1,30 @@
+{
+  "DVTSourceControlWorkspaceBlueprintPrimaryRemoteRepositoryKey" : "1472412A1A40EF795F29C7EBF79DE9C343137C4D",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyRepositoryLocationsKey" : {
+
+  },
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyStatesKey" : {
+    "1472412A1A40EF795F29C7EBF79DE9C343137C4D" : 9223372036854775807,
+    "934B13A09809163D67AAD90B10B7B0D1F0102B9E" : 9223372036854775807
+  },
+  "DVTSourceControlWorkspaceBlueprintIdentifierKey" : "46C8FFDC-64F5-4085-8763-ADD4C9A60B10",
+  "DVTSourceControlWorkspaceBlueprintWorkingCopyPathsKey" : {
+    "1472412A1A40EF795F29C7EBF79DE9C343137C4D" : "curl\/",
+    "934B13A09809163D67AAD90B10B7B0D1F0102B9E" : ".."
+  },
+  "DVTSourceControlWorkspaceBlueprintNameKey" : "curl_ios",
+  "DVTSourceControlWorkspaceBlueprintVersion" : 204,
+  "DVTSourceControlWorkspaceBlueprintRelativePathToProjectKey" : "curl_ios\/curl_ios.xcodeproj",
+  "DVTSourceControlWorkspaceBlueprintRemoteRepositoriesKey" : [
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/curl\/curl.git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "1472412A1A40EF795F29C7EBF79DE9C343137C4D"
+    },
+    {
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryURLKey" : "https:\/\/github.com\/holzschu\/blink",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositorySystemKey" : "com.apple.dt.Xcode.sourcecontrol.Git",
+      "DVTSourceControlWorkspaceBlueprintRemoteRepositoryIdentifierKey" : "934B13A09809163D67AAD90B10B7B0D1F0102B9E"
+    }
+  ]
+}

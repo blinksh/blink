@@ -134,10 +134,6 @@
 		22E03FAE1F0A488D00974EA7 /* subst.c in Sources */ = {isa = PBXBuildFile; fileRef = 22C6826F1F0A3EBC00077E19 /* subst.c */; settings = {COMPILER_FLAGS = "-I ../libarchive/ -I ../libarchive_fe/"; }; };
 		22E03FAF1F0A488D00974EA7 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 22C6826D1F0A3EBC00077E19 /* util.c */; settings = {COMPILER_FLAGS = "-I ../libarchive/ -I ../libarchive_fe/"; }; };
 		22E03FB01F0A488D00974EA7 /* write.c in Sources */ = {isa = PBXBuildFile; fileRef = 22C682721F0A3EBC00077E19 /* write.c */; settings = {COMPILER_FLAGS = "-I ../libarchive/ -I ../libarchive_fe/"; }; };
-		22F01EC31F0ACB190086C089 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F737FF1F0A4C5100048A48 /* libxml2.tbd */; };
-		22F01EC41F0ACB210086C089 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F737FD1F0A4C4100048A48 /* libbz2.tbd */; };
-		22F01EC51F0ACB2B0086C089 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F737F71F0A4BE800048A48 /* libz.tbd */; };
-		22F01EC71F0ACB3B0086C089 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F01EC61F0ACB340086C089 /* libiconv.tbd */; };
 		22F738061F0A4D0400048A48 /* archive_getdate.c in Sources */ = {isa = PBXBuildFile; fileRef = 22F738051F0A4D0300048A48 /* archive_getdate.c */; };
 /* End PBXBuildFile section */
 
@@ -272,7 +268,6 @@
 		22E03F2B1F0A482A00974EA7 /* libarchive_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = libarchive_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		22E03F2D1F0A482B00974EA7 /* libarchive_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = libarchive_ios.h; sourceTree = "<group>"; };
 		22E03F2E1F0A482B00974EA7 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		22F01EC61F0ACB340086C089 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		22F737F31F0A4BAF00048A48 /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = usr/lib/libxml2.2.tbd; sourceTree = SDKROOT; };
 		22F737F51F0A4BCD00048A48 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		22F737F71F0A4BE800048A48 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
@@ -290,10 +285,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				22F01EC71F0ACB3B0086C089 /* libiconv.tbd in Frameworks */,
-				22F01EC51F0ACB2B0086C089 /* libz.tbd in Frameworks */,
-				22F01EC41F0ACB210086C089 /* libbz2.tbd in Frameworks */,
-				22F01EC31F0ACB190086C089 /* libxml2.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -481,7 +472,6 @@
 		22F737F21F0A4BAF00048A48 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				22F01EC61F0ACB340086C089 /* libiconv.tbd */,
 				22F738031F0A4CBB00048A48 /* libz.1.tbd */,
 				22F738011F0A4C6200048A48 /* libiconv.2.tbd */,
 				22F737FF1F0A4C5100048A48 /* libxml2.tbd */,
@@ -811,7 +801,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -822,14 +812,14 @@
 				INFOPLIST_FILE = libarchive_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				"OTHER_CFLAGS[arch=*]" = (
 					"-D",
 					HAVE_CONFIG_H,
 					"-I",
 					"/Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/libxml2/",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Acube.libarchive-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "Acube.libarchive-ios-f";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
@@ -846,7 +836,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_IDENTITY = "";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEFINES_MODULE = YES;
@@ -857,14 +847,14 @@
 				INFOPLIST_FILE = libarchive_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
-				MACH_O_TYPE = mh_dylib;
+				MACH_O_TYPE = staticlib;
 				"OTHER_CFLAGS[arch=*]" = (
 					"-D",
 					HAVE_CONFIG_H,
 					"-I",
 					"/Applications/Xcode-beta.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk/usr/include/libxml2/",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "Acube.libarchive-ios";
+				PRODUCT_BUNDLE_IDENTIFIER = "Acube.libarchive-ios-f";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SKIP_INSTALL = YES;
