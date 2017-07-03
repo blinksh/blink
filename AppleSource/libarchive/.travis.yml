@@ -1,0 +1,30 @@
+language: C
+sudo: false
+dist: trusty
+addons:
+  apt:
+    packages:
+      - libacl1-dev
+      - libbz2-dev
+      - liblzma-dev
+      - libzip-dev
+      - lzop
+os:
+  - linux
+  - osx
+compiler:
+  - gcc
+  - clang
+env:
+  - BUILD_SYSTEM=cmake
+  - BUILD_SYSTEM=autotools
+matrix:
+  exclude:
+    - os: osx
+      compiler: gcc
+before_install:
+  - if [ `uname` = "Darwin" ]; then brew update; fi
+install:
+  - if [ `uname` = "Darwin" ]; then brew install xz lzop lz4; fi
+script:
+  - build/ci_build.sh

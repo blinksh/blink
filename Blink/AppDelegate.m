@@ -35,7 +35,6 @@
 #import "ScreenController.h"
 @import CloudKit;
 
-#define appGroupFiles @"group.Nicolas-Holzschuch-blinkshell"
 #undef HOCKEYSDK
 #if HOCKEYSDK
 @import HockeySDK;
@@ -52,17 +51,7 @@
 {
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
   
-#ifdef appGroupFiles
-  // Path for access to App Group files
-  NSURL *groupURL = [[NSFileManager defaultManager]
-                     containerURLForSecurityApplicationGroupIdentifier:
-                     appGroupFiles];
-  NSString *groupPath = [groupURL path];
-  storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
-#else
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  storagePath = docsPath;
-#endif
+  storagePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   
   // Override point for customization after application launch.
 #if HOCKEYSDK
@@ -120,7 +109,19 @@
   NSString* filename = [url lastPathComponent];
   
   NSString* path = [storagePath stringByAppendingPathComponent:filename];
-  [data writeToFile:path atomically:YES];
+  if ([data writeToFile:path atomically:YES]) {
+     // If it worked and it was a file in our Inbox, we delete it:
+    if (([url isFileURL]) && (
+        ([[url path] isEqualToString:[[storagePath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
+        ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[storagePath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
+        )) {
+      NSError *e;
+      if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
+        fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
+      }
+    }
+  }
+  // TODO? automatic expansion of archives. Should be a preference.
   return YES;
 }
 

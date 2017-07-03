@@ -29,6 +29,7 @@ compress, uncompress, gzip, gunzip,
 * From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
 * From text_cmds: cat, grep, wc
 * From curl: curl (includes http, https, scp, sftp...), scp, sftp
+* From libarchive: tar 
 
 
 You will need to compile the following frameworks:
@@ -36,12 +37,14 @@ You will need to compile the following frameworks:
 * blink/AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
 * blinkAppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
 * blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj
+* blink/AppleSource/libarchive/libarchive_ios/libarchive_ios.xcodeproj
 
 These create four static libraries: 
 * file_cmds_ios.framework 
 * shell_cmds_ios.framewok
 * text_cmds_ios.framework
 * curl_ios.framework
+* libarchive_ios.framework
 
 
 You will have to copy all of them the blink/Frameworks directory. You will also need to copy the header files: 
@@ -49,20 +52,13 @@ You will have to copy all of them the blink/Frameworks directory. You will also 
 * shell_cmds_ios/shell_cmds_ios.h 
 * text_cmds_ios/text_cmds_ios.h 
 * curl_ios/curl_ios.h
+* libarchive_ios/libarchive_ios.h
 
 to the blink/Frameworks/include directory. 
 
+Since you are sideloading, you can also compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS). With iOS 11 "open-in-place", you should be able to open files from Blink into Vim. From the shell, calling "vim myfile.txt" opens Vim and edits the file. 
 
-Since you are sideloading, you can also compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS) and create an "App group" so Vim and Blink have access to the same directory. 
-
-If you do that, there are 3 directories: 
-- one that can only be accessed by Vim
-- one that can only be accessed by Blink
-- one that is accessed by both applications. 
-
-In MCPSession.m, you will need to edit "appGroupFiles" to reflect the name of the shared directory (it will be related to your Apple ID). There are two environment variables: $HOME links to the Blink-specific directory, $SHARED links to the shared directory. 
-
-From Vim, you can open the files in $SHARED. You can also edit Vim so it opens by default in the shared directory. 
+This feature only works with iOS 11, and is currently broken. I'm investigating. 
 
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 ```

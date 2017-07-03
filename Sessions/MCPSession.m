@@ -45,14 +45,9 @@
 #include "shell_cmds_ios.h"
 #include "text_cmds_ios.h"
 #include "curl_ios.h"
+#include "libarchive_ios.h"
 
 #define MCP_MAX_LINE 4096
-
-// If you have enabled a shared directory between apps, this is where you put its name
-// For sideloading, it will be your developer name
-// Remember to also activate it in the other app (e.g. vimIOS) 
-#define appGroupFiles @"group.Nicolas-Holzschuch-blinkshell"
-#include "FileProvider.h"
 
 @implementation MCPSession {
   Session *childSession;
@@ -71,17 +66,8 @@
   // plus environment variables)
   // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
   // edit the arguments for curl syntax.
-#ifdef appGroupFiles
-  // Path for access to App Group files (also accessed by Vim)
-  NSURL *groupURL = [[NSFileManager defaultManager]
-                     containerURLForSecurityApplicationGroupIdentifier:
-                     appGroupFiles];
-  NSString *groupPath = [groupURL path];
-  NSString *storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
-#else
-  NSString *storagePath = [[NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] path];
-#endif
-
+  NSString *storagePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] ;
+  
   // Separate arr into arguments and parse (env vars, ~, ~shared)
   NSArray *listArgvMaybeEmptyStrings = [cmdline componentsSeparatedByString:@" "];
   // Remove empty strings (extra spaces)
@@ -231,16 +217,7 @@
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   
-#ifdef appGroupFiles
-  // Path for access to App Group files
-  NSURL *groupURL = [[NSFileManager defaultManager]
-                     containerURLForSecurityApplicationGroupIdentifier:
-                     appGroupFiles];
-  NSString *groupPath = [groupURL path];
-  NSString *storagePath = [groupPath stringByAppendingPathComponent:@"File Provider Storage"];
-#else
   NSString *storagePath = docsPath;
-#endif
   setenv("SHARED", storagePath.UTF8String, 0);
   // We can't write in $HOME so for ssh & curl to work, we need other homes for config files:
   setenv("SSH_HOME", docsPath.UTF8String, 0);
@@ -384,6 +361,8 @@
           // We have an scp / sftp command. We converted it into a curl command in makeargs
           argv[0] = "curl";
           curl_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"tar"]) {
+          tar_main(argc, argv);
         } else if ([cmd isEqualToString:@"vim"]) {
           NSString* fileLocation = @(argv[1]);
           if (! [fileLocation hasPrefix:@"/"]) {
@@ -393,7 +372,9 @@
           NSURL *fileURL = [NSURL fileURLWithPath:fileLocation];
           fileLocation = [@"vim://" stringByAppendingString:fileLocation];
           NSURL *myURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-           [[UIApplication sharedApplication] openURL:myURL];
+          dispatch_async(dispatch_get_main_queue(), ^{
+            [[UIApplication sharedApplication] openURL:myURL];
+          });
         } else {
           [self out:"Unknown command. Type 'help' for a list of available operations"];
         }

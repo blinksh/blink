@@ -76,7 +76,6 @@ __FBSDID("$FreeBSD: src/usr.bin/gzip/gzip.c,v 1.25 2011/10/10 06:37:32 delphij E
 #define exit return
 // Until someone install the libraries
 #define NO_XZ_SUPPORT
-#define NO_BZIP2_SUPPORT
 
 /* what type of file are we dealing with */
 enum filetype {
