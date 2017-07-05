@@ -2301,7 +2301,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="Lock Blink after the device awakes from sleep. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
+                            <tableViewSection footerTitle="Lock Blink after 10 minutes in the background. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="qGk-FE-K2U">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>
