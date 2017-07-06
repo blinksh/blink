@@ -204,6 +204,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
+  NSString *_textInputContextIdentifier;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -212,6 +213,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   if (self) {
     _inputEnabled = YES;
+    _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
+
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
 
@@ -511,6 +514,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 
   return YES;
+}
+
+- (NSString *)textInputContextIdentifier
+{
+  return _textInputContextIdentifier;
 }
 
 - (BOOL)canResignFirstResponder
