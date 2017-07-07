@@ -343,8 +343,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
   NSString *jsScript = [NSString stringWithFormat:@"write_to_term(%@[0])", jsString];
-
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  });
 }
 
 - (NSString *)title
