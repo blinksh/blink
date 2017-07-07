@@ -128,8 +128,10 @@
 
 - (void)showConfig
 {
-  [[UIApplication sharedApplication]
-    sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[UIApplication sharedApplication]
+     sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+  });
 }
 
 - (void)runSSHCopyIDWithArgs:(NSString *)args
