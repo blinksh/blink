@@ -132,7 +132,7 @@ printscol(DISPLAY *dp)
 	assert(dp);
 	if (COMPAT_MODE("bin/ls", "Unix2003") && (dp->list != NULL)) {
 		if (dp->list->fts_level != FTS_ROOTLEVEL && (f_longform || f_size))
-			(void)printf("total %qu\n\r", (u_int64_t)howmany(dp->btotal, blocksize));
+			(void)printf("total %qu\n", (u_int64_t)howmany(dp->btotal, blocksize));
 	}
 
 	for (p = dp->list; p; p = p->fts_link) {
@@ -140,7 +140,6 @@ printscol(DISPLAY *dp)
 			continue;
 		(void)printaname(p, dp->s_inode, dp->s_block);
 		(void)putchar('\n');
-        (void)putchar('\r');
 	}
 }
 
@@ -241,7 +240,6 @@ printxattr(DISPLAY *dp, int count, char *buf, int sizes[])
 		putchar('\t');
 		printsize(dp->s_size, sizes[i]);
 		putchar('\n');
-        putchar('\r');
 		buf += strlen(buf) + 1;
 	}
 }
@@ -309,7 +307,6 @@ printacl(acl_t acl, int isdir)
 		}
 			
 		(void)putchar('\n');
-        (void)putchar('\r');
 	}
 
 }
@@ -326,7 +323,7 @@ printlong(DISPLAY *dp)
 #endif
 
 	if (dp->list->fts_level != FTS_ROOTLEVEL && (f_longform || f_size))
-		(void)printf("total %qu\n\r", (u_int64_t)howmany(dp->btotal, blocksize));
+		(void)printf("total %qu\n", (u_int64_t)howmany(dp->btotal, blocksize));
 
 	for (p = dp->list; p; p = p->fts_link) {
 		if (IS_NOPRINT(p))
@@ -422,7 +419,6 @@ printlong(DISPLAY *dp)
 		if (S_ISLNK(sp->st_mode))
 			printlink(p);
 		(void)putchar('\n');
-        (void)putchar('\r');
 #ifdef __APPLE__
 		if (np->xattr_count && f_xattr) {
 			printxattr(dp, np->xattr_count, np->xattr_names, np->xattr_sizes);
@@ -447,7 +443,6 @@ printstream(DISPLAY *dp)
 		if (strlen(p->fts_name) + chcnt +
 		    (p->fts_link ? 2 : 0) >= (unsigned)termwidth) {
 			putchar('\n');
-            putchar('\r');
 			chcnt = 0;
 		}
 		chcnt += printaname(p, dp->s_inode, dp->s_block);
@@ -458,7 +453,6 @@ printstream(DISPLAY *dp)
 	}
     if (chcnt) {
 		putchar('\n');
-        putchar('\r');
     }
 }
 
@@ -523,7 +517,7 @@ printcol(DISPLAY *dp)
 
 	assert(dp->list);
 	if (dp->list->fts_level != FTS_ROOTLEVEL && (f_longform || f_size))
-		(void)printf("total %qu\n\r", (u_int64_t)howmany(dp->btotal, blocksize));
+		(void)printf("total %qu\n", (u_int64_t)howmany(dp->btotal, blocksize));
 
 	base = 0;
 	for (row = 0; row < numrows; ++row) {
@@ -549,7 +543,6 @@ printcol(DISPLAY *dp)
 			endcol += colwidth;
 		}
 		(void)putchar('\n');
-        (void)putchar('\r');
 	}
 }
 
@@ -779,7 +772,7 @@ parsecolors(const char *cs)
 					fprintf(stderr,
 					    "warn: LSCOLORS should use "
 					    "characters a-h instead of 0-9 ("
-					    "see the manual page)\n\r");
+					    "see the manual page)\n");
 				}
 				legacy_warn = 1;
 			} else if (c[j] >= 'a' && c[j] <= 'h')
@@ -792,7 +785,7 @@ parsecolors(const char *cs)
 			else {
 				fprintf(stderr,
 				    "error: invalid character '%c' in LSCOLORS"
-				    " env var\n\r", c[j]);
+				    " env var\n", c[j]);
 				colors[i].num[j] = -1;
 			}
 		}
@@ -823,7 +816,7 @@ printlink(FTSENT *p)
 		(void)snprintf(name, sizeof(name),
 		    "%s/%s", p->fts_parent->fts_accpath, p->fts_name);
 	if ((lnklen = readlink(name, path, sizeof(path) - 1)) == -1) {
-		(void)fprintf(stderr, "\n\rls: %s: %s\n\r", name, strerror(errno));
+		(void)fprintf(stderr, "\nls: %s: %s\n", name, strerror(errno));
 		return;
 	}
 	path[lnklen] = '\0';

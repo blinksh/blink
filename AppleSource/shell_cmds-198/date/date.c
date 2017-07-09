@@ -29,8 +29,8 @@
 
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1985, 1987, 1988, 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1985, 1987, 1988, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #if 0
@@ -172,14 +172,12 @@ date_main(int argc, char *argv[])
     if (set_timezone && settimeofday(NULL, &tz) != 0) {
 		// err(1, "settimeofday (timezone)");
         warn("settimeofday (timezone)");
-        fprintf(stderr, "\r");
         return 0;
     }
 
     if (!rflag && time(&tval) == -1) {
 		// err(1, "time");
         warn("time");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -211,7 +209,6 @@ date_main(int argc, char *argv[])
 	if (ltp == NULL) {
 		// err(1, "localtime");
         warn("localtime");
-        fprintf(stderr, "\r");
         return 0;
 	}
 	lt = *ltp;
@@ -220,7 +217,7 @@ date_main(int argc, char *argv[])
 #endif
 	badv = vary_apply(v, &lt);
 	if (badv) {
-		fprintf(stderr, "%s: Cannot apply date adjustment\n\r",
+		fprintf(stderr, "%s: Cannot apply date adjustment\n",
 			badv->arg);
 		vary_destroy(v);
 		usage();
@@ -236,11 +233,10 @@ date_main(int argc, char *argv[])
 		setlocale(LC_TIME, "C");
 
 	(void)strftime(buf, sizeof(buf), format, &lt);
-	(void)printf("%s\n\r", buf);
+	(void)printf("%s\n", buf);
     if (fflush(stdout)) {
 		// err(1, "stdout");
         warn("stdout");
-        fprintf(stderr, "\r");
         return 0;
     }
 	/*
@@ -273,12 +269,12 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
 		t = strptime(p, fmt, lt);
 		if (t == NULL) {
 			fprintf(stderr, "Failed conversion of ``%s''"
-				" using format ``%s''\n\r", p, fmt);
+				" using format ``%s''\n", p, fmt);
 			badformat();
             return;
 		} else if (*t != '\0')
 			fprintf(stderr, "Warning: Ignoring %ld extraneous"
-				" characters in date string (%s)\n\r",
+				" characters in date string (%s)\n",
 				(long) strlen(t), t);
 	} else {
 		for (t = p, dot = NULL; *t; ++t) {
@@ -363,7 +359,6 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
     if ((tval = mktime(lt)) == -1) {
 		// errx(1, "nonexistent time");
         warn("nonexistent time");
-        fprintf(stderr, "\r");
         return;
     }
 
@@ -378,7 +373,6 @@ setthetime(const char *fmt, const char *p, int jflag, int nflag)
             if (settimeofday(&tv, NULL) != 0) {
 				// err(1, "settimeofday (timeval)");
                 warn("settimeofday (timeval)");
-                fprintf(stderr, "\r");
                 return;
             }
 			utx.ut_type = NEW_TIME;
@@ -396,14 +390,13 @@ static void
 badformat(void)
 {
 	warnx("illegal time format");
-    fprintf(stderr, "\r");
 	usage();
 }
 
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
+	(void)fprintf(stderr, "%s\n%s\n",
 	    "usage: date [-jnRu] [-d dst] [-r seconds] [-t west] "
 	    "[-v[+|-]val[ymwdHMS]] ... ",
 	    unix2003_std ?

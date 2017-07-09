@@ -34,8 +34,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static char const copyright[] =
-"@(#) Copyright (c) 1992, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1992, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -84,7 +84,6 @@ rmdir_main(int argc, char *argv[])
 	for (errors = 0; *argv; argv++) {
 		if (rmdir(*argv) < 0) {
 			warn("%s", *argv);
-            fprintf(stderr, "\r");
 			errors = 1;
 		} else if (pflag)
 			errors |= rm_path(*argv);
@@ -111,7 +110,6 @@ rm_path(char *path)
 
 		if (rmdir(path) < 0) {
 			warn("%s", path);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 	}
@@ -122,6 +120,6 @@ rm_path(char *path)
 void
 usage(void)
 {
-	(void)fprintf(stderr, "\rusage: rmdir [-p] directory ...\n\r");
+	(void)fprintf(stderr, "usage: rmdir [-p] directory ...\n");
 	// exit(1);
 }

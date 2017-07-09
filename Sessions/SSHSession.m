@@ -53,10 +53,10 @@
 #define TERM "xterm-256color"
 
 static const char *usage_format =
-  "usage: ssh [options] [user@]hostname [command]\r\n"
-  "[-l login_name] [-i identity_file] [-p port]\r\n" 
-  "[-t request_tty] [-v verbose]\r\n"
-  "\r\n";
+  "usage: ssh [options] [user@]hostname [command]\n"
+  "[-l login_name] [-i identity_file] [-p port]\n" 
+  "[-t request_tty] [-v verbose]\n"
+  "\n";
 
 typedef struct {
   int address_family;
@@ -128,17 +128,17 @@ static void kbd_callback(const char *name, int name_len,
   FILE *termout = s->_stream.control.termout;
   if (name_len > 0) {
     fwrite(name, 1, name_len, termout);
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
   if (instruction_len > 0) {
     fwrite(instruction, 1, instruction_len, termout);
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
 
   for (int i = 0; i < num_prompts; i++) {
     fwrite(prompts[i].text, 1, prompts[i].length, termout);
     responses[i].length = (int)[s promptUser:&responses[i].text];
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
 } /* kbd_callback */
 
@@ -280,19 +280,19 @@ static void kbd_callback(const char *name, int name_len,
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 
 - (void)errMsg:(NSString *)msg
 {
-  fprintf(_stream.err, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.err, "%s\n", [msg UTF8String]);
 }
 
 - (void)debugMsg:(NSString *)msg
 {
   if (_debug) {
-    fprintf(_stream.out, "SSHSession:DEBUG:%s\r\n", [msg UTF8String]);
+    fprintf(_stream.out, "SSHSession:DEBUG:%s\n", [msg UTF8String]);
   }
 }
 
@@ -389,7 +389,7 @@ static void kbd_callback(const char *name, int name_len,
 		      timeout:&_options.connection_timeout] >= 0) {
       // Successful connection. Save host address
       memcpy(hostaddr, ai->ai_addr, ai->ai_addrlen);
-      fprintf(_stream.out, "Connected to %s\r\n", ntop);
+      fprintf(_stream.out, "Connected to %s\n", ntop);
       break;
     } else {
       [self debugMsg:[NSString stringWithFormat:@"connect to host %s port %s: %s", ntop, strport, strerror(errno)]];
@@ -520,7 +520,7 @@ static void kbd_callback(const char *name, int name_len,
     if (!password) {
       fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
       [self promptUser:&password];
-      fprintf(_stream.control.termout, "\r\n");
+      fprintf(_stream.control.termout, "\n");
     }
 
     if (strlen(password) != 0) {
@@ -588,7 +588,7 @@ static void kbd_callback(const char *name, int name_len,
       if ([pk isEncrypted]) {
         fprintf(_stream.control.termout, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
         [self promptUser:&passphrase];
-        fprintf(_stream.control.termout, "\r\n");
+        fprintf(_stream.control.termout, "\n");
       }
       
       while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
@@ -820,15 +820,15 @@ static void kbd_callback(const char *name, int name_len,
     if (check == LIBSSH2_KNOWNHOST_CHECK_FAILURE) {
       [self errMsg:@"Known host check failed"];
     } else if (check == LIBSSH2_KNOWNHOST_CHECK_NOTFOUND) {
-      [self errMsg:[NSString stringWithFormat:@"The authenticity of host %.200s (%s) can't be established.\r\n"
+      [self errMsg:[NSString stringWithFormat:@"The authenticity of host %.200s (%s) can't be established.\n"
 					       "%s key fingerprint is %@",
 					      _options.hostname, addr,
 					      type_str, fingerprint]];
 
     } else if (check == LIBSSH2_KNOWNHOST_CHECK_MISMATCH) {
-      [self errMsg:[NSString stringWithFormat:@"@@@@@@ REMOTE HOST IDENTIFICATION HAS CHANGED @@@@@@\r\n"
-					       "%s host key for %.200s (%s) has changed.\r\n"
-					       "This might be due to someone doing something nasty or just a change in the host.\r\n"
+      [self errMsg:[NSString stringWithFormat:@"@@@@@@ REMOTE HOST IDENTIFICATION HAS CHANGED @@@@@@\n"
+					       "%s host key for %.200s (%s) has changed.\n"
+					       "This might be due to someone doing something nasty or just a change in the host.\n"
 					       "Current %s key fingerprint is %@",
 					      type_str, _options.hostname, addr,
 					      type_str, fingerprint]];
@@ -893,7 +893,7 @@ static void kbd_callback(const char *name, int name_len,
       }
 
       if (c == '\n' || c == '\r') {
-	fprintf(_stream.err, "\r\n");
+	fprintf(_stream.err, "\n");
 	break;
       }
       fprintf(_stream.err, "%c", c);

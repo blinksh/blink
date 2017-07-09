@@ -328,7 +328,7 @@ void ourWriteOut(CURL *curl, struct OutStruct *outs, const char *writeinfo)
             }
           }
           if(!match) {
-            fprintf(stderr, "curl: unknown --write-out variable: '%s'\n\r", ptr);
+            fprintf(stderr, "curl: unknown --write-out variable: '%s'\n", ptr);
           }
           ptr = end + 1; /* pass the end */
           *end = keepit;

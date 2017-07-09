@@ -15,7 +15,6 @@ static void myerrx(int i, const char * fmt, ...) {
     va_start(ap, fmt);
     warnx(fmt, ap);
     va_end(ap);
-    fprintf(stderr, "\r");
 }
 
 static void myerr(int i, const char * fmt, ...) {
@@ -23,7 +22,6 @@ static void myerr(int i, const char * fmt, ...) {
     va_start(ap, fmt);
     warn(fmt, ap);
     va_end(ap);
-    fprintf(stderr, "\r");
 }
 
 static void mywarnx(const char * fmt, ...) {
@@ -31,7 +29,6 @@ static void mywarnx(const char * fmt, ...) {
     va_start(ap, fmt);
     warnx(fmt, ap);
     va_end(ap);
-    fprintf(stderr, "\r");
 }
 
 static void mywarn(const char * fmt, ...) {
@@ -39,7 +36,6 @@ static void mywarn(const char * fmt, ...) {
     va_start(ap, fmt);
     warn(fmt, ap);
     va_end(ap);
-    fprintf(stderr, "\r");
 }
 
 #define exit return

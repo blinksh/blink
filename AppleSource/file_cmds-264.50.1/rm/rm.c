@@ -34,8 +34,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1990, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1990, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -220,7 +220,6 @@ rm_tree(argv)
 			if (!fflag || p->fts_errno != ENOENT) {
 				warnx("%s: %s",
 				    p->fts_path, strerror(p->fts_errno));
-                fprintf(stderr, "\r");
 				eval = 1;
 			}
 			continue;
@@ -236,7 +235,6 @@ rm_tree(argv)
 			if (!fflag || p->fts_errno != ENOENT) {
 				warnx("%s: %s",
 				    p->fts_path, strerror(p->fts_errno));
-                fprintf(stderr, "\r");
 				eval = 1;
 			}
 			continue;
@@ -296,7 +294,7 @@ rm_tree(argv)
 				rval = rmdir(p->fts_accpath);
 				if (rval == 0 || (fflag && errno == ENOENT)) {
 					if (rval == 0 && vflag)
-						(void)printf("%s\n\r",
+						(void)printf("%s\n",
 						    p->fts_path);
 					continue;
 				}
@@ -306,7 +304,7 @@ rm_tree(argv)
 				rval = undelete(p->fts_accpath);
 				if (rval == 0 && (fflag && errno == ENOENT)) {
 					if (vflag)
-						(void)printf("%s\n\r",
+						(void)printf("%s\n",
 						    p->fts_path);
 					continue;
 				}
@@ -326,7 +324,7 @@ rm_tree(argv)
 #endif	/* __APPLE__ */
 				if (rval == 0 || (fflag && errno == ENOENT)) {
 					if (rval == 0 && vflag)
-						(void)printf("%s\n\r",
+						(void)printf("%s\n",
 						    p->fts_path);
 					continue;
 				}
@@ -334,7 +332,6 @@ rm_tree(argv)
 		}
 err:
 		warn("%s", p->fts_path);
-        fprintf(stderr, "\r");
 		eval = 1;
 	}
 	if (errno)
@@ -362,21 +359,18 @@ rm_file(argv)
 			} else {
 				if (!fflag || errno != ENOENT) {
 					warn("%s", f);
-                    fprintf(stderr, "\r");
 					eval = 1;
 				}
 				continue;
 			}
 		} else if (Wflag) {
 			warnx("%s: %s", f, strerror(EEXIST));
-            fprintf(stderr, "\r");
 			eval = 1;
 			continue;
 		}
 
 		if (S_ISDIR(sb.st_mode) && !dflag) {
 			warnx("%s: is a directory", f);
-            fprintf(stderr, "\r");
 			eval = 1;
 			continue;
 		}
@@ -408,11 +402,10 @@ rm_file(argv)
 		}
 		if (rval && (!fflag || errno != ENOENT)) {
 			warn("%s", f);
-            fprintf(stderr, "\r");
 			eval = 1;
 		}
 		if (vflag && rval == 0)
-			(void)printf("%s\n\r", f);
+			(void)printf("%s\n", f);
 	}
 }
 
@@ -477,7 +470,6 @@ err:	eval = 1;
 	if (buf)
 		free(buf);
 	warn("%s", file);
-    fprintf(stderr, "\r");
 }
 
 int
@@ -570,7 +562,6 @@ checkdot(argv)
 		if (ISDOT(p)) {
             if (!complained++) {
 				warnx("\".\" and \"..\" may not be removed");
-                fprintf(stderr, "\r");
             }
 			eval = 1;
 			for (save = t; (t[0] = t[1]) != NULL; ++t)
@@ -585,8 +576,8 @@ void
 usage()
 {
 
-	(void)fprintf(stderr, "%s\n\r%s\n\r",
-	    "\rusage: rm [-f | -i] [-dPRrvW] file ...",
+	(void)fprintf(stderr, "%s\n%s\n",
+	    "usage: rm [-f | -i] [-dPRrvW] file ...",
 	    "       unlink file");
 	// exit(EX_USAGE);
 }

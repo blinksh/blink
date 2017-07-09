@@ -200,7 +200,6 @@ uname_main(argc, argv)
 #endif /* __APPLE__ */
 	}
 	putchar('\n');
-    putchar('\r');
 
 	exit(EXIT_SUCCESS);
 	/* NOTREACHED */
@@ -209,6 +208,6 @@ uname_main(argc, argv)
 static void
 usage()
 {
-	fprintf(stderr, "\rusage: uname [-amnprsv]\n\r");
+	fprintf(stderr, "usage: uname [-amnprsv]\n");
 	// exit(EXIT_FAILURE);
 }

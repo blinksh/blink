@@ -53,7 +53,7 @@ pcrc(char *fn, uint32_t val, off_t len)
 	(void)printf("%lu %jd", (u_long)val, (intmax_t)len);
 	if (fn != NULL)
 		(void)printf(" %s", fn);
-	(void)printf("\n\r");
+	(void)printf("\n");
 }
 
 void
@@ -62,7 +62,7 @@ psum1(char *fn, uint32_t val, off_t len)
 	(void)printf("%lu %jd", (u_long)val, (intmax_t)(len + 1023) / 1024);
 	if (fn != NULL)
 		(void)printf(" %s", fn);
-	(void)printf("\n\r");
+	(void)printf("\n");
 }
 
 void
@@ -71,5 +71,5 @@ psum2(char *fn, uint32_t val, off_t len)
 	(void)printf("%lu %jd", (u_long)val, (intmax_t)(len + 511) / 512);
 	if (fn != NULL)
 		(void)printf(" %s", fn);
-	(void)printf("\n\r");
+	(void)printf("\n");
 }

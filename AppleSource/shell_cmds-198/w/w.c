@@ -36,8 +36,8 @@ __FBSDID("$FreeBSD: src/usr.bin/w/w.c,v 1.58 2005/06/04 23:40:09 gad Exp $");
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1980, 1991, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1980, 1991, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif
 
 #ifndef lint
@@ -387,7 +387,7 @@ w_main(int argc, char *argv[])
 #define HEADER_TTY		"TTY"
 #define HEADER_FROM		"FROM"
 #define HEADER_LOGIN_IDLE	"LOGIN@  IDLE "
-#define HEADER_WHAT		"WHAT\n\r"
+#define HEADER_WHAT		"WHAT\n"
 #define WUSED  (UT_NAMESIZE + UT_LINESIZE + W_DISPHOSTSIZE + \
 		sizeof(HEADER_LOGIN_IDLE) + 3)	/* header width incl. spaces */ 
 		(void)printf("%-*.*s %-*.*s %-*.*s  %s", 
@@ -567,7 +567,7 @@ w_main(int argc, char *argv[])
 				    dkp->ki_comm, MAXCOMLEN);
 				if (ptr == NULL)
 					ptr = "-";
-				(void)printf("\t\t%-9d %s\n\r",
+				(void)printf("\t\t%-9d %s\n",
 				    dkp->ki_pid, ptr);
 			}
 		}
@@ -591,7 +591,7 @@ w_main(int argc, char *argv[])
 		pr_attime(&t, &now);
 #endif
 		longidle = pr_idle(ep->idle);
-		(void)printf("%.*s\n\r", argwidth - longidle, ep->args);
+		(void)printf("%.*s\n", argwidth - longidle, ep->args);
 #ifdef __APPLE__
 		free(ep->args);
 #endif
@@ -658,7 +658,7 @@ pr_header(time_t *nowp, int nusers)
 	 * Print 1, 5, and 15 minute load averages.
 	 */
 	if (getloadavg(avenrun, sizeof(avenrun) / sizeof(avenrun[0])) == -1)
-		(void)printf(", no load average information available\n\r");
+		(void)printf(", no load average information available\n");
 	else {
 		(void)printf(", load averages:");
 		for (i = 0; i < (int)(sizeof(avenrun) / sizeof(avenrun[0])); i++) {
@@ -666,7 +666,7 @@ pr_header(time_t *nowp, int nusers)
 				(void)printf(",");
 			(void)printf(" %.2f", avenrun[i]);
 		}
-		(void)printf("\n\r");
+		(void)printf("\n");
 	}
 }
 
@@ -690,9 +690,9 @@ usage(int wcmd)
 {
 	if (wcmd)
 		(void)fprintf(stderr,
-		    "\rusage: w [hi] [user ...]\n\r");
+		    "usage: w [hi] [user ...]\n");
 	else
-		(void)fprintf(stderr, "\rusage: uptime\n\r");
+		(void)fprintf(stderr, "usage: uptime\n");
 	// exit(1);
 }
 

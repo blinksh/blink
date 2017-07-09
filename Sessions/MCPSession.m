@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sys/stat.h>
 
 #include "linenoise.h"
 #include "utf8.h"
@@ -41,11 +42,13 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 
+// TODO: merge all these in a single "system.h" file
 #include "file_cmds_ios.h"
 #include "shell_cmds_ios.h"
 #include "text_cmds_ios.h"
 #include "curl_ios.h"
 #include "libarchive_ios.h"
+#include "Python_ios.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -64,19 +67,57 @@
   // splits the command line into strings, removes empty strings,
   // does some conversions (~ --> home directory, for example,
   // plus environment variables)
+  // If the "command" is a file, that is in the path, is executable, and whose 1st line is "#! .../python..."
+  // then add python at the beginning of the line, plus path to position of file.
   // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
   // edit the arguments for curl syntax.
-  NSString *storagePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject] ;
   
-  // Separate arr into arguments and parse (env vars, ~, ~shared)
-  NSArray *listArgvMaybeEmptyStrings = [cmdline componentsSeparatedByString:@" "];
+  // Separate arr into arguments and parse (env vars, ~)
+  NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
   // Remove empty strings (extra spaces)
-  NSArray *listArgv = [listArgvMaybeEmptyStrings filteredArrayUsingPredicate:
-                       [NSPredicate predicateWithFormat:@"length > 0"]];
+  NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
+                       [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
   
+  NSString* cmd = [listArgv objectAtIndex:0];
+  if (![cmd hasPrefix:@"\\"]) {
+    // There can be several versions of a command (e.g. ls as precompiled and ls written in Python)
+    // The executable file has precedence, unless the user has specified they want the original
+    // version, by prefixing it with \. So "\ls" == always our ls. "ls" == maybe ~/Library/bin/ls
+    // (if it exists).
+    NSString* fullPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
+    NSArray *pathComponents = [fullPath componentsSeparatedByString:@":"];
+    for (NSString* path in pathComponents) {
+      NSString* cmdname = [path stringByAppendingPathComponent:cmd];
+      BOOL isDir;
+      if (![[NSFileManager defaultManager] fileExistsAtPath:cmdname isDirectory:&isDir]) continue;
+      if (isDir) continue;
+      // isExecutableFileAtPath replies "NO" even if file has x-bit set.
+      // if (![[NSFileManager defaultManager]  isExecutableFileAtPath:cmdname]) continue;
+      struct stat sb;
+      if (!(stat(cmdname.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) continue;
+      // File exists, is executable, not a directory.
+      NSData *data = [NSData dataWithContentsOfFile:cmdname];
+      NSString *fileContent = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
+      NSRange firstLineRange = [fileContent rangeOfString:@"\n"];
+      if (firstLineRange.location == NSNotFound) firstLineRange.location = 0;
+      firstLineRange.length = firstLineRange.location;
+      firstLineRange.location = 0;
+      NSString* firstLine = [fileContent substringWithRange:firstLineRange];
+      if ([firstLine hasPrefix:@"#!"] && [firstLine containsString:@"python" ]) {
+        // So long as the 1st line begins with "#!" and contains "python" we accept it as a python script
+        // "#! /usr/bin/python", "#! /usr/local/bin/python" and "#! /usr/bin/myStrangePath/python" are all OK.
+        // We also accept "#! /usr/bin/env python" because it is used.
+        [listArgv replaceObjectAtIndex:0 withObject:cmdname];
+        [listArgv insertObject:@"python" atIndex:0];
+        break;
+      }
+    }
+  } else {
+    // Just remove the \ at the beginning
+    [listArgv replaceObjectAtIndex:0 withObject:[cmd substringWithRange:NSMakeRange(1, [cmd length]-1)]];
+  }
   *argc = [listArgv count];
   char** argv = (char **)malloc((*argc + 1) * sizeof(char*));
-  NSString* cmd = [listArgv objectAtIndex:0];
   NSString *fileName = NULL;
   int mustAddMinusTPosition = -1;
   // 1) convert command line to argc / argv
@@ -103,7 +144,7 @@
     }
     // Bash spec: only convert "~" if: at the beginning of argument, after a ":" or the first "="
     // ("=" scenario for export, but we use setenv, so no "=").
-    // Only 2 possibilities: "~" (same as $HOME) and "~shared" (same as $SHARED)
+    // Only 1 possibility: "~" (same as $HOME)
     // If the command is scp or sftp, do not apply this on remote directories
     if (([cmd isEqualToString:@"scp"] || [cmd isEqualToString:@"sftp"]) && (i >= 1)) {
       if ([argument containsString:@":"]) {
@@ -151,42 +192,32 @@
     // Tilde conversion:
     if([argument hasPrefix:@"~"]) {
       // So it begins with "~"
-      NSString* test_string = @"~shared";
-      NSString* replacement_string;
-      if (storagePath && [argument hasPrefix:@"~shared"]) {
-        replacement_string = storagePath;
-        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 7)];
-      }
-      if (getenv("HOME") && [argument hasPrefix:@"~/"]) {
-        test_string = @"~/";
-        replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
-        replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
-        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 2)];
-      } else if (getenv("HOME") && ([argument isEqualToString:@"~"] || [argument hasPrefix:@"~:"])) {
-        test_string = @"~";
-        replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
+      argument = [argument stringByExpandingTildeInPath];
+      if ([argument hasPrefix:@"~:"]) {
+        NSString* test_string = @"~";
+        NSString* replacement_string = [NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding];
         argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange(0, 1)];
       }
     }
     // Also convert ":~something" in PATH style variables
     // We don't use these yet, but we could.
     if ([argument containsString:@":~"]) {
-      // Only 2 possibilities: ":~" (same as $HOME) and ":~shared" (same as $SHARED)
-      if ([argument containsString:@":~shared"] && storagePath) {
-        NSString* test_string = @":~shared";
-        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:storagePath];
-        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
-      }
-      if ([argument containsString:@":~/"] && getenv("HOME")) {
-        NSString* test_string = @":~/";
-        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
-        replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
-        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
-      }
-      if (getenv("HOME") && [argument hasSuffix:@":~"]) {
-        NSString* test_string = @":~";
-        NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
-        argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange([argument length] - 2, 2)];
+      // Only 1 possibility: ":~" (same as $HOME)
+      if (getenv("HOME")) {
+        if ([argument containsString:@":~/"]) {
+          NSString* test_string = @":~/";
+          NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
+          replacement_string = [replacement_string stringByAppendingString:[NSString stringWithCString:"/" encoding:NSASCIIStringEncoding]];
+          argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string];
+        } else if ([argument hasSuffix:@":~"]) {
+          NSString* test_string = @":~";
+          NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
+          argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange([argument length] - 2, 2)];
+        } else if ([argument hasSuffix:@":"]) {
+          NSString* test_string = @":";
+          NSString* replacement_string = [[NSString stringWithCString:":" encoding:NSASCIIStringEncoding] stringByAppendingString:[NSString stringWithCString:(getenv("HOME")) encoding:NSASCIIStringEncoding]];
+          argument = [argument stringByReplacingOccurrencesOfString:test_string withString:replacement_string options:NULL range:NSMakeRange([argument length] - 2, 2)];
+        }
       }
     }
     argv[i] = [argument UTF8String];
@@ -215,18 +246,23 @@
   // Path for application files, including history.txt and keys
   // TODO: give them a name / position
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
+  // Where the executables are stored:
+  NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
+  // Add content of old PATH to this. PATH *is* defined in iOS, surprising as it may be.
+  // I'm not going to erase it, so we just add ourselves.
+  binPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:[NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding]];
   
-  NSString *storagePath = docsPath;
-  setenv("SHARED", storagePath.UTF8String, 0);
   // We can't write in $HOME so for ssh & curl to work, we need other homes for config files:
   setenv("SSH_HOME", docsPath.UTF8String, 0);
   setenv("CURL_HOME", docsPath.UTF8String, 0);
+  setenv("PYTHONHOME", libPath.UTF8String, 0);
+  setenv("PATH", binPath.UTF8String, 1);
+  
   // iOS already defines "HOME" as the home dir of the application
   
-  // Current working directory == shared directory
-  if (![[NSFileManager defaultManager] changeCurrentDirectoryPath:storagePath])
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
   const char *history = [filePath UTF8String];
 
@@ -279,7 +315,7 @@
         // 3) call specific commands
         // Redirect all output to console:
         stdout = _stream.control.termout;
-        stderr = _stream.control.termout; 
+        stderr = _stream.control.termout;
         // Commands from Apple file_cmds: ls, rm, cp...
         if ([cmd isEqualToString:@"ls"]) {
           ls_main(argc, argv);
@@ -348,12 +384,12 @@
             if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
               if (isDir)
                [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
-              else  fprintf(_stream.out, "cd: %s: not a directory\r\n", argv[1]);
+              else  fprintf(_stream.out, "cd: %s: not a directory\n", argv[1]);
             } else {
-              fprintf(_stream.out, "cd: %s: no such file or directory\r\n", argv[1]);
+              fprintf(_stream.out, "cd: %s: no such file or directory\n", argv[1]);
             }
           } else // [cd] Help, I'm lost, bring me back home
-            [[NSFileManager defaultManager] changeCurrentDirectoryPath:storagePath];
+            [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
           // Higher level commands, not from system: curl, tar, scp, sftp
         } else if  ([cmd isEqualToString:@"curl"]) {
           curl_main(argc, argv);
@@ -363,13 +399,14 @@
           curl_main(argc, argv);
         } else if  ([cmd isEqualToString:@"tar"]) {
           tar_main(argc, argv);
+        } else if  ([cmd isEqualToString:@"python"]) {
+          python_main(argc, argv);
         } else if ([cmd isEqualToString:@"vim"]) {
           NSString* fileLocation = @(argv[1]);
           if (! [fileLocation hasPrefix:@"/"]) {
             // relative path. The most likely.
             fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
           }
-          NSURL *fileURL = [NSURL fileURLWithPath:fileLocation];
           fileLocation = [@"vim://" stringByAppendingString:fileLocation];
           NSURL *myURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
           dispatch_async(dispatch_get_main_queue(), ^{
@@ -395,8 +432,10 @@
 
 - (void)showConfig
 {
-  [[UIApplication sharedApplication]
-    sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+     [[UIApplication sharedApplication]
+        sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+  });
 }
 
 - (void)runSSHCopyIDWithArgs:(int)argc argv:(char **)argv;
@@ -459,14 +498,14 @@
     @"  cmd+,: Open config.",
     @"  pinch: Change font size.",
     @""
-  ] componentsJoinedByString:@"\r\n"];
+  ] componentsJoinedByString:@"\n"];
 
   [self out:help.UTF8String];
 }
 
 - (void)out:(const char *)str
 {
-  fprintf(_stream.out, "%s\r\n", str);
+  fprintf(_stream.out, "%s\n", str);
 }
 
 - (char *)linenoise:(char *)prompt

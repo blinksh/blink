@@ -225,11 +225,11 @@ kbd_callback(const char *name, int name_len, const char *instruction,
   struct connectdata *conn = (struct connectdata *)*abstract;
 
 #ifdef CURL_LIBSSH2_DEBUG
-  fprintf(stderr, "name=%s\n\r", name);
-  fprintf(stderr, "name_len=%d\n\r", name_len);
-  fprintf(stderr, "instruction=%s\n\r", instruction);
-  fprintf(stderr, "instruction_len=%d\n\r", instruction_len);
-  fprintf(stderr, "num_prompts=%d\n\r", num_prompts);
+  fprintf(stderr, "name=%s\n", name);
+  fprintf(stderr, "name_len=%d\n", name_len);
+  fprintf(stderr, "instruction=%s\n", instruction);
+  fprintf(stderr, "instruction_len=%d\n", instruction_len);
+  fprintf(stderr, "num_prompts=%d\n", num_prompts);
 #else
   (void)name;
   (void)name_len;

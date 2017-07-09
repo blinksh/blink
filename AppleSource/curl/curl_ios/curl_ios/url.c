@@ -643,7 +643,7 @@ CURLcode Curl_open(struct Curl_easy **curl)
   data = calloc(1, sizeof(struct Curl_easy));
   if(!data) {
     /* this is a very serious error */
-    DEBUGF(fprintf(stderr, "Error: calloc of Curl_easy failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: calloc of Curl_easy failed\n"));
     return CURLE_OUT_OF_MEMORY;
   }
 
@@ -651,7 +651,7 @@ CURLcode Curl_open(struct Curl_easy **curl)
 
   result = Curl_resolver_init(&data->state.resolver);
   if(result) {
-    DEBUGF(fprintf(stderr, "Error: resolver_init failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: resolver_init failed\n"));
     free(data);
     return result;
   }
@@ -660,13 +660,13 @@ CURLcode Curl_open(struct Curl_easy **curl)
 
   data->state.buffer = malloc(READBUFFER_SIZE + 1);
   if(!data->state.buffer) {
-    DEBUGF(fprintf(stderr, "Error: malloc of buffer failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: malloc of buffer failed\n"));
     result = CURLE_OUT_OF_MEMORY;
   }
 
   data->state.headerbuff = malloc(HEADERSIZE);
   if(!data->state.headerbuff) {
-    DEBUGF(fprintf(stderr, "Error: malloc of headerbuff failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: malloc of headerbuff failed\n"));
     result = CURLE_OUT_OF_MEMORY;
   }
   else {
@@ -2321,7 +2321,7 @@ CURLcode Curl_setopt(struct Curl_easy *data, CURLoption option,
     if(arg != data->set.buffer_size) {
       char *newbuff = realloc(data->state.buffer, arg + 1);
       if(!newbuff) {
-        DEBUGF(fprintf(stderr, "Error: realloc of buffer failed\n\r"));
+        DEBUGF(fprintf(stderr, "Error: realloc of buffer failed\n"));
         result = CURLE_OUT_OF_MEMORY;
       }
       else
@@ -3063,7 +3063,7 @@ CURLcode Curl_disconnect(struct connectdata *conn, bool dead_connection)
   data = conn->data;
 
   if(!data) {
-    DEBUGF(fprintf(stderr, "DISCONNECT without easy handle, ignoring\n\r"));
+    DEBUGF(fprintf(stderr, "DISCONNECT without easy handle, ignoring\n"));
     return CURLE_OK;
   }
 

@@ -222,10 +222,10 @@ ls_usage(void)
 {
 	(void)fprintf(stderr,
 #ifdef COLORLS
-	"\rusage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1]"
+	"usage: ls [-ABCFGHLOPRSTUWabcdefghiklmnopqrstuwx1]"
 #else
-	"\rusage: ls [-ABCFHLOPRSTUWabcdefghiklmnopqrstuwx1]"
+	"usage: ls [-ABCFHLOPRSTUWabcdefghiklmnopqrstuwx1]"
 #endif
-		      " [file ...]\n\r");
+		      " [file ...]\n");
 	// exit(1);
 }

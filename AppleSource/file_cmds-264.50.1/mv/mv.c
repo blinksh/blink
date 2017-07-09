@@ -37,8 +37,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static char const copyright[] =
-"@(#) Copyright (c) 1989, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1989, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -214,7 +214,6 @@ mv_main(int argc, char *argv[])
 
 		if ((baselen + (len = strlen(p))) >= PATH_MAX) {
 			warnx("%s: destination pathname too long", *argv);
-            fprintf(stderr, "\r");
 			rval = 1;
 		} else {
 			memmove(endp, p, (size_t)len + 1);
@@ -228,7 +227,7 @@ mv_main(int argc, char *argv[])
 					fsb.st_ino == tsb.st_ino && 
 					fsb.st_dev == tsb.st_dev &&
 					fsb.st_gen == tsb.st_gen) {
-					(void)fprintf(stderr, "mv: %s and %s are identical\n\r", 
+					(void)fprintf(stderr, "mv: %s and %s are identical\n", 
 								*argv, path);
 					rval = 2; /* Like the Sun */
 				} else {
@@ -262,7 +261,6 @@ do_move(char *from, char *to)
 		/* prompt only if source exist */
 	        if (lstat(from, &sb) == -1) {
 			warn("%s", from);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 
@@ -270,7 +268,7 @@ do_move(char *from, char *to)
 		ask = 0;
 		if (nflg) {
 			if (vflg)
-				printf("%s not overwritten\n\r", to);
+				printf("%s not overwritten\n", to);
 			return (0);
 		} else if (iflg) {
 			(void)fprintf(stderr, "overwrite %s? %s", to, YESNO);
@@ -288,14 +286,14 @@ do_move(char *from, char *to)
 			while (ch != '\n' && ch != EOF)
 				ch = getchar();
 			if (first != 'y' && first != 'Y') {
-				(void)fprintf(stderr, "not overwritten\n\r");
+				(void)fprintf(stderr, "not overwritten\n");
 				return (0);
 			}
 		}
 	}
 	if (!rename(from, to)) {
 		if (vflg)
-			printf("%s -> %s\n\r", from, to);
+			printf("%s -> %s\n", from, to);
 		return (0);
 	}
 
@@ -306,17 +304,14 @@ do_move(char *from, char *to)
 		/* Can't mv(1) a mount point. */
 		if (realpath(from, path) == NULL) {
 			warnx("cannot resolve %s: %s", from, path);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 		if (!statfs(path, &sfs) && !strcmp(path, sfs.f_mntonname)) {
 			warnx("cannot rename a mount point");
-            fprintf(stderr, "\r");
 			return (1);
 		}
 	} else {
 		warn("rename %s to %s", from, to);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 
@@ -327,7 +322,6 @@ do_move(char *from, char *to)
 	 */
 	if (lstat(from, &sb)) {
 		warn("%s", from);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	return (S_ISREG(sb.st_mode) ?
@@ -346,7 +340,6 @@ fastcopy(char *from, char *to, struct stat *sbp)
 
 	if ((from_fd = open(from, O_RDONLY, 0)) < 0) {
 		warn("%s", from);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (blen < sbp->st_blksize) {
@@ -355,7 +348,6 @@ fastcopy(char *from, char *to, struct stat *sbp)
 		if ((bp = malloc((size_t)sbp->st_blksize)) == NULL) {
 			blen = 0;
 			warnx("malloc failed");
-            fprintf(stderr, "\r");
 			return (1);
 		}
 		blen = sbp->st_blksize;
@@ -365,7 +357,6 @@ fastcopy(char *from, char *to, struct stat *sbp)
 		if (errno == EEXIST && unlink(to) == 0)
 			continue;
 		warn("%s", to);
-        fprintf(stderr, "\r");
 		(void)close(from_fd);
 		return (1);
 	}
@@ -393,15 +384,12 @@ fastcopy(char *from, char *to, struct stat *sbp)
 	while ((nread = read(from_fd, bp, (size_t)blen)) > 0)
 		if (write(to_fd, bp, (size_t)nread) != nread) {
 			warn("%s", to);
-            fprintf(stderr, "\r");
 			goto err;
 		}
 	if (nread < 0) {
 		warn("%s", from);
-        fprintf(stderr, "\r");
     err:		if (unlink(to)) {
 			warn("%s: remove", to);
-            fprintf(stderr, "\r");
     }
 (void)close(from_fd);
 		(void)close(to_fd);
@@ -412,7 +400,6 @@ fastcopy(char *from, char *to, struct stat *sbp)
 	if (fcopyfile(from_fd, to_fd, NULL, COPYFILE_ACL | COPYFILE_XATTR) < 0) {
 		warn("%s: unable to move extended attributes and ACL from %s",
 		     to, from);
-        fprintf(stderr, "\r");
 }
 #endif
 	(void)close(from_fd);
@@ -421,18 +408,15 @@ fastcopy(char *from, char *to, struct stat *sbp)
 	if (fchown(to_fd, sbp->st_uid, sbp->st_gid)) {
 		warn("%s: set owner/group (was: %lu/%lu)", to,
 		    (u_long)sbp->st_uid, (u_long)sbp->st_gid);
-        fprintf(stderr, "\r");
 		if (oldmode & (S_ISUID | S_ISGID)) {
 			warnx(
 "%s: owner/group changed; clearing suid/sgid (mode was 0%03o)",
 			    to, oldmode);
-            fprintf(stderr, "\r");
 			sbp->st_mode &= ~(S_ISUID | S_ISGID);
 		}
 	}
     if (fchmod(to_fd, sbp->st_mode)) {
 		warn("%s: set mode (was: 0%03o)", to, oldmode);
-        fprintf(stderr, "\r");
     }
 	/*
 	 * XXX
@@ -445,7 +429,6 @@ fastcopy(char *from, char *to, struct stat *sbp)
 	if (fchflags(to_fd, (u_int)sbp->st_flags))
         if (errno != ENOTSUP || sbp->st_flags != 0) {
 			warn("%s: set flags (was: 0%07o)", to, sbp->st_flags);
-            fprintf(stderr, "\r");
         }
 
 	tval[0].tv_sec = sbp->st_atime;
@@ -453,21 +436,18 @@ fastcopy(char *from, char *to, struct stat *sbp)
 	tval[0].tv_usec = tval[1].tv_usec = 0;
     if (utimes(to, tval)) {
 		warn("%s: set times", to);
-        fprintf(stderr, "\r");
     }
 	if (close(to_fd)) {
 		warn("%s", to);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 
 	if (unlink(from)) {
 		warn("%s: remove", from);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (vflg)
-		printf("%s -> %s\n\r", from, to);
+		printf("%s -> %s\n", from, to);
 	return (0);
 }
 
@@ -482,36 +462,30 @@ copy(char *from, char *to)
 		execl(_PATH_CP, "mv", vflg ? "-PRpv" : "-PRp", "--", from, to,
 		    (char *)NULL);
 		warn("%s", _PATH_CP);
-        fprintf(stderr, "\r");
         return -1;
 		// _exit(1);
 	}
 	if (waitpid(pid, &status, 0) == -1) {
 		warn("%s: waitpid", _PATH_CP);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (!WIFEXITED(status)) {
 		warnx("%s: did not terminate normally", _PATH_CP);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (WEXITSTATUS(status)) {
 		warnx("%s: terminated with %d (non-zero) status",
 		    _PATH_CP, WEXITSTATUS(status));
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (!(pid = vfork())) {
 		execl(_PATH_RM, "mv", "-rf", "--", from, (char *)NULL);
 		warn("%s", _PATH_RM);
-        fprintf(stderr, "\r");
         return -1;
 		// _exit(1);
 	}
 	if (waitpid(pid, &status, 0) == -1) {
 		warn("%s: waitpid", _PATH_RM);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (!WIFEXITED(status)) {
@@ -521,7 +495,6 @@ copy(char *from, char *to)
 	if (WEXITSTATUS(status)) {
 		warnx("%s: terminated with %d (non-zero) status",
 		    _PATH_RM, WEXITSTATUS(status));
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	return (0);
@@ -531,7 +504,7 @@ void
 usage(void)
 {
 
-	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
+	(void)fprintf(stderr, "%s\n%s\n",
 		      "usage: mv [-f | -i | -n] [-v] source target",
 		      "       mv [-f | -i | -n] [-v] source ... directory");
 	// exit(EX_USAGE);

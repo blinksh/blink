@@ -34,8 +34,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static char const copyright[] =
-"@(#) Copyright (c) 1989, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1989, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -142,7 +142,6 @@ chmod_main(int argc, char *argv[])
 //			acloptflags |= ACL_FLAG | ACL_TO_STDOUT;
 //			ace_arg_not_required = 1;
 			warnx("-A not implemented");
-                fprintf(stderr, "\r");
                 return 0;
 			goto done;
 		case 'E':
@@ -171,7 +170,6 @@ chmod_main(int argc, char *argv[])
 //			acloptflags |= ACL_FLAG | ACL_INVOKE_EDITOR;
 //			ace_arg_not_required = 1;
 			warn("-V not implemented");
-                fprintf(stderr, "\r");
                 return 0;
 			goto done;
 #endif /* __APPLE__ */
@@ -206,7 +204,6 @@ done:	argv += optind;
     }
     if (!Rflag && (Hflag || Lflag || Pflag)) {
 		warnx("options -H, -L, -P only useful with -R");
-        fprintf(stderr, "\r");
     }
 #else  /* !__APPLE__ */
     if (argc < 2) {
@@ -259,7 +256,6 @@ done:	argv += optind;
 						errno = ERANGE;
                         if (errno || *ep) {
 						warn("Invalid ACL entry number: %ld", aclpos);
-                            fprintf(stderr, "\r");
                             return 0;
                         }
 					if (acloptflags & ACL_DELETE_FLAG)
@@ -275,7 +271,6 @@ done:	argv += optind;
                         inheritance_level++;
                         if (inheritance_level > 1) {
                             warnx("Inheritance across more than one generation is not currently supported");
-                            fprintf(stderr, "\r");
                         }
 					if (inheritance_level >= MAX_INHERITANCE_LEVEL)
 						goto apdone;
@@ -298,7 +293,6 @@ apnoacl:
 		fts_options = FTS_PHYSICAL;
         if (hflag) {
 			warn("the -R and -h options may not be specified together.");
-            fprintf(stderr, "\r");
             return 0;
         }
 		if (Hflag)
@@ -323,7 +317,6 @@ apnoacl:
 		
         if (mode == NULL) {
 			warn("Unable to allocate mode string");
-            fprintf(stderr, "\r");
             return 0;
         }
 		/* Read the ACEs from STDIN */
@@ -335,7 +328,6 @@ apnoacl:
 			
         if (0 == readtotal) {
 			warn("-E specified, but read from STDIN failed");
-            fprintf(stderr, "\r");
             return 0;
         }
 		else
@@ -362,7 +354,6 @@ apnoacl:
 			acl_input = parse_acl_entries(mode);
 			if (acl_input == NULL) {
 				warn("Invalid ACL specification: %s", mode);
-                fprintf(stderr, "\r");
                 return 0;
             }
 		}
@@ -376,12 +367,10 @@ apnoacl:
 				errno = ERANGE;
             if (errno) {
 				warn("Invalid file mode: %s", mode);
-                fprintf(stderr, "\r");
                 return 0;
             }
             if (*ep) {
 				warn("Invalid file mode: %s", mode);
-                fprintf(stderr, "\r");
                 return 0;
             }
 			omode = (mode_t)val;
@@ -389,7 +378,6 @@ apnoacl:
 		} else {
             if ((set = setmode(mode)) == NULL) {
 				warn("Invalid file mode: %s", mode);
-                fprintf(stderr, "\r");
                 return 0;
             }
 			oct = 0;
@@ -399,7 +387,6 @@ apnoacl:
 #endif /* __APPLE__*/
     if ((ftsp = fts_open(++argv, fts_options, 0)) == NULL) {
 		warn("fts_open");
-        fprintf(stderr, "\r");
         return 0;
     }
 	for (rval = 0; (p = fts_read(ftsp)) != NULL;) {
@@ -410,7 +397,6 @@ apnoacl:
 			break;
 		case FTS_DNR:			/* Warn, chmod, continue. */
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			break;
 		case FTS_DP:			/* Already changed at FTS_D. */
@@ -420,7 +406,6 @@ apnoacl:
 				break;
 		case FTS_ERR:			/* Warn, continue. */
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			continue;
 		case FTS_SL:			/* Ignore. */
@@ -450,7 +435,6 @@ apnoacl:
 				continue;
 			if ((*change_mode)(p->fts_accpath, newmode) && !fflag) {
 				warn("Unable to change file mode on %s", p->fts_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 			} else {
 				if (vflag) {
@@ -468,7 +452,7 @@ apnoacl:
 					    (p->fts_statp->st_mode & S_IFMT) |
 							     newmode, m2);
 					}
-					(void)printf("\n\r");
+					(void)printf("\n");
 				}
 				
 			}
@@ -495,11 +479,11 @@ chmod_usage(void)
 {
 #ifdef __APPLE__
 	(void)fprintf(stderr,
-		      "\rusage:\tchmod [-fhv] [-R [-H | -L | -P]] [-a | +a | =a  [i][# [ n]]] mode|entry file ...\n\r"
-		      "\tchmod [-fhv] [-R [-H | -L | -P]] [-E | -C | -N | -i | -I] file ...\n\r"); /* add -A and -V when implemented */
+		      "usage:\tchmod [-fhv] [-R [-H | -L | -P]] [-a | +a | =a  [i][# [ n]]] mode|entry file ...\n"
+		      "\tchmod [-fhv] [-R [-H | -L | -P]] [-E | -C | -N | -i | -I] file ...\n"); /* add -A and -V when implemented */
 #else
 	(void)fprintf(stderr,
-	    "\rusage: chmod [-fhv] [-R [-H | -L | -P]] mode file ...\n\r");
+	    "usage: chmod [-fhv] [-R [-H | -L | -P]] mode file ...\n");
 #endif /* __APPLE__ */
 	// exit(1);
 }

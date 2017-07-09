@@ -216,31 +216,31 @@ static CURLcode global_init(long flags, bool memoryfuncs)
 
   if(flags & CURL_GLOBAL_SSL)
     if(!Curl_ssl_init()) {
-      DEBUGF(fprintf(stderr, "Error: Curl_ssl_init failed\n\r"));
+      DEBUGF(fprintf(stderr, "Error: Curl_ssl_init failed\n"));
       return CURLE_FAILED_INIT;
     }
 
   if(flags & CURL_GLOBAL_WIN32)
     if(win32_init()) {
-      DEBUGF(fprintf(stderr, "Error: win32_init failed\n\r"));
+      DEBUGF(fprintf(stderr, "Error: win32_init failed\n"));
       return CURLE_FAILED_INIT;
     }
 
 #ifdef __AMIGA__
   if(!Curl_amiga_init()) {
-    DEBUGF(fprintf(stderr, "Error: Curl_amiga_init failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: Curl_amiga_init failed\n"));
     return CURLE_FAILED_INIT;
   }
 #endif
 
 #ifdef NETWARE
   if(netware_init()) {
-    DEBUGF(fprintf(stderr, "Warning: LONG namespace not available\n\r"));
+    DEBUGF(fprintf(stderr, "Warning: LONG namespace not available\n"));
   }
 #endif
 
   if(Curl_resolver_global_init()) {
-    DEBUGF(fprintf(stderr, "Error: resolver_global_init failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: resolver_global_init failed\n"));
     return CURLE_FAILED_INIT;
   }
 
@@ -248,7 +248,7 @@ static CURLcode global_init(long flags, bool memoryfuncs)
 
 #if defined(USE_LIBSSH2) && defined(HAVE_LIBSSH2_INIT)
   if(libssh2_init(0)) {
-    DEBUGF(fprintf(stderr, "Error: libssh2_init failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: libssh2_init failed\n"));
     return CURLE_FAILED_INIT;
   }
 #endif
@@ -350,7 +350,7 @@ struct Curl_easy *curl_easy_init(void)
     result = curl_global_init(CURL_GLOBAL_DEFAULT);
     if(result) {
       /* something in the global init failed, return nothing */
-      DEBUGF(fprintf(stderr, "Error: curl_global_init failed\n\r"));
+      DEBUGF(fprintf(stderr, "Error: curl_global_init failed\n"));
       return NULL;
     }
   }
@@ -358,7 +358,7 @@ struct Curl_easy *curl_easy_init(void)
   /* We use curl_open() with undefined URL so far */
   result = Curl_open(&data);
   if(result) {
-    DEBUGF(fprintf(stderr, "Error: Curl_open failed\n\r"));
+    DEBUGF(fprintf(stderr, "Error: Curl_open failed\n"));
     return NULL;
   }
 

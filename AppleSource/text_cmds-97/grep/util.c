@@ -273,12 +273,12 @@ procfile(const char *fn)
 #endif
 		if (!hflag)
 			printf("%s:", ln.file);
-		printf("%u\n\r", c);
+		printf("%u\n", c);
 	}
 	if (lflag && !qflag && c != 0)
-		printf("%s%s", fn, nullflag ? 0 : "\n\r");
+		printf("%s%s", fn, nullflag ? 0 : "\n");
 	if (Lflag && !qflag && c == 0)
-		printf("%s%s", fn, nullflag ? 0 : "\n\r");
+		printf("%s%s", fn, nullflag ? 0 : "\n");
 	if (c && !cflag && !lflag && !Lflag &&
 	    binbehave == BINFILE_BIN && f->binary && !qflag)
 		printf(getstr(8), fn);
@@ -465,11 +465,11 @@ procline(struct str *l, int nottext)
 	if ((tail || c) && !cflag && !qflag && !lflag && !Lflag) {
 		if (c) {
 			if (!first && !prev && !tail && Aflag)
-				printf("--\n\r");
+				printf("--\n");
 			tail = Aflag;
 			if (Bflag > 0) {
 				if (!first && !prev)
-					printf("--\n\r");
+					printf("--\n");
 				printqueue();
 			}
 			linesqueued = 0;
@@ -600,18 +600,15 @@ printline(struct str *line, int sep, regmatch_t *matches, int m)
 			a = matches[i].rm_eo;
             if (oflag) {
 				putchar('\n');
-                putchar('\r');
             }
 		}
 		if (!oflag) {
 			if (line->len - a > 0)
 				fwrite(line->dat + a, line->len - a, 1, stdout);
 			putchar('\n');
-            putchar('\r');
 		}
 	} else {
 		fwrite(line->dat, line->len, 1, stdout);
 		putchar('\n');
-        putchar('\r');
 	}
 }

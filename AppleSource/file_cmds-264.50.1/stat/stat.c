@@ -254,7 +254,6 @@ stat_main(int argc, char *argv[])
                 if (fmtchar != 0) {
                     warnx("can't use format '%c' with '%c'",
                           fmtchar, ch);
-                    fprintf(stderr, "\r");
                     return 0;
                 }
 			fmtchar = ch;
@@ -282,7 +281,6 @@ stat_main(int argc, char *argv[])
 
     if (lsF && fmtchar != 'l') {
 		warnx("can't use format '%c' with -F", fmtchar);
-        fprintf(stderr, "\r");
         return 0;
     }
 	switch (fmtchar) {
@@ -327,7 +325,6 @@ stat_main(int argc, char *argv[])
             if (!quiet) {
 				warn("%s: stat",
 				    argc == 0 ? "(stdin)" : argv[0]);
-                fprintf(stderr, "\r");
             }
 		}
 		else
@@ -345,7 +342,7 @@ void
 usage(const char *synopsis)
 {
 
-	(void)fprintf(stderr, "\rusage: %s %s\n\r", getprogname(), synopsis);
+	(void)fprintf(stderr, "usage: %s %s\n", getprogname(), synopsis);
 	// exit(1);
 }
 
@@ -386,7 +383,6 @@ output(const struct stat *st, const char *file,
 		switch (*statfmt) {
 		case SIMPLE_NEWLINE:
 			addchar(stdout, '\n', &nl);
-            addchar(stdout, '\r', &nl);
 			statfmt++;
 			continue;
 		case SIMPLE_TAB:
@@ -536,13 +532,11 @@ output(const struct stat *st, const char *file,
 	badfmt:
 		warn("%.*s: bad format",
 		    (int)(statfmt - subfmt + 1), subfmt);
-        fprintf(stderr, "\r");
         return;
 	}
 
     if (!nl && !nonl) {
 		(void)fputc('\n', stdout);
-        (void)fputc('\r', stdout);
     }
 	(void)fflush(stdout);
 }
@@ -874,7 +868,6 @@ format1(const struct stat *st,
 		/*NOTREACHED*/
 	default:
 		warnx("%.*s: bad format", (int)flen, fmt);
-        fprintf(stderr, "\r");
         return 0;
 	}
 
@@ -884,7 +877,6 @@ format1(const struct stat *st,
 	 */
     if (hilo != 0 || (ofmt & formats) == 0) {
 		warnx("%.*s: bad format", (int)flen, fmt);
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -991,7 +983,6 @@ format1(const struct stat *st,
 	if (ofmt == FMTF_STRING) {
         if (sdata == NULL) {
 			warnx("%.*s: bad format", (int)flen, fmt);
-            fprintf(stderr, "\r");
             return 0;
         }
         (void)strcat(lfmt, "s");

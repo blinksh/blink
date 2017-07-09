@@ -33,8 +33,8 @@
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1980, 1987, 1991, 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1980, 1987, 1991, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #if 0
@@ -117,19 +117,19 @@ wc_main(int argc, char *argv[])
 	errors = 0;
 	total = 0;
     
-    // for (int i = 0; i < argc ; i++) fprintf("Need to open: %s \n\r", argv[i]);
+    // for (int i = 0; i < argc ; i++) fprintf("Need to open: %s \n", argv[i]);
     
 	if (!*argv) {
 		if (cnt((char *)NULL) != 0)
 			++errors;
 		else
-			(void)printf("\n\r");
+			(void)printf("\n");
 	}
 	else do {
 		if (cnt(*argv) != 0)
 			++errors;
 		else
-			(void)printf(" %s\n\r", *argv);
+			(void)printf(" %s\n", *argv);
 		++total;
 	} while(*++argv);
 
@@ -140,7 +140,7 @@ wc_main(int argc, char *argv[])
 			(void)printf(" %7ju", twordct);
 		if (dochar || domulti)
 			(void)printf(" %7ju", tcharct);
-		(void)printf(" total\n\r");
+		(void)printf(" total\n");
 	}
     
     optarg = NULL; opterr = 0; optind = 0;
@@ -300,6 +300,6 @@ word:	gotsp = 1;
 static void
 usage()
 {
-	(void)fprintf(stderr, "\rusage: wc [-clmw] [file ...]\n\r");
+	(void)fprintf(stderr, "usage: wc [-clmw] [file ...]\n");
 	// exit(1);
 }

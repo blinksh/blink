@@ -121,7 +121,7 @@ char *getpass_r(const char *prompt, char *buffer, size_t buflen)
   }
 #ifndef __SYMBIAN32__
   /* since echo is disabled, print a newline */
-  fputs("\n\r", stderr);
+  fputs("\n", stderr);
 #endif
   /* if user didn't hit ENTER, terminate buffer */
   if(i == buflen)
@@ -240,7 +240,7 @@ char *getpass_r(const char *prompt, /* prompt to display */
 
   if(disabled) {
     /* if echo actually was disabled, add a newline */
-    fputs("\n\r", stderr);
+    fputs("\n", stderr);
     (void)ttyecho(TRUE, fd); /* enable echo */
   }
 

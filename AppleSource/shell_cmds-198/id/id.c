@@ -33,8 +33,8 @@
 
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1991, 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1991, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -193,18 +193,18 @@ id_main(int argc, char *argv[])
 	if (gflag) {
 		id = pw ? pw->pw_gid : rflag ? getgid() : getegid();
 		if (nflag && (gr = getgrgid(id)))
-			(void)printf("%s\n\r", gr->gr_name);
+			(void)printf("%s\n", gr->gr_name);
 		else
-			(void)printf("%u\n\r", id);
+			(void)printf("%u\n", id);
 		exit(0);
 	}
 
 	if (uflag) {
 		id = pw ? pw->pw_uid : rflag ? getuid() : geteuid();
 		if (nflag && (pw = getpwuid(id)))
-			(void)printf("%s\n\r", pw->pw_name);
+			(void)printf("%s\n", pw->pw_name);
 		else
-			(void)printf("%u\n\r", id);
+			(void)printf("%u\n", id);
 		exit(0);
 	}
 
@@ -247,7 +247,7 @@ pretty(struct passwd *pw)
 	char *login;
 
 	if (pw) {
-		(void)printf("uid\t%s\n\r", pw->pw_name);
+		(void)printf("uid\t%s\n", pw->pw_name);
 		(void)printf("groups\t");
 		group(pw, 1);
 	} else {
@@ -258,23 +258,23 @@ pretty(struct passwd *pw)
 
 		pw = getpwuid(rid = getuid());
 		if (pw == NULL || strcmp(login, pw->pw_name))
-			(void)printf("login\t%s\n\r", login);
+			(void)printf("login\t%s\n", login);
 		if (pw)
-			(void)printf("uid\t%s\n\r", pw->pw_name);
+			(void)printf("uid\t%s\n", pw->pw_name);
 		else
-			(void)printf("uid\t%u\n\r", rid);
+			(void)printf("uid\t%u\n", rid);
 
 		if ((eid = geteuid()) != rid) {
 			if ((pw = getpwuid(eid)))
-				(void)printf("euid\t%s\n\r", pw->pw_name);
+				(void)printf("euid\t%s\n", pw->pw_name);
 			else
-				(void)printf("euid\t%u\n\r", eid);
+				(void)printf("euid\t%u\n", eid);
 		}
 		if ((rid = getgid()) != (eid = getegid())) {
 			if ((gr = getgrgid(rid)))
-				(void)printf("rgid\t%s\n\r", gr->gr_name);
+				(void)printf("rgid\t%s\n", gr->gr_name);
 			else
-				(void)printf("rgid\t%u\n\r", rid);
+				(void)printf("rgid\t%u\n", rid);
 		}
 		(void)printf("groups\t");
 		group(NULL, 1);
@@ -360,7 +360,7 @@ id_print(struct passwd *pw, int use_ggl, int p_euid, int p_egid)
 			printf("(%s)", gr->gr_name);
 		lastgid = gid;
 	}
-	printf("\n\r");
+	printf("\n");
 #ifdef __APPLE__
 	free(groups);
 #endif
@@ -376,11 +376,11 @@ auditid(void)
 		myerr(1, "getaudit");
         return;
     }
-	printf("auid=%d\n\r", auditinfo.ai_auid);
-	printf("mask.success=0x%08x\n\r", auditinfo.ai_mask.am_success);
-	printf("mask.failure=0x%08x\n\r", auditinfo.ai_mask.am_failure);
-	printf("termid.port=0x%08x\n\r", auditinfo.ai_termid.at_port);
-	printf("asid=%d\n\r", auditinfo.ai_asid);
+	printf("auid=%d\n", auditinfo.ai_auid);
+	printf("mask.success=0x%08x\n", auditinfo.ai_mask.am_success);
+	printf("mask.failure=0x%08x\n", auditinfo.ai_mask.am_failure);
+	printf("termid.port=0x%08x\n", auditinfo.ai_termid.at_port);
+	printf("asid=%d\n", auditinfo.ai_asid);
 }
 #endif
 
@@ -395,7 +395,7 @@ fullname(struct passwd *pw)
         }
 	}
 
-	(void)printf("%s\n\r", pw->pw_gecos);
+	(void)printf("%s\n", pw->pw_gecos);
 }
 
 void
@@ -448,7 +448,7 @@ group(struct passwd *pw, int nflag)
 		}
 		lastid = id;
 	}
-	(void)printf("\n\r");
+	(void)printf("\n");
 #ifdef __APPLE__
 	free(groups);
 #endif
@@ -477,7 +477,7 @@ maclabel(void)
 	if (error == -1)
 		myerrx(1, "mac_to_text: %s", strerror(errno));
 
-	(void)printf("%s\n\r", string);
+	(void)printf("%s\n", string);
 	mac_free(label);
 	free(string);
 #endif /* __APPLE__ */
@@ -515,7 +515,7 @@ pline(struct passwd *pw)
         }
 	}
 
-	(void)printf("%s:%s:%d:%d:%s:%ld:%ld:%s:%s:%s\n\r", pw->pw_name,
+	(void)printf("%s:%s:%d:%d:%s:%ld:%ld:%s:%s:%s\n", pw->pw_name,
 			pw->pw_passwd, pw->pw_uid, pw->pw_gid, pw->pw_class,
 			(long)pw->pw_change, (long)pw->pw_expire, pw->pw_gecos,
 			pw->pw_dir, pw->pw_shell);
@@ -527,14 +527,14 @@ usage(void)
 {
 
 	if (isgroups)
-		(void)fprintf(stderr, "\rusage: groups [user]\n\r");
+		(void)fprintf(stderr, "usage: groups [user]\n");
 	else if (iswhoami)
-		(void)fprintf(stderr, "\rusage: whoami\n\r");
+		(void)fprintf(stderr, "usage: whoami\n");
 	else
-		(void)fprintf(stderr, "\r%s\n\r%s%s\n\r%s\n\r%s\n\r%s\n\r%s\n\r%s\n\r%s\n\r",
+		(void)fprintf(stderr, "%s\n%s%s\n%s\n%s\n%s\n%s\n%s\n%s\n",
 		    "usage: id [user]",
 #ifdef USE_BSM_AUDIT
-		    "       id -A\n\r",
+		    "       id -A\n",
 #else
 		    "",
 #endif

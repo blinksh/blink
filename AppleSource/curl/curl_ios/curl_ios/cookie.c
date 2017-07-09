@@ -1367,12 +1367,12 @@ static int cookie_output(struct CookieInfo *c, const char *dumphere)
       continue;
     format_ptr = get_netscape_format(co);
     if(format_ptr == NULL) {
-      fprintf(out, "#\n# Fatal libcurl error\n\r");
+      fprintf(out, "#\n# Fatal libcurl error\n");
       if(!use_stdout)
         fclose(out);
       return 1;
     }
-    fprintf(out, "%s\n\r", format_ptr);
+    fprintf(out, "%s\n", format_ptr);
     free(format_ptr);
   }
 

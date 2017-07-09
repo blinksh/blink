@@ -37,8 +37,8 @@ __FBSDID("$FreeBSD: src/usr.bin/touch/touch.c,v 1.25 2010/03/28 13:16:08 ed Exp 
 
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif
 
 #ifndef lint
@@ -170,7 +170,6 @@ touch_main(int argc, char *argv[])
 			if (errno != ENOENT) {
 				rval = 1;
 				warn("%s", *argv);
-                fprintf(stderr, "\r");
 				continue;
 			}
 			if (!cflag) {
@@ -180,7 +179,6 @@ touch_main(int argc, char *argv[])
 				if (fd == -1 || fstat(fd, &sb) || close(fd)) {
 					rval = 1;
 					warn("%s", *argv);
-                    fprintf(stderr, "\r");
 					continue;
 				}
 
@@ -219,7 +217,6 @@ touch_main(int argc, char *argv[])
 		if (timeset || Aflag) {
 			rval = 1;
 			warn("%s", *argv);
-            fprintf(stderr, "\r");
 			continue;
 		}
 
@@ -239,7 +236,6 @@ touch_main(int argc, char *argv[])
 		} else {
 			rval = 1;
 			warn("%s", *argv);
-            fprintf(stderr, "\r");
 		}
 	}
 	// exit(rval);
@@ -376,7 +372,6 @@ stime_file(char *fname, struct timeval *tvp)
 
 	if (stat(fname, &sb))
 		err(1, "%s", fname);
-    fprintf(stderr, "\r");
 	TIMESPEC_TO_TIMEVAL(tvp, &sb.st_atimespec);
 	TIMESPEC_TO_TIMEVAL(tvp + 1, &sb.st_mtimespec);
 }
@@ -390,7 +385,6 @@ rw(char *fname, struct stat *sbp, int force)
 	/* Try regular files. */
 	if (!S_ISREG(sbp->st_mode)) {
 		warnx("%s: %s", fname, strerror(EFTYPE));
-        fprintf(stderr, "\r");
 		return (1);
 	}
 
@@ -414,23 +408,19 @@ rw(char *fname, struct stat *sbp, int force)
 		if (write(fd, &byte, sizeof(byte)) != sizeof(byte)) {
 err:			rval = 1;
 			warn("%s", fname);
-            fprintf(stderr, "\r");
 		} else if (ftruncate(fd, (off_t)0)) {
 			rval = 1;
 			warn("%s: file modified", fname);
-            fprintf(stderr, "\r");
 		}
 	}
 
 	if (close(fd) && rval != 1) {
 		rval = 1;
 		warn("%s", fname);
-        fprintf(stderr, "\r");
 	}
 	if (needed_chmod && chmod(fname, sbp->st_mode) && rval != 1) {
 		rval = 1;
 		warn("%s: permissions modified", fname);
-        fprintf(stderr, "\r");
 	}
 	return (rval);
 }
@@ -438,7 +428,7 @@ err:			rval = 1;
 void
 usage(char *myname)
 {
-	fprintf(stderr, "\rusage:\n\r" "%s [-A [-][[hh]mm]SS] [-acfhm] [-r file] "
-		"[-t [[CC]YY]MMDDhhmm[.SS]] file ...\n\r", myname);
+	fprintf(stderr, "usage:\n" "%s [-A [-][[hh]mm]SS] [-acfhm] [-r file] "
+		"[-t [[CC]YY]MMDDhhmm[.SS]] file ...\n", myname);
 	// exit(1);
 }

@@ -39,8 +39,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1980, 1990, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1980, 1990, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -215,7 +215,6 @@ df_main(int argc, char *argv[])
             if (tflag) {
 				//errx(1, "-l and -T are mutually exclusive.");
                 warnx("-l and -T are mutually exclusive.");
-                fprintf(stderr, "\r");
                 return 0;
             }
 			if (vfslist != NULL)
@@ -240,13 +239,11 @@ df_main(int argc, char *argv[])
                 if (tflag) {
 					// errx(1, "only one -%c option may be specified", ch);
                     warnx("only one -%c option may be specified", ch);
-                    fprintf(stderr, "\r");
                     return 0;
                 }
                 else {
 					// errx(1, "-l and -%c are mutually exclusive.", ch);
                     warnx("-l and -%c are mutually exclusive.", ch);
-                    fprintf(stderr, "\r");
                     return 0;
                 }
 			}
@@ -291,13 +288,11 @@ df_main(int argc, char *argv[])
 		if (stat(*argv, &stbuf) < 0) {
 			if ((mntpt = getmntpt(*argv)) == 0) {
 				warn("%s", *argv);
-                fprintf(stderr, "\r");
 				rv = 1;
 				continue;
 			}
 		} else if (S_ISCHR(stbuf.st_mode) || S_ISBLK(stbuf.st_mode)) {
 			warnx("%s: Raw devices not supported", *argv);
-            fprintf(stderr, "\r");
 			rv = 1;
 			continue;
 		} else
@@ -308,7 +303,6 @@ df_main(int argc, char *argv[])
 		 */
 		if (statfs(mntpt, &statfsbuf) < 0) {
 			warn("%s", mntpt);
-            fprintf(stderr, "\r");
 			rv = 1;
 			continue;
 		}
@@ -443,7 +437,6 @@ static intmax_t fsbtoblk(int64_t num, uint64_t fsbs, u_long bs, char *fs)
 {
 	if (num < 0) {
 		warnx("negative filesystem block count/size from fs %s", fs);
-        fprintf(stderr, "\r");
 		return 0;
 	} else if ((fsbs != 0) && (fsbs < bs)) {
 		return (num / (intmax_t) (bs / fsbs));
@@ -489,7 +482,7 @@ prtstat(struct statfs *sfsp, struct maxwidths *mwp)
 			(void)printf(" %*s %*s %%iused", mwp->iused - 2,
 			    "iused", mwp->ifree, "ifree");
 		}
-		(void)printf("  Mounted on\n\r");
+		(void)printf("  Mounted on\n");
 	}
 
 	(void)printf("%-*s", mwp->mntfrom, sfsp->f_mntfromname);
@@ -529,7 +522,7 @@ prtstat(struct statfs *sfsp, struct maxwidths *mwp)
 		    (double)used / (double)inodes * 100.0);
 	} else
 		(void)printf("  ");
-	(void)printf("  %s\n\r", sfsp->f_mntonname);
+	(void)printf("  %s\n", sfsp->f_mntonname);
 }
 
 /*
@@ -583,7 +576,7 @@ usage(void)
 
 	char *t_flag = COMPAT_MODE("bin/df", "unix2003") ? "[-t]" : "[-t type]";
 	(void)fprintf(stderr,
-	    "\rusage: df [-b | -H | -h | -k | -m | -g | -P] [-ailn] [-T type] %s [filesystem ...]\n\r", t_flag);
+	    "usage: df [-b | -H | -h | -k | -m | -g | -P] [-ailn] [-T type] %s [filesystem ...]\n", t_flag);
 	// exit(EX_USAGE);
 }
 
@@ -606,13 +599,11 @@ makenetvfslist(void)
 	if (sysctl(mib, 3,
 	    &maxvfsconf, &miblen, NULL, 0)) {
 		warn("sysctl failed");
-        fprintf(stderr, "\r");
 		return (NULL);
 	}
 
 	if ((listptr = malloc(sizeof(char*) * maxvfsconf)) == NULL) {
 		warnx("malloc failed");
-        fprintf(stderr, "\r");
 		return (NULL);
 	}
 
@@ -622,7 +613,6 @@ makenetvfslist(void)
 			listptr[cnt++] = strdup(ptr->vfc_name);
 			if (listptr[cnt-1] == NULL) {
 				warnx("malloc failed");
-                fprintf(stderr, "\r");
 				return (NULL);
 			}
 		}
@@ -637,7 +627,6 @@ makenetvfslist(void)
 	                        if (listptr[cnt-1] == NULL) {
 					free(listptr);
 	                                warnx("malloc failed");
-                                    fprintf(stderr, "\r");
 	                                return (NULL);
 	                        }
 	                }
@@ -649,7 +638,6 @@ makenetvfslist(void)
 	    (str = malloc(sizeof(char) * (32 * cnt + cnt + 2))) == NULL) {
         if (cnt > 0) {
 			warnx("malloc failed");
-            fprintf(stderr, "\r");
         }
 		free(listptr);
 		return (NULL);

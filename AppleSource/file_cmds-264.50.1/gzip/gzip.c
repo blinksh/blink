@@ -179,28 +179,28 @@ static	const char	gzip_version[] = "FreeBSD gzip 20111009";
 
 #ifndef SMALL
 static	const char	gzip_copyright[] = \
-"   Copyright (c) 1997, 1998, 2003, 2004, 2006 Matthew R. Green\n\r"
-"   All rights reserved.\n\r"
-"\n\r"
-"   Redistribution and use in source and binary forms, with or without\n\r"
-"   modification, are permitted provided that the following conditions\n\r"
-"   are met:\n\r"
-"   1. Redistributions of source code must retain the above copyright\n\r"
-"      notice, this list of conditions and the following disclaimer.\n\r"
-"   2. Redistributions in binary form must reproduce the above copyright\n\r"
-"      notice, this list of conditions and the following disclaimer in the\n\r"
-"      documentation and/or other materials provided with the distribution.\n\r"
-"\n\r"
-"   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR\n\r"
-"   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES\n\r"
-"   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.\n\r"
-"   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,\n\r"
-"   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,\n\r"
-"   BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n\r"
-"   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED\n\r"
-"   AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n\r"
-"   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY\n\r"
-"   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF\n\r"
+"   Copyright (c) 1997, 1998, 2003, 2004, 2006 Matthew R. Green\n"
+"   All rights reserved.\n"
+"\n"
+"   Redistribution and use in source and binary forms, with or without\n"
+"   modification, are permitted provided that the following conditions\n"
+"   are met:\n"
+"   1. Redistributions of source code must retain the above copyright\n"
+"      notice, this list of conditions and the following disclaimer.\n"
+"   2. Redistributions in binary form must reproduce the above copyright\n"
+"      notice, this list of conditions and the following disclaimer in the\n"
+"      documentation and/or other materials provided with the distribution.\n"
+"\n"
+"   THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR\n"
+"   IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES\n"
+"   OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.\n"
+"   IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,\n"
+"   INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,\n"
+"   BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;\n"
+"   LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED\n"
+"   AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,\n"
+"   OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY\n"
+"   OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF\n"
 "   SUCH DAMAGE.";
 #endif
 
@@ -392,7 +392,7 @@ gzip_main(int argc, char **argv)
 			/* NOTREACHED */
 #ifndef SMALL
 		case 'a':
-			fprintf(stderr, "%s: option --ascii ignored on this system\n\r", progname);
+			fprintf(stderr, "%s: option --ascii ignored on this system\n", progname);
 			break;
 		case 'f':
 			fflag = 1;
@@ -423,7 +423,6 @@ gzip_main(int argc, char **argv)
                 if (len > SUFFIX_MAXLEN) {
 					// errx(1, "incorrect suffix: '%s': too long", optarg);
                     warnx("incorrect suffix: '%s': too long", optarg);
-                    fprintf(stderr, "\r");
                 }
 				suffixes[0].zipped = optarg;
 				suffixes[0].ziplen = len;
@@ -475,7 +474,6 @@ maybe_warn(const char *fmt, ...)
 	if (qflag == 0) {
 		va_start(ap, fmt);
 		vwarn(fmt, ap);
-        fprintf(stderr, "\r");
 		va_end(ap);
 	}
 	if (exit_value == 0)
@@ -491,7 +489,6 @@ maybe_warnx(const char *fmt, ...)
 	if (qflag == 0) {
 		va_start(ap, fmt);
 		vwarnx(fmt, ap);
-        fprintf(stderr, "\r");
 		va_end(ap);
 	}
 	if (exit_value == 0)
@@ -507,7 +504,6 @@ maybe_err(const char *fmt, ...)
 	if (qflag == 0) {
 		va_start(ap, fmt);
 		vwarn(fmt, ap);
-        fprintf(stderr, "\r");
 		va_end(ap);
 	}
     exit; // (2);
@@ -524,7 +520,6 @@ maybe_errx(const char *fmt, ...)
 	if (qflag == 0) {
 		va_start(ap, fmt);
 		vwarnx(fmt, ap);
-        fprintf(stderr, "\r");
 		va_end(ap);
 	}
     exit; // (2);
@@ -1213,7 +1208,7 @@ check_outfile(const char *outfile)
 					"overwrite (y or n)? " , outfile);
 			(void)fgets(ans, sizeof(ans) - 1, stdin);
 			if (ans[0] != 'y' && ans[0] != 'Y') {
-				fprintf(stderr, "\tnot overwriting\n\r");
+				fprintf(stderr, "\tnot overwriting\n");
 				ok = 0;
 			} else
 				unlink(outfile);
@@ -2076,7 +2071,7 @@ print_verbage(const char *file, const char *nfile, off_t usize, off_t gsize)
 	print_ratio(usize, gsize, stderr);
 	if (nfile)
 		fprintf(stderr, " -- replaced with %s", nfile);
-	fprintf(stderr, "\n\r");
+	fprintf(stderr, "\n");
 	fflush(stderr);
 }
 
@@ -2087,7 +2082,7 @@ print_test(const char *file, int ok)
 
 	if (exit_value == 0 && ok == 0)
 		exit_value = 1;
-	fprintf(stderr, "%s:%s  %s\n\r", file,
+	fprintf(stderr, "%s:%s  %s\n", file,
 	    strlen(file) < 7 ? "\t\t" : "\t", ok ? "OK" : "NOT OK");
 	fflush(stderr);
 }
@@ -2115,7 +2110,7 @@ print_list(int fd, off_t out, const char *outfile, time_t ts)
 #endif
 		if (qflag == 0)
 			printf("  compressed uncompressed  "
-			       "ratio uncompressed_name\n\r");
+			       "ratio uncompressed_name\n");
 	}
 	first = 0;
 
@@ -2169,7 +2164,7 @@ print_list(int fd, off_t out, const char *outfile, time_t ts)
 #endif
 	printf("%12llu %12llu ", (unsigned long long)out, (unsigned long long)in);
 	print_ratio(in, out, stdout);
-	printf(" %s\n\r", outfile);
+	printf(" %s\n", outfile);
 }
 
 /* display the usage of NetBSD gzip */
@@ -2177,32 +2172,32 @@ static void
 usage(void)
 {
 
-	fprintf(stderr, "\r%s\n\r", gzip_version);
+	fprintf(stderr, "%s\n", gzip_version);
 	fprintf(stderr,
 #ifdef SMALL
-    "\rusage: %s [-" OPT_LIST "] [<file> [<file> ...]]\n\r",
+    "usage: %s [-" OPT_LIST "] [<file> [<file> ...]]\n",
 #else
-    "\rusage: %s [-123456789acdfhklLNnqrtVv] [-S .suffix] [<file> [<file> ...]]\n\r"
-    " -1 --fast            fastest (worst) compression\n\r"
-    " -2 .. -8             set compression level\n\r"
-    " -9 --best            best (slowest) compression\n\r"
-    " -c --stdout          write to stdout, keep original files\n\r"
-    "    --to-stdout\n\r"
-    " -d --decompress      uncompress files\n\r"
-    "    --uncompress\n\r"
-    " -f --force           force overwriting & compress links\n\r"
-    " -h --help            display this help\n\r"
-    " -k --keep            don't delete input files during operation\n\r"
-    " -l --list            list compressed file contents\n\r"
-    " -N --name            save or restore original file name and time stamp\n\r"
-    " -n --no-name         don't save original file name or time stamp\n\r"
-    " -q --quiet           output no warnings\n\r"
-    " -r --recursive       recursively compress files in directories\n\r"
-    " -S .suf              use suffix .suf instead of .gz\n\r"
-    "    --suffix .suf\n\r"
-    " -t --test            test compressed file\n\r"
-    " -V --version         display program version\n\r"
-    " -v --verbose         print extra statistics\n\r",
+    "usage: %s [-123456789acdfhklLNnqrtVv] [-S .suffix] [<file> [<file> ...]]\n"
+    " -1 --fast            fastest (worst) compression\n"
+    " -2 .. -8             set compression level\n"
+    " -9 --best            best (slowest) compression\n"
+    " -c --stdout          write to stdout, keep original files\n"
+    "    --to-stdout\n"
+    " -d --decompress      uncompress files\n"
+    "    --uncompress\n"
+    " -f --force           force overwriting & compress links\n"
+    " -h --help            display this help\n"
+    " -k --keep            don't delete input files during operation\n"
+    " -l --list            list compressed file contents\n"
+    " -N --name            save or restore original file name and time stamp\n"
+    " -n --no-name         don't save original file name or time stamp\n"
+    " -q --quiet           output no warnings\n"
+    " -r --recursive       recursively compress files in directories\n"
+    " -S .suf              use suffix .suf instead of .gz\n"
+    "    --suffix .suf\n"
+    " -t --test            test compressed file\n"
+    " -V --version         display program version\n"
+    " -v --verbose         print extra statistics\n",
 #endif
 	    getprogname());
     exit; // (0);
@@ -2215,11 +2210,11 @@ display_license(void)
 {
 
 #ifdef __APPLE__
-	fprintf(stderr, "%s (based on FreeBSD gzip 20111009)\n\r", gzip_version);
+	fprintf(stderr, "%s (based on FreeBSD gzip 20111009)\n", gzip_version);
 #else
-	fprintf(stderr, "%s (based on NetBSD gzip 20111009)\n\r", gzip_version);
+	fprintf(stderr, "%s (based on NetBSD gzip 20111009)\n", gzip_version);
 #endif
-	fprintf(stderr, "%s\n\r", gzip_copyright);
+	fprintf(stderr, "%s\n", gzip_copyright);
     exit; // (0);
 }
 #endif
@@ -2229,7 +2224,7 @@ static void
 display_version(void)
 {
 
-	fprintf(stderr, "%s\n\r", gzip_version);
+	fprintf(stderr, "%s\n", gzip_version);
     exit; // (0);
 }
 

@@ -203,7 +203,7 @@ static void setfiletime(long filetime, const char *filename,
        Windows FILETIME without overflow: 30827-12-31T23:59:59. */
     if(filetime > CURL_OFF_T_C(910670515199)) {
       fprintf(error_stream,
-              "Failed to set filetime %ld on outfile: overflow\n\r",
+              "Failed to set filetime %ld on outfile: overflow\n",
               filetime);
       return;
     }
@@ -222,7 +222,7 @@ static void setfiletime(long filetime, const char *filename,
       if(!SetFileTime(hfile, NULL, &ft, &ft)) {
         fprintf(error_stream,
                 "Failed to set filetime %ld on outfile: "
-                "SetFileTime failed: GetLastError %u\n\r",
+                "SetFileTime failed: GetLastError %u\n",
                 filetime, GetLastError());
       }
       CloseHandle(hfile);
@@ -230,7 +230,7 @@ static void setfiletime(long filetime, const char *filename,
     else {
       fprintf(error_stream,
               "Failed to set filetime %ld on outfile: "
-              "CreateFile failed: GetLastError %u\n\r",
+              "CreateFile failed: GetLastError %u\n",
               filetime, GetLastError());
     }
 
@@ -240,7 +240,7 @@ static void setfiletime(long filetime, const char *filename,
     times[0].tv_usec = times[1].tv_usec = 0;
     if(utimes(filename, times)) {
       fprintf(error_stream,
-              "Failed to set filetime %ld on outfile: errno %d\n\r",
+              "Failed to set filetime %ld on outfile: errno %d\n",
               filetime, errno);
     }
 
@@ -250,7 +250,7 @@ static void setfiletime(long filetime, const char *filename,
     times.modtime = (time_t)filetime;
     if(utime(filename, &times)) {
       fprintf(error_stream,
-              "Failed to set filetime %ld on outfile: errno %d\n\r",
+              "Failed to set filetime %ld on outfile: errno %d\n",
               filetime, errno);
     }
 #endif
@@ -811,10 +811,10 @@ static CURLcode operate_do(struct GlobalConfig *global,
         }
 
         if(urlnum > 1 && !global->mute) {
-          fprintf(global->errors, "\n[%lu/%lu]: %s --> %s\n\r",
+          fprintf(global->errors, "\n[%lu/%lu]: %s --> %s\n",
                   li+1, urlnum, this_url, outfile ? outfile : "<stdout>");
           if(separator)
-            printf("%s%s\n\r", CURLseparator, this_url);
+            printf("%s%s\n", CURLseparator, this_url);
         }
         if(httpgetfields) {
           char *urlbuffer;
@@ -1552,11 +1552,11 @@ static CURLcode operate_do(struct GlobalConfig *global,
               goto show_error;
             }
             fprintf(config->global->errors,
-                    "Metalink: parsing (%s) metalink/XML...\n\r", this_url);
+                    "Metalink: parsing (%s) metalink/XML...\n", this_url);
           }
           else if(metalink)
             fprintf(config->global->errors,
-                    "Metalink: fetching (%s) from (%s)...\n\r",
+                    "Metalink: fetching (%s) from (%s)...\n",
                     mlfile->filename, this_url);
 #endif /* USE_METALINK */
 
@@ -1581,7 +1581,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
 
           if(outs.is_cd_filename && outs.stream && !global->mute &&
              outs.filename)
-            printf("curl: Saved to filename '%s'\n\r", outs.filename);
+            printf("curl: Saved to filename '%s'\n", outs.filename);
 
           /* if retry-max-time is non-zero, make sure we haven't exceeded the
              time */
@@ -1682,7 +1682,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
                  */
                 if(!global->mute)
                   fprintf(global->errors, "Throwing away %"
-                          CURL_FORMAT_CURL_OFF_T " bytes\n\r",
+                          CURL_FORMAT_CURL_OFF_T " bytes\n",
                           outs.bytes);
                 fflush(outs.stream);
                 /* truncate file at the position where we started appending */
@@ -1692,7 +1692,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
                      create something strange, bail out */
                   if(!global->mute)
                     fprintf(global->errors,
-                            "failed to truncate, exiting\n\r");
+                            "failed to truncate, exiting\n");
                   result = CURLE_WRITE_ERROR;
                   goto quit_urls;
                 }
@@ -1729,7 +1729,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
                   metalink_next_res = 1;
                   fprintf(global->errors,
                           "Metalink: fetching (%s) from (%s) FAILED "
-                          "(HTTP status code %ld)\n\r",
+                          "(HTTP status code %ld)\n",
                           mlfile->filename, this_url, response);
                 }
               }
@@ -1737,14 +1737,14 @@ static CURLcode operate_do(struct GlobalConfig *global,
             else {
               metalink_next_res = 1;
               fprintf(global->errors,
-                      "Metalink: fetching (%s) from (%s) FAILED (%s)\n\r",
+                      "Metalink: fetching (%s) from (%s) FAILED (%s)\n",
                       mlfile->filename, this_url,
                       (errorbuffer[0]) ?
                       errorbuffer : curl_easy_strerror(result));
             }
           }
           if(metalink && !metalink_next_res)
-            fprintf(global->errors, "Metalink: fetching (%s) from (%s) OK\n\r",
+            fprintf(global->errors, "Metalink: fetching (%s) from (%s) OK\n",
                     mlfile->filename, this_url);
 
           /* In all ordinary cases, just break out of loop here */
@@ -1756,7 +1756,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
            progressbar.calls)
           /* if the custom progress bar has been displayed, we output a
              newline here */
-          fputs("\n\r", progressbar.out);
+          fputs("\n", progressbar.out);
 
         if(config->writeout)
           ourWriteOut(curl, &outs, config->writeout);
@@ -1782,14 +1782,14 @@ static CURLcode operate_do(struct GlobalConfig *global,
           ;
         }
         else if(result && global->showerror) {
-          fprintf(global->errors, "curl: (%d) %s\n\r", result, (errorbuffer[0]) ?
+          fprintf(global->errors, "curl: (%d) %s\n", result, (errorbuffer[0]) ?
                   errorbuffer : curl_easy_strerror(result));
           if(result == CURLE_SSL_CACERT)
             fprintf(global->errors, "%s%s%s",
                     CURL_CA_CERT_ERRORMSG1, CURL_CA_CERT_ERRORMSG2,
                     ((curlinfo->features & CURL_VERSION_HTTPS_PROXY) ?
                      "HTTPS-proxy has similar options --proxy-cacert "
-                     "and --proxy-insecure.\n\r" :
+                     "and --proxy-insecure.\n" :
                      ""));
         }
 
@@ -1822,7 +1822,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
           if(!result && rc) {
             /* something went wrong in the writing process */
             result = CURLE_WRITE_ERROR;
-            fprintf(global->errors, "(%d) Failed writing body\n\r", result);
+            fprintf(global->errors, "(%d) Failed writing body\n", result);
           }
         }
         else if(!outs.s_isreg && outs.stream) {
@@ -1831,7 +1831,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
           if(!result && rc) {
             /* something went wrong in the writing process */
             result = CURLE_WRITE_ERROR;
-            fprintf(global->errors, "(%d) Failed writing body\n\r", result);
+            fprintf(global->errors, "(%d) Failed writing body\n", result);
           }
         }
 
@@ -1861,10 +1861,10 @@ static CURLcode operate_do(struct GlobalConfig *global,
         if(!metalink && config->use_metalink && result == CURLE_OK) {
           int rv = parse_metalink(config, &outs, this_url);
           if(rv == 0)
-            fprintf(config->global->errors, "Metalink: parsing (%s) OK\n\r",
+            fprintf(config->global->errors, "Metalink: parsing (%s) OK\n",
                     this_url);
           else if(rv == -1)
-            fprintf(config->global->errors, "Metalink: parsing (%s) FAILED\n\r",
+            fprintf(config->global->errors, "Metalink: parsing (%s) FAILED\n",
                     this_url);
         }
         else if(metalink && result == CURLE_OK && !metalink_next_res) {

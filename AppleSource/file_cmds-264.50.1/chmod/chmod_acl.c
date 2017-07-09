@@ -105,7 +105,6 @@ name_to_uuid(char *tok, int nametype) {
 
 	if ((entryg = (uuid_t *) calloc(1, sizeof(uuid_t))) == NULL) {
 		warnx("Unable to allocate a uuid");
-        fprintf(stderr, "\r");
         return 0;
 	}
 
@@ -118,7 +117,6 @@ name_to_uuid(char *tok, int nametype) {
 	}
 	
 	warnx("Unable to translate '%s' to a UUID", tok);
-    fprintf(stderr, "\r");
     return 0;
 }
 
@@ -156,7 +154,6 @@ parse_entry(char *entrybuf, acl_entry_t newent) {
 	
 	if ((tok == NULL) || *tok == '\0') {
 		warnx("Invalid entry format -- expected user or group name");
-        fprintf(stderr, "\r");
         return 0;
 	}
 
@@ -166,7 +163,6 @@ parse_entry(char *entrybuf, acl_entry_t newent) {
 	tok = strsep(&pebuf, ": "); /* Stick with delimiter? */
 	if ((tok == NULL) || *tok == '\0') {
 		warnx("Invalid entry format -- expected allow or deny");
-        fprintf(stderr, "\r");
         return 0;
 	}
 
@@ -177,7 +173,6 @@ parse_entry(char *entrybuf, acl_entry_t newent) {
 		tag = ACL_EXTENDED_DENY;
 	} else {
 		warnx("Unknown tag type '%s'", tok);
-        fprintf(stderr, "\r");
         return 0;
 	}
 
@@ -203,7 +198,6 @@ parse_entry(char *entrybuf, acl_entry_t newent) {
 				}
 			}
 			warnx("Invalid permission type '%s'", tok);
-            fprintf(stderr, "\r");
             return 0;
 		found:
 			continue;
@@ -211,7 +205,6 @@ parse_entry(char *entrybuf, acl_entry_t newent) {
 	}
 	if (0 == permcount) {
 		warnx("No permissions specified");
-        fprintf(stderr, "\r");
         return 0;
     }
 	acl_set_tag_type(newent, tag);
@@ -244,7 +237,6 @@ parse_acl_entries(const char *input) {
 	
     if (inbuf == NULL) {
 		warn("malloc() failed");
-        fprintf(stderr, "\r");
         return 0;
     }
 	strncpy(inbuf, input, MAX_ACL_TEXT_SIZE);
@@ -252,7 +244,6 @@ parse_acl_entries(const char *input) {
 
     if ((acl_input = acl_init(1)) == NULL) {
 		warn("acl_init() failed");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -262,17 +253,14 @@ parse_acl_entries(const char *input) {
 		if (**bufp != '\0') {
             if (0 != acl_create_entry(&acl_input, &newent)) {
 				warn("acl_create_entry() failed");
-                fprintf(stderr, "\r");
                 return 0;
             }
 			if (0 != parse_entry(*bufp, newent)) {
 				warnx("Failed parsing entry '%s'", *bufp);
-                fprintf(stderr, "\r");
                 return 0;
 			}
 			if (++bufp >= &entryv[ACL_MAX_ENTRIES - 1]) {
 				warnx("Too many entries");
-                fprintf(stderr, "\r");
                 return 0;
 			}
 		}
@@ -308,17 +296,14 @@ score_acl_entry(acl_entry_t entry) {
 
 	if (acl_get_tag_type(entry, &tag) != 0) {
 		warn("Malformed ACL entry, no tag present");
-        fprintf(stderr, "\r");
         return 0;
 	}
 	if (acl_get_flagset_np(entry, &flags) != 0){
 		warn("Unable to obtain flagset");
-        fprintf(stderr, "\r");
         return 0;
 	}
     if (acl_get_permset(entry, &perms) != 0) {
 		warn("Malformed ACL entry, no permset present");
-        fprintf(stderr, "\r");
         return 0;
     }
 	switch(tag) {
@@ -329,7 +314,6 @@ score_acl_entry(acl_entry_t entry) {
 		break;
 	default:
 		warnx("Unknown tag type %d present in ACL entry", tag);
-        fprintf(stderr, "\r");
         return 0;
 	        /* NOTREACHED */
 	}
@@ -402,12 +386,10 @@ compare_acl_entries(acl_entry_t a, acl_entry_t b)
 
     if (0 != acl_get_tag_type(a, &atag)) {
 		warn("No tag type present in entry");
-        fprintf(stderr, "\r");
         return 0;
     }
     if (0!= acl_get_tag_type(b, &btag)) {
 		warn("No tag type present in entry");
-        fprintf(stderr, "\r");
         return 0;
     }
 	if (atag != btag)
@@ -418,7 +400,6 @@ compare_acl_entries(acl_entry_t a, acl_entry_t b)
 	    (acl_get_permset(b, &bperms) != 0) ||
         (acl_get_flagset_np(b, &bflags) != 0)) {
 		warn("error fetching permissions");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -521,12 +502,10 @@ find_matching_entry (acl_t acl, acl_entry_t modifier, acl_entry_t *rentryp,
 
                 if (0 != acl_get_flagset_np(modifier, &mflags)) {
 					warn("Unable to get flagset");
-                    fprintf(stderr, "\r");
                     return 0;
                 }
                 if (0 != acl_get_flagset_np(entry, &eflags)) {
 					warn("Unable to get flagset");
-                    fprintf(stderr, "\r");
                     return 0;
                 }
 				if (compare_acl_flagsets(mflags, eflags) == MATCH_EXACT) {
@@ -560,7 +539,6 @@ subtract_from_entry(acl_entry_t rentry, acl_entry_t  modifier, int* valid_perms)
 	    (acl_get_permset(modifier, &mperms) != 0) ||
         (acl_get_flagset_np(modifier, &mflags) != 0)) {
 		warn("error computing ACL modification");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -591,7 +569,6 @@ merge_entry_perms(acl_entry_t rentry, acl_entry_t  modifier)
 	    (acl_get_permset(modifier, &mperms) != 0) ||
         (acl_get_flagset_np(modifier, &mflags) != 0)) {
 		warn("error computing ACL modification");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -633,7 +610,6 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 		if (position != -1) {
             if (0 != acl_create_entry_np(&oacl, &newent, position)) {
 				warn("acl_create_entry() failed");
-                fprintf(stderr, "\r");
                 return 0;
             }
 			acl_copy_entry(newent, modifier);
@@ -659,7 +635,6 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 			cpos = find_canonical_position(oacl, modifier);
             if (0!= acl_create_entry_np(&oacl, &newent, cpos)) {
 				warn("acl_create_entry() failed");
-                fprintf(stderr, "\r");
                 return 0;
             }
 			acl_copy_entry(newent, modifier);
@@ -667,12 +642,10 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 	} else if (optflags & ACL_DELETE_FLAG) {
 		if (flag_new_acl) {
 			warnx("No ACL present '%s'", path);
-            fprintf(stderr, "\r");
 			retval = 1;
 		} else if (position != -1 ) {
 			if (0 != acl_get_entry(oacl, position, &rentry)) {
 				warnx("Invalid entry number '%s'", path);
-                fprintf(stderr, "\r");
 				retval = 1;
 			} else {
 				acl_delete_entry(oacl, rentry);
@@ -704,7 +677,6 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 			}
 			if (0 == match_found) {
 				warnx("Entry not found when attempting delete '%s'",path);
-                fprintf(stderr, "\r");
 				retval = 1;
 			}
 		}
@@ -719,18 +691,15 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 			if (0 != acl_get_entry(oacl, position,
                                    &rentry)) {
 				warn("Invalid entry number '%s'", path);
-                fprintf(stderr, "\r");
                 return 0;
             }
             if (0 != acl_delete_entry(oacl, rentry)) {
 				warn("Unable to delete entry '%s'", path);
-                fprintf(stderr, "\r");
                 return 0;
             }
         }
         if (0!= acl_create_entry_np(&oacl, &newent, position)) {
 			warn("acl_create_entry() failed");
-            fprintf(stderr, "\r");
             return 0;
         }
 		acl_copy_entry(newent, modifier);
@@ -774,19 +743,16 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 		filesec_t fsec = filesec_init();
 		if (fsec == NULL) {
 			warn("filesec_init() failed");
-            fprintf(stderr, "\r");
             return 0;
 		}
 		if (filesec_set_property(fsec, FILESEC_ACL, _FILESEC_REMOVE_ACL) != 0) {
 			warn("filesec_set_property() failed");
-            fprintf(stderr, "\r");
             return 0;
                 }
 		if (follow) {
 			if (chmodx_np(path, fsec) != 0) {
                                 if (!fflag) {
 					warn("Failed to clear ACL on file %s", path);
-                    fprintf(stderr, "\r");
 				}
 				retval = 1;
 			}
@@ -796,7 +762,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 				if (fchmodx_np(fd, fsec) != 0) {
 					if (!fflag) {
 						warn("Failed to clear ACL on file %s", path);
-                        fprintf(stderr, "\r");
 					}
 					retval = 1;
 				}
@@ -804,7 +769,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 			} else {
 				if (!fflag) {
 					warn("Failed to open file %s", path);
-                    fprintf(stderr, "\r");
                 }
 				retval = 1;
 			}
@@ -829,7 +793,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 		    (acl_get_entry(oacl,ACL_FIRST_ENTRY, &newent) != 0)) {
             if ((oacl = acl_init(1)) == NULL) {
 				warn("acl_init() failed");
-                fprintf(stderr, "\r");
                 return 0;
             }
 			flag_new_acl = 1;
@@ -841,7 +804,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 			acl_t facl = NULL;
             if ((facl = acl_init(1)) == NULL) {
 				warn("acl_init() failed");
-                fprintf(stderr, "\r");
                 return 0;
             }
             for (aindex = 0;
@@ -853,7 +815,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 				acl_entry_t fent = NULL;
 				if (acl_get_flagset_np(entry, &eflags) != 0) {
 					warn("Unable to obtain flagset");
-                    fprintf(stderr, "\r");
                     return 0;
 				}
 				
@@ -881,13 +842,11 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 		} else if (optflags & ACL_CHECK_CANONICITY) {
 			if (flag_new_acl) {
 				warnx("No ACL currently associated with file '%s'", path);
-                fprintf(stderr, "\r");
 			}
 			retval = is_canonical(oacl);
 		} else if ((optflags & ACL_SET_FLAG) && (position == -1) && 
 		    (!is_canonical(oacl))) {
 			warnx("The specified file '%s' does not have an ACL in canonical order, please specify a position with +a# ", path);
-            fprintf(stderr, "\r");
 			retval = 1;
 		} else if (((optflags & ACL_DELETE_FLAG) && (position != -1))
 		    || (optflags & ACL_CHECK_CANONICITY)) {
@@ -895,12 +854,10 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 					    inheritance_level, flag_new_acl, path);
 		} else if ((optflags & (ACL_REMOVE_INHERIT_FLAG|ACL_REMOVE_INHERITED_ENTRIES)) && flag_new_acl) {
 			warnx("No ACL currently associated with file '%s'", path);
-            fprintf(stderr, "\r");
 			retval = 1;
 		} else {
 			if (!modifier) { /* avoid bus error in acl_get_entry */
 				warnx("Internal error: modifier should not be NULL");
-                fprintf(stderr, "\r");
                 return 0;
 			}
 			for (aindex = 0; 
@@ -939,7 +896,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 		if (status != 0) {
             if (!fflag) {
 				warn("Failed to set ACL on file '%s'", path);
-                fprintf(stderr, "\r");
             }
 			retval = 1;
 		}

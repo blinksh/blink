@@ -34,8 +34,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1988, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1988, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -138,7 +138,6 @@ chown_main(int argc, char **argv)
     }
     if (!Rflag && (Hflag || Lflag || Pflag)) {
 		warnx("options -H, -L, -P only useful with -R");
-        fprintf(stderr, "\r");
     }
 
 	if (Rflag) {
@@ -146,7 +145,6 @@ chown_main(int argc, char **argv)
         if (hflag && (Hflag || Lflag)) {
 			warnx("the -R%c and -h options may not be "
 			    "specified together", Hflag ? 'H' : 'L');
-            fprintf(stderr, "\r");
             return 0;
         }
 		if (Hflag)
@@ -169,7 +167,6 @@ chown_main(int argc, char **argv)
 #ifdef SUPPORT_DOT
 		else if ((cp = strchr(*argv, '.')) != NULL) {
 			warnx("separation of user and group with a period is deprecated");
-            fprintf(stderr, "\r");
 			*cp++ = '\0';
 			a_gid(cp);
 		}
@@ -194,13 +191,11 @@ chown_main(int argc, char **argv)
 			continue;
 		case FTS_DNR:			/* Warn, chown. */
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			break;
 		case FTS_ERR:			/* Warn, continue. */
 		case FTS_NS:
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			continue;
 		case FTS_SL:
@@ -218,7 +213,6 @@ chown_main(int argc, char **argv)
 					if (Hflag || Lflag) {       /* -H or -L was specified */
 						if (p->fts_errno) {
 							warnx("%s: %s", p->fts_name, strerror(p->fts_errno));
-                            fprintf(stderr, "\r");
 							rval = 1;
 							continue;
 						}
@@ -246,7 +240,7 @@ chown_main(int argc, char **argv)
 			}
 		} else {
 			if (vflag)
-				printf("%s\n\r", p->fts_path);
+				printf("%s\n", p->fts_path);
 		}
 	}
 	if (errno)
@@ -286,7 +280,6 @@ id(const char *name, const char *type)
 	val = strtoul(name, &ep, 10);
     if (errno || *ep != '\0' || val > UID_MAX) {
 		warnx("%s: illegal %s name", name, type);
-        fprintf(stderr, "\r");
     }
 	return (uid_t)val;
 }
@@ -302,7 +295,6 @@ chownerr(const char *file)
 	if (errno != EPERM || (uid != (uid_t)-1 &&
 	    euid == (uid_t)-1 && (euid = geteuid()) != 0)) {
 		warn("%s", file);
-        fprintf(stderr, "\r");
 		return;
 	}
 
@@ -313,12 +305,10 @@ chownerr(const char *file)
 		while (--ngroups >= 0 && gid != groups[ngroups]);
 		if (ngroups < 0) {
 			warnx("you are not a member of group %s", gname);
-            fprintf(stderr, "\r");
 			return;
 		}
 	}
 	warn("%s", file);
-    fprintf(stderr, "\r");
 }
 
 void
@@ -326,12 +316,12 @@ usage(void)
 {
 
 	if (ischown)
-		(void)fprintf(stderr, "\r%s\n\r%s\n\r",
+		(void)fprintf(stderr, "%s\n%s\n",
 		    "usage: chown [-fhv] [-R [-H | -L | -P]] owner[:group]"
 		    " file ...",
 		    "       chown [-fhv] [-R [-H | -L | -P]] :group file ...");
 	else
-		(void)fprintf(stderr, "\r%s\n\r",
+		(void)fprintf(stderr, "%s\n",
 		    "usage: chgrp [-fhv] [-R [-H | -L | -P]] group file ...");
 	// exit(1);
 }

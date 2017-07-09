@@ -33,8 +33,8 @@
 #if 0
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1988, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1988, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -315,12 +315,10 @@ copy(char *argv[], enum op type, int fts_options)
 		case FTS_ERR:
 			warnx("%s: %s",
 			    curr->fts_path, strerror(curr->fts_errno));
-                fprintf(stderr, "\r");
 			rval = 1;
 			continue;
 		case FTS_DC:			/* Warn, continue. */
 			warnx("%s: directory causes a cycle", curr->fts_path);
-            fprintf(stderr, "\r");
 			rval = 1;
 			continue;
 		default:
@@ -402,7 +400,6 @@ copy(char *argv[], enum op type, int fts_options)
 			if (target_mid - to.p_path + nlen >= PATH_MAX) {
 				warnx("%s%s: name too long (not copied)",
 				    to.p_path, p);
-                fprintf(stderr, "\r");
 				rval = 1;
 				continue;
 			}
@@ -436,7 +433,6 @@ copy(char *argv[], enum op type, int fts_options)
 				/* setfile will fail if writeattr is denied */
                 if (copyfile(curr->fts_path, to.p_path, NULL, COPYFILE_ACL)<0) {
 					warn("%s: unable to copy ACL to %s", curr->fts_path, to.p_path);
-                    fprintf(stderr, "\r");
                 }
 #else  /* !__APPLE__ */
 				if (preserve_dir_acls(curr->fts_statp,
@@ -449,7 +445,6 @@ copy(char *argv[], enum op type, int fts_options)
 				    ((mode | S_IRWXU) & mask) != (mode & mask))
 					if (chmod(to.p_path, mode & mask) != 0){
 						warn("chmod: %s", to.p_path);
-                        fprintf(stderr, "\r");
 						rval = 1;
 					}
 			}
@@ -464,7 +459,6 @@ copy(char *argv[], enum op type, int fts_options)
 			    to_stat.st_ino == curr->fts_statp->st_ino) {
 				warnx("%s and %s are identical (not copied).",
 				    to.p_path, curr->fts_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 				if (S_ISDIR(curr->fts_statp->st_mode))
 					(void)fts_set(ftsp, curr, FTS_SKIP);
@@ -475,7 +469,6 @@ copy(char *argv[], enum op type, int fts_options)
 				warnx("cannot overwrite directory %s with "
 				    "non-directory %s",
 				    to.p_path, curr->fts_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 				continue;
 			}
@@ -499,7 +492,6 @@ copy(char *argv[], enum op type, int fts_options)
 			if (!Rflag && !rflag) {
 				warnx("%s is a directory (not copied).",
 				    curr->fts_path);
-                fprintf(stderr, "\r");
 				(void)fts_set(ftsp, curr, FTS_SKIP);
 				badcp = rval = 1;
 				break;
@@ -517,7 +509,6 @@ copy(char *argv[], enum op type, int fts_options)
 					  curr->fts_statp->st_mode | S_IRWXU) < 0) {
 					if (COMPAT_MODE("bin/cp", "unix2003")) {
 						warn("%s", to.p_path);
-                        fprintf(stderr, "\r");
 					} else {
 						err(1, "%s", to.p_path);
 					}
@@ -526,7 +517,6 @@ copy(char *argv[], enum op type, int fts_options)
 				errno = ENOTDIR;
 				if (COMPAT_MODE("bin/cp", "unix2003")) {
 					warn("%s", to.p_path);
-                    fprintf(stderr, "\r");
 				} else {
 					err(1, "%s", to.p_path);
 				}
@@ -542,7 +532,6 @@ copy(char *argv[], enum op type, int fts_options)
                 if (copyfile(curr->fts_path, to.p_path, NULL, COPYFILE_XATTR) < 0) {
 					warn("%s: unable to copy extended attributes to %s", curr->fts_path, to.p_path);
 				/* ACL and mtime set in postorder traversal */
-                    fprintf(stderr, "\r");
                 }
 			}
 #endif /* __APPLE__ */
@@ -572,7 +561,7 @@ copy(char *argv[], enum op type, int fts_options)
 			break;
 		}
 		if (vflag && !badcp)
-			(void)printf("%s -> %s\n\r", curr->fts_path, to.p_path);
+			(void)printf("%s -> %s\n", curr->fts_path, to.p_path);
 	}
 	if (errno)
 		err(1, "fts_read");

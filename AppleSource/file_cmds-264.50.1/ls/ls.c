@@ -37,8 +37,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1989, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1989, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #if 0
@@ -446,7 +446,7 @@ ls_main(int argc, char *argv[])
 				f_color = 1;
 		}
 #else
-		(void)fprintf(stderr, "Color support not compiled in.\n\r");
+		(void)fprintf(stderr, "Color support not compiled in.\n");
 #endif /*COLORLS*/
 
 #ifdef COLORLS
@@ -588,7 +588,6 @@ traverse(int argc, char *argv[], int options)
 		case FTS_DNR:
 		case FTS_ERR:
 			warnx("%s: %s", p->fts_name, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			break;
 		case FTS_D:
@@ -604,9 +603,9 @@ traverse(int argc, char *argv[], int options)
 			 * directory with its name.
 			 */
 			if (output)
-				(void)printf("\n\r%s:\n\r", p->fts_path);
+				(void)printf("\n%s:\n", p->fts_path);
 			else if (argc > 1) {
-				(void)printf("%s:\n\r", p->fts_path);
+				(void)printf("%s:\n", p->fts_path);
 				output = 1;
 			}
 			chp = fts_children(ftsp, ch_options);
@@ -626,7 +625,6 @@ traverse(int argc, char *argv[], int options)
 			if (COMPAT_MODE("bin/ls", "Unix2003")) {
 				if ((options & FTS_LOGICAL)!=0) {	/* -L was specified */
 					warnx("%s: %s", p->fts_name, strerror(p->fts_errno ?: ENOENT));
-                    fprintf(stderr, "\r");
 					rval = 1;
 				}
 			}
@@ -772,7 +770,6 @@ display(FTSENT *p, FTSENT *list)
 		if (cur->fts_info == FTS_ERR || cur->fts_info == FTS_NS) {
 			warnx("%s: %s",
 			    cur->fts_name, strerror(cur->fts_errno));
-            fprintf(stderr, "\r");
 
 			cur->fts_number = NO_PRINT;
 			rval = 1;

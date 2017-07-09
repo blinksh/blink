@@ -62,7 +62,7 @@ static void voutf(struct GlobalConfig *config,
           cut = width-1;
 
         (void)fwrite(ptr, cut + 1, 1, config->errors);
-        fputs("\n\r", config->errors);
+        fputs("\n", config->errors);
         ptr += cut+1; /* skip the space too */
         len -= cut;
       }
@@ -111,12 +111,11 @@ void helpf(FILE *errors, const char *fmt, ...)
     fputs("curl: ", errors); /* prefix it */
     vfprintf(errors, fmt, ap);
     va_end(ap);
-    fputs("\r", errors); /* Blink */
   }
   fprintf(errors, "curl: try 'curl --help' "
 #ifdef USE_MANUAL
           "or 'curl --manual' "
 #endif
-          "for more information\n\r");
+          "for more information\n");
 }
 

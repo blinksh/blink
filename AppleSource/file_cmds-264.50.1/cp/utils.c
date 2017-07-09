@@ -85,7 +85,6 @@ copy_file(const FTSENT *entp, int dne)
 
 	if ((from_fd = open(entp->fts_path, O_RDONLY, 0)) == -1) {
 		warn("%s", entp->fts_path);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 
@@ -147,7 +146,6 @@ copy_file(const FTSENT *entp, int dne)
 
 	if (to_fd == -1) {
 		warn("%s", to.p_path);
-        fprintf(stderr, "\r");
 		(void)close(from_fd);
 		return (1);
 	}
@@ -182,13 +180,11 @@ copy_file(const FTSENT *entp, int dne)
 		   && fchmod(to_fd, mode & ~(S_IRWXG|S_IRWXO))) {
                if (errno != EPERM) /* we have write access but do not own the file */ {
 			       warn("%s: fchmod failed", to.p_path);
-                   fprintf(stderr, "\r");
                }
 		       mode = 0;
 	       }
        } else {
 	       warn("%s", to.p_path);
-           fprintf(stderr, "\r");
        }
 	/*
 	 * Mmap and write if less than 8M (the limit is so we don't totally
@@ -201,7 +197,6 @@ copy_file(const FTSENT *entp, int dne)
 		if ((p = mmap(NULL, (size_t)fs->st_size, PROT_READ,
 		    MAP_SHARED, from_fd, (off_t)0)) == MAP_FAILED) {
 			warn("%s", entp->fts_path);
-            fprintf(stderr, "\r");
 			rval = 1;
 		} else {
 			wtotal = 0;
@@ -222,13 +217,11 @@ copy_file(const FTSENT *entp, int dne)
 			}
 			if (wcount != (ssize_t)wresid) {
 				warn("%s", to.p_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 			}
 			/* Some systems don't unmap on close(2). */
 			if (munmap(p, fs->st_size) < 0) {
 				warn("%s", entp->fts_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 			}
 		}
@@ -254,14 +247,12 @@ copy_file(const FTSENT *entp, int dne)
 			}
 			if (wcount != (ssize_t)wresid) {
 				warn("%s", to.p_path);
-                fprintf(stderr, "\r");
 				rval = 1;
 				break;
 			}
 		}
 		if (rcount < 0) {
 			warn("%s", entp->fts_path);
-            fprintf(stderr, "\r");
 			rval = 1;
 		}
 	}
@@ -275,14 +266,12 @@ copy_file(const FTSENT *entp, int dne)
 	if (mode != 0)
         if (fchmod(to_fd, mode)) {
 			warn("%s: fchmod failed", to.p_path);
-            fprintf(stderr, "\r");
         }
 #ifdef __APPLE__
 	/* do these before setfile in case copyfile changes mtime */
 	if (!Xflag && S_ISREG(fs->st_mode)) { /* skip devices, etc */
         if (fcopyfile(from_fd, to_fd, NULL, COPYFILE_XATTR) < 0) {
 			warn("%s: could not copy extended attributes to %s", entp->fts_path, to.p_path);
-            fprintf(stderr, "\r");
         }
 	}
 	if (pflag && setfile(fs, to_fd))
@@ -291,7 +280,6 @@ copy_file(const FTSENT *entp, int dne)
 		/* If this ACL denies writeattr then setfile will fail... */
         if (fcopyfile(from_fd, to_fd, NULL, COPYFILE_ACL) < 0) {
 			warn("%s: could not copy ACL to %s", entp->fts_path, to.p_path);
-            fprintf(stderr, "\r");
         }
 	}
 #else  /* !__APPLE__ */
@@ -303,7 +291,6 @@ copy_file(const FTSENT *entp, int dne)
 	(void)close(from_fd);
 	if (close(to_fd)) {
 		warn("%s", to.p_path);
-        fprintf(stderr, "\r");
 		rval = 1;
 	}
 	return (rval);
@@ -497,13 +484,11 @@ preserve_dir_acls(struct stat *fs, char *source_dir, char *dest_dir)
 	acl = aclgetf(source_dir, ACL_TYPE_ACCESS);
 	if (acl == NULL) {
 		warn("failed to get acl entries on %s", source_dir);
-        fprintf(stderr, "\r");
         return (1);
 	}
 	aclp = &acl->ats_acl;
 	if (aclsetf(dest_dir, ACL_TYPE_ACCESS, acl) < 0) {
 		warn("failed to set acl entries on %s", dest_dir);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	return (0);
@@ -515,12 +500,12 @@ cp_usage(void)
 {
 
 	if (COMPAT_MODE("bin/cp", "unix2003")) {
-	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
+	(void)fprintf(stderr, "%s\n%s\n",
 "usage: cp [-R [-H | -L | -P]] [-fi | -n] [-apvX] source_file target_file",
 "       cp [-R [-H | -L | -P]] [-fi | -n] [-apvX] source_file ... "
 "target_directory");
 	} else {
-	(void)fprintf(stderr, "\r%s\n\r%s\n\r",
+	(void)fprintf(stderr, "%s\n%s\n",
 "usage: cp [-R [-H | -L | -P]] [-f | -i | -n] [-apvX] source_file target_file",
 "       cp [-R [-H | -L | -P]] [-f | -i | -n] [-apvX] source_file ... "
 "target_directory");

@@ -143,7 +143,7 @@ int Curl_pgrsDone(struct connectdata *conn)
      !data->progress.callback)
     /* only output if we don't use a progress callback and we're not
      * hidden */
-    fprintf(data->set.err, "\n\r");
+    fprintf(data->set.err, "\n");
 
   data->progress.speeder_c = 0; /* reset the progress meter display */
   return 0;
@@ -475,13 +475,13 @@ int Curl_pgrsUpdate(struct connectdata *conn)
       if(data->state.resume_from) {
         fprintf(data->set.err,
                 "** Resuming transfer from byte position %"
-                CURL_FORMAT_CURL_OFF_T "\n\r", data->state.resume_from);
+                CURL_FORMAT_CURL_OFF_T "\n", data->state.resume_from);
       }
       fprintf(data->set.err,
               "  %% Total    %% Received %% Xferd  Average Speed   "
-              "Time    Time     Time  Current\n\r"
+              "Time    Time     Time  Current\n"
               "                                 Dload  Upload   "
-              "Total   Spent    Left  Speed\n\r");
+              "Total   Spent    Left  Speed\n");
       data->progress.flags |= PGRS_HEADERS_OUT; /* headers are shown */
     }
 

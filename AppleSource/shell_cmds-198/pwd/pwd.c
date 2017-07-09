@@ -30,8 +30,8 @@
 #if 0
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1991, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1991, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -94,7 +94,7 @@ pwd_main(int argc, char *argv[])
 	 */
 	if ((!physical && (p = getcwd_logical()) != NULL) ||
 	    ((physical || errno == ENOENT) && (p = getcwd(NULL, 0)) != NULL))
-		printf("%s\n\r", p);
+		printf("%s\n", p);
     else {
 		// err(1, ".");
         warn(".");
@@ -107,7 +107,7 @@ void
 usage(void)
 {
 
-	(void)fprintf(stderr, "\rusage: pwd [-L | -P]\n\r");
+	(void)fprintf(stderr, "usage: pwd [-L | -P]\n");
 //  	exit(1);
 }
 

@@ -467,7 +467,7 @@ CURLcode glob_url(URLGlob **glob, char *url, unsigned long *urlnum,
         t = glob_expand->error;
 
       /* send error description to the error-stream */
-      fprintf(error, "curl: (%d) [globbing] %s\n\r", res, t);
+      fprintf(error, "curl: (%d) [globbing] %s\n", res, t);
     }
     /* it failed, we cleanup */
     glob_cleanup(glob_expand);
@@ -544,7 +544,7 @@ CURLcode glob_next_url(char **globbed, URLGlob *glob)
         }
         break;
       default:
-        printf("internal error: invalid pattern type (%d)\n\r", (int)pat->type);
+        printf("internal error: invalid pattern type (%d)\n", (int)pat->type);
         return CURLE_FAILED_INIT;
       }
     }
@@ -582,7 +582,7 @@ CURLcode glob_next_url(char **globbed, URLGlob *glob)
       buflen -= len;
       break;
     default:
-      printf("internal error: invalid pattern type (%d)\n\r", (int)pat->type);
+      printf("internal error: invalid pattern type (%d)\n", (int)pat->type);
       return CURLE_FAILED_INIT;
     }
   }
@@ -656,7 +656,7 @@ CURLcode glob_match_url(char **result, char *filename, URLGlob *glob)
           appendlen = strlen(numbuf);
           break;
         default:
-          fprintf(stderr, "internal error: invalid pattern type (%d)\n\r",
+          fprintf(stderr, "internal error: invalid pattern type (%d)\n",
                   (int)pat->type);
           Curl_safefree(target);
           return CURLE_FAILED_INIT;

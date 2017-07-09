@@ -30,8 +30,8 @@
 #if 0
 #ifndef lint
 static const char copyright[] =
-"@(#) Copyright (c) 1992, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1992, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif
 
 #ifndef lint
@@ -111,7 +111,6 @@ chflags_main(int argc, char *argv[])
         if (hflag) {
 			warnx("the -R and -h options "
 			        "may not be specified together");
-            fprintf(stderr, "\r");
             return 0;
         }
 		if (Hflag)
@@ -136,12 +135,10 @@ chflags_main(int argc, char *argv[])
 			errno = ERANGE;
         if (errno) {
             warn("invalid flags: %s", flags);
-            fprintf(stderr, "\r");
             return 0;
         }
         if (*ep) {
             warnx(1, "invalid flags: %s", flags);
-            fprintf(stderr, "\r");
             return 0;
         }
 		set = val;
@@ -149,7 +146,6 @@ chflags_main(int argc, char *argv[])
 	} else {
         if (strtofflags(&flags, &set, &clear)) {
             warnx("invalid flag: %s", flags);
-            fprintf(stderr, "\r");
             return 0;
         }
 		clear = ~clear;
@@ -169,13 +165,11 @@ chflags_main(int argc, char *argv[])
 			continue;
 		case FTS_DNR:			/* Warn, chflag, continue. */
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			break;
 		case FTS_ERR:			/* Warn, continue. */
 		case FTS_NS:
 			warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-            fprintf(stderr, "\r");
 			rval = 1;
 			continue;
 		case FTS_SL:			/* Ignore. */
@@ -199,7 +193,6 @@ chflags_main(int argc, char *argv[])
 			continue;
 		if ((*change_flags)(p->fts_accpath, (u_int)newflags) && !fflag) {
 			warn("%s", p->fts_path);
-            fprintf(stderr, "\r");
 			rval = 1;
 		} else if (vflag) {
 			(void)printf("%s", p->fts_path);
@@ -207,7 +200,7 @@ chflags_main(int argc, char *argv[])
 				(void)printf(": 0%lo -> 0%lo",
 				    (u_long)p->fts_statp->st_flags,
 				    newflags);
-			(void)printf("\n\r");
+			(void)printf("\n");
 		}
 	}
 	if (errno)
@@ -220,6 +213,6 @@ static void
 usage(void)
 {
 	(void)fprintf(stderr,
-	    "\rusage: chflags [-fhv] [-R [-H | -L | -P]] flags file ...\n\r");
+	    "usage: chflags [-fhv] [-R [-H | -L | -P]] flags file ...\n");
 	// exit(1);
 }

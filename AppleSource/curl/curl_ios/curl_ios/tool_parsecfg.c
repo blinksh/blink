@@ -162,7 +162,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
         *line++ = '\0'; /* zero terminate, we have a local copy of the data */
 
 #ifdef DEBUG_CONFIG
-      fprintf(stderr, "GOT: %s\n\r", option);
+      fprintf(stderr, "GOT: %s\n", option);
 #endif
 
       /* pass spaces and separator(s) */
@@ -216,7 +216,7 @@ int parseconfig(const char *filename, struct GlobalConfig *global)
       }
 
 #ifdef DEBUG_CONFIG
-      fprintf(stderr, "PARAM: \"%s\"\n\r",(param ? param : "(null)"));
+      fprintf(stderr, "PARAM: \"%s\"\n",(param ? param : "(null)"));
 #endif
       res = getparameter(option, param, &usedarg, global, operation);
 

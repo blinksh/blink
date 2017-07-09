@@ -601,14 +601,14 @@ static int check_hash(const char *filename,
 
   fd = open(filename, flags);
   if(fd == -1) {
-    fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n\r", filename,
+    fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n", filename,
             digest_def->hash_name, strerror(errno));
     return -1;
   }
 
   dctx = Curl_digest_init(digest_def->dparams);
   if(!dctx) {
-    fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n\r", filename,
+    fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n", filename,
             digest_def->hash_name, "failed to initialize hash algorithm");
     close(fd);
     return -2;
@@ -626,7 +626,7 @@ static int check_hash(const char *filename,
       break;
     }
     else if(len == -1) {
-      fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n\r", filename,
+      fprintf(error, "Metalink: validating (%s) [%s] FAILED (%s)\n", filename,
               digest_def->hash_name, strerror(errno));
       Curl_digest_final(dctx, result);
       close(fd);
@@ -639,10 +639,10 @@ static int check_hash(const char *filename,
                     digest_def->dparams->digest_resultlen) == 0;
   /* sha*sum style verdict output */
   if(check_ok)
-    fprintf(error, "Metalink: validating (%s) [%s] OK\n\r", filename,
+    fprintf(error, "Metalink: validating (%s) [%s] OK\n", filename,
             digest_def->hash_name);
   else
-    fprintf(error, "Metalink: validating (%s) [%s] FAILED (digest mismatch)\n\r",
+    fprintf(error, "Metalink: validating (%s) [%s] FAILED (digest mismatch)\n",
             filename, digest_def->hash_name);
 
   free(result);
@@ -655,10 +655,10 @@ int metalink_check_hash(struct GlobalConfig *config,
                         const char *filename)
 {
   int rv;
-  fprintf(config->errors, "Metalink: validating (%s)...\n\r", filename);
+  fprintf(config->errors, "Metalink: validating (%s)...\n", filename);
   if(mlfile->checksum == NULL) {
     fprintf(config->errors,
-            "Metalink: validating (%s) FAILED (digest missing)\n\r", filename);
+            "Metalink: validating (%s) FAILED (digest missing)\n", filename);
     return -2;
   }
   rv = check_hash(filename, mlfile->checksum->digest_def,
@@ -801,7 +801,7 @@ int parse_metalink(struct OperationConfig *config, struct OutStruct *outs,
   }
   if(metalink->files == NULL) {
     fprintf(config->global->errors, "Metalink: parsing (%s) WARNING "
-            "(missing or invalid file name)\n\r",
+            "(missing or invalid file name)\n",
             metalink_url);
     metalink_delete(metalink);
     return -1;
@@ -811,7 +811,7 @@ int parse_metalink(struct OperationConfig *config, struct OutStruct *outs,
     /* Skip an entry which has no resource. */
     if(!(*files)->resources) {
       fprintf(config->global->errors, "Metalink: parsing (%s) WARNING "
-              "(missing or invalid resource)\n\r",
+              "(missing or invalid resource)\n",
               metalink_url);
       continue;
     }
@@ -840,7 +840,7 @@ int parse_metalink(struct OperationConfig *config, struct OutStruct *outs,
       if(!mlfile->checksum) {
         warnings = TRUE;
         fprintf(config->global->errors,
-                "Metalink: parsing (%s) WARNING (digest missing)\n\r",
+                "Metalink: parsing (%s) WARNING (digest missing)\n",
                 metalink_url);
       }
       /* Set name as url */
@@ -884,7 +884,7 @@ size_t metalink_write_cb(void *buffer, size_t sz, size_t nmemb,
   if(rv == 0)
     return sz * nmemb;
   else {
-    fprintf(config->global->errors, "Metalink: parsing FAILED\n\r");
+    fprintf(config->global->errors, "Metalink: parsing FAILED\n");
     return failure;
   }
 }

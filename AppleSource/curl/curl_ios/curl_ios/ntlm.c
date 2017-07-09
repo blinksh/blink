@@ -320,10 +320,10 @@ CURLcode Curl_auth_decode_ntlm_type2_message(struct Curl_easy *data,
   DEBUG_OUT({
     fprintf(stderr, "**** TYPE2 header flags=0x%08.8lx ", ntlm->flags);
     ntlm_print_flags(stderr, ntlm->flags);
-    fprintf(stderr, "\n\r                  nonce=");
+    fprintf(stderr, "\n                  nonce=");
     ntlm_print_hex(stderr, (char *)ntlm->nonce, 8);
-    fprintf(stderr, "\n\r****\n\r");
-    fprintf(stderr, "**** Header %s\n\r ", header);
+    fprintf(stderr, "\n****\n");
+    fprintf(stderr, "**** Header %s\n ", header);
   });
 
   free(type2);
@@ -454,7 +454,7 @@ CURLcode Curl_auth_create_ntlm_type1_message(const char *userp,
                      NTLMFLAG_NEGOTIATE_NTLM_KEY |
                      NTLM2FLAG |
                      NTLMFLAG_NEGOTIATE_ALWAYS_SIGN);
-    fprintf(stderr, "\n\r****\n\r");
+    fprintf(stderr, "\n****\n");
   });
 
   /* Return with binary blob encoded into base64 */
@@ -774,7 +774,7 @@ CURLcode Curl_auth_create_ntlm_type3_message(struct Curl_easy *data,
   }
 
   DEBUG_OUT({
-    fprintf(stderr, "\n\r   ntresp=");
+    fprintf(stderr, "\n   ntresp=");
     ntlm_print_hex(stderr, (char *)&ntlmbuf[ntrespoff], ntresplen);
   });
 
@@ -783,10 +783,10 @@ CURLcode Curl_auth_create_ntlm_type3_message(struct Curl_easy *data,
 #endif
 
   DEBUG_OUT({
-    fprintf(stderr, "\n\r   flags=0x%02.2x%02.2x%02.2x%02.2x 0x%08.8x ",
+    fprintf(stderr, "\n   flags=0x%02.2x%02.2x%02.2x%02.2x 0x%08.8x ",
             LONGQUARTET(ntlm->flags), ntlm->flags);
     ntlm_print_flags(stderr, ntlm->flags);
-    fprintf(stderr, "\n\r****\n\r");
+    fprintf(stderr, "\n****\n");
   });
 
   /* Make sure that the domain, user and host strings fit in the

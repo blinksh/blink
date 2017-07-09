@@ -30,8 +30,8 @@
 #if 0
 #ifndef lint
 static char const copyright[] =
-"@(#) Copyright (c) 1987, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1987, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -195,14 +195,12 @@ linkit(const char *target, const char *source, int isdir)
 		/* If target doesn't exist, quit now. */
 		if (stat(target, &sb)) {
 			warn("%s", target);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 		/* Only symbolic links to directories. */
 		if (S_ISDIR(sb.st_mode)) {
 			errno = EISDIR;
 			warn("%s", target);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 	}
@@ -220,7 +218,6 @@ linkit(const char *target, const char *source, int isdir)
 		    (ssize_t)sizeof(path)) {
 			errno = ENAMETOOLONG;
 			warn("%s", target);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 		source = path;
@@ -235,12 +232,10 @@ linkit(const char *target, const char *source, int isdir)
 		if (Fflag && S_ISDIR(sb.st_mode)) {
 			if (rmdir(source)) {
 				warn("%s", source);
-                fprintf(stderr, "\r");
 				return (1);
 			}
 		} else if (unlink(source)) {
 			warn("%s", source);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 	} else if (iflag && exists) {
@@ -251,19 +246,17 @@ linkit(const char *target, const char *source, int isdir)
 		while(ch != '\n' && ch != EOF)
 			ch = getchar();
 		if (first != 'y' && first != 'Y') {
-			fprintf(stderr, "not replaced\n\r");
+			fprintf(stderr, "not replaced\n");
 			return (1);
 		}
 
 		if (Fflag && S_ISDIR(sb.st_mode)) {
 			if (rmdir(source)) {
 				warn("%s", source);
-                fprintf(stderr, "\r");
 				return (1);
 			}
 		} else if (unlink(source)) {
 			warn("%s", source);
-            fprintf(stderr, "\r");
 			return (1);
 		}
 	}
@@ -271,18 +264,17 @@ linkit(const char *target, const char *source, int isdir)
 	/* Attempt the link. */
 	if ((*linkf)(target, source)) {
 		warn("%s", source);
-        fprintf(stderr, "\r");
 		return (1);
 	}
 	if (vflag)
-		(void)printf("%s %c> %s\n\r", source, linkch, target);
+		(void)printf("%s %c> %s\n", source, linkch, target);
 	return (0);
 }
 
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "\r%s\n\r%s\n\r%s\n\r",
+	(void)fprintf(stderr, "%s\n%s\n%s\n",
 	    "usage: ln [-Ffhinsv] source_file [target_file]",
 	    "       ln [-Ffhinsv] source_file ... target_dir",
 	    "       link source_file target_file");

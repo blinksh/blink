@@ -37,8 +37,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1991, 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1991, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -125,14 +125,12 @@ chksum_main(int argc, char **argv)
 			fn = *argv++;
 			if ((fd = open(fn, O_RDONLY, 0)) < 0) {
 				warn("%s", fn);
-                fprintf(stderr, "\r");
 				rval = 1;
 				continue;
 			}
 		}
 		if (cfncn(fd, &val, &len)) {
 			warn("%s", fn ? fn : "stdin");
-            fprintf(stderr, "\r");
 			rval = 1;
 		} else
 			pfncn(fn, val, len);
@@ -144,7 +142,7 @@ chksum_main(int argc, char **argv)
 static void
 usage(void)
 {
-	(void)fprintf(stderr, "\rusage: cksum [-o 1 | 2 | 3] [file ...]\n\r");
-	(void)fprintf(stderr, "       sum [file ...]\n\r");
+	(void)fprintf(stderr, "usage: cksum [-o 1 | 2 | 3] [file ...]\n");
+	(void)fprintf(stderr, "       sum [file ...]\n");
 	// exit(1);
 }

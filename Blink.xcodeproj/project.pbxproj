@@ -141,6 +141,9 @@
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8FB11EF7F379005D3D23 /* curl_ios.framework */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
+		227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
+		227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
+		227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
 		22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */; };
@@ -284,6 +287,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
 				22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */,
@@ -402,14 +406,16 @@
 		222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text_cmds_ios.framework; sourceTree = "<group>"; };
 		222A8FB11EF7F379005D3D23 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
 		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		227ED6D81F0E9E0D00D8EB67 /* Python_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Python_ios.h; path = "../../Python-2.7.13/Python_ios/Python_ios/Python_ios.h"; sourceTree = "<group>"; };
+		227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Python_ios.framework; sourceTree = "<group>"; };
 		228CFEBE1F045FD40082EBD8 /* FileProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FileProvider.h; path = ../BlinkFilesFileProvider/FileProvider.h; sourceTree = "<group>"; };
 		228CFEBF1F045FD40082EBD8 /* FileProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FileProvider.m; path = ../BlinkFilesFileProvider/FileProvider.m; sourceTree = "<group>"; };
-		22AEF8381EF147B300798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = file_cmds_ios.framework; path = file_cmds_ios.framework; sourceTree = "<group>"; };
+		22AEF8381EF147B300798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = file_cmds_ios.framework; sourceTree = "<group>"; };
 		22AEF83D1EF147C400798591 /* file_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = file_cmds_ios.h; path = "AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios/file_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
 		22C6715B1EEC370D00A44443 /* libc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc.tbd; path = usr/lib/libc.tbd; sourceTree = SDKROOT; };
 		22C6715F1EEC3C8400A44443 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		22C6827D1F0A464600077E19 /* libarchive_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libarchive_ios.h; path = AppleSource/libarchive/libarchive_ios/libarchive_ios/include/libarchive_ios/libarchive_ios.h; sourceTree = SOURCE_ROOT; };
-		22F738091F0A4D6300048A48 /* libarchive_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libarchive_ios.framework; path = libarchive_ios.framework; sourceTree = "<group>"; };
+		22F738091F0A4D6300048A48 /* libarchive_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libarchive_ios.framework; sourceTree = "<group>"; };
 		22F738101F0A563E00048A48 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		22F738121F0A564B00048A48 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
@@ -509,22 +515,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */,
-				22F01EDD1F0AD3FB0086C089 /* libarchive_ios.framework in Frameworks */,
 				22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */,
 				22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */,
 				22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
-				22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
+				227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
-				22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */,
 				225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
 				22F01ED91F0AD35E0086C089 /* file_cmds_ios.framework in Frameworks */,
+				22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */,
+				22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */,
+				227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */,
+				22F01EDD1F0AD3FB0086C089 /* libarchive_ios.framework in Frameworks */,
 				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
 				222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */,
 			);
@@ -597,8 +605,10 @@
 				222A8B931EF3DD6F005D3D23 /* shell_cmds_ios.h */,
 				222A8C401EF659A9005D3D23 /* text_cmds_ios.h */,
 				22C6827D1F0A464600077E19 /* libarchive_ios.h */,
+				227ED6D81F0E9E0D00D8EB67 /* Python_ios.h */,
 				22C6715F1EEC3C8400A44443 /* libiconv.tbd */,
 				22C6715B1EEC370D00A44443 /* libc.tbd */,
+				227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */,
 				22AEF8381EF147B300798591 /* file_cmds_ios.framework */,
 				22F738091F0A4D6300048A48 /* libarchive_ios.framework */,
 				222A8FB11EF7F379005D3D23 /* curl_ios.framework */,

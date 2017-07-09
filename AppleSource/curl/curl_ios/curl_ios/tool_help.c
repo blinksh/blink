@@ -505,7 +505,7 @@ void tool_help(void)
   int i;
   puts("Usage: curl [options...] <url>\r");
   for(i = 0; helptext[i].opt; i++) {
-    printf(" %-19s %s\n\r", helptext[i].opt, helptext[i].desc);
+    printf(" %-19s %s\n", helptext[i].opt, helptext[i].desc);
 #ifdef PRINT_LINES_PAUSE
     if(i && ((i % PRINT_LINES_PAUSE) == 0))
       tool_pressanykey();
@@ -517,12 +517,12 @@ void tool_version_info(void)
 {
   const char *const *proto;
 
-  printf(CURL_ID "%s\n\r", curl_version());
+  printf(CURL_ID "%s\n", curl_version());
 #ifdef CURL_PATCHSTAMP
-  printf("Release-Date: %s, security patched: %s\n\r",
+  printf("Release-Date: %s, security patched: %s\n",
          LIBCURL_TIMESTAMP, CURL_PATCHSTAMP);
 #else
-  printf("Release-Date: %s\n\r", LIBCURL_TIMESTAMP);
+  printf("Release-Date: %s\n", LIBCURL_TIMESTAMP);
 #endif
   if(curlinfo->protocols) {
     printf("Protocols: ");
@@ -558,7 +558,7 @@ void tool_list_engines(CURL *curl)
   puts("Build-time engines:\r");
   if(engines) {
     for(; engines; engines = engines->next)
-      printf("  %s\n\r", engines->data);
+      printf("  %s\n", engines->data);
   }
   else {
     puts("  <none>\r");

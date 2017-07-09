@@ -37,8 +37,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static const char copyright[] =
-"@(#) Copyright (c) 1989, 1993, 1994\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1989, 1993, 1994\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -170,7 +170,6 @@ du_main(int argc, char *argv[])
 				depth = atoi(optarg);
 				if (errno == ERANGE || depth < 0) {
 					warnx("invalid argument to option d: %s", optarg);
-                    fprintf(stderr, "\r");
 					usage();
                     return 0;
 				}
@@ -268,7 +267,6 @@ du_main(int argc, char *argv[])
 
     if ((fts = fts_open(argv, ftsoptions, NULL)) == NULL) {
 		warn("fts_open");
-        fprintf(stderr, "\r");
         return 0;
     }
 
@@ -293,9 +291,9 @@ du_main(int argc, char *argv[])
 				if (p->fts_level <= depth) {
 					if (hflag) {
 						(void) prthumanval(howmany(*ftsnum, blocksize));
-						(void) printf("\t%s\n\r", p->fts_path);
+						(void) printf("\t%s\n", p->fts_path);
 					} else {
-					(void) printf("%jd\t%s\n\r",
+					(void) printf("%jd\t%s\n",
 					    (intmax_t)howmany(*ftsnum, blocksize),
 					    p->fts_path);
 					}
@@ -304,7 +302,6 @@ du_main(int argc, char *argv[])
 			case FTS_DC:			/* Ignore. */
 				if (COMPAT_MODE("bin/du", "unix2003")) {
 					warnx("Can't follow symlink cycle from %s to %s", p->fts_path, p->fts_cycle->fts_path);
-                    fprintf(stderr, "\r");
                     return 0;
 				}
 				break;
@@ -312,7 +309,6 @@ du_main(int argc, char *argv[])
 			case FTS_ERR:
 			case FTS_NS:
 				warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
-                fprintf(stderr, "\r");
 				rval = 1;
 				break;
 			case FTS_SLNONE:
@@ -321,7 +317,6 @@ du_main(int argc, char *argv[])
 					int rc = stat(p->fts_path, &sb);
 					if (rc < 0 && errno == ELOOP) {
 						warnx("Too many symlinks at %s", p->fts_path);
-                        fprintf(stderr, "\r");
                         return 0;
 					}
 				}
@@ -341,14 +336,14 @@ du_main(int argc, char *argv[])
 						(void) prthumanval(howmany(howmany(p->fts_statp->st_size, 512LL),
 							blocksize));
 					    }
-						(void) printf("\t%s\n\r", p->fts_path);
+						(void) printf("\t%s\n", p->fts_path);
 					} else {
 					    if (p->fts_statp->st_size < TWO_TB) {
-						(void) printf("%jd\t%s\n\r",
+						(void) printf("%jd\t%s\n",
 							(intmax_t)howmany(p->fts_statp->st_blocks, blocksize),
 							p->fts_path);
 					    } else {
-						(void) printf("%jd\t%s\n\r",
+						(void) printf("%jd\t%s\n",
 							(intmax_t)howmany(howmany(p->fts_statp->st_size, 512LL), blocksize),
 							p->fts_path);
 					    }
@@ -367,16 +362,15 @@ du_main(int argc, char *argv[])
 
     if (errno) {
 		warn("fts_read");
-        fprintf(stderr, "\r");
         return 0;
     }
 
 	if (cflag) {
 		if (hflag) {
 			(void) prthumanval(howmany(savednumber, blocksize));
-			(void) printf("\ttotal\n\r");
+			(void) printf("\ttotal\n");
 		} else {
-			(void) printf("%jd\ttotal\n\r", (intmax_t)howmany(savednumber, blocksize));
+			(void) printf("%jd\ttotal\n", (intmax_t)howmany(savednumber, blocksize));
 		}
 	}
 
@@ -413,7 +407,6 @@ linkchk(FTSENT *p)
 		buckets = malloc(number_buckets * sizeof(buckets[0]));
         if (buckets == NULL) {
 			warnx(1, "No memory for hardlink detection");
-            fprintf(stderr, "\r");
             return 0;
         }
 		for (i = 0; i < number_buckets; i++)
@@ -438,7 +431,6 @@ linkchk(FTSENT *p)
 		if (new_buckets == NULL) {
 			stop_allocating = 1;
 			warnx("No more memory for tracking hard links");
-            fprintf(stderr, "\r");
         } else {
 			memset(new_buckets, 0,
 			    new_size * sizeof(struct links_entry *));
@@ -507,7 +499,6 @@ linkchk(FTSENT *p)
 	if (le == NULL) {
 		stop_allocating = 1;
 		warnx("No more memory for tracking hard links");
-        fprintf(stderr, "\r");
 		return (0);
 	}
 	le->dev = st->st_dev;
@@ -563,7 +554,6 @@ dirlinkchk(FTSENT *p)
 		buckets = malloc(number_buckets * sizeof(buckets[0]));
         if (buckets == NULL) {
 			warnx("No memory for directory hardlink detection");
-            fprintf(stderr, "\r");
             return 0;
         }
 		for (i = 0; i < number_buckets; i++)
@@ -588,7 +578,6 @@ dirlinkchk(FTSENT *p)
 		if (new_buckets == NULL) {
 			stop_allocating = 1;
 			warnx("No more memory for tracking directory hard links");
-            fprintf(stderr, "\r");
         } else {
 			memset(new_buckets, 0,
 			    new_size * sizeof(struct links_entry *));
@@ -656,7 +645,6 @@ dirlinkchk(FTSENT *p)
 	if (le == NULL) {
 		stop_allocating = 1;
 		warnx("No more memory for tracking hard links");
-        fprintf(stderr, "\r");
 		return (0);
 	}
 	le->dev = st->st_dev;
@@ -718,7 +706,7 @@ static void
 usage(void)
 {
 	(void)fprintf(stderr,
-		"\rusage: du [-H | -L | -P] [-a | -s | -d depth] [-c] [-h | -k | -m | -g] [-x] [-I mask] [file ...]\n\r");
+		"usage: du [-H | -L | -P] [-a | -s | -d depth] [-c] [-h | -k | -m | -g] [-x] [-I mask] [file ...]\n");
 	// exit(EX_USAGE);
 }
 
@@ -730,12 +718,10 @@ ignoreadd(const char *mask)
 	ign = calloc(1, sizeof(*ign));
     if (ign == NULL) {
 		warnx("cannot allocate memory");
-        fprintf(stderr, "\r");
     }
 	ign->mask = strdup(mask);
     if (ign->mask == NULL) {
 		warnx("cannot allocate memory");
-        fprintf(stderr, "\r");
     }
     SLIST_INSERT_HEAD(&ignores, ign, next);
 }

@@ -164,7 +164,7 @@ int formparse(struct OperationConfig *config,
     /* Allocate the contents */
     contents = strdup(contp+1);
     if(!contents) {
-      fprintf(config->global->errors, "out of memory\n\r");
+      fprintf(config->global->errors, "out of memory\n");
       return 1;
     }
     contp = contents;
@@ -279,7 +279,7 @@ int formparse(struct OperationConfig *config,
         }
         forms = malloc((count+1)*sizeof(struct curl_forms));
         if(!forms) {
-          fprintf(config->global->errors, "Error building form post!\n\r");
+          fprintf(config->global->errors, "Error building form post!\n");
           Curl_safefree(contents);
           FreeMultiInfo(&multi_start, &multi_current);
           return 4;

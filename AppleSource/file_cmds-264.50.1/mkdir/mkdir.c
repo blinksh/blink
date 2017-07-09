@@ -34,8 +34,8 @@
 #include <sys/cdefs.h>
 #ifndef lint
 __used static char const copyright[] =
-"@(#) Copyright (c) 1983, 1992, 1993\n\r\
-	The Regents of the University of California.  All rights reserved.\n\r";
+"@(#) Copyright (c) 1983, 1992, 1993\n\
+	The Regents of the University of California.  All rights reserved.\n";
 #endif /* not lint */
 
 #ifndef lint
@@ -112,20 +112,17 @@ mkdir_main(int argc, char *argv[])
 			int status = mkpath_np(*argv, omode);
 			if (status && status != EEXIST) {
 				warnc(status, "%s", *argv);
-                fprintf(stderr, "\r");
 				success = 0;
 			}
 		} else if (mkdir(*argv, omode) < 0) {
             if (errno == ENOTDIR || errno == ENOENT) {
 				warn("%s", dirname(*argv));
-                fprintf(stderr, "\r");
             } else {
 				warn("%s", *argv);
-                fprintf(stderr, "\r");
             }
 			success = 0;
 		} else if (vflag)
-			(void)printf("mkdir: created directory '%s'\n\r", *argv);
+			(void)printf("mkdir: created directory '%s'\n", *argv);
 		
 		if (!success)
 			exitval = 1;
@@ -138,7 +135,6 @@ mkdir_main(int argc, char *argv[])
 		 */
 		if (success && mode != NULL && chmod(*argv, omode) == -1) {
 			warn("%s", *argv);
-            fprintf(stderr, "\r");
 			exitval = 1;
 		}
 	}
@@ -150,6 +146,6 @@ void
 usage(void)
 {
 
-	(void)fprintf(stderr, "\rusage: mkdir [-pv] [-m mode] directory ...\n\r");
+	(void)fprintf(stderr, "usage: mkdir [-pv] [-m mode] directory ...\n");
 	// exit (EX_USAGE);
 }
