@@ -34,7 +34,7 @@
 #import "SSHSession.h"
 
 static const char *copy_command =
-"umask 077; test -d ~/.ssh || mkdir ~/.ssh ; cat >> .ssh/authorized_keys; test -x /sbin/restorecon && /sbin/restorecon .ssh .ssh/authorized_keys";
+"bash -c 'umask 077; test -d ~/.ssh || mkdir ~/.ssh ; cat >> .ssh/authorized_keys; test -x /sbin/restorecon && /sbin/restorecon .ssh .ssh/authorized_keys'";
 
   //  "umask 077; test -d ~/.ssh || mkdir ~/.ssh; grep -f ~/.ssh/authorized_keys > /dev/null 2>&1; ! [ -a ~/.ssh/authorized_keys ] || [ $? -ne 0 ] && cat >> ~/.ssh/authorized_keys && (test -x /sbin/restorecon && /sbin/restorecon ~/.ssh ~/.ssh/authorized_keys >/dev/null 2>&1 || true)";
 static const char *usage_format =
