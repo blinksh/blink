@@ -314,17 +314,23 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)setColumnNumber:(NSInteger)count
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%ld\");", (long)count] completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%ld\");", (long)count] completionHandler:nil];
+  });
 }
 
 - (void)setFontSize:(NSNumber *)newSize
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", newSize] completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", newSize] completionHandler:nil];
+  });
 }
 
 - (void)clear
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"clear();"] completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"clear();"] completionHandler:nil];
+  });
 }
 
 - (void)loadTerminal
@@ -343,7 +349,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
   NSString *jsScript = [NSString stringWithFormat:@"write_to_term(%@[0])", jsString];
 
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  });
 }
 
 - (NSString *)title
@@ -485,7 +493,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
     //_lastPinchScale = _webView.scrollView.zoomScale;
-    [_webView evaluateJavaScript:@"scaleTermStart();" completionHandler:nil];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [_webView evaluateJavaScript:@"scaleTermStart();" completionHandler:nil];
+    });
+
     if (_pinchSamplingTimer)
       [_pinchSamplingTimer invalidate];
 
@@ -500,7 +511,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)pinchSampling:(NSTimer *)timer
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", _pinchGesture.scale] completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", _pinchGesture.scale] completionHandler:nil];
+  });
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -526,13 +539,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   _smartKeys.textInputDelegate = self;
   cover.hidden = YES;
 
-  [_webView evaluateJavaScript:@"focusTerm();" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"focusTerm();" completionHandler:nil];
+  });
   return [super becomeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
-  [_webView evaluateJavaScript:@"blurTerm();" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"blurTerm();" completionHandler:nil];
+  });
   return [super resignFirstResponder];
 }
 
@@ -586,12 +603,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)loadTerminalThemeJS:(NSString *)themeContent
 {
-  [_webView evaluateJavaScript:themeContent completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:themeContent completionHandler:nil];
+  });
 }
 
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
+  });
 }
 
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent
@@ -602,18 +623,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
   NSString *jsScript = [NSString stringWithFormat:@"loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
   
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  });
 }
 
 - (void)setCursorBlink:(BOOL)state
 {
   NSString *jsScript = [NSString stringWithFormat:@"setCursorBlink(%@)", state ? @"true" : @"false"];
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  });
 }
 
 - (void)reset
 {
-  [_webView evaluateJavaScript:@"reset" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"reset" completionHandler:nil];
+  });
 }
 
 
@@ -795,17 +822,23 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)increaseFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"increaseTermFontSize();" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"increaseTermFontSize();" completionHandler:nil];
+  });
 }
 
 - (void)decreaseFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"decreaseTermFontSize();" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"decreaseTermFontSize();" completionHandler:nil];
+  });
 }
 
 - (void)resetFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"resetTermFontSize();" completionHandler:nil];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:@"resetTermFontSize();" completionHandler:nil];
+  });
 }
 
 - (void)escSeq:(UIKeyCommand *)cmd
