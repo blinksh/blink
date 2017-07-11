@@ -72,6 +72,7 @@ __used static const char rcsid[] =
 #include <sysexits.h>
 #include <unistd.h>
 #include <libutil.h>
+#include "error.h"
 
 #ifdef __APPLE__
 // #include "get_compat.h"
@@ -131,7 +132,6 @@ static long	  regetmntinfo(struct statfs **, long, char **);
 static unit_t	  unit_adjust(double *);
 static void	  update_maxwidths(struct maxwidths *, struct statfs *);
 static void	  usage(void);
-#define exit return
 
 static int	aflag = 0, hflag, iflag, nflag;
 static int headerlen, timesthrough;
@@ -213,8 +213,7 @@ df_main(int argc, char *argv[])
 			break;
 		case 'l':
             if (tflag) {
-				//errx(1, "-l and -T are mutually exclusive.");
-                warnx("-l and -T are mutually exclusive.");
+				errx(1, "-l and -T are mutually exclusive.");
                 return 0;
             }
 			if (vfslist != NULL)
@@ -237,13 +236,11 @@ df_main(int argc, char *argv[])
 		case 'T':
 			if (vfslist != NULL) {
                 if (tflag) {
-					// errx(1, "only one -%c option may be specified", ch);
-                    warnx("only one -%c option may be specified", ch);
+					errx(1, "only one -%c option may be specified", ch);
                     return 0;
                 }
                 else {
-					// errx(1, "-l and -%c are mutually exclusive.", ch);
-                    warnx("-l and -%c are mutually exclusive.", ch);
+					errx(1, "-l and -%c are mutually exclusive.", ch);
                     return 0;
                 }
 			}
@@ -253,7 +250,6 @@ df_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -281,7 +277,8 @@ df_main(int argc, char *argv[])
 			if (aflag || (mntbuf[i].f_flags & MNT_IGNORE) == 0)
 				prtstat(&mntbuf[i], &maxwidths);
 		}
-		exit(rv);
+		// exit(rv);
+        return(rv);
 	}
 
 	for (; *argv; argv++) {
@@ -577,6 +574,7 @@ usage(void)
 	char *t_flag = COMPAT_MODE("bin/df", "unix2003") ? "[-t]" : "[-t type]";
 	(void)fprintf(stderr,
 	    "usage: df [-b | -H | -h | -k | -m | -g | -P] [-ailn] [-T type] %s [filesystem ...]\n", t_flag);
+    pthread_exit(NULL);
 	// exit(EX_USAGE);
 }
 

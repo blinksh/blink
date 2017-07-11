@@ -61,6 +61,7 @@ __FBSDID("$FreeBSD: src/bin/cp/utils.c,v 1.46 2005/09/05 04:36:08 csjp Exp $");
 // #include <get_compat.h>
 // #else
 #define COMPAT_MODE(a,b) (1)
+#include <pthread.h>
 #endif /* __APPLE__ */
 
 #include "extern.h"
@@ -510,5 +511,6 @@ cp_usage(void)
 "       cp [-R [-H | -L | -P]] [-f | -i | -n] [-apvX] source_file ... "
 "target_directory");
 	}
-	// exit(EX_USAGE);
+    // exit(EX_USAGE);
+    pthread_exit(NULL);
 }

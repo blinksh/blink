@@ -77,6 +77,7 @@ __FBSDID("$FreeBSD: src/bin/cp/cp.c,v 1.52 2005/09/05 04:36:08 csjp Exp $");
 // #include <get_compat.h>
 // #else /* !__APPLE__ */
 #define COMPAT_MODE(a,b) (1)
+#include "error.h"
 #endif /* __APPLE__ */
 
 #include "extern.h"
@@ -181,7 +182,6 @@ cp_main(int argc, char *argv[])
 
     if (argc < 2) {
 		cp_usage();
-        return 0;
     }
 
 	fts_options = FTS_NOCHDIR | FTS_PHYSICAL;
@@ -248,8 +248,6 @@ cp_main(int argc, char *argv[])
 		 */
 		if (argc > 1) {
 			cp_usage();
-			// exit(1);
-            return 1;
 		}
 		/*
 		 * Need to detect the case:
@@ -284,7 +282,7 @@ cp_main(int argc, char *argv[])
 		 */
 		type = FILE_TO_DIR;
 
-    return copy(argv, type, fts_options);
+    return(copy(argv, type, fts_options));
 	// exit (copy(argv, type, fts_options));
 }
 

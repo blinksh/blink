@@ -140,8 +140,7 @@ grep_tree(char **argv)
 	fts_flags |= FTS_NOSTAT | FTS_NOCHDIR;
 
     if (!(fts = fts_open(argv, fts_flags, NULL))) {
-		myerr(2, "fts_open");
-        return 0;
+		err(2, "fts_open");
     }
 	while ((p = fts_read(fts)) != NULL) {
 		switch (p->fts_info) {
@@ -150,7 +149,7 @@ grep_tree(char **argv)
 		case FTS_ERR:
 			file_err = true;
 			if(!sflag)
-				mywarnx("%s: %s", p->fts_path, strerror(p->fts_errno));
+				warnx("%s: %s", p->fts_path, strerror(p->fts_errno));
 			break;
 		case FTS_D:
 			/* FALLTHROUGH */
@@ -162,7 +161,7 @@ grep_tree(char **argv)
 			break;
 		case FTS_DC:
 			/* Print a warning for recursive directory loop */
-			mywarnx("warning: %s: recursive directory loop",
+			warnx("warning: %s: recursive directory loop",
 				p->fts_path);
 			break;
 		default:
@@ -201,7 +200,7 @@ procfile(const char *fn)
 #ifdef __APPLE__
 		/* 4053512, 10290183 */
 		if (dirbehave == DIR_RECURSE && isatty(STDIN_FILENO)) {
-			mywarnx("warning: recursive search of stdin");
+			warnx("warning: recursive search of stdin");
 		}
 #endif
 		fn = label != NULL ? label : getstr(1);
@@ -221,7 +220,7 @@ procfile(const char *fn)
 	if (f == NULL) {
 		file_err = true;
 		if (!sflag)
-			mywarn("%s", fn);
+			warn("%s", fn);
 		return (0);
 	}
 
@@ -237,7 +236,8 @@ procfile(const char *fn)
 		ln.off += ln.len + 1;
 		if ((ln.dat = grep_fgetln(f, &ln.len)) == NULL || ln.len == 0) {
 			if (ln.line_no == 0 && matchall)
-				exit(0);
+                pthread_exit(NULL);
+				// exit(0);
 			else
 				break;
 		}
@@ -501,8 +501,7 @@ grep_malloc(size_t size)
 	void *ptr;
 
     if ((ptr = malloc(size)) == NULL) {
-		myerr(2, "malloc");
-        return NULL;
+		err(2, "malloc");
     }
 	return (ptr);
 }
@@ -516,8 +515,7 @@ grep_calloc(size_t nmemb, size_t size)
 	void *ptr;
 
     if ((ptr = calloc(nmemb, size)) == NULL) {
-		myerr(2, "calloc");
-        return NULL;
+		err(2, "calloc");
     }
 	return (ptr);
 }
@@ -530,8 +528,7 @@ grep_realloc(void *ptr, size_t size)
 {
 
     if ((ptr = realloc(ptr, size)) == NULL) {
-		myerr(2, "realloc");
-        return NULL;
+		err(2, "realloc");
     }
 	return (ptr);
 }
@@ -545,8 +542,7 @@ grep_strdup(const char *str)
 	char *ret;
 
     if ((ret = strdup(str)) == NULL) {
-		myerr(2, "strdup");
-        return NULL;
+		err(2, "strdup");
     }
 	return (ret);
 }

@@ -149,14 +149,12 @@ id_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
     if (iswhoami && argc > 0) {
 		usage();
-        return 0;
     }
 
 	switch(Aflag + Fflag + Gflag + Mflag + Pflag + gflag + pflag + uflag) {
@@ -168,26 +166,26 @@ id_main(int argc, char *argv[])
 		/* FALLTHROUGH */
 	default:
 		usage();
-        return 0;
 	}
 
 	pw = *argv ? who(*argv) : NULL;
 
     if (Mflag && pw != NULL) {
 		usage();
-        return 0;
     }
 
 #ifdef USE_BSM_AUDIT
 	if (Aflag) {
 		auditid();
-		exit(0);
+        pthread_exit(NULL);
+		// exit(0);
 	}
 #endif
 
 	if (Fflag) {
 		fullname(pw);
-		exit(0);
+        pthread_exit(NULL);
+		// exit(0);
 	}
 
 	if (gflag) {
@@ -196,7 +194,8 @@ id_main(int argc, char *argv[])
 			(void)printf("%s\n", gr->gr_name);
 		else
 			(void)printf("%u\n", id);
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (uflag) {
@@ -205,27 +204,32 @@ id_main(int argc, char *argv[])
 			(void)printf("%s\n", pw->pw_name);
 		else
 			(void)printf("%u\n", id);
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (Gflag) {
 		group(pw, nflag);
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (Mflag) {
 		maclabel();
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (Pflag) {
 		pline(pw);
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (pflag) {
 		pretty(pw);
-		exit(0);
+        pthread_exit(NULL);
+        // exit(0);
 	}
 
 	if (pw) {
@@ -236,7 +240,8 @@ id_main(int argc, char *argv[])
 		pw = getpwuid(id);
 		id_print(pw, 0, 1, 1);
 	}
-	exit(0);
+    pthread_exit(NULL);
+    // exit(0);
 }
 
 void
@@ -545,5 +550,6 @@ usage(void)
 		    "       id -g [-nr] [user]",
 		    "       id -p [user]",
 		    "       id -u [-nr] [user]");
+    pthread_exit(NULL);
 	// exit(1);
 }

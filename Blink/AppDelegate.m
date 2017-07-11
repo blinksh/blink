@@ -44,14 +44,14 @@
 @end
 
 @implementation AppDelegate {
-  NSString *storagePath;
+  NSString *docsPath;
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
   
-  storagePath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   
   // Override point for customization after application launch.
 #if HOCKEYSDK
@@ -108,12 +108,12 @@
   NSData *data = [NSData dataWithContentsOfURL:url];
   NSString* filename = [url lastPathComponent];
   
-  NSString* path = [storagePath stringByAppendingPathComponent:filename];
+  NSString* path = [docsPath stringByAppendingPathComponent:filename];
   if ([data writeToFile:path atomically:YES]) {
      // If it worked and it was a file in our Inbox, we delete it:
     if (([url isFileURL]) && (
-        ([[url path] isEqualToString:[[storagePath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
-        ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[storagePath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
+        ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
+        ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
         )) {
       NSError *e;
       if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {

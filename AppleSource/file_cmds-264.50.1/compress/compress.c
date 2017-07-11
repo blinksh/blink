@@ -54,6 +54,7 @@ __FBSDID("$FreeBSD: src/usr.bin/compress/compress.c,v 1.23 2010/12/11 08:32:16 j
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "error.h"
 
 #include "zopen.h"
 
@@ -64,7 +65,6 @@ static void	decompress(const char *, const char *, int);
 static int	permission(const char *);
 static void	setfile(const char *, struct stat *);
 static void	usage(int);
-#define exit return
 
 static int eval, force, verbose, cat;
 
@@ -78,7 +78,6 @@ compress_main(int argc, char *argv[])
 
     if (argc < 1) {
 		usage(1);
-        return 0;
     }
     // init all flags
 	eval = force = verbose = cat = 0;
@@ -94,9 +93,7 @@ compress_main(int argc, char *argv[])
 		cat = 1;
 		style = DECOMPRESS;
     } else {
-	//	errx(1, "unknown program name");
-        cwarn("unknown program name");
-        return 0;
+	    errx(1, "unknown program name");
     }
 	bits = 0;
 	while ((ch = getopt(argc, argv, "b:cdfv")) != -1)
@@ -104,9 +101,7 @@ compress_main(int argc, char *argv[])
 		case 'b':
 			bits = strtol(optarg, &p, 10);
             if (*p) {
-				// errx(1, "illegal bit count -- %s", optarg);
-                cwarnx(1, "illegal bit count -- %s", optarg);
-                return 0;
+				errx(1, "illegal bit count -- %s", optarg);
             }
 			break;
 		case 'c':
@@ -124,7 +119,6 @@ compress_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage(style == COMPRESS);
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -139,13 +133,12 @@ compress_main(int argc, char *argv[])
 			(void)decompress("/dev/stdin", "/dev/stdout", bits);
 			break;
 		}
-		exit (eval);
+        return(eval);
+		// exit (eval);
 	}
 
     if (cat == 1 && argc > 1) {
-		// errx(1, "the -c option permits only a single file argument");
-        cwarnx("the -c option permits only a single file argument");
-        return 0;
+		errx(1, "the -c option permits only a single file argument");
     }
 
 	for (; *argv; ++argv)
@@ -207,7 +200,8 @@ compress_main(int argc, char *argv[])
 			}
 			break;
 		}
-	exit (eval);
+    return(eval);
+	// exit (eval);
 }
 
 void
@@ -447,6 +441,7 @@ usage(int iscompress)
 	else
 		(void)fprintf(stderr,
 		    "usage: uncompress [-cfv] [-b bits] [file ...]\n");
+    pthread_exit(NULL);
 //	exit(1);
 }
 

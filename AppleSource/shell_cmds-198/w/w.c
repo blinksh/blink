@@ -97,6 +97,7 @@ static const char sccsid[] = "@(#)w.c	8.4 (Berkeley) 4/16/94";
 #include <utmp.h>
 #endif /* HAVE_UTMPX */
 #include <vis.h>
+#include <pthread.h>
 
 #include <TargetConditionals.h>
 
@@ -380,7 +381,8 @@ w_main(int argc, char *argv[])
 #if HAVE_KVM
 			(void)kvm_close(kd);
 #endif
-			exit(0);
+            pthread_exit(NULL);
+			// exit(0);
 		}
 
 #define HEADER_USER		"USER"
@@ -408,7 +410,8 @@ w_main(int argc, char *argv[])
 
 	if (sysctl(mib, 4, NULL, &bufSize, NULL, 0) < 0) {
 		perror("Failure calling sysctl");
-		exit(1);
+        pthread_exit(NULL);
+        // exit(1);
 	}
 
 	kprocbuf = kp = (struct kinfo_proc *)malloc(bufSize);
@@ -424,7 +427,8 @@ w_main(int argc, char *argv[])
 				continue;
 			}
 			perror("Failure calling sysctl");
-			exit(1);
+            pthread_exit(NULL);
+			// exit(1);
 		} else if (local_error == 0) {
 			break;
 		}
@@ -601,7 +605,8 @@ w_main(int argc, char *argv[])
 #else
 	free(kprocbuf);
 #endif /* HAVE_KVM */
-	exit(0);
+    pthread_exit(NULL);
+	// exit(0);
 }
 
 static void
@@ -693,6 +698,7 @@ usage(int wcmd)
 		    "usage: w [hi] [user ...]\n");
 	else
 		(void)fprintf(stderr, "usage: uptime\n");
+    pthread_exit(NULL);
 	// exit(1);
 }
 

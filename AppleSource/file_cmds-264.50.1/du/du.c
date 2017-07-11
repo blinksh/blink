@@ -72,6 +72,7 @@ __FBSDID("$FreeBSD: src/usr.bin/du/du.c,v 1.38 2005/04/09 14:31:40 stefanf Exp $
 // #include <get_compat.h>
 // #else
 #define COMPAT_MODE(func, mode) (1)
+#include <pthread.h>
 #endif
 
 #define	KILO_SZ(n) (n)
@@ -171,7 +172,6 @@ du_main(int argc, char *argv[])
 				if (errno == ERANGE || depth < 0) {
 					warnx("invalid argument to option d: %s", optarg);
 					usage();
-                    return 0;
 				}
 				break;
 			case 'c':
@@ -202,7 +202,6 @@ du_main(int argc, char *argv[])
 			case '?':
 			default:
 				usage();
-                return 0;
 		}
 
 //	argc -= optind;
@@ -223,7 +222,6 @@ du_main(int argc, char *argv[])
 
     if (Hflag + Lflag + Pflag > 1) {
 		usage();
-        return 0;
     }
 
 	if (Hflag + Lflag + Pflag == 0)
@@ -243,13 +241,11 @@ du_main(int argc, char *argv[])
 	if (aflag) {
         if (sflag || dflag) {
 			usage();
-            return 0;
         }
 		listall = 1;
 	} else if (sflag) {
         if (dflag) {
 			usage();
-            return 0;
         }
 		depth = 0;
 	}
@@ -707,6 +703,7 @@ usage(void)
 {
 	(void)fprintf(stderr,
 		"usage: du [-H | -L | -P] [-a | -s | -d depth] [-c] [-h | -k | -m | -g] [-x] [-I mask] [file ...]\n");
+    pthread_exit(NULL);
 	// exit(EX_USAGE);
 }
 

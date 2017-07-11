@@ -66,6 +66,7 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/bsdtar.c,v 1.93 2008/11/08 04:43:24 kientzle
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <pthread.h>
 
 #include "bsdtar.h"
 #include "err.h"
@@ -353,7 +354,8 @@ tar_main(int argc, char **argv)
 			break;
 		case OPTION_HELP: /* GNU tar, others */
 			long_help();
-			exit(0);
+            pthread_exit(NULL);
+			// exit(0);
 			break;
 		case OPTION_HFS_COMPRESSION: /* Mac OS X v10.6 or later */
 			bsdtar->extract_flags |=
@@ -616,7 +618,6 @@ tar_main(int argc, char **argv)
 			lafe_warnc(0,
 			    "-s is not supported by this version of bsdtar");
 			usage();
-            return;
 #endif
 			break;
 		case OPTION_SAME_OWNER: /* GNU tar */
@@ -728,7 +729,6 @@ tar_main(int argc, char **argv)
 			break;
 		default:
 			usage();
-            return 0;
 		}
 	}
 
@@ -739,7 +739,8 @@ tar_main(int argc, char **argv)
 	/* If no "real" mode was specified, treat -h as --help. */
 	if ((bsdtar->mode == '\0') && possible_help_request) {
 		long_help();
-		exit(0);
+        pthread_exit(NULL);
+		// exit(0);
 	}
 
 	/* Otherwise, a mode is required. */
@@ -917,6 +918,7 @@ usage(void)
 	fprintf(stderr, "  Extract: %s -xf <archive-filename>\n\r", p);
 	fprintf(stderr, "  Create:  %s -cf <archive-filename> [filenames...]\n\r", p);
 	fprintf(stderr, "  Help:    %s --help\n\r", p);
+    pthread_exit(NULL);
 	// exit(1);
 }
 
@@ -926,6 +928,7 @@ version(void)
 	printf("bsdtar %s - %s\n\r",
 	    BSDTAR_VERSION_STRING,
 	    archive_version_details());
+    pthread_exit(NULL);
 	// exit(0);
 }
 

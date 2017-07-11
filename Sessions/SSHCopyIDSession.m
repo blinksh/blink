@@ -76,11 +76,11 @@ static const char *usage_format =
                        [NSPredicate predicateWithFormat:@"length > 0"]];
   int local_argc = [listArgv count];
   char** local_argv = (char **)malloc((argc + 1) * sizeof(char*));
-  for (unsigned i = 0; i < argc; i++)
+  for (unsigned i = 0; i < local_argc; i++)
   {
     local_argv[i] = [[listArgv objectAtIndex:i] UTF8String];
   }
-  local_argv[argc] = NULL;
+  local_argv[local_argc] = NULL;
   
   [sshSession executeAttachedWithArgs:local_argc argv:local_argv];
 

@@ -58,7 +58,7 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/util.c,v 1.23 2008/12/15 06:00:25 kientzle E
 /* If we don't have wctype, we need to hack up some version of iswprint(). */
 #define	iswprint isprint
 #endif
-
+#include <pthread.h> 
 #include "bsdtar.h"
 #include "err.h"
 #include "passphrase.h"
@@ -246,7 +246,8 @@ yes(const char *fmt, ...)
 	l = read(2, buff, sizeof(buff) - 1);
 	if (l < 0) {
 	  fprintf(stderr, "Keyboard read failed\n\r");
-	  exit(1);
+      pthread_exit(NULL);
+	  // exit(1);
 	}
 	if (l == 0)
 		return (0);

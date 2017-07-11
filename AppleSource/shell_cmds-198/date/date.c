@@ -55,6 +55,7 @@ __FBSDID("$FreeBSD$");
 #include <syslog.h>
 #include <unistd.h>
 #include <utmpx.h>
+#include <pthread.h>
 
 #ifdef __APPLE__
 // #include <get_compat.h>
@@ -82,7 +83,6 @@ static void badformat(void);
 static void usage(void);
 
 static const char *rfc2822_format = "%a, %d %b %Y %T %z";
-#define exit return
 
 int
 date_main(int argc, char *argv[])
@@ -115,7 +115,6 @@ date_main(int argc, char *argv[])
 			tz.tz_dsttime = strtol(optarg, &endptr, 10) ? 1 : 0;
                 if (endptr == optarg || *endptr != '\0') {
                     usage();
-                    return 0;
                 }
 			set_timezone = 1;
 			break;
@@ -139,7 +138,6 @@ date_main(int argc, char *argv[])
 					tval = sb.st_mtim.tv_sec;
                 else {
 					usage();
-                    return 0;
                 }
 			}
 			break;
@@ -148,7 +146,6 @@ date_main(int argc, char *argv[])
 			tz.tz_minuteswest = strtol(optarg, &endptr, 10);
             if (endptr == optarg || *endptr != '\0') {
 				usage();
-                return 0;
             }
 			set_timezone = 1;
 			break;
@@ -160,7 +157,6 @@ date_main(int argc, char *argv[])
 			break;
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -197,7 +193,6 @@ date_main(int argc, char *argv[])
 		++argv;
     } else if (fmt != NULL) {
 		usage();
-        return 0;
     }
 
 	if (*argv && **argv == '+')
@@ -221,7 +216,6 @@ date_main(int argc, char *argv[])
 			badv->arg);
 		vary_destroy(v);
 		usage();
-        return 0;
 	}
 	vary_destroy(v);
 
@@ -245,8 +239,10 @@ date_main(int argc, char *argv[])
 	 * only propagated back to shell in legacy mode.
 	 */
 	if (unix2003_std)
-		exit(0);
-	exit(retval);
+        pthread_exit(NULL);
+		// exit(0);
+	// exit(retval);
+    return(retval);
 }
 
 #define	ATOI2(s)	((s) += 2, ((s)[-2] - '0') * 10 + ((s)[-1] - '0'))
@@ -404,5 +400,6 @@ usage(void)
 	    "[-f fmt date | [[[mm]dd]HH]MM[[cc]yy][.ss]] [+format]" :
 	    "            "
 	    "[-f fmt date | [[[[[cc]yy]mm]dd]HH]MM[.ss]] [+format]");
+    pthread_exit(NULL);
 //	exit(1);
 }

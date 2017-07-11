@@ -38,6 +38,7 @@ __FBSDID("$FreeBSD$");
 #include <string.h>
 #endif
 
+#include <pthread.h>
 #include "err.h"
 
 static void lafe_vwarnc(int, const char *, va_list) __LA_PRINTFLIKE(2, 0);
@@ -96,5 +97,6 @@ lafe_errc(int eval, int code, const char *fmt, ...)
 	va_start(ap, fmt);
 	lafe_vwarnc(code, fmt, ap);
 	va_end(ap);
+    pthread_exit(NULL);
 	// exit(eval);
 }

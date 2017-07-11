@@ -10,11 +10,14 @@
 #define error_h
 
 #include <stdarg.h>
+#include <pthread.h>
+
 static void myerrx(int i, const char * fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
     warnx(fmt, ap);
     va_end(ap);
+    pthread_exit(NULL);
 }
 
 static void myerr(int i, const char * fmt, ...) {
@@ -22,24 +25,10 @@ static void myerr(int i, const char * fmt, ...) {
     va_start(ap, fmt);
     warn(fmt, ap);
     va_end(ap);
+    pthread_exit(NULL);
 }
 
-static void mywarnx(const char * fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    warnx(fmt, ap);
-    va_end(ap);
-}
-
-static void mywarn(const char * fmt, ...) {
-    va_list ap;
-    va_start(ap, fmt);
-    warn(fmt, ap);
-    va_end(ap);
-}
-
-#define exit return
-#define _exit return
-
+#define errx myerrx
+#define err myerr
 
 #endif /* error_h */

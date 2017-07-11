@@ -57,6 +57,7 @@ __FBSDID("$FreeBSD: head/lib/libarchive/archive_util.c 201098 2009-12-28 02:58:1
 #ifdef HAVE_LZ4_H
 #include <lz4.h>
 #endif
+#include <pthread.h>
 
 #include "archive.h"
 #include "archive_private.h"
@@ -202,6 +203,7 @@ __archive_errx(int retvalue, const char *msg)
 	(void)s; /* UNUSED */
 	s = write(2, "\n", 1);
 	(void)s; /* UNUSED */
+    pthread_exit(NULL); 
 	// exit(retvalue);
 }
 

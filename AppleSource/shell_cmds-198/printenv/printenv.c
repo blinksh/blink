@@ -48,10 +48,10 @@ __FBSDID("$FreeBSD$");
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 static void	usage(void);
 extern char **environ;
-#define exit return
 
 /*
  * printenv
@@ -71,7 +71,6 @@ printenv_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
@@ -79,7 +78,8 @@ printenv_main(int argc, char *argv[])
 	if (argc == 0) {
 		for (ep = environ; *ep; ep++)
 			(void)printf("%s\n", *ep);
-		exit(0);
+        pthread_exit(NULL);
+		// exit(0);
 	}
 	len = strlen(*argv);
 	for (ep = environ; *ep; ep++)
@@ -87,15 +87,18 @@ printenv_main(int argc, char *argv[])
 			cp = *ep + len;
 			if (!*cp || *cp == '=') {
 				(void)printf("%s\n", *cp ? cp + 1 : cp);
-				exit(0);
+                pthread_exit(NULL);
+				// exit(0);
 			}
 		}
-	exit(1);
+    pthread_exit(NULL);
+	// exit(1);
 }
 
 void
 usage(void)
 {
 	(void)fprintf(stderr, "usage: printenv [name]\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

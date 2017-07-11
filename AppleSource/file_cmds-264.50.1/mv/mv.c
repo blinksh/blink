@@ -80,6 +80,7 @@ __RCSID("$FreeBSD: src/bin/mv/mv.c,v 1.39 2002/07/09 17:45:13 johan Exp $");
 #endif /* __APPLE__ */ 
 
 #include "pathnames.h"
+#include "error.h"
 
 int fflg, iflg, nflg, vflg;
 
@@ -120,14 +121,12 @@ mv_main(int argc, char *argv[])
 			break;
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
     if (argc < 2) {
 		usage();
-        return 0;
     }
 
 	/*
@@ -137,7 +136,6 @@ mv_main(int argc, char *argv[])
 	if (stat(argv[argc - 1], &sb) || !S_ISDIR(sb.st_mode)) {
         if (argc > 2) {
 			usage();
-            return 0;
         }
         return (do_move(argv[0], argv[1]));
 		// exit(do_move(argv[0], argv[1]));
@@ -462,7 +460,7 @@ copy(char *from, char *to)
 		execl(_PATH_CP, "mv", vflg ? "-PRpv" : "-PRp", "--", from, to,
 		    (char *)NULL);
 		warn("%s", _PATH_CP);
-        return -1;
+        pthread_exit(NULL);
 		// _exit(1);
 	}
 	if (waitpid(pid, &status, 0) == -1) {
@@ -481,7 +479,7 @@ copy(char *from, char *to)
 	if (!(pid = vfork())) {
 		execl(_PATH_RM, "mv", "-rf", "--", from, (char *)NULL);
 		warn("%s", _PATH_RM);
-        return -1;
+        pthread_exit(NULL);
 		// _exit(1);
 	}
 	if (waitpid(pid, &status, 0) == -1) {
@@ -507,5 +505,6 @@ usage(void)
 	(void)fprintf(stderr, "%s\n%s\n",
 		      "usage: mv [-f | -i | -n] [-v] source target",
 		      "       mv [-f | -i | -n] [-v] source ... directory");
+    pthread_exit(NULL);
 	// exit(EX_USAGE);
 }

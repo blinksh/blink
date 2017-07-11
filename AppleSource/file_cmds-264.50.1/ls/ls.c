@@ -204,7 +204,6 @@ ls_main(int argc, char *argv[])
 
     if (argc < 1) {
 		ls_usage();
-        return 0;
     }
     // re-initialize all flags:
     initializeAllFlags();
@@ -420,7 +419,6 @@ ls_main(int argc, char *argv[])
 		default:
 		case '?':
 			ls_usage();
-            return 0;
 		}
 	}
 	argc -= optind;
@@ -543,7 +541,7 @@ ls_main(int argc, char *argv[])
 	else
 		traverse(1, dotav, fts_options);
 	// exit(rval);
-    return 0; 
+    return rval;
 }
 
 static int output;		/* If anything output. */
@@ -563,7 +561,7 @@ traverse(int argc, char *argv[], int options)
 
 	if ((ftsp =
 	    fts_open(argv, options, f_nosort ? NULL : mastercmp)) == NULL)
-		myerr(1, "fts_open");
+		err(1, "fts_open");
 
 	display(NULL, fts_children(ftsp, 0));
 	if (f_listdir) {
@@ -637,7 +635,7 @@ traverse(int argc, char *argv[], int options)
 	errno = error;
 
 	if (errno)
-		myerr(1, "fts_read");
+		err(1, "fts_read");
 }
 
 /*
@@ -835,7 +833,7 @@ display(FTSENT *p, FTSENT *list)
 						flags = strdup("-");
 					}
 					if (flags == NULL)
-						myerr(1, "fflagstostr");
+						err(1, "fflagstostr");
 					flen = strlen(flags);
 					if (flen > (size_t)maxflags)
 						maxflags = flen;
@@ -846,7 +844,7 @@ display(FTSENT *p, FTSENT *list)
 				
 				if ((np = calloc(1, sizeof(NAMES) + lattrlen +
 				    ulen + glen + flen + 4)) == NULL)
-					myerr(1, "malloc");
+					err(1, "malloc");
 
 				np->user = &np->data[0];
 				(void)strcpy(np->user, user);

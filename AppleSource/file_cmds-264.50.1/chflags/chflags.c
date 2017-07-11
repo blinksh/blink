@@ -52,6 +52,7 @@ __FBSDID("$FreeBSD: src/bin/chflags/chflags.c,v 1.26.2.1.2.1 2009/10/25 01:10:29
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "error.h"
 
 static void usage(void);
 
@@ -96,14 +97,12 @@ chflags_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argv += optind;
 	argc -= optind;
 
     if (argc < 2) {
 		usage();
-        return 0;
     }
 
 	if (Rflag) {
@@ -214,5 +213,6 @@ usage(void)
 {
 	(void)fprintf(stderr,
 	    "usage: chflags [-fhv] [-R [-H | -L | -P]] flags file ...\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

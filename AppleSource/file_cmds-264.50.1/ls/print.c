@@ -83,6 +83,7 @@ __RCSID("$FreeBSD: src/bin/ls/print.c,v 1.57 2002/08/29 14:29:09 keramida Exp $"
 
 #include "ls.h"
 #include "extern.h"
+#include "error.h"
 
 static int	printaname(FTSENT *, u_long, u_long);
 static void	printlink(FTSENT *);

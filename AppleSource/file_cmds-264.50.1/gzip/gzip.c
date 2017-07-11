@@ -73,7 +73,7 @@ __FBSDID("$FreeBSD: src/usr.bin/gzip/gzip.c,v 1.25 2011/10/10 06:37:32 delphij E
 #define COMPAT_MODE(func, mode) 1
 #endif /* __APPLE__ */
 #include <stdbool.h> // for booleans
-#define exit return
+#include "error.h"
 // iOS: Until someone install the header file (the library exists)
 #define NO_XZ_SUPPORT
 
@@ -421,8 +421,7 @@ gzip_main(int argc, char **argv)
 			len = strlen(optarg);
 			if (len != 0) {
                 if (len > SUFFIX_MAXLEN) {
-					// errx(1, "incorrect suffix: '%s': too long", optarg);
-                    warnx("incorrect suffix: '%s': too long", optarg);
+					errx(1, "incorrect suffix: '%s': too long", optarg);
                 }
 				suffixes[0].zipped = optarg;
 				suffixes[0].ziplen = len;
@@ -441,7 +440,7 @@ gzip_main(int argc, char **argv)
 			break;
 #endif
 		default:
-            usage(); return 0;
+            usage();
 			/* NOTREACHED */
 		}
 	}
@@ -462,7 +461,8 @@ gzip_main(int argc, char **argv)
 	if (qflag == 0 && lflag && argc > 1)
 		print_list(-1, 0, "(totals)", 0);
 #endif
-	exit(exit_value);
+	// exit(exit_value);
+    return(exit_value);
 }
 
 /* maybe print a warning */
@@ -506,7 +506,8 @@ maybe_err(const char *fmt, ...)
 		vwarn(fmt, ap);
 		va_end(ap);
 	}
-    exit; // (2);
+    pthread_exit(NULL);
+    // exit (2);
 }
 
 #if !defined(NO_BZIP2_SUPPORT) || !defined(NO_PACK_SUPPORT) ||	\
@@ -522,7 +523,8 @@ maybe_errx(const char *fmt, ...)
 		vwarnx(fmt, ap);
 		va_end(ap);
 	}
-    exit; // (2);
+    pthread_exit(NULL);
+    // exit (2);
 }
 #endif
 
@@ -1243,7 +1245,8 @@ sigint_handler(int signo __unused)
 
 	if (remove_file != NULL)
 		unlink(remove_file);
-    _exit; // (2);
+    pthread_exit(NULL);
+    // _exit (2);
 }
 #endif
 
@@ -2200,7 +2203,8 @@ usage(void)
     " -v --verbose         print extra statistics\n",
 #endif
 	    getprogname());
-    exit; // (0);
+    pthread_exit(NULL);
+    // exit (0);
 }
 
 #ifndef SMALL
@@ -2215,7 +2219,8 @@ display_license(void)
 	fprintf(stderr, "%s (based on NetBSD gzip 20111009)\n", gzip_version);
 #endif
 	fprintf(stderr, "%s\n", gzip_copyright);
-    exit; // (0);
+    pthread_exit(NULL);
+    // exit (0);
 }
 #endif
 
@@ -2225,7 +2230,8 @@ display_version(void)
 {
 
 	fprintf(stderr, "%s\n", gzip_version);
-    exit; // (0);
+    pthread_exit(NULL);
+    // exit (0);
 }
 
 #ifndef NO_BZIP2_SUPPORT

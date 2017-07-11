@@ -53,6 +53,7 @@ __FBSDID("$FreeBSD: src/bin/ls/util.c,v 1.38 2005/06/03 11:05:58 dd Exp $");
 
 #include "ls.h"
 #include "extern.h"
+#include "error.h"
 
 int
 prn_normal(const char *s)
@@ -227,5 +228,6 @@ ls_usage(void)
 	"usage: ls [-ABCFHLOPRSTUWabcdefghiklmnopqrstuwx1]"
 #endif
 		      " [file ...]\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

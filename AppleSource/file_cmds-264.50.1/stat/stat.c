@@ -67,6 +67,7 @@ __FBSDID("$FreeBSD: src/usr.bin/stat/stat.c,v 1.6 2003/10/06 01:55:17 dougb Exp 
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "error.h"
 
 #if HAVE_STRUCT_STAT_ST_FLAGS
 #define DEF_F "%#Xf "
@@ -263,7 +264,6 @@ stat_main(int argc, char *argv[])
 			break;
 		default:
 			usage(synopsis);
-            return 0;
 		}
 
 	argc -= optind;
@@ -303,7 +303,6 @@ stat_main(int argc, char *argv[])
 		break;
 	default:
 		usage(synopsis);
-        return 0;
 		/*NOTREACHED*/
 	}
 
@@ -343,6 +342,7 @@ usage(const char *synopsis)
 {
 
 	(void)fprintf(stderr, "usage: %s %s\n", getprogname(), synopsis);
+    pthread_exit(NULL);
 	// exit(1);
 }
 

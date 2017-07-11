@@ -73,6 +73,7 @@ __FBSDID("$FreeBSD: src/usr.bin/tar/write.c,v 1.79 2008/11/27 05:49:52 kientzle 
 #ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
+#include <pthread.h>
 
 #include "bsdtar.h"
 #include "err.h"
@@ -714,13 +715,15 @@ append_archive(struct bsdtar *bsdtar, struct archive *a, struct archive *ina)
 				fprintf(stderr, ": %s", archive_error_string(a));
 		}
 		if (e == ARCHIVE_FATAL)
-			exit(1);
+            pthread_exit(NULL);
+			// exit(1);
 
 		if (e >= ARCHIVE_WARN) {
 			if (archive_entry_size(in_entry) == 0)
 				archive_read_data_skip(ina);
 			else if (copy_file_data_block(bsdtar, a, ina, in_entry))
-				exit(1);
+                pthread_exit(NULL);
+            // exit(1);
 		}
 
 		if (bsdtar->verbose)
@@ -986,7 +989,8 @@ write_entry(struct bsdtar *bsdtar, struct archive *a,
 	}
 
 	if (e == ARCHIVE_FATAL)
-		exit(1);
+        pthread_exit(NULL);
+    // exit(1);
 
 	/*
 	 * If we opened a file earlier, write it out now.  Note that
@@ -996,7 +1000,8 @@ write_entry(struct bsdtar *bsdtar, struct archive *a,
 	 */
 	if (e >= ARCHIVE_WARN && archive_entry_size(entry) > 0) {
 		if (copy_file_data_block(bsdtar, a, bsdtar->diskreader, entry))
-			exit(1);
+            pthread_exit(NULL);
+        // exit(1);
 	}
 }
 

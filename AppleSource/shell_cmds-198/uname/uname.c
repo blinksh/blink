@@ -54,8 +54,8 @@ __RCSID("$NetBSD: uname.c,v 1.10 1998/11/09 13:24:05 kleink Exp $");
 // #include <get_compat.h>
 // #else  /* !__APPLE__ */
 #define COMPAT_MODE(a,b) (1)
+#include <pthread.h>
 #endif /* __APPLE__ */
-#define exit return 
 
 int	uname_main __P((int, char **));
 static void usage __P((void));
@@ -131,9 +131,7 @@ uname_main(argc, argv)
 	}
 
 	if (uname(&u) != 0) {
-		// err(EXIT_FAILURE, "uname");
-        warn("uname");
-        return 0;
+		err(EXIT_FAILURE, "uname");
 		/* NOTREACHED */
 	}
 #ifndef __APPLE__
@@ -200,8 +198,9 @@ uname_main(argc, argv)
 #endif /* __APPLE__ */
 	}
 	putchar('\n');
-
-	exit(EXIT_SUCCESS);
+    
+    pthread_exit(NULL);
+	// exit(EXIT_SUCCESS);
 	/* NOTREACHED */
 }
 
@@ -209,5 +208,6 @@ static void
 usage()
 {
 	fprintf(stderr, "usage: uname [-amnprsv]\n");
+    pthread_exit(NULL);
 	// exit(EXIT_FAILURE);
 }

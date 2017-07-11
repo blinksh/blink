@@ -144,7 +144,8 @@ wc_main(int argc, char *argv[])
 	}
     
     optarg = NULL; opterr = 0; optind = 0;
-	exit(errors == 0 ? 0 : 1);
+    pthread_exit(NULL);
+	// exit(errors == 0 ? 0 : 1);
 }
 
 static int
@@ -170,7 +171,7 @@ cnt(const char *file)
 		fd = STDIN_FILENO;
 	} else {
 		if ((fd = open(file, O_RDONLY, 0)) < 0) {
-			mywarn("%s: open", file);
+			warn("%s: open", file);
 			return (1);
 		}
 	}
@@ -200,7 +201,7 @@ cnt(const char *file)
 	if (doline) {
 		while ((len = read(fd, buf, buf_size))) {
 			if (len == -1) {
-				mywarn("%s: read", file);
+				warn("%s: read", file);
 				(void)close(fd);
 				return (1);
 			}
@@ -224,7 +225,7 @@ cnt(const char *file)
 	 */
 	if (dochar || domulti) {
 		if (fstat(fd, &sb)) {
-			mywarn("%s: fstat", file);
+			warn("%s: fstat", file);
 			(void)close(fd);
 			return (1);
 		}
@@ -242,7 +243,7 @@ word:	gotsp = 1;
 	memset(&mbs, 0, sizeof(mbs));
 	while ((len = read(fd, buf, buf_size)) != 0) {
 		if (len == -1) {
-			mywarn("%s: read", file);
+			warn("%s: read", file);
 			(void)close(fd);
 			return (1);
 		}
@@ -255,7 +256,7 @@ word:	gotsp = 1;
 			    (size_t)-1) {
 				if (!warned) {
 					errno = EILSEQ;
-					mywarn("%s", file);
+					warn("%s", file);
 					warned = 1;
 				}
 				memset(&mbs, 0, sizeof(mbs));
@@ -280,7 +281,7 @@ word:	gotsp = 1;
 	}
 	if (domulti && MB_CUR_MAX > 1)
 		if (mbrtowc(NULL, NULL, 0, &mbs) == (size_t)-1 && !warned)
-			mywarn("%s", file);
+			warn("%s", file);
 	if (doline) {
 		tlinect += linect;
 		(void)printf(" %7ju", linect);
@@ -301,5 +302,6 @@ static void
 usage()
 {
 	(void)fprintf(stderr, "usage: wc [-clmw] [file ...]\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

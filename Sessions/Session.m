@@ -38,31 +38,6 @@
 #import "fterm.h"
 
 
-int makeargs(const char *args, char ***aa)
-{
-  char *buf = strdup(args);
-  int c = 1;
-  char *delim;
-  char **argv = calloc(c, sizeof(char *));
-
-  argv[0] = buf;
-
-  // TODO: this breaks when there are extra spaces in the command 
-  while ((delim = strchr(argv[c - 1], ' '))) {
-    argv = realloc(argv, (c + 1) * sizeof(char *));
-    argv[c] = delim + 1;
-    *delim = 0x00;
-    c++;
-  }
-
-  argv = realloc(argv, (c + 1) * sizeof(char *));
-  argv[c] = NULL;
-
-  *aa = argv;
-
-  return c;
-}
-
 void *run_session(void *params)
 {
   SessionParams *p = (SessionParams *)params;

@@ -41,14 +41,7 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
-
-// TODO: merge all these in a single "system.h" file
-#include "file_cmds_ios.h"
-#include "shell_cmds_ios.h"
-#include "text_cmds_ios.h"
-#include "curl_ios.h"
-#include "libarchive_ios.h"
-#include "Python_ios.h"
+#import "CommandSession.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -220,9 +213,11 @@
         }
       }
     }
-    argv[i] = [argument UTF8String];
+    if (([cmd isEqualToString:@"scp"] || [cmd isEqualToString:@"sftp"]) && (i == 0))
+      argv[i] = [@"curl" UTF8String];
+    else
+      argv[i] = [argument UTF8String];
   }
-  
   if (mustAddMinusTPosition > 0) {
     // For scp uploads
     // Need to add parameter "-T" before parameter number i.
@@ -258,8 +253,7 @@
   setenv("SSH_HOME", docsPath.UTF8String, 0);
   setenv("CURL_HOME", docsPath.UTF8String, 0);
   setenv("PYTHONHOME", libPath.UTF8String, 0);
-  setenv("PATH", binPath.UTF8String, 1);
-  
+  setenv("PATH", binPath.UTF8String, 1); // override
   // iOS already defines "HOME" as the home dir of the application
   
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
@@ -284,8 +278,6 @@
       argv = [self makeargs:cmdline argc:&argc];
 
       NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
-
-      // TODO: parsing scp / sftp commands
       
       if ([cmd isEqualToString:@"help"]) {
         [self showHelp];
@@ -305,77 +297,8 @@
         [self runSSHCopyIDWithArgs:argc argv:argv];
       } else if ([cmd isEqualToString:@"config"]) {
         [self showConfig];
-      } else {
-        // Shell commands for more interactions.
-        // ls, rm, rmdir, touch...
-        // 2) re-initialize for getopt:
-        optind = 1;
-        opterr = 1;
-        optreset = 1;
-        // 3) call specific commands
-        // Redirect all output to console:
-        stdout = _stream.control.termout;
-        stderr = _stream.control.termout;
-        // Commands from Apple file_cmds: ls, rm, cp...
-        if ([cmd isEqualToString:@"ls"]) {
-          ls_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"touch"]) {
-          touch_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"rm"]) {
-          rm_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"cp"]) {
-          cp_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"ln"]) || ([cmd isEqualToString:@"link"])) {
-          ln_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"mv"]) {
-            mv_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"mkdir"]) {
-            mkdir_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"rmdir"]) {
-            rmdir_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"chown"]) || ([cmd isEqualToString:@"chgrp"])) {
-          chown_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"chflags"]) {
-          chflags_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"chmod"]) {
-          chmod_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"du"]) {
-          du_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"df"]) {
-          df_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"chksum"]) || ([cmd isEqualToString:@"sum"])) {
-          chksum_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"stat"]) || ([cmd isEqualToString:@"readlink"])) {
-          stat_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"compress"]) || ([cmd isEqualToString:@"uncompress"])) {
-          compress_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"gzip"]) || ([cmd isEqualToString:@"gunzip"])) {
-          gzip_main(argc, argv);
-          // Commands from Apple shell_cmds:
-        } else if  ([cmd isEqualToString:@"printenv"]) {
-            printenv_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"pwd"]) {
-          pwd_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"uname"]) {
-          uname_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"date"]) {
-          date_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"env"]) {
-          env_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"id"])  || ([cmd isEqualToString:@"groups"]) || ([cmd isEqualToString:@"whoami"])) {
-            id_main(argc, argv);
-          } else if  (([cmd isEqualToString:@"uptime"]) || ([cmd isEqualToString:@"w"])) {
-              w_main(argc, argv);
-            // Commands from Apple text_cmds:
-          } else if  ([cmd isEqualToString:@"cat"]) {
-            cat_main(argc, argv);
-          } else if  ([cmd isEqualToString:@"wc"]) {
-            wc_main(argc, argv);
-          } else if  (([cmd isEqualToString:@"grep"]) || ([cmd isEqualToString:@"egrep"]) || ([cmd isEqualToString:@"fgrep"])){
-            grep_main(argc, argv);
-          } else
-                // Commands that have to be inside the "shell"
-                 if  ([cmd isEqualToString:@"setenv"]) {
+      } else if  ([cmd isEqualToString:@"setenv"]) {
+         // Builtin. commands that have to be inside the "shell"
           // setenv VARIABLE value
           setenv(argv[1], argv[2], 1);
         } else if  ([cmd isEqualToString:@"cd"]) {
@@ -383,7 +306,7 @@
             BOOL isDir;
             if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
               if (isDir)
-               [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
+                [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
               else  fprintf(_stream.out, "cd: %s: not a directory\n", argv[1]);
             } else {
               fprintf(_stream.out, "cd: %s: no such file or directory\n", argv[1]);
@@ -391,17 +314,8 @@
           } else // [cd] Help, I'm lost, bring me back home
             [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
           // Higher level commands, not from system: curl, tar, scp, sftp
-        } else if  ([cmd isEqualToString:@"curl"]) {
-          curl_main(argc, argv);
-        } else if  (([cmd isEqualToString:@"scp"]) || ([cmd isEqualToString:@"sftp"])) {
-          // We have an scp / sftp command. We converted it into a curl command in makeargs
-          argv[0] = "curl";
-          curl_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"tar"]) {
-          tar_main(argc, argv);
-        } else if  ([cmd isEqualToString:@"python"]) {
-          python_main(argc, argv);
         } else if ([cmd isEqualToString:@"vim"]) {
+          // Opening in helper apps (vim, for example)
           NSString* fileLocation = @(argv[1]);
           if (! [fileLocation hasPrefix:@"/"]) {
             // relative path. The most likely.
@@ -413,8 +327,7 @@
             [[UIApplication sharedApplication] openURL:myURL];
           });
         } else {
-          [self out:"Unknown command. Type 'help' for a list of available operations"];
-        }
+          [self runCommandWithArgs:argc argv:argv];
       }
       free(argv);
     }
@@ -459,6 +372,14 @@
   childSession = nil;
 }
 
+- (void)runCommandWithArgs:(int)argc argv:(char **)argv;
+{
+  childSession = [[CommandSession alloc] initWithStream:_stream];
+  [childSession executeAttachedWithArgs:argc argv:argv];
+  childSession = nil;
+}
+
+
 - (NSString *)shortVersionString
 {
   NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
@@ -485,9 +406,7 @@
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
-    @"  Plus the Unix utilities: cd, pwd, ls, cp, ln, mv, rm, touch, mkdir, rmdir, setenv, env, printenv, ",
-    @"      compress, uncompress, gzip, gunzip, cat, wc, grep, egrep, fgrep, date, ",
-    @"      df, du, chksum, chmod, chflags, chgrp, stat, readlink, uname, id, groups, whoami, uptime.",
+    @"  Plus the Unix utilities: cd, setenv, ls, touch, cp, rm, ln, mv, mkdir, rmdir, df, du, chksum, chmod, chflags, chgrp, stat, readlink, compress, uncompress, gzip, gunzip, pwd, env, printenv, date, uname, id, groups, whoami, uptime, cat, grep, wc, curl (includes http, https, scp, sftp...), scp, sftp, tar ",
     @"Available gestures and keyboard shortcuts:",
     @"  two fingers tap or cmd+t: New shell.",
     @"  two fingers swipe down or cmd+w: Close shell.",

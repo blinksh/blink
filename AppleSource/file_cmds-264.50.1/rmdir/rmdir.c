@@ -52,6 +52,7 @@ __RCSID("$FreeBSD: src/bin/rmdir/rmdir.c,v 1.13 2002/06/30 05:15:03 obrien Exp $
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "error.h"
 
 static int rm_path(char *);
 static void usage(void);
@@ -71,14 +72,12 @@ rmdir_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
     if (argc == 0) {
 		usage();
-        return 0;
     }
 
 	for (errors = 0; *argv; argv++) {
@@ -121,5 +120,6 @@ void
 usage(void)
 {
 	(void)fprintf(stderr, "usage: rmdir [-p] directory ...\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

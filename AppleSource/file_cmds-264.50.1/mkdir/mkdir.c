@@ -57,6 +57,7 @@ __RCSID("$FreeBSD: src/bin/mkdir/mkdir.c,v 1.26 2002/06/30 05:13:54 obrien Exp $
 #include <string.h>
 #include <sysexits.h>
 #include <unistd.h>
+#include "error.h"
 
 static void	usage(void);
 
@@ -87,7 +88,6 @@ mkdir_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 
 //	argc -= optind;
@@ -148,4 +148,5 @@ usage(void)
 
 	(void)fprintf(stderr, "usage: mkdir [-pv] [-m mode] directory ...\n");
 	// exit (EX_USAGE);
+    pthread_exit(NULL);
 }

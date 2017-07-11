@@ -115,7 +115,6 @@ cat_main(int argc, char *argv[])
 			break;
 		default:
 			usage();
-            return 0;
 		}
 	argv += optind;
 
@@ -123,9 +122,10 @@ cat_main(int argc, char *argv[])
 		scanfiles(argv, 1);
 	else
 		scanfiles(argv, 0);
-	// if (fclose(stdout)) myerr(1, "stdout");
+	// if (fclose(stdout)) err(1, "stdout");
     optarg = NULL; opterr = 0; optind = 0;
-	exit(rval);
+    pthread_exit(NULL);
+	// exit(rval);
 	/* NOTREACHED */
 }
 
@@ -133,6 +133,7 @@ static void
 usage(void)
 {
 	fprintf(stderr, "usage: cat [-benstuv] [file ...]\n");
+    pthread_exit(NULL);
 	// exit(1);
 	/* NOTREACHED */
 }
@@ -159,7 +160,7 @@ scanfiles(char *argv[], int cooked)
 #endif
 		}
 		if (fd < 0) {
-			mywarn("%s", path);
+			warn("%s", path);
 			rval = 1;
 		} else if (cooked) {
 			if (fd == STDIN_FILENO)
@@ -233,11 +234,11 @@ cook_cat(FILE *fp)
 			break;
 	}
 	if (ferror(fp)) {
-		mywarn("%s", filename);
+		warn("%s", filename);
 		rval = 1;
 		clearerr(fp);
 	}
-	// if (ferror(stdout)) myerr(1, "stdout");
+	if (ferror(stdout)) err(1, "stdout");
 }
 
 static void
@@ -252,10 +253,10 @@ raw_cat(int rfd)
 	// wfd = fileno(stdout);
 	if (buf == NULL) {
 		if (fstat(wfd, &sbuf))
-			myerr(1, "%s", filename);
+			err(1, "%s", filename);
 		bsize = MAX(sbuf.st_blksize, 1024);
 		if ((buf = malloc(bsize)) == NULL)
-			myerr(1, "buffer");
+			err(1, "buffer");
 	}
 	while ((nr = read(rfd, buf, bsize)) > 0)
         for (off = 0; nr; nr -= nw, off += nw) {
@@ -267,10 +268,10 @@ raw_cat(int rfd)
                 if (*(buf+off+nw) == '\n') fputc('\r', stdout);
                 nw += 1;
             }
-			// if ((nw = write(wfd, buf + off, (size_t)nr)) < 0) myerr(1, "stdout");
+			// if ((nw = write(wfd, buf + off, (size_t)nr)) < 0) err(1, "stdout");
         }
 	if (nr < 0) {
-		mywarn("%s", filename);
+		warn("%s", filename);
 		rval = 1;
 	}
     free(buf);
@@ -314,11 +315,11 @@ udom_open(const char *path, int flags)
 		switch(flags & O_ACCMODE) {
 		case O_RDONLY:
 			if (shutdown(fd, SHUT_WR) == -1)
-				mywarn(NULL);
+				warn(NULL);
 			break;
 		case O_WRONLY:
 			if (shutdown(fd, SHUT_RD) == -1)
-				mywarn(NULL);
+				warn(NULL);
 			break;
 		default:
 			break;

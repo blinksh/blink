@@ -173,6 +173,7 @@ usage(void)
 	fprintf(stderr, "%s", getstr(5));
 	fprintf(stderr, "%s", getstr(6));
 	fprintf(stderr, "%s", getstr(7));
+    pthread_exit(NULL);
 	// exit(2);
 }
 
@@ -334,8 +335,7 @@ read_patterns(const char *fn)
 	size_t len;
 
     if ((f = fopen(fn, "r")) == NULL) {
-		myerr(2, "%s", fn);
-        return;
+		err(2, "%s", fn);
     }
 	if ((fstat(fileno(f), &st) == -1) || (S_ISDIR(st.st_mode))) {
 		fclose(f);
@@ -344,7 +344,7 @@ read_patterns(const char *fn)
         while ((line = fgetln(f, &len)) != NULL)
 		add_pattern(line, line[0] == '\n' ? 0 : len);
 	if (ferror(f))
-		myerr(2, "%s", fn);
+		err(2, "%s", fn);
 	fclose(f);
 }
 
@@ -478,8 +478,7 @@ grep_main(int argc, char *argv[])
 				Aflag = 0;
 			else if (Aflag > LLONG_MAX / 10) {
 				errno = ERANGE;
-				myerr(2, NULL);
-                return 0;
+				err(2, NULL);
 			}
 			Aflag = Bflag = (Aflag * 10) + (c - '0');
 			break;
@@ -496,13 +495,11 @@ grep_main(int argc, char *argv[])
 			l = strtoull(optarg, &ep, 10);
 			if (((errno == ERANGE) && (l == ULLONG_MAX)) ||
                 ((errno == EINVAL) && (l == 0))) {
-				myerr(2, NULL);
-                return 0;
+				err(2, NULL);
             }
 			else if (ep[0] != '\0') {
 				errno = EINVAL;
-				myerr(2, NULL);
-                return 0;
+				err(2, NULL);
 			}
 			if (c == 'A')
 				Aflag = l;
@@ -526,8 +523,7 @@ grep_main(int argc, char *argv[])
 			else if (strcasecmp(optarg, "read") == 0)
 				devbehave = DEV_READ;
             else {
-				myerrx(2, getstr(3), "--devices");
-                return 0;
+				errx(2, getstr(3), "--devices");
             }
 			break;
 		case 'd':
@@ -539,8 +535,7 @@ grep_main(int argc, char *argv[])
 			else if (strcasecmp("read", optarg) == 0)
 				dirbehave = DIR_READ;
             else {
-				myerrx(2, getstr(3), "--directories");
-                return 0;
+				errx(2, getstr(3), "--directories");
             }
 			break;
 		case 'E':
@@ -578,8 +573,7 @@ grep_main(int argc, char *argv[])
 		case 'J':
 #ifdef WITHOUT_BZIP2
 			errno = EOPNOTSUPP;
-			myerr(2, "bzip2 support was disabled at compile-time");
-            return 0;
+			err(2, "bzip2 support was disabled at compile-time");
 #endif
 			filebehave = FILE_BZIP;
 			break;
@@ -597,19 +591,16 @@ grep_main(int argc, char *argv[])
 			mcount = strtoll(optarg, &ep, 10);
 			if (((errno == ERANGE) && (mcount == LLONG_MAX)) ||
                 ((errno == EINVAL) && (mcount == 0))) {
-				myerr(2, NULL);
-                return 0;
+				err(2, NULL);
             } else if (ep[0] != '\0') {
 				errno = EINVAL;
-				myerr(2, NULL);
-                return 0;
+				err(2, NULL);
 			}
 			break;
 		case 'M':
 #ifdef WITHOUT_LZMA
 			errno = EOPNOTSUPP;
-			myerr(2, "lzma support was disabled at compile-time");
-            return 0;
+			err(2, "lzma support was disabled at compile-time");
 #endif
 			filebehave = FILE_LZMA;
 			break;
@@ -652,7 +643,8 @@ grep_main(int argc, char *argv[])
 			break;
 		case 'V':
 			printf(getstr(9), getprogname(), VERSION);
-			exit(0);
+            pthread_exit(NULL);
+			// exit(0);
 		case 'v':
 			vflag = true;
 			break;
@@ -667,8 +659,7 @@ grep_main(int argc, char *argv[])
 		case 'X':
 #ifdef WITHOUT_LZMA
 			errno = EOPNOTSUPP;
-			myerr(2, "xz support was disabled at compile-time");
-            return 0;
+			err(2, "xz support was disabled at compile-time");
 #endif
 			filebehave = FILE_XZ;
 			break;
@@ -683,8 +674,7 @@ grep_main(int argc, char *argv[])
 			else if (strcasecmp("text", optarg) == 0)
 				binbehave = BINFILE_TEXT;
             else {
-				myerrx(2, getstr(3), "--binary-files");
-                return 0;
+				errx(2, getstr(3), "--binary-files");
             }
 			break;
 		case COLOR_OPT:
@@ -705,8 +695,7 @@ grep_main(int argc, char *argv[])
 			} else if (strcasecmp("never", optarg) != 0 &&
 			    strcasecmp("none", optarg) != 0 &&
                        strcasecmp("no", optarg) != 0) {
-				myerrx(2, getstr(3), "--color");
-                return 0;
+				errx(2, getstr(3), "--color");
             }
 			cflags &= ~REG_NOSUB;
 			break;
@@ -738,7 +727,6 @@ grep_main(int argc, char *argv[])
 		case HELP_OPT:
 		default:
 			usage();
-            return 0;
 		}
 		lastc = c;
 		newarg = optind != prevoptind;
@@ -753,12 +741,12 @@ grep_main(int argc, char *argv[])
 #else
 	if (!needpattern && (patterns == 0) && !matchall)
 #endif
-		exit(1);
+        pthread_exit(NULL);
+		// exit(1);
 
 	/* Fail if we don't have any pattern */
     if (aargc == 0 && needpattern) {
 		usage();
-        return 0;
     }
 
 	/* Process patterns from command line */
@@ -790,7 +778,6 @@ grep_main(int argc, char *argv[])
 	default:
 		/* NOTREACHED */
 		usage();
-        return 0;
 	}
 
 #ifndef WITHOUT_FASTMATCH
@@ -809,8 +796,7 @@ grep_main(int argc, char *argv[])
 			if (c != 0) {
 				regerror(c, &r_pattern[i], re_error,
 				    RE_ERROR_BUF);
-				myerrx(2, "%s", re_error);
-                return 0;
+				errx(2, "%s", re_error);
 			}
 #ifndef WITHOUT_FASTMATCH
 		}
@@ -824,7 +810,8 @@ grep_main(int argc, char *argv[])
 		hflag = true;
 
 	if (aargc == 0)
-		exit(!procfile("-"));
+        pthread_exit(NULL);
+		// exit(!procfile("-"));
 
 	if (dirbehave == DIR_RECURSE)
 		c = grep_tree(aargv);
@@ -841,5 +828,6 @@ grep_main(int argc, char *argv[])
 
 	/* Find out the correct return value according to the
 	   results and the command line option. */
-	exit(c ? (file_err ? (qflag ? 0 : 2) : 0) : (file_err ? 2 : 1));
+    pthread_exit(NULL);
+	// exit(c ? (file_err ? (qflag ? 0 : 2) : 0) : (file_err ? 2 : 1));
 }

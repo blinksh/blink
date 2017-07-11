@@ -685,7 +685,6 @@ modify_acl(acl_t *oaclp, acl_entry_t modifier, unsigned int optflags,
 		
 		if (-1 == position) {
 			chmod_usage();
-            return 0;
 		}
 		if (0 == flag_new_acl) {
 			if (0 != acl_get_entry(oacl, position,
@@ -736,7 +735,6 @@ modify_file_acl(unsigned int optflags, const char *path, acl_t modifier, int pos
 
     if (path == NULL) {
 		chmod_usage();
-        return 0;
     }
 
 	if (optflags & ACL_CLEAR_FLAG) {

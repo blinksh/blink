@@ -68,6 +68,7 @@ __used static const char rcsid[] =
 // #include "get_compat.h"
 // #else
 #define COMPAT_MODE(func, mode) 1
+#include "error.h"
 #endif
 
 static int dflag, eval, fflag, iflag, Pflag, vflag, Wflag, stdin_ok;
@@ -579,5 +580,6 @@ usage()
 	(void)fprintf(stderr, "%s\n%s\n",
 	    "usage: rm [-f | -i] [-dPRrvW] file ...",
 	    "       unlink file");
+    pthread_exit(NULL); 
 	// exit(EX_USAGE);
 }

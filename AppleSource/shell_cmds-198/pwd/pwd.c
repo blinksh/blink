@@ -50,10 +50,10 @@ __FBSDID("$FreeBSD: src/bin/pwd/pwd.c,v 1.25 2005/02/09 17:37:38 ru Exp $");
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 
 static char *getcwd_logical(void);
 static void usage(void);
-#define exit return
 
 int
 pwd_main(int argc, char *argv[])
@@ -75,14 +75,12 @@ pwd_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argc -= optind;
 	argv += optind;
 
     if (argc != 0) {
 		usage();
-        return 0;
     }
 
 	/*
@@ -99,8 +97,8 @@ pwd_main(int argc, char *argv[])
 		// err(1, ".");
         warn(".");
     }
-
-	exit(0);
+    pthread_exit(NULL);
+	// exit(0);
 }
 
 void
@@ -108,6 +106,7 @@ usage(void)
 {
 
 	(void)fprintf(stderr, "usage: pwd [-L | -P]\n");
+    pthread_exit(NULL);
 //  	exit(1);
 }
 

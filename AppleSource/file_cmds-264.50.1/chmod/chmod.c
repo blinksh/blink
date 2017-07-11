@@ -60,6 +60,7 @@ __RCSID("$FreeBSD: src/bin/chmod/chmod.c,v 1.27 2002/08/04 05:29:13 obrien Exp $
 
 #ifdef __APPLE__
 #include "chmod_acl.h"
+#include "error.h"
 
 #endif /*__APPLE__*/
 
@@ -192,7 +193,6 @@ chmod_main(int argc, char *argv[])
 		case '?':
 		default:
 			chmod_usage();
-            return 0;
 		}
 done:	argv += optind;
 	argc -= optind;
@@ -200,7 +200,6 @@ done:	argv += optind;
 #ifdef __APPLE__
     if (argc < ((acloptflags & ACL_FLAG) ? 1 : 2)) {
 		chmod_usage();
-        return 0;
     }
     if (!Rflag && (Hflag || Lflag || Pflag)) {
 		warnx("options -H, -L, -P only useful with -R");
@@ -208,7 +207,6 @@ done:	argv += optind;
 #else  /* !__APPLE__ */
     if (argc < 2) {
 		chmod_usage();
-        return 0; 
     }
 #endif	/* __APPLE__ */
 
@@ -232,7 +230,6 @@ done:	argv += optind;
 		
         if (argc < 3) {
 			chmod_usage();
-            return 0;
         }
 
 		if (acloptlen > 2) {
@@ -244,7 +241,6 @@ done:	argv += optind;
 					if (argc < ((acloptflags & ACL_DELETE_FLAG)
                                 ? 3 : 4)) {
 						chmod_usage();
-                        return 0;
                     }
 					argv++;
 					argc--;
@@ -278,7 +274,6 @@ done:	argv += optind;
 				default:
 					errno = EINVAL;
 					chmod_usage();
-                    return 0;
 				}
 			}
 		}
@@ -485,5 +480,6 @@ chmod_usage(void)
 	(void)fprintf(stderr,
 	    "usage: chmod [-fhv] [-R [-H | -L | -P]] mode file ...\n");
 #endif /* __APPLE__ */
+    pthread_exit(NULL);
 	// exit(1);
 }

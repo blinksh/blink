@@ -65,6 +65,7 @@ __RCSID("$FreeBSD: src/usr.sbin/chown/chown.c,v 1.24 2002/07/17 16:22:24 dwmalon
 // #include <get_compat.h>
 // #else
 #define COMPAT_MODE(a,b) (1)
+#include "error.h"
 #endif /* __APPLE__ */
 
 static void	a_gid(const char *);
@@ -91,7 +92,6 @@ chown_main(int argc, char **argv)
 
     if (argc < 1) {
 		usage();
-        return 0; 
     }
 	cp = strrchr(argv[0], '/');
 	cp = (cp != NULL) ? cp + 1 : argv[0];
@@ -127,14 +127,12 @@ chown_main(int argc, char **argv)
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	argv += optind;
 	argc -= optind;
 
     if (argc < 2) {
 		usage();
-        return 0;
     }
     if (!Rflag && (Hflag || Lflag || Pflag)) {
 		warnx("options -H, -L, -P only useful with -R");
@@ -323,5 +321,6 @@ usage(void)
 	else
 		(void)fprintf(stderr, "%s\n",
 		    "usage: chgrp [-fhv] [-R [-H | -L | -P]] group file ...");
+    pthread_exit(NULL);
 	// exit(1);
 }

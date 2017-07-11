@@ -58,6 +58,7 @@ __used static const char sccsid[] = "@(#)touch.c	8.1 (Berkeley) 6/6/93";
 #include <string.h>
 #include <time.h>
 #include <unistd.h>
+#include "error.h"
 
 static int	rw(char *, struct stat *, int);
 static void	stime_arg1(char *, struct timeval *);
@@ -430,5 +431,6 @@ usage(char *myname)
 {
 	fprintf(stderr, "usage:\n" "%s [-A [-][[hh]mm]SS] [-acfhm] [-r file] "
 		"[-t [[CC]YY]MMDDhhmm[.SS]] file ...\n", myname);
+    pthread_exit(NULL);
 	// exit(1);
 }

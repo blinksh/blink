@@ -59,6 +59,7 @@ __FBSDID("$FreeBSD: src/usr.bin/cksum/cksum.c,v 1.17 2003/03/13 23:32:28 robert 
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "extern.h"
 
@@ -106,12 +107,12 @@ chksum_main(int argc, char **argv)
 					pfncn = pcrc;
 				} else {
 					warnx("illegal argument to -o option");
-					usage(); return 0;
+					usage();
 				}
 				break;
 			case '?':
 			default:
-				usage(); return 0;
+				usage(); 
 			}
 //		argc -= optind;
 		argv += optind;
@@ -144,5 +145,6 @@ usage(void)
 {
 	(void)fprintf(stderr, "usage: cksum [-o 1 | 2 | 3] [file ...]\n");
 	(void)fprintf(stderr, "       sum [file ...]\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

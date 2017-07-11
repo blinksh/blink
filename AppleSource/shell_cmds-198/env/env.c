@@ -48,6 +48,7 @@ __FBSDID("$FreeBSD$");
 #include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "envopts.h"
 
@@ -56,7 +57,6 @@ extern char **environ;
 int	 env_verbosity;
 
 static void usage(void);
-#define exit return
 
 int
 env_main(int argc, char **argv)
@@ -89,9 +89,7 @@ env_main(int argc, char **argv)
 				fprintf(stderr, "#env unset:\t%s\n", optarg);
 			rtrn = unsetenv(optarg);
             if (rtrn == -1) {
-				// err(EXIT_FAILURE, "unsetenv %s", optarg);
-                warn("unsetenv %s", optarg);
-                return 0;
+				err(EXIT_FAILURE, "unsetenv %s", optarg);
             }
 			break;
 		case 'v':
@@ -103,7 +101,6 @@ env_main(int argc, char **argv)
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 	if (want_clear) {
 		environ = cleanenv;
@@ -118,9 +115,7 @@ env_main(int argc, char **argv)
 		rtrn = setenv(*argv, p + 1, 1);
 		*p = '=';
         if (rtrn == -1) {
-			//err(EXIT_FAILURE, "setenv %s", *argv);
-            warn("setenv %s", *argv);
-            return 0;
+			err(EXIT_FAILURE, "setenv %s", *argv);
         }
 	}
 	if (*argv) {
@@ -141,7 +136,8 @@ env_main(int argc, char **argv)
 	}
 	for (ep = environ; *ep; ep++)
 		(void)printf("%s\n", *ep);
-	exit(0);
+    pthread_exit(NULL);
+	// exit(0);
 }
 
 static void
@@ -150,5 +146,6 @@ usage(void)
 	(void)fprintf(stderr,
 	    "usage: env [-iv] [-P utilpath] [-S string] [-u name]\n"
 	    "           [name=value ...] [utility [argument ...]]\n");
+    pthread_exit(NULL);
 	// exit(1);
 }

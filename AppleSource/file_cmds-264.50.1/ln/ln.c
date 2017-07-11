@@ -52,6 +52,7 @@ __FBSDID("$FreeBSD: src/bin/ln/ln.c,v 1.34 2006/02/14 11:08:05 glebius Exp $");
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include "error.h"
 
 static int	fflag;				/* Unlink existing files. */
 static int	Fflag;				/* Remove empty directories also. */
@@ -77,7 +78,6 @@ ln_main(int argc, char *argv[])
     
     if (argc < 1) {
 		usage();
-        return 0;
     }
 	/*
 	 * Test for the special case where the utility is called as
@@ -91,17 +91,14 @@ ln_main(int argc, char *argv[])
 	if (strcmp(p, "link") == 0) {
         while (getopt(argc, argv, "") != -1) {
 			usage();
-            return 0;
         }
 		argc -= optind;
 		argv += optind;
         if (argc != 2) {
 			usage();
-            return 0;
         }
 		linkf = link;
-        linkit(argv[0], argv[1], 0);
-        return 0;
+        return(linkit(argv[0], argv[1], 0));
 		// exit(linkit(argv[0], argv[1], 0));
 	}
 
@@ -131,7 +128,6 @@ ln_main(int argc, char *argv[])
 		case '?':
 		default:
 			usage();
-            return 0;
 		}
 
 	argv += optind;
@@ -147,15 +143,12 @@ ln_main(int argc, char *argv[])
 	switch(argc) {
 	case 0:
 		usage();
-        return 0;
 		/* NOTREACHED */
 	case 1:				/* ln target */
-        linkit(argv[0], ".", 1);
-        return 0;
-		// exit(linkit(argv[0], ".", 1));
+        return(linkit(argv[0], ".", 1));
+        // exit(linkit(argv[0], ".", 1));
 	case 2:				/* ln target source */
-        linkit(argv[0], argv[1], 0);
-        return 0;
+        return(linkit(argv[0], argv[1], 0));
 		// exit(linkit(argv[0], argv[1], 0));
 	default:
 		;
@@ -174,7 +167,6 @@ ln_main(int argc, char *argv[])
 		err(1, "%s", sourcedir);
     if (!S_ISDIR(sb.st_mode)) {
 		usage();
-        return 0;
     }
 	for (exitval = 0; *argv != sourcedir; ++argv)
 		exitval |= linkit(*argv, sourcedir, 1);
@@ -278,5 +270,6 @@ usage(void)
 	    "usage: ln [-Ffhinsv] source_file [target_file]",
 	    "       ln [-Ffhinsv] source_file ... target_dir",
 	    "       link source_file target_file");
+    pthread_exit(NULL);
 	// exit(1);
 }
