@@ -85,7 +85,11 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)configureTerminal
 {
-  [_terminal assignSequence:TermViewAutoRepeateSeq toModifier:0];
+  [_terminal resetDefaultControlKeys];
+  
+  if ([BKDefaults autoRepeatKeys]) {
+    [_terminal assignSequence:TermViewAutoRepeateSeq toModifier:0];
+  }
 
   for (NSString *key in [BKDefaults keyboardKeyList]) {
     NSString *sequence = [BKDefaults keyboardMapping][key];
@@ -143,22 +147,12 @@ static NSDictionary *bkModifierMaps = nil;
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
 
   [defaultCenter addObserver:self
-                    selector:@selector(keyboardModifierChanged:)
-                        name:BKKeyboardModifierChanged
+                    selector:@selector(keyboardConfigChanged:)
+                        name:BKKeyboardConfigChanged
                       object:nil];
 
   [defaultCenter addObserver:self
-                    selector:@selector(keyboardCapsAsEscChanged:)
-                        name:BKKeyboardCapsAsEscChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardShiftAsEscChanged:)
-                        name:BKKeyboardShiftAsEscChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardFuncTriggerChanged:)
+                    selector:@selector(keyboardConfigChanged:)
                         name:BKKeyboardFuncTriggerChanged
                       object:nil];
 
@@ -307,35 +301,9 @@ static NSDictionary *bkModifierMaps = nil;
 
 #pragma mark Notifications
 
-- (void)keyboardModifierChanged:(NSNotification *)notification
+- (void)keyboardConfigChanged:(NSNotification *)notification
 {
-  // Map the sequence to a function in destination
-  NSDictionary *action = [notification userInfo];
-  [self assignSequence:action[@"sequence"] toModifier:[bkModifierMaps[action[@"modifier"]] integerValue]];
-}
-
-- (void)keyboardCapsAsEscChanged:(NSNotification *)notification
-{
-  if ([BKDefaults isCapsAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
-  } else {
-    [_terminal assignKey:nil toModifier:UIKeyModifierAlphaShift];
-  }
-}
-
-- (void)keyboardShiftAsEscChanged:(NSNotification *)notification
-{
-  if ([BKDefaults isShiftAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
-  } else {
-    [_terminal assignKey:nil toModifier:UIKeyModifierShift];
-  }
-}
-
-- (void)keyboardFuncTriggerChanged:(NSNotification *)notification
-{
-  NSDictionary *action = [notification userInfo];
-  [self assignFunction:action[@"func"] toTriggers:action[@"trigger"]];
+  [self configureTerminal];
 }
 
 - (void)appearanceChanged:(NSNotification *)notification

@@ -76,5 +76,5 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
 - (void)reset;
-
+- (void)resetDefaultControlKeys;
 @end
