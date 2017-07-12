@@ -68,7 +68,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     @"]" : @"\x1D",
     @"\\" : @"\x1C",
     @"^" : @"\x1E",
-    @"_" : @"\x1F"
+    @"_" : @"\x1F",
+    @"/" : @"\x1F"
   };
   FModifiers = @{
     @0 : @0,
@@ -205,6 +206,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
+  NSString *_textInputContextIdentifier;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -213,6 +215,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   if (self) {
     _inputEnabled = YES;
+    _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
+
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
 
@@ -236,6 +240,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
     
   _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
@@ -343,8 +348,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
   NSString *jsScript = [NSString stringWithFormat:@"write_to_term(%@[0])", jsString];
-
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript:jsScript completionHandler:nil];
+  });
 }
 
 - (NSString *)title
@@ -513,6 +520,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return YES;
 }
 
+- (NSString *)textInputContextIdentifier
+{
+  return _textInputContextIdentifier;
+}
+
 - (BOOL)canResignFirstResponder
 {
   return YES;
@@ -643,7 +655,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     NSMutableArray *cmds = [NSMutableArray array];
     NSString *charset;
     if (seq == TermViewCtrlSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
+      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
     } else if (seq == TermViewMetaSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
     } else if (seq == TermViewEscSeq) {

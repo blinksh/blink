@@ -47,19 +47,17 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 3.021.2
-	- iCloud Hosts sync. Synchronize hosts between devices. If a Host already has been synced, it provides conflict resolution. No critical data like passwords is saved.
-	- Auto Lock. If enabled, when you lock/unlock your device, Blink will also be locked. Passcode and TouchID will be required to unlock the app.
-	- Added ARMv7 support. Support for 32 bit devices like iPad 2, 3, iPhone 5, etc... We will publish depending on how well it performs!
-	- Added IPv6 support for hosts.
-	- Share Public Encryption Keys. You can now share the public key from the Keys section to other apps, like Mail.
+# Version 7.0
+	- Selection Granularity at the character level.
+	- Mapped Ctrl+/ to 0x1f (undo on Emacs).
+	- Set Autolock with a timer.
+	- Improved behavior of SmartKeys when in SplitView.
+	- Remember KB language selection between sessions.
 
-	- Updated Fira Code font to v1.204.
-	- Improved error checking on Themes and Font uploads. Auto correct if the GH URL is not a raw one.
+	- Fixed issue with terminal resizing not resetting after rotation or SplitView
+	- Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
 
-	- Fixed bug with password not getting saved on host creation
-	- Fixed crash when hitting arrows with landscape keyboard on Plus devices.
-	- Rolled back LC_CTYPE enforcement on server.
+	PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
 
 [View all changes](CHANGELOG.md)
 
