@@ -152,6 +152,7 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
           cell = [tableView dequeueReusableCellWithIdentifier:@"autoRepeatCell" forIndexPath:indexPath];
           _autoRepeatSwitch = [cell viewWithTag:AUTOREPEAT_TAG];
           [_autoRepeatSwitch setOn:[BKDefaults autoRepeatKeys]];
+          break;
         case 3:
           cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
           cell.textLabel.text = (NSString*)BKKeyboardFuncFTriggers;
