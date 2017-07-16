@@ -42,32 +42,15 @@
 
 @implementation BKFeedbackViewController
 
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-
-  // Uncomment the following line to preserve selection between presentations.
-  // self.clearsSelectionOnViewWillAppear = NO;
-
-  // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-  // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-  UITableViewCell *clickedCell = [self.tableView cellForRowAtIndexPath:indexPath];
+  UITableViewCell *clickedCell = [tableView cellForRowAtIndexPath:indexPath];
 
-  if ([clickedCell isEqual:self.twitterLinkCell]) {
+  if (clickedCell == self.twitterLinkCell) {
     [BKLinkActions sendToTwitter];
-  } else if ([clickedCell isEqual:self.githubLinkCell]) {
+  } else if (clickedCell == self.githubLinkCell) {
     [BKLinkActions sendToGitHub:nil];
-  } else if ([clickedCell isEqual:self.appstoreLinkCell]) {
+  } else if (clickedCell == self.appstoreLinkCell) {
     [BKLinkActions sendToAppStore];
   }
 }

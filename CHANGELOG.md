@@ -1,4 +1,52 @@
-# Version 2.109
+# Version 7.0
+	- Selection Granularity at the character level.
+	- Mapped Ctrl+/ to 0x1f (undo on Emacs).
+	- Set Autolock with a timer.
+	- Improved behavior of SmartKeys when in SplitView.
+	- Remember KB language selection between sessions.
+
+	- Fixed issue with terminal resizing not resetting after rotation or SplitView
+	- Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
+
+	PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
+
+# Version 5.028.1
+	- Fixed Cmd+v shortcut
+	- HostKey fingerprint as base64 encoding
+	- Smoothing the HUD on resize or SplitView
+	- Empty default user configuration bugs.
+	- Zoom shortcuts changed.
+	- Solarized theme fixes.
+	
+# Version 4.024.2
+	- AirTerminals! Put a terminal on your remote AirPlay screen :)
+	- Blink shortcuts. Use your external keyboard to move, create, or remove terminals. Configure the trigger too! View settings > Keyboard > Shortcuts for more info.
+	- Want to use SmartKeys when an external keyboard is connected? Now you can switch them on and off from configuration.
+	- View geometry of the screen from the overlay with each resize.
+	- Switch cursor blinking on/off from Appearance settings.
+
+	- Fixed TouchID issues when returning to the app.
+	- Fixed cursor blink sequence so that it always starts as ON.
+	- Fixed Host Port not resetting properly.
+	- Fixed overlay getting covered in landscape mode.
+
+	- Smoother experience thanks to cleanups and improvements.
+
+# Version 3.021.2
+	- iCloud Hosts sync. Synchronize hosts between devices. If a Host already has been synced, it provides conflict resolution. No critical data like passwords is saved.
+	- Auto Lock. If enabled, when you lock/unlock your device, Blink will also be locked. Passcode and TouchID will be required to unlock the app.
+	- Added ARMv7 support. Support for 32 bit devices like iPad 2, 3, iPhone 5, etc... We will publish depending on how well it performs!
+	- Added IPv6 support for hosts.
+	- Share Public Encryption Keys. You can now share the public key from the Keys section to other apps, like Mail.
+
+	- Updated Fira Code font to v1.204.
+	- Improved error checking on Themes and Font uploads. Auto correct if the GH URL is not a raw one.
+
+	- Fixed bug with password not getting saved on host creation.
+	- Fixed crash when hitting arrows with landscape keyboard on Plus devices.
+	- Rolled back LC_CTYPE enforcement on server.
+
+# Version 2.109 / 3.0
 	- NEW Autorepeat for normal keys on external keyboard. Vim users rejoice!
 	- NEW Default User for connections based on device.
 	- NEW Comments for Public Keys.

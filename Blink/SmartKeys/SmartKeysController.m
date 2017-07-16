@@ -29,7 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "SmartKeys.h"
+#import "SmartKeysController.h"
 
 
 NSString *const SpecialCursorKeyHome = @"SpecialCursorKeyHome";
@@ -44,13 +44,13 @@ static NSArray *AlternateKeys = nil; // To hold Function Keys F1 - F12
 static NSArray *CursorKeys = nil;
 
 
-@interface SmartKeys ()
+@interface SmartKeysController ()
 
 @property NSMutableArray *allKeys;
 
 @end
 
-@implementation SmartKeys {
+@implementation SmartKeysController {
   NSTimer *_timer;
 }
 
@@ -155,7 +155,7 @@ static NSArray *CursorKeys = nil;
   [self.allKeys addObject:[[SmartKey alloc] initWithName:KbdEscKey symbol:UIKeyInputEscape]];
 }
 
-- (void)symbolUp:(NSString *)symbol
+- (void)invalidateTimer
 {
   if (_timer != nil) {
     [_timer invalidate];
@@ -163,8 +163,16 @@ static NSArray *CursorKeys = nil;
   }
 }
 
+- (void)symbolUp:(NSString *)symbol
+{
+  [self invalidateTimer];
+}
+
 - (void)symbolDown:(NSString *)symbol
 {
+  // Always invalidate the previous key press if there was one.
+  [self invalidateTimer];
+  
   for (SmartKey *key in self.allKeys) {
     if ([key.name isEqualToString:symbol]) {
       [_textInputDelegate insertText:key.symbol];

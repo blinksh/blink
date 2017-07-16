@@ -20,7 +20,10 @@ var sigwinch = function() {
     t.scrollPort_.onResize_(null);
 }
 
-window.addEventListener('resize', sigwinch);
+window.onresize = function(){
+  clearTimeout(window.resizedFinished);
+  window.resizedFinished = setTimeout(sigwinch, 100);
+};
 
 var increaseTermFontSize = function() {
     var size = t.getFontSize();
@@ -46,6 +49,11 @@ var setFontSize = function(size) {
     t.setFontSize(size);
     window.webkit.messageHandlers.interOp.postMessage({"op": "fontSizeChanged", "data": {"size": t.getFontSize()}});
 }
+
+var setCursorBlink = function(state) {
+  t.prefs_.set('cursor-blink', state);
+}
+
 
 var focusTerm = function() {
     t.onFocusChange_(true);
@@ -74,6 +82,10 @@ var loadFontFromCSS = function(cssPath, name) {
 
 var clear = function() {
   t.clear();
+}
+
+var reset = function() {
+  t.reset();
 }
 
 hterm.copySelectionToClipboard = function(document) {

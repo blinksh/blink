@@ -49,6 +49,14 @@
     // Dispose of any resources that can be recreated.
 }
 
+- (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
+{
+  if([string isEqualToString:@" "]){
+    return NO;
+  }
+  return YES;
+}
+
 #pragma mark - Table view data source
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
@@ -61,7 +69,8 @@
 
 - (void)unwindForSegue:(UIStoryboardSegue *)unwindSegue towardsViewController:(UIViewController *)subsequentVC{
   if(self.userNameField.text != nil && ![self.userNameField.text isEqualToString:@""]){
-    [BKDefaults setDefaultUserName:self.userNameField.text];
+    NSString *sanitisedName = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
+    [BKDefaults setDefaultUserName:sanitisedName];
     [BKDefaults saveDefaults];
   }
 }

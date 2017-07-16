@@ -57,12 +57,16 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 @property (nonatomic, strong) NSString *defaultUser;
 @property (nonatomic) BOOL capsAsEsc;
 @property (nonatomic) BOOL shiftAsEsc;
+@property (nonatomic) BOOL autoRepeatKeys;
+@property (nonatomic) BOOL cursorBlink;
 
 + (void)initialize;
 + (BOOL)saveDefaults;
 + (void)setModifer:(NSString *)modifier forKey:(NSString *)key;
 + (void)setCapsAsEsc:(BOOL)state;
 + (void)setShiftAsEsc:(BOOL)state;
++ (void)setAutoRepeatKeys: (BOOL)state;
++ (void)setCursorBlink:(BOOL)state;
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
@@ -77,6 +81,8 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (NSDictionary *)keyboardFuncTriggers;
 + (BOOL)isCapsAsEsc;
 + (BOOL)isShiftAsEsc;
++ (BOOL)autoRepeatKeys;
++ (BOOL)isCursorBlink;
 + (void)setDefaultUserName:(NSString*)name;
 + (NSString*)defaultUserName;
 @end

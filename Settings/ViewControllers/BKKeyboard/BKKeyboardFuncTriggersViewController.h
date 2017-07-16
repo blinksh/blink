@@ -33,6 +33,8 @@
 
 @interface BKKeyboardFuncTriggersViewController : UITableViewController
 
+@property (nonatomic, strong) NSString *function;
+
 - (void)performInitialSelection:(NSArray *)selectedPrediction;
 - (NSArray *)selectedObjects;
 

@@ -95,6 +95,20 @@
   [pb setString:_pubkey.privateKey];
 }
 
+- (IBAction)sharePublicKey:(id)sender
+{
+  NSArray *sharingItems = @[_pubkey];
+
+  UIActivityViewController *activityController = [[UIActivityViewController alloc] initWithActivityItems:sharingItems applicationActivities:nil];
+  activityController.excludedActivityTypes = @[UIActivityTypePostToTwitter, UIActivityTypePostToFacebook,
+                                               UIActivityTypePostToWeibo, UIActivityTypeCopyToPasteboard,
+                                               UIActivityTypeAssignToContact, UIActivityTypeSaveToCameraRoll,
+                                               UIActivityTypeAddToReadingList, UIActivityTypePostToFlickr,
+                                               UIActivityTypePostToVimeo, UIActivityTypePostToTencentWeibo];
+  activityController.popoverPresentationController.barButtonItem = sender;
+  [self presentViewController:activityController animated:YES completion:nil];
+}
+
 - (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
 {
   if ([segue.identifier isEqualToString:@"unwindFromDetails"]) {

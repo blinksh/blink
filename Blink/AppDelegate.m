@@ -30,6 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
+#import "BKiCloudSyncHandler.h"
+#import "BKTouchIDAuthManager.h"
+#import "ScreenController.h"
+@import CloudKit;
 
 #if HOCKEYSDK
 @import HockeySDK;
@@ -43,7 +47,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  
+  [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
   // Override point for customization after application launch.
 #if HOCKEYSDK
   NSString *hockeyID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"HockeyID"];
@@ -54,8 +58,10 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif
+#endif 
   
+  [[ScreenController shared] setup];
+
   return YES;
 }
 
@@ -86,4 +92,7 @@
   // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+- (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler{
+  [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+}
 @end

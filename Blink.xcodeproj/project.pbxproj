@@ -15,6 +15,7 @@
 		0716B5961CFFAB9300268B5B /* TermController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5621CFFAB9300268B5B /* TermController.m */; };
 		0716B5A71CFFABB000268B5B /* BlinkUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5A51CFFABB000268B5B /* BlinkUITests.m */; };
 		0716B5A81CFFABB000268B5B /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0716B5A61CFFABB000268B5B /* Info.plist */; };
+		0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728A1D91E0AE80400ABD31B /* SmartKeysController.m */; };
 		0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
@@ -30,7 +31,6 @@
 		073D26BC1DC4137000965AB2 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
 		073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
 		073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
-		073D26BF1DC4137000965AB2 /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B81DC4137000965AB2 /* SmartKeys.m */; };
 		073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D26B91DC4137000965AB2 /* SmartKeys.xib */; };
 		073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26BB1DC4137000965AB2 /* SmartKeysView.m */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
@@ -103,10 +103,28 @@
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
 		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
+		07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06331E08B12E008310B7 /* PasscodeLock.strings */; };
+		07AA064A1E08B12E008310B7 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06351E08B12E008310B7 /* Functions.swift */; };
+		07AA064B1E08B12E008310B7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06361E08B12E008310B7 /* Info.plist */; };
+		07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06381E08B12E008310B7 /* ChangePasscodeState.swift */; };
+		07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06391E08B12E008310B7 /* ConfirmPasscodeState.swift */; };
+		07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063A1E08B12E008310B7 /* EnterPasscodeState.swift */; };
+		07AA064F1E08B12E008310B7 /* PasscodeLock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063B1E08B12E008310B7 /* PasscodeLock.swift */; };
+		07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063C1E08B12E008310B7 /* SetPasscodeState.swift */; };
+		07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063E1E08B12E008310B7 /* PasscodeLockPresenter.swift */; };
+		07AA06521E08B12E008310B7 /* PasscodeLockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063F1E08B12E008310B7 /* PasscodeLockViewController.swift */; };
+		07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06411E08B12E008310B7 /* PasscodeLockConfigurationType.swift */; };
+		07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06421E08B12E008310B7 /* PasscodeLockStateType.swift */; };
+		07AA06551E08B12E008310B7 /* PasscodeLockType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06431E08B12E008310B7 /* PasscodeLockType.swift */; };
+		07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06441E08B12E008310B7 /* PasscodeRepositoryType.swift */; };
+		07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06461E08B12E008310B7 /* PasscodeLockView.xib */; };
+		07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06471E08B12E008310B7 /* PasscodeSignButton.swift */; };
+		07AA06591E08B12E008310B7 /* PasscodeSignPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06481E08B12E008310B7 /* PasscodeSignPlaceholderView.swift */; };
+		07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA065A1E08B61F008310B7 /* PasscodeLockConfiguration.swift */; };
+		07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA065C1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift */; };
 		07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
 		07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
 		07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
-		07C92B7A1DD3BCE6002AA282 /* SmartKeys.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B81DC4137000965AB2 /* SmartKeys.m */; };
 		07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26BB1DC4137000965AB2 /* SmartKeysView.m */; };
 		07C92B7C1DD3BD55002AA282 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D26B91DC4137000965AB2 /* SmartKeys.xib */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
@@ -123,9 +141,18 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
+		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
+		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
+		B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */; };
+		B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7703BCE1E29233600B698DD /* BKKeyboardShortcutsViewController.m */; };
 		B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A487641DC7BD65007BA809 /* BKDefaultUserViewController.m */; };
 		B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A487681DC7C48D007BA809 /* UIDevice+DeviceName.m */; };
 		B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */; };
+		B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B7B3FC3F1DF5E99200B3D37C /* BKTouchIDAuthManager.m */; };
+		B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */; };
+		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
+		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		C94437651D838ABF0096F84E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
@@ -149,6 +176,8 @@
 		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
+		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 /* End PBXBuildFile section */
 
@@ -265,6 +294,8 @@
 		0716B5621CFFAB9300268B5B /* TermController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermController.m; sourceTree = "<group>"; };
 		0716B5A51CFFABB000268B5B /* BlinkUITests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlinkUITests.m; sourceTree = "<group>"; };
 		0716B5A61CFFABB000268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		0728A1D81E0AE80400ABD31B /* SmartKeysController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysController.h; sourceTree = "<group>"; };
+		0728A1D91E0AE80400ABD31B /* SmartKeysController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysController.m; sourceTree = "<group>"; };
 		0732F0491D062B9A00AB5438 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
@@ -282,8 +313,6 @@
 		073D26B41DC4137000965AB2 /* SKModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKModifierButton.m; sourceTree = "<group>"; };
 		073D26B51DC4137000965AB2 /* SKNonModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKNonModifierButton.h; sourceTree = "<group>"; };
 		073D26B61DC4137000965AB2 /* SKNonModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKNonModifierButton.m; sourceTree = "<group>"; };
-		073D26B71DC4137000965AB2 /* SmartKeys.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeys.h; sourceTree = "<group>"; };
-		073D26B81DC4137000965AB2 /* SmartKeys.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeys.m; sourceTree = "<group>"; };
 		073D26B91DC4137000965AB2 /* SmartKeys.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SmartKeys.xib; sourceTree = "<group>"; };
 		073D26BA1DC4137000965AB2 /* SmartKeysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysView.h; sourceTree = "<group>"; };
 		073D26BB1DC4137000965AB2 /* SmartKeysView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysView.m; sourceTree = "<group>"; };
@@ -298,6 +327,26 @@
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
 		079635861D0E6602000473B1 /* fterm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fterm.h; sourceTree = "<group>"; };
 		079635DA1D0F8219000473B1 /* webfont.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfont.js; sourceTree = "<group>"; };
+		07AA06341E08B12E008310B7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PasscodeLock.strings; sourceTree = "<group>"; };
+		07AA06351E08B12E008310B7 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
+		07AA06361E08B12E008310B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		07AA06381E08B12E008310B7 /* ChangePasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangePasscodeState.swift; sourceTree = "<group>"; };
+		07AA06391E08B12E008310B7 /* ConfirmPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConfirmPasscodeState.swift; sourceTree = "<group>"; };
+		07AA063A1E08B12E008310B7 /* EnterPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EnterPasscodeState.swift; sourceTree = "<group>"; };
+		07AA063B1E08B12E008310B7 /* PasscodeLock.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLock.swift; sourceTree = "<group>"; };
+		07AA063C1E08B12E008310B7 /* SetPasscodeState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SetPasscodeState.swift; sourceTree = "<group>"; };
+		07AA063D1E08B12E008310B7 /* PasscodeLock.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PasscodeLock.h; sourceTree = "<group>"; };
+		07AA063E1E08B12E008310B7 /* PasscodeLockPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockPresenter.swift; sourceTree = "<group>"; };
+		07AA063F1E08B12E008310B7 /* PasscodeLockViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockViewController.swift; sourceTree = "<group>"; };
+		07AA06411E08B12E008310B7 /* PasscodeLockConfigurationType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockConfigurationType.swift; sourceTree = "<group>"; };
+		07AA06421E08B12E008310B7 /* PasscodeLockStateType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockStateType.swift; sourceTree = "<group>"; };
+		07AA06431E08B12E008310B7 /* PasscodeLockType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockType.swift; sourceTree = "<group>"; };
+		07AA06441E08B12E008310B7 /* PasscodeRepositoryType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeRepositoryType.swift; sourceTree = "<group>"; };
+		07AA06461E08B12E008310B7 /* PasscodeLockView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = PasscodeLockView.xib; sourceTree = "<group>"; };
+		07AA06471E08B12E008310B7 /* PasscodeSignButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignButton.swift; sourceTree = "<group>"; };
+		07AA06481E08B12E008310B7 /* PasscodeSignPlaceholderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeSignPlaceholderView.swift; sourceTree = "<group>"; };
+		07AA065A1E08B61F008310B7 /* PasscodeLockConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PasscodeLockConfiguration.swift; sourceTree = "<group>"; };
+		07AA065C1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefaultsPasscodeRepository.swift; sourceTree = "<group>"; };
 		07E3AEAE1D8F6758007BC086 /* BKFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFeedbackViewController.h; sourceTree = "<group>"; };
 		07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFeedbackViewController.m; sourceTree = "<group>"; };
 		07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSupportViewController.h; sourceTree = "<group>"; };
@@ -322,12 +371,29 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
+		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
+		B752EE291DFEF19D00E305C8 /* BKUserConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKUserConfigurationManager.h; sourceTree = "<group>"; };
+		B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKUserConfigurationManager.m; sourceTree = "<group>"; };
+		B752EE2C1DFEF45300E305C8 /* BKSecurityConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSecurityConfigurationViewController.h; sourceTree = "<group>"; };
+		B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSecurityConfigurationViewController.m; sourceTree = "<group>"; };
+		B7703BCD1E29233600B698DD /* BKKeyboardShortcutsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKKeyboardShortcutsViewController.h; sourceTree = "<group>"; };
+		B7703BCE1E29233600B698DD /* BKKeyboardShortcutsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKKeyboardShortcutsViewController.m; sourceTree = "<group>"; };
 		B7A487631DC7BD65007BA809 /* BKDefaultUserViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDefaultUserViewController.h; sourceTree = "<group>"; };
 		B7A487641DC7BD65007BA809 /* BKDefaultUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDefaultUserViewController.m; sourceTree = "<group>"; };
 		B7A487671DC7C48D007BA809 /* UIDevice+DeviceName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+DeviceName.h"; sourceTree = "<group>"; };
 		B7A487681DC7C48D007BA809 /* UIDevice+DeviceName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+DeviceName.m"; sourceTree = "<group>"; };
 		B7A4876B1DC7C709007BA809 /* BKSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsViewController.h; sourceTree = "<group>"; };
 		B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsViewController.m; sourceTree = "<group>"; };
+		B7B3FC3E1DF5E99200B3D37C /* BKTouchIDAuthManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTouchIDAuthManager.h; sourceTree = "<group>"; };
+		B7B3FC3F1DF5E99200B3D37C /* BKTouchIDAuthManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTouchIDAuthManager.m; sourceTree = "<group>"; };
+		B7D450341DD3A87200CE0DBE /* BKiCloudSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudSyncHandler.h; sourceTree = "<group>"; };
+		B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudSyncHandler.m; sourceTree = "<group>"; };
+		B7D4503A1DD4706000CE0DBE /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
+		B7D4503B1DD4706000CE0DBE /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
+		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
+		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
 		C944375F1D831CD30096F84E /* Themes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Themes; sourceTree = "<group>"; };
@@ -372,6 +438,8 @@
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
+		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
+		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -405,6 +473,7 @@
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
+				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
@@ -438,6 +507,8 @@
 				0716B5621CFFAB9300268B5B /* TermController.m */,
 				079635831D0E6602000473B1 /* TermView.h */,
 				079635841D0E6602000473B1 /* TermView.m */,
+				D20A28BC1E185BDB00055791 /* ScreenController.h */,
+				D20A28BD1E185BDB00055791 /* ScreenController.m */,
 				079635851D0E6602000473B1 /* fterm.m */,
 				079635861D0E6602000473B1 /* fterm.h */,
 			);
@@ -471,6 +542,8 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				07AA06321E08B12E008310B7 /* PasscodeLock */,
+				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
 				0732F12A1D06324B00AB5438 /* libstdc++.tbd */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
@@ -523,9 +596,9 @@
 		073D26AE1DC4137000965AB2 /* SmartKeys */ = {
 			isa = PBXGroup;
 			children = (
+				0728A1D81E0AE80400ABD31B /* SmartKeysController.h */,
+				0728A1D91E0AE80400ABD31B /* SmartKeysController.m */,
 				073D26AF1DC4137000965AB2 /* CustomViews */,
-				073D26B71DC4137000965AB2 /* SmartKeys.h */,
-				073D26B81DC4137000965AB2 /* SmartKeys.m */,
 				073D26B91DC4137000965AB2 /* SmartKeys.xib */,
 				073D26BA1DC4137000965AB2 /* SmartKeysView.h */,
 				073D26BB1DC4137000965AB2 /* SmartKeysView.m */,
@@ -552,6 +625,58 @@
 				073D26B61DC4137000965AB2 /* SKNonModifierButton.m */,
 			);
 			path = Button;
+			sourceTree = "<group>";
+		};
+		07AA06321E08B12E008310B7 /* PasscodeLock */ = {
+			isa = PBXGroup;
+			children = (
+				07AA065C1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift */,
+				07AA065A1E08B61F008310B7 /* PasscodeLockConfiguration.swift */,
+				07AA06331E08B12E008310B7 /* PasscodeLock.strings */,
+				07AA06351E08B12E008310B7 /* Functions.swift */,
+				07AA06361E08B12E008310B7 /* Info.plist */,
+				07AA06371E08B12E008310B7 /* PasscodeLock */,
+				07AA063D1E08B12E008310B7 /* PasscodeLock.h */,
+				07AA063E1E08B12E008310B7 /* PasscodeLockPresenter.swift */,
+				07AA063F1E08B12E008310B7 /* PasscodeLockViewController.swift */,
+				07AA06401E08B12E008310B7 /* Protocols */,
+				07AA06451E08B12E008310B7 /* Views */,
+			);
+			name = PasscodeLock;
+			path = PasscodeLock/PasscodeLock;
+			sourceTree = "<group>";
+		};
+		07AA06371E08B12E008310B7 /* PasscodeLock */ = {
+			isa = PBXGroup;
+			children = (
+				07AA06381E08B12E008310B7 /* ChangePasscodeState.swift */,
+				07AA06391E08B12E008310B7 /* ConfirmPasscodeState.swift */,
+				07AA063A1E08B12E008310B7 /* EnterPasscodeState.swift */,
+				07AA063B1E08B12E008310B7 /* PasscodeLock.swift */,
+				07AA063C1E08B12E008310B7 /* SetPasscodeState.swift */,
+			);
+			path = PasscodeLock;
+			sourceTree = "<group>";
+		};
+		07AA06401E08B12E008310B7 /* Protocols */ = {
+			isa = PBXGroup;
+			children = (
+				07AA06411E08B12E008310B7 /* PasscodeLockConfigurationType.swift */,
+				07AA06421E08B12E008310B7 /* PasscodeLockStateType.swift */,
+				07AA06431E08B12E008310B7 /* PasscodeLockType.swift */,
+				07AA06441E08B12E008310B7 /* PasscodeRepositoryType.swift */,
+			);
+			path = Protocols;
+			sourceTree = "<group>";
+		};
+		07AA06451E08B12E008310B7 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				07AA06461E08B12E008310B7 /* PasscodeLockView.xib */,
+				07AA06471E08B12E008310B7 /* PasscodeSignButton.swift */,
+				07AA06481E08B12E008310B7 /* PasscodeSignPlaceholderView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		07E3AEAA1D8F64C6007BC086 /* GetInTouch */ = {
@@ -600,6 +725,21 @@
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
 		};
+		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
+			isa = PBXGroup;
+			children = (
+				B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */,
+				B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */,
+				B752EE291DFEF19D00E305C8 /* BKUserConfigurationManager.h */,
+				B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */,
+				B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */,
+				B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */,
+				B752EE2C1DFEF45300E305C8 /* BKSecurityConfigurationViewController.h */,
+				B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */,
+			);
+			path = UserConfiguration;
+			sourceTree = "<group>";
+		};
 		B7A4875F1DC7BD29007BA809 /* BKDefaultUser */ = {
 			isa = PBXGroup;
 			children = (
@@ -618,6 +758,15 @@
 				B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */,
 			);
 			path = Settings;
+			sourceTree = "<group>";
+		};
+		B7B3FC3A1DF5E96900B3D37C /* Security */ = {
+			isa = PBXGroup;
+			children = (
+				B7B3FC3E1DF5E99200B3D37C /* BKTouchIDAuthManager.h */,
+				B7B3FC3F1DF5E99200B3D37C /* BKTouchIDAuthManager.m */,
+			);
+			path = Security;
 			sourceTree = "<group>";
 		};
 		C989E53B1D6CC488003E0079 /* BKHosts */ = {
@@ -642,6 +791,8 @@
 				C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */,
 				C989E5451D6CC488003E0079 /* BKKeyboardViewController.h */,
 				C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */,
+				B7703BCD1E29233600B698DD /* BKKeyboardShortcutsViewController.h */,
+				B7703BCE1E29233600B698DD /* BKKeyboardShortcutsViewController.m */,
 			);
 			path = BKKeyboard;
 			sourceTree = "<group>";
@@ -680,6 +831,7 @@
 				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
 				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
 				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
+				B7B3FC3A1DF5E96900B3D37C /* Security */,
 				C9B2E0061D6B612300B89F69 /* Model */,
 				C9B2E0111D6B612300B89F69 /* Network */,
 				C9B2E0141D6B612300B89F69 /* ViewControllers */,
@@ -711,6 +863,10 @@
 			children = (
 				C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */,
 				C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */,
+				B7D450341DD3A87200CE0DBE /* BKiCloudSyncHandler.h */,
+				B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */,
+				B7D4503A1DD4706000CE0DBE /* Reachability.h */,
+				B7D4503B1DD4706000CE0DBE /* Reachability.m */,
 			);
 			path = Network;
 			sourceTree = "<group>";
@@ -726,6 +882,7 @@
 				C989E54F1D6CC4A1003E0079 /* Appearance */,
 				C989E53B1D6CC488003E0079 /* BKHosts */,
 				C989E5421D6CC488003E0079 /* BKKeyboard */,
+				B75112C71DE4A7680040C693 /* UserConfiguration */,
 			);
 			path = ViewControllers;
 			sourceTree = "<group>";
@@ -834,6 +991,7 @@
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = HV2S48975V;
+						LastSwiftMigration = 0830;
 						SystemCapabilities = {
 							com.apple.Keychain = {
 								enabled = 1;
@@ -842,12 +1000,13 @@
 								enabled = 1;
 							};
 							com.apple.iCloud = {
-								enabled = 0;
+								enabled = 1;
 							};
 						};
 					};
 					EA0BA1A31C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
+						LastSwiftMigration = 0800;
 						TestTargetID = EA0BA18A1C0CC57B00719C1A;
 					};
 				};
@@ -963,12 +1122,15 @@
 				07E3AED31D919272007BC086 /* css in Resources */,
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
+				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
+				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
+				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
 				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
@@ -996,7 +1158,6 @@
 				07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */,
 				07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */,
 				07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */,
-				07C92B7A1DD3BCE6002AA282 /* SmartKeys.m in Sources */,
 				07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */,
 				076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */,
 				076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */,
@@ -1029,6 +1190,7 @@
 				076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */,
 				076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */,
 				076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */,
+				D20A28C21E185BFF00055791 /* ScreenController.m in Sources */,
 				076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */,
 				076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */,
@@ -1042,51 +1204,76 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07AA064F1E08B12E008310B7 /* PasscodeLock.swift in Sources */,
 				073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */,
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
+				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
+				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
-				073D26BF1DC4137000965AB2 /* SmartKeys.m in Sources */,
+				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
+				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
+				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
+				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
+				07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */,
+				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
+				07AA06551E08B12E008310B7 /* PasscodeLockType.swift in Sources */,
+				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
+				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
+				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
+				D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */,
 				079635881D0E6602000473B1 /* fterm.m in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
+				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
+				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
+				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
+				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
+				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
+				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
+				07AA06521E08B12E008310B7 /* PasscodeLockViewController.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
+				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
+				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
+				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
 				C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
+				B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */,
+				07AA06591E08B12E008310B7 /* PasscodeSignPlaceholderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1143,6 +1330,14 @@
 				0716B52F1CFFAB9300268B5B /* Base */,
 			);
 			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		07AA06331E08B12E008310B7 /* PasscodeLock.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				07AA06341E08B12E008310B7 /* en */,
+			);
+			name = PasscodeLock.strings;
 			sourceTree = "<group>";
 		};
 		C9B2E0041D6B612300B89F69 /* Settings.storyboard */ = {
@@ -1244,6 +1439,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEFINES_MODULE = YES;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1285,6 +1481,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				COPY_PHASE_STRIP = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
 				ENABLE_NS_ASSERTIONS = NO;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				GCC_C_LANGUAGE_STANDARD = gnu99;
@@ -1312,6 +1509,8 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1335,8 +1534,9 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Debug;
 		};
@@ -1347,6 +1547,8 @@
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1367,18 +1569,21 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
+				VALID_ARCHS = "armv7 arm64";
 			};
 			name = Release;
 		};
 		EA0BA1B11C0CC57C00719C1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;
 				PRODUCT_NAME = Blink;
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Blink;
 				USES_XCTRUNNER = YES;
 			};
@@ -1387,10 +1592,12 @@
 		EA0BA1B21C0CC57C00719C1A /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;
 				PRODUCT_NAME = Blink;
+				SWIFT_VERSION = 3.0;
 				TEST_TARGET_NAME = Blink;
 				USES_XCTRUNNER = YES;
 			};

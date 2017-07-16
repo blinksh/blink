@@ -47,19 +47,22 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 2.109
-	- NEW Autorepeat for normal keys on external keyboard. Vim users rejoice!
-	- NEW Default User for connections based on device.
-	- NEW Comments for Public Keys.
+# Version 7.0
+	- Selection Granularity at the character level.
+	- Mapped Ctrl+/ to 0x1f (undo on Emacs).
+	- Set Autolock with a timer.
+	- Improved behavior of SmartKeys when in SplitView.
+	- Remember KB language selection between sessions.
 
-	- Security updates to libraries.
+	- Fixed issue with terminal resizing not resetting after rotation or SplitView
+	- Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
 
-	- Fixed critical bugs affecting ssh connections.
+	PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
 
 [View all changes](CHANGELOG.md)
 
 # Attributions
-- [Mosh](https://mosh.mit.edu) was written by Keith Winstein, along with Anders Kaseorg, Quentin Smith, Richard Tibbetts, Keegan McAllister, and John Hood.
+- [Mosh](https://mosh.org) was written by Keith Winstein, along with Anders Kaseorg, Quentin Smith, Richard Tibbetts, Keegan McAllister, and John Hood.
 - This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (http://www.openssl.org/).
 - [Libssh2](https://www.libssh2.org)

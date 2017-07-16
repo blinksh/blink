@@ -36,11 +36,12 @@
 
 @class TermController;
 
-@protocol TermControlDelegate
+@protocol TermControlDelegate <NSObject>
 
 // terminalReady to start a specific session from the delegate, instead of inside the class.
 //- (void)terminalReady:(TermStream *)stream;
 - (void)terminalHangup:(TermController *)control;
+- (void)terminalDidResize:(TermController*)control;
 
 @end
 
@@ -50,7 +51,7 @@
 @property (readonly) FILE *termin;
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
-@property (strong, nonatomic) TerminalView *terminal;
+@property (strong, nonatomic) TermView *terminal;
 @property (strong, nonatomic) UIScrollView *containerView;
 @property (weak) id<TermControlDelegate> delegate;
 
