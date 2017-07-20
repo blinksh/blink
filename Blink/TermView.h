@@ -34,6 +34,7 @@
 
 extern NSString * const TermViewCtrlSeq;
 extern NSString * const TermViewEscSeq;
+extern NSString * const TermViewMetaSeq;
 extern NSString * const TermViewCursorFuncSeq;
 extern NSString * const TermViewFFuncSeq;
 extern NSString * const TermViewAutoRepeateSeq;

@@ -219,7 +219,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 + (NSArray *)keyboardModifierList
 {
-  return @[BKKeyboardSeqNone, BKKeyboardSeqCtrl, BKKeyboardSeqEsc];
+  return @[BKKeyboardSeqNone, BKKeyboardSeqCtrl, BKKeyboardSeqMeta, BKKeyboardSeqEsc];
 }
 
 + (NSArray *)keyboardFuncTriggersList
