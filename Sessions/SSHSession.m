@@ -38,6 +38,7 @@
 #include <poll.h>
 #include <stdlib.h>
 #include <sys/socket.h>
+#include <sys/time.h>
 
 #import "BKDefaults.h"
 #import "BKHosts.h"

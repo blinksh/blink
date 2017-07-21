@@ -75,7 +75,7 @@ static const char *usage_format =
   NSArray *listArgv = [listArgvMaybeEmptyStrings filteredArrayUsingPredicate:
                        [NSPredicate predicateWithFormat:@"length > 0"]];
   int local_argc = [listArgv count];
-  char** local_argv = (char **)malloc((argc + 1) * sizeof(char*));
+  char** local_argv = (char **)malloc((local_argc + 1) * sizeof(char*));
   for (unsigned i = 0; i < local_argc; i++)
   {
     local_argv[i] = [[listArgv objectAtIndex:i] UTF8String];

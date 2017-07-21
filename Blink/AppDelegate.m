@@ -102,27 +102,67 @@
 }
 
 
+- (NSString*)uniqueFileName:(NSString*)filename {
+  NSString* extension = [filename pathExtension];
+  NSString* basename = [filename stringByDeletingPathExtension];
+  int nameSuffix = 1;
+  
+  NSURL* target = [NSURL fileURLWithPath:filename];
+  /*
+   Find a suitable filename that doesn't already exist on disk.
+   Do not use `fileManager.fileExistsAtPath(target.path!)` because
+   the document might not have downloaded yet.
+   */
+  NSError* error;
+  while ([target checkPromisedItemIsReachableAndReturnError:(&error)]) {
+    NSString* suffix = [NSString stringWithFormat:@"-%d.", nameSuffix];
+    NSString* newName = [[basename stringByAppendingString:suffix] stringByAppendingString:extension];
+    target = [NSURL fileURLWithPath:newName];
+    nameSuffix += 1;
+  }
+  return target.path;
+}
+
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
+  BOOL shouldOpenInPlace = options[UIApplicationOpenURLOptionsOpenInPlaceKey];
+  if (shouldOpenInPlace) [url startAccessingSecurityScopedResource];
   NSData *data = [NSData dataWithContentsOfURL:url];
+  if (shouldOpenInPlace) [url stopAccessingSecurityScopedResource];
+  // The place where we will write the data:
   NSString* filename = [url lastPathComponent];
-  
   NSString* path = [docsPath stringByAppendingPathComponent:filename];
-  if ([data writeToFile:path atomically:YES]) {
-     // If it worked and it was a file in our Inbox, we delete it:
-    if (([url isFileURL]) && (
-        ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
-        ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
-        )) {
-      NSError *e;
-      if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
-        fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
+  NSString* pathUnique = [self uniqueFileName:path];
+
+  if (shouldOpenInPlace && (data != nil)) {
+    if ([data writeToFile:pathUnique atomically:YES]) {
+      // If it worked and it was a file in our Inbox, we delete it:
+      if (([url isFileURL]) && (
+                                ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
+                                ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
+                                )) {
+        NSError *e;
+        if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
+          fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
+        }
       }
     }
+    // TODO? automatic expansion of archives. Should be a preference. Security risk?
+    return YES;
+  } else {
+    // can not open in place. Need to import.
+    // HOW can I debug that with iOS11?
+    NSFileAccessIntent *readIntent = [NSFileAccessIntent readingIntentWithURL:url options:0];
+    NSFileAccessIntent *writeIntent = [NSFileAccessIntent writingIntentWithURL:[NSURL  fileURLWithPath:pathUnique] options:NSFileCoordinatorWritingForReplacing];
+    NSFileCoordinator* fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
+    [fileCoordinator coordinateAccessWithIntents:@[readIntent] queue:queue byAccessor:^(NSError * _Nullable error) {
+      if (error != nil) return;
+      [[NSFileManager defaultManager]  copyItemAtURL:readIntent.URL toURL:writeIntent.URL error:0];
+    }];
+    return YES;
   }
-  // TODO? automatic expansion of archives. Should be a preference.
-  return YES;
 }
 
 

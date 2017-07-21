@@ -122,7 +122,6 @@ static NSDictionary *commandList = nil;
   stdin = _stream.control.termin;
   stdout = _stream.control.termout;
   stderr = _stream.control.termout;
-  
   NSString* commandName = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
   function = [[commandList objectForKey: commandName] pointerValue];
   if (function == nil) {

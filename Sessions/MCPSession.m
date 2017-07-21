@@ -54,6 +54,30 @@
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
+- (void)ssh_save_id:(int)argc argv:(char **)argv {
+  // Save specific IDs to ~/Documents/.ssh/...
+  // Useful for other Unix tools
+  BKPubKey *pk;
+  // Path = getenv(SSH_HOME) or ~/Documents
+  NSString* keypath;
+  if (getenv("SSH_HOME")) keypath = [NSString stringWithUTF8String:getenv("SSH_HOME")];
+  else keypath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  keypath = [keypath stringByAppendingPathComponent:@".ssh"];
+  
+  for (int i = 1; i < argc; i++) {
+    if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:argv[i]]]) != nil) {
+      NSString* filename = [keypath stringByAppendingPathComponent:[NSString stringWithUTF8String:argv[i]]];
+      // save private key:
+      [pk.privateKey writeToFile:filename atomically:NO];
+      filename = [filename stringByAppendingString:@".pub"];
+      [pk.publicKey writeToFile:filename atomically:NO];
+    }
+  }
+  if (argc < 1) {
+    [self out:"Usage: ssh-save-id identity"];
+  }
+    
+}
 
 - (char **) makeargs:(NSString*) cmdline argc:(int*) argc
 {
@@ -239,7 +263,6 @@
   argv = nil;
 
   // Path for application files, including history.txt and keys
-  // TODO: give them a name / position
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
@@ -249,10 +272,12 @@
   // I'm not going to erase it, so we just add ourselves.
   binPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:[NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding]];
   
-  // We can't write in $HOME so for ssh & curl to work, we need other homes for config files:
-  setenv("SSH_HOME", docsPath.UTF8String, 0);
-  setenv("CURL_HOME", docsPath.UTF8String, 0);
-  setenv("PYTHONHOME", libPath.UTF8String, 0);
+  // We can't write in $HOME so we need to set the position of config files:
+  setenv("SSH_HOME", docsPath.UTF8String, 0);  // SSH keys in ~/Documents/.ssh/
+  setenv("CURL_HOME", docsPath.UTF8String, 0); // CURL config in ~/Documents/
+  setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python2.7/
+  // hg config file in ~/Documents/.hgrc
+  setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
   setenv("PATH", binPath.UTF8String, 1); // override
   // iOS already defines "HOME" as the home dir of the application
   
@@ -289,12 +314,13 @@
       } else if ([cmd isEqualToString:@"ssh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
-
         [self runSSHWithArgs:argc argv:argv];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
         [self runSSHCopyIDWithArgs:argc argv:argv];
+      } else if ([cmd isEqualToString:@"ssh-save-id"]) {
+        [self ssh_save_id:argc argv:argv];
       } else if ([cmd isEqualToString:@"config"]) {
         [self showConfig];
       } else if  ([cmd isEqualToString:@"setenv"]) {
@@ -322,9 +348,12 @@
             fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
           }
           fileLocation = [@"vim://" stringByAppendingString:fileLocation];
-          NSURL *myURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+          NSURL *vimURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
           dispatch_async(dispatch_get_main_queue(), ^{
-            [[UIApplication sharedApplication] openURL:myURL];
+            // canOpenURL: permission to query. Must be set.
+            // if ([[UIApplication sharedApplication] canOpenURL:vimURL]) {
+               [[UIApplication sharedApplication] openURL:vimURL];
+            // }
           });
         } else {
           [self runCommandWithArgs:argc argv:argv];

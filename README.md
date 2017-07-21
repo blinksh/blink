@@ -39,7 +39,7 @@ You will need to compile the following frameworks:
 * blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj
 * blink/AppleSource/libarchive/libarchive_ios/libarchive_ios.xcodeproj
 
-These create four libraries: 
+These create five libraries: 
 * file_cmds_ios.framework 
 * shell_cmds_ios.framewok
 * text_cmds_ios.framework
