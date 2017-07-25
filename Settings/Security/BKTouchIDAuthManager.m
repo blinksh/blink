@@ -28,10 +28,9 @@
 // <http://www.github.com/blinksh/blink>.
 //
 ////////////////////////////////////////////////////////////////////////////////
-
 #import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
-#import "Blink-swift.h"
+#import "Blink-Swift.h"
 
 @import LocalAuthentication;
 
