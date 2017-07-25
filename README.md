@@ -1,3 +1,9 @@
+# About this fork
+
+- Fixes minor build errors in Xcode 8
+- Fixes minor build errors in Xcode 9/iOS 11
+- Makes it easier to build with your own Apple developer account
+
 # Blink Shell for iOS
 Do Blink! [Blink](http://blink.sh) is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool.
 
