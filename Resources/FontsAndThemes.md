@@ -1,4 +1,4 @@
-#Create your own Fonts & Themes
+# Create your own Fonts & Themes
 
 With [Blink Shell](http://blink.sh) you can have your terminal, your way. That's why we have built in a simple way to create and add themes and fonts to your terminal. Themes are JS code that can modify colors and cursor behavior, and fonts are just CSS that Blink will download for you. And don't forget to share them with others too!
 
@@ -40,7 +40,7 @@ t.prefs_.set('background-color', white);
 ```
 
 ### Colors
-Back in the old days terminals were only able to display 16 colors. Then more complex ones came with new sequences for 256 colors and nowadays there are even sequences to represent TruColor.
+Back in the old days terminals were only able to display 16 colors. Then more complex ones came with new sequences for 256 colors and nowadays there are even sequences to represent TrueColor.
 Terminal Emulators and applications still rely on the basic 16 color sequences for their applications. This is done by defining a set of basic colors, and then a "highlighted" / "accented" version of those.
 ```javascript
 t.prefs_.set('color-palette-overrides',
