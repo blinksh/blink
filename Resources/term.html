@@ -3,11 +3,14 @@
   <head>
     <meta charset="utf-8" />
     <meta name = "viewport" content = "user-scalable=no, height=device-height, initial-scale=1.0">
-    <script src="hterm_all.js"></script>
+    <link rel="stylesheet" href="Fonts/Fira Code.css" />
+    <link rel="stylesheet" href="xterm.css" />
+    <script src="xterm.js"></script>
+    <script src="fit.js"></script>
     <script src="webfont.js"></script>
     <script src="termcontrol.js"></script>
     <style>
-      body {
+      html, body {
         position: absolute;
         padding: 0;
         margin: 0;
@@ -15,32 +18,117 @@
         width: 100%;
         overflow: hidden;
       }
+
       #terminal {
         display: block;
         position: relative;
         width: 100%;
         height: 100%;
-      }    
+      }
+
+      #terminal .xterm-rows {
+        -webkit-user-select: text;
+      }
+
     </style>
+  </head>
   <body>
     <div id="terminal"></div>
     <script>
-      hterm.defaultStorage = new lib.Storage.Memory();
-      var t = new hterm.Terminal('blink');
 
-      t.decorate(document.querySelector('#terminal'));
+      function touchHandler(event)
+      {
+        var touches = event.changedTouches,
+          first = touches[0],
+          type = "";
+        switch(event.type)
+        {
+          case "touchstart": type = "mousedown"; break;
+          case "touchmove":  type="mousemove"; break;
+          case "touchend":   type="mouseup"; break;
+          default: return;
+        }
+        if (touches.length > 1) {
+          type = "wheel";
+        } else {
+          return;
+        }
+        //initMouseEvent(type, canBubble, cancelable, view, clickCount,
+        //           screenX, screenY, clientX, clientY, ctrlKey,
+        //           altKey, shiftKey, metaKey, button, relatedTarget);
+        var simulatedEvent = document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent(type, true, true, window, 1,
+          first.screenX, first.screenY,
+          first.clientX, first.clientY, false,
+          false, false, false, 0/*left*/, null);
+        first.target.dispatchEvent(simulatedEvent);
+        // event.preventDefault();
+      }
+      function init()
+      {
+        document.addEventListener("touchstart", touchHandler, true);
+        document.addEventListener("touchmove", touchHandler, true);
+        document.addEventListener("touchend", touchHandler, true);
+        document.addEventListener("touchcancel", touchHandler, true);
+      }
 
-t.onTerminalReady = function() {
-  window.webkit.messageHandlers.interOp.postMessage({"op": "terminalReady", "data": {}});
-      var io = t.io.push();
-      t.io.onTerminalResize = function(columns, rows) {
-      window.webkit.messageHandlers.interOp.postMessage({"op": "sigwinch", "data": {columns: columns, rows: rows}});
+
+      var term = new Terminal({cursorBlink: true, scrollBack: 10000, useFlowControl: true});
+
+
+      term.focus = function() {
+        term.element.classList.add('focus');
+        term.showCursor();
+        term.restartCursorBlinking.apply(term);
+        Terminal.focus = term;
+        term.emit('focus', {terminal: term});
       }
-      t.setCursorVisible(true);
-      t.prefs_.set('audible-bell-sound', '')
-      t.keyboard.uninstallKeyboard();
+
+      term.blur = function() {
+        term.element.classList.remove('focus');
+        term.clearCursorBlinkingInterval.apply(term);
+        Terminal.focus = null;
+        term.emit('blur', {terminal: term});
       }
-    
+
+      term.on('resize', function(e) {
+        window.webkit.messageHandlers.interOp.postMessage({"op": "sigwinch", "data": {columns: e.cols, rows: e.rows}});
+      });
+      term.attachCustomKeyEventHandler(function(){
+        term.restartCursorBlinking()
+        return false;
+      });
+
+      term.open(document.getElementById('terminal'));
+      
+      //term.fit();
+      term.setHypertextLinkHandler(function(e) {
+        window.webkit.messageHandlers.interOp.postMessage({"op": "openLink", "data": {"url": e.target.innerText}});
+      });
+      window.webkit.messageHandlers.interOp.postMessage({"op": "terminalReady", "data": {}});
+
+      // Turn on/off experemntal mouse events
+      init();
+
+      document.addEventListener("selectionchange", function(e) {
+        var selection = window.getSelection();
+        if (selection.rangeCount === 0) {
+          return;
+        }
+
+        var firstRange = selection.getRangeAt(0);
+        var lastRange = selection.getRangeAt(selection.rangeCount - 1);
+
+        var firstRects = firstRange.getClientRects()
+        var lastRects = lastRange.getClientRects()
+
+        var firstRect = firstRects[0];
+        var lastRect = lastRects[lastRects.length - 1];
+
+        // TODO selection with xterm.selectionManager
+
+      });
+      
     </script>
   </body>
 </html>
