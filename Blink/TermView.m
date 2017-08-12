@@ -58,6 +58,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 @end
 
+@implementation BLWebView
+
+- (BOOL)canBecomeFirstResponder
+{
+  return NO;
+}
+  
+- (BOOL)becomeFirstResponder
+{
+  return NO;
+}
+@end
+
 @implementation CC
 + (void)initialize
 {
@@ -242,7 +255,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
     
-  _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+  _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
+  [_webView.scrollView setScrollEnabled:NO];
   [self addSubview:_webView];
 
   _webView.opaque = NO;
@@ -261,13 +275,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     _tapBackground.delegate = self;
     [self addGestureRecognizer:_tapBackground];
   }
-
+  
   if (!_longPressBackground) {
     _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
     _longPressBackground.delegate = self;
     [self addGestureRecognizer:_longPressBackground];
   }
-
+  
   if (!_pinchGesture) {
     _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
     _pinchGesture.delegate = self;
@@ -375,7 +389,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if ([operation isEqualToString:@"terminalReady"]) {
     if ([self.delegate respondsToSelector:@selector(terminalIsReady)]) {
       [self.delegate terminalIsReady];
-    } 
+    }
+  } else if ([operation isEqualToString:@"openLink"]) {
+    NSURL * url = [NSURL URLWithString:data[@"url"]];
+    if ([UIApplication.sharedApplication canOpenURL:url]) {
+      [UIApplication.sharedApplication openURL:url];
+    }
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
       [self.delegate fontSizeChanged:data[@"size"]];
@@ -448,6 +467,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
     return YES;
   }
+  
+//  return YES;
   if (gestureRecognizer == self.longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
     return YES;
   }
@@ -539,6 +560,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   cover.hidden = YES;
 
   [_webView evaluateJavaScript:@"focusTerm();" completionHandler:nil];
+  
   return [super becomeFirstResponder];
 }
 
@@ -599,6 +621,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)loadTerminalThemeJS:(NSString *)themeContent
 {
   [_webView evaluateJavaScript:themeContent completionHandler:nil];
+  [_webView evaluateJavaScript:@"applyPrefs()" completionHandler:nil];
 }
 
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
@@ -625,7 +648,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)reset
 {
-  [_webView evaluateJavaScript:@"reset" completionHandler:nil];
+  [_webView evaluateJavaScript:@"reset();" completionHandler:nil];
 }
 
 
@@ -897,11 +920,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  // if ([sender isKindOfClass:[UIMenuController class]]) {
-  //   [_webView copy:sender];
-  // } else {
+   if ([sender isKindOfClass:[UIMenuController class]]) {
+     [_webView copy:sender];
+   } else {
     [_delegate write:[CC CTRL:@"c"]];
-    //  }
+   }
 }
 // Cmd+x
 - (void)cut:(id)sender
@@ -942,7 +965,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
-    if (action == @selector(paste:)) {
+    if (action == @selector(paste:) || action == @selector(copy:)) {
       return YES;
     }
     return NO;

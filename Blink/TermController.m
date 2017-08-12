@@ -177,7 +177,7 @@ static NSDictionary *bkModifierMaps = nil;
   if (theme) {
     [_terminal loadTerminalThemeJS:theme.content];
   }
-
+  
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
     if (font.isCustom) {

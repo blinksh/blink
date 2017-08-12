@@ -50,8 +50,8 @@
   UIPageViewController *_viewportsController;
   NSMutableArray *_viewports;
   
-  UITapGestureRecognizer *_twoFingersTap;
-  UIPanGestureRecognizer *_twoFingersDrag;
+  UITapGestureRecognizer *_threeFingersTap;
+  UIPanGestureRecognizer *_threeFingersDrag;
   
   NSLayoutConstraint *_topConstraint;
   NSLayoutConstraint *_bottomConstraint;
@@ -170,27 +170,27 @@
 
 - (void)addGestures
 {
-  if (!_twoFingersTap) {
-    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
-    [_twoFingersTap setNumberOfTouchesRequired:2];
-    [_twoFingersTap setNumberOfTapsRequired:1];
-    _twoFingersTap.delegate = self;
-    [self.view addGestureRecognizer:_twoFingersTap];
+  if (!_threeFingersTap) {
+    _threeFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleThreeFingersTap:)];
+    [_threeFingersTap setNumberOfTouchesRequired:3];
+    [_threeFingersTap setNumberOfTapsRequired:1];
+    _threeFingersTap.delegate = self;
+    [self.view addGestureRecognizer:_threeFingersTap];
   }
 
-  if (!_twoFingersDrag) {
-    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
-    [_twoFingersDrag setMinimumNumberOfTouches:2];
-    [_twoFingersDrag setMaximumNumberOfTouches:2];
-    _twoFingersDrag.delegate = self;
-    [self.view addGestureRecognizer:_twoFingersDrag];
+  if (!_threeFingersDrag) {
+    _threeFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handleThreeFingersDrag:)];
+    [_threeFingersDrag setMinimumNumberOfTouches:3];
+    [_threeFingersDrag setMaximumNumberOfTouches:3];
+    _threeFingersDrag.delegate = self;
+    [self.view addGestureRecognizer:_threeFingersDrag];
   }
 }
 
 #pragma mark Events
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
-  if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+  if (gestureRecognizer == _threeFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
     return YES;
   }
   return NO;
@@ -198,7 +198,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-  if (gestureRecognizer == _twoFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+  if (gestureRecognizer == _threeFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
     return YES;
   }
 
@@ -228,12 +228,12 @@
   [self.view setNeedsUpdateConstraints];
 }
 
-- (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
+- (void)_handleThreeFingersTap:(UITapGestureRecognizer *)sender
 {
   [self createShellAnimated:YES completion:nil];
 }
 
-- (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
+- (void)_handleThreeFingersDrag:(UIPanGestureRecognizer *)sender
 {
   CGFloat y = [sender translationInView:self.view].y;
   CGFloat height = self.view.frame.size.height;

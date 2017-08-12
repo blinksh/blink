@@ -38,6 +38,9 @@ extern NSString * const TermViewCursorFuncSeq;
 extern NSString * const TermViewFFuncSeq;
 extern NSString * const TermViewAutoRepeateSeq;
 
+@interface BLWebView: WKWebView
+@end
+
 @protocol TerminalDelegate <NSObject>
 
 - (void)write:(NSString *)input;
