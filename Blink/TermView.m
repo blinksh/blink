@@ -182,6 +182,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 @end
 
+@implementation BLWebView
+
+- (BOOL)becomeFirstResponder
+{
+  return NO;
+}
+@end
+
 @interface TermView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @property UITapGestureRecognizer *tapBackground;
 @property UILongPressGestureRecognizer *longPressBackground;
@@ -241,8 +249,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
-    
-  _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+
+  _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
+  
   [self addSubview:_webView];
 
   _webView.opaque = NO;
@@ -897,11 +906,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  // if ([sender isKindOfClass:[UIMenuController class]]) {
-  //   [_webView copy:sender];
-  // } else {
+   if ([sender isKindOfClass:[UIMenuController class]]) {
+     [_webView copy:sender];
+   } else {
     [_delegate write:[CC CTRL:@"c"]];
-    //  }
+  }
 }
 // Cmd+x
 - (void)cut:(id)sender
@@ -942,9 +951,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
-    if (action == @selector(paste:)) {
+    if (action == @selector(paste:) || action == @selector(copy:)) {
       return YES;
     }
+
     return NO;
   }
   

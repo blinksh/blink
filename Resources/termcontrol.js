@@ -90,4 +90,10 @@ var reset = function() {
 
 hterm.copySelectionToClipboard = function(document) {
     window.webkit.messageHandlers.interOp.postMessage({"op": "copy", "data":{"content": document.getSelection().toString()}});
+    // The following code tends to remove current selection...
+    // If it is ok to keep selection just remove it.
+    var input = document.createElement('input');
+    document.body.appendElement(input)
+    input.focus();
+    document.body.removeChild(input);
 }
