@@ -1,3 +1,6 @@
+# Version 8.026
+	- Fixed keyboard settings bug and alignment of controls
+	
 # Version 8.0
 	- Avoid kbd to collapse while performing a selection.
 	- Disable Smart Anything within iOS 11
