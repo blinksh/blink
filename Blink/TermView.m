@@ -234,6 +234,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return self;
 }
 
+// Disable Smart Anything introduced within iOS11
+- (UITextSmartDashesType)smartDashesType {
+  return UITextSmartDashesTypeNo;
+}
+- (UITextSmartQuotesType)smartQuotesType {
+  return UITextSmartQuotesTypeNo;
+}
+- (UITextSmartInsertDeleteType)smartInsertDeleteType {
+  return UITextSmartInsertDeleteTypeNo;
+}
+
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
