@@ -656,4 +656,20 @@
   [self displayHUD];
 }
 
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  // Fix for github issue #299
+  // Even app is not in active state it still recieves actions like CMD+T and etc.
+  // So we filter them here.
+  
+  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+  
+  if (appState != UIApplicationStateActive) {
+    return NO;
+  }
+  
+  return [super canPerformAction:action withSender:sender];
+}
+
+
 @end
