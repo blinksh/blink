@@ -118,7 +118,7 @@
 {
   [super viewDidLoad];
 
-  [self createShellAnimated:NO completion:nil];
+  [self _createShellWithUserActivity: nil animated:NO completion:nil];
   [self setKbdCommands];
 }
 
@@ -230,7 +230,7 @@
 
 - (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
 {
-  [self createShellAnimated:YES completion:nil];
+  [self _createShellWithUserActivity: nil animated:YES completion:nil];
 }
 
 - (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
@@ -373,7 +373,7 @@
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
     [_viewports removeObjectAtIndex:0];
-    [self createShellAnimated:NO completion:nil];
+    [self _createShellWithUserActivity: nil animated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
     [_viewports removeLastObject];
@@ -402,10 +402,11 @@
   }
 }
 
-- (void)createShellAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
+- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity animated:(BOOL)animated completion:(void (^)(BOOL finished))completion
 {
   TermController *term = [[TermController alloc] init];
   term.delegate = self;
+  term.userActivity = userActivity;
 
   if (_viewports == nil) {
     _viewports = [[NSMutableArray alloc] init];
@@ -532,7 +533,7 @@
 
 - (void)newShell:(UIKeyCommand *)cmd
 {
-  [self createShellAnimated:YES completion:nil];
+  [self _createShellWithUserActivity: nil animated:YES completion:nil];
 }
 
 - (void)closeShell:(UIKeyCommand *)cmd
@@ -669,6 +670,11 @@
   }
   
   return [super canPerformAction:action withSender:sender];
+}
+
+- (void)restoreUserActivityState:(NSUserActivity *)activity
+{
+  [self _createShellWithUserActivity:activity animated:YES completion:nil];
 }
 
 

@@ -37,5 +37,6 @@
 - (void)viewScreenWillBecomeActive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
+- (void)newShellWithActivity:(NSUserActivity *)activity;
 
 @end
