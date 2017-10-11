@@ -674,7 +674,35 @@
 
 - (void)restoreUserActivityState:(NSUserActivity *)activity
 {
-  [self _createShellWithUserActivity:activity animated:YES completion:nil];
+  [super restoreUserActivityState:activity];
+
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    return;
+  }
+  
+  NSInteger targetIdx = [_viewports indexOfObjectPassingTest:^BOOL(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+    return [activity.title isEqualToString:term.activityKey];
+  }];
+  
+  if (targetIdx == NSNotFound) {
+    [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    return;
+  }
+  
+  // we are already here
+  if (idx == targetIdx) {
+    return;
+  }
+  
+  UIPageViewControllerNavigationDirection direction =
+  idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
+  
+  
+  [self switchShellIdx: targetIdx
+             direction: direction
+              animated: NO];
 }
 
 

@@ -54,6 +54,7 @@
 @property (strong, nonatomic) TermView *terminal;
 @property (strong, nonatomic) UIScrollView *containerView;
 @property (weak) id<TermControlDelegate> delegate;
+@property (strong, nonatomic) NSString* activityKey;
 
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;

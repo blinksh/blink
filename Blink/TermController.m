@@ -182,9 +182,12 @@ static NSDictionary *bkModifierMaps = nil;
   activity.eligibleForSearch = YES;
   activity.eligibleForHandoff = YES;
   
-  [activity setTitle:[NSString stringWithFormat:@"run: %@ ", cmdLine]];
+  
+  _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
+  [activity setTitle:_activityKey];
   
   _activityUserInfo = @{BKUserActivityCommandLineKey: cmdLine ?: @"help"};
+  
   activity.userInfo = _activityUserInfo;
   
   self.userActivity = activity;
@@ -193,8 +196,10 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)updateUserActivityState:(NSUserActivity *)activity
 {
+  [activity setTitle:_activityKey];
   [activity addUserInfoEntriesFromDictionary:_activityUserInfo];
   activity.keywords = [NSSet setWithArray:@[@"blink", @"shell", @"mosh", @"ssh", @"terminal", @"remote"]];
+  
   [activity setRequiredUserInfoKeys:[NSSet setWithArray:_activityUserInfo.allKeys]];
 }
 
