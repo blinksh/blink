@@ -172,7 +172,6 @@ static NSDictionary *bkModifierMaps = nil;
     [self setAppearanceFromSettings];
   }
   [super viewDidAppear:animated];
-  [self.userActivity becomeCurrent];
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
@@ -201,6 +200,19 @@ static NSDictionary *bkModifierMaps = nil;
   activity.keywords = [NSSet setWithArray:@[@"blink", @"shell", @"mosh", @"ssh", @"terminal", @"remote"]];
   
   [activity setRequiredUserInfoKeys:[NSSet setWithArray:_activityUserInfo.allKeys]];
+}
+
+- (void)restoreUserActivityState:(NSUserActivity *)activity
+{
+  if (![activity.activityType isEqualToString: BKUserActivityTypeCommandLine]) {
+    [super restoreUserActivityState:activity];
+  }
+  
+  NSString *cmdLine = [activity.userInfo objectForKey:BKUserActivityCommandLineKey];
+  if (cmdLine) {
+    // TODO: investigate lost first char on iPad
+    [self write:[NSString stringWithFormat:@" %@\n", cmdLine]];
+  }
 }
 
 - (void)setAppearanceFromSettings
@@ -269,16 +281,6 @@ static NSDictionary *bkModifierMaps = nil;
   _session = [[MCPSession alloc] initWithStream:stream];
   _session.delegate = self;
   [_session executeWithArgs:@""];
-  
-  
-  // TODO: find a way to handle this in execute with args
-  if ([self.userActivity.activityType isEqualToString: BKUserActivityTypeCommandLine]) {
-    NSString *cmdLine = [self.userActivity.userInfo objectForKey:BKUserActivityCommandLineKey];
-    if (cmdLine) {
-      // TODO: investigate lost first char on iPad
-      [self write:[NSString stringWithFormat:@" %@\n", cmdLine]];
-    }
-  }
 }
 
 - (void)setRawMode:(BOOL)raw
@@ -313,6 +315,9 @@ static NSDictionary *bkModifierMaps = nil;
 {
   [self setAppearanceFromSettings];
   [self startSession];
+  if (self.userActivity) {
+    [self restoreUserActivityState:self.userActivity];
+  }
 }
 
 - (void)dealloc

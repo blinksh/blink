@@ -674,31 +674,36 @@
 
 - (void)restoreUserActivityState:(NSUserActivity *)activity
 {
-  [super restoreUserActivityState:activity];
-
+  // somehow we don't have current term... so we just create new one
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   if(idx == NSNotFound) {
     [self _createShellWithUserActivity:activity animated:YES completion:nil];
     return;
   }
   
+  // 1. Try find term with same activity key
   NSInteger targetIdx = [_viewports indexOfObjectPassingTest:^BOOL(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
     return [activity.title isEqualToString:term.activityKey];
   }];
   
+  // 2. No term with same activity key, so we create one or use current
   if (targetIdx == NSNotFound) {
-    [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    if (self.currentTerm.activityKey == nil) {
+      [self.currentTerm restoreUserActivityState:activity];
+    } else {
+      [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    }
     return;
   }
   
-  // we are already here
+  // 3. We are already showing required term. So do nothing.
   if (idx == targetIdx) {
     return;
   }
   
+  // 4. Switch to found term index.
   UIPageViewControllerNavigationDirection direction =
   idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
-  
   
   [self switchShellIdx: targetIdx
              direction: direction
