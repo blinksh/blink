@@ -78,7 +78,6 @@ static NSString *docsPath;
   if (argc < 1) {
     [self out:"Usage: ssh-save-id identity"];
   }
-    
 }
 
 - (char **) makeargs:(NSString*) cmdline argc:(int*) argc
@@ -107,18 +106,31 @@ static NSString *docsPath;
     // The executable file has precedence, unless the user has specified they want the original
     // version, by prefixing it with \. So "\ls" == always our ls. "ls" == maybe ~/Library/bin/ls
     // (if it exists).
+    BOOL isDir;
+    BOOL cmdIsAFile = false;
+    if ([cmd hasPrefix:@"~"]) cmd = [cmd stringByExpandingTildeInPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:cmd isDirectory:&isDir]  && (!isDir)) {
+      // File exists, is a file.
+      struct stat sb;
+      if ((stat(cmd.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) {
+        // File exists, is executable, not a directory.
+        cmdIsAFile = true;
+      }
+    }
     NSString* fullPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
     NSArray *pathComponents = [fullPath componentsSeparatedByString:@":"];
     for (NSString* path in pathComponents) {
-      NSString* cmdname = [path stringByAppendingPathComponent:cmd];
-      BOOL isDir;
-      if (![[NSFileManager defaultManager] fileExistsAtPath:cmdname isDirectory:&isDir]) continue;
-      if (isDir) continue;
-      // isExecutableFileAtPath replies "NO" even if file has x-bit set.
-      // if (![[NSFileManager defaultManager]  isExecutableFileAtPath:cmdname]) continue;
-      struct stat sb;
-      if (!(stat(cmdname.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) continue;
-      // File exists, is executable, not a directory.
+      NSString* cmdname;
+      if (!cmdIsAFile) {
+        cmdname = [path stringByAppendingPathComponent:cmd];
+        if (![[NSFileManager defaultManager] fileExistsAtPath:cmdname isDirectory:&isDir]) continue;
+        if (isDir) continue;
+        // isExecutableFileAtPath replies "NO" even if file has x-bit set.
+        // if (![[NSFileManager defaultManager]  isExecutableFileAtPath:cmdname]) continue;
+        struct stat sb;
+        if (!(stat(cmdname.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) continue;
+        // File exists, is executable, not a directory.
+      } else cmdname = cmd;
       NSData *data = [NSData dataWithContentsOfFile:cmdname];
       NSString *fileContent = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
       NSRange firstLineRange = [fileContent rangeOfString:@"\n"];
@@ -160,6 +172,7 @@ static NSString *docsPath;
           return NULL;
         }
       }
+      if (cmdIsAFile) continue;
     }
   } else {
     // Just remove the \ at the beginning
