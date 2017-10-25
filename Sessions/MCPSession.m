@@ -278,9 +278,10 @@
   setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python2.7/
   // hg config file in ~/Documents/.hgrc
   setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
-  setenv("PATH", binPath.UTF8String, 1); // override
+  setenv("PATH", binPath.UTF8String, 1); // 1 = override existing value
   // iOS already defines "HOME" as the home dir of the application
-  
+  char columnCountString[10];
+
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
   const char *history = [filePath UTF8String];
@@ -297,6 +298,9 @@
     if (line[0] != '\0' /* && line[0] != '/' */) {
       linenoiseHistoryAdd(line);
       linenoiseHistorySave(history);
+      // Re-evalute column number before each command
+      sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
+      setenv("COLUMNS", columnCountString, 1); //
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
 

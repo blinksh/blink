@@ -42,6 +42,8 @@
 #include "curl_ios.h"
 #include "libarchive_ios.h"
 #include "Python_ios.h"
+#include "lua_ios.h"
+#include "texlive_ios.h"
 
 static NSDictionary *commandList = nil;
 
@@ -106,6 +108,45 @@ static NSDictionary *commandList = nil;
                   @"tar"    : [NSValue valueWithPointer: tar_main],
                   // from python:
                   @"python"  : [NSValue valueWithPointer: python_main],
+                  // from lua:
+                  @"lua"     : [NSValue valueWithPointer: lua_main],
+                  @"luac"    : [NSValue valueWithPointer: luac_main],
+                  // from TeX:
+                  // LuaTeX:
+                  @"luatex"     : [NSValue valueWithPointer: dllluatexmain],
+                  @"lualatex"     : [NSValue valueWithPointer: dllluatexmain],
+                  @"texlua"     : [NSValue valueWithPointer: dllluatexmain],
+                  @"texluac"     : [NSValue valueWithPointer: dllluatexmain],
+                  @"dviluatex"     : [NSValue valueWithPointer: dllluatexmain],
+                  @"dvilualatex"     : [NSValue valueWithPointer: dllluatexmain],
+                  // pdfTeX
+                  @"amstex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"cslatex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"csplain"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"eplain"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"etex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"jadetex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"latex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"mex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"mllatex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"mltex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"etex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfcslatex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfcsplain"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfetex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfjadetex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdflatex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdftex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfmex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"pdfxmltex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"texsis"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"utf8mex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  @"xmltex"     : [NSValue valueWithPointer: dllpdftexmain],
+                  // XeTeX:
+                  // @"xetex"     : [NSValue valueWithPointer: dllxetexmain],
+                  // @"xelatex"     : [NSValue valueWithPointer: dllxetexmain],
+                  // BibTeX
+                  @"bibtex"     : [NSValue valueWithPointer: bibtex_main],
                   };
 }
   
