@@ -30,6 +30,7 @@ compress, uncompress, gzip, gunzip,
 * From text_cmds: cat, grep, wc
 * From curl: curl (includes http, https, scp, sftp...), scp, sftp
 * From libarchive: tar 
+* You can call commands individually, or use small scripts. Scripts can use python, lua or shell. The shell has no branching abilities, so it will be just a list of commands.
 
 
 You will need to compile the following frameworks:
@@ -56,9 +57,7 @@ You will have to copy all of them the blink/Frameworks directory. You will also 
 
 to the blink/Frameworks/include directory. 
 
-Since you are sideloading, you can also compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS). With iOS 11 "open-in-place", you should be able to open files from Blink into Vim. From the shell, calling "vim myfile.txt" opens Vim and edits the file. 
-
-This feature only works with iOS 11, and is currently broken. I'm investigating. 
+Since you are sideloading, you can also install iVim or compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS). With iOS 11 "open-in-place", you should be able to open files from Blink into Vim.
 
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 ```
