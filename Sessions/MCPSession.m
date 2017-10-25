@@ -49,6 +49,8 @@
   Session *childSession;
 }
 
+static NSString *docsPath;
+
 - (void)setTitle
 {
   fprintf(_stream.control.termout, "\033]0;blink\007");
@@ -84,8 +86,9 @@
   // splits the command line into strings, removes empty strings,
   // does some conversions (~ --> home directory, for example,
   // plus environment variables)
-  // If the "command" is a file, that is in the path, is executable, and whose 1st line is "#! .../python..."
-  // then add python at the beginning of the line, plus path to position of file.
+  // If the "command" is a file, that is in the path, is executable, and whose 1st line is "#! .../[language]..."
+  // then add [language] at the beginning of the line, plus path to position of file.
+  // We accept scripts written in lua, python, and shell (for the time being).
   // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
   // edit the arguments for curl syntax.
   
@@ -94,7 +97,10 @@
   // Remove empty strings (extra spaces)
   NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
                        [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-  
+  if ([listArgv count] == 0) {
+    *argc = 0;
+    return NULL;
+  }
   NSString* cmd = [listArgv objectAtIndex:0];
   if (![cmd hasPrefix:@"\\"]) {
     // There can be several versions of a command (e.g. ls as precompiled and ls written in Python)
@@ -120,13 +126,39 @@
       firstLineRange.length = firstLineRange.location;
       firstLineRange.location = 0;
       NSString* firstLine = [fileContent substringWithRange:firstLineRange];
-      if ([firstLine hasPrefix:@"#!"] && [firstLine containsString:@"python" ]) {
-        // So long as the 1st line begins with "#!" and contains "python" we accept it as a python script
-        // "#! /usr/bin/python", "#! /usr/local/bin/python" and "#! /usr/bin/myStrangePath/python" are all OK.
-        // We also accept "#! /usr/bin/env python" because it is used.
-        [listArgv replaceObjectAtIndex:0 withObject:cmdname];
-        [listArgv insertObject:@"python" atIndex:0];
-        break;
+      if ([firstLine hasPrefix:@"#!"]) {
+        // executable scripts files. Python, lua and shell.
+        if ([firstLine containsString:@"python"]) {
+          // So long as the 1st line begins with "#!" and contains "python" we accept it as a python script
+          // "#! /usr/bin/python", "#! /usr/local/bin/python" and "#! /usr/bin/myStrangePath/python" are all OK.
+          // We also accept "#! /usr/bin/env python" because it is used.
+          // TODO: only accept "python" or "python2" at the end of the line
+          [listArgv replaceObjectAtIndex:0 withObject:cmdname];
+          [listArgv insertObject:@"python" atIndex:0];
+          break;
+        } else if ([firstLine containsString:@"lua"]) {
+          [listArgv replaceObjectAtIndex:0 withObject:cmdname];
+          [listArgv insertObject:@"lua" atIndex:0];
+          break;
+        } else if ([firstLine containsString:@"sh"]) {
+          // sh, zsh, bash, tcsh...
+          // first, separate by new line
+          NSArray* allCommandLines =
+          [fileContent componentsSeparatedByCharactersInSet:
+           [NSCharacterSet newlineCharacterSet]];
+          for (NSString* shellCommandLine in allCommandLines) {
+            if ([shellCommandLine hasPrefix:@"#"]) continue; // comments, including first line
+            // empty lines will be treated by the system
+            int localArgc;
+            char** localArgv = [self makeargs:shellCommandLine argc:&localArgc];
+            bool mustExit = [self executeCommand:localArgc argv:localArgv];
+            free(localArgv);
+            if (mustExit) break;
+          }
+          // cleanup and return:
+          *argc = 0;
+          return NULL;
+        }
       }
     }
   } else {
@@ -256,14 +288,77 @@
   return argv;
 }
 
+- (bool)executeCommand:(int)argc argv:(char **)argv {
+  if (argc == 0) return false;
+  NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
+  
+  if ([cmd isEqualToString:@"help"]) {
+    [self showHelp];
+  } else if ([cmd isEqualToString:@"mosh"]) {
+    // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+    // Probably passing a Server struct of some type.
+    
+    [self runMoshWithArgs:argc argv:argv];
+  } else if ([cmd isEqualToString:@"ssh"]) {
+    // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+    // Probably passing a Server struct of some type.
+    [self runSSHWithArgs:argc argv:argv];
+  } else if ([cmd isEqualToString:@"exit"]) {
+    return true;
+  } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
+    [self runSSHCopyIDWithArgs:argc argv:argv];
+  } else if ([cmd isEqualToString:@"ssh-save-id"]) {
+    [self ssh_save_id:argc argv:argv];
+  } else if ([cmd isEqualToString:@"config"]) {
+    [self showConfig];
+  } else if  ([cmd isEqualToString:@"setenv"]) {
+    // Builtin. commands that have to be inside the "shell"
+    // setenv VARIABLE value
+    setenv(argv[1], argv[2], 1);
+  } else if  ([cmd isEqualToString:@"cd"]) {
+    if (argc > 1) {
+      BOOL isDir;
+      if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
+        if (isDir)
+          [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
+        else  fprintf(_stream.out, "cd: %s: not a directory\n", argv[1]);
+      } else {
+        fprintf(_stream.out, "cd: %s: no such file or directory\n", argv[1]);
+      }
+    } else // [cd] Help, I'm lost, bring me back home
+      [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
+    // Higher level commands, not from system: curl, tar, scp, sftp
+  } else if ([cmd isEqualToString:@"vim"]) {
+    // Opening in helper apps (vim, for example)
+    NSString* fileLocation = @(argv[1]);
+    if (! [fileLocation hasPrefix:@"/"]) {
+      // relative path. The most likely.
+      fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
+    }
+    fileLocation = [@"vim://" stringByAppendingString:fileLocation];
+    NSURL *vimURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      // canOpenURL: permission to query. Must be set.
+      // if ([[UIApplication sharedApplication] canOpenURL:vimURL]) {
+      [[UIApplication sharedApplication] openURL:vimURL];
+      // }
+    });
+  } else {
+    [self runCommandWithArgs:argc argv:argv];
+  }
+  return false;
+}
+
+
+
 - (int)main:(int)argc argv:(char **)argv
 {
   char *line;
   argc = 0;
   argv = nil;
 
-  // Path for application files, including history.txt and keys
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  // Initialize paths for application files, including history.txt and keys
+  docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   // Where the executables are stored:
@@ -300,71 +395,15 @@
       linenoiseHistorySave(history);
       // Re-evalute column number before each command
       sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
-      setenv("COLUMNS", columnCountString, 1); //
+      setenv("COLUMNS", columnCountString, 1); // force rewrite of value
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
 
       argv = [self makeargs:cmdline argc:&argc];
-
-      NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
-      
-      if ([cmd isEqualToString:@"help"]) {
-        [self showHelp];
-      } else if ([cmd isEqualToString:@"mosh"]) {
-        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-        // Probably passing a Server struct of some type.
-
-        [self runMoshWithArgs:argc argv:argv];
-      } else if ([cmd isEqualToString:@"ssh"]) {
-        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-        // Probably passing a Server struct of some type.
-        [self runSSHWithArgs:argc argv:argv];
-      } else if ([cmd isEqualToString:@"exit"]) {
-        break;
-      } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-        [self runSSHCopyIDWithArgs:argc argv:argv];
-      } else if ([cmd isEqualToString:@"ssh-save-id"]) {
-        [self ssh_save_id:argc argv:argv];
-      } else if ([cmd isEqualToString:@"config"]) {
-        [self showConfig];
-      } else if  ([cmd isEqualToString:@"setenv"]) {
-         // Builtin. commands that have to be inside the "shell"
-          // setenv VARIABLE value
-          setenv(argv[1], argv[2], 1);
-        } else if  ([cmd isEqualToString:@"cd"]) {
-          if (argc > 1) {
-            BOOL isDir;
-            if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
-              if (isDir)
-                [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
-              else  fprintf(_stream.out, "cd: %s: not a directory\n", argv[1]);
-            } else {
-              fprintf(_stream.out, "cd: %s: no such file or directory\n", argv[1]);
-            }
-          } else // [cd] Help, I'm lost, bring me back home
-            [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
-          // Higher level commands, not from system: curl, tar, scp, sftp
-        } else if ([cmd isEqualToString:@"vim"]) {
-          // Opening in helper apps (vim, for example)
-          NSString* fileLocation = @(argv[1]);
-          if (! [fileLocation hasPrefix:@"/"]) {
-            // relative path. The most likely.
-            fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
-          }
-          fileLocation = [@"vim://" stringByAppendingString:fileLocation];
-          NSURL *vimURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
-          dispatch_async(dispatch_get_main_queue(), ^{
-            // canOpenURL: permission to query. Must be set.
-            // if ([[UIApplication sharedApplication] canOpenURL:vimURL]) {
-               [[UIApplication sharedApplication] openURL:vimURL];
-            // }
-          });
-        } else {
-          [self runCommandWithArgs:argc argv:argv];
-      }
+      bool mustExit = [self executeCommand:argc argv:argv];
       free(argv);
+      if (mustExit) break;
     }
-
     [self setTitle]; // Temporary, until the apps restore the right state.
     
     free(line);
