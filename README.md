@@ -28,6 +28,7 @@ df, du, chksum, chmod, chflags, chgrp, stat, readlink,
 compress, uncompress, gzip, gunzip,
 * From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
 * From text_cmds: cat, grep, wc
+* From network_cmds: ping
 * From curl: curl (includes http, https, scp, sftp...), scp, sftp
 * From libarchive: tar 
 * You can call commands individually, or use small scripts. Scripts can use python, lua or shell. The shell has no branching abilities, so it will be just a list of commands.
@@ -36,14 +37,16 @@ compress, uncompress, gzip, gunzip,
 You will need to compile the following frameworks:
 * blink/AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj  (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for OSX).
 * blink/AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
-* blinkAppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
+* blink/AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
+* blink/AppleSource/network_cmds-543/network_cmds_ios/network_cmds_ios.xcodeproj/
 * blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj
 * blink/AppleSource/libarchive/libarchive_ios/libarchive_ios.xcodeproj
 
-These create five libraries: 
+These create six libraries: 
 * file_cmds_ios.framework 
 * shell_cmds_ios.framewok
 * text_cmds_ios.framework
+* network_cmds_ios.framework
 * curl_ios.framework
 * libarchive_ios.framework
 
@@ -52,12 +55,13 @@ You will have to copy all of them the blink/Frameworks directory. You will also 
 * file_cmds_ios/file_cmds_ios.h 
 * shell_cmds_ios/shell_cmds_ios.h 
 * text_cmds_ios/text_cmds_ios.h 
+* network_cmds_ios/network_cmds_ios.h 
 * curl_ios/curl_ios.h
 * libarchive_ios/libarchive_ios.h
 
 to the blink/Frameworks/include directory. 
 
-Since you are sideloading, you can also install iVim or compile VimIOS (the best fork is: https://github.com/eminarcissus/VimIOS). With iOS 11 "open-in-place", you should be able to open files from Blink into Vim.
+I suggest installing iVim (https://github.com/terrychou/iVim or https://itunes.apple.com/us/app/ivim/id1266544660?mt=8 ) and use iOS 11 "edit-in-place" to edit files inside Blink sandbox. 
 
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 ```
