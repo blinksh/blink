@@ -1,0 +1,63 @@
+                             MNC - Multicast NetCat
+                            ------------------------
+
+1. Introduction
+
+mnc is a simple, one-direction-at-a-time, "netcat"-like application using
+multicast. The aim is to provide a tool for easy debugging and testing when
+setting up a multicast network or host. MNC supports IPv4 and IPv6
+any-source-multicast and single-source-multicast, but depending on your
+platform some of those features may not be available:
+       
+       L = Listen (Implies IGMP/MLD mupport)
+       S = Send
+       
+       +----------+----------+----------+----------+----------+
+       | Platform | IPv4 ASM | IPv4 SSM | IPv6 ASM | IPv6 SSM |
+       +----------+----------+----------+----------+----------+
+       | *nix     |  L + S   |  L + S   |  L + S   |  L + S   |
+       +----------+----------+----------+----------+----------+
+       | Win2k    |  L + S   |    S     |   None   |   None   |
+       +----------+----------+----------+----------+----------+
+       | WinXP    |  L + S   |  L + S   |    S     |    S     |
+       +----------+----------+----------+----------+----------+
+       | Win2k3   |  L + S   |  L + S   |    S     |    S     |
+       +----------+----------+----------+----------+----------+
+       
+man doc/mnc.1 for information and help on how to run multicast.
+
+2. Supported platforms
+
+As of September 2004, mnc has been compiled and tested with Linux 2.6.8
+kernels, the BSD KAME stack and Windows XP Profesional. Currently automatic
+interface selection does not work on a KAME-based host and you will need to
+specify the interface when in listening mode.
+
+3. Installing mnc from source on UNIX:
+
+	./configure ; make ; make install
+
+4. Compiling from source on Windows:
+
+nmc is compilable with free utilities available from Microsoft. You need to
+download and install the free (as in beer) MS Visual C++ command-line tools
+from:
+	
+	http://msdn.microsoft.com/visualc/vctoolkit2003/
+
+and the SDK relevant to your platform from:
+
+	http://www.microsoft.com/msdownload/platformsdk/sdkupdate/
+
+You can run a Visual C++ command-line session, and use:
+
+	cl /DWINDOWS=1 /TC /c *.c 
+	link /fixed /out:mnc.exe *.obj ws2_32.lib
+
+to compile a working mnc.exe. The Windows version of MNC does not yet fully
+support IPv6 due to underlying limitation in the Operating System.
+
+5. Reporting problems
+
+Any problems, bugs or suggested features should be mailed to colm
+at apache.org.

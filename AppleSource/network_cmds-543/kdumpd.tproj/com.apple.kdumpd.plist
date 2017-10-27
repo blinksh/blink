@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Disabled</key>
+	<true/>
+	<key>InitGroups</key>
+	<true/>
+	<key>Label</key>
+	<string>com.apple.kdumpd</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/usr/libexec/kdumpd</string>
+		<string>/PanicDumps</string>
+	</array>
+	<key>Sockets</key>
+	<dict>
+		<key>Listener</key>
+		<dict>
+			<key>SockServiceName</key>
+			<string>1069</string>
+			<key>SockType</key>
+			<string>dgram</string>
+		</dict>
+	</dict>
+	<key>UserName</key>
+	<string>nobody</string>
+	<key>Umask</key>
+	<integer>7</integer>
+	<key>inetdCompatibility</key>
+	<dict>
+		<key>Wait</key>
+		<true/>
+	</dict>
+</dict>
+</plist>

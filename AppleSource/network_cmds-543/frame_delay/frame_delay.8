@@ -1,0 +1,45 @@
+.Dd October 12, 2015
+.Dt FRAME_DELAY 8
+.Os Darwin
+.Sh NAME
+.Nm frame_delay
+.Nd Utility to measure TCP/UDP frame delay
+
+.Sh DESCRIPTION
+.Pp
+The
+.Nm
+utility is designed to measure the effect of latency on
+delivery of evenly spaced TCP/UDP frames. This can be latency induced
+due to buffering or protocol stack or network drivers.
+.Pp
+The following options are available:
+.Bl -tag -width indent
+.It Fl m
+Server/Client mode. Should be "server" or "client".
+.It Fl t
+TCP/UDP frame. Should be either "tcp" or "udp".
+.It Fl i
+(Client Only) Server ip address.
+.It Fl p
+Port number.
+.It Fl n
+Number of frames.
+.It Fl f
+Frame size.
+.It Fl d
+(Client only) Delay traffic class. Pick one from {BK_SYS, BK, BE, RD, QAM, AV, RV, VI, VO, CTL}.
+.El
+
+.Sh EXAMPLES
+.Pp
+Setup TCP server:
+.Dl "frame_delay -m server -t tcp -p 10010 -n 10 -f 1000"
+.Pp
+Setup corresponding TCP client:
+.Dl "frame_delay -m client -t tcp -i 127.0.0.1 -p 10010 -n 10 -f 1000 -d 2000  -k RD"
+
+.Sh AUTHORS
+.An Padma Bhooma ,
+.An Kang Sun ,
+.An Vincent Lubet .

@@ -15,7 +15,7 @@
 static void myerrx(int i, const char * fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    warnx(fmt, ap);
+    vwarnx(fmt, ap);
     va_end(ap);
     pthread_exit(NULL);
 }
@@ -23,7 +23,7 @@ static void myerrx(int i, const char * fmt, ...) {
 static void myerr(int i, const char * fmt, ...) {
     va_list ap;
     va_start(ap, fmt);
-    warn(fmt, ap);
+    vwarn(fmt, ap);
     va_end(ap);
     pthread_exit(NULL);
 }

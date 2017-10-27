@@ -1,0 +1,41 @@
+.Dd 9/28/12
+.Dt pktapctl 8
+.Os Darwin
+.Sh NAME
+.Nm pktapctl
+.Sh SYNOPSIS
+.Nm
+.Op Fl g                   
+.Op Fl h                   
+.Op Fl i Ar interface
+.Op Fl p Ar rule
+.Op Fl s Ar rule
+.Sh DESCRIPTION
+.Nm
+let you configure a pktap virtual interface. 
+.Pp
+This is an experimental command whose syntax and functionalities may change in 
+future releases.
+.Pp
+The options have the following meaning:
+.Bl -tag -width -indent
+.It Fl g
+Get the list of filter rules for the given 
+.Ar interface.
+.It Fl h
+Display a quick help and exit.
+.It Fl p
+To add a pass interface filter rule.
+.It Fl s
+To add a skip interface filter rule.
+.El
+.Pp
+Here is the syntax of the interface filter rules:
+.Bl -tag -indent
+.It type number
+An interface type number or 0 for any interface type. 
+.It name string
+To specify interface with name matching the given string.
+.El
+.Sh SEE ALSO 
+.Xr tcpdump 1

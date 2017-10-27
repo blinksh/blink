@@ -1,0 +1,101 @@
+.\"
+.\" mnc.1 -- mnc manual
+.\"
+.\" Colm MacCárthaigh, <colm@apache.org>
+.\"
+.\" Copyright (c) 2007 Coolm MacCarthaigh.
+.\" Copyright (c) 2004-2006 HEAnet Ltd. 
+.\"
+.\" This software is an open source.
+.\"
+.\" Redistribution and use in source and binary forms, with or without
+.\" modification, are permitted provided that the following conditions
+.\" are met:
+.\"
+.\" Redistributions of source code must retain the above copyright notice,
+.\" this list of conditions and the following disclaimer.
+.\"
+.\" Redistributions in binary form must reproduce the above copyright notice,
+.\" this list of conditions and the following disclaimer in the documentation
+.\" and/or other materials provided with the distribution.
+.\"
+.\" Neither the name of the HEAnet Ltd. nor the names of its contributors may
+.\" be used to endorse or promote products derived from this software without
+.\" specific prior written permission.
+.\"
+.\" THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+.\" "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
+.\" TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
+.\" PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE REGENTS OR CONTRIBUTORS BE
+.\" LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+.\" CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+.\" SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+.\" INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+.\" CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+.\" ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+.\" POSSIBILITY OF SUCH DAMAGE.
+.\"
+.TH mnc 1 "17 September 2004" "mnc"
+.SH NAME
+mnc \- Multicast NetCat
+.SH SYNOPSIS
+.BR mnc 
+[ -l ] [ -i interface ] [ -p port ] group-id [ source-address ]
+.SH DESCRIPTION
+.B mnc
+is designed for simple multicast debugging and testing. It supports
+IPv4 and IPv6 any-source multicast and source-specific multicast.
+In standard mode it will multicast the standard-input verbatim. 
+In listening mode it recieves the content and displays it on the 
+standard output.
+.PP
+When given the optional source-address, mnc will attempt to use
+source-specific multicast. You may also specify this address
+in standard mode and mnc will use this source-address for
+outgoing packets.
+.PP
+.SH OPTIONS
+.IP \-l
+Listen for multicast packets. Default is to send.
+.IP \-i\ "interface"
+When listening for multicast packets, use the specified interface.
+.IP \-p\ "port"
+Specify a UDP port to use for sending or receiving packets. Default is to use port 1234.
+.SH "SEE ALSO"
+.BR nc (1)
+.PP
+.SH EXAMPLES
+To send IPv4 packets to an ASM group-id:
+.PP
+.RS 
+mnc 233.1.2.3 
+.RE
+.PP
+To receive IPv4 ASM packets from the same group-id, using eth0 as
+the listening interface:
+.PP
+.RS
+mnc -l -i eth0 233.1.2.3
+.RE
+.PP
+To receive IPv4 packets from an SSM group-id, using eth1 as the
+listening interface and 193.1.219.90 as the permitted source:
+.PP
+.RS
+mnc -l -i eth1 232.0.0.1 193.1.219.90
+.RE
+.PP
+To receive IPv6 packets from an SSM group-id, using eth1 as the
+listening interface and 2001:770:18:2::90 as the permitted source:
+.PP
+.RS
+mnc -l -i eth1 ff31::12 2001:770:18:2::90
+.RE
+.PP
+.SH CREDITS
+mnc is by Colm MacCárthaigh <colm@apache.org> and is available from:
+.PP
+http://people.apache.org/~colm/mnc/ 
+.PP
+Additional multicast development and support provided by John Lyons 
+<john.lyons@heanet.ie> and Eoin Kenny <eoin.kenny@heanet.ie>

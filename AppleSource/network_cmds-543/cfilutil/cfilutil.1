@@ -1,0 +1,56 @@
+.Dd 2/10/14
+.Dt cfilutil 1
+.Os Darwin
+.Sh NAME
+.Nm cfilutil
+.Nd Tool to exercise the content filter subsystem.
+.Sh SYNOPSIS
+.Nm
+.Op Fl hilqsv
+.Fl u Ar unit
+.Op Fl a Ar offset 
+.Op Fl d Ar offset value 
+.Op Fl k Ar increment
+.Op Fl m Ar length
+.Op Fl p Ar offset
+.Op Fl r Ar random
+.Op Fl t Ar delay
+.Sh DESCRIPTION
+Use
+.Nm
+to exercise the content filter subsystem.
+.Pp
+The flags have the following meaning:
+.Bl -tag -width -indent
+.It Fl a Ar offset
+Auto start filtering with given offset.
+.It Fl a Ar offset value
+Default values for offset passin, peekin, passout, peekout, pass or peek.
+.It Fl h
+Display this help.
+.It Fl i
+Interactive mode.
+.It Fl k Ar increment
+Peek mode with increment.
+.It Fl l
+Pass loopback traffic.
+.It Fl m Ar length
+Maximum dump length.
+.It Fl p Ar offset
+Pass mode (all or after given offset if it is > 0).
+.It Fl q
+Decrease verbosity.
+.It Fl r Ar rate
+Random drop rate.
+.It Fl s
+display content filter statistics (all, sock, filt, cfil).
+.It Fl t Ar delay
+Pass delay in microseconds.
+.It Fl u Ar unit
+NECP filter control unit.
+.It Fl v
+Increase verbosity.
+.El
+.Pp
+.Sh SEE ALSO 
+.Xr neutil 1              \" rdar://16115914

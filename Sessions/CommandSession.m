@@ -36,9 +36,13 @@
 
 // All functions from all commands:
 // TODO: merge all these in a single "system.h" file.
+// TODO: add options to add/remove libraries as needed.
+// Apple utilities:
 #include "file_cmds_ios.h"
 #include "shell_cmds_ios.h"
 #include "text_cmds_ios.h"
+#include "network_cmds_ios.h"
+// Other utilities
 #include "curl_ios.h"
 #include "libarchive_ios.h"
 #include "Python_ios.h"
@@ -99,6 +103,8 @@ static NSDictionary *commandList = nil;
                   @"grep"   : [NSValue valueWithPointer: grep_main],
                   @"egrep"  : [NSValue valueWithPointer: grep_main],
                   @"fgrep"  : [NSValue valueWithPointer: grep_main],
+                  // Commands from Apple network_cmds:
+                  @"ping"  : [NSValue valueWithPointer: ping_main],
                   // From curl:
                   @"curl"   : [NSValue valueWithPointer: curl_main],
                   // scp / sftp arguments were converted earlier in makeargs
@@ -166,7 +172,7 @@ static NSDictionary *commandList = nil;
   NSString* commandName = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
   function = [[commandList objectForKey: commandName] pointerValue];
   if (function == nil) {
-      [self out:"Unknown command. Type 'help' for a list of available operations"];
+    [self out:"Unknown command. Type 'help' for a list of available operations"];
     return 0;
   }
       
