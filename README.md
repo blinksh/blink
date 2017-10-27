@@ -75,6 +75,8 @@ sftp localFilename user@host.name.edu:~/
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
+If you are really interested, you can add two other packages: python2 (https://github.com/holzschu/python_ios) and TeX (https://github.com/holzschu/lib-tex). These are bigger packages, but also provide more fonctionalities. In both cases, the packages only provide the equivalent of the binaries (python, pdftex, luatex...) You will have to transfer the associated directories (/usr/local/texlive or /usr/lib/python2.7) yourself, and place them in the Library folder of the Blink application (these are huge directories). 
+
 Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. If you don't have an Apple Developer ID, it may complicate your signing process. If that is the case, use the ..._static.xcodeproj versions in each subdirectory. 
 
 # Obtaining Blink
