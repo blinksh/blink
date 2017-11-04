@@ -81,6 +81,7 @@
   _viewportsController.delegate = self;
 
   [self addChildViewController:_viewportsController];
+  
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
@@ -212,7 +213,7 @@
 {
   CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame);
+  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame) + self.bottomLayoutGuide.length;
 
   UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
   if ([termAccessory isHidden]) {
@@ -221,9 +222,18 @@
 
   [self.view setNeedsUpdateConstraints];
 }
+
 - (void)keyboardWillBeHidden:(NSNotification *)aNotification
 {
   _bottomConstraint.constant = 0;
+  [self.view updateConstraintsIfNeeded];
+  [self.view setNeedsUpdateConstraints];
+}
+
+// Support iPhone X
+- (void)viewLayoutMarginsDidChange {
+  _topConstraint.constant = self.topLayoutGuide.length;
+  [super viewLayoutMarginsDidChange];
   [self.view updateConstraintsIfNeeded];
   [self.view setNeedsUpdateConstraints];
 }
