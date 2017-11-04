@@ -93,7 +93,8 @@ The Regents of the University of California.  All rights reserved.\n";
 #include <netinet/in_systm.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
-// #include <netinet/ip_var.h>
+// #include <netinet/ip_var.h> // not available on iOS
+#include "ip_var.h" // required because it defined structs
 #include <arpa/inet.h>
 #include <net/if.h>
 
@@ -117,60 +118,7 @@ The Regents of the University of California.  All rights reserved.\n";
 #include <ifaddrs.h>
 #include <getopt.h>
 
-// constants that are not defined in the iPhoneOS SDK:
-#define SO_TRAFFIC_CLASS    0x1086    /* Traffic service class (int) */
-#define     SO_TC_BK_SYS    100        /* lowest class */
-#define     SO_TC_BK    200
-#define  SO_TC_BE    0
-#define     SO_TC_RD    300
-#define     SO_TC_OAM    400
-#define     SO_TC_AV    500
-#define     SO_TC_RV    600
-#define     SO_TC_VI    700
-#define     SO_TC_VO    800
-#define     SO_TC_CTL    900        /* highest class */
-#define  SO_TC_MAX    10        /* Total # of traffic classes */
-#define    SO_RECV_ANYIF    0x1104        /* unrestricted inbound processing */
-#define SO_RECV_TRAFFIC_CLASS    0x1087        /* Receive traffic class (bool)*/
-/*
- * Recommended DiffServ Code Point values
- */
-#define    _DSCP_DF    0    /* RFC 2474 */
-
-#define    _DSCP_CS0    0    /* RFC 2474 */
-#define    _DSCP_CS1    8    /* RFC 2474 */
-#define    _DSCP_CS2    16    /* RFC 2474 */
-#define    _DSCP_CS3    24    /* RFC 2474 */
-#define    _DSCP_CS4    32    /* RFC 2474 */
-#define    _DSCP_CS5    40    /* RFC 2474 */
-#define    _DSCP_CS6    48    /* RFC 2474 */
-#define    _DSCP_CS7    56    /* RFC 2474 */
-
-#define    _DSCP_EF    46    /* RFC 2474 */
-#define    _DSCP_VA    44    /* RFC 5865 */
-
-#define    _DSCP_AF11    10    /* RFC 2597 */
-#define    _DSCP_AF12    12    /* RFC 2597 */
-#define    _DSCP_AF13    14    /* RFC 2597 */
-#define    _DSCP_AF21    18    /* RFC 2597 */
-#define    _DSCP_AF22    20    /* RFC 2597 */
-#define    _DSCP_AF23    22    /* RFC 2597 */
-#define    _DSCP_AF31    26    /* RFC 2597 */
-#define    _DSCP_AF32    28    /* RFC 2597 */
-#define    _DSCP_AF33    30    /* RFC 2597 */
-#define    _DSCP_AF41    34    /* RFC 2597 */
-#define    _DSCP_AF42    36    /* RFC 2597 */
-#define    _DSCP_AF43    38    /* RFC 2597 */
-
-#define    _DSCP_52    52    /* Wi-Fi WMM Certification: Sigma */
-
-#define    _MAX_DSCP    63    /* coded on 6 bits */
-
-#define    IP_NO_IFT_CELLULAR    6969 /* for internal use only */
-#define MAX_IPOPTLEN    40
-// end addition for iPhone / blink
-
-
+#include "constants.h"
 
 #define    INADDR_LEN    ((int)sizeof(in_addr_t))
 #define    TIMEVAL_LEN    ((int)sizeof(struct tv32))
@@ -197,7 +145,7 @@ struct tv32 {
 };
 
 /* various options */
-int options;
+static int options;
 #define    F_FLOOD        0x0001
 #define    F_INTERVAL    0x0002
 #define    F_NUMERIC    0x0004
@@ -237,17 +185,17 @@ int options;
 int mx_dup_ck = MAX_DUP_CHK;
 char rcvd_tbl[MAX_DUP_CHK / 8];
 
-struct sockaddr_in whereto;    /* who to ping */
+static struct sockaddr_in whereto;    /* who to ping */
 int datalen = DEFDATALEN;
 int maxpayload;
-int s;                /* socket file descriptor */
+static int s;                /* socket file descriptor */
 u_char outpackhdr[IP_MAXPACKET], *outpack;
 char BBELL = '\a';        /* characters written for MISSED and AUDIBLE */
 char BSPACE = '\b';        /* characters written for flood */
 char DOT = '.';
-char *hostname;
+static char *hostname;
 char *shostname;
-int ident;            /* process id to identify our packets */
+static int ident;            /* process id to identify our packets */
 int uid;            /* cached uid for micro-optimization */
 u_char icmp_type = ICMP_ECHO;
 u_char icmp_type_rsp = ICMP_ECHOREPLY;
@@ -275,7 +223,7 @@ int sweepmax;            /* max value of payload in sweep */
 int sweepmin = 0;        /* start value of payload in sweep */
 int sweepincr = 1;        /* payload increment in sweep */
 int interval = 1000;        /* interval between packets, ms */
-int waittime = MAXWAIT;        /* timeout for each packet */
+static int waittime = MAXWAIT;        /* timeout for each packet */
 long nrcvtimeout = 0;        /* # of packets we got back after waittime */
 int icmp_len = 0;        /* length of the ICMP header */
 

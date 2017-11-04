@@ -11,6 +11,7 @@
 		225E4BB91FA3627C00494E03 /* ping.c in Sources */ = {isa = PBXBuildFile; fileRef = 225E4BB81FA3627C00494E03 /* ping.c */; };
 		225E4BBB1FA36D6900494E03 /* gmt2local.c in Sources */ = {isa = PBXBuildFile; fileRef = 225E4BBA1FA36D6900494E03 /* gmt2local.c */; };
 		225E4BC51FA37D8A00494E03 /* error.h in Headers */ = {isa = PBXBuildFile; fileRef = 225E4BC41FA37D8A00494E03 /* error.h */; };
+		225E4BD51FA472FB00494E03 /* ip_var.h in Headers */ = {isa = PBXBuildFile; fileRef = 225E4BD41FA472FB00494E03 /* ip_var.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +21,8 @@
 		225E4BB81FA3627C00494E03 /* ping.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = ping.c; path = ../../ping.tproj/ping.c; sourceTree = "<group>"; };
 		225E4BBA1FA36D6900494E03 /* gmt2local.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = gmt2local.c; path = ../../ecnprobe/gmt2local.c; sourceTree = "<group>"; };
 		225E4BC41FA37D8A00494E03 /* error.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = error.h; sourceTree = SOURCE_ROOT; };
+		225E4BD31FA471CB00494E03 /* constants.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = constants.h; path = network_cmds_ios/constants.h; sourceTree = SOURCE_ROOT; };
+		225E4BD41FA472FB00494E03 /* ip_var.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ip_var.h; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,9 +39,10 @@
 		225E4BA21FA3620600494E03 = {
 			isa = PBXGroup;
 			children = (
-				225E4BB71FA3626700494E03 /* SingleFileCommands */,
+				225E4BB71FA3626700494E03 /* ping */,
 				225E4BAE1FA3620600494E03 /* network_cmds_ios */,
 				225E4BAD1FA3620600494E03 /* Products */,
+				225E4C111FA4836600494E03 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -53,6 +57,8 @@
 		225E4BAE1FA3620600494E03 /* network_cmds_ios */ = {
 			isa = PBXGroup;
 			children = (
+				225E4BD41FA472FB00494E03 /* ip_var.h */,
+				225E4BD31FA471CB00494E03 /* constants.h */,
 				225E4BC41FA37D8A00494E03 /* error.h */,
 				225E4BAF1FA3620600494E03 /* network_cmds_ios.h */,
 				225E4BB01FA3620600494E03 /* Info.plist */,
@@ -60,13 +66,20 @@
 			path = network_cmds_ios;
 			sourceTree = "<group>";
 		};
-		225E4BB71FA3626700494E03 /* SingleFileCommands */ = {
+		225E4BB71FA3626700494E03 /* ping */ = {
 			isa = PBXGroup;
 			children = (
 				225E4BBA1FA36D6900494E03 /* gmt2local.c */,
 				225E4BB81FA3627C00494E03 /* ping.c */,
 			);
-			path = SingleFileCommands;
+			path = ping;
+			sourceTree = "<group>";
+		};
+		225E4C111FA4836600494E03 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -78,6 +91,7 @@
 			files = (
 				225E4BB11FA3620600494E03 /* network_cmds_ios.h in Headers */,
 				225E4BC51FA37D8A00494E03 /* error.h in Headers */,
+				225E4BD51FA472FB00494E03 /* ip_var.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -277,6 +291,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = ../../../Frameworks/;
 				INFOPLIST_FILE = network_cmds_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
@@ -297,6 +312,7 @@
 				DYLIB_COMPATIBILITY_VERSION = 1;
 				DYLIB_CURRENT_VERSION = 1;
 				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				FRAMEWORK_SEARCH_PATHS = ../../../Frameworks/;
 				INFOPLIST_FILE = network_cmds_ios/Info.plist;
 				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";

@@ -79,7 +79,8 @@ struct rtentry;
 
 #include <net/if.h>
 #include <net/if_dl.h>
-#include <net/route.h>
+// #include <net/route.h> // not available on iOS
+#include "route.h" // not available on iOS
 #include <netinet/in.h>
 
 #include <errno.h>

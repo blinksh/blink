@@ -48,6 +48,7 @@
 #include <stdlib.h>
 #include <errno.h>
 #include <err.h>
+#include "error.h"
 #include <stdio.h>
 
 #include "as.h"

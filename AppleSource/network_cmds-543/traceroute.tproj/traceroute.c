@@ -226,6 +226,8 @@ The Regents of the University of California.  All rights reserved.\n";
  *     Tue Dec 20 03:50:13 PST 1988
  */
 
+#define HAVE_SYS_SYSCTL_H // iOS
+
 #include <sys/param.h>
 #include <sys/file.h>
 #include <sys/ioctl.h>
@@ -241,12 +243,13 @@ The Regents of the University of California.  All rights reserved.\n";
 #include <netinet/in_systm.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
-#include <netinet/ip_var.h>
+/// #include <netinet/ip_var.h> // Not available on iOS
+#include "ip_var.h" // required because it defines structs
 #include <netinet/ip_icmp.h>
 #include <netinet/udp.h>
-#include <netinet/udp_var.h>
+// #include <netinet/udp_var.h> // Not available on iOS
 #include <netinet/tcp.h>
-#include <netinet/tcpip.h>
+// #include <netinet/tcpip.h> // Not available on iOS
 
 #include <arpa/inet.h>
 
@@ -257,6 +260,7 @@ The Regents of the University of California.  All rights reserved.\n";
 
 #include <ctype.h>
 #include <err.h>
+#include "error.h"
 #include <errno.h>
 #include <fcntl.h>
 #ifdef HAVE_MALLOC_H
@@ -289,6 +293,7 @@ The Regents of the University of California.  All rights reserved.\n";
 #include "ifaddrlist.h"
 #include "as.h"
 #include "traceroute.h"
+#include "constants.h"
 
 /* Maximum number of gateways (include room for one noop) */
 #define NGATEWAYS ((int)((MAX_IPOPTLEN - IPOPT_MINOFF - 1) / sizeof(u_int32_t)))
@@ -347,10 +352,10 @@ int hiplen = 0;
 /* loose source route gateway list (including room for final destination) */
 u_int32_t gwlist[NGATEWAYS + 1];
 
-int s;				/* receive (icmp) socket file descriptor */
+static int s;				/* receive (icmp) socket file descriptor */
 int sndsock;			/* send (udp) socket file descriptor */
 
-struct sockaddr whereto;	/* Who to try to reach */
+static struct sockaddr whereto;	/* Who to try to reach */
 struct sockaddr wherefrom;	/* Who we are */
 int packlen;			/* total length of packet */
 int protlen;			/* length of protocol part of packet */
@@ -361,19 +366,19 @@ u_int pausemsecs;
 
 char *prog;
 char *source;
-char *hostname;
+static char *hostname;
 char *device;
 static const char devnull[] = "/dev/null";
 
 int nprobes = -1;
 int max_ttl;
 int first_ttl = 1;
-u_short ident;
+static u_short ident;
 u_short port;			/* protocol specific base "port" */
 
-int options;			/* socket options */
+static int options;			/* socket options */
 int verbose;
-int waittime = 5;		/* time to wait for response (in seconds) */
+static int waittime = 5;		/* time to wait for response (in seconds) */
 int nflag;			/* print addresses numerically */
 int as_path;			/* print as numbers for each hop */
 char *as_server = NULL;
@@ -398,7 +403,7 @@ void	getaddr(u_int32_t *, char *);
 struct	hostinfo *gethostinfo(char *);
 u_short	in_cksum(u_short *, int);
 char	*inetname(struct in_addr);
-int	main(int, char **);
+int	traceroute_main(int, char **);
 u_short p_cksum(struct ip *, u_short *, int);
 int	packet_ok(u_char *, int, struct sockaddr_in *, int);
 char	*pr_type(u_char);
@@ -495,7 +500,7 @@ struct	outproto *proto = &protos[0];
 const char *ip_hdr_key = "vhtslen id  off tlprsum srcip   dstip   opts";
 
 int
-main(int argc, char **argv)
+traceroute_main(int argc, char **argv)
 {
 	register int op, code, n;
 	register char *cp;
@@ -516,6 +521,8 @@ main(int argc, char **argv)
 	int requestPort = -1;
 	int sump = 0;
 	int sockerrno = 0;
+    // Initialize everything:
+    options = 0;
 
 	if (argv[0] == NULL)
 		prog = "traceroute";
@@ -530,7 +537,8 @@ main(int argc, char **argv)
 	    open(devnull, O_RDONLY) < 0) {
 		Fprintf(stderr, "%s: open \"%s\": %s\n",
 		    prog, devnull, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	/*
 	 * Do the setuid-required stuff first, then lose priveleges ASAP.
@@ -555,7 +563,8 @@ main(int argc, char **argv)
 
 		if (sysctl(mib, 4, &max_ttl, &sz, NULL, 0) == -1) {
 			perror("sysctl(net.inet.ip.ttl)");
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		}
 	}
 #else
@@ -600,7 +609,8 @@ main(int argc, char **argv)
 				Fprintf(stderr,
 				    "%s: No more than %d gateways\n",
 				    prog, NGATEWAYS);
-				exit(1);
+                // exit(1);
+                pthread_exit(NULL);
 			}
 			getaddr(gwlist + lsrr, optarg);
 			++lsrr;
@@ -688,7 +698,8 @@ main(int argc, char **argv)
 		Fprintf(stderr,
 		    "%s: first ttl (%d) may not be greater than max ttl (%d)\n",
 		    prog, first_ttl, max_ttl);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 
 	if (!doipcksum)
@@ -735,7 +746,8 @@ main(int argc, char **argv)
 	outip = (struct ip *)malloc((unsigned)packlen);
 	if (outip == NULL) {
 		Fprintf(stderr, "%s: malloc: %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	memset((char *)outip, 0, packlen);
 
@@ -781,12 +793,14 @@ main(int argc, char **argv)
 
 	if (pe == NULL) {
 		Fprintf(stderr, "%s: unknown protocol %s\n", prog, cp);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (s < 0) {
 		errno = sockerrno;
 		Fprintf(stderr, "%s: icmp socket: %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	(void) setsockopt(s, SOL_SOCKET, SO_RECV_ANYIF, (char *)&on,
 	    sizeof(on));
@@ -808,7 +822,8 @@ main(int argc, char **argv)
 	if (sndsock < 0) {
 		errno = sockerrno;
 		Fprintf(stderr, "%s: raw socket: %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 
 #if defined(IP_OPTIONS) && !defined(HAVE_RAW_OPTIONS)
@@ -818,7 +833,8 @@ main(int argc, char **argv)
 		cp = "ip";
 		if ((pe = getprotobyname(cp)) == NULL) {
 			Fprintf(stderr, "%s: unknown protocol %s\n", prog, cp);
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		}
 
 		/* final hop */
@@ -839,7 +855,8 @@ main(int argc, char **argv)
 		    (char *)optlist, i + sizeof(gwlist[0]))) < 0) {
 			Fprintf(stderr, "%s: IP_OPTIONS: %s\n",
 			    prog, strerror(errno));
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		    }
 	}
 #endif
@@ -848,14 +865,16 @@ main(int argc, char **argv)
 	if (setsockopt(sndsock, SOL_SOCKET, SO_SNDBUF, (char *)&packlen,
 	    sizeof(packlen)) < 0) {
 		Fprintf(stderr, "%s: SO_SNDBUF: %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 #endif
 #ifdef IP_HDRINCL
 	if (setsockopt(sndsock, IPPROTO_IP, IP_HDRINCL, (char *)&on,
 	    sizeof(on)) < 0) {
 		Fprintf(stderr, "%s: IP_HDRINCL: %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 #else
 #ifdef IP_TOS
@@ -863,7 +882,8 @@ main(int argc, char **argv)
 	    (char *)&tos, sizeof(tos)) < 0) {
 		Fprintf(stderr, "%s: setsockopt tos %d: %s\n",
 		    prog, tos, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 #endif
 #endif
@@ -878,12 +898,14 @@ main(int argc, char **argv)
 	n = ifaddrlist(&al, errbuf, sizeof(errbuf));
 	if (n < 0) {
 		Fprintf(stderr, "%s: ifaddrlist: %s\n", prog, errbuf);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (n == 0) {
 		Fprintf(stderr,
 		    "%s: Can't find any network interfaces\n", prog);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 
 	/* Look for a specific device */
@@ -894,7 +916,8 @@ main(int argc, char **argv)
 		if (i <= 0) {
 			Fprintf(stderr, "%s: Can't find interface %.32s\n",
 			    prog, device);
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		}
 	}
 
@@ -909,7 +932,8 @@ main(int argc, char **argv)
 		else if ((err = findsaddr(to, from)) != NULL) {
 			Fprintf(stderr, "%s: findsaddr: %s\n",
 			    prog, err);
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		}
 	} else {
 		hi = gethostinfo(source);
@@ -929,7 +953,8 @@ main(int argc, char **argv)
 				Fprintf(stderr,
 				    "%s: %s is not on interface %.32s\n",
 				    prog, source, device);
-				exit(1);
+				// exit(1);
+                pthread_exit(NULL);
 			}
 			setsin(from, *ap);
 		} else {
@@ -1168,7 +1193,8 @@ main(int argc, char **argv)
 	}
 	if (as_path)
 		as_shutdown(asn);
-	exit(0);
+	//exit(0);
+    pthread_exit(NULL);
 }
 
 int
@@ -1201,7 +1227,8 @@ wait_for_reply(register int sock, register struct sockaddr_in *fromp,
 	error = select(sock + 1, fdsp, NULL, NULL, &wait);
 	if (error == -1 && errno == EINVAL) {
 		Fprintf(stderr, "%s: botched select() args\n", prog);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (error > 0)
 		cc = recvfrom(sock, (char *)packet, sizeof(packet), 0,
@@ -1246,7 +1273,8 @@ send_probe(int seq, int ttl)
 	    (char *)&ttl, sizeof(ttl)) < 0) {
 		Fprintf(stderr, "%s: setsockopt ttl %d: %s\n",
 		    prog, ttl, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 #endif
 
@@ -1652,12 +1680,14 @@ gethostinfo(register char *hostname)
 	if (strlen(hostname) > 64) {
 		Fprintf(stderr, "%s: hostname \"%.32s...\" is too long\n",
 		    prog, hostname);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	hi = calloc(1, sizeof(*hi));
 	if (hi == NULL) {
 		Fprintf(stderr, "%s: calloc %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	addr = inet_addr(hostname);
 	if ((int32_t)addr != -1) {
@@ -1667,7 +1697,8 @@ gethostinfo(register char *hostname)
 		if (hi->addrs == NULL) {
 			Fprintf(stderr, "%s: calloc %s\n",
 			    prog, strerror(errno));
-			exit(1);
+			// exit(1);
+            pthread_exit(NULL);
 		}
 		hi->addrs[0] = addr;
 		return (hi);
@@ -1676,11 +1707,13 @@ gethostinfo(register char *hostname)
 	hp = gethostbyname(hostname);
 	if (hp == NULL) {
 		Fprintf(stderr, "%s: unknown host %s\n", prog, hostname);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (hp->h_addrtype != AF_INET || hp->h_length != 4) {
 		Fprintf(stderr, "%s: bad host %s\n", prog, hostname);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	hi->name = strdup(hp->h_name);
 	for (n = 0, p = hp->h_addr_list; *p != NULL; ++n, ++p)
@@ -1689,7 +1722,8 @@ gethostinfo(register char *hostname)
 	hi->addrs = calloc(n, sizeof(hi->addrs[0]));
 	if (hi->addrs == NULL) {
 		Fprintf(stderr, "%s: calloc %s\n", prog, strerror(errno));
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	for (ap = hi->addrs, p = hp->h_addr_list; *p != NULL; ++ap, ++p)
 		memcpy(ap, *p, sizeof(*ap));
@@ -1746,7 +1780,8 @@ str2val(register const char *str, register const char *what,
 	if (*ep != '\0') {
 		Fprintf(stderr, "%s: \"%s\" bad value for %s \n",
 		    prog, str, what);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (val < mi && mi >= 0) {
 		if (mi == 0)
@@ -1755,11 +1790,13 @@ str2val(register const char *str, register const char *what,
 		else
 			Fprintf(stderr, "%s: %s must be > %d\n",
 			    prog, what, mi - 1);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	if (val > ma && ma >= 0) {
 		Fprintf(stderr, "%s: %s must be <= %d\n", prog, what, ma);
-		exit(1);
+		// exit(1);
+        pthread_exit(NULL);
 	}
 	return (val);
 }
@@ -1820,5 +1857,6 @@ usage(void)
 	    "Usage: %s [-adDeFInrSvx] [-A as_server] [-f first_ttl] [-g gateway] [-i iface]\n"
 	    "\t[-M first_ttl] [-m max_ttl] [-p port] [-P proto] [-q nqueries] [-s src_addr]\n"
 	    "\t[-t tos] [-w waittime] [-z pausemsecs] host [packetlen]\n", prog);
-	exit(1);
+	// exit(1);
+    pthread_exit(NULL);
 }
