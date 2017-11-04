@@ -59,5 +59,6 @@
 - (BOOL)rawMode;
 - (void)terminate;
 - (void)sigwinch;
+- (BOOL)executeCommand:(NSString*)command;
 
 @end

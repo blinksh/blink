@@ -117,6 +117,13 @@ static NSString *docsPath;
         cmdIsAFile = true;
       }
     }
+    if ((!cmdIsAFile) && [cmd hasPrefix:@"/"]) {
+      // cmd starts with "/" --> path to a command. Remove all directories at beginning:
+      cmd = [cmd lastPathComponent];
+      [listArgv replaceObjectAtIndex:0 withObject:cmd];
+      // This is a point where we are different from actual shells.
+      // There is one version of each command, and we always assume it is the one you want.
+    }
     NSString* fullPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
     NSArray *pathComponents = [fullPath componentsSeparatedByString:@":"];
     for (NSString* path in pathComponents) {
@@ -362,7 +369,14 @@ static NSString *docsPath;
   return false;
 }
 
-
+- (BOOL)executeCommand:(NSString*) command {
+  int argc;
+  char** argv;
+  argv = [self makeargs:command argc:&argc];
+  bool mustExit = [self executeCommand:argc argv:argv];
+  free(argv);
+  return mustExit;
+}
 
 - (int)main:(int)argc argv:(char **)argv
 {
@@ -374,6 +388,7 @@ static NSString *docsPath;
   docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
+  
   // Where the executables are stored:
   NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
   // Add content of old PATH to this. PATH *is* defined in iOS, surprising as it may be.
@@ -409,12 +424,13 @@ static NSString *docsPath;
       // Re-evalute column number before each command
       sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
       setenv("COLUMNS", columnCountString, 1); // force rewrite of value
-
+      
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
+      BOOL mustExit = [self executeCommand:cmdline];
 
-      argv = [self makeargs:cmdline argc:&argc];
+      /* argv = [self makeargs:cmdline argc:&argc];
       bool mustExit = [self executeCommand:argc argv:argv];
-      free(argv);
+      free(argv); */
       if (mustExit) break;
     }
     [self setTitle]; // Temporary, until the apps restore the right state.
@@ -422,7 +438,6 @@ static NSString *docsPath;
     free(line);
   }
 
-  
   [self out:"Bye!"];
 
   return 0;

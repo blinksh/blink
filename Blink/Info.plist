@@ -21,10 +21,8 @@
 			<string>Owner</string>
 			<key>LSItemContentTypes</key>
 			<array>
-				<string>public.item</string>
 				<string>public.content</string>
-				<string>public.data</string>
-				<string>public.image</string>
+				<string>public.archive</string>
 			</array>
 		</dict>
 	</array>
@@ -42,8 +40,25 @@
 	<string>6.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Blink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>blinkshell</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>blinkshell</string>
+	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>

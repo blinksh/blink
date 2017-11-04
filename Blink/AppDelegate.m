@@ -33,6 +33,8 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
+// Required for commands
+#import "SpaceController.h"
 @import CloudKit;
 
 #undef HOCKEYSDK
@@ -126,44 +128,56 @@
 - (BOOL)application:(UIApplication *)app
             openURL:(NSURL *)url
             options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
-  BOOL shouldOpenInPlace = options[UIApplicationOpenURLOptionsOpenInPlaceKey];
-  if (shouldOpenInPlace) [url startAccessingSecurityScopedResource];
-  NSData *data = [NSData dataWithContentsOfURL:url];
-  if (shouldOpenInPlace) [url stopAccessingSecurityScopedResource];
-  // The place where we will write the data:
-  NSString* filename = [url lastPathComponent];
-  NSString* path = [docsPath stringByAppendingPathComponent:filename];
-  NSString* pathUnique = [self uniqueFileName:path];
-
-  if (shouldOpenInPlace && (data != nil)) {
-    if ([data writeToFile:pathUnique atomically:YES]) {
-      // If it worked and it was a file in our Inbox, we delete it:
-      if (([url isFileURL]) && (
-                                ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
-                                ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
-                                )) {
-        NSError *e;
-        if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
-          fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
+  // Two different possibilities:
+  // a) we have been sent a file (by "open in Blink").
+  //         --> we either save it or copy it in Documents.
+  // b) we have been sent a command (by "blinkshell://command%20plus%20arguments").
+  //         --> we extract the command and execute it.
+  if (url.isFileURL) {
+    BOOL shouldOpenInPlace = options[UIApplicationOpenURLOptionsOpenInPlaceKey];
+    if (shouldOpenInPlace) [url startAccessingSecurityScopedResource];
+    NSData *data = [NSData dataWithContentsOfURL:url];
+    if (shouldOpenInPlace) [url stopAccessingSecurityScopedResource];
+    // The place where we will write the data:
+    NSString* filename = [url lastPathComponent];
+    NSString* path = [docsPath stringByAppendingPathComponent:filename];
+    NSString* pathUnique = [self uniqueFileName:path];
+    
+    if (shouldOpenInPlace && (data != nil)) {
+      if ([data writeToFile:pathUnique atomically:YES]) {
+        // If it worked and it was a file in our Inbox, we delete it:
+        if (([url isFileURL]) && (
+                                  ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
+                                  ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
+                                  )) {
+          NSError *e;
+          if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
+            fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
+          }
         }
       }
+      // TODO? automatic expansion of archives. Should be a preference. Security risk?
+      return YES;
+    } else {
+      // can not open in place. Need to import.
+      // HOW can I debug that with iOS11?
+      NSFileAccessIntent *readIntent = [NSFileAccessIntent readingIntentWithURL:url options:0];
+      NSFileAccessIntent *writeIntent = [NSFileAccessIntent writingIntentWithURL:[NSURL  fileURLWithPath:pathUnique] options:NSFileCoordinatorWritingForReplacing];
+      NSFileCoordinator* fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
+      NSOperationQueue* queue = [[NSOperationQueue alloc] init];
+      [fileCoordinator coordinateAccessWithIntents:@[readIntent] queue:queue byAccessor:^(NSError * _Nullable error) {
+        if (error != nil) return;
+        [[NSFileManager defaultManager]  copyItemAtURL:readIntent.URL toURL:writeIntent.URL error:0];
+      }];
+      return YES;
     }
-    // TODO? automatic expansion of archives. Should be a preference. Security risk?
-    return YES;
-  } else {
-    // can not open in place. Need to import.
-    // HOW can I debug that with iOS11?
-    NSFileAccessIntent *readIntent = [NSFileAccessIntent readingIntentWithURL:url options:0];
-    NSFileAccessIntent *writeIntent = [NSFileAccessIntent writingIntentWithURL:[NSURL  fileURLWithPath:pathUnique] options:NSFileCoordinatorWritingForReplacing];
-    NSFileCoordinator* fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
-    NSOperationQueue* queue = [[NSOperationQueue alloc] init];
-    [fileCoordinator coordinateAccessWithIntents:@[readIntent] queue:queue byAccessor:^(NSError * _Nullable error) {
-      if (error != nil) return;
-      [[NSFileManager defaultManager]  copyItemAtURL:readIntent.URL toURL:writeIntent.URL error:0];
-    }];
-    return YES;
-  }
+  } else if ([url.scheme isEqualToString:@"blinkshell"]) {
+    NSString *command = [url.absoluteString stringByRemovingPercentEncoding];
+    command = [command stringByReplacingOccurrencesOfString:@"blinkshell://" withString:@""];
+    fprintf(stderr, "BlinkShell: We've been asked to execute: %s\n", command.UTF8String);
+    SpaceController*  spaceC = (SpaceController *)ScreenController.shared.mainScreenRootViewController;
+    return [spaceC executeCommand:command];
+  } else return NO; // Not a scheme we can handle, sorry
 }
-
 
 @end

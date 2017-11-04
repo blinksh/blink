@@ -141,9 +141,23 @@
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8FB11EF7F379005D3D23 /* curl_ios.framework */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
+		225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
+		225E4BC21FA36EA400494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
+		225E4BC31FA36EA400494E03 /* network_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
 		227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
 		227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		229A0F7D1F2BBC7B00DB7AFD /* luatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		229A0F7E1F2BBC8700DB7AFD /* luatex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */; };
+		229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; };
+		229A0F861F2BC72100DB7AFD /* libtexlua52.5.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */; };
+		229A0F891F2BC74700DB7AFD /* pdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F881F2BC74700DB7AFD /* pdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		229A0F8A1F2BC75700DB7AFD /* pdftex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F881F2BC74700DB7AFD /* pdftex.dylib */; };
+		229A0F8F1F2BCA4A00DB7AFD /* bibtex8.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		229A0F901F2BCA5600DB7AFD /* bibtex8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */; };
+		22C106871F140B620014E7E8 /* CommandSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C106861F140B620014E7E8 /* CommandSession.m */; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
 		22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */; };
@@ -154,6 +168,8 @@
 		22F01EDE1F0AD3FB0086C089 /* libarchive_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738091F0A4D6300048A48 /* libarchive_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */; };
 		22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22F531C91F8E4CF2004F0AE1 /* lua_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */; };
+		22F531CA1F8E4CF2004F0AE1 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738101F0A563E00048A48 /* libxml2.tbd */; };
 		22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738121F0A564B00048A48 /* libbz2.tbd */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
@@ -289,9 +305,16 @@
 			files = (
 				227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
+				229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
+				229A0F8F1F2BCA4A00DB7AFD /* bibtex8.dylib in Embed Frameworks */,
+				22F531CA1F8E4CF2004F0AE1 /* lua_ios.framework in Embed Frameworks */,
 				22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */,
+				229A0F7D1F2BBC7B00DB7AFD /* luatex.dylib in Embed Frameworks */,
+				229A0F861F2BC72100DB7AFD /* libtexlua52.5.dylib in Embed Frameworks */,
 				22F01ED81F0AD3040086C089 /* shell_cmds_ios.framework in Embed Frameworks */,
+				225E4BC31FA36EA400494E03 /* network_cmds_ios.framework in Embed Frameworks */,
+				229A0F891F2BC74700DB7AFD /* pdftex.dylib in Embed Frameworks */,
 				22F01EDA1F0AD35E0086C089 /* file_cmds_ios.framework in Embed Frameworks */,
 				22F01EDE1F0AD3FB0086C089 /* libarchive_ios.framework in Embed Frameworks */,
 			);
@@ -400,21 +423,33 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		22241B451F27E2390093B33B /* lua_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = lua_ios.h; path = ../../lua53/lua_ios/lua_ios/lua_ios.h; sourceTree = "<group>"; };
 		222A8B931EF3DD6F005D3D23 /* shell_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = shell_cmds_ios.h; sourceTree = "<group>"; };
 		222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = shell_cmds_ios.framework; sourceTree = "<group>"; };
 		222A8C401EF659A9005D3D23 /* text_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = text_cmds_ios.h; path = "AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios/text_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
 		222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text_cmds_ios.framework; sourceTree = "<group>"; };
 		222A8FB11EF7F379005D3D23 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
 		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = network_cmds_ios.framework; sourceTree = "<group>"; };
+		225E4BD61FA475BA00494E03 /* network_cmds_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network_cmds_ios.h; path = include/network_cmds_ios.h; sourceTree = "<group>"; };
 		227ED6D81F0E9E0D00D8EB67 /* Python_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Python_ios.h; path = "../../Python-2.7.13/Python_ios/Python_ios/Python_ios.h"; sourceTree = "<group>"; };
 		227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Python_ios.framework; sourceTree = "<group>"; };
-		228CFEBE1F045FD40082EBD8 /* FileProvider.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = FileProvider.h; path = ../BlinkFilesFileProvider/FileProvider.h; sourceTree = "<group>"; };
-		228CFEBF1F045FD40082EBD8 /* FileProvider.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = FileProvider.m; path = ../BlinkFilesFileProvider/FileProvider.m; sourceTree = "<group>"; };
+		229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = luatex.dylib; path = Frameworks/luatex.dylib; sourceTree = "<group>"; };
+		229A0F7F1F2BBE0B00DB7AFD /* libtexlua52.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtexlua52.dylib; path = Frameworks/libtexlua52.dylib; sourceTree = "<group>"; };
+		229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libkpathsea.6.dylib; path = Frameworks/libkpathsea.6.dylib; sourceTree = "<group>"; };
+		229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtexlua52.5.dylib; path = Frameworks/libtexlua52.5.dylib; sourceTree = "<group>"; };
+		229A0F881F2BC74700DB7AFD /* pdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = pdftex.dylib; path = Frameworks/pdftex.dylib; sourceTree = "<group>"; };
+		229A0F8B1F2BC87500DB7AFD /* xetex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = xetex.dylib; path = Frameworks/xetex.dylib; sourceTree = "<group>"; };
+		229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = bibtex8.dylib; path = Frameworks/bibtex8.dylib; sourceTree = "<group>"; };
+		22A9D1511F2B64C8000E3AAB /* texlive_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = texlive_ios.h; path = include/texlive_ios.h; sourceTree = "<group>"; };
 		22AEF8381EF147B300798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = file_cmds_ios.framework; sourceTree = "<group>"; };
 		22AEF83D1EF147C400798591 /* file_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = file_cmds_ios.h; path = "AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios/file_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
+		22C106861F140B620014E7E8 /* CommandSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CommandSession.m; sourceTree = "<group>"; };
+		22C106881F140B720014E7E8 /* CommandSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CommandSession.h; sourceTree = "<group>"; };
 		22C6715B1EEC370D00A44443 /* libc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc.tbd; path = usr/lib/libc.tbd; sourceTree = SDKROOT; };
 		22C6715F1EEC3C8400A44443 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
 		22C6827D1F0A464600077E19 /* libarchive_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = libarchive_ios.h; path = AppleSource/libarchive/libarchive_ios/libarchive_ios/include/libarchive_ios/libarchive_ios.h; sourceTree = SOURCE_ROOT; };
+		22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = lua_ios.framework; sourceTree = "<group>"; };
 		22F738091F0A4D6300048A48 /* libarchive_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libarchive_ios.framework; sourceTree = "<group>"; };
 		22F738101F0A563E00048A48 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		22F738121F0A564B00048A48 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
@@ -514,6 +549,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */,
 				22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */,
 				22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */,
 				22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */,
@@ -523,6 +559,11 @@
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
+				229A0F7E1F2BBC8700DB7AFD /* luatex.dylib in Frameworks */,
+				229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */,
+				229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */,
+				229A0F8A1F2BC75700DB7AFD /* pdftex.dylib in Frameworks */,
+				229A0F901F2BCA5600DB7AFD /* bibtex8.dylib in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */,
@@ -530,9 +571,11 @@
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
 				22F01ED91F0AD35E0086C089 /* file_cmds_ios.framework in Frameworks */,
 				22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */,
+				225E4BC21FA36EA400494E03 /* network_cmds_ios.framework in Frameworks */,
 				22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */,
 				227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */,
 				22F01EDD1F0AD3FB0086C089 /* libarchive_ios.framework in Frameworks */,
+				22F531C91F8E4CF2004F0AE1 /* lua_ios.framework in Frameworks */,
 				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
 				222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */,
 			);
@@ -599,6 +642,9 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				225E4BD61FA475BA00494E03 /* network_cmds_ios.h */,
+				225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */,
+				22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */,
 				22F738121F0A564B00048A48 /* libbz2.tbd */,
 				22F738101F0A563E00048A48 /* libxml2.tbd */,
 				22AEF83D1EF147C400798591 /* file_cmds_ios.h */,
@@ -606,6 +652,8 @@
 				222A8C401EF659A9005D3D23 /* text_cmds_ios.h */,
 				22C6827D1F0A464600077E19 /* libarchive_ios.h */,
 				227ED6D81F0E9E0D00D8EB67 /* Python_ios.h */,
+				22241B451F27E2390093B33B /* lua_ios.h */,
+				22A9D1511F2B64C8000E3AAB /* texlive_ios.h */,
 				22C6715F1EEC3C8400A44443 /* libiconv.tbd */,
 				22C6715B1EEC370D00A44443 /* libc.tbd */,
 				227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */,
@@ -793,8 +841,8 @@
 				07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */,
 				07F6706F1D05EEE200C0A53C /* SSHSession.h */,
 				07F670701D05EEE200C0A53C /* SSHSession.m */,
-				228CFEBE1F045FD40082EBD8 /* FileProvider.h */,
-				228CFEBF1F045FD40082EBD8 /* FileProvider.m */,
+				22C106881F140B720014E7E8 /* CommandSession.h */,
+				22C106861F140B620014E7E8 /* CommandSession.m */,
 			);
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
@@ -964,6 +1012,13 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */,
+				229A0F8B1F2BC87500DB7AFD /* xetex.dylib */,
+				229A0F881F2BC74700DB7AFD /* pdftex.dylib */,
+				229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */,
+				229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */,
+				229A0F7F1F2BBE0B00DB7AFD /* libtexlua52.dylib */,
+				229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
@@ -1071,7 +1126,7 @@
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.ApplicationGroups.iOS = {
-								enabled = 1;
+								enabled = 0;
 							};
 							com.apple.BackgroundModes = {
 								enabled = 0;
@@ -1089,7 +1144,7 @@
 					};
 					EA0BA1A31C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = FCX3DQP2U9;
+						DevelopmentTeam = VG8Z23C8YL;
 						LastSwiftMigration = 0800;
 						ProvisioningStyle = Automatic;
 						TestTargetID = EA0BA18A1C0CC57B00719C1A;
@@ -1299,6 +1354,7 @@
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
 				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
+				22C106871F140B620014E7E8 /* CommandSession.m in Sources */,
 				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
@@ -1624,6 +1680,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks/",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
@@ -1661,6 +1718,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks/",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
 				OTHER_LDFLAGS = "-ObjC";
@@ -1678,7 +1736,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = FCX3DQP2U9;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;
@@ -1695,7 +1753,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = FCX3DQP2U9;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				INFOPLIST_FILE = BlinkUITests/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = Carlos.BlinkUITests;

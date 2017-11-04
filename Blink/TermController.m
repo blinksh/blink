@@ -347,4 +347,10 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
+- (BOOL)executeCommand:(NSString*)command {
+  if (!self.isViewLoaded) [self viewDidLoad];
+  return [self->_session executeCommand:command];
+}
+
+
 @end

@@ -656,4 +656,11 @@
   [self displayHUD];
 }
 
+- (BOOL)executeCommand:(NSString*) command
+{
+  TermController *term = [self currentTerm];
+  return [term executeCommand:command];
+}
+
+
 @end

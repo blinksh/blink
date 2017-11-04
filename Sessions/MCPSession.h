@@ -38,6 +38,7 @@
 - (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
 - (int)main:(int)argc argv:(char **)argv;
 - (void)executeWithArgs:(int)argc argv:(char **)argv;
+- (BOOL)executeCommand:(NSString*) command;
 - (void)sigwinch;
 - (void)close;
 
