@@ -35,6 +35,7 @@
 #import "ScreenController.h"
 // Required for commands
 #import "SpaceController.h"
+#import <pthread.h>
 @import CloudKit;
 
 #undef HOCKEYSDK
@@ -172,11 +173,32 @@
       return YES;
     }
   } else if ([url.scheme isEqualToString:@"blinkshell"]) {
-    NSString *command = [url.absoluteString stringByRemovingPercentEncoding];
-    command = [command stringByReplacingOccurrencesOfString:@"blinkshell://" withString:@""];
-    fprintf(stderr, "BlinkShell: We've been asked to execute: %s\n", command.UTF8String);
+    // extract the command:
+    NSString *command = [url.absoluteString stringByReplacingOccurrencesOfString:@"blinkshell://" withString:@""];
     SpaceController*  spaceC = (SpaceController *)ScreenController.shared.mainScreenRootViewController;
-    return [spaceC executeCommand:command];
+    // parse into composants, if needed:
+    if ([command containsString:@"%1E"]) {
+      // We separated arguments with %1E. Let's parse:
+      // Corresponds to programs that create arguments with spaces in them.
+      // e.g. python, when calling "python -c vast command with spaces"
+      NSArray *listArgvMaybeEmpty = [command componentsSeparatedByString:@"%1E"];
+      NSMutableArray *listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
+                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+      for (int i = 0; i < [listArgv count]; i++)
+           [listArgv replaceObjectAtIndex:i withObject:[listArgv[i] stringByRemovingPercentEncoding]];
+      return [spaceC executeCommand:listArgv];
+    } else {
+      // no %1E inside. Simpler case.
+      // First, remove percent encoding
+      command = [command stringByRemovingPercentEncoding];
+      // Separate arr into arguments and parse (env vars, ~)
+      NSArray *listArgvMaybeEmpty = [command componentsSeparatedByString:@" "];
+      // Remove empty strings (extra spaces)
+      NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
+                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+      if ([listArgv count] == 0) return NULL; // unlikely
+      return [spaceC executeCommand:listArgv];
+      }
   } else return NO; // Not a scheme we can handle, sorry
 }
 

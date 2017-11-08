@@ -656,10 +656,10 @@
   [self displayHUD];
 }
 
-- (BOOL)executeCommand:(NSString*) command
+- (BOOL)executeCommand:(NSMutableArray*) listArgv
 {
   TermController *term = [self currentTerm];
-  return [term executeCommand:command];
+  return [term executeCommand:listArgv];
 }
 
 

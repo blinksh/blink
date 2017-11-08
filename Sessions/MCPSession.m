@@ -80,26 +80,17 @@ static NSString *docsPath;
   }
 }
 
-- (char **) makeargs:(NSString*) cmdline argc:(int*) argc
+- (char **) makeargs:(NSMutableArray*) listArgv argc:(int*) argc
 {
-  // splits the command line into strings, removes empty strings,
+  // Assumes the command line has been separated into arguments, parse the arguments if needed
   // does some conversions (~ --> home directory, for example,
   // plus environment variables)
   // If the "command" is a file, that is in the path, is executable, and whose 1st line is "#! .../[language]..."
   // then add [language] at the beginning of the line, plus path to position of file.
   // We accept scripts written in lua, python, and shell (for the time being).
   // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
-  // edit the arguments for curl syntax.
-  
-  // Separate arr into arguments and parse (env vars, ~)
-  NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
-  // Remove empty strings (extra spaces)
-  NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
-                       [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-  if ([listArgv count] == 0) {
-    *argc = 0;
-    return NULL;
-  }
+  // edit the arguments (we simulate scp and sftp by calling "curl scp://remotefile")
+  if ([listArgv count] == 0) { *argc = 0; return NULL; }
   NSString* cmd = [listArgv objectAtIndex:0];
   if (![cmd hasPrefix:@"\\"]) {
     // There can be several versions of a command (e.g. ls as precompiled and ls written in Python)
@@ -169,9 +160,16 @@ static NSString *docsPath;
             if ([shellCommandLine hasPrefix:@"#"]) continue; // comments, including first line
             // empty lines will be treated by the system
             int localArgc;
-            char** localArgv = [self makeargs:shellCommandLine argc:&localArgc];
-            bool mustExit = [self executeCommand:localArgc argv:localArgv];
-            free(localArgv);
+            NSArray *localListArgvMaybeEmpty = [shellCommandLine componentsSeparatedByString:@" "];
+            // Remove empty strings (extra spaces)
+            NSMutableArray* localListArgv = [[localListArgvMaybeEmpty filteredArrayUsingPredicate:
+                                         [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+            bool mustExit = false;
+            if ([localListArgv count] > 0) {
+              char** localArgv = [self makeargs:localListArgv argc:&localArgc];
+              mustExit = [self executeCommand:localArgc argv:localArgv];
+              free(localArgv);
+            }
             if (mustExit) break;
           }
           // cleanup and return:
@@ -184,6 +182,27 @@ static NSString *docsPath;
   } else {
     // Just remove the \ at the beginning
     [listArgv replaceObjectAtIndex:0 withObject:[cmd substringWithRange:NSMakeRange(1, [cmd length]-1)]];
+  }
+  // Re-concatenate arguments with quotes (' and ")
+  for (unsigned i = 0; i < [listArgv count]; i++) {
+    NSString *argument = [listArgv objectAtIndex:i];
+    if ([argument hasPrefix:@"'"] && !([argument hasSuffix:@"'"])) {
+      do {
+        // add a space
+        [listArgv replaceObjectAtIndex:i withObject:[[listArgv objectAtIndex:i] stringByAppendingString:@" "]];
+        // add all arguments that are part of the argument:
+        [listArgv replaceObjectAtIndex:i withObject:[[listArgv objectAtIndex:i] stringByAppendingString:[listArgv objectAtIndex:(i+1)]]];
+        [listArgv removeObjectAtIndex:(i+1)];
+      } while (![[listArgv objectAtIndex:(i+1)] hasSuffix:@"'"]);
+      // including the last one
+      [listArgv replaceObjectAtIndex:i withObject:[[listArgv objectAtIndex:i] stringByAppendingString:@" "]];
+      [listArgv replaceObjectAtIndex:i withObject:[[listArgv objectAtIndex:i] stringByAppendingString:[listArgv objectAtIndex:(i+1)]]];
+      [listArgv removeObjectAtIndex:(i+1)];
+      argument = [listArgv objectAtIndex:i];
+      argument = [argument stringByReplacingOccurrencesOfString:@"'" withString:@""];
+      [listArgv replaceObjectAtIndex:i withObject:argument];
+    }
+    // TODO: "
   }
   *argc = [listArgv count];
   char** argv = (char **)malloc((*argc + 1) * sizeof(char*));
@@ -369,10 +388,11 @@ static NSString *docsPath;
   return false;
 }
 
-- (BOOL)executeCommand:(NSString*) command {
+- (BOOL)executeCommand:(NSMutableArray*) listArgv {
   int argc;
   char** argv;
-  argv = [self makeargs:command argc:&argc];
+  if ([listArgv count] == 0) return false;
+  argv = [self makeargs:listArgv argc:&argc];
   bool mustExit = [self executeCommand:argc argv:argv];
   free(argv);
   return mustExit;
@@ -399,6 +419,7 @@ static NSString *docsPath;
   setenv("SSH_HOME", docsPath.UTF8String, 0);  // SSH keys in ~/Documents/.ssh/
   setenv("CURL_HOME", docsPath.UTF8String, 0); // CURL config in ~/Documents/
   setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python2.7/
+  setenv("SSL_CERT_FILE", [docsPath stringByAppendingPathComponent:@"cacert.pem"].UTF8String, 0); // SLL cacert.pem in ~/Documents/cacert.pem
   // hg config file in ~/Documents/.hgrc
   setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
   setenv("PATH", binPath.UTF8String, 1); // 1 = override existing value
@@ -426,11 +447,12 @@ static NSString *docsPath;
       setenv("COLUMNS", columnCountString, 1); // force rewrite of value
       
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
-      BOOL mustExit = [self executeCommand:cmdline];
-
-      /* argv = [self makeargs:cmdline argc:&argc];
-      bool mustExit = [self executeCommand:argc argv:argv];
-      free(argv); */
+      // separate into arguments, parse and execute:
+      NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
+      // Remove empty strings (extra spaces)
+      NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
+                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+      BOOL mustExit = [self executeCommand:listArgv];
       if (mustExit) break;
     }
     [self setTitle]; // Temporary, until the apps restore the right state.

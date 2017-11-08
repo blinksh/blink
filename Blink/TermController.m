@@ -347,9 +347,9 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
-- (BOOL)executeCommand:(NSString*)command {
+- (BOOL)executeCommand:(NSMutableArray*)listArgv {
   if (!self.isViewLoaded) [self viewDidLoad];
-  return [self->_session executeCommand:command];
+  return [self->_session executeCommand:listArgv];
 }
 
 

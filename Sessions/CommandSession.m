@@ -172,10 +172,10 @@ static NSDictionary *commandList = nil;
   NSString* commandName = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
   function = [[commandList objectForKey: commandName] pointerValue];
   if (function == nil) {
-    [self out:"Unknown command. Type 'help' for a list of available operations"];
+    fprintf(_stream.out, "%s\n", [commandName UTF8String]);
+    [self out:[NSString stringWithFormat:@"Unknown command: %s . Type 'help' for a list of available operations", argv[0]]];
     return 0;
-  }
-      
+  }      
   int exit_code = 0;
   exit_code = function(argc, argv);
   [self debugMsg:[NSString stringWithFormat:@"command %s finished with code %d", argv[0], exit_code]];
@@ -183,9 +183,9 @@ static NSDictionary *commandList = nil;
   return exit_code;
 }
 
-- (void)out:(const char *)str
+- (void)out:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\n", str);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
 }
 
 - (int)dieMsg:(NSString *)msg
