@@ -50,6 +50,7 @@
 }
 
 static NSString *docsPath;
+static NSString *filePath;
 static NSString* previousDirectory;
 
 - (void)setTitle
@@ -408,6 +409,13 @@ static NSString* previousDirectory;
   int argc;
   char** argv;
   if ([listArgv count] == 0) return false;
+  NSString* line = listArgv[0];
+  for (int i = 1; i < [listArgv count]; i++) {
+    line = [line stringByAppendingString:@" "];
+    line = [line stringByAppendingString:listArgv[i]];
+  }
+  linenoiseHistoryAdd(line.UTF8String);
+  linenoiseHistorySave(filePath.UTF8String);
   argv = [self makeargs:listArgv argc:&argc];
   bool mustExit = [self executeCommand:argc argv:argv];
   free(argv);
@@ -423,7 +431,7 @@ static NSString* previousDirectory;
   // Initialize paths for application files, including history.txt and keys
   docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
-  NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
+  filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   
   // Where the executables are stored:
   NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
@@ -456,8 +464,8 @@ static NSString* previousDirectory;
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' /* && line[0] != '/' */) {
-      linenoiseHistoryAdd(line);
-      linenoiseHistorySave(history);
+      // linenoiseHistoryAdd(line);
+      // linenoiseHistorySave(history);
       
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
       // separate into arguments, parse and execute:

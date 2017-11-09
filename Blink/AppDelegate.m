@@ -197,8 +197,25 @@
       NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
                                    [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
       if ([listArgv count] == 0) return NULL; // unlikely
-      return [spaceC executeCommand:listArgv];
+      // Set the working directory to the first (existing) file on the command line
+      NSString* workingDirectory = @"";
+      for (NSString* argument in listArgv) {
+        BOOL isDir;
+        if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir]  && (!isDir)) {
+          workingDirectory = argument.stringByDeletingLastPathComponent;
+          break;
+        }
       }
+      NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
+      if (workingDirectory.length > 0) {
+        [[NSFileManager defaultManager] changeCurrentDirectoryPath:workingDirectory];
+      }
+      [spaceC executeCommand:listArgv];
+      if (workingDirectory.length > 0) {
+        [[NSFileManager defaultManager] changeCurrentDirectoryPath:currentDir];
+      }
+      return YES;
+    }
   } else return NO; // Not a scheme we can handle, sorry
 }
 
