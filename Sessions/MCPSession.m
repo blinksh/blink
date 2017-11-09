@@ -50,6 +50,7 @@
 }
 
 static NSString *docsPath;
+static NSString* previousDirectory;
 
 - (void)setTitle
 {
@@ -328,6 +329,11 @@ static NSString *docsPath;
 }
 
 - (bool)executeCommand:(int)argc argv:(char **)argv {
+  // Re-evalute column number before each command
+  char columnCountString[10];
+  sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
+  setenv("COLUMNS", columnCountString, 1); // force rewrite of value
+
   if (argc == 0) return false;
   NSString *cmd = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
   
@@ -355,17 +361,27 @@ static NSString *docsPath;
     // setenv VARIABLE value
     setenv(argv[1], argv[2], 1);
   } else if  ([cmd isEqualToString:@"cd"]) {
+    NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
     if (argc > 1) {
-      BOOL isDir;
-      if ([[NSFileManager defaultManager] fileExistsAtPath:@(argv[1]) isDirectory:&isDir]) {
-        if (isDir)
-          [[NSFileManager defaultManager] changeCurrentDirectoryPath:@(argv[1])];
-        else  fprintf(_stream.out, "cd: %s: not a directory\n", argv[1]);
-      } else {
-        fprintf(_stream.out, "cd: %s: no such file or directory\n", argv[1]);
+      NSString* newDir = @(argv[1]);
+      if (strcmp(argv[1], "-") == 0) {
+        // "cd -" option to pop back to previous directory
+        newDir = previousDirectory;
       }
-    } else // [cd] Help, I'm lost, bring me back home
+      BOOL isDir;
+      if ([[NSFileManager defaultManager] fileExistsAtPath:newDir isDirectory:&isDir]) {
+        if (isDir) {
+          [[NSFileManager defaultManager] changeCurrentDirectoryPath:newDir];
+          previousDirectory = currentDir;
+        }
+        else  fprintf(_stream.out, "cd: %s: not a directory\n", [newDir UTF8String]);
+      } else {
+        fprintf(_stream.out, "cd: %s: no such file or directory\n", [newDir UTF8String]);
+      }
+    } else { // [cd] Help, I'm lost, bring me back home
+      previousDirectory = [[NSFileManager defaultManager] currentDirectoryPath];
       [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
+    }
     // Higher level commands, not from system: curl, tar, scp, sftp
   } else if ([cmd isEqualToString:@"vim"]) {
     // Opening in helper apps (vim, for example)
@@ -424,9 +440,9 @@ static NSString *docsPath;
   setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
   setenv("PATH", binPath.UTF8String, 1); // 1 = override existing value
   // iOS already defines "HOME" as the home dir of the application
-  char columnCountString[10];
 
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
+  previousDirectory = docsPath;
 
   const char *history = [filePath UTF8String];
 
@@ -442,9 +458,6 @@ static NSString *docsPath;
     if (line[0] != '\0' /* && line[0] != '/' */) {
       linenoiseHistoryAdd(line);
       linenoiseHistorySave(history);
-      // Re-evalute column number before each command
-      sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
-      setenv("COLUMNS", columnCountString, 1); // force rewrite of value
       
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
       // separate into arguments, parse and execute:

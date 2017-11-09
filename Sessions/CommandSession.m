@@ -171,11 +171,15 @@ static NSDictionary *commandList = nil;
   stderr = _stream.control.termout;
   NSString* commandName = [NSString stringWithCString:argv[0] encoding:NSASCIIStringEncoding];
   function = [[commandList objectForKey: commandName] pointerValue];
+  if (_debug) {
+    for (int i = 0; i < argc; i++)
+      [self debugMsg:[NSString stringWithFormat:@"argument: %d = %s", i, argv[i]]];
+  }
   if (function == nil) {
     fprintf(_stream.out, "%s\n", [commandName UTF8String]);
     [self out:[NSString stringWithFormat:@"Unknown command: %s . Type 'help' for a list of available operations", argv[0]]];
     return 0;
-  }      
+  }
   int exit_code = 0;
   exit_code = function(argc, argv);
   [self debugMsg:[NSString stringWithFormat:@"command %s finished with code %d", argv[0], exit_code]];
