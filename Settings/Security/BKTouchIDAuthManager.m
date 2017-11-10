@@ -35,6 +35,8 @@
 
 @import LocalAuthentication;
 
+#define MAX_INTERVAL_INACTIVE 10 * 60
+
 static BKTouchIDAuthManager *sharedManager = nil;
 static BOOL authRequired = NO;
 
@@ -45,7 +47,9 @@ static BOOL authRequired = NO;
 
 @end
 
-@implementation BKTouchIDAuthManager
+@implementation BKTouchIDAuthManager {
+  NSTimeInterval inactiveTimeStamp;
+}
 
 + (id)sharedManager
 {
@@ -72,19 +76,20 @@ static BOOL authRequired = NO;
 - (void)registerforDeviceLockNotif
 {
   //Screen lock notifications
-  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-				  NULL,                                        // observer
-				  displayStatusChanged,                        // callback
-				  CFSTR("com.apple.springboard.lockcomplete"), // event name
-				  NULL,                                        // object
-				  CFNotificationSuspensionBehaviorDeliverImmediately);
-
-  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
-				  NULL,                                        // observer
-				  displayStatusChanged,                        // callback
-				  CFSTR("com.apple.springboard.lockstate"),    // event name
-				  NULL,                                        // object
-				  CFNotificationSuspensionBehaviorDeliverImmediately);
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(displayStatusChanged:) name:UIApplicationDidEnterBackgroundNotification object:nil];
+//  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+//				  NULL,                                        // observer
+//				  displayStatusChanged,                        // callback
+//				  CFSTR("com.apple.springboard.lockcomplete"), // event name
+//				  NULL,                                        // object
+//				  CFNotificationSuspensionBehaviorDeliverImmediately);
+//
+//  CFNotificationCenterAddObserver(CFNotificationCenterGetDarwinNotifyCenter(), //center
+//				  NULL,                                        // observer
+//				  displayStatusChanged,                        // callback
+//				  CFSTR("com.apple.springboard.lockstate"),    // event name
+//				  NULL,                                        // object
+//				  CFNotificationSuspensionBehaviorDeliverImmediately);
 
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didBecomeActive:) name:UIApplicationDidBecomeActiveNotification object:nil];
 }
@@ -92,16 +97,22 @@ static BOOL authRequired = NO;
 
 - (void)didBecomeActive:(NSNotification *)notification
 {
+  if (authRequired == NO && inactiveTimeStamp != 0) {
+    authRequired = ([[NSDate date] timeIntervalSince1970] - inactiveTimeStamp) > MAX_INTERVAL_INACTIVE;
+  }
+  inactiveTimeStamp = 0;
   if ([BKTouchIDAuthManager requiresTouchAuth]) {
     [self authenticateUser];
   }
 }
 
 //call back
-static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+//static void displayStatusChanged(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo)
+- (void) displayStatusChanged:(NSNotification *)notification
 {
   // the "com.apple.springboard.lockcomplete" notification will always come after the "com.apple.springboard.lockstate" notification
-  authRequired = YES;
+  inactiveTimeStamp = [[NSDate date] timeIntervalSince1970];
+  //authRequired = YES;
 }
 
 + (BOOL)requiresTouchAuth

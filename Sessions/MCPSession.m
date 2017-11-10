@@ -486,8 +486,8 @@ static NSString* previousDirectory;
 - (void)showConfig
 {
   dispatch_async(dispatch_get_main_queue(), ^{
-     [[UIApplication sharedApplication]
-        sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+    [[UIApplication sharedApplication]
+     sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
   });
 }
 

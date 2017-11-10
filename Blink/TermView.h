@@ -48,6 +48,9 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)fontSizeChanged:(NSNumber *)size;
 @end
 
+@interface BLWebView: WKWebView
+@end
+
 @interface TermView : UIView
 
 @property (nonatomic) WKWebView *webView;
@@ -76,5 +79,5 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
 - (void)reset;
-
+- (void)resetDefaultControlKeys;
 @end

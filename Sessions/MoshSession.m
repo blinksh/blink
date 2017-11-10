@@ -203,11 +203,18 @@ static const char *usage_format =
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
 
   // Mosh does not support scroll. Disable it to avoid problems.
-  [_stream.control.terminal setScrollEnabled:NO];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_stream.control.terminal setScrollEnabled:NO];
+  });
+  
   BOOL mode = [_stream.control rawMode];
   [_stream.control.terminal setRawMode:YES];
   mosh_main(_stream.in, _stream.out, _stream.sz, [_moshParams.ip UTF8String], [_moshParams.port UTF8String], [_moshParams.key UTF8String], [_moshParams.predictionMode UTF8String]);
-  [_stream.control.terminal setScrollEnabled:YES];
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_stream.control.terminal setScrollEnabled:YES];
+  });
+  
   [_stream.control setRawMode:mode];
 
   fprintf(_stream.out, "\nMosh session finished!\n");

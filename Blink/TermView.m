@@ -67,7 +67,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     @"]" : @"\x1D",
     @"\\" : @"\x1C",
     @"^" : @"\x1E",
-    @"_" : @"\x1F"
+    @"_" : @"\x1F",
+    @"/" : @"\x1F"
   };
   FModifiers = @{
     @0 : @0,
@@ -181,6 +182,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 @end
 
+@implementation BLWebView
+
+- (BOOL)becomeFirstResponder
+{
+  return NO;
+}
+@end
+
 @interface TermView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @property UITapGestureRecognizer *tapBackground;
 @property UILongPressGestureRecognizer *longPressBackground;
@@ -204,6 +213,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
+  NSString *_textInputContextIdentifier;
 }
 
 - (id)initWithFrame:(CGRect)frame
@@ -212,6 +222,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   if (self) {
     _inputEnabled = YES;
+    _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
+
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
 
@@ -220,6 +232,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 
   return self;
+}
+
+// Disable Smart Anything introduced within iOS11
+- (UITextSmartDashesType)smartDashesType {
+  return UITextSmartDashesTypeNo;
+}
+- (UITextSmartQuotesType)smartQuotesType {
+  return UITextSmartQuotesTypeNo;
+}
+- (UITextSmartInsertDeleteType)smartInsertDeleteType {
+  return UITextSmartInsertDeleteTypeNo;
 }
 
 - (void)didMoveToWindow
@@ -235,9 +258,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
-    
-  _webView = [[WKWebView alloc] initWithFrame:self.frame configuration:configuration];
+
+  _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
+  
   [self addSubview:_webView];
 
   _webView.opaque = NO;
@@ -514,6 +539,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return YES;
 }
 
+- (NSString *)textInputContextIdentifier
+{
+  return _textInputContextIdentifier;
+}
+
 - (BOOL)canResignFirstResponder
 {
   return YES;
@@ -644,7 +674,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     NSMutableArray *cmds = [NSMutableArray array];
     NSString *charset;
     if (seq == TermViewCtrlSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^_ ";
+      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
     } else if (seq == TermViewEscSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
     } else if (seq == TermViewAutoRepeateSeq){
@@ -887,11 +917,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  // if ([sender isKindOfClass:[UIMenuController class]]) {
-  //   [_webView copy:sender];
-  // } else {
+   if ([sender isKindOfClass:[UIMenuController class]]) {
+     [_webView copy:sender];
+   } else {
     [_delegate write:[CC CTRL:@"c"]];
-    //  }
+  }
 }
 // Cmd+x
 - (void)cut:(id)sender
@@ -932,9 +962,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
-    if (action == @selector(paste:)) {
+    if (action == @selector(paste:) || action == @selector(copy:)) {
       return YES;
     }
+
     return NO;
   }
   

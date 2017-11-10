@@ -1,3 +1,22 @@
+# Version 8.026
+	- Fixed keyboard settings bug and alignment of controls
+	
+# Version 8.0
+	- Avoid kbd to collapse while performing a selection.
+	- Disable Smart Anything within iOS 11
+
+# Version 7.0
+	- Selection Granularity at the character level.
+	- Mapped Ctrl+/ to 0x1f (undo on Emacs).
+	- Set Autolock with a timer.
+	- Improved behavior of SmartKeys when in SplitView.
+	- Remember KB language selection between sessions.
+
+	- Fixed issue with terminal resizing not resetting after rotation or SplitView
+	- Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
+
+	PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
+
 # Version 5.028.1
 	- Fixed Cmd+v shortcut
 	- HostKey fingerprint as base64 encoding

@@ -1383,8 +1383,41 @@
                                     <outlet property="accessoryView" destination="KOT-ej-LV9" id="lqC-gN-YGB"/>
                                 </connections>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="autoRepeatCell" id="FV1-a7-KK0">
+                                <rect key="frame" x="0.0" y="188" width="375" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="FV1-a7-KK0" id="1X5-Hn-Zyc">
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <switch opaque="NO" tag="1003" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" preservesSuperviewLayoutMargins="YES" contentHorizontalAlignment="right" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="cii-El-Jjy">
+                                            <rect key="frame" x="310" y="6.5" width="51" height="31"/>
+                                            <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="10"/>
+                                            <connections>
+                                                <action selector="autoRepeatChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="8vc-bU-907"/>
+                                                <action selector="cursorBlinkSwitchChanged:" destination="wNx-Mq-Q3D" eventType="valueChanged" id="Mkt-ed-QZD"/>
+                                            </connections>
+                                        </switch>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Auto Repeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3l2-Pw-5NA">
+                                            <rect key="frame" x="16" y="12" width="89" height="20"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                    <constraints>
+                                        <constraint firstItem="cii-El-Jjy" firstAttribute="centerY" secondItem="3l2-Pw-5NA" secondAttribute="centerY" id="7YK-zd-ARa"/>
+                                        <constraint firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="3l2-Pw-5NA" secondAttribute="trailingMargin" id="FMW-X2-U7h"/>
+                                        <constraint firstItem="3l2-Pw-5NA" firstAttribute="leading" secondItem="1X5-Hn-Zyc" secondAttribute="leadingMargin" id="KJ3-FB-FXl"/>
+                                        <constraint firstItem="3l2-Pw-5NA" firstAttribute="leading" secondItem="1X5-Hn-Zyc" secondAttribute="leadingMargin" id="WU2-fQ-sTe"/>
+                                        <constraint firstAttribute="trailingMargin" secondItem="cii-El-Jjy" secondAttribute="trailing" id="jHm-wV-gBa"/>
+                                        <constraint firstItem="cii-El-Jjy" firstAttribute="trailing" secondItem="1X5-Hn-Zyc" secondAttribute="trailingMargin" id="jhM-SC-L9w"/>
+                                        <constraint firstItem="3l2-Pw-5NA" firstAttribute="centerY" secondItem="1X5-Hn-Zyc" secondAttribute="centerY" id="mp2-pW-0aS"/>
+                                    </constraints>
+                                </tableViewCellContentView>
+                            </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="multipleModifierCell" textLabel="XE5-AE-x0L" detailTextLabel="gYW-Y1-qzY" style="IBUITableViewCellStyleValue1" id="RfM-9g-AlL">
-                                <rect key="frame" x="0.0" y="187.5" width="375" height="44"/>
+                                <rect key="frame" x="0.0" y="232" width="375" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="RfM-9g-AlL" id="xG1-iY-VNO">
                                     <rect key="frame" x="0.0" y="0.0" width="342" height="43.5"/>
@@ -2308,7 +2341,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="Lock Blink after the device awakes from sleep. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
+                            <tableViewSection footerTitle="Lock Blink after 10 minutes in the background. Request Passcode or TouchID to unlock Blink." id="9Vo-jE-Sfm">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="qGk-FE-K2U">
                                         <rect key="frame" x="0.0" y="35" width="375" height="44"/>
@@ -2371,6 +2404,7 @@
         <image name="user" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="dlZ-04-Kay"/>
         <segue reference="y9I-rB-ZKT"/>
         <segue reference="dlZ-04-Kay"/>
         <segue reference="dMC-e1-GtW"/>
