@@ -86,9 +86,9 @@
   [_viewportsController didMoveToParentViewController:self];
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-
-  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
-  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor];
+  // Support new top & bottom guides (and fixes the notch)
+  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
+  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
   
   // Container view fills out entire root view.
   [NSLayoutConstraint activateConstraints:
@@ -226,14 +226,6 @@
 - (void)keyboardWillBeHidden:(NSNotification *)aNotification
 {
   _bottomConstraint.constant = 0;
-  [self.view updateConstraintsIfNeeded];
-  [self.view setNeedsUpdateConstraints];
-}
-
-// Support iPhone X
-- (void)viewLayoutMarginsDidChange {
-  _topConstraint.constant = self.topLayoutGuide.length;
-  [super viewLayoutMarginsDidChange];
   [self.view updateConstraintsIfNeeded];
   [self.view setNeedsUpdateConstraints];
 }
