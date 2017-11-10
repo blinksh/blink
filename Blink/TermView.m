@@ -920,11 +920,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-   if ([sender isKindOfClass:[UIMenuController class]]) {
+//   if ([sender isKindOfClass:[UIMenuController class]]) {
      [_webView copy:sender];
-   } else {
-    [_delegate write:[CC CTRL:@"c"]];
-  }
+//   } else {
+//    [_delegate write:[CC CTRL:@"c"]];
+//  }
 }
 // Cmd+x
 - (void)cut:(id)sender
