@@ -384,20 +384,17 @@ static NSString* previousDirectory;
       [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
     }
     // Higher level commands, not from system: curl, tar, scp, sftp
-  } else if ([cmd isEqualToString:@"vim"]) {
-    // Opening in helper apps (vim, for example)
+  } else if ([cmd isEqualToString:@"preview"]) {
+    // Opening in helper apps (iBooks, in this example)
     NSString* fileLocation = @(argv[1]);
     if (! [fileLocation hasPrefix:@"/"]) {
       // relative path. The most likely.
       fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
     }
-    fileLocation = [@"vim://" stringByAppendingString:fileLocation];
-    NSURL *vimURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    fileLocation = [@"itms-books://" stringByAppendingString:fileLocation];
+    NSURL *actionURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     dispatch_async(dispatch_get_main_queue(), ^{
-      // canOpenURL: permission to query. Must be set.
-      // if ([[UIApplication sharedApplication] canOpenURL:vimURL]) {
-      [[UIApplication sharedApplication] openURL:vimURL];
-      // }
+      [[UIApplication sharedApplication] openURL:actionURL];
     });
   } else {
     [self runCommandWithArgs:argc argv:argv];
