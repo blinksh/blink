@@ -81,13 +81,14 @@
   _viewportsController.delegate = self;
 
   [self addChildViewController:_viewportsController];
+  
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-
-  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
-  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor];
+  // Support new top & bottom guides (and fixes the notch)
+  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
+  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
   
   // Container view fills out entire root view.
   [NSLayoutConstraint activateConstraints:
@@ -212,7 +213,7 @@
 {
   CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame);
+  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame) + self.bottomLayoutGuide.length;
 
   UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
   if ([termAccessory isHidden]) {
@@ -221,6 +222,7 @@
 
   [self.view setNeedsUpdateConstraints];
 }
+
 - (void)keyboardWillBeHidden:(NSNotification *)aNotification
 {
   _bottomConstraint.constant = 0;
