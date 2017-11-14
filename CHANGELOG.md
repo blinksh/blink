@@ -1,6 +1,15 @@
+# Version 9.0
+	- Index and run commands from Spotlight
+	- Tune Selection
+
+	- Updated Layout guides for terminal. Better behaviour on iOS11 and iPhone X
+	- Shortcuts working again.
+	- Send INTerrupt instead of TERMinate to Mosh.
+	- Ignore commands when app doesn't have focus. Should fix empty tabs and improve stability.
+
 # Version 8.026
 	- Fixed keyboard settings bug and alignment of controls
-	
+
 # Version 8.0
 	- Avoid kbd to collapse while performing a selection.
 	- Disable Smart Anything within iOS 11
