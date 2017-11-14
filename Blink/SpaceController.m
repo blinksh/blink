@@ -87,8 +87,13 @@
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
 
   // Support new top & bottom guides (and fixes the notch)
-  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
-  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+  if (@available(iOS 11, *)) {
+    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
+    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+  } else {
+    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
+    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.bottomAnchor];
+  }
   
   // Container view fills out entire root view.
   [NSLayoutConstraint activateConstraints:
