@@ -414,6 +414,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   return UITextAutocorrectionTypeNo;
 }
+- (UITextAutocapitalizationType)autocapitalizationType
+{
+  return UITextAutocapitalizationTypeNone;
+}
 
 - (UIView *)inputAccessoryView
 {
