@@ -164,6 +164,7 @@ static NSDictionary *commandList = nil;
   optind = 1;
   opterr = 1;
   optreset = 1;
+  // _debug = 1; 
   // 3) call specific commands
   // Redirect all output to console:
   stdin = _stream.control.termin;
@@ -212,12 +213,14 @@ static NSDictionary *commandList = nil;
 
 - (void)sigwinch
 {
+  // Window size change
   pthread_kill(_tid, SIGWINCH);
 }
 
 - (void)kill
 {
-  pthread_kill(_tid, SIGTERM);
+  // Interruption
+  pthread_kill(_tid, SIGINT);
 }
 
 @end

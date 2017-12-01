@@ -72,6 +72,7 @@ typedef struct SessionParams {
 - (id)init __unavailable;
 - (id)initWithStream:(TermStream *)stream;
 - (void)executeWithArgs:(int)argc argv:(char **)argv;
+- (void)executeWithArgsAndWait:(int)argc argv:(char **)argv;
 - (void)executeAttachedWithArgs:(int)argc argv:(char **)argv;
 - (int)main:(int)argc argv:(char **)argv;
 - (void)sigwinch;

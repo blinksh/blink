@@ -118,6 +118,21 @@ void *run_session(void *params)
   pthread_create(&_tid, &attr, run_session, params);
 }
 
+- (void)executeWithArgsAndWait:(int)argc argv:(char **)argv
+{
+  // Execute command, with args, but still listens to events
+  SessionParams *params = [self createSessionParams:argc argv:argv];
+  
+  pthread_attr_t attr;
+  pthread_attr_init(&attr);
+  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+  pthread_create(&_tid, &attr, run_session, params);
+  while (1) {
+    if (pthread_kill(_tid, 0) != 0) break; // the thread is finished
+  }
+}
+
+
 - (void)executeAttachedWithArgs:(int)argc argv:(char **)argv
 {
   SessionParams *params = [self createSessionParams:argc argv:argv];

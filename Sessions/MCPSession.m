@@ -94,10 +94,13 @@ static NSString* previousDirectory;
   // edit the arguments (we simulate scp and sftp by calling "curl scp://remotefile")
   if ([listArgv count] == 0) { *argc = 0; return NULL; }
   NSString* cmd = [listArgv objectAtIndex:0];
-  if (![cmd hasPrefix:@"\\"]) {
+  if ([cmd hasPrefix:@"\\"]) {
+    // Just remove the \ at the beginning
+    [listArgv replaceObjectAtIndex:0 withObject:[cmd substringWithRange:NSMakeRange(1, [cmd length]-1)]];
+  } else  {
     // There can be several versions of a command (e.g. ls as precompiled and ls written in Python)
     // The executable file has precedence, unless the user has specified they want the original
-    // version, by prefixing it with \. So "\ls" == always our ls. "ls" == maybe ~/Library/bin/ls
+    // version, by prefixing it with \. So "\ls" == always "our" ls. "ls" == maybe ~/Library/bin/ls
     // (if it exists).
     BOOL isDir;
     BOOL cmdIsAFile = false;
@@ -117,9 +120,14 @@ static NSString* previousDirectory;
       // This is a point where we are different from actual shells.
       // There is one version of each command, and we always assume it is the one you want.
     }
+    // We go through the path, because that command may be a file in the path
+    // i.e. user called /usr/local/bin/hg and it's ~/Library/bin/hg
     NSString* fullPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
     NSArray *pathComponents = [fullPath componentsSeparatedByString:@":"];
     for (NSString* path in pathComponents) {
+      // If we don't have access to the path component, there's no point in continuing:
+      if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
+      if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
       NSString* cmdname;
       if (!cmdIsAFile) {
         cmdname = [path stringByAppendingPathComponent:cmd];
@@ -165,7 +173,7 @@ static NSString* previousDirectory;
             NSArray *localListArgvMaybeEmpty = [shellCommandLine componentsSeparatedByString:@" "];
             // Remove empty strings (extra spaces)
             NSMutableArray* localListArgv = [[localListArgvMaybeEmpty filteredArrayUsingPredicate:
-                                         [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+                                              [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
             bool mustExit = false;
             if ([localListArgv count] > 0) {
               char** localArgv = [self makeargs:localListArgv argc:&localArgc];
@@ -179,11 +187,8 @@ static NSString* previousDirectory;
           return NULL;
         }
       }
-      if (cmdIsAFile) continue;
+      if (cmdIsAFile) break; // if (cmdIsAFile) we only go through the loop once
     }
-  } else {
-    // Just remove the \ at the beginning
-    [listArgv replaceObjectAtIndex:0 withObject:[cmd substringWithRange:NSMakeRange(1, [cmd length]-1)]];
   }
   // Re-concatenate arguments with quotes (' and ")
   for (unsigned i = 0; i < [listArgv count]; i++) {
@@ -461,9 +466,6 @@ static NSString* previousDirectory;
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' /* && line[0] != '/' */) {
-      // linenoiseHistoryAdd(line);
-      // linenoiseHistorySave(history);
-      
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
       // separate into arguments, parse and execute:
       NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
@@ -515,6 +517,7 @@ static NSString* previousDirectory;
 - (void)runCommandWithArgs:(int)argc argv:(char **)argv;
 {
   childSession = [[CommandSession alloc] initWithStream:_stream];
+  // [childSession executeWithArgsAndWait:argc argv:argv];
   [childSession executeAttachedWithArgs:argc argv:argv];
   childSession = nil;
 }
@@ -573,7 +576,7 @@ static NSString* previousDirectory;
   if (_stream.in == NULL) {
     return nil;
   }
-
+  
   int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, _stream.sz);
   if (count == -1) {
     return nil;
@@ -593,6 +596,7 @@ static NSString* previousDirectory;
 {
   if (childSession != nil) {
     [childSession kill];
+    return;
   }
 
   // Close stdin to end the linenoise loop.
