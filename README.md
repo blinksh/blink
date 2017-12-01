@@ -111,17 +111,14 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 7.0
-	- Selection Granularity at the character level.
-	- Mapped Ctrl+/ to 0x1f (undo on Emacs).
-	- Set Autolock with a timer.
-	- Improved behavior of SmartKeys when in SplitView.
-	- Remember KB language selection between sessions.
+# Version 9.0
+	- Index and run commands from Spotlight
+	- Tune Selection
 
-	- Fixed issue with terminal resizing not resetting after rotation or SplitView
-	- Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
-
-	PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
+	- Updated Layout guides for terminal. Better behaviour on iOS11 and iPhone X
+	- Shortcuts working again.
+	- Send INTerrupt instead of TERMinate to Mosh.
+	- Ignore commands when app doesn't have focus. Should fix empty tabs and improve stability.
 
 [View all changes](CHANGELOG.md)
 

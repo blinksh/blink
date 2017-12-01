@@ -46,7 +46,7 @@
 #define MCP_MAX_LINE 4096
 
 @implementation MCPSession {
-  Session *childSession;
+  Session *_childSession;
 }
 
 static NSString *docsPath;
@@ -495,23 +495,25 @@ static NSString* previousDirectory;
 
 - (void)runSSHCopyIDWithArgs:(int)argc argv:(char **)argv;
 {
-  childSession = [[SSHCopyIDSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:argc argv:argv];
-  childSession = nil;
+  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream];
+  [_childSession executeAttachedWithArgs:argc argv:argv];
+  _childSession = nil;
 }
 
 - (void)runMoshWithArgs:(int)argc argv:(char **)argv;
 {
-  childSession = [[MoshSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:argc argv:argv];
-  childSession = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[MoshSession alloc] initWithStream:_stream];
+  [_childSession executeAttachedWithArgs:argc argv:argv];
+  _childSession = nil;
 }
 
 - (void)runSSHWithArgs:(int)argc argv:(char **)argv;
 {
-  childSession = [[SSHSession alloc] initWithStream:_stream];
-  [childSession executeAttachedWithArgs:argc argv:argv];
-  childSession = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SSHSession alloc] initWithStream:_stream];
+  [_childSession executeAttachedWithArgs:argc argv:argv];
+  _childSession = nil;
 }
 
 - (void)runCommandWithArgs:(int)argc argv:(char **)argv;
@@ -587,17 +589,12 @@ static NSString* previousDirectory;
 
 - (void)sigwinch
 {
-  if (childSession != nil) {
-    [childSession sigwinch];
-  }
+  [_childSession sigwinch];
 }
 
 - (void)kill
 {
-  if (childSession != nil) {
-    [childSession kill];
-    return;
-  }
+  [_childSession kill];
 
   // Close stdin to end the linenoise loop.
   if (_stream.in) {

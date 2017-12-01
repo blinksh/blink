@@ -363,7 +363,7 @@ static const char *usage_format =
 
 - (void)kill
 {
-  pthread_kill(_tid, SIGTERM);
+  pthread_kill(_tid, SIGINT);
 }
 
 @end

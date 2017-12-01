@@ -39,6 +39,9 @@
 #import "Session.h"
 #import "fterm.h"
 
+NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
+NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
+
 static NSDictionary *bkModifierMaps = nil;
 
 @interface TermController () <TerminalDelegate, SessionDelegate>
@@ -50,6 +53,7 @@ static NSDictionary *bkModifierMaps = nil;
   BOOL _viewIsLocked;
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
+  NSDictionary *_activityUserInfo;
 }
 
 + (void)initialize
@@ -170,6 +174,47 @@ static NSDictionary *bkModifierMaps = nil;
   [super viewDidAppear:animated];
 }
 
+- (void)indexCommand:(NSString *)cmdLine {
+  
+  NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
+  activity.eligibleForPublicIndexing = NO;
+  activity.eligibleForSearch = YES;
+  activity.eligibleForHandoff = YES;
+  
+  
+  _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
+  [activity setTitle:_activityKey];
+  
+  _activityUserInfo = @{BKUserActivityCommandLineKey: cmdLine ?: @"help"};
+  
+  activity.userInfo = _activityUserInfo;
+  
+  self.userActivity = activity;
+  [self.userActivity becomeCurrent];
+}
+
+- (void)updateUserActivityState:(NSUserActivity *)activity
+{
+  [activity setTitle:_activityKey];
+  [activity addUserInfoEntriesFromDictionary:_activityUserInfo];
+  activity.keywords = [NSSet setWithArray:@[@"blink", @"shell", @"mosh", @"ssh", @"terminal", @"remote"]];
+  
+  [activity setRequiredUserInfoKeys:[NSSet setWithArray:_activityUserInfo.allKeys]];
+}
+
+- (void)restoreUserActivityState:(NSUserActivity *)activity
+{
+  if (![activity.activityType isEqualToString: BKUserActivityTypeCommandLine]) {
+    [super restoreUserActivityState:activity];
+  }
+  
+  NSString *cmdLine = [activity.userInfo objectForKey:BKUserActivityCommandLineKey];
+  if (cmdLine) {
+    // TODO: investigate lost first char on iPad
+    [self write:[NSString stringWithFormat:@" %@\n", cmdLine]];
+  }
+}
+
 - (void)setAppearanceFromSettings
 {
   // Load theme
@@ -270,6 +315,9 @@ static NSDictionary *bkModifierMaps = nil;
 {
   [self setAppearanceFromSettings];
   [self startSession];
+  if (self.userActivity) {
+    [self restoreUserActivityState:self.userActivity];
+  }
 }
 
 - (void)dealloc
@@ -290,6 +338,7 @@ static NSDictionary *bkModifierMaps = nil;
     free(_termsz);
     _termsz = NULL;
   }
+  [self.userActivity resignCurrent];
 }
 
 #pragma mark SessionDelegate

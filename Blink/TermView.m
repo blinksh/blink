@@ -492,7 +492,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
         setMenuVisible:NO
               animated:YES];
     } else {
-      [[UIMenuController sharedMenuController] setTargetRect:self.frame
+      
+      CGRect targetRect = CGRectMake(0, self.bounds.size.height - 20, self.bounds.size.width, 10);
+
+      [[UIMenuController sharedMenuController] setTargetRect: targetRect
                                                       inView:self];
 
       UIMenuItem *pasteItem = [[UIMenuItem alloc] initWithTitle:@"Paste"
@@ -917,11 +920,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-   if ([sender isKindOfClass:[UIMenuController class]]) {
+//   if ([sender isKindOfClass:[UIMenuController class]]) {
      [_webView copy:sender];
-   } else {
-    [_delegate write:[CC CTRL:@"c"]];
-  }
+//   } else {
+//    [_delegate write:[CC CTRL:@"c"]];
+//  }
 }
 // Cmd+x
 - (void)cut:(id)sender

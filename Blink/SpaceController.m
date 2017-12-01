@@ -81,13 +81,19 @@
   _viewportsController.delegate = self;
 
   [self addChildViewController:_viewportsController];
+  
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
   [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
 
-
-  _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
-  _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.topAnchor];
+  // Support new top & bottom guides (and fixes the notch)
+  if (@available(iOS 11, *)) {
+    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
+    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
+  } else {
+    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
+    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.bottomAnchor];
+  }
   
   // Container view fills out entire root view.
   [NSLayoutConstraint activateConstraints:
@@ -118,7 +124,7 @@
 {
   [super viewDidLoad];
 
-  [self createShellAnimated:NO completion:nil];
+  [self _createShellWithUserActivity: nil animated:NO completion:nil];
   [self setKbdCommands];
 }
 
@@ -212,7 +218,7 @@
 {
   CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
   CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame);
+  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame) + self.bottomLayoutGuide.length;
 
   UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
   if ([termAccessory isHidden]) {
@@ -221,6 +227,7 @@
 
   [self.view setNeedsUpdateConstraints];
 }
+
 - (void)keyboardWillBeHidden:(NSNotification *)aNotification
 {
   _bottomConstraint.constant = 0;
@@ -230,7 +237,7 @@
 
 - (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
 {
-  [self createShellAnimated:YES completion:nil];
+  [self _createShellWithUserActivity: nil animated:YES completion:nil];
 }
 
 - (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
@@ -373,7 +380,7 @@
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
     [_viewports removeObjectAtIndex:0];
-    [self createShellAnimated:NO completion:nil];
+    [self _createShellWithUserActivity: nil animated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
     [_viewports removeLastObject];
@@ -402,10 +409,11 @@
   }
 }
 
-- (void)createShellAnimated:(BOOL)animated completion:(void (^)(BOOL finished))completion
+- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity animated:(BOOL)animated completion:(void (^)(BOOL finished))completion
 {
   TermController *term = [[TermController alloc] init];
   term.delegate = self;
+  term.userActivity = userActivity;
 
   if (_viewports == nil) {
     _viewports = [[NSMutableArray alloc] init];
@@ -532,7 +540,7 @@
 
 - (void)newShell:(UIKeyCommand *)cmd
 {
-  [self createShellAnimated:YES completion:nil];
+  [self _createShellWithUserActivity: nil animated:YES completion:nil];
 }
 
 - (void)closeShell:(UIKeyCommand *)cmd
@@ -660,6 +668,61 @@
 {
   TermController *term = [self currentTerm];
   return [term executeCommand:listArgv];
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  // Fix for github issue #299
+  // Even app is not in active state it still recieves actions like CMD+T and etc.
+  // So we filter them here.
+  
+  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+  
+  if (appState != UIApplicationStateActive) {
+    return NO;
+  }
+  
+  return [super canPerformAction:action withSender:sender];
+}
+
+- (void)restoreUserActivityState:(NSUserActivity *)activity
+{
+  // somehow we don't have current term... so we just create new one
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    return;
+  }
+
+  // 1. Try find term with same activity key
+  NSInteger targetIdx = [_viewports indexOfObjectPassingTest:^BOOL(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+    return [activity.title isEqualToString:term.activityKey];
+  }];
+
+  // 2. No term with same activity key, so we create one or use current
+  if (targetIdx == NSNotFound) {
+    if (self.currentTerm.activityKey == nil) {
+      [self.currentTerm restoreUserActivityState:activity];
+      [self focusOnShell];
+    } else {
+      [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    }
+    return;
+  }
+
+  // 3. We are already showing required term. So do nothing.
+  if (idx == targetIdx) {
+    [self focusOnShell];
+    return;
+  }
+
+  // 4. Switch to found term index.
+  UIPageViewControllerNavigationDirection direction =
+  idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
+
+  [self switchShellIdx: targetIdx
+             direction: direction
+              animated: NO];
 }
 
 

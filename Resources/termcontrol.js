@@ -88,12 +88,15 @@ var reset = function() {
   t.reset();
 }
 
-hterm.copySelectionToClipboard = function(document) {
-    window.webkit.messageHandlers.interOp.postMessage({"op": "copy", "data":{"content": document.getSelection().toString()}});
-    // The following code tends to remove current selection...
-    // If it is ok to keep selection just remove it.
-    var input = document.createElement('input');
-    document.body.appendElement(input)
-    input.focus();
-    document.body.removeChild(input);
+hterm.Terminal.prototype.copyStringToClipboard = function(str) {
+  if (this.prefs_.get('enable-clipboard-notice'))
+    setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
+  
+  hterm.copySelectionToClipboard(this.document_, str);
+};
+
+hterm.copySelectionToClipboard = function(document, content) {
+    var selection = document.getSelection();
+    selection.removeAllRanges();
+    window.webkit.messageHandlers.interOp.postMessage({"op": "copy", "data":{"content": content}});
 }

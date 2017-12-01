@@ -38,5 +38,6 @@
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
 - (BOOL)executeCommand:(NSMutableArray*) listArgv; 
+- (void)newShellWithActivity:(NSUserActivity *)activity;
 
 @end

@@ -58,6 +58,7 @@ typedef struct SessionParams {
 @protocol SessionDelegate
 
 - (void)sessionFinished;
+- (void)indexCommand:(NSString *)cmdLine;
 
 @end
 
