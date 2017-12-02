@@ -31,35 +31,13 @@ compress, uncompress, gzip, gunzip,
 * From network_cmds: ping
 * From curl: curl (includes http, https, scp, sftp...), scp, sftp
 * From libarchive: tar 
+* Using external projects: [Python](https://github.com/holzschu/python_ios)Python, Lua and [TeX](https://github.com/holzschu/lib-tex)
+
 * You can call commands individually, or use small scripts. Scripts can use python, lua or shell. The shell has no branching abilities, so it will be just a list of commands.
 
 
-You will need to compile the following frameworks:
-* blink/AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj  (*not*  blink/file_cmds-264.50.1/file_cmds.xcodeproj which is for OSX).
-* blink/AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj 
-* blink/AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj/
-* blink/AppleSource/network_cmds-543/network_cmds_ios/network_cmds_ios.xcodeproj/
-* blink/AppleSource/curl/curl_ios/curl_ios.xcodeproj
-* blink/AppleSource/libarchive/libarchive_ios/libarchive_ios.xcodeproj
+All these commands come as auxiliary frameworks: file_cmds_ios, shell_cmds_ios, text_cmds_ios, network_cmds_ios, curl_ios, libarchive_ios. Their Xcode projects are embedded inside Blink project. You just have to hit "Build", and everything should work (assuming you've done what was needed to compile Blink, see below). 
 
-These create six libraries: 
-* file_cmds_ios.framework 
-* shell_cmds_ios.framewok
-* text_cmds_ios.framework
-* network_cmds_ios.framework
-* curl_ios.framework
-* libarchive_ios.framework
-
-
-You will have to copy all of them the blink/Frameworks directory. You will also need to copy the header files: 
-* file_cmds_ios/file_cmds_ios.h 
-* shell_cmds_ios/shell_cmds_ios.h 
-* text_cmds_ios/text_cmds_ios.h 
-* network_cmds_ios/network_cmds_ios.h 
-* curl_ios/curl_ios.h
-* libarchive_ios/libarchive_ios.h
-
-to the blink/Frameworks/include directory. 
 
 I suggest installing iVim (https://github.com/terrychou/iVim or https://itunes.apple.com/us/app/ivim/id1266544660?mt=8 ) and use iOS 11 "edit-in-place" to edit files inside Blink sandbox. 
 
@@ -75,9 +53,10 @@ sftp localFilename user@host.name.edu:~/
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
-If you are really interested, you can add two other packages: python2 (https://github.com/holzschu/python_ios) and TeX (https://github.com/holzschu/lib-tex). These are bigger packages, but also provide more fonctionalities. In both cases, the packages only provide the equivalent of the binaries (python, pdftex, luatex...) You will have to transfer the associated directories (/usr/local/texlive or /usr/lib/python2.7) yourself, and place them in the Library folder of the Blink application (these are huge directories). 
+Two packages were too big to include in this project, but are available separately: 
+python2 (https://github.com/holzschu/python_ios) and TeX (https://github.com/holzschu/lib-tex). Note that the packages only provide the equivalent of the binaries (python, pdftex, luatex...) You will have to transfer the associated directories (/usr/local/texlive or /usr/lib/python2.7) yourself, and place them in the Library folder of the Blink application (these are huge directories). 
 
-Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. If you don't have an Apple Developer ID, it may complicate your signing process. If that is the case, use the ..._static.xcodeproj versions in each subdirectory. 
+Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. 
 
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
