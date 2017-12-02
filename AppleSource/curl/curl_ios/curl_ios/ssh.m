@@ -27,7 +27,7 @@
 
 #ifdef USE_LIBSSH2
 
-// Blinkshellss
+// Blinkshell key management
 #ifdef BLINKSHELL
 #import "BKDefaults.h"
 #import "BKHosts.h"
@@ -725,7 +725,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
   int seekerr = CURL_SEEKFUNC_OK;
   *block = 0; /* we're not blocking by default */
 #ifdef BLINKSHELL // Blinkshell generates keys and stores them
-    // Blinkshell: did we find the keys in the KeyChain?
+  // Blinkshell: did we find the keys in the KeyChain?
+  char *publicKeyMemory = NULL;
+  char *privateKeyMemory = NULL;
   BKHosts *host;
   BKPubKey *pk;
     

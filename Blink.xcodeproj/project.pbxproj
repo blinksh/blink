@@ -140,6 +140,12 @@
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8FB11EF7F379005D3D23 /* curl_ios.framework */; };
+		224E6F191FC7069E00E5631F /* libluatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F171FC7069E00E5631F /* libluatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224E6F1A1FC7069E00E5631F /* libpdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F181FC7069E00E5631F /* libpdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224E6F1C1FC706B300E5631F /* libbibtex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F1B1FC706B300E5631F /* libbibtex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224E6F1D1FC706C500E5631F /* libpdftex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F181FC7069E00E5631F /* libpdftex.dylib */; };
+		224E6F1E1FC706D300E5631F /* libbibtex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F1B1FC706B300E5631F /* libbibtex.dylib */; };
+		224E6F1F1FC7072500E5631F /* libluatex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F171FC7069E00E5631F /* libluatex.dylib */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
 		225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
 		225E4BC21FA36EA400494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
@@ -147,16 +153,10 @@
 		227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
 		227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
 		227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		229A0F7D1F2BBC7B00DB7AFD /* luatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		229A0F7E1F2BBC8700DB7AFD /* luatex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */; };
 		229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; };
 		229A0F861F2BC72100DB7AFD /* libtexlua52.5.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */; };
-		229A0F891F2BC74700DB7AFD /* pdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F881F2BC74700DB7AFD /* pdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		229A0F8A1F2BC75700DB7AFD /* pdftex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F881F2BC74700DB7AFD /* pdftex.dylib */; };
-		229A0F8F1F2BCA4A00DB7AFD /* bibtex8.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		229A0F901F2BCA5600DB7AFD /* bibtex8.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */; };
 		22C106871F140B620014E7E8 /* CommandSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C106861F140B620014E7E8 /* CommandSession.m */; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
@@ -275,6 +275,13 @@
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
 		};
+		225570161FD2B78F007E2D67 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 222A8EB91EF7BC27005D3D23;
+			remoteInfo = curl_ios;
+		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -307,14 +314,14 @@
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
-				229A0F8F1F2BCA4A00DB7AFD /* bibtex8.dylib in Embed Frameworks */,
+				224E6F1C1FC706B300E5631F /* libbibtex.dylib in Embed Frameworks */,
 				22F531CA1F8E4CF2004F0AE1 /* lua_ios.framework in Embed Frameworks */,
 				22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */,
-				229A0F7D1F2BBC7B00DB7AFD /* luatex.dylib in Embed Frameworks */,
+				224E6F1A1FC7069E00E5631F /* libpdftex.dylib in Embed Frameworks */,
 				229A0F861F2BC72100DB7AFD /* libtexlua52.5.dylib in Embed Frameworks */,
+				224E6F191FC7069E00E5631F /* libluatex.dylib in Embed Frameworks */,
 				22F01ED81F0AD3040086C089 /* shell_cmds_ios.framework in Embed Frameworks */,
 				225E4BC31FA36EA400494E03 /* network_cmds_ios.framework in Embed Frameworks */,
-				229A0F891F2BC74700DB7AFD /* pdftex.dylib in Embed Frameworks */,
 				22F01EDA1F0AD35E0086C089 /* file_cmds_ios.framework in Embed Frameworks */,
 				22F01EDE1F0AD3FB0086C089 /* libarchive_ios.framework in Embed Frameworks */,
 			);
@@ -429,18 +436,17 @@
 		222A8C401EF659A9005D3D23 /* text_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = text_cmds_ios.h; path = "AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios/text_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
 		222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text_cmds_ios.framework; sourceTree = "<group>"; };
 		222A8FB11EF7F379005D3D23 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
+		224E6F171FC7069E00E5631F /* libluatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libluatex.dylib; path = Frameworks/libluatex.dylib; sourceTree = "<group>"; };
+		224E6F181FC7069E00E5631F /* libpdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpdftex.dylib; path = Frameworks/libpdftex.dylib; sourceTree = "<group>"; };
+		224E6F1B1FC706B300E5631F /* libbibtex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbibtex.dylib; path = Frameworks/libbibtex.dylib; sourceTree = "<group>"; };
+		225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios.xcodeproj; path = AppleSource/curl/curl_ios/curl_ios.xcodeproj; sourceTree = "<group>"; };
 		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = network_cmds_ios.framework; sourceTree = "<group>"; };
 		225E4BD61FA475BA00494E03 /* network_cmds_ios.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = network_cmds_ios.h; path = include/network_cmds_ios.h; sourceTree = "<group>"; };
 		227ED6D81F0E9E0D00D8EB67 /* Python_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Python_ios.h; path = "../../Python-2.7.13/Python_ios/Python_ios/Python_ios.h"; sourceTree = "<group>"; };
 		227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Python_ios.framework; sourceTree = "<group>"; };
-		229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = luatex.dylib; path = Frameworks/luatex.dylib; sourceTree = "<group>"; };
-		229A0F7F1F2BBE0B00DB7AFD /* libtexlua52.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtexlua52.dylib; path = Frameworks/libtexlua52.dylib; sourceTree = "<group>"; };
 		229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libkpathsea.6.dylib; path = Frameworks/libkpathsea.6.dylib; sourceTree = "<group>"; };
 		229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtexlua52.5.dylib; path = Frameworks/libtexlua52.5.dylib; sourceTree = "<group>"; };
-		229A0F881F2BC74700DB7AFD /* pdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = pdftex.dylib; path = Frameworks/pdftex.dylib; sourceTree = "<group>"; };
-		229A0F8B1F2BC87500DB7AFD /* xetex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = xetex.dylib; path = Frameworks/xetex.dylib; sourceTree = "<group>"; };
-		229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = bibtex8.dylib; path = Frameworks/bibtex8.dylib; sourceTree = "<group>"; };
 		22A9D1511F2B64C8000E3AAB /* texlive_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = texlive_ios.h; path = include/texlive_ios.h; sourceTree = "<group>"; };
 		22AEF8381EF147B300798591 /* file_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = file_cmds_ios.framework; sourceTree = "<group>"; };
 		22AEF83D1EF147C400798591 /* file_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = file_cmds_ios.h; path = "AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios/file_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
@@ -549,6 +555,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224E6F1F1FC7072500E5631F /* libluatex.dylib in Frameworks */,
+				224E6F1E1FC706D300E5631F /* libbibtex.dylib in Frameworks */,
+				224E6F1D1FC706C500E5631F /* libpdftex.dylib in Frameworks */,
+				229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */,
+				229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */,
 				225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */,
 				22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */,
 				22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */,
@@ -559,11 +570,6 @@
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
-				229A0F7E1F2BBC8700DB7AFD /* luatex.dylib in Frameworks */,
-				229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */,
-				229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */,
-				229A0F8A1F2BC75700DB7AFD /* pdftex.dylib in Frameworks */,
-				229A0F901F2BCA5600DB7AFD /* bibtex8.dylib in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */,
@@ -847,6 +853,14 @@
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
 		};
+		225570131FD2B78F007E2D67 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				225570171FD2B78F007E2D67 /* curl_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
 			isa = PBXGroup;
 			children = (
@@ -1012,13 +1026,12 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
-				229A0F8E1F2BCA4A00DB7AFD /* bibtex8.dylib */,
-				229A0F8B1F2BC87500DB7AFD /* xetex.dylib */,
-				229A0F881F2BC74700DB7AFD /* pdftex.dylib */,
+				225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */,
+				224E6F1B1FC706B300E5631F /* libbibtex.dylib */,
+				224E6F171FC7069E00E5631F /* libluatex.dylib */,
+				224E6F181FC7069E00E5631F /* libpdftex.dylib */,
 				229A0F851F2BC72100DB7AFD /* libtexlua52.5.dylib */,
 				229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */,
-				229A0F7F1F2BBE0B00DB7AFD /* libtexlua52.dylib */,
-				229A0F7C1F2BBC7A00DB7AFD /* luatex.dylib */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
@@ -1176,6 +1189,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 225570131FD2B78F007E2D67 /* Products */;
+					ProjectRef = 225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */;
+				},
+				{
 					ProductGroup = 0732F1061D062BF700AB5438 /* Products */;
 					ProjectRef = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
 				},
@@ -1227,6 +1244,13 @@
 			fileType = wrapper.cfbundle;
 			path = UICKeyChainStoreTests.xctest;
 			remoteRef = 0732F11A1D062CA000AB5438 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		225570171FD2B78F007E2D67 /* curl_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = curl_ios.framework;
+			remoteRef = 225570161FD2B78F007E2D67 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1682,6 +1706,7 @@
 					"$(PROJECT_DIR)/Frameworks/",
 					"$(PROJECT_DIR)/Frameworks",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
@@ -1721,6 +1746,7 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;

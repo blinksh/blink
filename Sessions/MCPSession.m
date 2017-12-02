@@ -418,6 +418,7 @@ static NSString* previousDirectory;
   }
   linenoiseHistoryAdd(line.UTF8String);
   linenoiseHistorySave(filePath.UTF8String);
+  [self.delegate indexCommand:line];
   argv = [self makeargs:listArgv argc:&argc];
   bool mustExit = [self executeCommand:argc argv:argv];
   free(argv);
@@ -502,7 +503,7 @@ static NSString* previousDirectory;
 
 - (void)runMoshWithArgs:(int)argc argv:(char **)argv;
 {
-  [self.delegate indexCommand:args];
+  
   _childSession = [[MoshSession alloc] initWithStream:_stream];
   [_childSession executeAttachedWithArgs:argc argv:argv];
   _childSession = nil;
@@ -510,7 +511,6 @@ static NSString* previousDirectory;
 
 - (void)runSSHWithArgs:(int)argc argv:(char **)argv;
 {
-  [self.delegate indexCommand:args];
   _childSession = [[SSHSession alloc] initWithStream:_stream];
   [_childSession executeAttachedWithArgs:argc argv:argv];
   _childSession = nil;
@@ -518,10 +518,10 @@ static NSString* previousDirectory;
 
 - (void)runCommandWithArgs:(int)argc argv:(char **)argv;
 {
-  childSession = [[CommandSession alloc] initWithStream:_stream];
+  _childSession = [[CommandSession alloc] initWithStream:_stream];
   // [childSession executeWithArgsAndWait:argc argv:argv];
-  [childSession executeAttachedWithArgs:argc argv:argv];
-  childSession = nil;
+  [_childSession executeAttachedWithArgs:argc argv:argv];
+  _childSession = nil;
 }
 
 
