@@ -35,8 +35,6 @@
 // ls, rm, rmdir, touch...
 
 // All functions from all commands:
-// TODO: merge all these in a single "system.h" file.
-// TODO: add options to add/remove libraries as needed.
 // Apple utilities:
 #include "file_cmds_ios.h"
 #include "shell_cmds_ios.h"
