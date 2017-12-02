@@ -139,7 +139,6 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8FB11EF7F379005D3D23 /* curl_ios.framework */; };
 		224E6F191FC7069E00E5631F /* libluatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F171FC7069E00E5631F /* libluatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		224E6F1A1FC7069E00E5631F /* libpdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F181FC7069E00E5631F /* libpdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		224E6F1C1FC706B300E5631F /* libbibtex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F1B1FC706B300E5631F /* libbibtex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -147,11 +146,7 @@
 		224E6F1E1FC706D300E5631F /* libbibtex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F1B1FC706B300E5631F /* libbibtex.dylib */; };
 		224E6F1F1FC7072500E5631F /* libluatex.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 224E6F171FC7069E00E5631F /* libluatex.dylib */; };
 		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
-		225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
-		225E4BC21FA36EA400494E03 /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; };
-		225E4BC31FA36EA400494E03 /* network_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 225E4BC01FA36E5E00494E03 /* network_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
-		227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; };
 		227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 227ED6DE1F0E9E9900D8EB67 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 229A0F821F2BBF6400DB7AFD /* libkpathsea.6.dylib */; };
@@ -160,18 +155,22 @@
 		22C106871F140B620014E7E8 /* CommandSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 22C106861F140B620014E7E8 /* CommandSession.m */; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
-		22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */; };
-		22F01ED81F0AD3040086C089 /* shell_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8B991EF3DE01005D3D23 /* shell_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F01ED91F0AD35E0086C089 /* file_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22AEF8381EF147B300798591 /* file_cmds_ios.framework */; };
-		22F01EDA1F0AD35E0086C089 /* file_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22AEF8381EF147B300798591 /* file_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F01EDD1F0AD3FB0086C089 /* libarchive_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738091F0A4D6300048A48 /* libarchive_ios.framework */; };
-		22F01EDE1F0AD3FB0086C089 /* libarchive_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738091F0A4D6300048A48 /* libarchive_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */; };
-		22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22F531C91F8E4CF2004F0AE1 /* lua_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */; };
 		22F531CA1F8E4CF2004F0AE1 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22F531C51F8E4CEA004F0AE1 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738101F0A563E00048A48 /* libxml2.tbd */; };
 		22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738121F0A564B00048A48 /* libbz2.tbd */; };
+		22FA514A1FD3208600CF3CCA /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225570171FD2B78F007E2D67 /* curl_ios.framework */; };
+		22FA514B1FD3208600CF3CCA /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 225570171FD2B78F007E2D67 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22FA51571FD3211500CF3CCA /* file_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51541FD320DA00CF3CCA /* file_cmds_ios.framework */; };
+		22FA51581FD3211500CF3CCA /* file_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51541FD320DA00CF3CCA /* file_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22FA51611FD3216D00CF3CCA /* libarchive_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51601FD3214000CF3CCA /* libarchive_ios.framework */; };
+		22FA51621FD3216D00CF3CCA /* libarchive_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51601FD3214000CF3CCA /* libarchive_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22FA516B1FD321BE00CF3CCA /* network_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA516A1FD321A400CF3CCA /* network_cmds_ios.framework */; };
+		22FA516C1FD321BE00CF3CCA /* network_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA516A1FD321A400CF3CCA /* network_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22FA517B1FD33C7400CF3CCA /* text_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA517A1FD33C4600CF3CCA /* text_cmds_ios.framework */; };
+		22FA517C1FD33C7400CF3CCA /* text_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA517A1FD33C4600CF3CCA /* text_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22FA517F1FD33C7900CF3CCA /* shell_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51741FD33C3A00CF3CCA /* shell_cmds_ios.framework */; };
+		22FA51801FD33C7900CF3CCA /* shell_cmds_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22FA51741FD33C3A00CF3CCA /* shell_cmds_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
 		B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */; };
@@ -282,6 +281,90 @@
 			remoteGlobalIDString = 222A8EB91EF7BC27005D3D23;
 			remoteInfo = curl_ios;
 		};
+		22FA514C1FD3208600CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 222A8EB81EF7BC27005D3D23;
+			remoteInfo = curl_ios;
+		};
+		22FA51531FD320DA00CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22AEF7FF1EF123EA00798591;
+			remoteInfo = file_cmds_ios;
+		};
+		22FA51551FD320DA00CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22AEF8081EF123EB00798591;
+			remoteInfo = file_cmds_iosTests;
+		};
+		22FA51591FD3211500CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 22AEF7FE1EF123EA00798591;
+			remoteInfo = file_cmds_ios;
+		};
+		22FA515F1FD3214000CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA515B1FD3213F00CF3CCA /* libarchive_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 22E03F2B1F0A482A00974EA7;
+			remoteInfo = libarchive_ios;
+		};
+		22FA51631FD3216D00CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA515B1FD3213F00CF3CCA /* libarchive_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 22E03F2A1F0A482A00974EA7;
+			remoteInfo = libarchive_ios;
+		};
+		22FA51691FD321A400CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA51651FD321A400CF3CCA /* network_cmds_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 225E4BAC1FA3620600494E03;
+			remoteInfo = network_cmds_ios;
+		};
+		22FA516D1FD321BE00CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA51651FD321A400CF3CCA /* network_cmds_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 225E4BAB1FA3620600494E03;
+			remoteInfo = network_cmds_ios;
+		};
+		22FA51731FD33C3A00CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA516F1FD33C3A00CF3CCA /* shell_cmds_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 222A8B851EF3DAC9005D3D23;
+			remoteInfo = shell_cmds_ios;
+		};
+		22FA51791FD33C4600CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA51751FD33C4600CF3CCA /* text_cmds_ios.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 222A8C301EF656C6005D3D23;
+			remoteInfo = text_cmds_ios;
+		};
+		22FA517D1FD33C7400CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA51751FD33C4600CF3CCA /* text_cmds_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 222A8C2F1EF656C6005D3D23;
+			remoteInfo = text_cmds_ios;
+		};
+		22FA51811FD33C7900CF3CCA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 22FA516F1FD33C3A00CF3CCA /* shell_cmds_ios.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 222A8B841EF3DAC9005D3D23;
+			remoteInfo = shell_cmds_ios;
+		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -311,19 +394,20 @@
 			dstSubfolderSpec = 10;
 			files = (
 				227ED6E11F0E9E9E00D8EB67 /* Python_ios.framework in Embed Frameworks */,
+				22FA516C1FD321BE00CF3CCA /* network_cmds_ios.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
+				22FA51801FD33C7900CF3CCA /* shell_cmds_ios.framework in Embed Frameworks */,
 				229A0F831F2BBF6400DB7AFD /* libkpathsea.6.dylib in Embed Frameworks */,
+				22FA51581FD3211500CF3CCA /* file_cmds_ios.framework in Embed Frameworks */,
+				22FA514B1FD3208600CF3CCA /* curl_ios.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
 				224E6F1C1FC706B300E5631F /* libbibtex.dylib in Embed Frameworks */,
 				22F531CA1F8E4CF2004F0AE1 /* lua_ios.framework in Embed Frameworks */,
-				22F01EE51F0AD8950086C089 /* text_cmds_ios.framework in Embed Frameworks */,
+				22FA51621FD3216D00CF3CCA /* libarchive_ios.framework in Embed Frameworks */,
 				224E6F1A1FC7069E00E5631F /* libpdftex.dylib in Embed Frameworks */,
 				229A0F861F2BC72100DB7AFD /* libtexlua52.5.dylib in Embed Frameworks */,
+				22FA517C1FD33C7400CF3CCA /* text_cmds_ios.framework in Embed Frameworks */,
 				224E6F191FC7069E00E5631F /* libluatex.dylib in Embed Frameworks */,
-				22F01ED81F0AD3040086C089 /* shell_cmds_ios.framework in Embed Frameworks */,
-				225E4BC31FA36EA400494E03 /* network_cmds_ios.framework in Embed Frameworks */,
-				22F01EDA1F0AD35E0086C089 /* file_cmds_ios.framework in Embed Frameworks */,
-				22F01EDE1F0AD3FB0086C089 /* libarchive_ios.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -459,6 +543,11 @@
 		22F738091F0A4D6300048A48 /* libarchive_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libarchive_ios.framework; sourceTree = "<group>"; };
 		22F738101F0A563E00048A48 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
 		22F738121F0A564B00048A48 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = file_cmds_ios.xcodeproj; path = "AppleSource/file_cmds-264.50.1/file_cmds_ios/file_cmds_ios.xcodeproj"; sourceTree = "<group>"; };
+		22FA515B1FD3213F00CF3CCA /* libarchive_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = libarchive_ios.xcodeproj; path = AppleSource/libarchive/libarchive_ios/libarchive_ios.xcodeproj; sourceTree = "<group>"; };
+		22FA51651FD321A400CF3CCA /* network_cmds_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = network_cmds_ios.xcodeproj; path = "AppleSource/network_cmds-543/network_cmds_ios/network_cmds_ios.xcodeproj"; sourceTree = "<group>"; };
+		22FA516F1FD33C3A00CF3CCA /* shell_cmds_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = shell_cmds_ios.xcodeproj; path = "AppleSource/shell_cmds-198/shell_cmds_ios/shell_cmds_ios.xcodeproj"; sourceTree = "<group>"; };
+		22FA51751FD33C4600CF3CCA /* text_cmds_ios.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = text_cmds_ios.xcodeproj; path = "AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios.xcodeproj"; sourceTree = "<group>"; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
 		B752EE291DFEF19D00E305C8 /* BKUserConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKUserConfigurationManager.h; sourceTree = "<group>"; };
@@ -559,8 +648,9 @@
 				224E6F1E1FC706D300E5631F /* libbibtex.dylib in Frameworks */,
 				224E6F1D1FC706C500E5631F /* libpdftex.dylib in Frameworks */,
 				229A0F871F2BC72F00DB7AFD /* libtexlua52.5.dylib in Frameworks */,
+				22FA517F1FD33C7900CF3CCA /* shell_cmds_ios.framework in Frameworks */,
 				229A0F841F2BBF7200DB7AFD /* libkpathsea.6.dylib in Frameworks */,
-				225E4BC11FA36E6000494E03 /* network_cmds_ios.framework in Frameworks */,
+				22FA517B1FD33C7400CF3CCA /* text_cmds_ios.framework in Frameworks */,
 				22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */,
 				22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */,
 				22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */,
@@ -568,22 +658,20 @@
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
-				227ED6E01F0E9E9E00D8EB67 /* Python_ios.framework in Frameworks */,
+				22FA51571FD3211500CF3CCA /* file_cmds_ios.framework in Frameworks */,
+				22FA514A1FD3208600CF3CCA /* curl_ios.framework in Frameworks */,
+				22FA51611FD3216D00CF3CCA /* libarchive_ios.framework in Frameworks */,
+				227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
-				22F01ED91F0AD35E0086C089 /* file_cmds_ios.framework in Frameworks */,
-				22F01ED71F0AD3040086C089 /* shell_cmds_ios.framework in Frameworks */,
-				225E4BC21FA36EA400494E03 /* network_cmds_ios.framework in Frameworks */,
-				22F01EE41F0AD8950086C089 /* text_cmds_ios.framework in Frameworks */,
+				22FA516B1FD321BE00CF3CCA /* network_cmds_ios.framework in Frameworks */,
 				227ED6DF1F0E9E9900D8EB67 /* Python_ios.framework in Frameworks */,
-				22F01EDD1F0AD3FB0086C089 /* libarchive_ios.framework in Frameworks */,
 				22F531C91F8E4CF2004F0AE1 /* lua_ios.framework in Frameworks */,
 				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
-				222A8FB21EF7F379005D3D23 /* curl_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -861,6 +949,47 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		22FA514F1FD320DA00CF3CCA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FA51541FD320DA00CF3CCA /* file_cmds_ios.framework */,
+				22FA51561FD320DA00CF3CCA /* file_cmds_iosTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22FA515C1FD3213F00CF3CCA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FA51601FD3214000CF3CCA /* libarchive_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22FA51661FD321A400CF3CCA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FA516A1FD321A400CF3CCA /* network_cmds_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22FA51701FD33C3A00CF3CCA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FA51741FD33C3A00CF3CCA /* shell_cmds_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		22FA51761FD33C4600CF3CCA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				22FA517A1FD33C4600CF3CCA /* text_cmds_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
 			isa = PBXGroup;
 			children = (
@@ -1026,6 +1155,11 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				22FA51751FD33C4600CF3CCA /* text_cmds_ios.xcodeproj */,
+				22FA516F1FD33C3A00CF3CCA /* shell_cmds_ios.xcodeproj */,
+				22FA51651FD321A400CF3CCA /* network_cmds_ios.xcodeproj */,
+				22FA515B1FD3213F00CF3CCA /* libarchive_ios.xcodeproj */,
+				22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */,
 				225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */,
 				224E6F1B1FC706B300E5631F /* libbibtex.dylib */,
 				224E6F171FC7069E00E5631F /* libluatex.dylib */,
@@ -1094,6 +1228,12 @@
 			dependencies = (
 				0732F1211D062DDB00AB5438 /* PBXTargetDependency */,
 				0732F1251D062DDC00AB5438 /* PBXTargetDependency */,
+				22FA514D1FD3208600CF3CCA /* PBXTargetDependency */,
+				22FA515A1FD3211500CF3CCA /* PBXTargetDependency */,
+				22FA51641FD3216D00CF3CCA /* PBXTargetDependency */,
+				22FA516E1FD321BE00CF3CCA /* PBXTargetDependency */,
+				22FA517E1FD33C7400CF3CCA /* PBXTargetDependency */,
+				22FA51821FD33C7900CF3CCA /* PBXTargetDependency */,
 			);
 			name = Blink;
 			productName = Blink;
@@ -1193,8 +1333,28 @@
 					ProjectRef = 225570121FD2B78F007E2D67 /* curl_ios.xcodeproj */;
 				},
 				{
+					ProductGroup = 22FA514F1FD320DA00CF3CCA /* Products */;
+					ProjectRef = 22FA514E1FD320DA00CF3CCA /* file_cmds_ios.xcodeproj */;
+				},
+				{
+					ProductGroup = 22FA515C1FD3213F00CF3CCA /* Products */;
+					ProjectRef = 22FA515B1FD3213F00CF3CCA /* libarchive_ios.xcodeproj */;
+				},
+				{
 					ProductGroup = 0732F1061D062BF700AB5438 /* Products */;
 					ProjectRef = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+				},
+				{
+					ProductGroup = 22FA51661FD321A400CF3CCA /* Products */;
+					ProjectRef = 22FA51651FD321A400CF3CCA /* network_cmds_ios.xcodeproj */;
+				},
+				{
+					ProductGroup = 22FA51701FD33C3A00CF3CCA /* Products */;
+					ProjectRef = 22FA516F1FD33C3A00CF3CCA /* shell_cmds_ios.xcodeproj */;
+				},
+				{
+					ProductGroup = 22FA51761FD33C4600CF3CCA /* Products */;
+					ProjectRef = 22FA51751FD33C4600CF3CCA /* text_cmds_ios.xcodeproj */;
 				},
 				{
 					ProductGroup = 0732F1111D062C9F00AB5438 /* Products */;
@@ -1251,6 +1411,48 @@
 			fileType = wrapper.framework;
 			path = curl_ios.framework;
 			remoteRef = 225570161FD2B78F007E2D67 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA51541FD320DA00CF3CCA /* file_cmds_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = file_cmds_ios.framework;
+			remoteRef = 22FA51531FD320DA00CF3CCA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA51561FD320DA00CF3CCA /* file_cmds_iosTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = file_cmds_iosTests.xctest;
+			remoteRef = 22FA51551FD320DA00CF3CCA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA51601FD3214000CF3CCA /* libarchive_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = libarchive_ios.framework;
+			remoteRef = 22FA515F1FD3214000CF3CCA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA516A1FD321A400CF3CCA /* network_cmds_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = network_cmds_ios.framework;
+			remoteRef = 22FA51691FD321A400CF3CCA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA51741FD33C3A00CF3CCA /* shell_cmds_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = shell_cmds_ios.framework;
+			remoteRef = 22FA51731FD33C3A00CF3CCA /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		22FA517A1FD33C4600CF3CCA /* text_cmds_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = text_cmds_ios.framework;
+			remoteRef = 22FA51791FD33C4600CF3CCA /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1470,6 +1672,36 @@
 			isa = PBXTargetDependency;
 			name = "MBProgressHUD Framework";
 			targetProxy = 076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */;
+		};
+		22FA514D1FD3208600CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = curl_ios;
+			targetProxy = 22FA514C1FD3208600CF3CCA /* PBXContainerItemProxy */;
+		};
+		22FA515A1FD3211500CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = file_cmds_ios;
+			targetProxy = 22FA51591FD3211500CF3CCA /* PBXContainerItemProxy */;
+		};
+		22FA51641FD3216D00CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = libarchive_ios;
+			targetProxy = 22FA51631FD3216D00CF3CCA /* PBXContainerItemProxy */;
+		};
+		22FA516E1FD321BE00CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = network_cmds_ios;
+			targetProxy = 22FA516D1FD321BE00CF3CCA /* PBXContainerItemProxy */;
+		};
+		22FA517E1FD33C7400CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = text_cmds_ios;
+			targetProxy = 22FA517D1FD33C7400CF3CCA /* PBXContainerItemProxy */;
+		};
+		22FA51821FD33C7900CF3CCA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = shell_cmds_ios;
+			targetProxy = 22FA51811FD33C7900CF3CCA /* PBXContainerItemProxy */;
 		};
 		EA0BA1A61C0CC57B00719C1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
