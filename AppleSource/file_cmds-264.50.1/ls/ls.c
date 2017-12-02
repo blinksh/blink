@@ -183,6 +183,9 @@ static void initializeAllFlags()
 #ifdef COLORLS
     f_color = 0;		/* add type in color for non-regular files */
 #endif
+    optind = 1;
+    opterr = 1;
+    optreset = 1;
 }
 
 
@@ -421,8 +424,11 @@ ls_main(int argc, char *argv[])
 			ls_usage();
 		}
 	}
+    // I've had some issues with optind. 
+    // fprintf(stderr, "Before: argc = %d, optind = %d\n", argc, optind); fflush(stderr);
 	argc -= optind;
-	argv += optind;
+    // fprintf(stderr, "After: argc = %d, optind = %d\n", argc, optind); fflush(stderr);
+    argv += optind;
 
 	/* Enabling of colours is conditional on the environment. */
 	if (getenv("CLICOLOR") &&
@@ -459,6 +465,9 @@ ls_main(int argc, char *argv[])
 		(void)signal(SIGQUIT, colorquit);
 		parsecolors(getenv("LSCOLORS"));
 	}
+#else
+    (void)signal(SIGINT, signal_catcher);
+    (void)signal(SIGQUIT, signal_catcher);
 #endif
 
 	/*

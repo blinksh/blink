@@ -28,7 +28,24 @@ static void myerr(int i, const char * fmt, ...) {
     pthread_exit(NULL);
 }
 
+
+static void signal_catcher(int sig) {
+    if ((sig == SIGINT) || (sig == SIGQUIT) || (sig == SIGKILL) || (sig == SIGABRT) || (sig == SIGSTOP) || (sig == SIGHUP)) {
+        (void)signal(sig, SIG_DFL); // stop using this signal catcher
+        pthread_exit(NULL);
+    }
+}
+
+static void mywarn(const char * fmt, ...) {
+    if (stderr == 0) return;
+    va_list ap;
+    va_start(ap, fmt);
+    vwarn(fmt, ap);
+    va_end(ap);
+}
+
 #define errx myerrx
 #define err myerr
+#define warn mywarn
 
 #endif /* error_h */

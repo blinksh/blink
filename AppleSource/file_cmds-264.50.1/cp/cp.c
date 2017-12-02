@@ -207,6 +207,9 @@ cp_main(int argc, char *argv[])
 		fts_options |= FTS_LOGICAL | FTS_COMFOLLOW;
 	}
 	(void)signal(SIGINFO, siginfo);
+    // iOS additions
+    (void)signal(SIGINT, signal_catcher);
+    (void)signal(SIGQUIT, signal_catcher);
 
 	/* Save the target base in "to". */
 	target = argv[--argc];

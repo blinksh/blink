@@ -1,3 +1,4 @@
+
 /***************************************************************************
  *                                  _   _ ____  _
  *  Project                     ___| | | |  _ \| |
@@ -20,16 +21,18 @@
  *
  ***************************************************************************/
 
-/* #define CURL_LIBSSH2_DEBUG */
+#define CURL_LIBSSH2_DEBUG
 
 #include "curl_setup.h"
 
 #ifdef USE_LIBSSH2
 
 // Blinkshellss
+#ifdef BLINKSHELL
 #import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
+#endif
 
 
 #ifdef HAVE_LIMITS_H
@@ -721,9 +724,8 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
   int err;
   int seekerr = CURL_SEEKFUNC_OK;
   *block = 0; /* we're not blocking by default */
-  // Blinkshell: did we find the keys in the KeyChain?
-  char *publicKeyMemory = NULL;
-  char *privateKeyMemory = NULL;
+#ifdef BLINKSHELL // Blinkshell generates keys and stores them
+    // Blinkshell: did we find the keys in the KeyChain?
   BKHosts *host;
   BKPubKey *pk;
     
@@ -737,6 +739,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
           conn->user = strdup([host.user UTF8String]);
       }
   }
+#endif
 
   do {
     switch(sshc->state) {
@@ -843,9 +846,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
             // if the user specified a private key, use it (it's a string)
           sshc->rsa = strdup(data->set.str[STRING_SSH_PRIVATE_KEY]);
           // b) get from options the preferences associated with this host:
+#ifdef BLINKSHELL
         if (host) {
             if (!sshc->passphrase && host.password) sshc->passphrase = [host.password UTF8String];
-            
             // Find the stored key that corresponds to the key name:
             publicKeyMemory = NULL; privateKeyMemory = NULL;
             if (data->set.str[STRING_SSH_PRIVATE_KEY]) {
@@ -884,6 +887,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
                 }
             }
         }
+#endif
         /* c) No private key file specified, did not find keys in storage, try some common paths. */
         /* Note that storage can still have been used for username and password. */
         if (!sshc->rsa) {
@@ -923,7 +927,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
          * libssh2 extract the public key from the private key file.
          * This is done by simply passing sshc->rsa_pub = NULL.
          */
+#ifdef BLINKSHELL
         if (!(privateKeyMemory && publicKeyMemory)) {
+#endif
               if(data->set.str[STRING_SSH_PUBLIC_KEY]
                  /* treat empty string the same way as NULL */
                  && data->set.str[STRING_SSH_PUBLIC_KEY][0]) {
@@ -931,7 +937,9 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
                   if(!sshc->rsa_pub)
                       out_of_memory = TRUE;
               }
+#ifdef BLINKSHELL
         }
+#endif
 
         if(out_of_memory || sshc->rsa == NULL) {
           free(home);
@@ -947,13 +955,17 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
 
         free(home);
 
+#ifdef BLINKSHELL
         if (!(privateKeyMemory && publicKeyMemory)) {
+#endif
             if(sshc->rsa_pub)
                 infof(data, "Using SSH public key file '%s'\n", sshc->rsa_pub);
             infof(data, "Using SSH private key file '%s'\n", sshc->rsa);
+#ifdef BLINKSHELL
         } else {
             infof(data, "Using private key stored in BlinkShell keys: '%s'\n", sshc->rsa);
         }
+#endif
 
         state(conn, SSH_AUTH_PKEY);
       }
@@ -965,13 +977,16 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
     case SSH_AUTH_PKEY:
       /* The function below checks if the files exists, no need to stat() here.
        */
+#ifdef BLINKSHELL
       if (!(privateKeyMemory && publicKeyMemory))
-         while ((rc = libssh2_userauth_publickey_fromfile_ex(sshc->ssh_session,
+#endif
+          while ((rc = libssh2_userauth_publickey_fromfile_ex(sshc->ssh_session,
                                                   conn->user,
                                                   curlx_uztoui(
                                                     strlen(conn->user)),
-                                                  sshc->rsa_pub,
-                                                  sshc->rsa, sshc->passphrase)) == LIBSSH2_ERROR_EAGAIN) ;
+                                                    sshc->rsa_pub,
+                                                   sshc->rsa, sshc->passphrase)) == LIBSSH2_ERROR_EAGAIN) ;
+#ifdef BLINKSHELL
      else
          while ((rc = libssh2_userauth_publickey_frommemory(sshc->ssh_session,
                                                             conn->user,
@@ -980,7 +995,7 @@ static CURLcode ssh_statemach_act(struct connectdata *conn, bool *block)
                                                             publicKeyMemory, strlen(publicKeyMemory),
                                                             privateKeyMemory, strlen(privateKeyMemory),
                                                     sshc->passphrase)) == LIBSSH2_ERROR_EAGAIN);
-            
+#endif            
 
       if(rc == LIBSSH2_ERROR_EAGAIN) {
         break;

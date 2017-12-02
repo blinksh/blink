@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		220EFB161FCEFFF70090A317 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 220EFB151FCEFFF60090A317 /* openssl.framework */; };
 		222A8EBE1EF7BC27005D3D23 /* curl_ios.h in Headers */ = {isa = PBXBuildFile; fileRef = 222A8EBC1EF7BC27005D3D23 /* curl_ios.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		222A8EC61EF7BC50005D3D23 /* file.c in Sources */ = {isa = PBXBuildFile; fileRef = 222A8EC51EF7BC50005D3D23 /* file.c */; settings = {COMPILER_FLAGS = "-I ../include -I ../lib -I ../../../Frameworks/libssh2.framework/Headers/ -F ../../../Frameworks/"; }; };
 		222A8ED01EF7C083005D3D23 /* timeval.c in Sources */ = {isa = PBXBuildFile; fileRef = 222A8ECF1EF7C083005D3D23 /* timeval.c */; settings = {COMPILER_FLAGS = "-I ../include -I ../lib"; }; };
@@ -132,6 +133,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		220EFB151FCEFFF60090A317 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = "../../../../libssh2-for-iOS/openssl.framework"; sourceTree = "<group>"; };
 		222A8EB91EF7BC27005D3D23 /* curl_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = curl_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		222A8EBC1EF7BC27005D3D23 /* curl_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = curl_ios.h; sourceTree = "<group>"; };
 		222A8EBD1EF7BC27005D3D23 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -256,8 +258,6 @@
 		227C4D7E1EF9445D00968772 /* smb.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = smb.c; sourceTree = "<group>"; };
 		227C4D801EF944D100968772 /* hostcheck.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hostcheck.c; sourceTree = "<group>"; };
 		229557E81EFD0FF800C54B16 /* tool_operate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = tool_operate.m; sourceTree = "<group>"; };
-		22F01EEB1F0ADCE70086C089 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = ../../../Frameworks/openssl.framework; sourceTree = "<group>"; };
-		22F01EEC1F0ADCE80086C089 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libssh2.framework; path = ../../../Frameworks/libssh2.framework; sourceTree = "<group>"; };
 		22F01EEF1F0ADDAB0086C089 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -266,6 +266,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				220EFB161FCEFFF70090A317 /* openssl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,9 +431,8 @@
 		22F01EEA1F0ADCE40086C089 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				220EFB151FCEFFF60090A317 /* openssl.framework */,
 				22F01EEF1F0ADDAB0086C089 /* libz.tbd */,
-				22F01EEC1F0ADCE80086C089 /* libssh2.framework */,
-				22F01EEB1F0ADCE70086C089 /* openssl.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";

@@ -799,7 +799,8 @@ colorquit(int sig)
 	endcolor(sig);
 
 	(void)signal(sig, SIG_DFL);
-	(void)kill(getpid(), sig);
+    pthread_exit(NULL);
+	// (void)kill(getpid(), sig);
 }
 
 #endif /* COLORLS */

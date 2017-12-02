@@ -5264,6 +5264,7 @@
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = FD6061311B7D2DDE004BCA6A /* sh.xcconfig */;
 			buildSettings = {
+				SUPPORTED_PLATFORMS = macosx;
 			};
 			name = Release;
 		};

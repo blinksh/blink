@@ -1203,7 +1203,7 @@ check_outfile(const char *outfile)
 	if (lflag == 0 && stat(outfile, &sb) == 0) {
 		if (fflag)
 			unlink(outfile);
-		else if (isatty(STDIN_FILENO)) {
+		else if (isatty(fileno(stdin))) {
 			char ans[10] = { 'n', '\0' };	/* default */
 
 			fprintf(stderr, "%s already exists -- do you wish to "
@@ -1366,7 +1366,7 @@ file_compress(char *file, char *outfile, size_t outsize)
 		remove_file = outfile;
 #endif
 	} else
-		out = STDOUT_FILENO;
+		out = fileno(stdout);
 
 	insize = gz_compress(in, out, &size, basename(file), (uint32_t)isb.st_mtime);
 
@@ -1531,10 +1531,10 @@ file_uncompress(char *file, char *outfile, size_t outsize)
 
 	if (cflag == 0 && lflag == 0) {
 		zfd = open(outfile, O_WRONLY|O_CREAT|O_EXCL, 0600);
-		if (zfd == STDOUT_FILENO) {
-			/* We won't close STDOUT_FILENO later... */
+		if (zfd == fileno(stdout)) {
+			/* We won't close fileno(stdout) later... */
 			zfd = dup(zfd);
-			close(STDOUT_FILENO);
+			close(fileno(stdout));
 		}
 		if (zfd == -1) {
 			maybe_warn("can't open %s", outfile);
@@ -1544,7 +1544,7 @@ file_uncompress(char *file, char *outfile, size_t outsize)
 		remove_file = outfile;
 #endif
 	} else
-		zfd = STDOUT_FILENO;
+		zfd = fileno(stdout);
 
 	switch (method) {
 #ifndef NO_BZIP2_SUPPORT
@@ -1641,7 +1641,7 @@ file_uncompress(char *file, char *outfile, size_t outsize)
 
 	if (close(fd) != 0)
 		maybe_warn("couldn't close input");
-	if (zfd != STDOUT_FILENO && close(zfd) != 0)
+	if (zfd != fileno(stdout) && close(zfd) != 0)
 		maybe_warn("couldn't close output");
 
 	if (size == -1) {
@@ -1699,7 +1699,7 @@ file_uncompress(char *file, char *outfile, size_t outsize)
     lose:
 	if (fd != -1)
 		close(fd);
-	if (zfd != -1 && zfd != STDOUT_FILENO)
+	if (zfd != -1 && zfd != fileno(stdout))
 		close(fd);
 	return -1;
 }
@@ -1713,7 +1713,7 @@ cat_fd(unsigned char * prepend, size_t count, off_t *gsizep, int fd)
 	ssize_t w;
 
 	in_tot = count;
-	w = write(STDOUT_FILENO, prepend, count);
+	w = write(fileno(stdout), prepend, count);
 	if (w == -1 || (size_t)w != count) {
 		maybe_warn("write to stdout");
 		return -1;
@@ -1729,7 +1729,7 @@ cat_fd(unsigned char * prepend, size_t count, off_t *gsizep, int fd)
 			break;
 		}
 
-		if (write(STDOUT_FILENO, buf, rv) != rv) {
+		if (write(fileno(stdout), buf, rv) != rv) {
 			maybe_warn("write to stdout");
 			break;
 		}
@@ -1754,7 +1754,7 @@ handle_stdin(void)
 #endif
 
 #ifndef SMALL
-	if (fflag == 0 && lflag == 0 && isatty(STDIN_FILENO)) {
+	if (fflag == 0 && lflag == 0 && isatty(fileno(stdin))) {
 		maybe_warnx("standard input is a terminal -- ignoring");
 		return;
 	}
@@ -1764,15 +1764,15 @@ handle_stdin(void)
 		struct stat isb;
 
 		/* XXX could read the whole file, etc. */
-		if (fstat(STDIN_FILENO, &isb) < 0) {
+		if (fstat(fileno(stdin), &isb) < 0) {
 			maybe_warn("fstat");
 			return;
 		}
-		print_list(STDIN_FILENO, isb.st_size, "stdout", isb.st_mtime);
+		print_list(fileno(stdin), isb.st_size, "stdout", isb.st_mtime);
 		return;
 	}
-
-	bytes_read = read_retry(STDIN_FILENO, header1, sizeof header1);
+    
+	bytes_read = read_retry(fileno(stdin), header1, sizeof header1);
 	if (bytes_read == -1) {
 		maybe_warn("can't read stdin");
 		return;
@@ -1789,22 +1789,22 @@ handle_stdin(void)
 			maybe_warnx("unknown compression format");
 			return;
 		}
-		usize = cat_fd(header1, sizeof header1, &gsize, STDIN_FILENO);
+		usize = cat_fd(header1, sizeof header1, &gsize, fileno(stdin));
 		break;
 #endif
 	case FT_GZIP:
-		usize = gz_uncompress(STDIN_FILENO, STDOUT_FILENO, 
+		usize = gz_uncompress(fileno(stdin), fileno(stdout),
 			      (char *)header1, sizeof header1, &gsize, "(stdin)");
 		break;
 #ifndef NO_BZIP2_SUPPORT
 	case FT_BZIP2:
-		usize = unbzip2(STDIN_FILENO, STDOUT_FILENO,
+		usize = unbzip2(fileno(stdin), fileno(stdout),
 				(char *)header1, sizeof header1, &gsize);
 		break;
 #endif
 #ifndef NO_COMPRESS_SUPPORT
 	case FT_Z:
-		if ((in = zdopen(STDIN_FILENO)) == NULL) {
+		if ((in = zdopen(fileno(stdin))) == NULL) {
 			maybe_warnx("zopen of stdin");
 			return;
 		}
@@ -1816,13 +1816,13 @@ handle_stdin(void)
 #endif
 #ifndef NO_PACK_SUPPORT
 	case FT_PACK:
-		usize = unpack(STDIN_FILENO, STDOUT_FILENO,
+		usize = unpack(fileno(stdin), fileno(stdout),
 			       (char *)header1, sizeof header1, &gsize);
 		break;
 #endif
 #ifndef NO_XZ_SUPPORT
 	case FT_XZ:
-		usize = unxz(STDIN_FILENO, STDOUT_FILENO,
+		usize = unxz(fileno(stdin), fileno(stdout),
 			     (char *)header1, sizeof header1, &gsize);
 		break;
 #endif
@@ -1847,13 +1847,13 @@ handle_stdout(void)
 	int ret;
 
 #ifndef SMALL
-	if (fflag == 0 && isatty(STDOUT_FILENO)) {
+	if (fflag == 0 && isatty(fileno(stdout))) {
 		maybe_warnx("standard output is a terminal -- ignoring");
 		return;
 	}
 #endif
 	/* If stdin is a file use it's mtime, otherwise use current time */
-	ret = fstat(STDIN_FILENO, &sb);
+	ret = fstat(fileno(stdin), &sb);
 
 #ifndef SMALL
 	if (ret < 0) {
@@ -1875,7 +1875,7 @@ handle_stdout(void)
 		mtime = (uint32_t)systime;
 	}
 	 		
-	usize = gz_compress(STDIN_FILENO, STDOUT_FILENO, &gsize, "", mtime);
+	usize = gz_compress(fileno(stdin), fileno(stdout), &gsize, "", mtime);
 #ifndef SMALL
         if (vflag && !tflag && usize != -1 && gsize != -1)
 		print_verbage(NULL, NULL, usize, gsize);
