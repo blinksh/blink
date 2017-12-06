@@ -41,7 +41,8 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
-#import "CommandSession.h"
+
+extern int ios_system(char* cmd);
 
 #define MCP_MAX_LINE 4096
 
@@ -85,111 +86,12 @@ static NSString* previousDirectory;
 - (char **) makeargs:(NSMutableArray*) listArgv argc:(int*) argc
 {
   // Assumes the command line has been separated into arguments, parse the arguments if needed
-  // does some conversions (~ --> home directory, for example,
-  // plus environment variables)
-  // If the "command" is a file, that is in the path, is executable, and whose 1st line is "#! .../[language]..."
-  // then add [language] at the beginning of the line, plus path to position of file.
-  // We accept scripts written in lua, python, and shell (for the time being).
+  // does some conversions (~ --> home directory, for example, plus environment variables)
+  // Most of the heavy parsing is done in ios_system.m (check if command is a file, etc)
   // If the command is "scp" or "sftp", do not replace "~" on remote file locations, but
   // edit the arguments (we simulate scp and sftp by calling "curl scp://remotefile")
   if ([listArgv count] == 0) { *argc = 0; return NULL; }
   NSString* cmd = [listArgv objectAtIndex:0];
-  if ([cmd hasPrefix:@"\\"]) {
-    // Just remove the \ at the beginning
-    [listArgv replaceObjectAtIndex:0 withObject:[cmd substringWithRange:NSMakeRange(1, [cmd length]-1)]];
-  } else  {
-    // There can be several versions of a command (e.g. ls as precompiled and ls written in Python)
-    // The executable file has precedence, unless the user has specified they want the original
-    // version, by prefixing it with \. So "\ls" == always "our" ls. "ls" == maybe ~/Library/bin/ls
-    // (if it exists).
-    BOOL isDir;
-    BOOL cmdIsAFile = false;
-    if ([cmd hasPrefix:@"~"]) cmd = [cmd stringByExpandingTildeInPath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:cmd isDirectory:&isDir]  && (!isDir)) {
-      // File exists, is a file.
-      struct stat sb;
-      if ((stat(cmd.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) {
-        // File exists, is executable, not a directory.
-        cmdIsAFile = true;
-      }
-    }
-    if ((!cmdIsAFile) && [cmd hasPrefix:@"/"]) {
-      // cmd starts with "/" --> path to a command. Remove all directories at beginning:
-      cmd = [cmd lastPathComponent];
-      [listArgv replaceObjectAtIndex:0 withObject:cmd];
-      // This is a point where we are different from actual shells.
-      // There is one version of each command, and we always assume it is the one you want.
-    }
-    // We go through the path, because that command may be a file in the path
-    // i.e. user called /usr/local/bin/hg and it's ~/Library/bin/hg
-    NSString* fullPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
-    NSArray *pathComponents = [fullPath componentsSeparatedByString:@":"];
-    for (NSString* path in pathComponents) {
-      // If we don't have access to the path component, there's no point in continuing:
-      if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
-      if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
-      NSString* cmdname;
-      if (!cmdIsAFile) {
-        cmdname = [path stringByAppendingPathComponent:cmd];
-        if (![[NSFileManager defaultManager] fileExistsAtPath:cmdname isDirectory:&isDir]) continue;
-        if (isDir) continue;
-        // isExecutableFileAtPath replies "NO" even if file has x-bit set.
-        // if (![[NSFileManager defaultManager]  isExecutableFileAtPath:cmdname]) continue;
-        struct stat sb;
-        if (!(stat(cmdname.UTF8String, &sb) == 0 && (sb.st_mode & S_IXUSR))) continue;
-        // File exists, is executable, not a directory.
-      } else cmdname = cmd;
-      NSData *data = [NSData dataWithContentsOfFile:cmdname];
-      NSString *fileContent = [[NSString alloc]initWithData:data encoding:NSUTF8StringEncoding];
-      NSRange firstLineRange = [fileContent rangeOfString:@"\n"];
-      if (firstLineRange.location == NSNotFound) firstLineRange.location = 0;
-      firstLineRange.length = firstLineRange.location;
-      firstLineRange.location = 0;
-      NSString* firstLine = [fileContent substringWithRange:firstLineRange];
-      if ([firstLine hasPrefix:@"#!"]) {
-        // executable scripts files. Python, lua and shell.
-        if ([firstLine containsString:@"python"]) {
-          // So long as the 1st line begins with "#!" and contains "python" we accept it as a python script
-          // "#! /usr/bin/python", "#! /usr/local/bin/python" and "#! /usr/bin/myStrangePath/python" are all OK.
-          // We also accept "#! /usr/bin/env python" because it is used.
-          // TODO: only accept "python" or "python2" at the end of the line
-          [listArgv replaceObjectAtIndex:0 withObject:cmdname];
-          [listArgv insertObject:@"python" atIndex:0];
-          break;
-        } else if ([firstLine containsString:@"lua"]) {
-          [listArgv replaceObjectAtIndex:0 withObject:cmdname];
-          [listArgv insertObject:@"lua" atIndex:0];
-          break;
-        } else if ([firstLine containsString:@"sh"]) {
-          // sh, zsh, bash, tcsh...
-          // first, separate by new line
-          NSArray* allCommandLines =
-          [fileContent componentsSeparatedByCharactersInSet:
-           [NSCharacterSet newlineCharacterSet]];
-          for (NSString* shellCommandLine in allCommandLines) {
-            if ([shellCommandLine hasPrefix:@"#"]) continue; // comments, including first line
-            // empty lines will be treated by the system
-            int localArgc;
-            NSArray *localListArgvMaybeEmpty = [shellCommandLine componentsSeparatedByString:@" "];
-            // Remove empty strings (extra spaces)
-            NSMutableArray* localListArgv = [[localListArgvMaybeEmpty filteredArrayUsingPredicate:
-                                              [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-            bool mustExit = false;
-            if ([localListArgv count] > 0) {
-              char** localArgv = [self makeargs:localListArgv argc:&localArgc];
-              mustExit = [self executeCommand:localArgc argv:localArgv];
-              free(localArgv);
-            }
-            if (mustExit) break;
-          }
-          // cleanup and return:
-          *argc = 0;
-          return NULL;
-        }
-      }
-      if (cmdIsAFile) break; // if (cmdIsAFile) we only go through the loop once
-    }
-  }
   // Re-concatenate arguments with quotes (' and ")
   for (unsigned i = 0; i < [listArgv count]; i++) {
     NSString *argument = [listArgv objectAtIndex:i];
@@ -402,7 +304,25 @@ static NSString* previousDirectory;
       [[UIApplication sharedApplication] openURL:actionURL];
     });
   } else {
-    [self runCommandWithArgs:argc argv:argv];
+    // Not one of our internal commands, so we pass it to ios_system:
+    // Re-concatenate everything into a command line
+    // We can't take the original command line because we (possibly) changed it.
+    int cmdSize = 0;
+    for (int i = 0; i < argc; i++) cmdSize += strlen(argv[i] + 3); // at most +3 characters per arg
+    char* cmd = (char*) malloc(cmdSize * sizeof(char));
+    strcpy(cmd, argv[0]);
+    for (int i = 1; i < argc; i++) {
+      strcat(cmd, " ");
+      // if arguments contain spaces, enclose in quotes:
+      if (strstr(argv[i], " ")) strcat(cmd, "'");
+      strcat(cmd, argv[i]);
+      if (strstr(argv[i], " ")) strcat(cmd, "'");
+    }
+    // Redirect all output to console:
+    stdin = _stream.control.termin;
+    stdout = _stream.control.termout;
+    stderr = _stream.control.termout;
+    ios_system(cmd);
   }
   return false; 
 }
@@ -512,14 +432,6 @@ static NSString* previousDirectory;
 - (void)runSSHWithArgs:(int)argc argv:(char **)argv;
 {
   _childSession = [[SSHSession alloc] initWithStream:_stream];
-  [_childSession executeAttachedWithArgs:argc argv:argv];
-  _childSession = nil;
-}
-
-- (void)runCommandWithArgs:(int)argc argv:(char **)argv;
-{
-  _childSession = [[CommandSession alloc] initWithStream:_stream];
-  // [childSession executeWithArgsAndWait:argc argv:argv];
   [_childSession executeAttachedWithArgs:argc argv:argv];
   _childSession = nil;
 }
