@@ -404,7 +404,7 @@ static NSString* previousDirectory;
   } else {
     [self runCommandWithArgs:argc argv:argv];
   }
-  return false;
+  return false; 
 }
 
 - (BOOL)executeCommand:(NSMutableArray*) listArgv {

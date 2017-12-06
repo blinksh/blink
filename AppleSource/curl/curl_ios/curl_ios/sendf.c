@@ -805,8 +805,6 @@ static int showit(struct Curl_easy *data, curl_infotype type,
         fwrite("\n", 1, 1, data->set.err);
       }
 #endif
-      // Blinkshell: we need an extra \r after each newline
-      fwrite("\r", 1, 1, data->set.err);
       break;
     default: /* nada */
       break;

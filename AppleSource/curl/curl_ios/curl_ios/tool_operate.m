@@ -41,7 +41,7 @@
 
 #include "strcase.h"
 
-// Blinkshell:
+// iOS:
 #import <Foundation/Foundation.h>
 
 #define ENABLE_CURLX_PRINTF
@@ -1189,7 +1189,7 @@ static CURLcode operate_do(struct GlobalConfig *global,
             result = CURLE_OUT_OF_MEMORY;
             home = homedir();
             if(home) {
-                // Blinkshell: read the known_hosts stored by Blink:
+                // iOS: read the known_hosts file in ~/Documents/known_hosts
                 NSURL *dd = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
                 NSURL *khURL = [dd URLByAppendingPathComponent:@"known_hosts"];
                 file = [khURL.path UTF8String];
