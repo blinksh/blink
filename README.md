@@ -17,31 +17,26 @@ For more information, please visit [Blink Shell](http://blink.sh).
 
 # Additions: 
 
-This fork also contains a subset of shell utilities, so you can add / remove files, list them, etc.
+This fork also contains a set of shell utilities, so you can add / remove files, list them, etc.
 
 Specifically, the commands available (as of now) are:
 
-* Builtin: cd, setenv 
-* From file_cmds:
-ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
+* cd, setenv, ls, touch, cp, rm, ln, mv, mkdir, rmdir, 
 df, du, chksum, chmod, chflags, chgrp, stat, readlink, 
 compress, uncompress, gzip, gunzip,
-* From shell_cmds: pwd, env, printenv, date, uname, id, groups, whoami, uptime
-* From text_cmds: cat, grep, wc
-* From network_cmds: ping
-* From curl: curl (includes http, https, scp, sftp...), scp, sftp
-* From libarchive: tar 
-* Using external projects: [Python](https://github.com/holzschu/python_ios)Python, Lua and [TeX](https://github.com/holzschu/lib-tex)
+* pwd, env, printenv, date, uname, id, groups, whoami, uptime
+* cat, grep, wc
+* curl (includes http, https, scp, sftp...), scp, sftp
+* tar 
+* Using external projects: [Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)
 
-* You can call commands individually, or use small scripts. Scripts can use python, lua or shell. The shell has no branching abilities, so it will be just a list of commands.
+* You can call commands individually, or use small scripts using python or lua. There is redirection (">", "<"...), but no pipe. 
 
-
-All these commands come as auxiliary frameworks: file_cmds_ios, shell_cmds_ios, text_cmds_ios, network_cmds_ios, curl_ios, libarchive_ios. Their Xcode projects are embedded inside Blink project. You just have to hit "Build", and everything should work (assuming you've done what was needed to compile Blink, see below). 
-
+All these commands come from the [ios_system](https://github.com/holzschu/ios_system) framework. Its project is embedded inside the Blink project, so you should just download it, compile it and hit "Build". 
 
 I suggest installing iVim (https://github.com/terrychou/iVim or https://itunes.apple.com/us/app/ivim/id1266544660?mt=8 ) and use iOS 11 "edit-in-place" to edit files inside Blink sandbox. 
 
-curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
+curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). If you specify `-DBLINKSHELL` in the `CFLAGS` of `ios_system.m`, it uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
 ```
 curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
 ```
@@ -53,8 +48,7 @@ sftp localFilename user@host.name.edu:~/
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
-Two packages were too big to include in this project, but are available separately: 
-python2 (https://github.com/holzschu/python_ios) and TeX (https://github.com/holzschu/lib-tex). Note that the packages only provide the equivalent of the binaries (python, pdftex, luatex...) You will have to transfer the associated directories (/usr/local/texlive or /usr/lib/python2.7) yourself, and place them in the Library folder of the Blink application (these are huge directories). 
+The language packages ([Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)) only provide the equivalent of the binaries. It is up to you to transfer the directories with the packges  (`/usr/local/texlive` or `/usr/lib/python2.7`), and place them in the Library folder of the Blink application. This is where commands such as ls, rm, tar, mv... will be useful. 
 
 Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. 
 
