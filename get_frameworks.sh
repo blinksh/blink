@@ -25,3 +25,9 @@ echo "Downloading protobuf-$PROTOBF_VER.framework.tar.gz"
 curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF_VER.tar.gz
 ( tar -zxf protobuf-*.tar.gz && cp protobuf-*/lib/libprotobuf.a ./lib/ && rm -rf protobuf-* ) || { echo "Protobuf framework failed to download"; exit 1; }
 
+# ios_system
+cd "${BASH_SOURCE%/*}/.."
+git clone https://github.com/holzschu/ios_system
+cd "ios_system"
+./get_sources.sh
+
