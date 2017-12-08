@@ -139,6 +139,8 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		2236F3501FDA7900000D3229 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2236F34B1FDA7886000D3229 /* curl_ios.framework */; };
+		2236F3511FDA7900000D3229 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2236F34B1FDA7886000D3229 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22467EF81FD8A8CF0075A1F9 /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22467EF71FD8A7A30075A1F9 /* ios_system.framework */; };
 		22467EFA1FD8A8FA0075A1F9 /* file_cmds_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22467EFF1FD8A8FA0075A1F9 /* file_cmds_ios.framework */; };
 		22467EFB1FD8A8FA0075A1F9 /* libarchive_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22467F001FD8A8FA0075A1F9 /* libarchive_ios.framework */; };
@@ -164,8 +166,6 @@
 		2288430D1FD9E1120042CAF2 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2288430B1FD9E1120042CAF2 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2288430F1FD9E1170042CAF2 /* lua_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2288430E1FD9E1170042CAF2 /* lua_ios.framework */; };
 		228843101FD9E1170042CAF2 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2288430E1FD9E1170042CAF2 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		228843111FD9E1440042CAF2 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22467EFE1FD8A8FA0075A1F9 /* curl_ios.framework */; };
-		228843121FD9E1440042CAF2 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22467EFE1FD8A8FA0075A1F9 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
 		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
 		22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738101F0A563E00048A48 /* libxml2.tbd */; };
@@ -245,13 +245,6 @@
 			remoteGlobalIDString = 14796A5F1C1CD9B500169D09;
 			remoteInfo = UICKeyChainStoreTests;
 		};
-		0732F1241D062DDC00AB5438 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D104D791ACA36CC00973364;
-			remoteInfo = "MBProgressHUD Framework";
-		};
 		076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
@@ -265,6 +258,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
+		};
+		2236F34A1FDA7886000D3229 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2219DFCF1FD73AF500675252;
+			remoteInfo = curl_ios;
+		};
+		2236F3521FDA7900000D3229 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 2219DFCE1FD73AF500675252;
+			remoteInfo = curl_ios;
 		};
 		22467EF61FD8A7A30075A1F9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -311,7 +318,7 @@
 				22467F081FD8A93E0075A1F9 /* text_cmds_ios.framework in Embed Frameworks */,
 				22467F061FD8A9390075A1F9 /* shell_cmds_ios.framework in Embed Frameworks */,
 				22467F161FD8A9A90075A1F9 /* libbibtex.dylib in Embed Frameworks */,
-				228843121FD9E1440042CAF2 /* curl_ios.framework in Embed Frameworks */,
+				2236F3511FDA7900000D3229 /* curl_ios.framework in Embed Frameworks */,
 				22467F041FD8A9340075A1F9 /* file_cmds_ios.framework in Embed Frameworks */,
 				22467F0A1FD8A9430075A1F9 /* libarchive_ios.framework in Embed Frameworks */,
 				2288430D1FD9E1120042CAF2 /* Python_ios.framework in Embed Frameworks */,
@@ -435,6 +442,7 @@
 		222A8C401EF659A9005D3D23 /* text_cmds_ios.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = text_cmds_ios.h; path = "AppleSource/text_cmds-97/text_cmds_ios/text_cmds_ios/text_cmds_ios.h"; sourceTree = SOURCE_ROOT; };
 		222A8C431EF65A86005D3D23 /* text_cmds_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text_cmds_ios.framework; sourceTree = "<group>"; };
 		222A8FB11EF7F379005D3D23 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
+		2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
 		22467EED1FD8A7A30075A1F9 /* ios_system.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ios_system.xcodeproj; path = ../ios_system/ios_system.xcodeproj; sourceTree = "<group>"; };
 		22467EFE1FD8A8FA0075A1F9 /* curl_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = curl_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		22467EFF1FD8A8FA0075A1F9 /* file_cmds_ios.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; path = file_cmds_ios.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -562,7 +570,7 @@
 				22467EFA1FD8A8FA0075A1F9 /* file_cmds_ios.framework in Frameworks */,
 				22467EFB1FD8A8FA0075A1F9 /* libarchive_ios.framework in Frameworks */,
 				22467EFC1FD8A8FA0075A1F9 /* shell_cmds_ios.framework in Frameworks */,
-				228843111FD9E1440042CAF2 /* curl_ios.framework in Frameworks */,
+				2236F3501FDA7900000D3229 /* curl_ios.framework in Frameworks */,
 				22467F031FD8A9340075A1F9 /* file_cmds_ios.framework in Frameworks */,
 				22467EFD1FD8A8FA0075A1F9 /* text_cmds_ios.framework in Frameworks */,
 				2288430F1FD9E1170042CAF2 /* lua_ios.framework in Frameworks */,
@@ -858,6 +866,14 @@
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
 		};
+		2236F3471FDA7885000D3229 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2236F34B1FDA7886000D3229 /* curl_ios.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		22467EEE1FD8A7A30075A1F9 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1038,6 +1054,7 @@
 				22467F121FD8A9A80075A1F9 /* libluatex.dylib */,
 				22467F141FD8A9A90075A1F9 /* libpdftex.dylib */,
 				22467F131FD8A9A90075A1F9 /* libtexlua52.5.dylib */,
+				2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */,
 				22467EED1FD8A7A30075A1F9 /* ios_system.xcodeproj */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
@@ -1099,8 +1116,8 @@
 			buildRules = (
 			);
 			dependencies = (
-				0732F1251D062DDC00AB5438 /* PBXTargetDependency */,
 				22467F0E1FD8A9480075A1F9 /* PBXTargetDependency */,
+				2236F3531FDA7900000D3229 /* PBXTargetDependency */,
 			);
 			name = Blink;
 			productName = Blink;
@@ -1196,6 +1213,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 2236F3471FDA7885000D3229 /* Products */;
+					ProjectRef = 2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */;
+				},
+				{
 					ProductGroup = 22467EEE1FD8A7A30075A1F9 /* Products */;
 					ProjectRef = 22467EED1FD8A7A30075A1F9 /* ios_system.xcodeproj */;
 				},
@@ -1251,6 +1272,13 @@
 			fileType = wrapper.cfbundle;
 			path = UICKeyChainStoreTests.xctest;
 			remoteRef = 0732F11A1D062CA000AB5438 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2236F34B1FDA7886000D3229 /* curl_ios.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = curl_ios.framework;
+			remoteRef = 2236F34A1FDA7886000D3229 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		22467EF71FD8A7A30075A1F9 /* ios_system.framework */ = {
@@ -1457,11 +1485,6 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		0732F1251D062DDC00AB5438 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "MBProgressHUD Framework";
-			targetProxy = 0732F1241D062DDC00AB5438 /* PBXContainerItemProxy */;
-		};
 		076FBE0C1DB80AC900F6D997 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = UICKeyChainStore;
@@ -1471,6 +1494,11 @@
 			isa = PBXTargetDependency;
 			name = "MBProgressHUD Framework";
 			targetProxy = 076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */;
+		};
+		2236F3531FDA7900000D3229 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = curl_ios;
+			targetProxy = 2236F3521FDA7900000D3229 /* PBXContainerItemProxy */;
 		};
 		22467F0E1FD8A9480075A1F9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

@@ -43,6 +43,7 @@
 #import "SSHSession.h"
 
 extern int ios_system(char* cmd);
+extern int curl_main(int argc, char** argv);
 
 #define MCP_MAX_LINE 4096
 
@@ -304,25 +305,30 @@ static NSString* previousDirectory;
       [[UIApplication sharedApplication] openURL:actionURL];
     });
   } else {
-    // Not one of our internal commands, so we pass it to ios_system:
-    // Re-concatenate everything into a command line
-    // We can't take the original command line because we (possibly) changed it.
-    int cmdSize = 0;
-    for (int i = 0; i < argc; i++) cmdSize += strlen(argv[i] + 3); // at most +3 characters per arg
-    char* cmd = (char*) malloc(cmdSize * sizeof(char));
-    strcpy(cmd, argv[0]);
-    for (int i = 1; i < argc; i++) {
-      strcat(cmd, " ");
-      // if arguments contain spaces, enclose in quotes:
-      if (strstr(argv[i], " ")) strcat(cmd, "'");
-      strcat(cmd, argv[i]);
-      if (strstr(argv[i], " ")) strcat(cmd, "'");
-    }
     // Redirect all output to console:
     stdin = _stream.control.termin;
     stdout = _stream.control.termout;
     stderr = _stream.control.termout;
-    ios_system(cmd);
+    // curl gets a special treatment because it uses the keys stored internally by Blink
+    if (strcmp(argv[0], "curl") == 0) {
+      curl_main(argc, argv);
+    } else {
+      // Not one of our internal commands, so we pass it to ios_system:
+      // Re-concatenate everything into a command line
+      // We can't take the original command line because we (possibly) changed it.
+      int cmdSize = 0;
+      for (int i = 0; i < argc; i++) cmdSize += strlen(argv[i] + 3); // at most +3 characters per arg
+      char* cmd = (char*) malloc(cmdSize * sizeof(char));
+      strcpy(cmd, argv[0]);
+      for (int i = 1; i < argc; i++) {
+        strcat(cmd, " ");
+        // if arguments contain spaces, enclose in quotes:
+        if (strstr(argv[i], " ")) strcat(cmd, "'");
+        strcat(cmd, argv[i]);
+        if (strstr(argv[i], " ")) strcat(cmd, "'");
+      }
+      ios_system(cmd);
+    }
   }
   return false; 
 }
