@@ -43,7 +43,7 @@
 #import "SSHSession.h"
 
 extern int ios_system(char* cmd);
-extern int curl_main(int argc, char** argv);
+extern int curl_static_main(int argc, char** argv);
 
 #define MCP_MAX_LINE 4096
 
@@ -311,7 +311,8 @@ static NSString* previousDirectory;
     stderr = _stream.control.termout;
     // curl gets a special treatment because it uses the keys stored internally by Blink
     if (strcmp(argv[0], "curl") == 0) {
-      curl_main(argc, argv);
+      curl_static_main(argc, argv); // this is the static library version of curl
+      // curl_main still exists, will be called by python and lua, for example.
     } else {
       // Not one of our internal commands, so we pass it to ios_system:
       // Re-concatenate everything into a command line
