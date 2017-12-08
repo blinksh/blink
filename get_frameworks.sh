@@ -29,5 +29,5 @@ curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF
 cd "${BASH_SOURCE%/*}/.."
 git clone https://github.com/holzschu/ios_system
 cd "ios_system"
-./get_sources.sh
+sh ./get_sources.sh
 
