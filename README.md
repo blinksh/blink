@@ -62,23 +62,16 @@ Bugs should be reported here on GitHub. Crash reports will be automatically repo
 We can't wait to receive your valuable feedback. Enjoy!
 
 ## Build
-To download the source code and some of the Frameworks required, type: 
+We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
 
 ```bash
 git clone --recursive git@github.com:holzschu/blink.git && \
 cd blink && ./get_frameworks.sh
 ```
 
-This will download Blink and the associated frameworks (OpenSSH, libssl2), but also the projects for `ios_system`, `python_ios` and `lua_ios`. To compile:
-- If you don't need Python, delete the `python_grp` folder in  `blink.xcodeproj`, comment out the `FEAT_PYTHON`line in `ios_system.m`, and press "Build".
-- If you *do* need Python: 
-    - open `python_ios/libffi-3.2.1/libffi.xcodeproj/`, and press "Build". 
-    - go to "Products", control-click on `libffi.a`, "Show in Finder", and move it to the `python_ios` directory.
-    - open `blink.xcodeproj` and press "Build". 
-    - you'll need to install the Python packages yourself, see https://github.com/holzschu/python_ios
-- If you want TeX, follow the instructions at https://github.com/holzschu/lib-tex, uncomment the `TEX_COMMANDS` line in `ios_system.m`, and add the TeX libraries to the project.
+This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 
-I am working on a simpler method, with precompiled libraries. This is the best I could do so far. You can also recompile the other libraries  yourself (refer to [BUILD](https://github.com/blinksh/blink/blob/master/BUILD). .
+Although this is the quickest method to get you up and running, if you would like to compile all libraries and resources yourself, refer to [BUILD](https://github.com/holzschu/blink/blob/master/BUILD.md). Please let us know if you find any issues. Blink is a complex project with multiple low level dependencies and we are still looking for ways to simplify and automate the full compilation process.
 
 # Using Blink
 Our UI is very straightforward and optimizes the experience on touch devices for the really important part, the terminal. You will jump right into a very simple shell, so you will know what to do. Here are a few more tricks:
