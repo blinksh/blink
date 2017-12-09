@@ -65,7 +65,7 @@ We can't wait to receive your valuable feedback. Enjoy!
 We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
 
 ```bash
-git clone --recursive git@github.com:holzschu/blink.git && \
+git clone --recursive https://github.com/holzschu/blink.git && \
 cd blink && ./get_frameworks.sh
 ```
 
