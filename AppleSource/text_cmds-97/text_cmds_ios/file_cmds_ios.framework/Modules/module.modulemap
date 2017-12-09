@@ -1,6 +1,0 @@
-framework module file_cmds_ios {
-  umbrella header "file_cmds_ios.h"
-
-  export *
-  module * { export * }
-}
