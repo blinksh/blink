@@ -30,13 +30,13 @@ compress, uncompress, gzip, gunzip,
 * tar 
 * Using external projects: [Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)
 
-* You can call commands individually, or use small scripts using python or lua. There is redirection (">", "<"...), but no pipe. 
+* You can call commands individually, or use small scripts using python or lua. There is redirection (">", "<", "&>" ...), but no pipe. 
 
-All these commands come from the [ios_system](https://github.com/holzschu/ios_system) framework. Its project is embedded inside the Blink project, so you should just download it, compile it and hit "Build". 
+All these commands are inside the `ios_system.framework` (precompiled, for facility). If you want to edit the source (to add more commands), see: https://github.com/holzschu/ios_system . 
 
 I suggest installing iVim (https://github.com/terrychou/iVim or https://itunes.apple.com/us/app/ivim/id1266544660?mt=8 ) and use iOS 11 "edit-in-place" to edit files inside Blink sandbox. 
 
-curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). If you specify `-DBLINKSHELL` in the `CFLAGS` of `ios_system.m`, it uses the key management system of BlinkShell (the keys you created with "config"). You can also specify keys with a path:
+curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management of BLINKSHELL  (the keys you created with "config"). You can also specify keys with a path:
 ```
 curl scp://host.name.edu/filename -o filename --key $SHARED/id_rsa --pass MyPassword 
 ```
