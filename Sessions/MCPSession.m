@@ -274,7 +274,8 @@ static NSString* previousDirectory;
   } else if  ([cmd isEqualToString:@"setenv"]) {
     // Builtin. commands that have to be inside the "shell"
     // setenv VARIABLE value
-    setenv(argv[1], argv[2], 1);
+    if (argv[2] != NULL) setenv(argv[1], argv[2], 1);
+    else setenv(argv[1], "", 1);
   } else if  ([cmd isEqualToString:@"cd"]) {
     NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
     if (argc > 1) {
