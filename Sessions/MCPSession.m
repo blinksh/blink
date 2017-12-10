@@ -127,9 +127,15 @@ static NSString* previousDirectory;
     // 1b) expand environment variables, + "~" (not wildcards ? and *)
     while ([argument containsString:@"$"]) {
       // It has environment variables inside. Work on them one by one.
+      // position of first "$" sign:
       NSRange r1 = [argument rangeOfString:@"$"];
+      // position of first "/" after this $ sign:
       NSRange r2 = [argument rangeOfString:@"/" options:NULL range:NSMakeRange(r1.location + r1.length, [argument length] - r1.location - r1.length)];
-      if (r2.location == NSNotFound) r2.location = [argument length];
+      // position of first ":" after this $ sign:
+      NSRange r3 = [argument rangeOfString:@":" options:NULL range:NSMakeRange(r1.location + r1.length, [argument length] - r1.location - r1.length)];
+      if ((r2.location == NSNotFound) && (r3.location == NSNotFound)) r2.location = [argument length];
+      else if ((r2.location == NSNotFound) || (r3.location < r2.location)) r2.location = r3.location;
+
       NSRange  rSub = NSMakeRange(r1.location + r1.length, r2.location - r1.location - r1.length);
       NSString *variable_string = [argument substringWithRange:rSub];
       const char* variable = getenv([variable_string UTF8String]);
