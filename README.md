@@ -52,6 +52,24 @@ The language packages ([Python](https://github.com/holzschu/python_ios), [Lua](h
 
 Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. 
 
+# Environment variables
+
+In iOS, because of sandbox restrictions, you cannot write in the `~` directory, only in `~/Documents/`, `~/Library/` and `~/tmp`. Most Unix programs assume the configuration files are in `$HOME`. 
+So either you redefine `$HOME` to `~/Documents/` or you set configuration variables (using `setenv`) to some other place.
+
+I do this in Blink, inside the `MCPSession.m` file. The following variables are defined:
+Here's what I have:
+```powershell
+setenv PATH = $PATH:~/Library/bin:~/Documents/bin
+setenv PYTHONHOME = $HOME/Library/
+setenv SSH_HOME = $HOME/Documents/
+setenv CURL_HOME = $HOME/Documents/
+setenv HGRCPATH = $HOME/Documents/.hgrc/
+setenv SSL_CERT_FILE = $HOME/Documents/cacert.pem
+```
+
+If you want to change them permanently, it's probably best to edit `MCPSession.m`.
+
 # Obtaining Blink
 Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
 
