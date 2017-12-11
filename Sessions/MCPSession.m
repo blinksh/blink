@@ -369,6 +369,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
   // Number of spaces:
   size_t numSpaces = 0;
+  BOOL isDir;
   // the number of arguments is *at most* the number of spaces plus one
   char* str = command;
   while(*str) if (*str++ == ' ') ++numSpaces;
@@ -388,7 +389,25 @@ void completion(const char *command, linenoiseCompletions *lc) {
           if (strncmp(command, commandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,commandList[i]);
       i++;
     }
-    // TODO: commands in the PATH
+    // Commands in the PATH
+    // Do we have an interpreter? (otherwise, there's no point)
+    if (ios_executable("python") || ios_executable("lua")) {
+      NSString* fullCommandPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
+      NSArray *pathComponents = [fullCommandPath componentsSeparatedByString:@":"];
+      char* newCommand = (char*) malloc(PATH_MAX * sizeof(char));
+      for (NSString* path in pathComponents) {
+        // If the path component doesn't exist, no point in continuing:
+        if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
+        if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
+        NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:Nil];
+        for (NSString *fileName in filenames) {
+          if (strncmp(command, [fileName UTF8String], strlen(command)) == 0) {
+            linenoiseAddCompletion(lc,[fileName UTF8String]);
+          }
+        }
+      }
+      free(newCommand);
+    }
   } else {
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
@@ -416,7 +435,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
         filePosition = strlen(command);
       }
     }
-    BOOL isDir;
     if (directory &&
         [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:directory] isDirectory:&isDir]
         && isDir) {
