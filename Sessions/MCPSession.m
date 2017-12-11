@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <libgen.h>
 #include <sys/stat.h>
 
 #include "linenoise.h"
@@ -337,6 +338,7 @@ static NSString* previousDirectory;
         if (strstr(argv[i], " ")) strcat(cmd, "'");
       }
       ios_system(cmd);
+      free(cmd);
     }
   }
   return false; 
@@ -385,8 +387,40 @@ void completion(const char *command, linenoiseCompletions *lc) {
     // TODO: commands in the PATH
   } else {
     // the user is typing an argument.
-    
-    
+    // Last position of space in the command:
+    char* argument = strrchr (command, ' ') + 1;
+    // which directory?
+    char *directory, *file;
+    int filePosition;
+    if (argument[strlen(argument) - 1] == '/') { // ends with a '/'
+      directory = argument;
+      file = NULL;
+      filePosition = strlen(command);
+    } else {
+      directory = dirname(argument); // will be "." if empty
+      if (strlen(argument) > 0) {
+        file = basename(argument);
+        filePosition = strlen(command) - strlen(file);
+      } else {
+        file = NULL;
+        filePosition = strlen(command);
+      }
+    }
+    BOOL isDir;
+    if (directory &&
+        [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:directory] isDirectory:&isDir]
+        && isDir) {
+      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithUTF8String:directory] error:Nil];
+      char* newCommand = (char*) malloc((filePosition + NAME_MAX) * sizeof(char));
+      for (NSString *fileName in filenames) {
+        if ((!file) || strncmp(file, [fileName UTF8String], strlen(file)) == 0) {
+          newCommand = strcpy(newCommand, command);
+          sprintf(newCommand + filePosition, "%s", [fileName UTF8String]);
+          linenoiseAddCompletion(lc,newCommand);
+        }
+      }
+      free(newCommand);
+    }
   }
 }
 
