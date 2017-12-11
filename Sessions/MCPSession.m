@@ -372,16 +372,16 @@ void completion(const char *command, linenoiseCompletions *lc) {
   if (numSpaces == 0) {
     // the user is typing a command
     int i = 0;
-    // commands from ios_system:
+    // local commands (ssh, mosh...)
+    while (localCommandList[i]) {
+      if (strncmp(command, localCommandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,localCommandList[i]);
+      i++;
+    }
+    i = 0;
+    // commands from ios_system (ls, cp...):
     while (commandList[i]) {
       if (ios_executable(commandList[i]))
           if (strncmp(command, commandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,commandList[i]);
-      i++;
-    }
-    // local commands:
-    i = 0;
-    while (localCommandList[i]) {
-      if (strncmp(command, localCommandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,localCommandList[i]);
       i++;
     }
     // TODO: commands in the PATH
