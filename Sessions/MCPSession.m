@@ -361,6 +361,10 @@ char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "
 // Commands defined outside of ios_executable:
 char* localCommandList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "cd", "scp", "sftp", NULL}; // must end with NULL pointer
 
+// Commands that don't take a file as argument:
+char* commandsNoFileList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", NULL};
+// must end with NULL pointer
+
 void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
   // Number of spaces:
@@ -370,7 +374,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   while(*str) if (*str++ == ' ') ++numSpaces;
   int numCharsTyped = strlen(command);
   if (numSpaces == 0) {
-    // the user is typing a command
+    // No spaces. The user is typing a command
     int i = 0;
     // local commands (ssh, mosh...)
     while (localCommandList[i]) {
@@ -387,6 +391,12 @@ void completion(const char *command, linenoiseCompletions *lc) {
     // TODO: commands in the PATH
   } else {
     // the user is typing an argument.
+    // Is this one the commands that want a file as an argument?
+    int i = 0;
+    while (commandsNoFileList[i]) {
+      if (strncmp(command, commandsNoFileList[i], strlen(commandsNoFileList[i])) == 0) return;
+      i++;
+    }
     // Last position of space in the command:
     char* argument = strrchr (command, ' ') + 1;
     // which directory?
