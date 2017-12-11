@@ -43,6 +43,7 @@
 #import "SSHSession.h"
 
 extern int ios_system(char* cmd);
+extern int ios_executable(char* inputCmd);
 extern int curl_static_main(int argc, char** argv);
 
 #define MCP_MAX_LINE 4096
@@ -351,6 +352,44 @@ static NSString* previousDirectory;
   return mustExit;
 }
 
+// This is a superset of all commands available. We check at runtime whether they are actually available (using ios_executable)
+char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex",
+  NULL}; // must end with NULL pointer
+
+// Commands defined outside of ios_executable:
+char* localCommandList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "cd", "scp", "sftp", NULL}; // must end with NULL pointer
+
+void completion(const char *command, linenoiseCompletions *lc) {
+  // autocomplete command for lineNoise
+  // Number of spaces:
+  size_t numSpaces = 0;
+  // the number of arguments is *at most* the number of spaces plus one
+  char* str = command;
+  while(*str) if (*str++ == ' ') ++numSpaces;
+  int numCharsTyped = strlen(command);
+  if (numSpaces == 0) {
+    // the user is typing a command
+    int i = 0;
+    // commands from ios_system:
+    while (commandList[i]) {
+      if (ios_executable(commandList[i]))
+          if (strncmp(command, commandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,commandList[i]);
+      i++;
+    }
+    // local commands:
+    i = 0;
+    while (localCommandList[i]) {
+      if (strncmp(command, localCommandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,localCommandList[i]);
+      i++;
+    }
+    // TODO: commands in the PATH
+  } else {
+    // the user is typing an argument.
+    
+    
+  }
+}
+
 - (int)main:(int)argc argv:(char **)argv
 {
   char *line;
@@ -390,6 +429,7 @@ static NSString* previousDirectory;
                                 linenoiseUtf8ReadCode);
 
   linenoiseHistoryLoad(history);
+  linenoiseSetCompletionCallback(completion);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' /* && line[0] != '/' */) {
