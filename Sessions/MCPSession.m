@@ -275,7 +275,7 @@ static NSString* previousDirectory;
     // Builtin. commands that have to be inside the "shell"
     // setenv VARIABLE value
     if (argv[2] != NULL) setenv(argv[1], argv[2], 1);
-    else setenv(argv[1], "", 1);
+    else setenv(argv[1], "", 1); // if there's no value, pass an empty string instead of a null pointer
   } else if  ([cmd isEqualToString:@"cd"]) {
     NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
     if (argc > 1) {
@@ -345,14 +345,6 @@ static NSString* previousDirectory;
   int argc;
   char** argv;
   if ([listArgv count] == 0) return false;
-  NSString* line = listArgv[0];
-  for (int i = 1; i < [listArgv count]; i++) {
-    line = [line stringByAppendingString:@" "];
-    line = [line stringByAppendingString:listArgv[i]];
-  }
-  linenoiseHistoryAdd(line.UTF8String);
-  linenoiseHistorySave(filePath.UTF8String);
-  [self.delegate indexCommand:line];
   argv = [self makeargs:listArgv argc:&argc];
   bool mustExit = [self executeCommand:argc argv:argv];
   free(argv);
@@ -407,11 +399,13 @@ static NSString* previousDirectory;
       // Remove empty strings (extra spaces)
       NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
                                    [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
+      linenoiseHistoryAdd(cmdline.UTF8String);
+      linenoiseHistorySave(filePath.UTF8String);
+      [self.delegate indexCommand:cmdline];
       BOOL mustExit = [self executeCommand:listArgv];
       if (mustExit) break;
     }
     [self setTitle]; // Temporary, until the apps restore the right state.
-    
     free(line);
   }
 
