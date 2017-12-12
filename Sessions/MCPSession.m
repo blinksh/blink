@@ -56,6 +56,10 @@ extern int curl_static_main(int argc, char** argv);
 static NSString *docsPath;
 static NSString *filePath;
 static NSString* previousDirectory;
+// do recompute directoriesInPath only if $PATH has changed
+static NSString* fullCommandPath = @"";
+static NSArray *directoriesInPath;
+
 
 - (void)setTitle
 {
@@ -392,10 +396,13 @@ void completion(const char *command, linenoiseCompletions *lc) {
     // Commands in the PATH
     // Do we have an interpreter? (otherwise, there's no point)
     if (ios_executable("python") || ios_executable("lua")) {
-      NSString* fullCommandPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
-      NSArray *pathComponents = [fullCommandPath componentsSeparatedByString:@":"];
+      NSString* checkingPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
+      if (! [fullCommandPath isEqualToString:checkingPath]) {
+        fullCommandPath = checkingPath;
+        directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
+      }
       char* newCommand = (char*) malloc(PATH_MAX * sizeof(char));
-      for (NSString* path in pathComponents) {
+      for (NSString* path in directoriesInPath) {
         // If the path component doesn't exist, no point in continuing:
         if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
         if (!isDir) continue; // same in the (unlikely) event the path component is not a directory

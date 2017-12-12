@@ -460,7 +460,7 @@ static void kbd_callback(const char *name, int name_len,
 - (void)ssh_login:(NSArray *)ids to:(struct sockaddr *)addr port:(int)port user:(const char *)user timeout:(int)timeout error:(NSError **)error
 {
   char *userauthlist = NULL;
-  int auth_type;
+  int auth_type = 0;
 
   // Set supported auth_type from server
   do {

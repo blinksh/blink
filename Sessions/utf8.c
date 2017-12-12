@@ -354,7 +354,7 @@ size_t linenoiseUtf8PrevCharLen(const char* buf, size_t buf_len, size_t pos, siz
     while (pos > 0) {
         size_t len = prevUtf8CharLen(buf, pos);
         pos -= len;
-        int cp;
+        int cp = 0;
         utf8BytesToCodePoint(buf + pos, len, &cp);
         if (!isCombiningChar(cp)) {
             if (col_len != NULL) *col_len = isWideChar(cp) ? 2 : 1;
