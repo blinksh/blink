@@ -58,8 +58,7 @@ In iOS, because of sandbox restrictions, you cannot write in the `~` directory, 
 So either you redefine `$HOME` to `~/Documents/` or you set configuration variables (using `setenv`) to some other place.
 
 I do this in Blink, inside the `MCPSession.m` file. The following variables are defined:
-Here's what I have:
-```powershell
+```bash
 setenv PATH = $PATH:~/Library/bin:~/Documents/bin
 setenv PYTHONHOME = $HOME/Library/
 setenv SSH_HOME = $HOME/Documents/
@@ -90,6 +89,27 @@ cd blink && ./get_frameworks.sh
 This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 
 Although this is the quickest method to get you up and running, if you would like to compile all libraries and resources yourself, refer to [BUILD](https://github.com/holzschu/blink/blob/master/BUILD.md). Please let us know if you find any issues. Blink is a complex project with multiple low level dependencies and we are still looking for ways to simplify and automate the full compilation process.
+
+## Packages
+
+The precompiled version of `ios_system` already containes the `python` and `lua` "binaries", but not their associated modules.
+
+If you want to use python, you will have to transfer the python modules. On your computer:
+```bash
+cd Python-2.7.13/
+tar -cvzf packages.tar.gz Lib/
+```
+transfer the file `packages.tar.gz` to your iOS device, using iTunes or the scp command in Blink. 
+
+On your device:
+```bash
+cd ~/Library/
+mkdir lib/
+tar -xvzf ~/packages.tar.gz 
+mv Lib lib/python-2.7
+cd ~
+```
+
 
 # Using Blink
 Our UI is very straightforward and optimizes the experience on touch devices for the really important part, the terminal. You will jump right into a very simple shell, so you will know what to do. Here are a few more tricks:
