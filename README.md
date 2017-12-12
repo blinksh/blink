@@ -106,7 +106,7 @@ On your device:
 cd ~/Library/
 mkdir lib/
 tar -xvzf ~/packages.tar.gz 
-mv Lib lib/python-2.7
+mv Lib lib/python2.7
 cd ~
 ```
 
