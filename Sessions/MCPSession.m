@@ -331,7 +331,7 @@ static NSArray *directoriesInPath;
       // Re-concatenate everything into a command line
       // We can't take the original command line because we (possibly) changed it.
       int cmdSize = 0;
-      for (int i = 0; i < argc; i++) cmdSize += strlen(argv[i] + 3); // at most +3 characters per arg
+      for (int i = 0; i < argc; i++) cmdSize += strlen(argv[i]) + 3; // at most +3 characters per arg
       char* cmd = (char*) malloc(cmdSize * sizeof(char));
       strcpy(cmd, argv[0]);
       for (int i = 1; i < argc; i++) {
