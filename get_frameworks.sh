@@ -4,7 +4,7 @@ LIBSSH2_VER="1.7.0"
 OPENSSL_VER="1.0.2j"
 LIBMOSH_VER="1.2.5-8671e87"
 PROTOBF_VER="2.6.1"
-IOS_SYSTEM_VER="0.1"
+IOS_SYSTEM_VER="0.2"
 
 GHROOT="https://github.com/blinksh"
 HHROOT="https://github.com/holzschu"
@@ -28,8 +28,8 @@ curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF
 ( tar -zxf protobuf-*.tar.gz && cp protobuf-*/lib/libprotobuf.a ./lib/ && rm -rf protobuf-* ) || { echo "Protobuf framework failed to download"; exit 1; }
 # ios_system
 echo "Downloading ios_system.framework.zip"
-curl -OL $HHROOT/blink/releases/download/v$IOS_SYSTEM_VER/ios_system.framework.zip
-( unzip ios_system.framework.zip && rm ios_system.framework.zip ) || { echo "ios_system failed to download"; exit 1; }
+curl -OL $HHROOT/blink/releases/download/v$IOS_SYSTEM_VER/ios_system.framework.tar.gz
+( tar -xzf ios_system.framework.tar.gz && rm ios_system.framework.tar.gz ) || { echo "ios_system failed to download"; exit 1; }
 )
 
 # We need ios_system for the sources of curl_static too:
