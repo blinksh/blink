@@ -442,10 +442,11 @@ void completion(const char *command, linenoiseCompletions *lc) {
         filePosition = strlen(command);
       }
     }
-    if (directory &&
-        [[NSFileManager defaultManager] fileExistsAtPath:[NSString stringWithUTF8String:directory] isDirectory:&isDir]
+    NSString* dirString = [NSString stringWithUTF8String:directory];
+    dirString = [dirString stringByExpandingTildeInPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:dirString isDirectory:&isDir]
         && isDir) {
-      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:[NSString stringWithUTF8String:directory] error:Nil];
+      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirString error:Nil];
       char* newCommand = (char*) malloc((filePosition + NAME_MAX) * sizeof(char));
       for (NSString *fileName in filenames) {
         if ((!file) || strncmp(file, [fileName UTF8String], strlen(file)) == 0) {
