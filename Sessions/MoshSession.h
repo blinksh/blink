@@ -33,13 +33,17 @@
 
 #import "Session.h"
 
+@interface MoshParameters: SessionParameters
+@property (strong) NSString *ip;
+@property (strong) NSString *port;
+@property (strong) NSString *key;
+@property (strong) NSString *predictionMode;
+@property (strong) NSString *startupCmd;
+@property (strong) NSString *serverPath;
+@end
 
 @interface MoshSession : Session
 
-- (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
-- (int)main:(int)argc argv:(char **)argv;
-- (void)executeWithArgs:(NSString *)args;
-- (void)sigwinch;
-- (void)close;
+@property (strong) MoshParameters *sessionParameters;
 
 @end

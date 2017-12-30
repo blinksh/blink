@@ -37,6 +37,19 @@
 #import "Session.h"
 #import "fterm.h"
 
+@implementation SessionParameters
+- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
+  SessionParameters *params = [[SessionParameters alloc] init];
+  params.encodedState = [aDecoder decodeObjectForKey:@"encodedState"];
+  return params;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder{
+  [aCoder encodeObject:_encodedState forKey:@"encodedState"];
+}
+
+@end
+
 
 int makeargs(const char *args, char ***aa)
 {
@@ -103,12 +116,13 @@ void *run_session(void *params)
 
 @implementation Session
 
-- (id)initWithStream:(TermStream *)stream
+- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters
 {
   self = [super init];
 
   if (self) {
     _stream = [self duplicateStream:stream];
+    _sessionParameters = parameters;
   }
 
   return self;
@@ -163,5 +177,29 @@ void *run_session(void *params)
 
   return params;
 }
+
+- (int)main:(int)argc argv:(char **)argv {
+  return 0;
+}
+
+- (void)sigwinch {
+}
+
+- (void)kill {
+}
+
+- (void)suspend
+{
+}
+- (void)resume
+{
+  
+}
+
+- (NSString *)suspendSequence
+{
+  return nil;
+}
+
 
 @end

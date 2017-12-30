@@ -33,6 +33,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
+#import "StateManager.h"
 @import CloudKit;
 
 #if HOCKEYSDK
@@ -44,6 +45,7 @@
 @end
 
 @implementation AppDelegate
+
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
@@ -59,41 +61,94 @@
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
 #endif 
-  
-  [[ScreenController shared] setup];
 
+  return YES;
+}
+
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  [StateManager shared];
+  [[ScreenController shared] setup];
   return YES;
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
 {
+  NSLog(@"- (void)applicationWillResignActive:(UIApplication *)application");
   // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
   // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
+  NSLog(@"- (void)applicationDidEnterBackground:(UIApplication *)application");
   // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
   // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
+  [[ScreenController shared] suspend];
+  
+  [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+    sleep(1);
+    [[ScreenController shared] saveStates];
+  }];
+  
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
+  NSLog(@"- (void)applicationWillEnterForeground:(UIApplication *)application");
+  [[ScreenController shared] resume];
   // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
+  NSLog(@"- (void)applicationDidBecomeActive:(UIApplication *)application");
   // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
+    NSLog(@"- (void)applicationWillTerminate:(UIApplication *)application");
   // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
+{
+  NSLog(@"- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder");
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
+  return YES;
+}
+
+- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
+{
+  NSLog(@"- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder");
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
+  return YES;
+}
+
+- (void)application:(UIApplication *)application willEncodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  NSLog(@"- (void)application:(UIApplication *)application willEncodeRestorableStateWithCoder:(NSCoder *)coder");
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
+}
+
+- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application
+{
+  NSLog(@"- (void)applicationProtectedDataDidBecomeAvailable:(UIApplication *)application");
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
+}
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+{
+  NSLog(@"- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application");
+  NSLog(@"%@", [NSNumber numberWithDouble:application.backgroundTimeRemaining]);
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
+  // TODO: pass completion handler.
 }
 
 // MARK: NSUserActivity

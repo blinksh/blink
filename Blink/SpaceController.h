@@ -38,5 +38,8 @@
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
 - (void)newShellWithActivity:(NSUserActivity *)activity;
+- (void)suspend;
+- (void)resume;
+- (void)saveStates;
 
 @end

@@ -165,8 +165,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (void)attachTestTerminalToView:(UIView *)view
 {
   if (!view.subviews.count) {
-    _testTerminal = [[TermView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
-    [view addSubview:_testTerminal];
+    TermView *tview = [[TermView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
+    [view addSubview:tview];
+    _testTerminal = tview;
   } else {
     _testTerminal = view.subviews[0];
   }

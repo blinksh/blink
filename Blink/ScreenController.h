@@ -40,6 +40,9 @@
 - (void)setup;
 - (void)switchToOtherScreen;
 - (void)moveCurrentShellToOtherScreen;
+- (void)suspend;
+- (void)resume;
+- (void)saveStates;
 
 
 @end

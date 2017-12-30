@@ -174,5 +174,27 @@
   [nonKeySpaceCtrl moveCurrentShellFromSpaceController:keySpaceCtrl];
 }
 
+- (void)suspend
+{
+  for (UIWindow *win in _windows) {
+    [[win spaceController]  suspend];
+  }
+}
+
+- (void)saveStates
+{
+  for (UIWindow *win in _windows) {
+    [[win spaceController] saveStates];
+  }
+}
+
+
+- (void)resume
+{
+  for (UIWindow *win in _windows) {
+    [[win spaceController]  resume];
+  }
+}
+
 
 @end

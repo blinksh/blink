@@ -124,8 +124,10 @@
 {
   [super viewDidLoad];
 
-  [self _createShellWithUserActivity: nil animated:NO completion:nil];
-  [self setKbdCommands];
+  if (_viewports == nil) {
+    [self _createShellWithUserActivity: nil sessionStateKey:nil animated:NO completion:nil];
+    [self setKbdCommands];
+  }
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -141,6 +143,52 @@
 - (void)focusOnShell
 {
   [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+}
+
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  [super decodeRestorableStateWithCoder:coder];
+  
+  NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
+  
+//  [[_viewports firstObject] terminate];
+  _viewports = [[NSMutableArray alloc] init];
+  
+  for (NSString *sessionStateKey in sessionStateKeys) {
+    TermController *term = [[TermController alloc] init];
+    term.sessionStateKey = sessionStateKey;
+    term.delegate = self;
+    term.userActivity = nil;
+    [_viewports addObject:term];
+  }
+  
+  NSInteger idx = [coder decodeIntegerForKey:@"idx"];
+  TermController *term = _viewports[idx];
+  [_viewportsController setViewControllers:@[term] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+}
+
+- (void)encodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  [super encodeRestorableStateWithCoder:coder];
+  NSMutableArray *sessionStateKeys = [[NSMutableArray alloc] init];
+  
+  for (TermController *term in _viewports) {
+    [sessionStateKeys addObject:term.sessionStateKey];
+  }
+  
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    idx = 0;
+  }
+  [coder encodeInteger:idx forKey:@"idx"];
+  [coder encodeObject:sessionStateKeys forKey:@"sessionStateKeys"];
+}
+
+- (void)saveStates
+{
+  for (TermController * term in _viewports) {
+    [term saveState];
+  }
 }
 
 - (void)registerForNotifications
@@ -237,7 +285,7 @@
 
 - (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
 {
-  [self _createShellWithUserActivity: nil animated:YES completion:nil];
+  [self _createShellWithUserActivity: nil sessionStateKey: nil animated:YES completion:nil];
 }
 
 - (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
@@ -380,7 +428,7 @@
   if (idx == 0 && numViewports == 1) {
     // Only one viewport. Create a new one to replace this
     [_viewports removeObjectAtIndex:0];
-    [self _createShellWithUserActivity: nil animated:NO completion:nil];
+    [self _createShellWithUserActivity: nil sessionStateKey:nil animated:NO completion:nil];
   } else if (idx >= [_viewports count] - 1) {
     // Last viewport, go to the previous.
     [_viewports removeLastObject];
@@ -409,9 +457,10 @@
   }
 }
 
-- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity animated:(BOOL)animated completion:(void (^)(BOOL finished))completion
+- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity sessionStateKey:(NSString *)sessionStateKey animated:(BOOL)animated completion:(void (^)(BOOL finished))completion
 {
   TermController *term = [[TermController alloc] init];
+  term.sessionStateKey = sessionStateKey;
   term.delegate = self;
   term.userActivity = userActivity;
 
@@ -540,7 +589,7 @@
 
 - (void)newShell:(UIKeyCommand *)cmd
 {
-  [self _createShellWithUserActivity: nil animated:YES completion:nil];
+  [self _createShellWithUserActivity: nil sessionStateKey:nil animated:YES completion:nil];
 }
 
 - (void)closeShell:(UIKeyCommand *)cmd
@@ -612,17 +661,21 @@
 
 - (void)switchToShellN:(UIKeyCommand *)cmd
 {
-  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
-  if(idx == NSNotFound) {
-    return;
-  }
-  
   NSInteger targetIdx = [cmd.input integerValue];
   if (targetIdx <= 0) {
     targetIdx = 10;
   }
   
   targetIdx -= 1;
+  [self switchToTargetIndex:targetIdx];
+}
+
+- (void)switchToTargetIndex:(NSInteger)targetIdx
+{
+  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  if(idx == NSNotFound) {
+    return;
+  }
   
   if (idx == targetIdx) {
     // We are on this page already.
@@ -684,7 +737,7 @@
   // somehow we don't have current term... so we just create new one
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   if(idx == NSNotFound) {
-    [self _createShellWithUserActivity:activity animated:YES completion:nil];
+    [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
     return;
   }
 
@@ -699,7 +752,7 @@
       [self.currentTerm restoreUserActivityState:activity];
       [self focusOnShell];
     } else {
-      [self _createShellWithUserActivity:activity animated:YES completion:nil];
+      [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
     }
     return;
   }
@@ -717,6 +770,20 @@
   [self switchShellIdx: targetIdx
              direction: direction
               animated: NO];
+}
+
+- (void)suspend
+{
+  [_viewports enumerateObjectsUsingBlock:^(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+    [term suspend];
+  }];
+}
+
+- (void)resume
+{
+  [_viewports enumerateObjectsUsingBlock:^(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+    [term resume];
+  }];
 }
 
 

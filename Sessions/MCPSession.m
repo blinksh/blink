@@ -43,6 +43,31 @@
 
 #define MCP_MAX_LINE 4096
 
+@implementation MCPSessionParameters
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+  SessionParameters *sparams = [super initWithCoder:aDecoder];
+  MCPSessionParameters *params = [[MCPSessionParameters alloc] init];
+  params.encodedState = sparams.encodedState;
+  params.childSessionType = [aDecoder decodeObjectForKey:@"childSessionType"];
+  params.childSessionParameters = [aDecoder decodeObjectForKey:@"childSessionParameters"];
+  params.rows = [aDecoder decodeIntegerForKey:@"rows"];
+  params.cols = [aDecoder decodeIntegerForKey:@"cols"];
+  return params;
+}
+
+- (void)encodeWithCoder:(NSCoder *)coder
+{
+  [super encodeWithCoder:coder];
+  [coder encodeObject:_childSessionType forKey:@"childSessionType"];
+  [coder encodeObject:_childSessionParameters forKey:@"childSessionParameters"];
+  [coder encodeInteger:_rows forKey:@"rows"];
+  [coder encodeInteger:_cols forKey:@"cols"];
+}
+
+@end
+
 @implementation MCPSession {
   Session *_childSession;
 }
@@ -67,6 +92,14 @@
 
 - (int)main:(int)argc argv:(char **)argv
 {
+  if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
+    _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+    [_childSession executeAttachedWithArgs:@""];
+    _childSession = nil;
+    // If it exits it goes to default
+    //return 0;
+  }
+  
   char *line;
   argc = 0;
   argv = nil;
@@ -137,7 +170,9 @@
 
 - (void)runSSHCopyIDWithArgs:(NSString *)args
 {
-  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream];
+  self.sessionParameters.childSessionParameters = nil;
+  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"sshcopyid";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
@@ -145,7 +180,9 @@
 - (void)runMoshWithArgs:(NSString *)args
 {
   [self.delegate indexCommand:args];
-  _childSession = [[MoshSession alloc] initWithStream:_stream];
+  self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
+  self.sessionParameters.childSessionType = @"mosh";
+  _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
   [_childSession executeAttachedWithArgs:args];
   
   _childSession = nil;
@@ -153,8 +190,10 @@
 
 - (void)runSSHWithArgs:(NSString *)args
 {
+  self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SSHSession alloc] initWithStream:_stream];
+  _childSession = [[SSHSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
@@ -235,6 +274,21 @@
     fclose(_stream.in);
     _stream.in = NULL;
   }
+}
+
+- (void)suspend
+{
+  [_childSession suspend];
+}
+
+- (void)resume
+{
+  
+}
+
+- (NSString *)suspendSequence
+{
+  return _childSession.suspendSequence;
 }
 
 @end

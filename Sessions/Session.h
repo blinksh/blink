@@ -61,20 +61,28 @@ typedef struct SessionParams {
 
 @end
 
+@interface SessionParameters: NSObject<NSCoding>
+@property NSData *encodedState;
+@end
+
 @interface Session : NSObject {
   TermStream *_stream;
   pthread_t _tid;
 }
 
+@property (strong, atomic) SessionParameters *sessionParameters;
 @property TermStream *stream;
 @property (weak) NSObject<SessionDelegate>* delegate;
 
 - (id)init __unavailable;
-- (id)initWithStream:(TermStream *)stream;
+- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv;
 - (void)sigwinch;
 - (void)kill;
+- (void)suspend;
+- (void)resume;
+- (NSString *)suspendSequence;
 
 @end

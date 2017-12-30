@@ -33,13 +33,15 @@
 
 #import "Session.h"
 
+@interface MCPSessionParameters: SessionParameters
+@property (strong) NSString *childSessionType;
+@property (strong) SessionParameters *childSessionParameters;
+@property NSInteger rows;
+@property NSInteger cols;
+@end
 
 @interface MCPSession : Session
 
-- (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
-- (int)main:(int)argc argv:(char **)argv;
-- (void)executeWithArgs:(NSString *)args;
-- (void)sigwinch;
-- (void)close;
+@property (strong) MCPSessionParameters *sessionParameters;
 
 @end

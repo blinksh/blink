@@ -55,10 +55,13 @@
 @property (strong, nonatomic) UIScrollView *containerView;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
+@property (strong, nonatomic) NSString* sessionStateKey;
 
+- (void)saveState;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
 - (void)terminate;
-- (void)sigwinch;
+- (void)suspend;
+- (void)resume;
 
 @end

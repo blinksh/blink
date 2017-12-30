@@ -38,6 +38,7 @@
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
+#import "StateManager.h"
 
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
@@ -50,6 +51,7 @@ static NSDictionary *bkModifierMaps = nil;
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
+  MCPSessionParameters *_sessionParameters;
   BOOL _viewIsLocked;
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
@@ -77,8 +79,13 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)loadView
 {
   [super loadView];
+  
+  if (_sessionStateKey == nil) {
+    _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
+  }
 
   _terminal = [[TermView alloc] initWithFrame:self.view.frame];
+  _terminal.restorationIdentifier = @"TermView";
   _terminal.delegate = self;
 
   self.view = _terminal;
@@ -244,6 +251,7 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)terminate
 {
+  [[StateManager shared] removeSession:_sessionStateKey];
   // Disconnect message handler
   [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
 
@@ -253,6 +261,13 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  MCPSessionParameters *params = (MCPSessionParameters *)[[StateManager shared] restoreSessionParamsForKey:_sessionStateKey];
+  if (params) {
+    _sessionParameters = params;
+  } else {
+    _sessionParameters = [[MCPSessionParameters alloc] init];
+  }
 
   [_terminal loadTerminal];
 
@@ -266,6 +281,28 @@ static NSDictionary *bkModifierMaps = nil;
   _termerr = fterm_open(_terminal, 0);
   _termin = fdopen(_pinput[0], "r");
   _termsz = malloc(sizeof(struct winsize));
+  _termsz->ws_col = _sessionParameters.cols;
+  _termsz->ws_row = _sessionParameters.rows;
+}
+
+- (void)destroyPTY
+{
+  if (_termin) {
+    fclose(_termin);
+    _termin = NULL;
+  }
+  if (_termout) {
+    fclose(_termout);
+    _termout = NULL;
+  }
+  if (_termerr) {
+    fclose(_termerr);
+    _termerr = NULL;
+  }
+  if (_termsz) {
+    free(_termsz);
+    _termsz = NULL;
+  }
 }
 
 - (void)startSession
@@ -278,7 +315,7 @@ static NSDictionary *bkModifierMaps = nil;
   stream.control = self;
   stream.sz = _termsz;
 
-  _session = [[MCPSession alloc] initWithStream:stream];
+  _session = [[MCPSession alloc] initWithStream:stream andParametes:_sessionParameters];
   _session.delegate = self;
   [_session executeWithArgs:@""];
 }
@@ -297,6 +334,9 @@ static NSDictionary *bkModifierMaps = nil;
 {
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
+  _sessionParameters.rows = rows.shortValue;
+  _sessionParameters.cols = cols.shortValue;
+  
   if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
     [self.delegate terminalDidResize:self];
   }
@@ -322,22 +362,8 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)dealloc
 {
-  if (_termin) {
-    fclose(_termin);
-    _termin = NULL;
-  }
-  if (_termout) {
-    fclose(_termout);
-    _termout = NULL;
-  }
-  if (_termerr) {
-    fclose(_termerr);
-    _termerr = NULL;
-  }
-  if (_termsz) {
-    free(_termsz);
-    _termsz = NULL;
-  }
+  [self destroyPTY];
+  
   [self.userActivity resignCurrent];
 }
 
@@ -362,6 +388,27 @@ static NSDictionary *bkModifierMaps = nil;
   } else {
     _appearanceChanged = YES;
   }
+}
+
+- (void)suspend
+{
+  NSString *suspendSeq = [_session suspendSequence];
+  if (suspendSeq) {
+    [self write:suspendSeq];
+  }
+}
+
+- (void)saveState
+{
+  [StateManager.shared storeSessionParams:_sessionStateKey params:_sessionParameters];
+}
+
+- (void)resume
+{
+  [self destroyPTY];
+//  [_session kill];
+  [self createPTY];
+  [self startSession];
 }
 
 @end
