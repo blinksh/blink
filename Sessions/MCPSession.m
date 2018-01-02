@@ -43,34 +43,12 @@
 
 #define MCP_MAX_LINE 4096
 
-@implementation MCPSessionParameters
-
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-  SessionParameters *sparams = [super initWithCoder:aDecoder];
-  MCPSessionParameters *params = [[MCPSessionParameters alloc] init];
-  params.encodedState = sparams.encodedState;
-  params.childSessionType = [aDecoder decodeObjectForKey:@"childSessionType"];
-  params.childSessionParameters = [aDecoder decodeObjectForKey:@"childSessionParameters"];
-  params.rows = [aDecoder decodeIntegerForKey:@"rows"];
-  params.cols = [aDecoder decodeIntegerForKey:@"cols"];
-  return params;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-  [super encodeWithCoder:coder];
-  [coder encodeObject:_childSessionType forKey:@"childSessionType"];
-  [coder encodeObject:_childSessionParameters forKey:@"childSessionParameters"];
-  [coder encodeInteger:_rows forKey:@"rows"];
-  [coder encodeInteger:_cols forKey:@"cols"];
-}
-
-@end
 
 @implementation MCPSession {
   Session *_childSession;
 }
+
+@dynamic sessionParameters;
 
 - (NSArray *)splitCommandAndArgs:(NSString *)cmdline
 {
@@ -278,17 +256,15 @@
 
 - (void)suspend
 {
-  [_childSession suspend];
+  if (_childSession == nil) {
+    [self out:@"\r\n".UTF8String];
+  } else {
+    [_childSession suspend];
+  }
 }
 
 - (void)resume
 {
-  
-}
-
-- (NSString *)suspendSequence
-{
-  return _childSession.suspendSequence;
 }
 
 @end

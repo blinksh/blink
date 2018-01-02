@@ -34,6 +34,7 @@
 #include <sys/ioctl.h>
 
 #import "TermController.h"
+#import "SessionParameters.h"
 
 
 typedef struct SessionParams {
@@ -61,10 +62,6 @@ typedef struct SessionParams {
 
 @end
 
-@interface SessionParameters: NSObject<NSCoding>
-@property NSData *encodedState;
-@end
-
 @interface Session : NSObject {
   TermStream *_stream;
   pthread_t _tid;
@@ -83,6 +80,5 @@ typedef struct SessionParams {
 - (void)kill;
 - (void)suspend;
 - (void)resume;
-- (NSString *)suspendSequence;
 
 @end

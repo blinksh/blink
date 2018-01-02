@@ -104,20 +104,6 @@
       _bottomConstraint
       ]
    ];
-
-  // Termination notification
-  UIApplication *app = [UIApplication sharedApplication];
-  [[NSNotificationCenter defaultCenter] addObserver:self
-					   selector:@selector(applicationWillTerminate:)
-					       name:UIApplicationWillTerminateNotification
-					     object:app];
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-  [_viewports enumerateObjectsUsingBlock:^(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
-    [term terminate];
-  }];
 }
 
 - (void)viewDidLoad
@@ -151,7 +137,6 @@
   
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
-//  [[_viewports firstObject] terminate];
   _viewports = [[NSMutableArray alloc] init];
   
   for (NSString *sessionStateKey in sessionStateKeys) {
@@ -182,13 +167,6 @@
   }
   [coder encodeInteger:idx forKey:@"idx"];
   [coder encodeObject:sessionStateKeys forKey:@"sessionStateKeys"];
-}
-
-- (void)saveStates
-{
-  for (TermController * term in _viewports) {
-    [term saveState];
-  }
 }
 
 - (void)registerForNotifications

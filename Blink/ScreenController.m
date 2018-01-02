@@ -32,6 +32,7 @@
 #import <UIKit/UIKit.h>
 #import "ScreenController.h"
 #import "SpaceController.h"
+#import "StateManager.h"
 
 @interface UIWindow (ScreenController)
 - (SpaceController *)spaceController;
@@ -177,23 +178,17 @@
 - (void)suspend
 {
   for (UIWindow *win in _windows) {
-    [[win spaceController]  suspend];
+    [[win spaceController] suspend];
   }
+  [[StateManager shared] save];
 }
-
-- (void)saveStates
-{
-  for (UIWindow *win in _windows) {
-    [[win spaceController] saveStates];
-  }
-}
-
 
 - (void)resume
 {
   for (UIWindow *win in _windows) {
-    [[win spaceController]  resume];
+    [[win spaceController] resume];
   }
+  [[StateManager shared] reset];
 }
 
 

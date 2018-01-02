@@ -36,6 +36,4 @@
 
 @interface SSHCopyIDSession : Session
 
-- (int)main:(int)argc argv:(char **)argv;
-
 @end

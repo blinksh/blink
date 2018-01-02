@@ -16,6 +16,8 @@
 - (void)storeSessionParams:(NSString *)sessionKey params:(NSObject *)params;
 - (void)removeSession:(NSString *)sessionKey;
 - (NSObject *)restoreSessionParamsForKey:(NSString *)sessionKey;
+- (void)save;
+- (void)reset;
 
 
 @end

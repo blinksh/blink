@@ -56,6 +56,7 @@
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong, nonatomic) NSString* sessionStateKey;
+- (void)write:(NSString *)input;
 
 - (void)saveState;
 - (void)setRawMode:(BOOL)raw;

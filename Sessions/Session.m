@@ -37,19 +37,6 @@
 #import "Session.h"
 #import "fterm.h"
 
-@implementation SessionParameters
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
-  SessionParameters *params = [[SessionParameters alloc] init];
-  params.encodedState = [aDecoder decodeObjectForKey:@"encodedState"];
-  return params;
-}
-
-- (void)encodeWithCoder:(NSCoder *)aCoder{
-  [aCoder encodeObject:_encodedState forKey:@"encodedState"];
-}
-
-@end
-
 
 int makeargs(const char *args, char ***aa)
 {
@@ -190,16 +177,11 @@ void *run_session(void *params)
 
 - (void)suspend
 {
+  [self kill];
 }
+
 - (void)resume
 {
-  
 }
-
-- (NSString *)suspendSequence
-{
-  return nil;
-}
-
 
 @end

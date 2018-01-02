@@ -40,6 +40,5 @@
 - (void)newShellWithActivity:(NSUserActivity *)activity;
 - (void)suspend;
 - (void)resume;
-- (void)saveStates;
 
 @end

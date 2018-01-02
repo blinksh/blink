@@ -38,16 +38,20 @@
   return [[url URLByAppendingPathComponent:@"state2"] path];
 }
 
+- (void)reset
+{
+  _states = [[NSDictionary alloc] init];
+  [self save];
+}
+
 - (void)save
 {
   [NSKeyedArchiver archiveRootObject:_states toFile:[self filePath]];
 }
 
-
 - (void)storeSessionParams:(NSString *)sessionKey params:(NSObject *)params
 {
   _states[sessionKey] = params;
-  [self save];
 }
 
 -(NSObject *)restoreSessionParamsForKey:(NSString *)sessionKey {
@@ -57,7 +61,6 @@
 - (void)removeSession:(NSString *)sessionKey
 {
   [_states removeObjectForKey:sessionKey];
-  [self save];
 }
 
 

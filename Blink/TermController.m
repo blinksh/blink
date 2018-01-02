@@ -249,14 +249,6 @@ static NSDictionary *bkModifierMaps = nil;
   [_terminal reset];
 }
 
-- (void)terminate
-{
-  [[StateManager shared] removeSession:_sessionStateKey];
-  // Disconnect message handler
-  [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
-
-  [_session kill];
-}
 
 - (void)viewDidLoad
 {
@@ -390,23 +382,24 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
-- (void)suspend
+- (void)terminate
 {
-  NSString *suspendSeq = [_session suspendSequence];
-  if (suspendSeq) {
-    [self write:suspendSeq];
-  }
+  [[StateManager shared] removeSession:_sessionStateKey];
+  // Disconnect message handler
+  [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
+  
+  [_session kill];
 }
 
-- (void)saveState
+- (void)suspend
 {
+  [_session suspend];
   [StateManager.shared storeSessionParams:_sessionStateKey params:_sessionParameters];
 }
 
 - (void)resume
 {
   [self destroyPTY];
-//  [_session kill];
   [self createPTY];
   [self startSession];
 }

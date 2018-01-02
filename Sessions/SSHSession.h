@@ -33,13 +33,8 @@
 
 #import "Session.h"
 
-
 @interface SSHSession : Session
 
 @property (nonatomic) BOOL debug;
-
-- (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
-- (int)main:(int)argc argv:(char **)argv;
-- (void)close;
 
 @end

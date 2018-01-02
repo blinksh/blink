@@ -32,6 +32,7 @@
 #include <getopt.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <pthread.h>
 
 #include "libmoshios/moshiosbridge.h"
 
@@ -62,38 +63,20 @@ static const char *usage_format =
   "        --help               this message\r\n"
   "\r\n";
 
-@implementation MoshParameters{
+void __state_callback(const void *context, const void *buffer, size_t size) {
+  MoshSession *session = (__bridge MoshSession *)context;
+  NSData * data = [NSData dataWithBytes:buffer length:size];
+  session.sessionParameters.encodedState = data;
+  [session suspended];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder{
-  SessionParameters *sparams = [super initWithCoder:aDecoder];
-  MoshParameters *params = [[MoshParameters alloc] init];
-  params.encodedState = sparams.encodedState;
-  params.ip = [aDecoder decodeObjectForKey:@"ip"];
-  params.port = [aDecoder decodeObjectForKey:@"port"];
-  params.key = [aDecoder decodeObjectForKey:@"key"];
-  params.predictionMode = [aDecoder decodeObjectForKey:@"predictionMode"];
-  params.startupCmd = [aDecoder decodeObjectForKey:@"startupCmd"];
-  params.serverPath = [aDecoder decodeObjectForKey:@"serverPath"];
-  
-  return params;
-}
-
-- (void)encodeWithCoder:(NSCoder *)coder
-{
-  [super encodeWithCoder:coder];
-  [coder encodeObject:_ip forKey:@"ip"];
-  [coder encodeObject:_port forKey:@"port"];
-  [coder encodeObject:_key forKey:@"key"];
-  [coder encodeObject:_predictionMode forKey:@"predictMode"];
-  [coder encodeObject:_startupCmd forKey:@"startupCmd"];
-  [coder encodeObject:_serverPath forKey:@"serverPath"];
-}
-@end
 
 @implementation MoshSession {
   int _debug;
+  NSLock * _lock;
 }
+
+@dynamic sessionParameters;
 
 + (void)initialize
 {
@@ -240,9 +223,13 @@ static const char *usage_format =
   
   mosh_main(
             _stream.in, _stream.out, _stream.sz,
-            &state_callback, (__bridge void *) self,
-            [self.sessionParameters.ip UTF8String], [self.sessionParameters.port UTF8String], [self.sessionParameters.key UTF8String],
-            [self.sessionParameters.predictionMode UTF8String], self.sessionParameters.encodedState.bytes, self.sessionParameters.encodedState.length
+            &__state_callback, (__bridge void *) self,
+            [self.sessionParameters.ip UTF8String],
+            [self.sessionParameters.port UTF8String],
+            [self.sessionParameters.key UTF8String],
+            [self.sessionParameters.predictionMode UTF8String],
+            self.sessionParameters.encodedState.bytes,
+            self.sessionParameters.encodedState.length
             );
   
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -255,12 +242,6 @@ static const char *usage_format =
   fprintf(_stream.out, "\r\n");
 
   return 0;
-}
-
-void state_callback(const void *context, const void *buffer, size_t size) {
-  MoshSession *session = (__bridge MoshSession *)context;
-  NSData * data = [NSData dataWithBytes:buffer length:size];
-  session.sessionParameters.encodedState = data;
 }
 
 - (void)processMoshSettings:(BKHosts *)host
@@ -394,13 +375,25 @@ void state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)kill
 {
-  
-//  pthread_cancel(<#struct _opaque_pthread_t * _Nonnull#>)
-//  pthread_kill(_tid, SIGINT);
+  pthread_kill(_tid, SIGINT);
 }
 
 - (void)suspend
 {
+  _lock = [[NSLock alloc] init];
+  [_lock lock];
+  [_stream.control write:@"\x1e\x1a"];
+  NSTimeInterval timeout = 2;
+  NSDate *d = [[NSDate date] dateByAddingTimeInterval:timeout];
+  if ([_lock lockBeforeDate: d]) {
+    [_lock unlock];
+  }
+  _lock = nil;
+}
+
+- (void)suspended
+{
+  [_lock unlock];
 }
 
 - (void)resume
@@ -408,11 +401,6 @@ void state_callback(const void *context, const void *buffer, size_t size) {
   if (self.sessionParameters.encodedState == nil) {
     return;
   }
-}
-
-- (NSString *)suspendSequence
-{
-  return @"\x1e\x1a";
 }
 
 @end

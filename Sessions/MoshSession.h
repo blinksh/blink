@@ -32,18 +32,11 @@
 #import <Foundation/Foundation.h>
 
 #import "Session.h"
-
-@interface MoshParameters: SessionParameters
-@property (strong) NSString *ip;
-@property (strong) NSString *port;
-@property (strong) NSString *key;
-@property (strong) NSString *predictionMode;
-@property (strong) NSString *startupCmd;
-@property (strong) NSString *serverPath;
-@end
+#import "MoshSessionParameters.h"
 
 @interface MoshSession : Session
 
 @property (strong) MoshParameters *sessionParameters;
+- (void)suspended;
 
 @end

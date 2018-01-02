@@ -32,13 +32,7 @@
 #import <Foundation/Foundation.h>
 
 #import "Session.h"
-
-@interface MCPSessionParameters: SessionParameters
-@property (strong) NSString *childSessionType;
-@property (strong) SessionParameters *childSessionParameters;
-@property NSInteger rows;
-@property NSInteger cols;
-@end
+#import "MCPSessionParameters.h"
 
 @interface MCPSession : Session
 
