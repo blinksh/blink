@@ -177,7 +177,6 @@ void *run_session(void *params)
 
 - (void)suspend
 {
-  [self kill];
 }
 
 - (void)resume

@@ -104,12 +104,17 @@
   _suspendedMode = NO;
   UIApplication *application = [UIApplication sharedApplication];
   
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [application endBackgroundTask:_suspendTaskId];
+  }
+  
   _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
     [self suspendApplication];
   }];
   
   NSTimeInterval time = MIN(application.backgroundTimeRemaining, 60); // 1 minute
-  _suspendTimer = [NSTimer timerWithTimeInterval:time target:self selector:@selector(suspendApplication) userInfo:nil repeats:NO];
+  [_suspendTimer invalidate];
+  _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time target:self selector:@selector(suspendApplication) userInfo:nil repeats:NO];
 }
 
 - (void)suspendApplication
@@ -140,7 +145,10 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-  [self suspendApplication];
+  if (!_suspendedMode) {
+    [self startMonitoringForSuspending];
+    [self suspendApplication];
+  }
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -163,7 +171,10 @@
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
-  [self suspendApplication];
+  if (!_suspendedMode) {
+    [self startMonitoringForSuspending];
+    [self suspendApplication];
+  }
 }
 
 
