@@ -1009,6 +1009,9 @@
 						DevelopmentTeam = HV2S48975V;
 						LastSwiftMigration = 0830;
 						SystemCapabilities = {
+							com.apple.DataProtection = {
+								enabled = 1;
+							};
 							com.apple.Keychain = {
 								enabled = 1;
 							};

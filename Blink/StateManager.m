@@ -23,19 +23,59 @@
 
 -(instancetype)init {
   if (self = [super init]) {
-    NSDictionary *states = [NSKeyedUnarchiver unarchiveObjectWithFile:[self filePath]];
-    if (states == nil) {
-      states = [[NSDictionary alloc] init];
-    }
-    _states = [states mutableCopy];
+    _states = [self _loadStates];
   }
   
   return self;
 }
 
-- (NSString *)filePath{
-  NSURL *url = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-  return [[url URLByAppendingPathComponent:@"state2"] path];
+- (NSMutableDictionary *)_loadStates
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSURL *fileURL = [self _filePath];
+  
+  if ([fileManager fileExistsAtPath:[fileURL absoluteString]]) {
+    return [[NSMutableDictionary alloc] init];
+  }
+  
+  @try {
+    NSData *data = [NSData dataWithContentsOfFile:[fileURL path]];
+    NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
+//    [unarchiver setRequiresSecureCoding:YES];
+    NSDictionary *dict = [unarchiver decodeObject];
+    return [dict mutableCopy] ?: [[NSMutableDictionary alloc] init];
+  }
+  @catch (NSException *exception){
+    NSLog(@"Exception: %@", exception);
+    
+    return [[NSMutableDictionary alloc] init];
+  }
+}
+
+- (void)_saveStates
+{
+  NSMutableData *data = [[NSMutableData alloc] init];
+  NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
+//  [archiver setRequiresSecureCoding:YES];
+  [archiver encodeObject:_states];
+  [archiver finishEncoding];
+  
+
+  NSString *filePath = [[self _filePath] path];
+  NSDataWritingOptions options = NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
+  
+  NSError *error = nil;
+  if ([data writeToFile:filePath options:options error:&error]) {
+    NSLog(@"States are saved");
+  } else {
+    NSLog(@"Error: %@", error);
+  }
+}
+
+- (NSURL *)_filePath {
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSURL *url = [[[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject] filePathURL];
+  return [url URLByAppendingPathComponent:@"states"] ;
 }
 
 - (void)reset
@@ -46,7 +86,7 @@
 
 - (void)save
 {
-  [NSKeyedArchiver archiveRootObject:_states toFile:[self filePath]];
+  [self _saveStates];
 }
 
 - (void)storeSessionParams:(NSString *)sessionKey params:(NSObject *)params
