@@ -42,7 +42,6 @@
 - (void)moveCurrentShellToOtherScreen;
 - (void)suspend;
 - (void)resume;
-- (void)saveStates;
-
+- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder;
 
 @end

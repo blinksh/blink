@@ -49,6 +49,7 @@
 @implementation ScreenController
 {
   NSMutableArray<UIWindow *> *_windows;
+  NSMutableDictionary *_tmpControllers;
 }
 
 + (ScreenController *)shared {
@@ -65,6 +66,7 @@
   self = [super init];
   if (self) {
     _windows = [[NSMutableArray alloc] init];
+    _tmpControllers = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -99,22 +101,50 @@
   if ([UIScreen screens].count > 1) {
     [self setupWindowForScreen:[[UIScreen screens] lastObject]];
   }
+  _tmpControllers = nil;
+}
+
+- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder
+{
+  NSString *identifier = [identifierComponents lastObject];
+  
+  if ([identifier isEqualToString:@"MainSpaceController"] || [identifier isEqualToString:@"SecondSpaceController"]) {
+    SpaceController *spaceController = [[SpaceController alloc] init];
+    spaceController.restorationIdentifier = identifier;
+    [spaceController decodeRestorableStateWithCoder2:coder];
+    _tmpControllers[identifier] = spaceController;
+    return spaceController;
+  }
+  
+  return nil;
 }
 
 - (void)setupWindowForScreen:(UIScreen *)screen
 {
   UIWindow *window = [[UIWindow alloc] initWithFrame:[screen bounds]];
+  
   [_windows addObject:window];
   
+  NSString *rootControllerIdentifier = nil;
+  
+  if (screen == [UIScreen mainScreen]) {
+    window.restorationIdentifier = @"MainWindow";
+    rootControllerIdentifier = @"MainSpaceController";
+  } else {
+    window.restorationIdentifier = @"SecondWindow";
+    rootControllerIdentifier = @"SecondSpaceController";
+  }
+  
   window.screen = screen;
-  window.rootViewController = [self createSpaceController];
+  window.rootViewController = [self createSpaceController: rootControllerIdentifier];
   window.hidden = NO;
 }
 
-- (SpaceController *)createSpaceController
+- (SpaceController *)createSpaceController: (NSString *)identifier;
 {
-  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-  return [storyboard instantiateViewControllerWithIdentifier:@"SpaceController"];
+  SpaceController *spaceController = _tmpControllers[identifier] ?: [[SpaceController alloc] init];
+  spaceController.restorationIdentifier = identifier;
+  return spaceController;
 }
 
 - (void)screenDidConnect:(NSNotification *) notification

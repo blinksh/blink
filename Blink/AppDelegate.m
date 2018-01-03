@@ -65,11 +65,6 @@
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
 #endif 
 
-  return YES;
-}
-
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
   [[ScreenController shared] setup];
   return YES;
 }
@@ -80,7 +75,6 @@
 }
 
 // MARK: NSUserActivity
-
 
 - (BOOL)application:(UIApplication *)application willContinueUserActivityWithType:(NSString *)userActivityType {
   return YES;
@@ -96,10 +90,10 @@
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-  [self startMonitoringForSuspending];
+  [self _startMonitoringForSuspending];
 }
 
-- (void)startMonitoringForSuspending
+- (void)_startMonitoringForSuspending
 {
   _suspendedMode = NO;
   UIApplication *application = [UIApplication sharedApplication];
@@ -109,15 +103,24 @@
   }
   
   _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
-    [self suspendApplication];
+    [self _suspendApplication];
   }];
   
   NSTimeInterval time = MIN(application.backgroundTimeRemaining, 60); // 1 minute
   [_suspendTimer invalidate];
-  _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time target:self selector:@selector(suspendApplication) userInfo:nil repeats:NO];
+  _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time
+                                                   target:self
+                                                 selector:@selector(_suspendApplication)
+                                                 userInfo:nil
+                                                  repeats:NO];
 }
 
-- (void)suspendApplication
+- (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder
+{
+  return [[ScreenController shared] restoreViewController:identifierComponents coder: coder];
+}
+
+- (void)_suspendApplication
 {
   if (_suspendedMode) {
     return;
@@ -127,14 +130,16 @@
     return;
   }
   
-  [[ScreenController shared] suspend];
-  _suspendedMode = YES;
-  UIApplication *application = [UIApplication sharedApplication];
-  [application endBackgroundTask:_suspendTaskId];
-  _suspendTaskId = UIBackgroundTaskInvalid;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [[ScreenController shared] suspend];
+    _suspendedMode = YES;
+    UIApplication *application = [UIApplication sharedApplication];
+    [application endBackgroundTask:_suspendTaskId];
+    _suspendTaskId = UIBackgroundTaskInvalid;
+  });
 }
 
-- (void)cancelSuspend
+- (void)_cancelApplicationSuspend
 {
   [_suspendTimer invalidate];
   _suspendedMode = NO;
@@ -146,8 +151,8 @@
 - (void)applicationWillTerminate:(UIApplication *)application
 {
   if (!_suspendedMode) {
-    [self startMonitoringForSuspending];
-    [self suspendApplication];
+    [self _startMonitoringForSuspending];
+    [self _suspendApplication];
   }
 }
 
@@ -156,7 +161,7 @@
   if (_suspendedMode) {
     [[ScreenController shared] resume];
   }
-  [self cancelSuspend];
+  [self _cancelApplicationSuspend];
 }
 
 - (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
@@ -172,8 +177,8 @@
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
   if (!_suspendedMode) {
-    [self startMonitoringForSuspending];
-    [self suspendApplication];
+    [self _startMonitoringForSuspending];
+    [self _suspendApplication];
   }
 }
 

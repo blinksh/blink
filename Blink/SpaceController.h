@@ -37,8 +37,8 @@
 - (void)viewScreenWillBecomeActive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
-- (void)newShellWithActivity:(NSUserActivity *)activity;
 - (void)suspend;
 - (void)resume;
+- (void)decodeRestorableStateWithCoder2:(NSCoder *)coder;
 
 @end

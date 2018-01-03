@@ -109,10 +109,9 @@
 - (void)viewDidLoad
 {
   [super viewDidLoad];
-
+  [self setKbdCommands];
   if (_viewports == nil) {
     [self _createShellWithUserActivity: nil sessionStateKey:nil animated:NO completion:nil];
-    [self setKbdCommands];
   }
 }
 
@@ -131,10 +130,8 @@
   [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 }
 
-- (void)decodeRestorableStateWithCoder:(NSCoder *)coder
+- (void)decodeRestorableStateWithCoder2:(NSCoder *)coder
 {
-  [super decodeRestorableStateWithCoder:coder];
-  
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
   _viewports = [[NSMutableArray alloc] init];
@@ -149,6 +146,7 @@
   
   NSInteger idx = [coder decodeIntegerForKey:@"idx"];
   TermController *term = _viewports[idx];
+  [self loadViewIfNeeded];
   [_viewportsController setViewControllers:@[term] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
 

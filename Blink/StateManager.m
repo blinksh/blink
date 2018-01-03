@@ -40,7 +40,7 @@
 
 - (void)reset
 {
-  _states = [[NSDictionary alloc] init];
+  _states = [[NSMutableDictionary alloc] init];
   [self save];
 }
 
