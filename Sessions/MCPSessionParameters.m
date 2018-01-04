@@ -7,6 +7,8 @@
 //
 
 #import "MCPSessionParameters.h"
+#import "MoshSessionParameters.h"
+#import "SessionParameters.h"
 
 NSString * const ChildSessionTypeKey = @"childSessionType";
 NSString * const ChildSessionParametersKey = @"childSessionParameters";
@@ -20,8 +22,9 @@ NSString * const ColsKey = @"cols";
   self = [super initWithCoder:aDecoder];
   
   if (self) {
-    self.childSessionType = [aDecoder decodeObjectForKey:ChildSessionTypeKey];
-    self.childSessionParameters = [aDecoder decodeObjectForKey:ChildSessionParametersKey];
+    NSSet *classes = [NSSet setWithObjects:[MoshParameters class], [SessionParameters class], nil];
+    self.childSessionType = [aDecoder decodeObjectOfClass:[NSString class] forKey:ChildSessionTypeKey];
+    self.childSessionParameters = [aDecoder decodeObjectOfClasses:classes forKey:ChildSessionParametersKey];
     self.rows = [aDecoder decodeIntegerForKey:RowsKey];
     self.cols = [aDecoder decodeIntegerForKey:ColsKey];
   }
@@ -36,6 +39,11 @@ NSString * const ColsKey = @"cols";
   [coder encodeObject:_childSessionParameters forKey:ChildSessionParametersKey];
   [coder encodeInteger:_rows forKey:RowsKey];
   [coder encodeInteger:_cols forKey:ColsKey];
+}
+
++ (BOOL)supportsSecureCoding
+{
+  return YES;
 }
 
 @end

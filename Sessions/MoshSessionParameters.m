@@ -21,12 +21,12 @@ NSString * const ServerPathKey = @"serverPath";
   self = [super initWithCoder:aDecoder];
   
   if (self) {
-    self.ip = [aDecoder decodeObjectForKey:IPKey];
-    self.port = [aDecoder decodeObjectForKey:PortKey];
-    self.key = [aDecoder decodeObjectForKey:KeyKey];
-    self.predictionMode = [aDecoder decodeObjectForKey:PredictionModeKey];
-    self.startupCmd = [aDecoder decodeObjectForKey:StartupCmdKey];
-    self.serverPath = [aDecoder decodeObjectForKey:ServerPathKey];
+    self.ip = [aDecoder decodeObjectOfClass:[NSString class] forKey:IPKey];
+    self.port = [aDecoder decodeObjectOfClass:[NSString class] forKey:PortKey];
+    self.key = [aDecoder decodeObjectOfClass:[NSString class] forKey:KeyKey];
+    self.predictionMode = [aDecoder decodeObjectOfClass:[NSString class] forKey:PredictionModeKey];
+    self.startupCmd = [aDecoder decodeObjectOfClass:[NSString class] forKey:StartupCmdKey];
+    self.serverPath = [aDecoder decodeObjectOfClass:[NSString class] forKey:ServerPathKey];
   }
   
   return self;
@@ -43,4 +43,10 @@ NSString * const ServerPathKey = @"serverPath";
   [coder encodeObject:_startupCmd forKey:StartupCmdKey];
   [coder encodeObject:_serverPath forKey:ServerPathKey];
 }
+
++ (BOOL)supportsSecureCoding
+{
+  return YES;
+}
+
 @end

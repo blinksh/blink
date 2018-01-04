@@ -8,6 +8,6 @@
 
 #import <Foundation/Foundation.h>
 
-@interface SessionParameters: NSObject<NSCoding>
+@interface SessionParameters: NSObject<NSSecureCoding>
 @property NSData *encodedState;
 @end

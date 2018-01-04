@@ -15,13 +15,18 @@ NSString * const EncodedStateKey = @"EncodedStateKey";
 - (nullable instancetype)initWithCoder:(NSCoder *)aDecoder {
   self = [super init];
   if (self) {
-    self.encodedState = [aDecoder decodeObjectForKey:EncodedStateKey];
+    self.encodedState = [aDecoder decodeObjectOfClass:[NSData class] forKey:EncodedStateKey];
   }
   return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)aCoder{
   [aCoder encodeObject:_encodedState forKey:EncodedStateKey];
+}
+
++ (BOOL)supportsSecureCoding
+{
+  return YES;
 }
 
 @end

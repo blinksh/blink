@@ -7,6 +7,9 @@
 //
 
 #import "StateManager.h"
+#import "MCPSessionParameters.h"
+
+NSString * const StatesKey = @"StatesKey";
 
 @implementation StateManager {
   NSMutableDictionary *_states;
@@ -14,7 +17,7 @@
 
 -(instancetype)init {
   if (self = [super init]) {
-    _states = [self _loadStates];
+    _states = [[NSMutableDictionary alloc] init];
   }
   
   return self;
@@ -32,9 +35,15 @@
   @try {
     NSData *data = [NSData dataWithContentsOfFile:[fileURL path]];
     NSKeyedUnarchiver *unarchiver = [[NSKeyedUnarchiver alloc] initForReadingWithData:data];
-//    [unarchiver setRequiresSecureCoding:YES];
-    NSDictionary *dict = [unarchiver decodeObject];
-    return [dict mutableCopy] ?: [[NSMutableDictionary alloc] init];
+    [unarchiver setRequiresSecureCoding:YES];
+    
+    NSSet *classes = [[NSSet alloc] initWithObjects:[NSDictionary class], [NSString class], [MCPSessionParameters class], nil];
+    NSDictionary *dict = [unarchiver decodeObjectOfClasses:classes forKey:StatesKey];
+    if (dict) {
+      return [dict mutableCopy];
+    } else {
+      return [[NSMutableDictionary alloc] init];
+    }
   }
   @catch (NSException *exception){
     NSLog(@"Exception: %@", exception);
@@ -62,12 +71,13 @@
 
 - (void)save
 {
+  NSDictionary *copy = [[NSDictionary alloc] initWithDictionary:_states];
+  
   NSMutableData *data = [[NSMutableData alloc] init];
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-  //  [archiver setRequiresSecureCoding:YES];
-  [archiver encodeObject:_states];
+    [archiver setRequiresSecureCoding:YES];
+  [archiver encodeObject:copy forKey:StatesKey];
   [archiver finishEncoding];
-  
   
   NSString *filePath = [[self _filePath] path];
   NSDataWritingOptions options = NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
