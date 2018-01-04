@@ -33,7 +33,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
-#import "StateManager.h"
+
 @import CloudKit;
 
 #if HOCKEYSDK
