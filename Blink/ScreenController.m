@@ -98,8 +98,8 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   
   [self setupWindowForScreen:[UIScreen mainScreen]];
   
-  [[_windows firstObject] makeKeyAndVisible];
-
+  UIWindow *mainWindow = [_windows firstObject];
+  [mainWindow makeKeyAndVisible];
   
   SpaceController * secondarySC = _bootControllers[SecondarySpaceControllerKey];
   
@@ -107,7 +107,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   if ([UIScreen screens].count > 1) {
     [self setupWindowForScreen:[[UIScreen screens] lastObject]];
   } else if (secondarySC) {
-    SpaceController *mainSC = [[_windows firstObject] spaceController];
+    SpaceController *mainSC = [mainWindow spaceController];
     [mainSC moveAllShellsFromSpaceController:secondarySC];
   }
   _bootControllers = nil;
@@ -120,13 +120,8 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   
   [_windows addObject:window];
   
-  NSString *rootControllerIdentifier = nil;
-  
-  if (screen == [UIScreen mainScreen]) {
-    rootControllerIdentifier = MainSpaceControllerKey;
-  } else {
-    rootControllerIdentifier = SecondarySpaceControllerKey;
-  }
+  NSString *rootControllerIdentifier =
+    screen == [UIScreen mainScreen] ? MainSpaceControllerKey : SecondarySpaceControllerKey;
   
   window.screen = screen;
   window.rootViewController = [self createSpaceController: rootControllerIdentifier];

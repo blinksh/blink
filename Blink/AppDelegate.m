@@ -106,7 +106,7 @@
     [self _suspendApplication];
   }];
   
-  NSTimeInterval time = MIN(application.backgroundTimeRemaining, 60); // 1 minute
+  NSTimeInterval time = MIN(application.backgroundTimeRemaining * 0.9, 5 * 60);
   [_suspendTimer invalidate];
   _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time
                                                    target:self
@@ -117,6 +117,8 @@
 
 - (void)_suspendApplication
 {
+  [_suspendTimer invalidate];
+  
   if (_suspendedMode) {
     return;
   }
