@@ -214,7 +214,7 @@
   StateManager * stateManager = [[StateManager alloc] init];
   
   for (UIWindow *win in _windows) {
-    [[win spaceController] suspend: stateManager];
+    [[win spaceController] suspendWith:stateManager];
   }
   
   [stateManager save];
@@ -226,7 +226,7 @@
   [stateManager load];
   
   for (UIWindow *win in _windows) {
-    [[win spaceController] resume: stateManager];
+    [[win spaceController] resumeWith:stateManager];
   }
   [stateManager reset];
   [stateManager save];

@@ -749,7 +749,7 @@
               animated: NO];
 }
 
-- (void)suspend: (StateManager *) stateManager
+- (void)suspendWith:(StateManager *) stateManager
 {
   for (TermController * term in _viewports) {
     [term suspend];
@@ -757,7 +757,7 @@
   }
 }
 
-- (void)resume: (StateManager *)stateManager
+- (void)resumeWith:(StateManager *)stateManager
 {
   for (TermController * term in _viewports) {
     [stateManager restoreState:term];
