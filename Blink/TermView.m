@@ -223,7 +223,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (self) {
     _inputEnabled = YES;
     _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
-    _webView.restorationIdentifier = @"WebView";
 
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
