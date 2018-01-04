@@ -139,6 +139,7 @@
   
   for (NSString *sessionStateKey in sessionStateKeys) {
     TermController *term = [[TermController alloc] init];
+    term.restorationIdentifier = @"TermController";
     term.sessionStateKey = sessionStateKey;
     [stateManager restoreState:term];
     term.delegate = self;
@@ -440,6 +441,7 @@
   TermController *term = [[TermController alloc] init];
   term.sessionStateKey = sessionStateKey;
   term.delegate = self;
+  term.restorationIdentifier = @"TermController";
   term.userActivity = userActivity;
 
   if (_viewports == nil) {
