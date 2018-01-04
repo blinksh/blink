@@ -52,7 +52,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 @implementation ScreenController
 {
   NSMutableArray<UIWindow *> *_windows;
-  NSMutableDictionary *_tmpControllers;
+  NSMutableDictionary *_bootControllers;
 }
 
 + (ScreenController *)shared {
@@ -69,7 +69,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   self = [super init];
   if (self) {
     _windows = [[NSMutableArray alloc] init];
-    _tmpControllers = [[NSMutableDictionary alloc] init];
+    _bootControllers = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -101,7 +101,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   [[_windows firstObject] makeKeyAndVisible];
 
   
-  SpaceController * secondarySC = _tmpControllers[SecondarySpaceControllerKey];
+  SpaceController * secondarySC = _bootControllers[SecondarySpaceControllerKey];
   
   // We have already connected external screen
   if ([UIScreen screens].count > 1) {
@@ -110,7 +110,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
     SpaceController *mainSC = [[_windows firstObject] spaceController];
     [mainSC moveAllShellsFromSpaceController:secondarySC];
   }
-  _tmpControllers = nil;
+  _bootControllers = nil;
 }
 
 
@@ -135,7 +135,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 
 - (SpaceController *)createSpaceController: (NSString *)identifier;
 {
-  SpaceController *spaceController = _tmpControllers[identifier] ?: [[SpaceController alloc] init];
+  SpaceController *spaceController = _bootControllers[identifier] ?: [[SpaceController alloc] init];
   spaceController.restorationIdentifier = identifier;
   spaceController.restorationClass = [ScreenController class];
   return spaceController;
@@ -210,7 +210,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
     SpaceController *spaceController = [[SpaceController alloc] init];
     spaceController.restorationIdentifier = identifier;
     [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
-    [ScreenController shared]->_tmpControllers[identifier] = spaceController;
+    [ScreenController shared]->_bootControllers[identifier] = spaceController;
     return spaceController;
   }
   
