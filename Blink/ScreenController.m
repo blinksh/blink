@@ -100,9 +100,15 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   
   [[_windows firstObject] makeKeyAndVisible];
 
+  
+  SpaceController * secondarySC = _tmpControllers[SecondarySpaceControllerKey];
+  
   // We have already connected external screen
   if ([UIScreen screens].count > 1) {
     [self setupWindowForScreen:[[UIScreen screens] lastObject]];
+  } else if (secondarySC) {
+    SpaceController *mainSC = [[_windows firstObject] spaceController];
+    [mainSC moveAllShellsFromSpaceController:secondarySC];
   }
   _tmpControllers = nil;
 }
