@@ -31,7 +31,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface ScreenController : NSObject
+@interface ScreenController : NSObject<UIViewControllerRestoration>
 
 + (ScreenController *)shared;
 
@@ -42,6 +42,5 @@
 - (void)moveCurrentShellToOtherScreen;
 - (void)suspend;
 - (void)resume;
-- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder;
 
 @end

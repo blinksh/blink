@@ -115,11 +115,6 @@
                                                   repeats:NO];
 }
 
-- (UIViewController *)application:(UIApplication *)application viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder
-{
-  return [[ScreenController shared] restoreViewController:identifierComponents coder: coder];
-}
-
 - (void)_suspendApplication
 {
   if (_suspendedMode) {

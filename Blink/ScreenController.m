@@ -34,6 +34,9 @@
 #import "SpaceController.h"
 #import "StateManager.h"
 
+NSString * const MainSpaceControllerKey = @"MainSpaceControllerKey";
+NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
+
 @interface UIWindow (ScreenController)
 - (SpaceController *)spaceController;
 @end
@@ -114,11 +117,9 @@
   NSString *rootControllerIdentifier = nil;
   
   if (screen == [UIScreen mainScreen]) {
-    window.restorationIdentifier = @"MainWindow";
-    rootControllerIdentifier = @"MainSpaceController";
+    rootControllerIdentifier = MainSpaceControllerKey;
   } else {
-    window.restorationIdentifier = @"SecondWindow";
-    rootControllerIdentifier = @"SecondSpaceController";
+    rootControllerIdentifier = SecondarySpaceControllerKey;
   }
   
   window.screen = screen;
@@ -130,6 +131,7 @@
 {
   SpaceController *spaceController = _tmpControllers[identifier] ?: [[SpaceController alloc] init];
   spaceController.restorationIdentifier = identifier;
+  spaceController.restorationClass = [ScreenController class];
   return spaceController;
 }
 
@@ -191,18 +193,18 @@
   [nonKeySpaceCtrl moveCurrentShellFromSpaceController:keySpaceCtrl];
 }
 
-- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder
++ (UIViewController *)viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder
 {
   NSString *identifier = [identifierComponents lastObject];
   
-  if ([identifier isEqualToString:@"MainSpaceController"] || [identifier isEqualToString:@"SecondSpaceController"]) {
+  if ([identifier isEqualToString:MainSpaceControllerKey] || [identifier isEqualToString:SecondarySpaceControllerKey]) {
     StateManager *stateManager = [[StateManager alloc] init];
     [stateManager load];
 
     SpaceController *spaceController = [[SpaceController alloc] init];
     spaceController.restorationIdentifier = identifier;
     [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
-    _tmpControllers[identifier] = spaceController;
+    [ScreenController shared]->_tmpControllers[identifier] = spaceController;
     return spaceController;
   }
   
@@ -211,7 +213,7 @@
 
 - (void)suspend
 {
-  StateManager * stateManager = [[StateManager alloc] init];
+  StateManager *stateManager = [[StateManager alloc] init];
   
   for (UIWindow *win in _windows) {
     [[win spaceController] suspendWith:stateManager];

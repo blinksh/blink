@@ -79,6 +79,7 @@
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
+  _viewportsController.restorationIdentifier = @"ViewPortsController";
 
   [self addChildViewController:_viewportsController];
   
