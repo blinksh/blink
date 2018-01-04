@@ -263,8 +263,4 @@
   }
 }
 
-- (void)resume
-{
-}
-
 @end

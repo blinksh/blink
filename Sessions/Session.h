@@ -79,6 +79,5 @@ typedef struct SessionParams {
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;
-- (void)resume;
 
 @end

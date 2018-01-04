@@ -37,6 +37,6 @@
 @interface MoshSession : Session
 
 @property (strong) MoshParameters *sessionParameters;
-- (void)suspended;
+
 
 @end

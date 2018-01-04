@@ -63,11 +63,15 @@ static const char *usage_format =
   "        --help               this message\r\n"
   "\r\n";
 
+
+@interface MoshSession ()
+- (void) onStateEncoded:(NSData *) encodedState;
+@end
+
 void __state_callback(const void *context, const void *buffer, size_t size) {
-  MoshSession *session = (__bridge MoshSession *)context;
   NSData * data = [NSData dataWithBytes:buffer length:size];
-  session.sessionParameters.encodedState = data;
-  [session suspended];
+  MoshSession *session = (__bridge MoshSession *)context;
+  [session onStateEncoded: data];
 }
 
 
@@ -391,16 +395,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   _lock = nil;
 }
 
-- (void)suspended
+- (void)onStateEncoded: (NSData *) encodedState
 {
+  self.sessionParameters.encodedState = encodedState;
   [_lock unlock];
-}
-
-- (void)resume
-{
-  if (self.sessionParameters.encodedState == nil) {
-    return;
-  }
 }
 
 @end
