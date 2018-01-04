@@ -32,7 +32,8 @@
 #import <UIKit/UIKit.h>
 
 #import "TermView.h"
-
+#import "MCPSessionParameters.h"
+#import "StateManager.h"
 
 @class TermController;
 
@@ -45,7 +46,7 @@
 
 @end
 
-@interface TermController : UIViewController
+@interface TermController : UIViewController<SecureRestoration>
 
 @property (readonly) FILE *termout;
 @property (readonly) FILE *termin;
@@ -55,10 +56,10 @@
 @property (strong, nonatomic) UIScrollView *containerView;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
-@property (strong, nonatomic) NSString* sessionStateKey;
+@property (strong) NSString* sessionStateKey;
+@property (strong) MCPSessionParameters *sessionParameters;
 - (void)write:(NSString *)input;
 
-- (void)saveState;
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
 - (void)terminate;

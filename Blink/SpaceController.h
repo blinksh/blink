@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
+#import "StateManager.h"
 
 
 @interface SpaceController : UIViewController
@@ -37,8 +38,8 @@
 - (void)viewScreenWillBecomeActive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
-- (void)suspend;
-- (void)resume;
-- (void)decodeRestorableStateWithCoder2:(NSCoder *)coder;
+- (void)suspend: (StateManager *)stateManager;
+- (void)resume: (StateManager *)stateManager;
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager;
 
 @end

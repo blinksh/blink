@@ -130,7 +130,7 @@
   [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
 }
 
-- (void)decodeRestorableStateWithCoder2:(NSCoder *)coder
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
 {
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
@@ -139,6 +139,7 @@
   for (NSString *sessionStateKey in sessionStateKeys) {
     TermController *term = [[TermController alloc] init];
     term.sessionStateKey = sessionStateKey;
+    [stateManager restoreState:term];
     term.delegate = self;
     term.userActivity = nil;
     [_viewports addObject:term];
@@ -748,18 +749,20 @@
               animated: NO];
 }
 
-- (void)suspend
+- (void)suspend: (StateManager *) stateManager
 {
-  [_viewports enumerateObjectsUsingBlock:^(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+  for (TermController * term in _viewports) {
     [term suspend];
-  }];
+    [stateManager snapshotState:term];
+  }
 }
 
-- (void)resume
+- (void)resume: (StateManager *)stateManager
 {
-  [_viewports enumerateObjectsUsingBlock:^(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+  for (TermController * term in _viewports) {
+    [stateManager restoreState:term];
     [term resume];
-  }];
+  };
 }
 
 

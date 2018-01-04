@@ -7,17 +7,22 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Session.h"
+#import "SessionParameters.h"
+
+@protocol SecureRestoration
+
+@property NSString * sessionStateKey;
+@property SessionParameters *sessionParameters;
+
+@end
 
 @interface StateManager : NSObject
 
-+ (StateManager *)shared;
+- (void)snapshotState:(id<SecureRestoration>) object;
+- (void)restoreState:(id<SecureRestoration>) object;
 
-- (void)storeSessionParams:(NSString *)sessionKey params:(NSObject *)params;
-- (void)removeSession:(NSString *)sessionKey;
-- (NSObject *)restoreSessionParamsForKey:(NSString *)sessionKey;
+- (void)load;
 - (void)save;
 - (void)reset;
-
 
 @end

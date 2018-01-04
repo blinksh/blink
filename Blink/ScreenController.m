@@ -104,20 +104,6 @@
   _tmpControllers = nil;
 }
 
-- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder
-{
-  NSString *identifier = [identifierComponents lastObject];
-  
-  if ([identifier isEqualToString:@"MainSpaceController"] || [identifier isEqualToString:@"SecondSpaceController"]) {
-    SpaceController *spaceController = [[SpaceController alloc] init];
-    spaceController.restorationIdentifier = identifier;
-    [spaceController decodeRestorableStateWithCoder2:coder];
-    _tmpControllers[identifier] = spaceController;
-    return spaceController;
-  }
-  
-  return nil;
-}
 
 - (void)setupWindowForScreen:(UIScreen *)screen
 {
@@ -205,20 +191,45 @@
   [nonKeySpaceCtrl moveCurrentShellFromSpaceController:keySpaceCtrl];
 }
 
+- (UIViewController *)restoreViewController:(NSArray *)identifierComponents coder:(NSCoder *)coder
+{
+  NSString *identifier = [identifierComponents lastObject];
+  
+  if ([identifier isEqualToString:@"MainSpaceController"] || [identifier isEqualToString:@"SecondSpaceController"]) {
+    StateManager *stateManager = [[StateManager alloc] init];
+    [stateManager load];
+
+    SpaceController *spaceController = [[SpaceController alloc] init];
+    spaceController.restorationIdentifier = identifier;
+    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
+    _tmpControllers[identifier] = spaceController;
+    return spaceController;
+  }
+  
+  return nil;
+}
+
 - (void)suspend
 {
+  StateManager * stateManager = [[StateManager alloc] init];
+  
   for (UIWindow *win in _windows) {
-    [[win spaceController] suspend];
+    [[win spaceController] suspend: stateManager];
   }
-  [[StateManager shared] save];
+  
+  [stateManager save];
 }
 
 - (void)resume
 {
+  StateManager *stateManager = [[StateManager alloc] init];
+  [stateManager load];
+  
   for (UIWindow *win in _windows) {
-    [[win spaceController] resume];
+    [[win spaceController] resume: stateManager];
   }
-  [[StateManager shared] reset];
+  [stateManager reset];
+  [stateManager save];
 }
 
 

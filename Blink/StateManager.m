@@ -12,15 +12,6 @@
   NSMutableDictionary *_states;
 }
 
-+ (StateManager *)shared {
-  static StateManager *manager = nil;
-  static dispatch_once_t onceToken;
-  dispatch_once(&onceToken, ^{
-    manager = [[self alloc] init];
-  });
-  return manager;
-}
-
 -(instancetype)init {
   if (self = [super init]) {
     _states = [self _loadStates];
@@ -52,15 +43,32 @@
   }
 }
 
-- (void)_saveStates
+- (NSURL *)_filePath {
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSURL *url = [[[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject] filePathURL];
+  return [url URLByAppendingPathComponent:@"states"] ;
+}
+
+- (void)load
+{
+  _states = [self _loadStates];
+}
+
+- (void)reset
+{
+  _states = [[NSMutableDictionary alloc] init];
+  [self save];
+}
+
+- (void)save
 {
   NSMutableData *data = [[NSMutableData alloc] init];
   NSKeyedArchiver *archiver = [[NSKeyedArchiver alloc] initForWritingWithMutableData:data];
-//  [archiver setRequiresSecureCoding:YES];
+  //  [archiver setRequiresSecureCoding:YES];
   [archiver encodeObject:_states];
   [archiver finishEncoding];
   
-
+  
   NSString *filePath = [[self _filePath] path];
   NSDataWritingOptions options = NSDataWritingAtomic | NSDataWritingFileProtectionComplete;
   
@@ -72,36 +80,15 @@
   }
 }
 
-- (NSURL *)_filePath {
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSURL *url = [[[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject] filePathURL];
-  return [url URLByAppendingPathComponent:@"states"] ;
-}
-
-- (void)reset
+- (void)snapshotState:(id<SecureRestoration>)object
 {
-  _states = [[NSMutableDictionary alloc] init];
-  [self save];
+  _states[object.sessionStateKey] = object.sessionParameters;
 }
 
-- (void)save
-{
-  [self _saveStates];
+- (void)restoreState:(id<SecureRestoration>)object {
+  if (object.sessionParameters == nil) {
+    object.sessionParameters = _states[object.sessionStateKey];
+  }
 }
-
-- (void)storeSessionParams:(NSString *)sessionKey params:(NSObject *)params
-{
-  _states[sessionKey] = params;
-}
-
--(NSObject *)restoreSessionParamsForKey:(NSString *)sessionKey {
-  return _states[sessionKey];
-}
-
-- (void)removeSession:(NSString *)sessionKey
-{
-  [_states removeObjectForKey:sessionKey];
-}
-
 
 @end

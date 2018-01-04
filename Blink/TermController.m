@@ -51,7 +51,6 @@ static NSDictionary *bkModifierMaps = nil;
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
-  MCPSessionParameters *_sessionParameters;
   BOOL _viewIsLocked;
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
@@ -254,10 +253,7 @@ static NSDictionary *bkModifierMaps = nil;
 {
   [super viewDidLoad];
   
-  MCPSessionParameters *params = (MCPSessionParameters *)[[StateManager shared] restoreSessionParamsForKey:_sessionStateKey];
-  if (params) {
-    _sessionParameters = params;
-  } else {
+  if (_sessionParameters == nil) {
     _sessionParameters = [[MCPSessionParameters alloc] init];
   }
 
@@ -384,7 +380,6 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)terminate
 {
-  [[StateManager shared] removeSession:_sessionStateKey];
   // Disconnect message handler
   [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
   
@@ -394,7 +389,6 @@ static NSDictionary *bkModifierMaps = nil;
 - (void)suspend
 {
   [_session suspend];
-  [StateManager.shared storeSessionParams:_sessionStateKey params:_sessionParameters];
 }
 
 - (void)resume
