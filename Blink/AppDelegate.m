@@ -171,6 +171,11 @@
   return YES;
 }
 
+- (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  [[ScreenController shared] finishRestoring];
+}
+
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
   if (!_suspendedMode) {
