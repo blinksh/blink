@@ -1,5 +1,5 @@
 var write_to_term = function(data) {
-    t.io.print(data);
+    t.io.writeUTF8(data);
 }
 var sigwinch = function() {
     // This was removed as in theory the next resize would also take care of it.
@@ -67,7 +67,7 @@ var setWidth = function(columnCount) {
 }
 
 var loadFontFromCSS = function(cssPath, name) {
-  t.prefs_.set('user-css', "data:text/css;utf-8,* { font-feature-settings: \"liga\" 0; }");
+  t.prefs_.set('user-css', "data:text/css;utf-8,* { font-feature-settings: \"liga\" 0; } x-screen {-webkit-overflow-scrolling: touch;} x-row { transform: translate3d(0,0,0); } ");
 
     WebFont.load({
 	custom: {

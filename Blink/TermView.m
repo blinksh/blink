@@ -262,6 +262,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
+  [_webView.scrollView setScrollEnabled:NO];
   
   [self addSubview:_webView];
 
@@ -288,11 +289,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [self addGestureRecognizer:_longPressBackground];
   }
 
-  if (!_pinchGesture) {
-    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
-    _pinchGesture.delegate = self;
-    [self addGestureRecognizer:_pinchGesture];
-  }
+//  if (!_pinchGesture) {
+//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+//    _pinchGesture.delegate = self;
+//    [self addGestureRecognizer:_pinchGesture];
+//  }
 }
 
 - (void)configureNotifications

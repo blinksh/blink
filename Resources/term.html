@@ -25,8 +25,45 @@
   <body>
     <div id="terminal"></div>
     <script>
+      function touchHandler(event)
+      {
+        var touches = event.changedTouches,
+        first = touches[0],
+        type = "";
+        switch(event.type)
+        {
+          case "touchstart": type = "mousedown"; break;
+          case "touchmove":  type="mousemove"; break;
+          case "touchend":   type="mouseup"; break;
+          default: return;
+        }
+        if (touches.length > 1) {
+          type = "wheel";
+        }
+        
+        //initMouseEvent(type, canBubble, cancelable, view, clickCount,
+        //           screenX, screenY, clientX, clientY, ctrlKey,
+        //           altKey, shiftKey, metaKey, button, relatedTarget);
+        var simulatedEvent = event.view.document.createEvent("MouseEvent");
+        simulatedEvent.initMouseEvent(type, true, true, event.view, 1,
+                                      first.screenX, first.screenY,
+                                      first.clientX, first.clientY, false,
+                                      false, false, false, 0/*left*/, null);
+                                      first.target.dispatchEvent(simulatedEvent);
+        event.preventDefault();
+      }
+    function init()
+    {
+      document.addEventListener("touchstart", touchHandler, true);
+      document.addEventListener("touchmove", touchHandler, true);
+      document.addEventListener("touchend", touchHandler, true);
+      document.addEventListener("touchcancel", touchHandler, true);
+    }
+
+
       hterm.defaultStorage = new lib.Storage.Memory();
       var t = new hterm.Terminal('blink');
+      t.scrollPort_.onTouch_ = function(e) {};
 
       t.decorate(document.querySelector('#terminal'));
 
@@ -38,6 +75,7 @@ t.onTerminalReady = function() {
       }
       t.setCursorVisible(true);
       t.prefs_.set('audible-bell-sound', '')
+      t.prefs_.set('receive-encoding', 'raw');
       t.keyboard.uninstallKeyboard();
       }
     

@@ -77,7 +77,7 @@ static int closefn(void *handler)
 
 // UTF8 friendly stream
 @implementation FUTF8Term {
-  NSData *_splitChar;
+  NSMutableData *_splitChar;
 }
 
 - (id)initOnTermView:(TermView *)term
@@ -94,18 +94,20 @@ static int closefn(void *handler)
 - (void)write:(const char *)buf length:(int)len
 {
   // Prepend characters to buf
-  NSMutableData *data = [[NSMutableData alloc] init];
-  if (_splitChar) {
-    [data appendData:_splitChar];
+  NSMutableData *data = _splitChar;
+  if (data) {
     _splitChar = nil;
+    [data appendBytes:buf length:len];
+  } else {
+    data = [NSMutableData dataWithBytes:buf length:len];
   }
-
-  [data appendBytes:buf length:len];
+  
   len = (unsigned int)[data length];
 
   // Find the first UTF mark and compare with the iterator.
   int i = 1;
-  for (; i <= ((len >= 3) ? 3 : len); i++) {
+  int count = ((len >= 3) ? 3 : len);
+  for (; i <= count; i++) {
     unsigned char c = ((const char *)[data bytes])[len - i];
 
     if (i == 1 && (c & 0x80) == 0) {
@@ -122,27 +124,28 @@ static int closefn(void *handler)
 
     // Check if the character corresponds to the sequence by ORing with it
     if ((i == 2 && ((c | 0xDF) == 0xDF)) || // 110X XXXX 1 1101 1111
-	(i == 3 && ((c | 0xEF) == 0xEF)) || // 1110 XXXX 2 1110 1111
-	(i == 4 && ((c | 0xF7) == 0xF7))) { // 1111 0XXX 3 1111 0111
+        (i == 3 && ((c | 0xEF) == 0xEF)) || // 1110 XXXX 2 1110 1111
+        (i == 4 && ((c | 0xF7) == 0xF7))) { // 1111 0XXX 3 1111 0111
       // Complete sequence
       break;
     } else {
       // Save splitted sequences
-      _splitChar = [data subdataWithRange:NSMakeRange(len - i, i)];
+      _splitChar = [NSMutableData dataWithData: [data subdataWithRange:NSMakeRange(len - i, i)]];
       break;
     }
   }
 
   NSString *output;
   if (_splitChar) {
-    output = [[NSString alloc] initWithBytes:[data bytes] length:(len - [_splitChar length]) encoding:NSUTF8StringEncoding];
+    NSUInteger outLength = len - [_splitChar length];
+    output = [[NSString alloc] initWithBytes:[data bytes] length:outLength encoding:NSUTF8StringEncoding];
     if (!output) {
-      output = [[NSString alloc] initWithBytes:[data bytes] length:(len - [_splitChar length]) encoding:NSASCIIStringEncoding];
+      output = [[NSString alloc] initWithBytes:[data bytes] length:outLength encoding:NSASCIIStringEncoding];
     }
   } else {
-    output = [[NSString alloc] initWithBytes:[data bytes] length:(len) encoding:NSUTF8StringEncoding];
+    output = [[NSString alloc] initWithBytes:[data bytes] length:len encoding:NSUTF8StringEncoding];
     if (!output) {
-      output = [[NSString alloc] initWithBytes:[data bytes] length:(len) encoding:NSASCIIStringEncoding];
+      output = [[NSString alloc] initWithBytes:[data bytes] length:len encoding:NSASCIIStringEncoding];
     }
   }
 
