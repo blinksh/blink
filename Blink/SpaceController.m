@@ -372,7 +372,9 @@
 
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   NSString *title = self.currentTerm.terminal.title.length ? self.currentTerm.terminal.title : @"blink";
-  NSString *geometry = [NSString stringWithFormat:@"%d x %d", self.currentTerm.terminal.rowCount, self.currentTerm.terminal.columnCount];
+  NSString *geometry = [NSString stringWithFormat:@"%ld x %ld",
+                        (long)self.currentTerm.sessionParameters.rows
+                        , (long)self.currentTerm.sessionParameters.cols];
 
   _hud.label.numberOfLines = 2;
   _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];

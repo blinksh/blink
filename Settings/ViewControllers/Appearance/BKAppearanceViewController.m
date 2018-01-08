@@ -174,7 +174,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _testTerminal.delegate = self;
   _testTerminal.backgroundColor = [UIColor blackColor];
   [_testTerminal setInputEnabled:NO];
-  [_testTerminal loadTerminal];
+  [_testTerminal loadTerminal: nil];
 }
 
 - (NSString *)cellIdentifierForIndexPath:(NSIndexPath *)indexPath
@@ -365,7 +365,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 #pragma mark - Terminal
 
-- (void)terminalIsReady
+- (void)terminalIsReady:(NSDictionary *)size
 {
   NSLog(@"reset");
   [_testTerminal setColumnNumber:60];

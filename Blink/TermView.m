@@ -289,11 +289,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [self addGestureRecognizer:_longPressBackground];
   }
 
-//  if (!_pinchGesture) {
-//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
-//    _pinchGesture.delegate = self;
-//    [self addGestureRecognizer:_pinchGesture];
-//  }
+  if (!_pinchGesture) {
+    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+    _pinchGesture.delegate = self;
+    [self addGestureRecognizer:_pinchGesture];
+  }
 }
 
 - (void)configureNotifications
@@ -340,21 +340,31 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)setColumnNumber:(NSInteger)count
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setWidth(\"%ld\");", (long)count] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term.setWidth(\"%ld\");", (long)count] completionHandler:nil];
 }
 
 - (void)setFontSize:(NSNumber *)newSize
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"setFontSize(\"%@\");", newSize] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term.setFontSize(\"%@\");", newSize] completionHandler:nil];
 }
 
 - (void)clear
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"clear();"] completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.clear();" completionHandler:nil];
 }
 
-- (void)loadTerminal
+- (void)loadTerminal: (NSString *)userScript
 {
+  NSString * initScript = @";term.init(document.getElementById('terminal'));";
+  if (userScript) {
+    userScript = [userScript stringByAppendingString:initScript];
+  } else {
+    userScript = initScript;
+  }
+  
+  WKUserScript *script = [[WKUserScript alloc] initWithSource:userScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
+  [_webView.configuration.userContentController addUserScript:script];
+  
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
   NSURL *url = [NSURL fileURLWithPath:path];
   // NSURL *url = [NSURL URLWithString:@"http://www.apple.com"];
@@ -367,7 +377,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-  NSString *jsScript = [NSString stringWithFormat:@"write_to_term(%@[0])", jsString];
+  NSString *jsScript = [NSString stringWithFormat:@"term.write(%@[0]);", jsString];
   
   dispatch_async(dispatch_get_main_queue(), ^{
     [_webView evaluateJavaScript:jsScript completionHandler:nil];
@@ -389,14 +399,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   if ([operation isEqualToString:@"sigwinch"]) {
     if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
-      self.rowCount = (int)[data[@"rows"]integerValue];
-      self.columnCount = (int)[data[@"columns"]integerValue];
-      [self.delegate updateTermRows:data[@"rows"] Cols:data[@"columns"]];
+      [self.delegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
     }
   } else if ([operation isEqualToString:@"terminalReady"]) {
-    if ([self.delegate respondsToSelector:@selector(terminalIsReady)]) {
-      [self.delegate terminalIsReady];
-    } 
+    if ([self.delegate respondsToSelector:@selector(terminalIsReady:)]) {
+      [self.delegate terminalIsReady:data[@"size"]];
+    }
+    if ([self isFirstResponder]) {
+      [_webView evaluateJavaScript:@"term.focus()" completionHandler:nil];
+    }
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
       [self.delegate fontSizeChanged:data[@"size"]];
@@ -411,6 +422,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   return UIKeyboardAppearanceDark;
 }
+
 - (UITextAutocorrectionType)autocorrectionType
 {
   return UITextAutocorrectionTypeNo;
@@ -418,13 +430,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (UIView *)inputAccessoryView
 {
-  return [_smartKeys view];
+  return nil;
+  //return [_smartKeys view];
 }
 
 - (void)keyboardWillHide:(NSNotification *)sender
 {
   // Always hide the AccessoryView.
-  self.inputAccessoryView.hidden = YES;
+  //self.inputAccessoryView.hidden = YES;
   //_capsMapped = YES;
   // If keyboard hides, then become first responder. This ensures there is a responder for the long focus events.
   //[self becomeFirstResponder];
@@ -440,17 +453,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   CGRect bounds = self.bounds;
   CGRect intersection = CGRectIntersection(frame, bounds);
 
-  // If the intersection is only the accesoryView, we have a external keyboard
-  if (intersection.size.height == [iaView frame].size.height) {
-    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
-      iaView.hidden = NO;
-    } else {
-      iaView.hidden = YES;
-    }
-  } else {
-    //_capsMapped = NO;
-    iaView.hidden = NO;
-  }
+//  // If the intersection is only the accesoryView, we have a external keyboard
+//  if (intersection.size.height == [iaView frame].size.height) {
+//    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
+//      iaView.hidden = NO;
+//    } else {
+//      iaView.hidden = YES;
+//    }
+//  } else {
+//    //_capsMapped = NO;
+//    iaView.hidden = NO;
+//  }
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
@@ -516,7 +529,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
     //_lastPinchScale = _webView.scrollView.zoomScale;
-    [_webView evaluateJavaScript:@"scaleTermStart();" completionHandler:nil];
+    [_webView evaluateJavaScript:@"term.scaleTermStart();" completionHandler:nil];
     if (_pinchSamplingTimer)
       [_pinchSamplingTimer invalidate];
 
@@ -531,7 +544,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)pinchSampling:(NSTimer *)timer
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"scaleTerm(%f);", _pinchGesture.scale] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term.scaleTerm(%f);", _pinchGesture.scale] completionHandler:nil];
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -555,20 +568,20 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
 - (BOOL)becomeFirstResponder
 {
-  if (!_smartKeys) {
-    _smartKeys = [[SmartKeysController alloc] init];
-  }
+//  if (!_smartKeys) {
+//    _smartKeys = [[SmartKeysController alloc] init];
+//  }
 
-  _smartKeys.textInputDelegate = self;
+//  _smartKeys.textInputDelegate = self;
   cover.hidden = YES;
 
-  [_webView evaluateJavaScript:@"focusTerm();" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.focus();" completionHandler:nil];
   return [super becomeFirstResponder];
 }
 
 - (BOOL)resignFirstResponder
 {
-  [_webView evaluateJavaScript:@"blurTerm();" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.blur();" completionHandler:nil];
   return [super resignFirstResponder];
 }
 
@@ -627,7 +640,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term.loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
 }
 
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent
@@ -636,20 +649,20 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ cssContent ] options:0 error:nil];
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-  NSString *jsScript = [NSString stringWithFormat:@"loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+  NSString *jsScript = [NSString stringWithFormat:@"term.loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
   
   [_webView evaluateJavaScript:jsScript completionHandler:nil];
 }
 
 - (void)setCursorBlink:(BOOL)state
 {
-  NSString *jsScript = [NSString stringWithFormat:@"setCursorBlink(%@)", state ? @"true" : @"false"];
+  NSString *jsScript = [NSString stringWithFormat:@"term.setCursorBlink(%@)", state ? @"true" : @"false"];
   [_webView evaluateJavaScript:jsScript completionHandler:nil];
 }
 
 - (void)reset
 {
-  [_webView evaluateJavaScript:@"reset" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.reset();" completionHandler:nil];
 }
 
 
@@ -831,17 +844,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)increaseFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"increaseTermFontSize();" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.increaseFontSize();" completionHandler:nil];
 }
 
 - (void)decreaseFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"decreaseTermFontSize();" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.decreaseFontSize();" completionHandler:nil];
 }
 
 - (void)resetFontSize:(UIKeyCommand *)cmd
 {
-  [_webView evaluateJavaScript:@"resetTermFontSize();" completionHandler:nil];
+  [_webView evaluateJavaScript:@"term.resetFontSize();" completionHandler:nil];
 }
 
 - (void)escSeq:(UIKeyCommand *)cmd

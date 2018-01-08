@@ -43,7 +43,7 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)write:(NSString *)input;
 
 @optional
-- (void)terminalIsReady;
+- (void)terminalIsReady: (NSDictionary *)size;
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 - (void)fontSizeChanged:(NSNumber *)size;
 @end
@@ -58,8 +58,6 @@ extern NSString * const TermViewAutoRepeateSeq;
 @property (nonatomic, readonly, weak) NSString *title;
 @property (readwrite, copy) UITextRange *selectedTextRange;
 @property (nonatomic, readonly) UITextRange *markedTextRange;
-@property (nonatomic, assign) int rowCount;
-@property (nonatomic, assign) int columnCount;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
@@ -69,7 +67,7 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)setColumnNumber:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)setInputEnabled:(BOOL)enabled;
-- (void)loadTerminal;
+- (void)loadTerminal: (NSString *)userScript;
 - (void)write:(NSString *)data;
 - (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
 - (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier;

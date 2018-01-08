@@ -223,12 +223,6 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)setAppearanceFromSettings
 {
-  // Load theme
-  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (theme) {
-    [_terminal loadTerminalThemeJS:theme.content];
-  }
-
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
     if (font.isCustom) {
@@ -237,15 +231,25 @@ static NSDictionary *bkModifierMaps = nil;
       [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
     }
   }
+}
 
-  if (!_disableFontSizeSelection) {
-    NSNumber *fontSize = [BKDefaults selectedFontSize];
-    [_terminal setFontSize:fontSize];
+- (NSString *)termInitScript
+{
+  NSMutableString *script = [[NSMutableString alloc] init];
+  
+  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+  if (theme) {
+    [script appendString:theme.content];
   }
   
-  [_terminal setCursorBlink:[BKDefaults isCursorBlink]];
+  [script appendString:[NSString stringWithFormat:@"\n;term.setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
+  
+  if (!_disableFontSizeSelection) {
+    NSNumber *fontSize = [BKDefaults selectedFontSize];
+    [script appendString:[NSString stringWithFormat:@"\nterm.setFontSize('%@');", fontSize]];
+  }
 
-  [_terminal reset];
+  return script;
 }
 
 
@@ -257,7 +261,7 @@ static NSDictionary *bkModifierMaps = nil;
     _sessionParameters = [[MCPSessionParameters alloc] init];
   }
 
-  [_terminal loadTerminal];
+  [_terminal loadTerminal: [self termInitScript]];
 
   [self createPTY];
 }
@@ -339,8 +343,11 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
-- (void)terminalIsReady
+- (void)terminalIsReady: (NSDictionary *)size
 {
+  _sessionParameters.rows = [size[@"rows"] integerValue];
+  _sessionParameters.cols = [size[@"cols"] integerValue];
+  
   [self setAppearanceFromSettings];
   [self startSession];
   if (self.userActivity) {
@@ -397,5 +404,17 @@ static NSDictionary *bkModifierMaps = nil;
   [self createPTY];
   [self startSession];
 }
+
+#pragma mark On-Screen keyboard - UIKeyInput
+- (UIKeyboardAppearance)keyboardAppearance
+{
+  return UIKeyboardAppearanceDark;
+}
+
+- (UITextAutocorrectionType)autocorrectionType
+{
+  return UITextAutocorrectionTypeNo;
+}
+
 
 @end

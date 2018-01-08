@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */ = {isa = PBXBuildFile; fileRef = 070058EB1D12FA6D00D133E3 /* termcontrol.js */; };
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
@@ -95,7 +94,6 @@
 		076FBE501DB80AC900F6D997 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
 		076FBE511DB80AC900F6D997 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
 		076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */ = {isa = PBXBuildFile; fileRef = 070058EB1D12FA6D00D133E3 /* termcontrol.js */; };
 		076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
@@ -180,6 +178,8 @@
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
+		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
+		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 /* End PBXBuildFile section */
 
@@ -284,7 +284,6 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		070058EB1D12FA6D00D133E3 /* termcontrol.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = termcontrol.js; sourceTree = "<group>"; };
 		0716B5291CFFAB9300268B5B /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0716B52A1CFFAB9300268B5B /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -449,6 +448,8 @@
 		D23B188A1FFB76B300A6C903 /* SessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionParameters.m; sourceTree = "<group>"; };
 		D23B188C1FFB776000A6C903 /* MoshSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoshSessionParameters.h; sourceTree = "<group>"; };
 		D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoshSessionParameters.m; sourceTree = "<group>"; };
+		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
+		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCPSessionParameters.h; sourceTree = "<group>"; };
 		D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCPSessionParameters.m; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -537,10 +538,11 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D2496F402003941B00E75FE9 /* term.js */,
+				D2496F3B20038B3300E75FE9 /* hterm_all.min.js */,
 				C94437641D838ABF0096F84E /* Fonts */,
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
-				070058EB1D12FA6D00D133E3 /* termcontrol.js */,
 				079635DA1D0F8219000473B1 /* webfont.js */,
 				0732F0491D062B9A00AB5438 /* hterm_all.js */,
 				0732F04A1D062B9A00AB5438 /* locales.bundle */,
@@ -1129,7 +1131,6 @@
 				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
 				076FBE511DB80AC900F6D997 /* webfont.js in Resources */,
 				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
-				076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1145,6 +1146,7 @@
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
+				D2496F412003941B00E75FE9 /* term.js in Resources */,
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
@@ -1153,7 +1155,7 @@
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
 				079635DC1D0F8219000473B1 /* webfont.js in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
-				070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */,
+				D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
