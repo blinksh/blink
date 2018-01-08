@@ -9,8 +9,9 @@ hterm.defaultStorage = new lib.Storage.Memory();
 hterm.ScrollPort.prototype.onTouch_ = function() {}; // disable build in touch support.
 
 hterm.Terminal.prototype.copyStringToClipboard = function(str) {
-  if (this.prefs_.get('enable-clipboard-notice'))
+  if (this.prefs_.get('enable-clipboard-notice')) {
     setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
+  }
 
   hterm.copySelectionToClipboard(this.document_, str);
 };
@@ -32,7 +33,7 @@ class Term {
     this.clear = this._hterm.clear.bind(this._hterm);
     this.reset = this._hterm.reset.bind(this._hterm);
 
-    this.focus = this._hterm.focus.bind(this._hterm);
+    this.focus = this._hterm.onFocusChange_.bind(this._hterm, true);
     this.blur = this._hterm.onFocusChange_.bind(this._hterm, false);
 
     this._hterm.prefs_.set(
@@ -116,7 +117,7 @@ class Term {
 
   setFontSize(size) {
     this._hterm.prefs_.set('font-size', size);
-    //_postMessage('fontSizeChanged', { size: this._hterm.getFontSize() });
+    _postMessage('fontSizeChanged', { size: parseInt(size) });
   }
 
   setCursorBlink(state) {
