@@ -1,3 +1,9 @@
+"use strict";
+
+function _postMessage(op, data) {
+  window.webkit.messageHandlers.interOp.postMessage({op, data});
+};
+
 hterm.defaultStorage = new lib.Storage.Memory();
 
 hterm.ScrollPort.prototype.onTouch_ = function() {}; // disable build in touch support.
@@ -12,10 +18,7 @@ hterm.Terminal.prototype.copyStringToClipboard = function(str) {
 hterm.copySelectionToClipboard = function(document, content) {
   var selection = document.getSelection();
   selection.removeAllRanges();
-  window.webkit.messageHandlers.interOp.postMessage({
-    op: 'copy',
-    data: { content: content },
-  });
+  _postMessage('copy', { content });
 };
 
 class Term {
@@ -52,21 +55,16 @@ class Term {
 
     this._size = { cols: screenSize.width, rows: screenSize.height };
 
-    window.webkit.messageHandlers.interOp.postMessage({
-      op: 'terminalReady',
-      data: { size: this._size },
-    });
+    _postMessage('terminalReady', { size: this._size });
 
     this._hterm.io.onTerminalResize = (cols, rows) => {
-      if (cols === this._size.cols || rows === this._size.rows) {
+      if (cols === this._size.cols && rows === this._size.rows) {
         return;
       }
-      this._size = {cols: cols, rows: rows};
+      
+      this._size = {cols, rows};
 
-      window.webkit.messageHandlers.interOp.postMessage({
-        op: 'sigwinch',
-        data: this._size,
-      });
+      _postMessage('sigwinch', this._size);
     };
     //this._hterm.keyboard.uninstallKeyboard();
   }
@@ -118,10 +116,7 @@ class Term {
 
   setFontSize(size) {
     this._hterm.prefs_.set('font-size', size);
-    //window.webkit.messageHandlers.interOp.postMessage({
-    //op: 'fontSizeChanged',
-    //data: { size: this._hterm.getFontSize() },
-    //});
+    //_postMessage('fontSizeChanged', { size: this._hterm.getFontSize() });
   }
 
   setCursorBlink(state) {
