@@ -277,11 +277,6 @@ static NSArray *directoriesInPath;
     [self ssh_save_id:argc argv:argv];
   } else if ([cmd isEqualToString:@"config"]) {
     [self showConfig];
-  } else if  ([cmd isEqualToString:@"setenv"]) {
-    // Builtin. commands that have to be inside the "shell"
-    // setenv VARIABLE value
-    if (argv[2] != NULL) setenv(argv[1], argv[2], 1);
-    else setenv(argv[1], "", 1); // if there's no value, pass an empty string instead of a null pointer
   } else if  ([cmd isEqualToString:@"cd"]) {
     NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
     if (argc > 1) {
@@ -306,23 +301,28 @@ static NSArray *directoriesInPath;
     }
     // Higher level commands, not from system: curl, tar, scp, sftp
   } else if ([cmd isEqualToString:@"preview"]) {
-    // Opening in helper apps (iBooks, in this example)
+    // Opening in helper apps (PDFViewer, in this example)
     NSString* fileLocation = @(argv[1]);
     if (! [fileLocation hasPrefix:@"/"]) {
       // relative path. The most likely.
       fileLocation = [[[NSFileManager defaultManager] currentDirectoryPath] stringByAppendingPathComponent:fileLocation];
     }
-    fileLocation = [@"itms-books://" stringByAppendingString:fileLocation];
-    NSURL *actionURL = [NSURL URLWithString:[fileLocation                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
+    NSURL* fileURL = [NSURL fileURLWithPath:fileLocation];
+    NSString* urlToOpen = [@"pdfviewer://" stringByAppendingString:fileLocation];
+    NSURL *actionURL = [NSURL URLWithString:[urlToOpen                                               stringByAddingPercentEncodingWithAllowedCharacters:[NSCharacterSet URLFragmentAllowedCharacterSet]]];
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication] openURL:actionURL];
     });
   } else {
     // Redirect all output to console:
-    stdin = _stream.control.termin;
-    stdout = _stream.control.termout;
-    stderr = _stream.control.termout;
-    // curl gets a special treatment because it uses the keys stored internally by Blink
+    FILE* saved_out = stdout;
+    FILE* saved_err = stderr;
+    stdin = _stream.in;
+    if ((strcmp(argv[0], "python") != 0) && (strcmp(argv[0], "pip") != 0) && (strcmp(argv[0], "jupyter-notebook") != 0)) {
+      stdout = _stream.out;
+      stderr = stdout;
+    }
+    // curl gets a special treatment because it uses the SSH keys stored internally by Blink
     if (strcmp(argv[0], "curl") == 0) {
       curl_static_main(argc, argv); // this is the static library version of curl
       // curl_main still exists, will be called by python and lua, for example.
@@ -343,6 +343,8 @@ static NSArray *directoriesInPath;
       }
       ios_system(cmd);
       free(cmd);
+      stdout = saved_out;
+      stderr = saved_err;
     }
   }
   return false; 
@@ -471,22 +473,37 @@ void completion(const char *command, linenoiseCompletions *lc) {
   NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   
-  // Where the executables are stored:
-  NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
+  // Where the executables are stored: $PATH + ~/Library/bin + ~/Documents/bin
   // Add content of old PATH to this. PATH *is* defined in iOS, surprising as it may be.
   // I'm not going to erase it, so we just add ourselves.
-  binPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:[NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding]];
-  
+  // We go through main several times, so make sure we only append to PATH once
+  NSString* checkingPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
+  if (! [fullCommandPath isEqualToString:checkingPath]) {
+    fullCommandPath = checkingPath;
+  }
+  if (![fullCommandPath containsString:@"Library/bin"]) {
+    NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
+    fullCommandPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:fullCommandPath];
+  }
+  if (![fullCommandPath containsString:@"Documents/bin"]) {
+    NSString *binPath = [docsPath stringByAppendingPathComponent:@"bin"];
+    fullCommandPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:fullCommandPath];
+  }
+  setenv("BLINK", [[NSBundle mainBundle] resourcePath].UTF8String, 1); 
+  setenv("PATH", fullCommandPath.UTF8String, 1); // 1 = override existing value
+  directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
+
   // We can't write in $HOME so we need to set the position of config files:
   setenv("SSH_HOME", docsPath.UTF8String, 0);  // SSH keys in ~/Documents/.ssh/
   setenv("CURL_HOME", docsPath.UTF8String, 0); // CURL config in ~/Documents/
-  setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python2.7/
+  setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python3.6/
+  setenv("PYZMQ_BACKEND", "cffi", 0);
+  setenv("JUPYTER_CONFIG_DIR", [docsPath stringByAppendingPathComponent:@".jupyter"].UTF8String, 0);
+  setenv("TMPDIR", NSTemporaryDirectory().UTF8String, 0); // tmp directory
   setenv("SSL_CERT_FILE", [docsPath stringByAppendingPathComponent:@"cacert.pem"].UTF8String, 0); // SLL cacert.pem in ~/Documents/cacert.pem
   // hg config file in ~/Documents/.hgrc
   setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
-  setenv("PATH", binPath.UTF8String, 1); // 1 = override existing value
   // iOS already defines "HOME" as the home dir of the application
-
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
   previousDirectory = docsPath;
 
