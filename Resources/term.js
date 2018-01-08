@@ -61,6 +61,7 @@ class Term {
       if (cols === this._size.cols || rows === this._size.rows) {
         return;
       }
+      this._size = {cols: cols, rows: rows};
 
       window.webkit.messageHandlers.interOp.postMessage({
         op: 'sigwinch',
@@ -111,8 +112,8 @@ class Term {
   }
 
   scaleTerm(scale) {
-    scale = Math.min(Math.max(scale, 0.5), 2.0);
-    this.setFontSize(Math.floor(this._fontSize * scale));
+    var size = Math.min(Math.max(scale, 0.5), 2.0) * this._fontSize;
+    this.setFontSize(Math.floor(size));
   }
 
   setFontSize(size) {
