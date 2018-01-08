@@ -318,7 +318,8 @@ static NSArray *directoriesInPath;
     FILE* saved_out = stdout;
     FILE* saved_err = stderr;
     stdin = _stream.in;
-    if ((strcmp(argv[0], "python") != 0) && (strcmp(argv[0], "pip") != 0) && (strcmp(argv[0], "jupyter-notebook") != 0)) {
+    // Experimental development
+    if (strcmp(argv[0], "jupyter-notebook") != 0) {
       stdout = _stream.out;
       stderr = stdout;
     }
