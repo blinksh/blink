@@ -43,8 +43,10 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 
+// from ios_system:
 extern int ios_system(char* cmd);
 extern int ios_executable(char* inputCmd);
+extern void initializeEnvironment();
 extern int curl_static_main(int argc, char** argv);
 
 #define MCP_MAX_LINE 4096
@@ -55,7 +57,7 @@ extern int curl_static_main(int argc, char** argv);
 
 static NSString *docsPath;
 static NSString *filePath;
-static NSString* previousDirectory;
+// for file completion
 // do recompute directoriesInPath only if $PATH has changed
 static NSString* fullCommandPath = @"";
 static NSArray *directoriesInPath;
@@ -178,7 +180,7 @@ static NSArray *directoriesInPath;
         NSString *prefix = [cmd stringByAppendingString:[NSString stringWithCString:"://" encoding:NSASCIIStringEncoding]];
         argument = [[prefix stringByAppendingString:userAndHost] stringByAppendingString:fileLocation];
         // avoid ~ conversion:
-        argv[i] = [argument UTF8String];
+        argv[i] = strdup([argument UTF8String]);
         continue;
       }
       if (![argument hasPrefix:@"-"]) {
@@ -231,9 +233,9 @@ static NSArray *directoriesInPath;
       }
     }
     if (([cmd isEqualToString:@"scp"] || [cmd isEqualToString:@"sftp"]) && (i == 0))
-      argv[i] = [@"curl" UTF8String];
+      argv[i] = strdup([@"curl" UTF8String]);
     else
-      argv[i] = [argument UTF8String];
+      argv[i] = strdup([argument UTF8String]);
   }
   if (mustAddMinusTPosition > 0) {
     // For scp uploads
@@ -241,8 +243,8 @@ static NSArray *directoriesInPath;
     *argc += 1;
     argv = (char **)realloc(argv, (*argc + 1) * sizeof(char*));
     for (int i = *argc; i > mustAddMinusTPosition; i--)
-      argv[i - 1] = strdup(argv[i - 2]);
-    argv[mustAddMinusTPosition] = [@"-T" UTF8String];
+      argv[i - 1] = argv[i - 2];
+    argv[mustAddMinusTPosition] = strdup([@"-T" UTF8String]);
   }
   
   argv[*argc] = NULL;
@@ -277,29 +279,6 @@ static NSArray *directoriesInPath;
     [self ssh_save_id:argc argv:argv];
   } else if ([cmd isEqualToString:@"config"]) {
     [self showConfig];
-  } else if  ([cmd isEqualToString:@"cd"]) {
-    NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
-    if (argc > 1) {
-      NSString* newDir = @(argv[1]);
-      if (strcmp(argv[1], "-") == 0) {
-        // "cd -" option to pop back to previous directory
-        newDir = previousDirectory;
-      }
-      BOOL isDir;
-      if ([[NSFileManager defaultManager] fileExistsAtPath:newDir isDirectory:&isDir]) {
-        if (isDir) {
-          [[NSFileManager defaultManager] changeCurrentDirectoryPath:newDir];
-          previousDirectory = currentDir;
-        }
-        else  fprintf(_stream.out, "cd: %s: not a directory\n", [newDir UTF8String]);
-      } else {
-        fprintf(_stream.out, "cd: %s: no such file or directory\n", [newDir UTF8String]);
-      }
-    } else { // [cd] Help, I'm lost, bring me back home
-      previousDirectory = [[NSFileManager defaultManager] currentDirectoryPath];
-      [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
-    }
-    // Higher level commands, not from system: curl, tar, scp, sftp
   } else if ([cmd isEqualToString:@"preview"]) {
     // Opening in helper apps (PDFViewer, in this example)
     NSString* fileLocation = @(argv[1]);
@@ -362,14 +341,14 @@ static NSArray *directoriesInPath;
 }
 
 // This is a superset of all commands available. We check at runtime whether they are actually available (using ios_executable)
-char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex",
+char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex", "setenv", "unsetenv", "cd", 
   NULL}; // must end with NULL pointer
 
 // Commands defined outside of ios_executable:
-char* localCommandList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "cd", "scp", "sftp", NULL}; // must end with NULL pointer
+char* localCommandList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "scp", "sftp", NULL}; // must end with NULL pointer
 
 // Commands that don't take a file as argument:
-char* commandsNoFileList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", NULL};
+char* commandsNoFileList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "unsetenv", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", NULL};
 // must end with NULL pointer
 
 void completion(const char *command, linenoiseCompletions *lc) {
@@ -471,42 +450,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
 
   // Initialize paths for application files, including history.txt and keys
   docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  NSString *libPath = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) lastObject];
   filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
-  
-  // Where the executables are stored: $PATH + ~/Library/bin + ~/Documents/bin
-  // Add content of old PATH to this. PATH *is* defined in iOS, surprising as it may be.
-  // I'm not going to erase it, so we just add ourselves.
-  // We go through main several times, so make sure we only append to PATH once
-  NSString* checkingPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
-  if (! [fullCommandPath isEqualToString:checkingPath]) {
-    fullCommandPath = checkingPath;
-  }
-  if (![fullCommandPath containsString:@"Library/bin"]) {
-    NSString *binPath = [libPath stringByAppendingPathComponent:@"bin"];
-    fullCommandPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:fullCommandPath];
-  }
-  if (![fullCommandPath containsString:@"Documents/bin"]) {
-    NSString *binPath = [docsPath stringByAppendingPathComponent:@"bin"];
-    fullCommandPath = [[binPath stringByAppendingString:@":"] stringByAppendingString:fullCommandPath];
-  }
-  setenv("BLINK", [[NSBundle mainBundle] resourcePath].UTF8String, 1); 
-  setenv("PATH", fullCommandPath.UTF8String, 1); // 1 = override existing value
-  directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
-
-  // We can't write in $HOME so we need to set the position of config files:
-  setenv("SSH_HOME", docsPath.UTF8String, 0);  // SSH keys in ~/Documents/.ssh/
-  setenv("CURL_HOME", docsPath.UTF8String, 0); // CURL config in ~/Documents/
-  setenv("PYTHONHOME", libPath.UTF8String, 0);  // Python scripts in ~/Library/lib/python3.6/
-  setenv("PYZMQ_BACKEND", "cffi", 0);
-  setenv("JUPYTER_CONFIG_DIR", [docsPath stringByAppendingPathComponent:@".jupyter"].UTF8String, 0);
-  setenv("TMPDIR", NSTemporaryDirectory().UTF8String, 0); // tmp directory
-  setenv("SSL_CERT_FILE", [docsPath stringByAppendingPathComponent:@"cacert.pem"].UTF8String, 0); // SLL cacert.pem in ~/Documents/cacert.pem
-  // hg config file in ~/Documents/.hgrc
-  setenv("HGRCPATH", [docsPath stringByAppendingPathComponent:@".hgrc"].UTF8String, 0);
-  // iOS already defines "HOME" as the home dir of the application
+  initializeEnvironment();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
-  previousDirectory = docsPath;
 
   const char *history = [filePath UTF8String];
 
