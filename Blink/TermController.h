@@ -61,5 +61,6 @@
 - (void)terminate;
 - (void)sigwinch;
 - (BOOL)executeCommand:(NSMutableArray*)listArgv;
+- (void)createPTY;
 
 @end

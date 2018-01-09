@@ -133,7 +133,8 @@ static NSArray *directoriesInPath;
     // Operations on individual arguments
     NSString *argument = [listArgv objectAtIndex:i];
     // 1b) expand environment variables, + "~" (not wildcards ? and *)
-    while ([argument containsString:@"$"]) {
+    bool stopParsing = false;
+    while (([argument containsString:@"$"]) && !stopParsing) {
       // It has environment variables inside. Work on them one by one.
       // position of first "$" sign:
       NSRange r1 = [argument rangeOfString:@"$"];
@@ -152,7 +153,7 @@ static NSArray *directoriesInPath;
         NSString* replacement_string = [NSString stringWithCString:variable encoding:NSASCIIStringEncoding];
         variable_string = [[NSString stringWithCString:"$" encoding:NSASCIIStringEncoding] stringByAppendingString:variable_string];
         argument = [argument stringByReplacingOccurrencesOfString:variable_string withString:replacement_string];
-      }
+      } else stopParsing = true;
     }
     // Bash spec: only convert "~" if: at the beginning of argument, after a ":" or the first "="
     // ("=" scenario for export, but we use setenv, so no "=").
@@ -325,6 +326,7 @@ static NSArray *directoriesInPath;
       free(cmd);
       stdout = saved_out;
       stderr = saved_err;
+      stdin = _stream.in;
     }
   }
   return false; 
@@ -341,7 +343,7 @@ static NSArray *directoriesInPath;
 }
 
 // This is a superset of all commands available. We check at runtime whether they are actually available (using ios_executable)
-char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex", "setenv", "unsetenv", "cd", 
+char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex", "setenv", "unsetenv", "cd",
   NULL}; // must end with NULL pointer
 
 // Commands defined outside of ios_executable:

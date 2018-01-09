@@ -153,6 +153,7 @@ static NSArray *CursorKeys = nil;
   [self.allKeys addObjectsFromArray:AlternateKeys];
   [self.allKeys addObjectsFromArray:CursorKeys];
   [self.allKeys addObject:[[SmartKey alloc] initWithName:KbdEscKey symbol:UIKeyInputEscape]];
+  [super viewDidLoad];
 }
 
 - (void)invalidateTimer
