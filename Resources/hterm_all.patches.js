@@ -191,3 +191,10 @@ hterm.ScrollPort.prototype.focus = function() {
   this.screen_.focus();
 };
 
+hterm.ScrollPort.prototype.getTopRowIndex = function() {
+//  return Math.round(this.screen_.scrollTop / this.characterSize.height);
+  // Blink: We can go negative here
+  return Math.max(0, Math.round(this.screen_.scrollTop / this.characterSize.height));
+};
+
+
