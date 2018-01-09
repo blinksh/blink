@@ -1,19 +1,19 @@
-base03 =     "#2C3E50";
-base02 =     "#34495E";
-base01 =     "#27AE60";
-base00 =     "#F39C12";
-base0 =      "#3C7DD1";
-base1 =      "#2980B9";
-base2 =      "#ECF0F1";
-base3 =      "#BDC3C7";
-yellow =     "#F1C40F";
-orange =     "#C0392B";
-red =        "#E74C3C";
-magenta =    "#9B59B6";
-violet =     "#8E44AD";
-blue =       "#3498DB";
-cyan =       "#1ABC9C";
-green =      "#2ECC71";
+var base03 =     "#2C3E50";
+var base02 =     "#34495E";
+var base01 =     "#27AE60";
+var base00 =     "#F39C12";
+var base0 =      "#3C7DD1";
+var base1 =      "#2980B9";
+var base2 =      "#ECF0F1";
+var base3 =      "#BDC3C7";
+var yellow =     "#F1C40F";
+var orange =     "#C0392B";
+var red =        "#E74C3C";
+var magenta =    "#9B59B6";
+var violet =     "#8E44AD";
+var blue =       "#3498DB";
+var cyan =       "#1ABC9C";
+var green =      "#2ECC71";
 
 t.prefs_.set('color-palette-overrides',
 		 [ base02 , red     , green  , yellow,

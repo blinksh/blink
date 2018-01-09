@@ -259,10 +259,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
+  configuration.dataDetectorTypes = WKDataDetectorTypeLink;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
   [_webView.scrollView setScrollEnabled:NO];
+//  _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
   
   [self addSubview:_webView];
 
@@ -355,7 +357,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)loadTerminal: (NSString *)userScript
 {
-  NSString * initScript = @";term.init(document.getElementById('terminal'));";
+  NSString * initScript = @"\nterm.init(document.getElementById('terminal'));";
   if (userScript) {
     userScript = [userScript stringByAppendingString:initScript];
   } else {
@@ -367,7 +369,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
   NSURL *url = [NSURL fileURLWithPath:path];
-  // NSURL *url = [NSURL URLWithString:@"http://www.apple.com"];
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   [_webView loadRequest:request];
 }
@@ -430,8 +431,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (UIView *)inputAccessoryView
 {
-  return nil;
-  //return [_smartKeys view];
+  return [_smartKeys view];
 }
 
 - (void)keyboardWillHide:(NSNotification *)sender
@@ -453,17 +453,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   CGRect bounds = self.bounds;
   CGRect intersection = CGRectIntersection(frame, bounds);
 
-//  // If the intersection is only the accesoryView, we have a external keyboard
-//  if (intersection.size.height == [iaView frame].size.height) {
-//    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
-//      iaView.hidden = NO;
-//    } else {
-//      iaView.hidden = YES;
-//    }
-//  } else {
-//    //_capsMapped = NO;
-//    iaView.hidden = NO;
-//  }
+  // If the intersection is only the accesoryView, we have a external keyboard
+  if (intersection.size.height == [iaView frame].size.height) {
+    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
+      iaView.hidden = NO;
+    } else {
+      iaView.hidden = YES;
+    }
+  } else {
+    //_capsMapped = NO;
+    iaView.hidden = NO;
+  }
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
@@ -530,8 +530,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
     //_lastPinchScale = _webView.scrollView.zoomScale;
     [_webView evaluateJavaScript:@"term.scaleTermStart();" completionHandler:nil];
-    if (_pinchSamplingTimer)
+    if (_pinchSamplingTimer) {
       [_pinchSamplingTimer invalidate];
+    }
 
     _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(pinchSampling:) userInfo:nil repeats:YES];
     [_pinchSamplingTimer fire];
@@ -568,11 +569,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
 - (BOOL)becomeFirstResponder
 {
-//  if (!_smartKeys) {
-//    _smartKeys = [[SmartKeysController alloc] init];
-//  }
+  if (!_smartKeys) {
+    _smartKeys = [[SmartKeysController alloc] init];
+  }
 
-//  _smartKeys.textInputDelegate = self;
+  _smartKeys.textInputDelegate = self;
   cover.hidden = YES;
 
   [_webView evaluateJavaScript:@"term.focus();" completionHandler:nil];

@@ -5,6 +5,7 @@
     <meta name="viewport" content="user-scalable=no, height=device-height, initial-scale=1.0">
     <script src="webfont.js"></script>
     <script src="hterm_all.min.js"></script>
+    <script src="hterm_all.patches.js"></script>
     <script src="term.js"></script>
     <style>
       body, #terminal {
@@ -17,11 +18,16 @@
         bottom:0;
         overflow: hidden;
       }
+
+      * {
+        font-feature-settings: "liga" 0;
+      }
     </style>
   <body>
     <div id="terminal"></div>
     <script>
       var term = new Term();
+      // term.init(...); is called from wkwebview user scripts
     </script>
   </body>
 </html>

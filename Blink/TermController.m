@@ -223,14 +223,14 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)setAppearanceFromSettings
 {
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
-  if (font) {
-    if (font.isCustom) {
-      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
-    } else {
-      [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
-    }
-  }
+//  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+//  if (font) {
+//    if (font.isCustom) {
+//      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+//    } else {
+//      [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
+//    }
+//  }
 }
 
 - (NSString *)termInitScript
@@ -247,6 +247,19 @@ static NSDictionary *bkModifierMaps = nil;
   if (!_disableFontSizeSelection) {
     NSNumber *fontSize = [BKDefaults selectedFontSize];
     [script appendString:[NSString stringWithFormat:@"\nterm.setFontSize('%@');", fontSize]];
+  }
+  
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  if (font) {
+    [script appendString:[NSString stringWithFormat:@"\nterm.setFontFamily('%@');", font.name]];
+    if (font.isCustom) {
+      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
+      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+      NSString *jsScript = [NSString stringWithFormat:@"\nterm.appendUserCSS(%@[0])", jsString];
+      [script appendString:jsScript];
+//      NSString *jsScript = [NSString stringWithFormat:@"term.loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+//      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+    }
   }
 
   return script;

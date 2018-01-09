@@ -1,12 +1,10 @@
-"use strict";
-
-function _postMessage(op, data) {
-  window.webkit.messageHandlers.interOp.postMessage({op, data});
-};
+'use strict';
 
 hterm.defaultStorage = new lib.Storage.Memory();
 
-hterm.ScrollPort.prototype.onTouch_ = function() {}; // disable build in touch support.
+function _postMessage(op, data) {
+  window.webkit.messageHandlers.interOp.postMessage({ op, data });
+}
 
 hterm.Terminal.prototype.copyStringToClipboard = function(str) {
   if (this.prefs_.get('enable-clipboard-notice')) {
@@ -35,20 +33,14 @@ class Term {
 
     this.focus = this._hterm.onFocusChange_.bind(this._hterm, true);
     this.blur = this._hterm.onFocusChange_.bind(this._hterm, false);
+    
+    this.init = this._hterm.decorate.bind(this._hterm);
 
-    this._hterm.prefs_.set(
-      'user-css',
-      'data:text/css;utf-8,* { font-feature-settings: "liga" 0; }',
-    );
     this._hterm.prefs_.set('audible-bell-sound', '');
     this._hterm.prefs_.set('receive-encoding', 'raw'); // we are UTF8
     this._hterm.prefs_.set('allow-images-inline', true); // need to make it work
 
     window.t = this._hterm; // For backward compatability
-  }
-
-  init(element) {
-    this._hterm.decorate(element);
   }
 
   _onTerminalReady() {
@@ -62,34 +54,13 @@ class Term {
       if (cols === this._size.cols && rows === this._size.rows) {
         return;
       }
-      
-      this._size = {cols, rows};
+
+      this._size = { cols, rows };
 
       _postMessage('sigwinch', this._size);
     };
-    //this._hterm.keyboard.uninstallKeyboard();
-  }
 
-  sigwinch() {
-    return;
-    // This was removed as in theory the next resize would also take care of it.
-    // It looks like under certain scenarios there is a race condition under which different sizes are
-    // sent through different events on hterm and here included. This ensures that we take care of the
-    // event chain ourselves.
-    var screen = document
-      .getElementsByTagName('iframe')[0]
-      .contentWindow.document.getElementsByTagName('x-screen')[0];
-    var view_w = window.innerWidth;
-    var view_h = window.innerHeight;
-    screen.style.width = view_w;
-    screen.style.height = view_h;
-
-    // This was done to fix the SplitView getting stuck.
-    // It shouldn't be necessary anymore, but it makes transitions smoother too.
-    var termWindow = document.getElementsByTagName('iframe')[0].contentWindow;
-    termWindow.resizeTo(window.innerWidth, window.innerHeight);
-
-    this._hterm.scrollPort_.onResize_(null);
+    this._hterm.uninstallKeyboard();
   }
 
   increaseFontSize() {
@@ -124,15 +95,27 @@ class Term {
     this._hterm.prefs_.set('cursor-blink', state);
   }
 
-  loadFontFromCSS(cssPath, name) {
-    WebFont.load({
-      custom: {
-        families: [name],
-        urls: [cssPath],
-      },
-      context: this._hterm.scrollPort_.iframe_.contentWindow,
-      active: () => this._hterm.syncFontFamily(),
-    });
+  setFontFamily(name) {
     this._hterm.prefs_.set('font-family', name + ', Menlo');
+  }
+
+  appendUserCSS(css) {
+    var current = this._hterm.prefs_.get('user-css');
+    if (!current) {
+      current = 'data:text/css;utf-8,';
+    }
+    current += '\n' + css;
+    this._hterm.prefs_.set('user-css', current);
+  }
+
+  loadFontFromCSS(cssPath, name) {
+      WebFont.load({
+        custom: {
+          families: [name],
+          urls: [cssPath],
+        },
+        active: () => this._hterm.syncFontFamily(),
+      });
+      this.setFontFamily(name);
   }
 }
