@@ -38,12 +38,39 @@
 #import "fterm.h"
 
 
+int makeargs(const char *args, char ***aa)
+{
+  char *buf = strdup(args);
+  int c = 1;
+  char *delim;
+  char **argv = calloc(c, sizeof(char *));
+
+  argv[0] = buf;
+
+  while ((delim = strchr(argv[c - 1], ' '))) {
+    argv = realloc(argv, (c + 1) * sizeof(char *));
+    argv[c] = delim + 1;
+    *delim = 0x00;
+    c++;
+  }
+
+  argv = realloc(argv, (c + 1) * sizeof(char *));
+  argv[c] = NULL;
+
+  *aa = argv;
+
+  return c;
+}
+
 void *run_session(void *params)
 {
   SessionParams *p = (SessionParams *)params;
   // Object back to ARC
   Session *session = (Session *)CFBridgingRelease(p->session);
-  [session main:p->argc argv:p->argv];
+  char **argv;
+  int argc = makeargs(p->args, &argv);
+  [session main:argc argv:argv];
+  free(argv);
   free(params);
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
@@ -108,9 +135,9 @@ void *run_session(void *params)
   return dupe;
 }
 
-- (void)executeWithArgs:(int)argc argv:(char **)argv
+- (void)executeWithArgs:(NSString *)args
 {
-  SessionParams *params = [self createSessionParams:argc argv:argv];
+  SessionParams *params = [self createSessionParams:args];
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
@@ -118,36 +145,20 @@ void *run_session(void *params)
   pthread_create(&_tid, &attr, run_session, params);
 }
 
-- (void)executeWithArgsAndWait:(int)argc argv:(char **)argv
+- (void)executeAttachedWithArgs:(NSString *)args
 {
-  // Execute command, with args, but still listens to events
-  SessionParams *params = [self createSessionParams:argc argv:argv];
-  
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  pthread_create(&_tid, &attr, run_session, params);
-  while (1) {
-    if (pthread_kill(_tid, 0) != 0) break; // the thread is finished
-  }
-}
-
-
-- (void)executeAttachedWithArgs:(int)argc argv:(char **)argv
-{
-  SessionParams *params = [self createSessionParams:argc argv:argv];
+  SessionParams *params = [self createSessionParams:args];
 
   pthread_create(&_tid, NULL, run_session, params);
   pthread_join(_tid, NULL);
 }
 
-- (SessionParams *)createSessionParams:(int)argc argv:(char **)argv
+- (SessionParams *)createSessionParams:(NSString *)args
 {
   SessionParams *params = malloc(sizeof(SessionParams));
   // Pointer to our struct, we are responsible of release
   params->session = CFBridgingRetain(self);
-  params->argc = argc;
-  params->argv = argv;
+  params->args = [args UTF8String];
   params->attached = false;
 
   return params;

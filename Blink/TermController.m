@@ -280,7 +280,7 @@ static NSDictionary *bkModifierMaps = nil;
 
   _session = [[MCPSession alloc] initWithStream:stream];
   _session.delegate = self;
-  [_session executeWithArgs:0 argv:NULL];
+  [_session executeWithArgs:@""];
 }
 
 - (void)setRawMode:(BOOL)raw
@@ -363,11 +363,5 @@ static NSDictionary *bkModifierMaps = nil;
     _appearanceChanged = YES;
   }
 }
-
-- (BOOL)executeCommand:(NSMutableArray*)listArgv {
-  if (!self.isViewLoaded) [self viewDidLoad];
-  return [self->_session executeCommand:listArgv];
-}
-
 
 @end

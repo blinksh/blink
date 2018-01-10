@@ -38,8 +38,7 @@
 
 typedef struct SessionParams {
   CFTypeRef session;
-  const char **argv;
-  int argc;
+  const char *args;
   bool attached;
 } SessionParams;
 
@@ -72,9 +71,8 @@ typedef struct SessionParams {
 
 - (id)init __unavailable;
 - (id)initWithStream:(TermStream *)stream;
-- (void)executeWithArgs:(int)argc argv:(char **)argv;
-- (void)executeWithArgsAndWait:(int)argc argv:(char **)argv;
-- (void)executeAttachedWithArgs:(int)argc argv:(char **)argv;
+- (void)executeWithArgs:(NSString *)args;
+- (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv;
 - (void)sigwinch;
 - (void)kill;

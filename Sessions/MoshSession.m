@@ -290,16 +290,7 @@ static const char *usage_format =
   fclose(sshSession.stream.out);
   sshSession.stream.out = term_w;
 
-  int argc = [sshArgs count];
-  char** argv = (char **)malloc((argc + 1) * sizeof(char*));
-  for (unsigned i = 0; i < argc; i++)
-  {
-    argv[i] = [[sshArgs objectAtIndex:i] UTF8String];
-  }
-  argv[argc] = NULL;
-  
-  [sshSession executeWithArgs:argv argv:argv];
-  free(argv);
+  [sshSession executeWithArgs:sshCmd];
 
   // Capture ssh output and process parameters for Mosh connection
   char *buf = NULL;

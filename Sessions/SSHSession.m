@@ -170,7 +170,7 @@ static void kbd_callback(const char *name, int name_len,
   // key -i identity file
   // forced password
   optind = 1;
-  
+
   while (1) {
     int c = getopt_long(argc, argv, "p:i:htvl:", NULL, NULL);
     if (c == -1) {
