@@ -99,15 +99,14 @@ void initializeCommandListForCompletion() {
   NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
   // add commands from Blinkshell:
   [combinedCommands addObjectsFromArray:@[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config"]];
+  // sort alphabetically:
   commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
   commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"ssh-save-id", @"config", @"setenv", @"unsetenv", @"printenv", @"pwd", @"uname", @"date", @"env", @"id", @"groups", @"whoami", @"uptime", @"w"];
 }
 
 void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
-  // Number of spaces:
   BOOL isDir;
-  // the number of arguments is *at most* the number of spaces plus one
   NSString* commandString = [NSString stringWithUTF8String:command];
   if ([commandString rangeOfString:@" "].location == NSNotFound) {
     // No spaces. The user is typing a command
