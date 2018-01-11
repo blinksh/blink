@@ -87,12 +87,11 @@ static NSArray *directoriesInPath;
   }
 }
 
-// This is a superset of all commands available. We check at runtime whether they are actually available (using ios_executable)
-// todo: extract from commandsAsString()
+// List of all commands available, sorted alphabetically:
+// Extracted at runtime from ios_system() plus blinkshell commands:
 NSArray* commandList;
-// Commands that don't take a file as argument:
+// Commands that don't take a file as argument (uname, ssh, mosh...):
 NSArray* commandsNoFile;
-// must end with NULL pointer
 
 void initializeCommandListForCompletion() {
   // set up the list of commands for auto-complete:
@@ -101,21 +100,16 @@ void initializeCommandListForCompletion() {
   // add commands from Blinkshell:
   [combinedCommands addObjectsFromArray:@[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config"]];
   commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
-  // [combinedCommands copy];
   commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"ssh-save-id", @"config", @"setenv", @"unsetenv", @"printenv", @"pwd", @"uname", @"date", @"env", @"id", @"groups", @"whoami", @"uptime", @"w"];
 }
 
 void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
   // Number of spaces:
-  size_t numSpaces = 0;
   BOOL isDir;
   // the number of arguments is *at most* the number of spaces plus one
   NSString* commandString = [NSString stringWithUTF8String:command];
-  char* str = command;
-  while(*str) if (*str++ == ' ') ++numSpaces; // count spaces
-  int numCharsTyped = strlen(command);
-  if (numSpaces == 0) {
+  if ([commandString rangeOfString:@" "].location == NSNotFound) {
     // No spaces. The user is typing a command
     // check for pre-defined commands:
     for (NSString* existingCommand in commandList) {
