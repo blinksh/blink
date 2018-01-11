@@ -89,15 +89,21 @@ static NSArray *directoriesInPath;
 
 // This is a superset of all commands available. We check at runtime whether they are actually available (using ios_executable)
 // todo: extract from commandsAsString()
-char* commandList[] = {"ls", "touch", "rm", "cp", "ln", "link", "mv", "mkdir", "chown", "chgrp", "chflags", "chmod", "du", "df", "chksum", "sum", "stat", "readlink", "compress", "uncompress", "gzip", "gunzip", "tar", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", "cat", "wc", "grep", "egrep", "fgrep", "curl", "python", "lua", "luac", "amstex", "cslatex", "csplain", "eplain", "etex", "jadetex", "latex", "mex", "mllatex", "mltex", "pdflatex", "pdftex", "pdfcslatex", "pdfcstex", "pdfcsplain", "pdfetex", "pdfjadetex", "pdfmex", "pdfxmltex", "texsis", "utf8mex", "xmltex", "lualatex", "luatex", "texlua", "texluac", "dviluatex", "dvilualatex", "bibtex", "setenv", "unsetenv", "cd",
-  NULL}; // must end with NULL pointer
-
-// Commands defined outside of ios_executable:
-char* localCommandList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "scp", "sftp", NULL}; // must end with NULL pointer
-
+NSArray* commandList;
 // Commands that don't take a file as argument:
-char* commandsNoFileList[] = {"help", "mosh", "ssh", "exit", "ssh-copy-id", "ssh-save-id", "config", "setenv", "unsetenv", "printenv", "pwd", "uname", "date", "env", "id", "groups", "whoami", "uptime", "w", NULL};
+NSArray* commandsNoFile;
 // must end with NULL pointer
+
+void initializeCommandListForCompletion() {
+  // set up the list of commands for auto-complete:
+  // list of commands from ios_system:
+  NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
+  // add commands from Blinkshell:
+  [combinedCommands addObjectsFromArray:@[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config"]];
+  commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
+  // [combinedCommands copy];
+  commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"ssh-save-id", @"config", @"setenv", @"unsetenv", @"printenv", @"pwd", @"uname", @"date", @"env", @"id", @"groups", @"whoami", @"uptime", @"w"];
+}
 
 void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
@@ -105,23 +111,15 @@ void completion(const char *command, linenoiseCompletions *lc) {
   size_t numSpaces = 0;
   BOOL isDir;
   // the number of arguments is *at most* the number of spaces plus one
+  NSString* commandString = [NSString stringWithUTF8String:command];
   char* str = command;
-  while(*str) if (*str++ == ' ') ++numSpaces;
+  while(*str) if (*str++ == ' ') ++numSpaces; // count spaces
   int numCharsTyped = strlen(command);
   if (numSpaces == 0) {
     // No spaces. The user is typing a command
-    int i = 0;
-    // local commands (ssh, mosh...)
-    while (localCommandList[i]) {
-      if (strncmp(command, localCommandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,localCommandList[i]);
-      i++;
-    }
-    i = 0;
-    // commands from ios_system (ls, cp...):
-    while (commandList[i]) {
-      if (ios_executable(commandList[i]))
-          if (strncmp(command, commandList[i], numCharsTyped) == 0) linenoiseAddCompletion(lc,commandList[i]);
-      i++;
+    // check for pre-defined commands:
+    for (NSString* existingCommand in commandList) {
+      if ([existingCommand hasPrefix:commandString]) linenoiseAddCompletion(lc, existingCommand.UTF8String);
     }
     // Commands in the PATH
     // Do we have an interpreter? (otherwise, there's no point)
@@ -131,61 +129,47 @@ void completion(const char *command, linenoiseCompletions *lc) {
         fullCommandPath = checkingPath;
         directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
       }
-      char* newCommand = (char*) malloc(PATH_MAX * sizeof(char));
       for (NSString* path in directoriesInPath) {
         // If the path component doesn't exist, no point in continuing:
         if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
         if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
         NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:Nil];
         for (NSString *fileName in filenames) {
-          if (strncmp(command, [fileName UTF8String], strlen(command)) == 0) {
-            linenoiseAddCompletion(lc,[fileName UTF8String]);
-          }
+          if ([fileName hasPrefix:commandString]) linenoiseAddCompletion(lc,[fileName UTF8String]);
         }
       }
-      free(newCommand);
     }
   } else {
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
-    int i = 0;
-    while (commandsNoFileList[i]) {
-      if (strncmp(command, commandsNoFileList[i], strlen(commandsNoFileList[i])) == 0) return;
-      i++;
-    }
-    // Last position of space in the command:
-    char* argument = strrchr (command, ' ') + 1;
+    NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
+    if ([commandsNoFile containsObject:commandArray[0]]) return;
+
+    // Last position of space in the command.
+    // Would be better if I could get position of cursor.
+    NSString* argument = commandArray.lastObject;
     // which directory?
-    char *directory, *file;
-    int filePosition;
-    if (argument[strlen(argument) - 1] == '/') { // ends with a '/'
+    BOOL isDir;
+    NSString* directory;
+    NSString *file;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
       directory = argument;
-      file = NULL;
-      filePosition = strlen(command);
+      file = @"";
     } else {
-      directory = dirname(argument); // will be "." if empty
-      if (strlen(argument) > 0) {
-        file = basename(argument);
-        filePosition = strlen(command) - strlen(file);
-      } else {
-        file = NULL;
-        filePosition = strlen(command);
-      }
+      directory = [argument stringByDeletingLastPathComponent]; // can be empty.
+      if (directory.length == 0) directory = @".";
+      file = [argument lastPathComponent];
     }
-    NSString* dirString = [NSString stringWithUTF8String:directory];
-    dirString = [dirString stringByExpandingTildeInPath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:dirString isDirectory:&isDir]
-        && isDir) {
-      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:dirString error:Nil];
-      char* newCommand = (char*) malloc((filePosition + NAME_MAX) * sizeof(char));
+    directory = [directory stringByExpandingTildeInPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isDir] && isDir) {
+      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:Nil];
       for (NSString *fileName in filenames) {
-        if ((!file) || strncmp(file, [fileName UTF8String], strlen(file)) == 0) {
-          newCommand = strcpy(newCommand, command);
-          sprintf(newCommand + filePosition, "%s", [fileName UTF8String]);
-          linenoiseAddCompletion(lc,newCommand);
+        if ((file.length == 0) || [fileName hasPrefix:file]) {
+          NSString* addition = [fileName substringFromIndex:[file length]];
+          NSString * newCommand = [commandString stringByAppendingString:addition];
+          linenoiseAddCompletion(lc,[newCommand UTF8String]);
         }
       }
-      free(newCommand);
     }
   }
 }
@@ -198,8 +182,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
 
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
-  initializeEnvironment();
-  replaceCommand(@"curl", curl_static_main, true);
+  initializeEnvironment(); // initialize environment variables for iOS system
+  replaceCommand(@"curl", curl_static_main, true); // replace curl in ios_system with our own, accessing Blink keys.
+  initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
   const char *history = [filePath UTF8String];
@@ -258,8 +243,8 @@ void completion(const char *command, linenoiseCompletions *lc) {
         stdin = _stream.in;
         stdout = _stream.out;
         stderr = stdout;
-        // Experimental development
         ios_system(cmdline.UTF8String);
+        // get all output back:
         stdout = saved_out;
         stderr = saved_err;
         stdin = _stream.in;
