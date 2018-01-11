@@ -242,22 +242,22 @@ static NSDictionary *bkModifierMaps = nil;
     [script appendString:theme.content];
   }
   
-  [script appendString:[NSString stringWithFormat:@"\n;term.setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
+  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
   
   if (!_disableFontSizeSelection) {
     NSNumber *fontSize = [BKDefaults selectedFontSize];
-    [script appendString:[NSString stringWithFormat:@"\nterm.setFontSize('%@');", fontSize]];
+    [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%@');", fontSize]];
   }
   
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
-    [script appendString:[NSString stringWithFormat:@"\nterm.setFontFamily('%@');", font.name]];
+    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
     if (font.isCustom) {
       NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
       NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-      NSString *jsScript = [NSString stringWithFormat:@"\nterm.appendUserCSS(%@[0])", jsString];
+      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
       [script appendString:jsScript];
-//      NSString *jsScript = [NSString stringWithFormat:@"term.loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+//      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
 //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
     }
   }
@@ -339,6 +339,7 @@ static NSDictionary *bkModifierMaps = nil;
 {
   _termsz->ws_row = rows.shortValue;
   _termsz->ws_col = cols.shortValue;
+
   _sessionParameters.rows = rows.shortValue;
   _sessionParameters.cols = cols.shortValue;
   
@@ -360,6 +361,9 @@ static NSDictionary *bkModifierMaps = nil;
 {
   _sessionParameters.rows = [size[@"rows"] integerValue];
   _sessionParameters.cols = [size[@"cols"] integerValue];
+
+  _termsz->ws_row = _sessionParameters.rows;
+  _termsz->ws_col = _sessionParameters.cols;
   
   [self setAppearanceFromSettings];
   [self startSession];
@@ -428,6 +432,7 @@ static NSDictionary *bkModifierMaps = nil;
 {
   return UITextAutocorrectionTypeNo;
 }
+
 
 
 @end

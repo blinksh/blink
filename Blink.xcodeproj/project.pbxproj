@@ -547,6 +547,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				0732F04B1D062B9A00AB5438 /* term.html */,
 				D2496F402003941B00E75FE9 /* term.js */,
 				D29392B82004DCC9001FB2AA /* hterm_all.js */,
 				D2496F3B20038B3300E75FE9 /* hterm_all.min.js */,
@@ -560,7 +561,6 @@
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
 				0732F04A1D062B9A00AB5438 /* locales.bundle */,
-				0732F04B1D062B9A00AB5438 /* term.html */,
 			);
 			path = Resources;
 			sourceTree = "<group>";

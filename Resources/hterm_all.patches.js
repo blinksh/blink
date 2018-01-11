@@ -80,7 +80,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     'font-family: monospace;' +
     'font-size: 15px;' +
     //    'font-variant-ligatures: none;' + // Blink: We use ligatures a lot
-    '-webkit-overflow-scrolling: touch;' +  // Blink: We love smooth scrolling
+    // '-webkit-overflow-scrolling: touch;' +  // <-- for inertial scroll Blink: We love smooth scrolling
     'height: 100%;' +
     'overflow-y: scroll; overflow-x: hidden;' +
     'white-space: pre;' +
@@ -191,10 +191,45 @@ hterm.ScrollPort.prototype.focus = function() {
   this.screen_.focus();
 };
 
-hterm.ScrollPort.prototype.getTopRowIndex = function() {
-//  return Math.round(this.screen_.scrollTop / this.characterSize.height);
-  // Blink: We can go negative here
-  return Math.max(0, Math.round(this.screen_.scrollTop / this.characterSize.height));
+// Do not show resize notifications. We show ours
+hterm.Terminal.prototype.overlaySize = function() {};
+
+
+hterm.Terminal.prototype.copyStringToClipboard = function(str) {
+  if (this.prefs_.get('enable-clipboard-notice')) {
+    setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
+  }
+
+  hterm.copySelectionToClipboard(this.document_, str);
 };
 
-
+hterm.Terminal.prototype.setCursorVisible = function(state) {
+  this.options_.cursorVisible = state;
+  
+  if (!state) {
+    if (this.timeouts_.cursorBlink) {
+      clearTimeout(this.timeouts_.cursorBlink);
+      delete this.timeouts_.cursorBlink;
+    }
+    this.cursorNode_.style.opacity = '0';
+    return;
+  }
+  
+  this.syncCursorPosition_();
+  
+  this.cursorNode_.style.opacity = '1';
+  
+  if (this.options_.cursorBlink) {
+    if (this.timeouts_.cursorBlink)
+      return;
+    
+    // Blink: Switch the cursor off, so that the manual (first) blink trigger sets it on again
+    this.cursorNode_.style.opacity = '0';
+    this.onCursorBlink_();
+  } else {
+    if (this.timeouts_.cursorBlink) {
+      clearTimeout(this.timeouts_.cursorBlink);
+      delete this.timeouts_.cursorBlink;
+    }
+  }
+};
