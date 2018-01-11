@@ -11,48 +11,19 @@ hterm.copySelectionToClipboard = function(document, content) {
   _postMessage('copy', { content });
 };
 
-var _cachedRects = [];
-var _saved = 0;
-
-hterm.getClientSize = function(dom) {
-  if (!dom._cachedBoundingClientRect) {
-    dom._cachedBoundingClientRect = dom.getBoundingClientRect();
-    _cachedRects.push(dom);
-  } else {
-    _saved++;
-  }
-  return dom._cachedBoundingClientRect;
-};
-
-function _cleanRectCache() {
-  for (var i = 0; i < _cachedRects.length; i++) {
-    _cachedRects[i]._cachedBoundingClientRect = null;
-  }
-  _cachedRects = [];
-}
-
+// Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
 
-var _size = { cols: 0, rows: 0 };
 var t = new hterm.Terminal('blink');
 
 t.onTerminalReady = function() {
-  var screenSize = t.screenSize;
-
-  _size = { cols: screenSize.width, rows: screenSize.height };
-
-  _postMessage('terminalReady', { size: _size });
+  _postMessage('terminalReady', {
+    cols: t.screenSize.width,
+    rows: t.screenSize.height,
+  });
 
   t.io.onTerminalResize = function(cols, rows) {
-    if (cols === _size.cols && rows === _size.rows) {
-      return;
-    }
-
-    _cleanRectCache();
-
-    _size = { cols, rows };
-
-    _postMessage('sigwinch', _size);
+    _postMessage('sigwinch', { cols, rows });
   };
 
   t.uninstallKeyboard();
@@ -92,6 +63,10 @@ function term_blur() {
   t.onFocusChange_(false);
 }
 
+function term_setWidth(cols) {
+  t.setWidth(cols);
+}
+
 function term_increaseFontSize() {
   var size = t.getFontSize();
   term_setFontSize(++size);
@@ -113,14 +88,13 @@ function term_scaleStart() {
 }
 
 function term_scale(scale) {
+  var minScale = 0.5;
+  var maxScale = 2.0;
+  scale = Math.max(minScale, Math.min(maxScale, scale));
   term_setFontSize(Math.round(_fontSizeOnScaleStart * scale));
 }
 
 function term_setFontSize(size) {
-  if (!size) {
-    size = '15px';
-  }
-  _cleanRectCache();
   term_set('font-size', size);
   _postMessage('fontSizeChanged', { size: parseInt(size) });
 }
@@ -130,7 +104,6 @@ function term_setCursorBlink(state) {
 }
 
 function term_setFontFamily(name) {
-  _cleanRectCache();
   term_set('font-family', name + ', Menlo');
 }
 

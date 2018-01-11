@@ -241,13 +241,11 @@ static NSDictionary *bkModifierMaps = nil;
   if (theme) {
     [script appendString:theme.content];
   }
-  
-  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
-  
-  if (!_disableFontSizeSelection) {
-    NSNumber *fontSize = [BKDefaults selectedFontSize];
-    [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%@');", fontSize]];
-  }
+
+//  if (!_disableFontSizeSelection) {
+//    NSNumber *fontSize = [BKDefaults selectedFontSize];
+  [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%ld');", (long)_sessionParameters.fontSize]];
+//  }
   
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
@@ -261,6 +259,8 @@ static NSDictionary *bkModifierMaps = nil;
 //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
     }
   }
+  
+  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
 
   return script;
 }
@@ -272,6 +272,7 @@ static NSDictionary *bkModifierMaps = nil;
   
   if (_sessionParameters == nil) {
     _sessionParameters = [[MCPSessionParameters alloc] init];
+    _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
   }
 
   [_terminal loadTerminal: [self termInitScript]];
@@ -351,6 +352,7 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)fontSizeChanged:(NSNumber *)newSize
 {
+  _sessionParameters.fontSize = [newSize integerValue];
   // Ignore the font size settings in case it was manually changed
   if (!([newSize isEqualToNumber:[BKDefaults selectedFontSize]])) {
     _disableFontSizeSelection = YES;

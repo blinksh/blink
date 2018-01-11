@@ -235,8 +235,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     if (@available(iOS 11.0, *)) {
       self.pasteConfiguration = [[UIPasteConfiguration alloc]
                                  initWithTypeIdentifiersForAcceptingClass:[NSString class]];
-      
-      NSLog(@"%@", self.pasteConfiguration.acceptableTypeIdentifiers);
     }
 
     self.inputAssistantItem.leadingBarButtonGroups = @[];
@@ -245,7 +243,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     _jsBuffer = [[NSMutableString alloc] init];
     _jsBufferCount = 0;
 
-    [self addWebView];
+    [self _addWebView];
     [self resetDefaultControlKeys];
   }
 
@@ -268,22 +266,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [super didMoveToWindow];
   
   if (self.window && self.window.screen == [UIScreen mainScreen]) {
-    [self addGestures];
-    [self configureNotifications];
+    [self _addGestures];
+    [self _configureNotifications];
   }
 }
 
-- (void)addWebView
+- (void)_addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
-  configuration.dataDetectorTypes = WKDataDetectorTypeLink;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
   [_webView.scrollView setScrollEnabled:NO];
-  
-//  _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
   
   [self addSubview:_webView];
 
@@ -295,9 +290,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
 }
 
-
-
-- (void)addGestures
+- (void)_addGestures
 {
   if (!_tapBackground) {
     _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
@@ -319,7 +312,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)configureNotifications
+- (void)_configureNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter removeObserver:self];
