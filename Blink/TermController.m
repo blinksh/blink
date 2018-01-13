@@ -31,10 +31,7 @@
 
 #import "TermController.h"
 #import "BKDefaults.h"
-#import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
-#import "BKFont.h"
-#import "BKTheme.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
@@ -43,7 +40,6 @@
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
-static NSDictionary *bkModifierMaps = nil;
 
 @interface TermController () <TerminalDelegate, SessionDelegate>
 @end
@@ -55,24 +51,34 @@ static NSDictionary *bkModifierMaps = nil;
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
+  TermInput *_termInput;
 }
 
-+ (void)initialize
-{
-  bkModifierMaps = @{
-    BKKeyboardModifierCtrl : [NSNumber numberWithInt:UIKeyModifierControl],
-    BKKeyboardModifierAlt : [NSNumber numberWithInt:UIKeyModifierAlternate],
-    BKKeyboardModifierCmd : [NSNumber numberWithInt:UIKeyModifierCommand],
-    BKKeyboardModifierCaps : [NSNumber numberWithInt:UIKeyModifierAlphaShift],
-    BKKeyboardModifierShift : [NSNumber numberWithInt:UIKeyModifierShift]
-  };
-}
 
 - (void)write:(NSString *)input
 {
   // Trasform the string and write it, with the correct sequence
   const char *str = [input UTF8String];
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+}
+
+
+- (TermInput *)termInput {
+  return _termInput;
+}
+
+- (void)setTermInput:(TermInput *)termInput
+{
+  _termInput = termInput;
+  if (termInput) {
+    if ([_termInput isFirstResponder]) {
+      [_terminal focus];
+    } else {
+      [_terminal blur];
+    }
+  } else {
+    [_terminal blur];
+  }
 }
 
 - (void)loadView
@@ -85,92 +91,11 @@ static NSDictionary *bkModifierMaps = nil;
 
   _terminal = [[TermView alloc] initWithFrame:self.view.frame];
   _terminal.restorationIdentifier = @"TermView";
-  _terminal.delegate = self;
+  _terminal.termDelegate = self;
 
   self.view = _terminal;
-
-  [self configureTerminal];
-  [self listenToControlEvents];
 }
 
-- (void)configureTerminal
-{
-  [_terminal resetDefaultControlKeys];
-  
-  if ([BKDefaults autoRepeatKeys]) {
-    [_terminal assignSequence:TermViewAutoRepeateSeq toModifier:0];
-  }
-
-  for (NSString *key in [BKDefaults keyboardKeyList]) {
-    NSString *sequence = [BKDefaults keyboardMapping][key];
-    [self assignSequence:sequence toModifier:[bkModifierMaps[key] integerValue]];
-  }
-  
-  if ([BKDefaults isShiftAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
-  }
-
-  if ([BKDefaults isCapsAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
-  }
-
-  for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
-    NSArray *triggers = [BKDefaults keyboardFuncTriggers][func];
-    [self assignFunction:func toTriggers:triggers];
-  }
-}
-
-- (void)assignSequence:(NSString *)seq toModifier:(NSInteger)modifier
-{
-  if ([seq isEqual:BKKeyboardSeqNone]) {
-    [_terminal assignSequence:nil toModifier:modifier];
-  } else if ([seq isEqual:BKKeyboardSeqCtrl]) {
-    [_terminal assignSequence:TermViewCtrlSeq toModifier:modifier];
-  } else if ([seq isEqual:BKKeyboardSeqEsc]) {
-    [_terminal assignSequence:TermViewEscSeq toModifier:modifier];
-  }
-}
-
-- (void)assignFunction:(NSString *)func toTriggers:(NSArray *)triggers
-{
-  UIKeyModifierFlags modifiers = 0;
-  for (NSString *t in triggers) {
-    NSNumber *modifier = bkModifierMaps[t];
-    modifiers = modifiers | modifier.intValue;
-  }
-  if ([func isEqual:BKKeyboardFuncCursorTriggers]) {
-    [_terminal assignFunction:TermViewCursorFuncSeq toTriggers:modifiers];
-  } else if ([func isEqual:BKKeyboardFuncFTriggers]) {
-    [_terminal assignFunction:TermViewFFuncSeq toTriggers:modifiers];
-  }
-}
-
-- (void)listenToControlEvents
-{
-  // With this one as delegate, we would just listen to a keyboardChanged event, and remap the keyboard.
-  // Like seriously remapping all keys anyway doesn't take that long, and you are in the settings of the app.
-  // I separated it in different functions here because I really didn't want to regenerate everthing here and in the TV.
-  // The other thing is that I can actually embed the info in the dictionary, and just redo here, instead of multiple events.
-  // (But in the end those would have to be separate strings anyway, so it is pretty much the same).
-  // And that was the thing, here we were mapping Defaults -> TC -> TV, even in the functions, and that doesn't make any sense anymore.
-  
-  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardConfigChanged:)
-                        name:BKKeyboardConfigChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardConfigChanged:)
-                        name:BKKeyboardFuncTriggerChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(appearanceChanged:)
-                        name:BKAppearanceChanged
-                      object:nil];
-}
 
 - (void)viewDidAppear:(BOOL)animated
 {
@@ -233,37 +158,6 @@ static NSDictionary *bkModifierMaps = nil;
 //  }
 }
 
-- (NSString *)termInitScript
-{
-  NSMutableString *script = [[NSMutableString alloc] init];
-  
-  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (theme) {
-    [script appendString:theme.content];
-  }
-
-//  if (!_disableFontSizeSelection) {
-//    NSNumber *fontSize = [BKDefaults selectedFontSize];
-  [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%ld');", (long)_sessionParameters.fontSize]];
-//  }
-  
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
-  if (font) {
-    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
-    if (font.isCustom) {
-      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
-      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
-      [script appendString:jsScript];
-//      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
-//      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
-    }
-  }
-  
-  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
-
-  return script;
-}
 
 
 - (void)viewDidLoad
@@ -275,7 +169,7 @@ static NSDictionary *bkModifierMaps = nil;
     _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
   }
 
-  [_terminal loadTerminal: [self termInitScript]];
+  [_terminal loadTerminal];
 
   [self createPTY];
 }
@@ -390,11 +284,6 @@ static NSDictionary *bkModifierMaps = nil;
 
 #pragma mark Notifications
 
-- (void)keyboardConfigChanged:(NSNotification *)notification
-{
-  [self configureTerminal];
-}
-
 - (void)appearanceChanged:(NSNotification *)notification
 {
   if (self.isViewLoaded && self.view.window) {
@@ -411,7 +300,6 @@ static NSDictionary *bkModifierMaps = nil;
   
   [_session kill];
 }
-
 - (void)suspend
 {
   [_session suspend];
@@ -424,15 +312,19 @@ static NSDictionary *bkModifierMaps = nil;
   [self startSession];
 }
 
-#pragma mark On-Screen keyboard - UIKeyInput
-- (UIKeyboardAppearance)keyboardAppearance
+- (void)copy:(id)sender
 {
-  return UIKeyboardAppearanceDark;
+  [_terminal copy:sender];
 }
 
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return UITextAutocorrectionTypeNo;
+- (void)focus {
+  _termInput.termDelegate = self;
+  [_termInput becomeFirstResponder];
+}
+
+- (void)blur {
+  _termInput.termDelegate = nil;
+  [_terminal blur];
 }
 
 

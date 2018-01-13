@@ -37,6 +37,7 @@
 #import "ScreenController.h"
 #import "SmartKeysController.h"
 #import "TermController.h"
+#import "TermInput.h"
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
@@ -53,7 +54,6 @@
   UITapGestureRecognizer *_twoFingersTap;
   UIPanGestureRecognizer *_twoFingersDrag;
   
-  NSLayoutConstraint *_topConstraint;
   NSLayoutConstraint *_bottomConstraint;
   
   UIPageControl *_pageControl;
@@ -61,49 +61,50 @@
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
+  UIEdgeInsets _rootLayoutMargins;
+  TermInput *_termInput;
 }
 
 #pragma mark Setup
 - (void)loadView
 {
   [super loadView];
-  NSDictionary *options = [NSDictionary dictionaryWithObject:
-					  [NSNumber numberWithInt:UIPageViewControllerSpineLocationMid]
-						      forKey:UIPageViewControllerOptionSpineLocationKey];
-
-  self.view.backgroundColor = [UIColor blackColor];
+  
+  _termInput = [[TermInput alloc] init];
+  [self.view addSubview:_termInput];
+  
+  self.view.backgroundColor = [UIColor blueColor];
   self.view.opaque = YES;
 
-  _viewportsController = [[UIPageViewController alloc] initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal options:options];
-  _viewportsController.view.backgroundColor = [UIColor blackColor];
+
+  _viewportsController = [[UIPageViewController alloc]
+                          initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
+                          navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
+                          options:nil];
+  _viewportsController.view.backgroundColor = [UIColor redColor];
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
-
+  _viewportsController.view.frame = self.view.bounds;
+  _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
+  _viewportsController.automaticallyAdjustsScrollViewInsets = NO;
+  
   [self addChildViewController:_viewportsController];
   
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
-  [_viewportsController.view setTranslatesAutoresizingMaskIntoConstraints:NO];
+}
 
-  // Support new top & bottom guides (and fixes the notch)
-  if (@available(iOS 11, *)) {
-    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.topAnchor];
-    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.view.safeAreaLayoutGuide.bottomAnchor];
-  } else {
-    _topConstraint = [_viewportsController.view.topAnchor constraintEqualToAnchor:self.view.topAnchor];
-    _bottomConstraint = [_viewportsController.view.bottomAnchor constraintEqualToAnchor:self.bottomLayoutGuide.bottomAnchor];
-  }
-  
-  // Container view fills out entire root view.
-  [NSLayoutConstraint activateConstraints:
-    @[
-      _topConstraint,
-      [_viewportsController.view.leftAnchor constraintEqualToAnchor:self.view.leftAnchor],
-      [_viewportsController.view.rightAnchor constraintEqualToAnchor:self.view.rightAnchor],
-      _bottomConstraint
-      ]
-   ];
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
+  CGRect rect = self.view.bounds;
+
+  rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
+
+  _viewportsController.view.frame = rect;
+  [_viewportsController.view setNeedsLayout];
+  [_viewportsController.view layoutIfNeeded];
 }
 
 - (void)viewDidLoad
@@ -127,7 +128,8 @@
 
 - (void)focusOnShell
 {
-  [self.currentTerm.terminal performSelector:@selector(becomeFirstResponder) withObject:nil afterDelay:0];
+  [self.currentTerm.terminal focus];
+  [_termInput becomeFirstResponder];
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
@@ -142,12 +144,15 @@
     [stateManager restoreState:term];
     term.delegate = self;
     term.userActivity = nil;
+    
     [_viewports addObject:term];
   }
   
   NSInteger idx = [coder decodeIntegerForKey:@"idx"];
   TermController *term = _viewports[idx];
   [self loadViewIfNeeded];
+  term.termInput = _termInput;
+  
   [_viewportsController setViewControllers:@[term] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
 
@@ -175,15 +180,10 @@
   [defaultCenter removeObserver:self];
 
   [defaultCenter addObserver:self
-                    selector:@selector(keyboardWasShown:)
-                        name:UIKeyboardDidShowNotification
+                    selector:@selector(_keyboardWillChangeFrame:)
+                        name:UIKeyboardWillChangeFrameNotification
                       object:nil];
   
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardWillBeHidden:)
-                        name:UIKeyboardWillHideNotification
-                      object:nil];
-
   [defaultCenter addObserver:self
 		    selector:@selector(keyboardFuncTriggerChanged:)
 			name:BKKeyboardFuncTriggerChanged
@@ -239,25 +239,38 @@
 // The Space will be responsible to accommodate the work environment for widgets, adjusting the size, making sure it doesn't overlap content,
 // moving widgets or scrolling to them when necessary, etc...
 // In this case we make sure we take the SmartBar/Keys into account.
-- (void)keyboardWasShown:(NSNotification *)sender
+- (void)_keyboardWillChangeFrame:(NSNotification *)sender
 {
-  CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  CGRect newFrame = [self.view convertRect:frame fromView:[[UIApplication sharedApplication] delegate].window];
-  _bottomConstraint.constant = newFrame.origin.y - CGRectGetHeight(self.view.frame) + self.bottomLayoutGuide.length;
-
-  UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
-  if ([termAccessory isHidden]) {
-    _bottomConstraint.constant += termAccessory.frame.size.height;
+  CGRect kbEndFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  CGRect kbFame = [self.view convertRect: kbEndFrame fromView:nil];
+  
+  CGFloat bottomInset = 0;
+  if (CGRectGetMaxY(kbFame) >= self.view.bounds.size.height) {
+    bottomInset = self.view.bounds.size.height - kbFame.origin.y;
   }
+  
+  _rootLayoutMargins.bottom = bottomInset;
+  
+  if ([UIView areAnimationsEnabled]) {
+    [UIView beginAnimations:@"kb" context:nil];
 
-  [self.view setNeedsUpdateConstraints];
-}
+    NSNumber *durationValue = sender.userInfo[UIKeyboardAnimationDurationUserInfoKey];
+    NSTimeInterval animationDuration = durationValue.doubleValue;
 
-- (void)keyboardWillBeHidden:(NSNotification *)aNotification
-{
-  _bottomConstraint.constant = 0;
-  [self.view updateConstraintsIfNeeded];
-  [self.view setNeedsUpdateConstraints];
+    NSNumber *curveValue = sender.userInfo[UIKeyboardAnimationCurveUserInfoKey];
+    UIViewAnimationCurve curve = curveValue.integerValue;
+    [UIView setAnimationCurve:curve];
+    [UIView setAnimationDuration:animationDuration];
+    [UIView setAnimationBeginsFromCurrentState: YES];
+
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+
+    [UIView commitAnimations];
+  } else {
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+  }
 }
 
 - (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
@@ -271,11 +284,12 @@
   CGFloat height = self.view.frame.size.height;
   CGRect frame = self.view.frame;
 
+  
   if (y > 0) {
     [self.view setFrame:CGRectMake(frame.origin.x, y, frame.size.width, frame.size.height)];
     _viewportsController.view.alpha = 1 - (y * 2/ height);
   }
-
+  
   if (sender.state == UIGestureRecognizerStateEnded) {
     CGPoint velocity = [sender velocityInView:self.view];
     [self.view setFrame:CGRectMake(frame.origin.x, 0, frame.size.width, frame.size.height)];
@@ -305,7 +319,9 @@
   if (idx >= [_viewports count] - 1) {
     return nil;
   }
-  return _viewports[idx + 1];
+  UIViewController *ctrl = _viewports[idx + 1];
+  [ctrl.view setNeedsLayout];
+  return ctrl;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
@@ -319,16 +335,23 @@
   if (idx <= 0) {
     return nil;
   }
-  return _viewports[idx - 1];
+  UIViewController *ctrl = _viewports[idx - 1];
+  [ctrl.view setNeedsLayout];
+  return ctrl;
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
 {
   if (completed) {
-    [self displayHUD];
-    [self focusOnShell];
+    for (TermController *term in previousViewControllers) {
+      term.termInput = nil;
+    }
+    
+    TermController * term = (TermController *)pageViewController.viewControllers[0];
+    term.termInput = _termInput;
   }
 }
+
 
 #pragma mark Spaces
 - (TermController *)currentTerm {
@@ -419,7 +442,7 @@
             if (didComplete) {
               [weakSelf displayHUD];
               [weakSelf focusOnShell];
-				    }
+            }
 				  }];
   } else {
     [_viewports removeObjectAtIndex:idx];
@@ -429,8 +452,8 @@
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-		[weakSelf displayHUD];
-		[weakSelf focusOnShell];
+              [weakSelf displayHUD];
+              [weakSelf focusOnShell];
 				    }
 				  }];
   }
@@ -440,6 +463,7 @@
 {
   TermController *term = [[TermController alloc] init];
   term.sessionStateKey = sessionStateKey;
+  term.termInput = _termInput;
   term.delegate = self;
   term.userActivity = userActivity;
 
@@ -470,9 +494,8 @@
 				    completion(didComplete);
 				  }
 				  if (didComplete) {
-				    [weakSelf displayHUD];
-				    // Still not in view hierarchy, so calling through selector. There should be a way...
-				    [weakSelf focusOnShell];
+            [weakSelf displayHUD];
+            [weakSelf focusOnShell];
 				  }
 				}];
 }
@@ -489,9 +512,9 @@
 
 - (void)terminalDidResize:(TermController*)control
 {
-  if ([control.view isFirstResponder]) {
+//  if ([control.view isFirstResponder]) {
     [self displayHUD];
-  }
+//  }
 }
 
 #pragma mark External Keyboard
@@ -606,10 +629,10 @@
 				 direction:direction
 				  animated:animated
 				completion:^(BOOL didComplete) {
-				  if (didComplete) {
-				    [weakSelf displayHUD];
+          if (didComplete) {
+            [weakSelf displayHUD];
             [weakSelf focusOnShell];
-				  }
+          }
 				}];
   
 }

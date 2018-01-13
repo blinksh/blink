@@ -32,11 +32,6 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
-extern NSString * const TermViewCtrlSeq;
-extern NSString * const TermViewEscSeq;
-extern NSString * const TermViewCursorFuncSeq;
-extern NSString * const TermViewFFuncSeq;
-extern NSString * const TermViewAutoRepeateSeq;
 
 @protocol TerminalDelegate <NSObject>
 
@@ -46,18 +41,19 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)terminalIsReady: (NSDictionary *)size;
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 - (void)fontSizeChanged:(NSNumber *)size;
+- (void)focus;
+- (void)copy:(id)sender;
 @end
 
 @interface BLWebView: WKWebView
+
 @end
 
 @interface TermView : UIView
 
 @property (nonatomic) WKWebView *webView;
-@property (weak) id<TerminalDelegate> delegate;
+@property (weak) id<TerminalDelegate> termDelegate;
 @property (nonatomic, readonly, weak) NSString *title;
-@property (readwrite, copy) UITextRange *selectedTextRange;
-@property (nonatomic, readonly) UITextRange *markedTextRange;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
@@ -67,15 +63,15 @@ extern NSString * const TermViewAutoRepeateSeq;
 - (void)setColumnNumber:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)setInputEnabled:(BOOL)enabled;
-- (void)loadTerminal: (NSString *)userScript;
+- (void)loadTerminal;
 - (void)write:(NSString *)data;
-- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers;
 - (void)loadTerminalThemeJS:(NSString *)themeContent;
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
 - (void)reset;
-- (void)resetDefaultControlKeys;
+
+- (void)blur;
+- (void)focus;
+
 @end

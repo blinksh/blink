@@ -17,14 +17,15 @@ hterm.Screen.prototype.syncSelectionCaret = function() {};
 var t = new hterm.Terminal('blink');
 
 t.onTerminalReady = function() {
-  _postMessage('terminalReady', {
-    cols: t.screenSize.width,
-    rows: t.screenSize.height,
-  });
-
+  
   t.io.onTerminalResize = function(cols, rows) {
     _postMessage('sigwinch', { cols, rows });
   };
+  
+  _postMessage('terminalReady', {
+               cols: t.screenSize.width,
+               rows: t.screenSize.height,
+               });
 
   t.uninstallKeyboard();
 };

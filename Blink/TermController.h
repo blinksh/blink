@@ -34,6 +34,7 @@
 #import "TermView.h"
 #import "MCPSessionParameters.h"
 #import "StateManager.h"
+#import "TermInput.h"
 
 @class TermController;
 
@@ -53,11 +54,12 @@
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
 @property (strong, nonatomic) TermView *terminal;
-@property (strong, nonatomic) UIScrollView *containerView;
+@property (strong, nonatomic) TermInput *termInput;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong) NSString* sessionStateKey;
 @property (strong) MCPSessionParameters *sessionParameters;
+
 - (void)write:(NSString *)input;
 
 - (void)setRawMode:(BOOL)raw;

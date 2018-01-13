@@ -31,189 +31,52 @@
 
 #include <sys/ioctl.h>
 
-#import "SmartKeysController.h"
-#import "SmartKeysView.h"
+
 #import "TermView.h"
-#import "BKUserConfigurationManager.h"
-
-static NSDictionary *CTRLCodes = nil;
-static NSDictionary *FModifiers = nil;
-static NSDictionary *FKeys = nil;
-static NSString *SS3 = nil;
-static NSString *CSI = nil;
-
-NSString *const TermViewCtrlSeq = @"ctrlSeq:";
-NSString *const TermViewEscSeq = @"escSeq:";
-NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
-NSString *const TermViewFFuncSeq = @"fkeySeq:";
-NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
-
-
-@interface CC : NSObject
-
-+ (void)initialize;
-+ (NSString *)CTRL:(NSString *)c;
-+ (NSString *)ESC:(NSString *)c;
-+ (NSString *)KEY:(NSString *)c;
-
-@end
-
-@implementation CC
-+ (void)initialize
-{
-  CTRLCodes = @{
-    @" " : @"\x00",
-    @"[" : @"\x1B",
-    @"]" : @"\x1D",
-    @"\\" : @"\x1C",
-    @"^" : @"\x1E",
-    @"_" : @"\x1F",
-    @"/" : @"\x1F"
-  };
-  FModifiers = @{
-    @0 : @0,
-    [NSNumber numberWithInt:UIKeyModifierShift] : @2,
-    [NSNumber numberWithInt:UIKeyModifierAlternate] : @3,
-    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate] : @4,
-    [NSNumber numberWithInt:UIKeyModifierControl] : @5,
-    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierControl] : @6,
-    [NSNumber numberWithInt:UIKeyModifierAlternate | UIKeyModifierControl] : @7,
-    [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierControl] : @8
-  };
-  FKeys = @{
-    UIKeyInputUpArrow : @"A",
-    UIKeyInputDownArrow : @"B",
-    UIKeyInputRightArrow : @"C",
-    UIKeyInputLeftArrow : @"D",
-    SpecialCursorKeyPgUp: @"5~",
-    SpecialCursorKeyPgDown: @"6~",
-    SpecialCursorKeyHome: @"H",
-    SpecialCursorKeyEnd: @"F"
-  };
-
-  SS3 = [self ESC:@"O"];
-  CSI = [self ESC:@"["];
-}
-
-+ (NSDictionary *)FModifiers
-{
-  return FModifiers;
-}
-
-+ (NSString *)CTRL:(NSString *)c
-{
-  NSString *code;
-
-  if ((code = [CTRLCodes objectForKey:c]) != nil) {
-    return code;
-  } else {
-    char x = [c characterAtIndex:0];
-    return [NSString stringWithFormat:@"%c", x - 'a' + 1];
-  }
-}
-
-+ (NSString *)ESC:(NSString *)c
-{
-  if (c == nil || [c length] == 0 || c == UIKeyInputEscape) {
-    return @"\x1B";
-  } else {
-    return [NSString stringWithFormat:@"\x1B%c", [c characterAtIndex:0]];
-  }
-}
-
-+ (NSString *)KEY:(NSString *)c
-{
-  return [CC KEY:c MOD:0 RAW:NO];
-}
-
-+ (NSString *)KEY:(NSString *)c MOD:(NSInteger)m RAW:(BOOL)raw
-{
-  NSArray *out;
-  
-  BOOL isPageCursorKey = c == SpecialCursorKeyPgUp || c == SpecialCursorKeyPgDown;
-  
-  if ([FKeys.allKeys containsObject:c]) {
-    if (m) {
-      out = @[ CSI, FKeys[c] ];
-    } else if (raw && !isPageCursorKey) {
-      return [NSString stringWithFormat:@"%@%@", SS3, FKeys[c]];
-    } else {
-      return [NSString stringWithFormat:@"%@%@", CSI, FKeys[c]];
-    }
-  } else if (c == UIKeyInputEscape) {
-    return @"\x1B";
-  } else if ([c isEqual:@"\n"]) {
-    return @"\r";
-  }
-
-  if (m) {
-    NSString *modSeq = [NSString stringWithFormat:@"1;%@", FModifiers[[NSNumber numberWithInteger:m]]];
-    return [out componentsJoinedByString:modSeq];
-  }
-
-  return c;
-}
-
-+ (NSString *)FKEY:(NSInteger)number
-{
-  switch (number) {
-    case 1:
-      return [NSString stringWithFormat:@"%@P", SS3];
-    case 2:
-      return [NSString stringWithFormat:@"%@Q", SS3];
-    case 3:
-      return [NSString stringWithFormat:@"%@R", SS3];
-    case 4:
-      return [NSString stringWithFormat:@"%@S", SS3];
-    case 5:
-      return [NSString stringWithFormat:@"%@15~", CSI];
-    case 6:
-    case 7:
-    case 8:
-      return [NSString stringWithFormat:@"%@1%ld~", CSI, number + 1];
-    case 9:
-    case 10:
-    case 11:
-    case 12:
-      return [NSString stringWithFormat:@"%@2%ld~", CSI, number - 9];
-    default:
-      return nil;
-  }
-}
-@end
+#import "BKDefaults.h"
+#import "BKSettingsNotifications.h"
+#import "BKFont.h"
+#import "BKTheme.h"
 
 @implementation BLWebView
+
+- (BOOL)canResignFirstResponder
+{
+  return NO;
+}
 
 - (BOOL)becomeFirstResponder
 {
   return NO;
 }
+
+- (UIEdgeInsets)layoutMargins
+{
+  return UIEdgeInsetsZero;
+}
+
+- (NSDirectionalEdgeInsets)directionalLayoutMargins
+{
+  return NSDirectionalEdgeInsetsZero;
+}
+
 @end
 
-@interface TermView () <UIKeyInput, UIGestureRecognizerDelegate, WKScriptMessageHandler>
+
+@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
 @property UITapGestureRecognizer *tapBackground;
 @property UILongPressGestureRecognizer *longPressBackground;
 @property UIPinchGestureRecognizer *pinchGesture;
 @end
 
+
 @implementation TermView {
-  WKWebView *_webView;
-  // option + e on iOS lets introduce an accented character, that we override
-  BOOL _disableAccents;
-  BOOL _dismissInput;
-  BOOL _pasteMenu;
-  NSMutableArray<UIKeyCommand *> *_kbdCommands;
-  SmartKeysController *_smartKeys;
+  
   UIView *cover;
   NSTimer *_pinchSamplingTimer;
-  BOOL _raw;
-  BOOL _inputEnabled;
-  BOOL _cmdAsModifier;
-  NSMutableDictionary *_controlKeys;
-  NSMutableDictionary *_functionKeys;
-  NSMutableDictionary *_functionTriggerKeys;
-  NSString *_specialFKeysRow;
-  NSString *_textInputContextIdentifier;
+  BOOL _focused;
+  BOOL _pasteMenu;
+  
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
@@ -223,52 +86,35 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
 }
 
+
 - (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
 
   if (self) {
-    _inputEnabled = YES;
-    _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
     
-    
-    if (@available(iOS 11.0, *)) {
-      self.pasteConfiguration = [[UIPasteConfiguration alloc]
-                                 initWithTypeIdentifiersForAcceptingClass:[NSString class]];
-    }
-
-    self.inputAssistantItem.leadingBarButtonGroups = @[];
-    self.inputAssistantItem.trailingBarButtonGroups = @[];
     _jsQueue = dispatch_queue_create(@"js".UTF8String, DISPATCH_QUEUE_SERIAL);
     _jsBuffer = [[NSMutableString alloc] init];
     _jsBufferCount = 0;
 
+    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
-    [self resetDefaultControlKeys];
   }
 
   return self;
-}
-
-// Disable Smart Anything introduced within iOS11
-- (UITextSmartDashesType)smartDashesType {
-  return UITextSmartDashesTypeNo;
-}
-- (UITextSmartQuotesType)smartQuotesType {
-  return UITextSmartQuotesTypeNo;
-}
-- (UITextSmartInsertDeleteType)smartInsertDeleteType {
-  return UITextSmartInsertDeleteTypeNo;
 }
 
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
   
-  if (self.window && self.window.screen == [UIScreen mainScreen]) {
+  if (self.window.screen == [UIScreen mainScreen]) {
     [self _addGestures];
-    [self _configureNotifications];
   }
+}
+
+- (BOOL)canBecomeFirstResponder {
+  return NO;
 }
 
 - (void)_addWebView
@@ -277,17 +123,20 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BLWebView alloc] initWithFrame:self.frame configuration:configuration];
+  _webView = [[BLWebView alloc] initWithFrame:self.bounds configuration:configuration];
   [_webView.scrollView setScrollEnabled:NO];
+  [_webView.scrollView setBounces:NO];
+  _webView.scrollView.delaysContentTouches = NO;
+  
+  _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  
   
   [self addSubview:_webView];
-
-  _webView.opaque = NO;
-  _webView.translatesAutoresizingMaskIntoConstraints = NO;
-  [_webView.topAnchor constraintEqualToAnchor:self.topAnchor].active = YES;
-  [_webView.leadingAnchor constraintEqualToAnchor:self.leadingAnchor].active = YES;
-  [_webView.trailingAnchor constraintEqualToAnchor:self.trailingAnchor].active = YES;
-  [_webView.bottomAnchor constraintEqualToAnchor:self.bottomAnchor].active = YES;
+  
+  
+  self.backgroundColor = [UIColor greenColor];
+  _webView.opaque = YES;
+  _webView.backgroundColor = [UIColor yellowColor];
 }
 
 - (void)_addGestures
@@ -312,46 +161,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)_configureNotifications
-{
-  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-  [defaultCenter removeObserver:self];
-  
-  [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-  [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-}
-
-- (void)resetDefaultControlKeys
-{
-  _controlKeys = [[NSMutableDictionary alloc] init];
-  _functionKeys = [[NSMutableDictionary alloc] init];
-  _functionTriggerKeys = [[NSMutableDictionary alloc] init];
-  _specialFKeysRow = @"1234567890";
-  [self setKbdCommands];
-}
 
 #pragma mark Terminal Control
 - (void)setScrollEnabled:(BOOL)scroll
 {
   [_webView.scrollView setScrollEnabled:NO];
-}
-
-- (void)setRawMode:(BOOL)raw
-{
-  _raw = raw;
-}
-
-- (BOOL)rawMode
-{
-  return _raw;
-}
-
-- (void)setInputEnabled:(BOOL)enabled
-{
-  _inputEnabled = enabled;
-  if (!enabled && self.isFirstResponder) {
-    [self resignFirstResponder];
-  }
 }
 
 - (void)setColumnNumber:(NSInteger)count
@@ -369,9 +183,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView evaluateJavaScript:@"term_clear();" completionHandler:nil];
 }
 
-- (void)loadTerminal: (NSString *)userScript
+- (void)loadTerminal
 {
-  NSString * initScript = @"\nterm_decorate(document.getElementById('terminal'));";
+  NSString *userScript = [self termInitScript];
+  
+  NSString * initScript = @"\ndocument.fonts.ready.then(function() {term_decorate(document.getElementById('terminal'));});";
   if (userScript) {
     userScript = [userScript stringByAppendingString:initScript];
   } else {
@@ -382,9 +198,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView.configuration.userContentController addUserScript:script];
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
-  NSURL *url = [NSURL fileURLWithPath:path];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url];
-  [_webView loadRequest:request];
+  NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+  
+  html = [html stringByReplacingOccurrencesOfString:@"<!-- CSS -->" withString:[self termInitCss]];
+  
+  NSURL *baseUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
+  [_webView loadHTMLString:html baseURL:baseUrl];
 }
 
 // Write data to terminal control
@@ -440,16 +259,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSDictionary *data = sentData[@"data"];
 
   if ([operation isEqualToString:@"sigwinch"]) {
-    if ([self.delegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
-      [self.delegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
+    if ([_termDelegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
+      [_termDelegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
     }
   } else if ([operation isEqualToString:@"terminalReady"]) {
-    if ([self.delegate respondsToSelector:@selector(terminalIsReady:)]) {
-      [self.delegate terminalIsReady:data[@"size"]];
+    if ([_termDelegate respondsToSelector:@selector(terminalIsReady:)]) {
+      [_termDelegate terminalIsReady:data[@"size"]];
+      _webView.frame = self.bounds;
+      _webView.scrollView.contentInset = UIEdgeInsetsZero;
+      _webView.scrollView.contentSize = self.bounds.size;
+    }
+    if (_focused) {
+      [self focus];
+    } else {
+      [self blur];
     }
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
-    if ([self.delegate respondsToSelector:@selector(fontSizeChanged:)]) {
-      [self.delegate fontSizeChanged:data[@"size"]];
+    if ([_termDelegate respondsToSelector:@selector(fontSizeChanged:)]) {
+      [_termDelegate fontSizeChanged:data[@"size"]];
     }
   } else if ([operation isEqualToString:@"copy"]) {
     [[UIPasteboard generalPasteboard] setString:data[@"content"]];
@@ -457,52 +284,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 
 #pragma mark On-Screen keyboard - UIKeyInput
-- (UIKeyboardAppearance)keyboardAppearance
-{
-  return UIKeyboardAppearanceDark;
-}
 
-- (UITextAutocorrectionType)autocorrectionType
-{
-  return UITextAutocorrectionTypeNo;
-}
-
-- (UIView *)inputAccessoryView
-{
-  return [_smartKeys view];
-}
-
-- (void)keyboardWillHide:(NSNotification *)sender
-{
-  // Always hide the AccessoryView.
-  self.inputAccessoryView.hidden = YES;
-  //_capsMapped = YES;
-  // If keyboard hides, then become first responder. This ensures there is a responder for the long focus events.
-  //[self becomeFirstResponder];
-}
-
-- (void)keyboardWillShow:(NSNotification *)sender
-{
-  UIView *iaView = self.inputAccessoryView;
-
-  CGRect frame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  // Not needed, since iOS 8.0 respects the coordinates.
-  //CGRect inViewFrame = [self.view convertRect:frame fromView:nil];
-  CGRect bounds = self.bounds;
-  CGRect intersection = CGRectIntersection(frame, bounds);
-
-  // If the intersection is only the accesoryView, we have a external keyboard
-  if (intersection.size.height == [iaView frame].size.height) {
-    if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
-      iaView.hidden = NO;
-    } else {
-      iaView.hidden = YES;
-    }
-  } else {
-    //_capsMapped = NO;
-    iaView.hidden = NO;
-  }
-}
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
@@ -529,17 +311,22 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
-  if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-    [_webView becomeFirstResponder];
-  }
+//  if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
+//    [_webView becomeFirstResponder];
+//  }
 }
 
 - (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
-  if (![self isFirstResponder]) {
-    [self becomeFirstResponder];
+//  if (!_focused) {
+    [self focus];
+    [_termDelegate focus];
     return;
-  }
+//  }
+//  if (![self isFirstResponder]) {
+//    [self becomeFirstResponder];
+//    return;
+//  }
   
   if (_pasteMenu) {
     [[UIMenuController sharedMenuController]
@@ -585,90 +372,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_scale(%f);", _pinchGesture.scale] completionHandler:nil];
 }
 
-- (BOOL)canBecomeFirstResponder
-{
-  if (!_inputEnabled) {
-    return NO;
-  }
-
-  return YES;
-}
-
-- (NSString *)textInputContextIdentifier
-{
-  return _textInputContextIdentifier;
-}
-
-- (BOOL)canResignFirstResponder
-{
-  return YES;
-}
-  
-- (BOOL)becomeFirstResponder
-{
-  if (!_smartKeys) {
-    _smartKeys = [[SmartKeysController alloc] init];
-  }
-
-  _smartKeys.textInputDelegate = self;
-  cover.hidden = YES;
-
+- (void)focus {
+  _focused = YES;
   [_webView evaluateJavaScript:@"term_focus();" completionHandler:nil];
-  return [super becomeFirstResponder];
 }
 
-- (BOOL)resignFirstResponder
+- (void)blur
 {
+  _focused = NO;
   [_webView evaluateJavaScript:@"term_blur();" completionHandler:nil];
-  return [super resignFirstResponder];
 }
 
-- (BOOL)hasText
-{
-  return YES;
-}
 
-- (void)deleteBackward
+- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
 {
-  // Send a delete backward key to the buffer
-  [_delegate write:@"\x7f"];
-}
-
-- (void)insertText:(NSString *)text
-{
-  if (_disableAccents) {
-    // If the accent switch is on, the next character should remove them.
-    //CFStringTransform((__bridge CFMutableStringRef)mtext, nil, kCFStringTransformStripCombiningMarks, NO);
-    text = [[NSString alloc] initWithData:[text dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] encoding:NSASCIIStringEncoding];
-    _disableAccents = NO;
-  }
-
-  // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
-  BOOL capsWithoutSWKeyboard = [self capsMapped] & self.inputAccessoryView.hidden;
-  if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
-    text = [text lowercaseString];
-  }
-  
-  // If the key is a special key, we do not apply modifiers.
-  if (text.length > 1) {
-    // Check if we have a function key
-    NSRange range = [text rangeOfString:@"FKEY"];
-    if (range.location != NSNotFound) {
-      NSString *value = [text substringFromIndex:(range.length)];
-      [_delegate write:[CC FKEY:[value integerValue]]];
-    } else {
-      [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
-    }
-  } else {
-    NSUInteger modifiers = [[_smartKeys view] modifiers];
-    if (modifiers & KbdCtrlModifier) {
-      [_delegate write:[CC CTRL:text]];
-    } else if (modifiers & KbdAltModifier) {
-      [_delegate write:[CC ESC:text]];
-    } else {
-      [_delegate write:[CC KEY:text MOD:0 RAW:_raw]];
-    }
-  }
+  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_loadFontFromCss(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
 }
 
 - (void)loadTerminalThemeJS:(NSString *)themeContent
@@ -676,10 +394,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView evaluateJavaScript:themeContent completionHandler:nil];
 }
 
-- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
-{
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_loadFontFromCSS(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
-}
 
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent
 {
@@ -687,7 +401,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ cssContent ] options:0 error:nil];
   NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-  NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+  NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCss(%@[0], \"%@\")", jsString, familyName];
   
   [_webView evaluateJavaScript:jsScript completionHandler:nil];
 }
@@ -701,183 +415,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)reset
 {
   [_webView evaluateJavaScript:@"term_reset();" completionHandler:nil];
-}
-
-
-#pragma mark External Keyboard
-- (void)setKbdCommands
-{
-  _kbdCommands = [NSMutableArray array];
-  
-  [_kbdCommands addObjectsFromArray:self.presetShortcuts];
-  for (NSNumber *modifier in _controlKeys.allKeys) {
-    [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
-  }
-  for (NSNumber *modifier in _functionKeys.allKeys) {
-    [_kbdCommands addObjectsFromArray:_functionKeys[modifier]];
-  }
-  for (NSNumber *modifier in _functionTriggerKeys.allKeys) {
-    [_kbdCommands addObjectsFromArray:_functionTriggerKeys[modifier]];
-  }
-
-  [_kbdCommands addObjectsFromArray:self.functionModifierKeys];
-}
-
-- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
-{
-  if (seq) {
-    NSMutableArray *cmds = [NSMutableArray array];
-    NSString *charset;
-    if (seq == TermViewCtrlSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
-    } else if (seq == TermViewEscSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
-    } else if (seq == TermViewAutoRepeateSeq){
-      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
-    }
-    else {
-      return;
-    }
-    
-    // Cmd is default for iOS shortcuts, so we control whether or not we are re-mapping those ourselves.
-    if (modifier == UIKeyModifierCommand) {
-      _cmdAsModifier = YES;
-    }
-
-    NSUInteger length = charset.length;
-    unichar buffer[length + 1];
-    [charset getCharacters:buffer range:NSMakeRange(0, length)];
-
-    [charset enumerateSubstringsInRange:NSMakeRange(0, length)
-                                options:NSStringEnumerationByComposedCharacterSequences
-                             usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                               [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
-                                                                   modifierFlags:modifier
-                                                                          action:NSSelectorFromString(seq)]];
-
-                               // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
-                               if (modifier == UIKeyModifierAlphaShift) {
-                                 [cmds addObjectsFromArray:[self shiftMaps]];
-                               }
-                             }];
-
-    [_controlKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
-  } else {
-    if (modifier == UIKeyModifierCommand) {
-      _cmdAsModifier = NO;
-    }
-
-    [_controlKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
-  }
-  [self setKbdCommands];
-}
-
-- (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
-{
-  NSMutableArray *cmds = [[NSMutableArray alloc] init];
-
-  if (key == UIKeyInputEscape) {
-    [cmds addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)]];
-    if (modifier == UIKeyModifierAlphaShift) {
-      [cmds addObjectsFromArray:[self shiftMaps]];
-    }
-    [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
-  } else {
-    [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
-  }
-  [self setKbdCommands];
-}
-
-- (NSArray *)shiftMaps
-{
-  NSMutableArray *cmds = [[NSMutableArray alloc] init];
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
-
-  [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
-                              options:NSStringEnumerationByComposedCharacterSequences
-                           usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                             [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
-                           }];
-
-  return cmds;
-}
-
-- (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers
-{
-  // And Removing the Seq?
-  NSMutableArray *functions = [[NSMutableArray alloc] init];
-  SEL seq = NSSelectorFromString(function);
-
-  if (function == TermViewCursorFuncSeq) {
-    [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:triggers action:seq]];
-    [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:triggers action:seq]];
-    [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:triggers action:seq]];
-    [functions addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:triggers action:seq]];
-  } else if (function == TermViewFFuncSeq) {
-    [_specialFKeysRow enumerateSubstringsInRange:NSMakeRange(0, [_specialFKeysRow length])
-                                         options:NSStringEnumerationByComposedCharacterSequences
-                                      usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                                        [functions addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:triggers action:@selector(fkeySeq:)]];
-                                      }];
-  }
-
-  [_functionTriggerKeys setObject:functions forKey:function];
-  [self setKbdCommands];
-}
-
-- (NSArray *)presetShortcuts
-{
-  return @[ [UIKeyCommand keyCommandWithInput:@"+"
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(increaseFontSize:)
-             discoverabilityTitle:@"Zoom In"],
-            [UIKeyCommand keyCommandWithInput:@"-"
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(decreaseFontSize:)
-             discoverabilityTitle:@"Zoom Out"],
-            [UIKeyCommand keyCommandWithInput:@"="
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(resetFontSize:)
-             discoverabilityTitle:@"Reset Zoom"],
-	    [UIKeyCommand keyCommandWithInput: @"v" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
-                                          action: @selector(yank:)
-                            discoverabilityTitle: @"Paste"]];
-}
-
-- (NSArray *)functionModifierKeys
-{
-  NSMutableArray *f = [NSMutableArray array];
-
-  for (NSNumber *modifier in [CC FModifiers]) {
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-  }
-
-  [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
-
-  return f;
-}
-
-- (NSArray<UIKeyCommand *> *)keyCommands
-{
-  return _kbdCommands;
-}
-
-- (BOOL)capsMapped
-{
-  return ([[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count] ||
-          [[_functionKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count]);
-}
-
-- (void)yank:(id)sender
-{
-  NSString *str = [UIPasteboard generalPasteboard].string;
-
-  if (str) {
-    [_delegate write:str];
-  }
 }
 
 - (void)increaseFontSize:(UIKeyCommand *)cmd
@@ -895,147 +432,72 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_webView evaluateJavaScript:@"term_resetFontSize();" completionHandler:nil];
 }
 
-- (void)escSeq:(UIKeyCommand *)cmd
-{
-  [_delegate write:[CC ESC:cmd.input]];
-}
-
-- (void)arrowSeq:(UIKeyCommand *)cmd
-{
-  [_delegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
-}
-
-// Shift prints uppercase in the case CAPSLOCK is blocked
-- (void)shiftSeq:(UIKeyCommand *)cmd
-{
-  if ([cmd.input length] == 0) {
-    return;
-  } else {
-    [_delegate write:[cmd.input uppercaseString]];
-  }
-}
-
-- (void)ctrlSeq:(UIKeyCommand *)cmd
-{
-  [_delegate write:[CC CTRL:cmd.input]];
-}
-
-- (void)metaSeq:(UIKeyCommand *)cmd
-{
-  if ([cmd.input isEqual:@"e"]) {
-    //_disableAccents = YES;
-  }
-
-  [_delegate write:[CC ESC:cmd.input]];
-}
-
-- (void)cursorSeq:(UIKeyCommand *)cmd
-{
-  if (cmd.input == UIKeyInputUpArrow) {
-    [_delegate write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputDownArrow) {
-    [_delegate write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputLeftArrow) {
-    [_delegate write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputRightArrow) {
-    [_delegate write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
-  }
-}
-
-- (void)fkeySeq:(UIKeyCommand *)cmd
-{
-  NSInteger value = [cmd.input integerValue];
-  
-  if (value == 0) {
-    [_delegate write:[CC FKEY:10]];
-  } else {
-    [_delegate write:[CC FKEY:value]];
-  }
-}
-
-- (void)autoRepeatSeq:(id)sender
-{
-  UIKeyCommand *command = (UIKeyCommand*)sender;
-  [_delegate write:command.input];
-}
-
-
-
-// This are all key commands capture by UIKeyInput and triggered
-// straight to the handler. A different firstresponder than UIKeyInput could
-// capture them, but we would not capture normal keys. We remap them
-// here as commands to the terminal.
-
-// Cmd+c
 - (void)copy:(id)sender
 {
-//   if ([sender isKindOfClass:[UIMenuController class]]) {
-     [_webView copy:sender];
-//   } else {
-//    [_delegate write:[CC CTRL:@"c"]];
-//  }
-}
-// Cmd+x
-- (void)cut:(id)sender
-{
-  [_delegate write:[CC CTRL:@"x"]];
-}
-// Cmd+v
-- (void)paste:(id)sender
-{
-  if ([sender isKindOfClass:[UIMenuController class]] || !_cmdAsModifier) {
-    [self yank:sender];
-  } else {
-    [_delegate write:[CC CTRL:@"v"]];
-  }
+  [_webView copy:sender];
 }
 
-- (void)pasteItemProviders:(NSArray<NSItemProvider *> *)itemProviders
+- (void)setRawMode:(BOOL)raw
 {
-  NSLog(@"%@", itemProviders);
+  
 }
 
-- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider *> *)itemProviders
-{
+- (BOOL)rawMode {
   return YES;
 }
 
-// Cmd+a
-- (void)selectAll:(id)sender
+- (NSString *)termInitCss
 {
-  [_delegate write:[CC CTRL:@"a"]];
-}
-// Cmd+b
-- (void)toggleBoldface:(id)sender
-{
-  [_delegate write:[CC CTRL:@"b"]];
-}
-// Cmd+i
-- (void)toggleItalics:(id)sender
-{
-  [_delegate write:[CC CTRL:@"i"]];
-}
-// Cmd+u
-- (void)toggleUnderline:(id)sender
-{
-  [_delegate write:[CC CTRL:@"u"]];
-}
-
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-  if ([sender isKindOfClass:[UIMenuController class]]) {
-    // The menu can only perform paste methods
-    if (action == @selector(paste:) || action == @selector(copy:)) {
-      return YES;
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  if (font) {
+//    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
+    if (font.isCustom) {
+      return font.content;
+//      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
+//      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//      //      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
+//      [script appendString:jsScript];
+//      //      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+//      //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
     }
+  }
+  return @"";
+}
 
-    return NO;
+- (NSString *)termInitScript
+{
+  NSMutableString *script = [[NSMutableString alloc] init];
+  
+  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+  if (theme) {
+    [script appendString:theme.content];
   }
   
-  return [super canPerformAction:action withSender:sender];
+  //  if (!_disableFontSizeSelection) {
+  //    NSNumber *fontSize = [BKDefaults selectedFontSize];
+  // TODO
+//  [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%ld');", (long)_sessionParameters.fontSize]];
+  //  }
+  
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  if (font) {
+    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
+    if (font.isCustom) {
+//      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
+//      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
+//      [script appendString:jsScript];
+      //      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
+      //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+    }
+  }
+  
+  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
+  
+  return script;
 }
+
+
+
 
 @end

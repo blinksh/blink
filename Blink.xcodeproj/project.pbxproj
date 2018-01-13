@@ -176,11 +176,11 @@
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
+		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D29392AE2004C6C4001FB2AA /* FiraCode-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */; };
 		D29392AF2004C6C4001FB2AA /* FiraCode-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AB2004C6C3001FB2AA /* FiraCode-Regular.ttf */; };
-		D29392B02004C6C4001FB2AA /* FiraCode-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AC2004C6C3001FB2AA /* FiraCode-Light.ttf */; };
 		D29392B12004C6C4001FB2AA /* FiraCode-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AD2004C6C3001FB2AA /* FiraCode-Medium.ttf */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B82004DCC9001FB2AA /* hterm_all.js */; };
@@ -451,11 +451,12 @@
 		D23B188A1FFB76B300A6C903 /* SessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionParameters.m; sourceTree = "<group>"; };
 		D23B188C1FFB776000A6C903 /* MoshSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoshSessionParameters.h; sourceTree = "<group>"; };
 		D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoshSessionParameters.m; sourceTree = "<group>"; };
+		D23D0FAB2008DAEB00B33A9F /* TermInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermInput.h; sourceTree = "<group>"; };
+		D23D0FAC2008DAEB00B33A9F /* TermInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermInput.m; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Bold.ttf"; sourceTree = "<group>"; };
 		D29392AB2004C6C3001FB2AA /* FiraCode-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Regular.ttf"; sourceTree = "<group>"; };
-		D29392AC2004C6C3001FB2AA /* FiraCode-Light.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Light.ttf"; sourceTree = "<group>"; };
 		D29392AD2004C6C3001FB2AA /* FiraCode-Medium.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Medium.ttf"; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
@@ -531,6 +532,8 @@
 				079635861D0E6602000473B1 /* fterm.h */,
 				D23B18831FF7CEBA00A6C903 /* StateManager.h */,
 				D23B18841FF7CEBA00A6C903 /* StateManager.m */,
+				D23D0FAB2008DAEB00B33A9F /* TermInput.h */,
+				D23D0FAC2008DAEB00B33A9F /* TermInput.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -553,10 +556,7 @@
 				D2496F3B20038B3300E75FE9 /* hterm_all.min.js */,
 				D29392B62004D785001FB2AA /* hterm_all.patches.js */,
 				079635DA1D0F8219000473B1 /* webfont.js */,
-				D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */,
-				D29392AC2004C6C3001FB2AA /* FiraCode-Light.ttf */,
-				D29392AD2004C6C3001FB2AA /* FiraCode-Medium.ttf */,
-				D29392AB2004C6C3001FB2AA /* FiraCode-Regular.ttf */,
+				D266E19F2007802D007365FD /* fonts */,
 				C94437641D838ABF0096F84E /* Fonts */,
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
@@ -919,6 +919,16 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		D266E19F2007802D007365FD /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */,
+				D29392AD2004C6C3001FB2AA /* FiraCode-Medium.ttf */,
+				D29392AB2004C6C3001FB2AA /* FiraCode-Regular.ttf */,
+			);
+			name = fonts;
+			sourceTree = "<group>";
+		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
@@ -1165,7 +1175,6 @@
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				D29392AF2004C6C4001FB2AA /* FiraCode-Regular.ttf in Resources */,
-				D29392B02004C6C4001FB2AA /* FiraCode-Light.ttf in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
 				D29392B12004C6C4001FB2AA /* FiraCode-Medium.ttf in Resources */,
@@ -1268,6 +1277,7 @@
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
+				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,

@@ -80,10 +80,16 @@ NSString *const KbdTabKey = @"⇥";
 
 - (void)awakeFromNib {
   [super awakeFromNib];
-  self.translatesAutoresizingMaskIntoConstraints = NO;
-  _nonModifierScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+//  self.translatesAutoresizingMaskIntoConstraints = NO;
+//  _nonModifierScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _nonModifierScrollView.backgroundColor = [UIColor grayColor];
+  self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   [self setupModifierButtons];
+}
+
+- (CGSize)intrinsicContentSize
+{
+  return CGSizeZero;
 }
 
 - (void)setupModifierButtons {

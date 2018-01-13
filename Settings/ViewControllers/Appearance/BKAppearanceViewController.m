@@ -171,10 +171,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else {
     _testTerminal = view.subviews[0];
   }
-  _testTerminal.delegate = self;
+  _testTerminal.termDelegate = self;
   _testTerminal.backgroundColor = [UIColor blackColor];
   [_testTerminal setInputEnabled:NO];
-  [_testTerminal loadTerminal: nil];
+  [_testTerminal loadTerminal];
 }
 
 - (NSString *)cellIdentifierForIndexPath:(NSIndexPath *)indexPath
@@ -367,7 +367,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)terminalIsReady:(NSDictionary *)size
 {
-  NSLog(@"reset");
   [_testTerminal setColumnNumber:60];
   BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
   if (selectedTheme) {
