@@ -16,13 +16,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     div.appendChild(this.iframe_);
   */
 
-  var self = this;
-  function _resize() {
-    self.onResize_();
-  }
-  window.addEventListener('resize', _resize);// this.onResize_.bind(this));
-  
-  document.fonts.ready.then(_resize);
+  window.addEventListener('resize', this.onResize_.bind(this));
 
   var doc = (this.document_ = document);
   doc.body.style.cssText =

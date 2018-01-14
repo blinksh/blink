@@ -185,9 +185,9 @@
 
 - (void)loadTerminal
 {
-  NSString *userScript = [self termInitScript];
+  NSString *userScript = [self _termInitScript];
   
-  NSString * initScript = @"\ndocument.fonts.ready.then(function() {term_decorate(document.getElementById('terminal'));});";
+  NSString * initScript = @"";
   if (userScript) {
     userScript = [userScript stringByAppendingString:initScript];
   } else {
@@ -198,12 +198,10 @@
   [_webView.configuration.userContentController addUserScript:script];
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
-  NSString *html = [NSString stringWithContentsOfFile:path encoding:NSUTF8StringEncoding error:nil];
+  NSURL *url = [NSURL fileURLWithPath:path];
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
   
-  html = [html stringByReplacingOccurrencesOfString:@"<!-- CSS -->" withString:[self termInitCss]];
-  
-  NSURL *baseUrl = [NSURL fileURLWithPath:[[NSBundle mainBundle] bundlePath]];
-  [_webView loadHTMLString:html baseURL:baseUrl];
+  [_webView loadRequest:request];
 }
 
 // Write data to terminal control
@@ -442,31 +440,31 @@
   
 }
 
+- (void)setInputEnabled:(BOOL) enabled {
+  
+}
+
 - (BOOL)rawMode {
   return YES;
 }
 
-- (NSString *)termInitCss
+- (NSString *)_termInitScript
 {
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  NSString *fontFamily = NULL;
+  
   if (font) {
-//    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
-    if (font.isCustom) {
-      return font.content;
-//      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
-//      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//      //      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
-//      [script appendString:jsScript];
-//      //      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
-//      //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+    fontFamily = font.name;
+    if (![@"Menlo" isEqualToString:fontFamily]) {
+      fontFamily = [fontFamily stringByAppendingString:@", Menlo"];
     }
+  } else {
+    fontFamily = @"Menlo";
   }
-  return @"";
-}
-
-- (NSString *)termInitScript
-{
+  
   NSMutableString *script = [[NSMutableString alloc] init];
+  
+  [script appendString:@"function applyUserSetting() {\n"];
   
   BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
   if (theme) {
@@ -479,7 +477,6 @@
 //  [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%ld');", (long)_sessionParameters.fontSize]];
   //  }
   
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
   if (font) {
     [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
     if (font.isCustom) {
@@ -494,6 +491,16 @@
   
   [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
   
+  
+  [script appendString:@"\n};"];
+
+//  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ fontFamily ] options:0 error:nil];
+//  NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//  NSString *jsScript = [NSString stringWithFormat:@"\n waitForFontFamily(%@[0], applyUserSetting)", jsString];
+//
+//  [script appendString:jsScript];
+  [script appendString:@"\nterm_decorate(document.getElementById('terminal'));"];
+//
   return script;
 }
 

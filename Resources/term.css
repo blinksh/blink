@@ -1,0 +1,79 @@
+/* FiraCode */
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('FiraCode.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code';
+  src: url('FiraCode-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Menlo */
+
+@font-face {
+  font-family: 'Menlo';
+  src: url('Menlo-for-Powerline.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Menlo';
+  src: url('Menlo-Italic-for-Powerline.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Menlo';
+  src: url('Menlo-Bold-for-Powerline.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Menlo';
+  src: url('Menlo-Bold-Italic-for-Powerline.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Roboto Mono */
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('Menlo-for-Powerline.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('Roboto-Mono-Italic-for-Powerline.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('Roboto-Mono-Bold-for-Powerline.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Roboto Mono';
+  src: url('Roboto-Mono-Bold-Italic-for-Powerline.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Source Code Pro */
+
+
