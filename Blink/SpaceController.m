@@ -97,7 +97,13 @@
   [super viewWillLayoutSubviews];
   CGRect rect = self.view.bounds;
 
-  rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
+  if (@available(iOS 11.0, *)) {
+    UIEdgeInsets insets = self.view.safeAreaInsets;
+    insets.bottom = MAX(_rootLayoutMargins.bottom, insets.bottom);
+    rect = UIEdgeInsetsInsetRect(rect, insets);
+  } else {
+    rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
+  }
 
   _viewportsController.view.frame = rect;
   [_viewportsController.view setNeedsLayout];
@@ -125,6 +131,7 @@
 
 - (void)focusOnShell
 {
+  // UIPagedController animation can crash. So we enqueue focus
   dispatch_async(dispatch_get_main_queue(), ^{
     self.currentTerm.termInput = _termInput;
     [self.currentTerm focus];
