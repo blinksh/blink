@@ -233,7 +233,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [super didMoveToWindow];
   
   // Do not show smart kb on non touch screen
-  if (self.window.screen != [UIScreen mainScreen]) {
+  if (self.window && self.window.screen != [UIScreen mainScreen]) {
     self.inputAccessoryView = nil;
   }
 }

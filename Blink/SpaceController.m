@@ -95,6 +95,7 @@
 - (void)viewWillLayoutSubviews
 {
   [super viewWillLayoutSubviews];
+
   CGRect rect = self.view.bounds;
 
   if (@available(iOS 11.0, *)) {
@@ -156,6 +157,7 @@
   
   NSInteger idx = [coder decodeIntegerForKey:@"idx"];
   TermController *term = _viewports[idx];
+  
   [self loadViewIfNeeded];
   term.termInput = _termInput;
   
