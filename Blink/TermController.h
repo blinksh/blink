@@ -67,5 +67,7 @@
 - (void)terminate;
 - (void)suspend;
 - (void)resume;
+- (void)focus;
+- (void)blur;
 
 @end

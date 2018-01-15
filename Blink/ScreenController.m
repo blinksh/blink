@@ -113,7 +113,6 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   _bootControllers = nil;
 }
 
-
 - (void)setupWindowForScreen:(UIScreen *)screen
 {
   UIWindow *window = [[UIWindow alloc] initWithFrame:[screen bounds]];

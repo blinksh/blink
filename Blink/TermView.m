@@ -71,8 +71,6 @@
 
 
 @implementation TermView {
-  
-  UIView *cover;
   NSTimer *_pinchSamplingTimer;
   BOOL _focused;
   BOOL _pasteMenu;
@@ -80,10 +78,6 @@
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
-  NSInteger _jsBufferCount;
-  NSInteger _currentBufferUsed;
-  NSInteger _maxBufferUsed;
-  
 }
 
 
@@ -93,9 +87,8 @@
 
   if (self) {
     
-    _jsQueue = dispatch_queue_create(@"js".UTF8String, DISPATCH_QUEUE_SERIAL);
+    _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
     _jsBuffer = [[NSMutableString alloc] init];
-    _jsBufferCount = 0;
 
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
@@ -128,16 +121,12 @@
   [_webView.scrollView setScrollEnabled:NO];
   [_webView.scrollView setBounces:NO];
   _webView.scrollView.delaysContentTouches = NO;
-  
+  _webView.opaque = NO;
+  _webView.backgroundColor = [UIColor clearColor];
   
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
   [self addSubview:_webView];
-  
-  
-  self.backgroundColor = [UIColor greenColor];
-  _webView.opaque = YES;
-  _webView.backgroundColor = [UIColor yellowColor];
 }
 
 - (void)_addGestures
@@ -212,15 +201,10 @@
     [_jsBuffer appendString:data];
     
     if (_jsIsBusy) {
-      _jsBufferCount++;
-      _currentBufferUsed++;
       return;
     }
   
     _jsIsBusy = YES;
-    
-    _maxBufferUsed = MAX(_maxBufferUsed, _currentBufferUsed);
-    _currentBufferUsed = 0;
     
     NSString * buffer = _jsBuffer;
     _jsBuffer = [[NSMutableString alloc] init];
@@ -267,11 +251,6 @@
       _webView.frame = self.bounds;
       _webView.scrollView.contentInset = UIEdgeInsetsZero;
       _webView.scrollView.contentSize = self.bounds.size;
-    }
-    if (_focused) {
-      [self focus];
-    } else {
-      [self blur];
     }
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     if ([_termDelegate respondsToSelector:@selector(fontSizeChanged:)]) {
@@ -322,10 +301,6 @@
     [_termDelegate focus];
     return;
 //  }
-//  if (![self isFirstResponder]) {
-//    [self becomeFirstResponder];
-//    return;
-//  }
   
   if (_pasteMenu) {
     [[UIMenuController sharedMenuController]
@@ -373,7 +348,6 @@
 
 - (void)focus {
   _focused = YES;
-  
   [_webView evaluateJavaScript:@"term_focus();" completionHandler:nil];
 }
 

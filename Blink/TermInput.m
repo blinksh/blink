@@ -206,7 +206,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.inputAssistantItem.trailingBarButtonGroups = @[];
     
     // Disable Smart Anything introduced within iOS11
-    
     if (@available(iOS 11.0, *)) {
       self.smartDashesType = UITextSmartDashesTypeNo;
       self.smartQuotesType = UITextSmartQuotesTypeNo;
@@ -216,6 +215,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
     
+    _smartKeys = [[SmartKeysController alloc] init];
+    _smartKeys.textInputDelegate = self;
+    self.inputAccessoryView = [_smartKeys view];
     
     [self _configureNotifications];
     [self resetDefaultControlKeys];
@@ -226,6 +228,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return self;
 }
 
+- (void)didMoveToWindow
+{
+  [super didMoveToWindow];
+  
+  // Do not show smart kb on non touch screen
+  if (self.window.screen != [UIScreen mainScreen]) {
+    self.inputAccessoryView = nil;
+  }
+}
+
 - (void)_configureNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
@@ -234,7 +246,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 //  [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 //  [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
 }
-
 
 - (void)resetDefaultControlKeys
 {

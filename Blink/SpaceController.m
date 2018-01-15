@@ -73,7 +73,6 @@
   _termInput = [[TermInput alloc] init];
   [self.view addSubview:_termInput];
   
-  self.view.backgroundColor = [UIColor blueColor];
   self.view.opaque = YES;
 
 
@@ -81,13 +80,11 @@
                           initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
                           navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                           options:nil];
-  _viewportsController.view.backgroundColor = [UIColor redColor];
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
   _viewportsController.view.frame = self.view.bounds;
   _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
-  _viewportsController.automaticallyAdjustsScrollViewInsets = NO;
   
   [self addChildViewController:_viewportsController];
   
@@ -95,9 +92,9 @@
   [_viewportsController didMoveToParentViewController:self];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)viewWillLayoutSubviews
 {
-  [super viewDidLayoutSubviews];
+  [super viewWillLayoutSubviews];
   CGRect rect = self.view.bounds;
 
   rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
@@ -128,8 +125,10 @@
 
 - (void)focusOnShell
 {
-  [self.currentTerm.terminal focus];
-  [_termInput becomeFirstResponder];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    self.currentTerm.termInput = _termInput;
+    [self.currentTerm focus];
+  });
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
@@ -153,7 +152,15 @@
   [self loadViewIfNeeded];
   term.termInput = _termInput;
   
-  [_viewportsController setViewControllers:@[term] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
+  __weak typeof(self) weakSelf = self;
+  [_viewportsController setViewControllers:@[term]
+                                 direction:UIPageViewControllerNavigationDirectionForward
+                                  animated:NO
+                                completion:^(BOOL complete) {
+                                  if (complete) {
+                                    [weakSelf focusOnShell];
+                                  }
+                                }];
 }
 
 - (void)encodeRestorableStateWithCoder:(NSCoder *)coder
@@ -349,6 +356,8 @@
     
     TermController * term = (TermController *)pageViewController.viewControllers[0];
     term.termInput = _termInput;
+    [self displayHUD];
+    [self focusOnShell];
   }
 }
 
@@ -490,13 +499,13 @@
 				 direction:UIPageViewControllerNavigationDirectionForward
 				  animated:animated
 				completion:^(BOOL didComplete) {
-				  if (completion) {
-				    completion(didComplete);
-				  }
 				  if (didComplete) {
             [weakSelf displayHUD];
             [weakSelf focusOnShell];
 				  }
+          if (completion) {
+            completion(didComplete);
+          }
 				}];
 }
 

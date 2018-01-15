@@ -214,8 +214,9 @@ NSString *const KbdTabKey = @"⇥";
     [stack addArrangedSubview:button];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchUpInside];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchUpOutside];
+    [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchCancel];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchDragExit];
-    [button addTarget:nil action:@selector(nonModifierDown:) forControlEvents:UIControlEventTouchDown];
+    [button addTarget:nil action:@selector(nonModifierDown:forEvent:) forControlEvents:UIControlEventTouchDown];
   }
 
   return stack;
@@ -226,8 +227,17 @@ NSString *const KbdTabKey = @"⇥";
   [self.delegate symbolUp:sender.currentTitle];
 }
 
-- (IBAction)nonModifierDown:(UIButton *)sender
+- (IBAction)nonModifierDown:(UIButton *)sender forEvent:(UIEvent *)event
 {
+  UITouch * touch = [[event.allTouches allObjects] firstObject];
+  
+  if (touch) {
+    CGPoint p = [touch locationInView:touch.window];
+    
+    if ((CGRectGetMaxY(touch.window.bounds) - p.y) <= 10) {
+      return;
+    }
+  }
   [self.delegate symbolDown:sender.currentTitle];
 }
 
