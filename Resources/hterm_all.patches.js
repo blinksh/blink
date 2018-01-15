@@ -67,12 +67,12 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   // Some of these attributes are standard while others are browser specific,
   // but should be safely ignored by other browsers.
   this.screen_ = doc.createElement('x-screen');
-  this.screen_.setAttribute('contenteditable', 'false'); // Blink: Set this to `false` makes selection on iOS possible.
-  this.screen_.setAttribute('spellcheck', 'false');
-  this.screen_.setAttribute('autocomplete', 'off');
-  this.screen_.setAttribute('autocorrect', 'off');
-  this.screen_.setAttribute('autocaptalize', 'none');
-  this.screen_.setAttribute('role', 'textbox');
+//  this.screen_.setAttribute('contenteditable', 'false'); // Blink: Set this to `false` makes selection on iOS possible.
+//  this.screen_.setAttribute('spellcheck', 'false');
+//  this.screen_.setAttribute('autocomplete', 'off');
+//  this.screen_.setAttribute('autocorrect', 'off');
+//  this.screen_.setAttribute('autocaptalize', 'none');
+//  this.screen_.setAttribute('role', 'textbox');
   this.screen_.setAttribute('tabindex', '-1');
   this.screen_.style.cssText =
     'caret-color: transparent;' +

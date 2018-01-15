@@ -15,12 +15,12 @@ var lightMagenta= '#F92672'; // pink
 var lightCyan   = '#28C6E4'; // cyan
 var lightWhite  = '#E0E0E0'; // white
 
-t.prefs_.set('color-palette-overrides',
+term_set('color-palette-overrides',
                  [ black , red     , green  , yellow,
                   blue     , magenta , cyan   , white,
                   lightBlack   , lightRed  , lightGreen , lightYellow,
                   lightBlue    , lightMagenta  , lightCyan  , lightWhite ]);
 
-t.prefs_.set('cursor-color', 'rgba(0, 0, 0, 0.5)');
-t.prefs_.set('foreground-color', '#000000');
-t.prefs_.set('background-color', white);
+term_set('cursor-color', 'rgba(0, 0, 0, 0.5)');
+term_set('foreground-color', '#000000');
+term_set('background-color', white);

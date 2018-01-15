@@ -1,6 +1,6 @@
 'use strict';
 
-hterm.defaultStorage = new lib.Storage.Local();
+hterm.defaultStorage = new lib.Storage.Memory();
 
 function _postMessage(op, data) {
   window.webkit.messageHandlers.interOp.postMessage({ op, data });
@@ -14,44 +14,49 @@ hterm.copySelectionToClipboard = function(document, content) {
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
 
-var prefs = new hterm.PreferenceManager('default')
-var t = { prefs_: prefs };
+// Before we fully load hterm. We set options here.
+var _prefs = new hterm.PreferenceManager('blink');
+var t = { prefs_: _prefs }; // <- `t` will become actual hterm instance after decorate.
 
 function term_set(key, value) {
-  t.prefs_.set(key, value);
+  _prefs.set(key, value);
 }
 
 function term_get(key) {
-  return t.prefs_.get(key);
+  return _prefs.get(key);
 }
 
-function term_init() {
+function term_setupDefaults() {
   term_set('enable-bold', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
   term_set('allow-images-inline', true); // need to make it work
 }
 
-function term_decorate(element) {
-  waitForFontFamily('', function() {
-    applyUserSetting();
-    t = new hterm.Terminal('blink');
-    
-    //  t.syncFontFamily();
-    t.onTerminalReady = function() {
+function term_setup() {
+  
+  t = new hterm.Terminal('blink');
+
+  t.onTerminalReady = function() {
     t.io.onTerminalResize = function(cols, rows) {
-    _postMessage('sigwinch', { cols, rows });
+      _postMessage('sigwinch', { cols, rows });
     };
-    
+
     _postMessage('terminalReady', {
-                 cols: t.screenSize.width,
-                 rows: t.screenSize.height,
-                 });
-    
+      cols: t.screenSize.width,
+      rows: t.screenSize.height,
+    });
+
     t.uninstallKeyboard();
-    };
-    t.decorate(element);
-  });
+  };
+
+  t.decorate(document.getElementById('terminal'));
+}
+
+function term_init() {
+  term_setupDefaults();
+  applyUserSettings();
+  waitForFontFamily(term_setup);
 }
 
 function term_write(data) {
@@ -140,12 +145,17 @@ function term_loadFontFromCss(url, name) {
   term_setFontFamily(name);
 }
 
-function waitForFontFamily(name, callback) {
-  const families = name.split(/\s*,\s*/);
-  
+function waitForFontFamily(callback) {
+  const fontFamily = term_get('font-family');
+  if (!fontFamily) {
+    return callback();
+  }
+
+  const families = fontFamily.split(/\s*,\s*/);
+
   WebFont.load({
     custom: { families },
     active: callback,
-    inactive: callback
+    inactive: callback,
   });
 }

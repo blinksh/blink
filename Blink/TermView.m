@@ -121,6 +121,7 @@
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
+  configuration.dataDetectorTypes = WKDataDetectorTypeNone;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BLWebView alloc] initWithFrame:self.bounds configuration:configuration];
@@ -128,8 +129,8 @@
   [_webView.scrollView setBounces:NO];
   _webView.scrollView.delaysContentTouches = NO;
   
-  _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
+  _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
   [self addSubview:_webView];
   
@@ -372,6 +373,7 @@
 
 - (void)focus {
   _focused = YES;
+  
   [_webView evaluateJavaScript:@"term_focus();" completionHandler:nil];
 }
 
@@ -464,7 +466,7 @@
   
   NSMutableString *script = [[NSMutableString alloc] init];
   
-  [script appendString:@"function applyUserSetting() {\n"];
+  [script appendString:@"function applyUserSettings() {\n"];
   
   BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
   if (theme) {
@@ -499,7 +501,7 @@
 //  NSString *jsScript = [NSString stringWithFormat:@"\n waitForFontFamily(%@[0], applyUserSetting)", jsString];
 //
 //  [script appendString:jsScript];
-  [script appendString:@"\nterm_decorate(document.getElementById('terminal'));"];
+  [script appendString:@"\nterm_init();"];
 //
   return script;
 }

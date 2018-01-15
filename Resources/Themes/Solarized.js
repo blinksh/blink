@@ -15,13 +15,13 @@ var blue =       "#268bd2";
 var cyan =       "#2aa198";
 var green =      "#859900";
 
-t.prefs_.set('color-palette-overrides',
+term_set('color-palette-overrides',
 		 [ base02 , red     , green  , yellow,
 		   blue     , magenta , cyan   , base2,
 		   base03   , orange  , base01 , base00,
 		   base0    , violet  , base1  , base3 ]);
 
-t.prefs_.set('cursor-color', 'rgba(255, 255, 255, 0.3)');
-t.prefs_.set('cursor-blink', false);
-t.prefs_.set('foreground-color', base0);
-t.prefs_.set('background-color', base03);
+term_set('cursor-color', 'rgba(255, 255, 255, 0.3)');
+term_set('cursor-blink', false);
+term_set('foreground-color', base0);
+term_set('background-color', base03);
