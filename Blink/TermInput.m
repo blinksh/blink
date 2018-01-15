@@ -243,8 +243,34 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter removeObserver:self];
   
+  [defaultCenter addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+  [defaultCenter addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 //  [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
 //  [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+}
+
+- (void)_willResignActive
+{
+//  [self reloadInputViews];
+}
+
+- (void)_didBecomeActive
+{
+  [self reloadInputViews];
+}
+
+- (BOOL)becomeFirstResponder
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [self reloadInputViews];
+  });
+  return [super becomeFirstResponder];
+}
+
+- (BOOL)resignFirstResponder
+{
+  [_termDelegate blur];
+  return [super resignFirstResponder];
 }
 
 - (void)resetDefaultControlKeys

@@ -42,6 +42,7 @@
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 - (void)fontSizeChanged:(NSNumber *)size;
 - (void)focus;
+- (void)blur;
 - (void)copy:(id)sender;
 @end
 
