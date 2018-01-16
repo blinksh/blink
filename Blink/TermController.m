@@ -295,8 +295,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)terminate
 {
-  // Disconnect message handler
-  [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
+  [_terminal terminate];
   
   [_session kill];
 }
@@ -312,11 +311,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [self startSession];
 }
 
-- (void)copy:(id)sender
-{
-  [_terminal copy:sender];
-}
-
 - (void)focus {
   _termInput.termDelegate = self;
   [_terminal focus];
@@ -330,6 +324,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [_terminal blur];
 }
 
-
+- (TermView *) termView {
+  return _terminal;
+}
 
 @end

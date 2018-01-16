@@ -170,6 +170,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
   NSString *_textInputContextIdentifier;
+
   
   // option + e on iOS lets introduce an accented character, that we override
   BOOL _disableAccents;
@@ -214,6 +215,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
+    
+    self.keyboardType = UIKeyboardAppearanceDark;
     
     _smartKeys = [[SmartKeysController alloc] init];
     _smartKeys.textInputDelegate = self;
@@ -411,7 +414,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)copy:(id)sender
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
-    [_termDelegate copy:sender];
+    [_termDelegate.termView copy:sender];
   } else {
     [_termDelegate write:[CC CTRL:@"c"]];
   }
@@ -430,16 +433,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate write:[CC CTRL:@"v"]];
   }
 }
-
-//- (void)pasteItemProviders:(NSArray<NSItemProvider *> *)itemProviders
-//{
-//  NSLog(@"%@", itemProviders);
-//}
-//
-//- (BOOL)canPasteItemProviders:(NSArray<NSItemProvider *> *)itemProviders
-//{
-//  return YES;
-//}
 
 // Cmd+a
 - (void)selectAll:(id)sender
@@ -466,7 +459,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
-    if (action == @selector(paste:) || action == @selector(copy:)) {
+    if (action == @selector(paste:) ||
+        action == @selector(copy:) ||
+        action == @selector(copyLink:) ||
+        action == @selector(openLink:)
+      ) {
       return YES;
     }
     
@@ -476,15 +473,26 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return [super canPerformAction:action withSender:sender];
 }
 
-- (UIKeyboardAppearance)keyboardAppearance
+- (void)copyLink:(id)sender
 {
-  return UIKeyboardAppearanceDark;
+  UIPasteboard.generalPasteboard.URL = [_termDelegate.termView detectedLink];
 }
 
-- (UITextAutocorrectionType)autocorrectionType
+- (void)openLink:(id)sender
 {
-  return UITextAutocorrectionTypeNo;
+  NSURL * url = [_termDelegate.termView detectedLink];
+  if (url == nil) {
+    return;
+  }
+  
+  UIApplication * app = [UIApplication sharedApplication];
+  if (![app canOpenURL:url]) {
+    return;
+  }
+  
+  [app openURL:url];
 }
+
 
 #pragma mark External Keyboard
 - (void)setKbdCommands
@@ -661,6 +669,22 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate write:str];
   }
 }
+
+- (void)increaseFontSize:(UIKeyCommand *)cmd
+{
+  [_termDelegate.termView increaseFontSize];
+}
+
+- (void)decreaseFontSize:(UIKeyCommand *)cmd
+{
+  [_termDelegate.termView decreaseFontSize];
+}
+
+- (void)resetFontSize:(UIKeyCommand *)cmd
+{
+  [_termDelegate.termView resetFontSize];
+}
+
 
 - (void)configureTerminal
 {

@@ -32,8 +32,11 @@
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
 
+@class TermView;
 
 @protocol TerminalDelegate <NSObject>
+
+@property (readonly) TermView *termView;
 
 - (void)write:(NSString *)input;
 
@@ -43,7 +46,12 @@
 - (void)fontSizeChanged:(NSNumber *)size;
 - (void)focus;
 - (void)blur;
-- (void)copy:(id)sender;
+//- (void)copy:(id)sender;
+//- (void)increaseFontSize;
+//- (void)decreaseFontSize;
+//- (void)resetFontSize;
+//- (void)openLink;
+
 @end
 
 @interface BLWebView: WKWebView
@@ -52,9 +60,9 @@
 
 @interface TermView : UIView
 
-@property (nonatomic) WKWebView *webView;
 @property (weak) id<TerminalDelegate> termDelegate;
 @property (nonatomic, readonly, weak) NSString *title;
+@property (nonatomic, readonly) NSURL *detectedLink;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
@@ -70,9 +78,14 @@
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
 - (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
+- (void)copy:(id)sender;
+- (void)terminate;
 - (void)reset;
 
 - (void)blur;
 - (void)focus;
+- (void)increaseFontSize;
+- (void)decreaseFontSize;
+- (void)resetFontSize;
 
 @end

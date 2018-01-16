@@ -63,17 +63,21 @@
 @end
 
 
-@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
-@property UITapGestureRecognizer *tapBackground;
-@property UILongPressGestureRecognizer *longPressBackground;
-@property UIPinchGestureRecognizer *pinchGesture;
+@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler>
+
 @end
 
 
 @implementation TermView {
+  WKWebView *_webView;
+  UITapGestureRecognizer *_tapBackground;
+  UILongPressGestureRecognizer *_longPressBackground;
+  UIPinchGestureRecognizer *_pinchGesture;
+  
+  NSURL *_detectedLink;
+  
   NSTimer *_pinchSamplingTimer;
   BOOL _focused;
-  BOOL _pasteMenu;
   
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
@@ -95,6 +99,10 @@
   }
 
   return self;
+}
+
+- (NSURL *)detectedLink {
+  return _detectedLink;
 }
 
 - (void)didMoveToWindow
@@ -153,6 +161,7 @@
 
 
 #pragma mark Terminal Control
+
 - (void)setScrollEnabled:(BOOL)scroll
 {
   [_webView.scrollView setScrollEnabled:NO];
@@ -172,6 +181,7 @@
 {
   [_webView evaluateJavaScript:@"term_clear();" completionHandler:nil];
 }
+
 
 - (void)loadTerminal
 {
@@ -266,7 +276,7 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
-  if (gestureRecognizer == self.pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
+  if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
     return YES;
   }
   return NO;
@@ -274,13 +284,13 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-  if (gestureRecognizer == self.tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+  if (gestureRecognizer == _tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
     // We cancel the one from the WebView from executing, as it will wait for this one to fail.
     // We return yes, to make sure that is understood.
     [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
     return YES;
   }
-  if (gestureRecognizer == self.longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+  if (gestureRecognizer == _longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
     return YES;
   }
 
@@ -289,39 +299,98 @@
 
 - (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
-//  if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-//    [_webView becomeFirstResponder];
-//  }
+  if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
+    return;
+  }
+  
+  UIMenuController *menuController = [UIMenuController sharedMenuController];
+
+  if (menuController.isMenuVisible) {
+    [menuController setMenuVisible:NO animated:YES];
+  } else {
+    CGPoint touchPoint = [gestureRecognizer locationInView:self];
+    CGRect targetRect = CGRectMake(touchPoint.x - 10, touchPoint.y - 10, 10, 10);
+    
+    [self _detectLinkInSelection: ^{
+      [menuController setTargetRect: targetRect inView:self];
+      
+      NSMutableArray *items = [[NSMutableArray alloc] init];
+      
+      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste"
+                                                  action:@selector(yank:)]];
+      
+      if (_detectedLink) {
+        NSString *host = [_detectedLink host];
+        [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:host]
+                                                    action:@selector(copyLink:)]];
+        
+        [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Open " stringByAppendingString:host]
+                                                    action:@selector(openLink:)]];
+      }
+      
+      [menuController setMenuItems:items];
+      [menuController setMenuVisible:YES animated:YES];
+    }];
+  }
+}
+
+- (void)_detectLinkInSelection:(void (^)()) block {
+  _detectedLink = nil;
+  [_webView evaluateJavaScript:@"term_getCurrentSelection();" completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+    if (error) {
+      block();
+      return;
+    }
+    
+    NSString *text = res[@"text"];
+    NSInteger offset = [res[@"offset"] integerValue];
+    
+    if (text == nil || [text length] == 0) {
+      block();
+      return;
+    }
+    
+    NSDataDetector * dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
+    [dataDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, [text length])
+        usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+          
+      if (result == nil) {
+        return;
+      }
+      NSURL *url = result.URL;
+      
+      if (url != nil && result.range.location <= offset && result.range.location + result.range.length >= offset) {
+        _detectedLink = url;
+        *stop = YES;
+      }
+    }];
+    block();
+  }];
+}
+
+- (void)copyLink:(id)sender
+{
+  
+}
+
+- (void)openLink:(id)sender
+{
+  
+}
+
+- (void)yank:(id)sender
+{
+  // just to remove warning in selector
 }
 
 - (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
-//  if (!_focused) {
-    [self focus];
-    [_termDelegate focus];
+  if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
     return;
-//  }
-  
-  if (_pasteMenu) {
-    [[UIMenuController sharedMenuController]
-      setMenuVisible:NO
-            animated:YES];
-  } else {
-    CGRect targetRect = CGRectMake(0, self.bounds.size.height - 20, self.bounds.size.width, 10);
-
-    [[UIMenuController sharedMenuController] setTargetRect: targetRect
-                                                    inView:self];
-
-    UIMenuItem *pasteItem = [[UIMenuItem alloc] initWithTitle:@"Paste"
-                                                       action:@selector(yank:)];
-
-    [[UIMenuController sharedMenuController]
-      setMenuItems:@[ pasteItem ]];
-    [[UIMenuController sharedMenuController]
-      setMenuVisible:YES
-            animated:YES];
   }
-  _pasteMenu = !_pasteMenu;
+  
+  [self focus];
+  [_termDelegate focus];
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
@@ -391,17 +460,17 @@
   [_webView evaluateJavaScript:@"term_reset();" completionHandler:nil];
 }
 
-- (void)increaseFontSize:(UIKeyCommand *)cmd
+- (void)increaseFontSize
 {
   [_webView evaluateJavaScript:@"term_increaseFontSize();" completionHandler:nil];
 }
 
-- (void)decreaseFontSize:(UIKeyCommand *)cmd
+- (void)decreaseFontSize
 {
   [_webView evaluateJavaScript:@"term_decreaseFontSize();" completionHandler:nil];
 }
 
-- (void)resetFontSize:(UIKeyCommand *)cmd
+- (void)resetFontSize
 {
   [_webView evaluateJavaScript:@"term_resetFontSize();" completionHandler:nil];
 }
@@ -478,6 +547,12 @@
   [script appendString:@"\nterm_init();"];
 //
   return script;
+}
+
+- (void)terminate
+{
+  // Disconnect message handler
+  [_webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
 }
 
 

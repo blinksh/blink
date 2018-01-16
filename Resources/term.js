@@ -145,6 +145,18 @@ function term_loadFontFromCss(url, name) {
   term_setFontFamily(name);
 }
 
+function term_getCurrentSelection() {
+  const selection = document.getSelection()
+  if (!selection || document.rangeCount == 0) {
+    return {text: "", offset: 0};
+  }
+  
+  return {
+    text: selection.baseNode.textContent,
+    offset: selection.baseOffset
+  }
+}
+
 function waitForFontFamily(callback) {
   const fontFamily = term_get('font-family');
   if (!fontFamily) {
