@@ -63,6 +63,7 @@
 @property (weak) id<TerminalDelegate> termDelegate;
 @property (nonatomic, readonly, weak) NSString *title;
 @property (nonatomic, readonly) NSURL *detectedLink;
+@property (nonatomic, readonly) NSString *selectedText;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
@@ -84,6 +85,7 @@
 
 - (void)blur;
 - (void)focus;
+- (void)cleanSelection;
 - (void)increaseFontSize;
 - (void)decreaseFontSize;
 - (void)resetFontSize;

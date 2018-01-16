@@ -74,8 +74,6 @@
   UILongPressGestureRecognizer *_longPressBackground;
   UIPinchGestureRecognizer *_pinchGesture;
   
-  NSURL *_detectedLink;
-  
   NSTimer *_pinchSamplingTimer;
   BOOL _focused;
   
@@ -99,10 +97,6 @@
   }
 
   return self;
-}
-
-- (NSURL *)detectedLink {
-  return _detectedLink;
 }
 
 - (void)didMoveToWindow
@@ -328,6 +322,9 @@
                                                     action:@selector(openLink:)]];
       }
       
+//      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Unselect"
+//                                                  action:@selector(unselect:)]];
+//      
       [menuController setMenuItems:items];
       [menuController setMenuVisible:YES animated:YES];
     }];
@@ -341,8 +338,8 @@
       block();
       return;
     }
-    
-    NSString *text = res[@"text"];
+    _selectedText = res[@"text"];
+    NSString *text = res[@"base"];
     NSInteger offset = [res[@"offset"] integerValue];
     
     if (text == nil || [text length] == 0) {
@@ -368,19 +365,26 @@
   }];
 }
 
+- (void)cleanSelection
+{
+  [_webView evaluateJavaScript:@"term_cleanSelection();" completionHandler: nil];
+}
+
 - (void)copyLink:(id)sender
 {
-  
 }
 
 - (void)openLink:(id)sender
 {
-  
 }
 
 - (void)yank:(id)sender
 {
   // just to remove warning in selector
+}
+
+- (void)unselect:(id)sender
+{
 }
 
 - (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
@@ -391,6 +395,7 @@
   
   [self focus];
   [_termDelegate focus];
+  [self cleanSelection];
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer

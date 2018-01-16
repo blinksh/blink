@@ -148,13 +148,18 @@ function term_loadFontFromCss(url, name) {
 function term_getCurrentSelection() {
   const selection = document.getSelection()
   if (!selection || document.rangeCount == 0) {
-    return {text: "", offset: 0};
+    return {base: "", offset: 0, text: ""};
   }
   
   return {
-    text: selection.baseNode.textContent,
-    offset: selection.baseOffset
+    base: selection.baseNode.textContent,
+    offset: selection.baseOffset,
+    text: selection.toString()
   }
+}
+
+function term_cleanSelection() {
+  document.getSelection().removeAllRanges();
 }
 
 function waitForFontFamily(callback) {

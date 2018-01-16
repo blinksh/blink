@@ -455,32 +455,18 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_termDelegate write:[CC CTRL:@"u"]];
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-  if ([sender isKindOfClass:[UIMenuController class]]) {
-    // The menu can only perform paste methods
-    if (action == @selector(paste:) ||
-        action == @selector(copy:) ||
-        action == @selector(copyLink:) ||
-        action == @selector(openLink:)
-      ) {
-      return YES;
-    }
-    
-    return NO;
-  }
-  
-  return [super canPerformAction:action withSender:sender];
-}
-
 - (void)copyLink:(id)sender
 {
   UIPasteboard.generalPasteboard.URL = [_termDelegate.termView detectedLink];
+  [_termDelegate.termView cleanSelection];
 }
 
 - (void)openLink:(id)sender
 {
   NSURL * url = [_termDelegate.termView detectedLink];
+  
+  [_termDelegate.termView cleanSelection];
+  
   if (url == nil) {
     return;
   }
@@ -493,6 +479,29 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [app openURL:url];
 }
 
+- (void)unselect:(id)sender
+{
+  [_termDelegate.termView cleanSelection];
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  if ([sender isKindOfClass:[UIMenuController class]]) {
+    // The menu can only perform paste methods
+    if (action == @selector(paste:) ||
+        action == @selector(copy:) ||
+        action == @selector(copyLink:) ||
+        action == @selector(openLink:) ||
+        action == @selector(unselect:)
+      ) {
+      return YES;
+    }
+    
+    return NO;
+  }
+  
+  return [super canPerformAction:action withSender:sender];
+}
 
 #pragma mark External Keyboard
 - (void)setKbdCommands
