@@ -83,21 +83,17 @@
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
-  _viewportsController.view.frame = self.view.bounds;
-  _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
   
   [self addChildViewController:_viewportsController];
-  
+  _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
+  _viewportsController.view.frame = [self _frameForPagedController];
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
 }
 
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-
+- (CGRect)_frameForPagedController {
   CGRect rect = self.view.bounds;
-
+  
   if (@available(iOS 11.0, *)) {
     UIEdgeInsets insets = self.view.safeAreaInsets;
     insets.bottom = MAX(_rootLayoutMargins.bottom, insets.bottom);
@@ -105,18 +101,23 @@
   } else {
     rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
   }
+  return rect;
+}
 
-  _viewportsController.view.frame = rect;
-  [_viewportsController.view setNeedsLayout];
-  [_viewportsController.view layoutIfNeeded];
+- (void)viewWillLayoutSubviews
+{
+  [super viewWillLayoutSubviews];
+  
+  _viewportsController.view.frame = [self _frameForPagedController];
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+
   [self setKbdCommands];
   if (_viewports == nil) {
-    [self _createShellWithUserActivity: nil sessionStateKey:nil animated:NO completion:nil];
+    [self _createShellWithUserActivity: nil sessionStateKey:nil animated:YES completion:nil];
   }
 }
 
@@ -159,6 +160,7 @@
   TermController *term = _viewports[idx];
   
   [self loadViewIfNeeded];
+  
   term.termInput = _termInput;
   
   __weak typeof(self) weakSelf = self;
@@ -170,6 +172,8 @@
                                     [weakSelf focusOnShell];
                                   }
                                 }];
+  [self.view setNeedsLayout];
+  [self.view layoutIfNeeded];
 }
 
 - (void)encodeRestorableStateWithCoder:(NSCoder *)coder
@@ -391,20 +395,11 @@
 - (void)displayHUD
 {
   if (!_hud) {
-    _hud = [[MBProgressHUD alloc] initWithView:self.view];
+    _hud = [[MBProgressHUD alloc] initWithView:_viewportsController.view];
     _hud.mode = MBProgressHUDModeCustomView;
     _hud.bezelView.color = [UIColor darkGrayColor];
     _hud.contentColor = [UIColor whiteColor];
-    [self.view addSubview:_hud];
-  } else {
-    // Add some tolerance before changing the center of the HUD.
-    CGPoint newCenter = CGPointMake(_hud.center.x, self.currentTerm.terminal.frame.size.height/2);
-    UIView *termAccessory = [self.currentTerm.terminal inputAccessoryView];
-    if (fabs(_hud.center.y - newCenter.y) > termAccessory.frame.size.height) {
-      [UIView animateWithDuration:0.25 animations:^{
-        _hud.center = newCenter;
-      }];
-    }
+    [_viewportsController.view addSubview:_hud];
   }
 
   _hud.userInteractionEnabled = NO;
@@ -423,7 +418,7 @@
   pages.currentPage = idx;
   _hud.customView = pages;
 
-  [_hud showAnimated:NO];
+  [_hud showAnimated:YES];
   _hud.alpha = 0.6;
 
   [_hud hideAnimated:YES afterDelay:1.f];

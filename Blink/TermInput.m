@@ -206,6 +206,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
     
+    
     // Disable Smart Anything introduced within iOS11
     if (@available(iOS 11.0, *)) {
       self.smartDashesType = UITextSmartDashesTypeNo;
@@ -215,8 +216,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     self.autocorrectionType = UITextAutocorrectionTypeNo;
     self.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    
-    self.keyboardType = UIKeyboardAppearanceDark;
     
     _smartKeys = [[SmartKeysController alloc] init];
     _smartKeys.textInputDelegate = self;
@@ -229,6 +228,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   return self;
+}
+
+- (UIKeyboardAppearance)keyboardAppearance
+{
+  return UIKeyboardAppearanceDark;
 }
 
 - (void)didMoveToWindow

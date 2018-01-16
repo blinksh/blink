@@ -47,7 +47,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
-  BOOL _viewIsLocked;
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
@@ -62,6 +61,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
+
+- (TermView *) termView {
+  return _terminal;
+}
 
 - (TermInput *)termInput {
   return _termInput;
@@ -157,8 +160,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 //    }
 //  }
 }
-
-
 
 - (void)viewDidLoad
 {
@@ -322,10 +323,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)blur {
   _termInput.termDelegate = nil;
   [_terminal blur];
-}
-
-- (TermView *) termView {
-  return _terminal;
 }
 
 @end

@@ -60,6 +60,16 @@
   return NSDirectionalEdgeInsetsZero;
 }
 
+-(void)layoutMarginsDidChange
+{
+  
+}
+
+- (void)safeAreaInsetsDidChange
+{
+  
+}
+
 @end
 
 
@@ -125,6 +135,12 @@
   _webView.scrollView.delaysContentTouches = NO;
   _webView.opaque = NO;
   _webView.backgroundColor = [UIColor clearColor];
+  if (@available(iOS 11.0, *)) {
+    _webView.insetsLayoutMarginsFromSafeArea = NO;
+    _webView.scrollView.insetsLayoutMarginsFromSafeArea = NO;
+  } else {
+    // Fallback on earlier versions
+  }
   
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
@@ -324,7 +340,7 @@
       
 //      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Unselect"
 //                                                  action:@selector(unselect:)]];
-//      
+//
       [menuController setMenuItems:items];
       [menuController setMenuVisible:YES animated:YES];
     }];
