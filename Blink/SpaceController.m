@@ -54,8 +54,6 @@
   UITapGestureRecognizer *_twoFingersTap;
   UIPanGestureRecognizer *_twoFingersDrag;
   
-  NSLayoutConstraint *_bottomConstraint;
-  
   UIPageControl *_pageControl;
   MBProgressHUD *_hud;
 
@@ -89,6 +87,8 @@
   _viewportsController.view.frame = [self _frameForPagedController];
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
+  
+  [self registerForNotifications];
 }
 
 - (CGRect)_frameForPagedController {
@@ -97,6 +97,9 @@
   if (@available(iOS 11.0, *)) {
     UIEdgeInsets insets = self.view.safeAreaInsets;
     insets.bottom = MAX(_rootLayoutMargins.bottom, insets.bottom);
+    if (insets.bottom == 0) {
+      insets.bottom = 1;
+    }
     rect = UIEdgeInsetsInsetRect(rect, insets);
   } else {
     rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
@@ -109,6 +112,8 @@
   [super viewWillLayoutSubviews];
   
   _viewportsController.view.frame = [self _frameForPagedController];
+//  self.currentTerm.view.frame = _viewportsController.view.bounds;
+//  NSLog(@"ncie");
 }
 
 - (void)viewDidLoad
@@ -215,7 +220,6 @@
   [super viewDidAppear:animated];
   if (self.view.window.screen == [UIScreen mainScreen]) {
     [self addGestures];
-    [self registerForNotifications];
   }
 }
 
