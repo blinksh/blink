@@ -34,7 +34,6 @@ function term_setupDefaults() {
 }
 
 function term_setup() {
-  
   t = new hterm.Terminal('blink');
 
   t.onTerminalReady = function() {
@@ -146,16 +145,16 @@ function term_loadFontFromCss(url, name) {
 }
 
 function term_getCurrentSelection() {
-  const selection = document.getSelection()
+  const selection = document.getSelection();
   if (!selection || document.rangeCount == 0) {
-    return {base: "", offset: 0, text: ""};
+    return { base: '', offset: 0, text: '' };
   }
-  
+
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
-    text: selection.toString()
-  }
+    text: selection.toString(),
+  };
 }
 
 function term_cleanSelection() {
