@@ -84,14 +84,17 @@
   
   [self addChildViewController:_viewportsController];
   _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
-  _viewportsController.view.frame = [self _frameForPagedController];
+  _viewportsController.view.frame = self.view.bounds;
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
   
   [self registerForNotifications];
 }
 
-- (CGRect)_frameForPagedController {
+- (void)viewWillLayoutSubviews
+{
+  [super viewWillLayoutSubviews];
+  
   CGRect rect = self.view.bounds;
   
   if (@available(iOS 11.0, *)) {
@@ -104,16 +107,8 @@
   } else {
     rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
   }
-  return rect;
-}
-
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
   
-  _viewportsController.view.frame = [self _frameForPagedController];
-//  self.currentTerm.view.frame = _viewportsController.view.bounds;
-//  NSLog(@"ncie");
+  _viewportsController.view.frame = rect;
 }
 
 - (void)viewDidLoad
