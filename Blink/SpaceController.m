@@ -138,11 +138,7 @@
 
 - (void)focusOnShell
 {
-  // UIPagedController animation can crash. So we enqueue focus
-  dispatch_async(dispatch_get_main_queue(), ^{
-    self.currentTerm.termInput = _termInput;
-    [self.currentTerm focus];
-  });
+  [self.currentTerm attachInput:_termInput];
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
@@ -165,8 +161,6 @@
   TermController *term = _viewports[idx];
   
   [self loadViewIfNeeded];
-  
-  term.termInput = _termInput;
   
   __weak typeof(self) weakSelf = self;
   [_viewportsController setViewControllers:@[term]
@@ -368,11 +362,9 @@
 {
   if (completed) {
     for (TermController *term in previousViewControllers) {
-      term.termInput = nil;
+      [term attachInput:nil];
     }
-    
-    TermController * term = (TermController *)pageViewController.viewControllers[0];
-    term.termInput = _termInput;
+
     [self displayHUD];
     [self focusOnShell];
   }
@@ -480,7 +472,6 @@
 {
   TermController *term = [[TermController alloc] init];
   term.sessionStateKey = sessionStateKey;
-  term.termInput = _termInput;
   term.delegate = self;
   term.userActivity = userActivity;
 

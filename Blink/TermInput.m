@@ -179,10 +179,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   SmartKeysController *_smartKeys;
   
-  BOOL _raw;
   BOOL _inputEnabled;
   BOOL _cmdAsModifier;
-  
 }
 
 + (void)initialize

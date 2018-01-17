@@ -54,14 +54,13 @@
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
 @property (strong, nonatomic) TermView *terminal;
-@property (strong, nonatomic) TermInput *termInput;
+@property (readonly, strong, nonatomic) TermInput *termInput;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong) NSString* sessionStateKey;
 @property (strong) MCPSessionParameters *sessionParameters;
 
 - (void)write:(NSString *)input;
-
 - (void)setRawMode:(BOOL)raw;
 - (BOOL)rawMode;
 - (void)terminate;
@@ -69,5 +68,7 @@
 - (void)resume;
 - (void)focus;
 - (void)blur;
+
+- (void)attachInput:(TermInput *)termInput;
 
 @end

@@ -19,6 +19,8 @@ extern NSString * const TermViewAutoRepeateSeq;
 
 
 @interface TermInput : UITextView
+@property BOOL raw;
+
 @property (weak) id<TerminalDelegate> termDelegate;
 
 - (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;

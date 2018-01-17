@@ -70,10 +70,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   return _termInput;
 }
 
-- (void)setTermInput:(TermInput *)termInput
+- (void)attachInput:(TermInput *)termInput
 {
   _termInput = termInput;
   if (termInput) {
+    _termInput.termDelegate = self;
     if ([_termInput isFirstResponder]) {
       [_terminal focus];
     } else {
