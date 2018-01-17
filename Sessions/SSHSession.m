@@ -922,7 +922,7 @@ static void kbd_callback(const char *name, int name_len,
 
   if (_tty_flag) {
     [self set_nonblock:fileno(_stream.in)];
-    mode = [self.stream.control.terminal rawMode];
+    mode = [self.stream.control rawMode];
     [self.stream.control setRawMode:YES];
   }
 

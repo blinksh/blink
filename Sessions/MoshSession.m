@@ -223,7 +223,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   });
   
   BOOL mode = [_stream.control rawMode];
-  [_stream.control.terminal setRawMode:YES];
+  [_stream.control setRawMode:YES];
   
   mosh_main(
             _stream.in, _stream.out, _stream.sz,

@@ -409,7 +409,7 @@
     return;
   }
   
-  [self focus];
+//  [self focus];
   [_termDelegate focus];
   [self cleanSelection];
 }
@@ -501,17 +501,8 @@
   [_webView copy:sender];
 }
 
-- (void)setRawMode:(BOOL)raw
-{
-  
-}
-
 - (void)setInputEnabled:(BOOL) enabled {
   
-}
-
-- (BOOL)rawMode {
-  return YES;
 }
 
 - (NSString *)_termInitScript

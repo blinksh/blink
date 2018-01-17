@@ -51,6 +51,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
   TermInput *_termInput;
+  BOOL _rawMode;
 }
 
 
@@ -74,6 +75,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 {
   _termInput = termInput;
   if (termInput) {
+    _termInput.raw = _rawMode;
     _termInput.termDelegate = self;
     if ([_termInput isFirstResponder]) {
       [_terminal focus];
@@ -224,12 +226,13 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)setRawMode:(BOOL)raw
 {
-  [_terminal setRawMode:raw];
+  _rawMode = raw;
+  _termInput.raw = raw;
 }
 
 - (BOOL)rawMode
 {
-  return [_terminal rawMode];
+  return _rawMode;
 }
 
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols

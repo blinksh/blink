@@ -67,8 +67,6 @@
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)setScrollEnabled:(BOOL)scroll;
-- (void)setRawMode:(BOOL)raw;
-- (BOOL)rawMode;
 - (void)clear;
 - (void)setColumnNumber:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
