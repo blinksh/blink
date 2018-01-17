@@ -27,6 +27,23 @@
 
 'use strict';
 
+function setNodeText(node, text) {
+  node.textContent = text;
+  if (node && node.nodeName === 'SPAN') {
+    if (node.wcNode) {
+      return;
+    }
+    var len = text.length
+    
+    if (node._len !== len) {
+      node._len = len;
+      node.style.display = 'inline-block';
+      node.style.overflowX = 'hidden';
+      node.style.width = 'calc(var(--hterm-charsize-width) * ' + len + ')';
+    }
+  }
+}
+
 if (typeof lib != 'undefined')
   throw new Error('Global "lib" object already exists.');
 
@@ -9245,12 +9262,14 @@ hterm.Screen.prototype.syncSelectionCaret = function(selection) {
  * @param {integer} offset The offset into the node where the split should
  *     occur.
  */
+                      
+                         
 hterm.Screen.prototype.splitNode_ = function(node, offset) {
   var afterNode = node.cloneNode(false);
 
   var textContent = node.textContent;
-  node.textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
-  afterNode.textContent = lib.wc.substr(textContent, offset);
+  setNodeText(node, hterm.TextAttributes.nodeSubstr(node, 0, offset));
+  setNodeText(afterNode, lib.wc.substr(textContent, offset));
 
   if (afterNode.textContent)
     node.parentNode.insertBefore(afterNode, node.nextSibling);
@@ -9284,8 +9303,8 @@ hterm.Screen.prototype.maybeClipCurrentRow = function() {
   width = hterm.TextAttributes.nodeWidth(this.cursorNode_);
 
   if (this.cursorOffset_ < width - 1) {
-    this.cursorNode_.textContent = hterm.TextAttributes.nodeSubstr(
-        this.cursorNode_, 0, this.cursorOffset_ + 1);
+    setNodeText(this.cursorNode_, hterm.TextAttributes.nodeSubstr(
+        this.cursorNode_, 0, this.cursorOffset_ + 1));
   }
 
   // Remove all nodes after the cursor.
@@ -9364,7 +9383,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
                  cursorNode.style.textDecoration ||
                  cursorNode.style.backgroundColor)) {
       // Second best case, the current node is able to hold the whitespace.
-      cursorNode.textContent = (cursorNodeText += ws);
+      setNodeText(cursorNode, (cursorNodeText += ws));
     } else {
       // Worst case, we have to create a new node to hold the whitespace.
       var wsNode = cursorNode.ownerDocument.createTextNode(ws);
@@ -9381,13 +9400,13 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
   if (this.textAttributes.matchesContainer(cursorNode)) {
     // The new text can be placed directly in the cursor node.
     if (reverseOffset == 0) {
-      cursorNode.textContent = cursorNodeText + str;
+      setNodeText(cursorNode, cursorNodeText + str);
     } else if (offset == 0) {
-      cursorNode.textContent = str + cursorNodeText;
+      setNodeText(cursorNode, str + cursorNodeText);
     } else {
-      cursorNode.textContent =
+      setNodeText(cursorNode,
           hterm.TextAttributes.nodeSubstr(cursorNode, 0, offset) +
-          str + hterm.TextAttributes.nodeSubstr(cursorNode, offset);
+          str + hterm.TextAttributes.nodeSubstr(cursorNode, offset));
     }
 
     this.cursorOffset_ += wcwidth;
@@ -9403,7 +9422,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
     var previousSibling = cursorNode.previousSibling;
     if (previousSibling &&
         this.textAttributes.matchesContainer(previousSibling)) {
-      previousSibling.textContent += str;
+      setNodeText(previousSibling, previousSibling.textContent + str);
       this.cursorNode_ = previousSibling;
       this.cursorOffset_ = lib.wc.strWidth(previousSibling.textContent);
       return;
@@ -9421,7 +9440,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
     var nextSibling = cursorNode.nextSibling;
     if (nextSibling &&
         this.textAttributes.matchesContainer(nextSibling)) {
-      nextSibling.textContent = str + nextSibling.textContent;
+      setNodeText(nextSibling, str + nextSibling.textContent);
       this.cursorNode_ = nextSibling;
       this.cursorOffset_ = lib.wc.strWidth(str);
       return;
@@ -9504,8 +9523,8 @@ hterm.Screen.prototype.deleteChars = function(count) {
     }
 
     startLength = hterm.TextAttributes.nodeWidth(node);
-    node.textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset) +
-        hterm.TextAttributes.nodeSubstr(node, offset + count);
+    setNodeText(node, hterm.TextAttributes.nodeSubstr(node, 0, offset) +
+        hterm.TextAttributes.nodeSubstr(node, offset + count));
     endLength = hterm.TextAttributes.nodeWidth(node);
 
     // Deal with splitting wide characters.  There are two ways: we could delete
@@ -9520,7 +9539,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
       // wide character node here and replace it with a single space.
       var spaceNode = this.textAttributes.createContainer(' ');
       node.parentNode.insertBefore(spaceNode, offset ? node : node.nextSibling);
-      node.textContent = '';
+      setNodeText(node, '');
       endLength = 0;
       count -= 1;
     } else
@@ -15494,8 +15513,9 @@ hterm.TextAttributes.prototype.createContainer = function(opt_textContent) {
     span.tileNode = true;
   }
 
-  if (opt_textContent)
-    span.textContent = opt_textContent;
+  if (opt_textContent) {
+    setNodeText(span, opt_textContent);
+  }
 
   if (this.uri) {
     classes.push('uri-node');
