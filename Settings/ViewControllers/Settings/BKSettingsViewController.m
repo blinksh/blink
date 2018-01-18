@@ -46,10 +46,22 @@
 @end
 
 @implementation BKSettingsViewController
+{
+  NSArray *_kbCommands;
+}
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
+  
+  _kbCommands = @[
+                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
+                                             action: @selector(_closeConfig:)
+                               discoverabilityTitle: @"Close Settings"]
+                  ];
+  
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
 
@@ -58,6 +70,21 @@
   if (@available(iOS 11, *)) {
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
   }
+}
+
+- (void)_closeConfig:(UIKeyCommand *)cmd
+{
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return _kbCommands;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
