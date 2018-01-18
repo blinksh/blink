@@ -142,7 +142,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
   }
 
-  [_termView loadTerminal];
+  [_termView load];
 
   [self createPTY];
 }

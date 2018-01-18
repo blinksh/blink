@@ -131,12 +131,12 @@
   return YES;
 }
 
-- (BOOL)becomeFirstResponder
-{
-  [self _focusOnShell];
-  return [_termInput becomeFirstResponder];
-}
-
+//- (BOOL)becomeFirstResponder
+//{
+//  [self _focusOnShell];
+//  return [_termInput becomeFirstResponder];
+//}
+//
 - (BOOL)prefersStatusBarHidden
 {
   return YES;

@@ -36,7 +36,7 @@
 
 @protocol TerminalDelegate <NSObject>
 
-@property (readonly) TermView *termView;
+@property (readonly, nonatomic) TermView *termView;
 
 - (void)write:(NSString *)input;
 
@@ -60,12 +60,11 @@
 @property (nonatomic, readonly) NSString *selectedText;
 
 - (id)initWithFrame:(CGRect)frame;
-- (void)loadTerminal;
+- (void)load;
 - (void)setScrollEnabled:(BOOL)scroll;
 - (void)clear;
 - (void)setColumnNumber:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
-- (void)setInputEnabled:(BOOL)enabled;
 - (void)write:(NSString *)data;
 - (void)loadTerminalThemeJS:(NSString *)themeContent;
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;

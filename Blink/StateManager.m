@@ -15,7 +15,7 @@ NSString * const StatesKey = @"StatesKey";
   NSMutableDictionary *_states;
 }
 
--(instancetype)init {
+- (instancetype)init {
   if (self = [super init]) {
     _states = [[NSMutableDictionary alloc] init];
   }
@@ -74,7 +74,6 @@ NSString * const StatesKey = @"StatesKey";
 - (void)reset
 {
   _states = [[NSMutableDictionary alloc] init];
-  [self save];
 }
 
 - (void)save

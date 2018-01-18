@@ -175,7 +175,7 @@
   [_webView evaluateJavaScript:@"term_clear();" completionHandler:nil];
 }
 
-- (void)loadTerminal
+- (void)load
 {
   NSString *userScript = [self _termInitScript];
   
@@ -478,10 +478,6 @@
   [_webView copy:sender];
 }
 
-- (void)setInputEnabled:(BOOL) enabled {
-  
-}
-
 - (NSString *)_termInitScript
 {
   BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
@@ -543,8 +539,5 @@
   // Disconnect message handler
   [_webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
 }
-
-
-
 
 @end

@@ -54,7 +54,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
-@property (weak, nonatomic) TermView *testTerminal;
+@property (strong, nonatomic) TermView *termView;
 
 @end
 
@@ -67,6 +67,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   [self loadDefaultValues];
   [super viewDidLoad];
+  
+  _termView = [[TermView alloc] initWithFrame:self.view.bounds];
+  _termView.termDelegate = self;
+  _termView.backgroundColor = [UIColor blackColor];
+  [_termView load];
 }
 
 
@@ -164,17 +169,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)attachTestTerminalToView:(UIView *)view
 {
-  if (!view.subviews.count) {
-    TermView *tview = [[TermView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
-    [view addSubview:tview];
-    _testTerminal = tview;
-  } else {
-    _testTerminal = view.subviews[0];
-  }
-  _testTerminal.termDelegate = self;
-  _testTerminal.backgroundColor = [UIColor blackColor];
-  [_testTerminal setInputEnabled:NO];
-  [_testTerminal loadTerminal];
+  [view addSubview:_termView];
+  _termView.frame = view.bounds;
 }
 
 - (NSString *)cellIdentifierForIndexPath:(NSIndexPath *)indexPath
@@ -346,7 +342,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (IBAction)stepperValueChanged:(id)sender
 {
   NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
-  [_testTerminal setFontSize:newSize];
+  [_termView setFontSize:newSize];
 }
 
 - (IBAction)cursorBlinkSwitchChanged:(id)sender
@@ -367,7 +363,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)terminalIsReady:(NSDictionary *)size
 {
-  [_testTerminal setColumnNumber:60];
+  [_termView setColumnNumber:60];
   BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
   if (selectedTheme) {
     [self showcaseTheme:selectedTheme];
@@ -378,10 +374,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     [self showcaseFont:selectedFont];
   }
   
-  [_testTerminal setFontSize:[BKDefaults selectedFontSize]];
+  [_termView setFontSize:[BKDefaults selectedFontSize]];
 }
 
-- (void)writeColorShowcase
+- (void)_writeColorShowcase
 {
   // Write content
   NSMutableArray *lines = [[NSMutableArray alloc] init];
@@ -395,7 +391,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     [lines addObject:[line componentsJoinedByString:@""]];
   }
   NSString *showcase = [lines componentsJoinedByString:@"\r\n"];
-  [_testTerminal write:showcase];
+  [_termView write:showcase];
 }
 
 - (void)fontSizeChanged:(NSNumber *)newSize
@@ -412,15 +408,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)showcaseTheme:(BKTheme *)theme
 {
-  [_testTerminal clear];
-  [_testTerminal loadTerminalThemeJS:theme.content];
+  [_termView clear];
+  [_termView loadTerminalThemeJS:theme.content];
   // Wait for the terminal to setup everything internally
-  [self performSelector:@selector(writeColorShowcase) withObject:self afterDelay:0.25];
+  [self performSelector:@selector(_writeColorShowcase) withObject:self afterDelay:0.25];
 }
 
 - (void)showcaseFont:(BKFont *)font
 {
-  [_testTerminal loadTerminalFont:font.name fromCSS:font.fullPath];
+  [_termView loadTerminalFont:font.name fromCSS:font.fullPath];
 }
 
 @end
