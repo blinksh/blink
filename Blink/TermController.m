@@ -47,10 +47,22 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
-  BOOL _appearanceChanged;
-  BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
-  BOOL _rawMode;
+}
+
+- (void)loadView
+{
+  [super loadView];
+  
+  if (_sessionStateKey == nil) {
+    _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
+  }
+  
+  _termView = [[TermView alloc] initWithFrame:self.view.frame];
+  _termView.restorationIdentifier = @"TermView";
+  _termView.termDelegate = self;
+  
+  self.view = _termView;
 }
 
 - (NSString *)title {
@@ -78,30 +90,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   } else {
     [_termView blur];
   }
-}
-
-- (void)loadView
-{
-  [super loadView];
-  
-  if (_sessionStateKey == nil) {
-    _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
-  }
-
-  _termView = [[TermView alloc] initWithFrame:self.view.frame];
-  _termView.restorationIdentifier = @"TermView";
-  _termView.termDelegate = self;
-
-  self.view = _termView;
-}
-
-
-- (void)viewDidAppear:(BOOL)animated
-{
-  if (_appearanceChanged) {
-    [self setAppearanceFromSettings];
-  }
-  [super viewDidAppear:animated];
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
@@ -143,18 +131,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     // TODO: investigate lost first char on iPad
     [self write:[NSString stringWithFormat:@" %@\n", cmdLine]];
   }
-}
-
-- (void)setAppearanceFromSettings
-{
-//  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
-//  if (font) {
-//    if (font.isCustom) {
-//      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
-//    } else {
-//      [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
-//    }
-//  }
 }
 
 - (void)viewDidLoad
@@ -223,11 +199,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termInput.raw = raw;
 }
 
-- (BOOL)rawMode
-{
-  return _rawMode;
-}
-
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
 {
   _termsz->ws_row = rows.shortValue;
@@ -245,10 +216,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)fontSizeChanged:(NSNumber *)newSize
 {
   _sessionParameters.fontSize = [newSize integerValue];
-  // Ignore the font size settings in case it was manually changed
-  if (!([newSize isEqualToNumber:[BKDefaults selectedFontSize]])) {
-    _disableFontSizeSelection = YES;
-  }
 }
 
 - (void)terminalIsReady: (NSDictionary *)size
@@ -259,7 +226,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termsz->ws_row = _sessionParameters.rows;
   _termsz->ws_col = _sessionParameters.cols;
   
-  [self setAppearanceFromSettings];
   [self startSession];
   if (self.userActivity) {
     [self restoreUserActivityState:self.userActivity];
@@ -282,14 +248,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 #pragma mark Notifications
 
-- (void)appearanceChanged:(NSNotification *)notification
-{
-  if (self.isViewLoaded && self.view.window) {
-    [self setAppearanceFromSettings];
-  } else {
-    _appearanceChanged = YES;
-  }
-}
 
 - (void)terminate
 {
