@@ -74,7 +74,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [_termView load];
 }
 
-
 - (void)viewWillDisappear:(BOOL)animated
 {
   if (self.isMovingFromParentViewController) {
@@ -343,6 +342,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
   [_termView setFontSize:newSize];
+  [_termView setWidth:60];
 }
 
 - (IBAction)cursorBlinkSwitchChanged:(id)sender
@@ -350,31 +350,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _cursorBlinkValue = _cursorBlinkSwitch.on;
 }
 
-
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-//  // Get the new view controller using [segue destinationViewController].
-//  // Pass the selected object to the new view controller.
-//}
-
 #pragma mark - Terminal
 
 - (void)terminalIsReady:(NSDictionary *)size
 {
-  [_termView setColumnNumber:60];
-  BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (selectedTheme) {
-    [self showcaseTheme:selectedTheme];
-  }
-  
-  BKFont *selectedFont = [BKFont withName:[BKDefaults selectedFontName]];
-  if (selectedFont) {
-    [self showcaseFont:selectedFont];
-  }
-  
-  [_termView setFontSize:[BKDefaults selectedFontSize]];
+  [_termView setWidth:60];
+  [self _writeColorShowcase];
 }
 
 - (void)_writeColorShowcase
@@ -408,15 +389,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)showcaseTheme:(BKTheme *)theme
 {
-  [_termView clear];
-  [_termView loadTerminalThemeJS:theme.content];
-  // Wait for the terminal to setup everything internally
-  [self performSelector:@selector(_writeColorShowcase) withObject:self afterDelay:0.25];
+  [_termView reload];
 }
 
 - (void)showcaseFont:(BKFont *)font
 {
-  [_termView loadTerminalFont:font.name fromCSS:font.fullPath];
+  [_termView reload];
 }
 
 @end

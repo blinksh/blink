@@ -474,6 +474,7 @@
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
 		D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Italic-for-Powerline.otf"; sourceTree = "<group>"; };
 		D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-for-Powerline.otf"; sourceTree = "<group>"; };
 		D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Bold-for-Powerline.otf"; sourceTree = "<group>"; };
@@ -566,6 +567,7 @@
 				D23B18841FF7CEBA00A6C903 /* StateManager.m */,
 				D23D0FAB2008DAEB00B33A9F /* TermInput.h */,
 				D23D0FAC2008DAEB00B33A9F /* TermInput.m */,
+				D215E59B2010C77E00D893EB /* TermJS.h */,
 			);
 			path = Blink;
 			sourceTree = "<group>";

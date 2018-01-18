@@ -61,9 +61,9 @@
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)load;
-- (void)setScrollEnabled:(BOOL)scroll;
+- (void)reload;
 - (void)clear;
-- (void)setColumnNumber:(NSInteger)count;
+- (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)write:(NSString *)data;
 - (void)loadTerminalThemeJS:(NSString *)themeContent;

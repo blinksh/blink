@@ -37,6 +37,7 @@
 #import "BKSettingsNotifications.h"
 #import "BKFont.h"
 #import "BKTheme.h"
+#import "TermJS.h"
 
 @implementation BLWebView
 
@@ -53,10 +54,8 @@
 @end
 
 
-@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler>
-
+@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler, WKNavigationDelegate>
 @end
-
 
 @implementation TermView {
   WKWebView *_webView;
@@ -106,21 +105,16 @@
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
-  configuration.dataDetectorTypes = WKDataDetectorTypeNone;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BLWebView alloc] initWithFrame:self.bounds configuration:configuration];
+  
+  _webView.navigationDelegate = self;
   [_webView.scrollView setScrollEnabled:NO];
   [_webView.scrollView setBounces:NO];
   _webView.scrollView.delaysContentTouches = NO;
   _webView.opaque = NO;
   _webView.backgroundColor = [UIColor clearColor];
-  if (@available(iOS 11.0, *)) {
-    _webView.insetsLayoutMarginsFromSafeArea = NO;
-    _webView.scrollView.insetsLayoutMarginsFromSafeArea = NO;
-  } else {
-    // Fallback on earlier versions
-  }
   
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
@@ -149,43 +143,19 @@
   }
 }
 
-
 - (NSString *)title
 {
   return _webView.title;
 }
 
-- (void)setScrollEnabled:(BOOL)scroll
+- (void)_evalJS:(NSString *)script completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler
 {
-  [_webView.scrollView setScrollEnabled:NO];
-}
-
-- (void)setColumnNumber:(NSInteger)count
-{
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_setWidth(\"%ld\");", (long)count] completionHandler:nil];
-}
-
-- (void)setFontSize:(NSNumber *)newSize
-{
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_setFontSize(\"%@\");", newSize] completionHandler:nil];
-}
-
-- (void)clear
-{
-  [_webView evaluateJavaScript:@"term_clear();" completionHandler:nil];
+  [_webView evaluateJavaScript:script completionHandler:completionHandler];
 }
 
 - (void)load
 {
   NSString *userScript = [self _termInitScript];
-  
-  NSString * initScript = @"";
-  if (userScript) {
-    userScript = [userScript stringByAppendingString:initScript];
-  } else {
-    userScript = initScript;
-  }
-  
   WKUserScript *script = [[WKUserScript alloc] initWithSource:userScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
   [_webView.configuration.userContentController addUserScript:script];
   
@@ -194,6 +164,72 @@
   NSURLRequest *request = [NSURLRequest requestWithURL:url];
   
   [_webView loadRequest:request];
+}
+
+
+- (void)reload
+{
+  // Can't make webview to reload properly. So we create new one:
+  [self terminate];
+  [_webView removeFromSuperview];
+  [self _addWebView];
+  [self load];
+}
+
+- (void)setWidth:(NSInteger)count
+{
+  [self _evalJS:term_setWidth(count) completionHandler:nil];
+}
+
+- (void)setFontSize:(NSNumber *)newSize
+{
+  [self _evalJS:term_setFontSize(newSize) completionHandler:nil];
+}
+
+- (void)clear
+{
+  [self _evalJS:term_clear() completionHandler:nil];
+}
+
+- (void)cleanSelection
+{
+  [self _evalJS:term_cleanSelection() completionHandler:nil];
+}
+
+- (void)setCursorBlink:(BOOL)state
+{
+  [self _evalJS:term_setCursorBlink(state) completionHandler:nil];
+}
+
+- (void)reset
+{
+  [self _evalJS:term_reset() completionHandler:nil];
+}
+
+- (void)increaseFontSize
+{
+  [self _evalJS:term_increaseFontSize() completionHandler:nil];
+}
+
+- (void)decreaseFontSize
+{
+  [self _evalJS:term_decreaseFontSize() completionHandler:nil];
+}
+
+- (void)resetFontSize
+{
+  [self _evalJS:term_resetFontSize() completionHandler:nil];
+}
+
+- (void)focus {
+  _focused = YES;
+  [self _evalJS:term_focus() completionHandler:nil];
+}
+
+- (void)blur
+{
+  _focused = NO;
+  [self _evalJS:term_blur() completionHandler:nil];
 }
 
 // Write data to terminal control
@@ -211,12 +247,10 @@
     NSString * buffer = _jsBuffer;
     _jsBuffer = [[NSMutableString alloc] init];
     
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ buffer ] options:0 error:nil];
-    NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-    NSString *jsScript = [NSString stringWithFormat:@"term_write(%@[0]);", jsString];
+    NSString *jsScript = term_write(buffer);
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_webView evaluateJavaScript:jsScript completionHandler:^(id result, NSError *error) {
+      [self _evalJS: jsScript completionHandler:^(id result, NSError *error) {
         dispatch_async(_jsQueue, ^{
           _jsIsBusy = NO;
           if (_jsBuffer.length > 0) {
@@ -227,8 +261,8 @@
     });
     
   });
-  
 }
+
 
 //  Since TermView is a WKScriptMessageHandler, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
 - (void)userContentController:(WKUserContentController *)userContentController
@@ -257,8 +291,6 @@
     [[UIPasteboard generalPasteboard] setString:data[@"content"]];
   }
 }
-
-#pragma mark On-Screen keyboard - UIKeyInput
 
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
@@ -324,9 +356,9 @@
   }
 }
 
-- (void)_detectLinkInSelection:(void (^)()) block {
+- (void)_detectLinkInSelection:(void (^)(void)) block {
   _detectedLink = nil;
-  [_webView evaluateJavaScript:@"term_getCurrentSelection();" completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+  [self _evalJS:term_getCurrentSelection() completionHandler:^(id _Nullable res, NSError * _Nullable error) {
     if (error) {
       block();
       return;
@@ -358,10 +390,6 @@
   }];
 }
 
-- (void)cleanSelection
-{
-  [_webView evaluateJavaScript:@"term_cleanSelection();" completionHandler: nil];
-}
 
 // just to remove warning in selector
 
@@ -394,7 +422,7 @@
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-    [_webView evaluateJavaScript:@"term_scaleStart();" completionHandler:nil];
+    [self _evalJS: term_scaleStart() completionHandler:nil];
     if (_pinchSamplingTimer) {
       [_pinchSamplingTimer invalidate];
     }
@@ -410,20 +438,8 @@
 
 - (void)pinchSampling:(NSTimer *)timer
 {
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_scale(%f);", _pinchGesture.scale] completionHandler:nil];
+  [self _evalJS:term_scale(_pinchGesture.scale) completionHandler:nil];
 }
-
-- (void)focus {
-  _focused = YES;
-  [_webView evaluateJavaScript:@"term_focus();" completionHandler:nil];
-}
-
-- (void)blur
-{
-  _focused = NO;
-  [_webView evaluateJavaScript:@"term_blur();" completionHandler:nil];
-}
-
 
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
 {
@@ -432,7 +448,7 @@
 
 - (void)loadTerminalThemeJS:(NSString *)themeContent
 {
-  [_webView evaluateJavaScript:themeContent completionHandler:nil];
+  [self _evalJS:themeContent completionHandler:nil];
 }
 
 
@@ -447,32 +463,6 @@
   [_webView evaluateJavaScript:jsScript completionHandler:nil];
 }
 
-- (void)setCursorBlink:(BOOL)state
-{
-  NSString *jsScript = [NSString stringWithFormat:@"term_setCursorBlink(%@)", state ? @"true" : @"false"];
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
-}
-
-- (void)reset
-{
-  [_webView evaluateJavaScript:@"term_reset();" completionHandler:nil];
-}
-
-- (void)increaseFontSize
-{
-  [_webView evaluateJavaScript:@"term_increaseFontSize();" completionHandler:nil];
-}
-
-- (void)decreaseFontSize
-{
-  [_webView evaluateJavaScript:@"term_decreaseFontSize();" completionHandler:nil];
-}
-
-- (void)resetFontSize
-{
-  [_webView evaluateJavaScript:@"term_resetFontSize();" completionHandler:nil];
-}
-
 - (void)copy:(id)sender
 {
   [_webView copy:sender];
@@ -480,58 +470,33 @@
 
 - (NSString *)_termInitScript
 {
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
-  NSString *fontFamily = NULL;
+  NSMutableArray *script = [[NSMutableArray alloc] init];
   
-  if (font) {
-    fontFamily = font.name;
-    if (![@"Menlo" isEqualToString:fontFamily]) {
-      fontFamily = [fontFamily stringByAppendingString:@", Menlo"];
+  [script addObject:@"function applyUserSettings() {"];
+  {
+    BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+    if (theme) {
+      [script addObject:theme.content];
     }
-  } else {
-    fontFamily = @"Menlo";
-  }
-  
-  NSMutableString *script = [[NSMutableString alloc] init];
-  
-  [script appendString:@"function applyUserSettings() {\n"];
-  
-  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (theme) {
-    [script appendString:theme.content];
-  }
-  
-  //  if (!_disableFontSizeSelection) {
-  //    NSNumber *fontSize = [BKDefaults selectedFontSize];
-  // TODO
-//  [script appendString:[NSString stringWithFormat:@"\nterm_setFontSize('%ld');", (long)_sessionParameters.fontSize]];
-  //  }
-  
-  if (font) {
-    [script appendString:[NSString stringWithFormat:@"\nterm_setFontFamily('%@');", font.name]];
-    if (font.isCustom) {
-//      NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ font.content ] options:0 error:nil];
-//      NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//      NSString *jsScript = [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", jsString];
-//      [script appendString:jsScript];
-      //      NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCSS(%@[0], \"%@\")", jsString, familyName];
-      //      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
+    
+    BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+    
+    [script addObject:term_setFontSize([BKDefaults selectedFontSize])];
+    
+    if (font) {
+      [script addObject: term_setFontFamily(font.name)];
+      if (font.isCustom) {
+        [script addObject:term_appendUserCss(font.content)];
+      }
     }
+    
+    [script addObject: term_setCursorBlink([BKDefaults isCursorBlink])];
   }
-  
-  [script appendString:[NSString stringWithFormat:@"\n;term_setCursorBlink(%@);", [BKDefaults isCursorBlink] ? @"true" : @"false"]];
-  
-  
-  [script appendString:@"\n};"];
+  [script addObject:@"};"];
 
-//  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ fontFamily ] options:0 error:nil];
-//  NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//  NSString *jsScript = [NSString stringWithFormat:@"\n waitForFontFamily(%@[0], applyUserSetting)", jsString];
-//
-//  [script appendString:jsScript];
-  [script appendString:@"\nterm_init();"];
-//
-  return script;
+  [script addObject:term_init()];
+
+  return [script componentsJoinedByString:@"\n"];
 }
 
 - (void)terminate
