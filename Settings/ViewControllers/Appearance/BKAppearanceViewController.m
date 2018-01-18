@@ -255,7 +255,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
       [BKDefaults setThemeName:[theme name]];
-      [self showcaseTheme:theme];
+      [_termView reload];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
@@ -270,8 +270,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKFont *font = [[BKFont all] objectAtIndex:_selectedFontIndexPath.row];
       [BKDefaults setFontName:[font name]];
-      [self showcaseFont:font];
-    
+      [_termView reload];
     }
   }
 }
@@ -348,12 +347,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (IBAction)cursorBlinkSwitchChanged:(id)sender
 {
   _cursorBlinkValue = _cursorBlinkSwitch.on;
+  [_termView setCursorBlink:_cursorBlinkValue];
 }
 
 #pragma mark - Terminal
 
 - (void)terminalIsReady:(NSDictionary *)size
 {
+  [_termView setCursorBlink:_cursorBlinkValue];
   [_termView setWidth:60];
   [self _writeColorShowcase];
 }
@@ -387,14 +388,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   // Nothing
 }
 
-- (void)showcaseTheme:(BKTheme *)theme
+- (void)focus
 {
-  [_termView reload];
+  // Nothing
 }
 
-- (void)showcaseFont:(BKFont *)font
+- (void)blur
 {
-  [_termView reload];
+  // Nothing
 }
 
 @end
