@@ -46,12 +46,6 @@
 - (void)fontSizeChanged:(NSNumber *)size;
 - (void)focus;
 - (void)blur;
-//- (void)copy:(id)sender;
-//- (void)increaseFontSize;
-//- (void)decreaseFontSize;
-//- (void)resetFontSize;
-//- (void)openLink;
-
 @end
 
 @interface BLWebView: WKWebView
@@ -61,17 +55,17 @@
 @interface TermView : UIView
 
 @property (weak) id<TerminalDelegate> termDelegate;
-@property (nonatomic, readonly, weak) NSString *title;
+@property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) NSURL *detectedLink;
 @property (nonatomic, readonly) NSString *selectedText;
 
 - (id)initWithFrame:(CGRect)frame;
+- (void)loadTerminal;
 - (void)setScrollEnabled:(BOOL)scroll;
 - (void)clear;
 - (void)setColumnNumber:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)setInputEnabled:(BOOL)enabled;
-- (void)loadTerminal;
 - (void)write:(NSString *)data;
 - (void)loadTerminalThemeJS:(NSString *)themeContent;
 - (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;

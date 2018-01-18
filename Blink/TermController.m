@@ -50,25 +50,18 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   BOOL _appearanceChanged;
   BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
-  TermInput *_termInput;
   BOOL _rawMode;
 }
 
+- (NSString *)title {
+  return _termView.title;
+}
 
 - (void)write:(NSString *)input
 {
   // Trasform the string and write it, with the correct sequence
   const char *str = [input UTF8String];
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-}
-
-
-- (TermView *) termView {
-  return _terminal;
-}
-
-- (TermInput *)termInput {
-  return _termInput;
 }
 
 - (void)attachInput:(TermInput *)termInput
@@ -78,12 +71,12 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _termInput.raw = _rawMode;
     _termInput.termDelegate = self;
     if ([_termInput isFirstResponder]) {
-      [_terminal focus];
+      [_termView focus];
     } else {
-      [_terminal blur];
+      [_termView blur];
     }
   } else {
-    [_terminal blur];
+    [_termView blur];
   }
 }
 
@@ -95,11 +88,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
   }
 
-  _terminal = [[TermView alloc] initWithFrame:self.view.frame];
-  _terminal.restorationIdentifier = @"TermView";
-  _terminal.termDelegate = self;
+  _termView = [[TermView alloc] initWithFrame:self.view.frame];
+  _termView.restorationIdentifier = @"TermView";
+  _termView.termDelegate = self;
 
-  self.view = _terminal;
+  self.view = _termView;
 }
 
 
@@ -173,7 +166,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
   }
 
-  [_terminal loadTerminal];
+  [_termView loadTerminal];
 
   [self createPTY];
 }
@@ -181,8 +174,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)createPTY
 {
   pipe(_pinput);
-  _termout = fterm_open(_terminal, 0);
-  _termerr = fterm_open(_terminal, 0);
+  _termout = fterm_open(_termView, 0);
+  _termerr = fterm_open(_termView, 0);
   _termin = fdopen(_pinput[0], "r");
   _termsz = malloc(sizeof(struct winsize));
   _termsz->ws_col = _sessionParameters.cols;
@@ -300,7 +293,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)terminate
 {
-  [_terminal terminate];
+  [_termView terminate];
   
   [_session kill];
 }
@@ -318,7 +311,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)focus {
   _termInput.termDelegate = self;
-  [_terminal focus];
+  [_termView focus];
   if (![_termInput isFirstResponder]) {
     [_termInput becomeFirstResponder];
   }
@@ -326,7 +319,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)blur {
   _termInput.termDelegate = nil;
-  [_terminal blur];
+  [_termView blur];
 }
 
 @end

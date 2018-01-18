@@ -50,26 +50,6 @@
   return NO;
 }
 
-- (UIEdgeInsets)layoutMargins
-{
-  return UIEdgeInsetsZero;
-}
-
-- (NSDirectionalEdgeInsets)directionalLayoutMargins
-{
-  return NSDirectionalEdgeInsetsZero;
-}
-
--(void)layoutMarginsDidChange
-{
-  
-}
-
-- (void)safeAreaInsetsDidChange
-{
-  
-}
-
 @end
 
 
@@ -170,7 +150,10 @@
 }
 
 
-#pragma mark Terminal Control
+- (NSString *)title
+{
+  return _webView.title;
+}
 
 - (void)setScrollEnabled:(BOOL)scroll
 {
@@ -191,7 +174,6 @@
 {
   [_webView evaluateJavaScript:@"term_clear();" completionHandler:nil];
 }
-
 
 - (void)loadTerminal
 {
@@ -246,11 +228,6 @@
     
   });
   
-}
-
-- (NSString *)title
-{
-  return _webView.title;
 }
 
 //  Since TermView is a WKScriptMessageHandler, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
@@ -386,6 +363,8 @@
   [_webView evaluateJavaScript:@"term_cleanSelection();" completionHandler: nil];
 }
 
+// just to remove warning in selector
+
 - (void)copyLink:(id)sender
 {
 }
@@ -396,7 +375,6 @@
 
 - (void)yank:(id)sender
 {
-  // just to remove warning in selector
 }
 
 - (void)unselect:(id)sender
@@ -409,9 +387,8 @@
     return;
   }
   
-//  [self focus];
-  [_termDelegate focus];
   [self cleanSelection];
+  [_termDelegate focus];
 }
 
 - (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer

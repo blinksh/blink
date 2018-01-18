@@ -74,12 +74,15 @@
   [self.view addSubview:_termInput];
   
   self.view.opaque = YES;
-
+  
+  NSDictionary *options = [NSDictionary dictionaryWithObject:
+                           [NSNumber numberWithInt:UIPageViewControllerSpineLocationMid]
+                                            forKey:UIPageViewControllerOptionSpineLocationKey];
 
   _viewportsController = [[UIPageViewController alloc]
                           initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
                           navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
-                          options:nil];
+                          options:options];
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
   _viewportsController.delegate = self;
@@ -123,11 +126,6 @@
   }
 }
 
-- (void)copy:(id)sender
-{
-  
-}
-
 - (BOOL)canBecomeFirstResponder
 {
   return YES;
@@ -138,7 +136,7 @@
   return YES;
 }
 
-- (void)focusOnShell
+- (void)_focusOnShell
 {
   [self.currentTerm attachInput:_termInput];
 }
@@ -170,7 +168,7 @@
                                   animated:NO
                                 completion:^(BOOL complete) {
                                   if (complete) {
-                                    [weakSelf focusOnShell];
+                                    [weakSelf _focusOnShell];
                                   }
                                 }];
   [self.view setNeedsLayout];
@@ -303,7 +301,6 @@
   CGFloat y = [sender translationInView:self.view].y;
   CGFloat height = self.view.frame.size.height;
   CGRect frame = self.view.frame;
-
   
   if (y > 0) {
     [self.view setFrame:CGRectMake(frame.origin.x, y, frame.size.width, frame.size.height)];
@@ -313,7 +310,7 @@
   if (sender.state == UIGestureRecognizerStateEnded) {
     CGPoint velocity = [sender velocityInView:self.view];
     [self.view setFrame:CGRectMake(frame.origin.x, 0, frame.size.width, frame.size.height)];
-
+    
     if (velocity.y > height * 2) {
       _viewportsController.view.alpha = 1;
       [self closeCurrentSpace];
@@ -339,9 +336,7 @@
   if (idx >= [_viewports count] - 1) {
     return nil;
   }
-  UIViewController *ctrl = _viewports[idx + 1];
-  [ctrl.view setNeedsLayout];
-  return ctrl;
+  return _viewports[idx + 1];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
@@ -355,20 +350,21 @@
   if (idx <= 0) {
     return nil;
   }
-  UIViewController *ctrl = _viewports[idx - 1];
-  [ctrl.view setNeedsLayout];
-  return ctrl;
+  return _viewports[idx - 1];
 }
 
-- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers transitionCompleted:(BOOL)completed
+- (void)pageViewController:(UIPageViewController *)pageViewController
+        didFinishAnimating:(BOOL)finished
+   previousViewControllers:(NSArray<UIViewController *> *)previousViewControllers
+       transitionCompleted:(BOOL)completed
 {
   if (completed) {
     for (TermController *term in previousViewControllers) {
       [term attachInput:nil];
     }
 
-    [self displayHUD];
-    [self focusOnShell];
+    [self _displayHUD];
+    [self _focusOnShell];
   }
 }
 
@@ -390,7 +386,7 @@
   return _pageControl;
 }
 
-- (void)displayHUD
+- (void)_displayHUD
 {
   if (!_hud) {
     _hud = [[MBProgressHUD alloc] initWithView:_viewportsController.view];
@@ -405,7 +401,7 @@
   UIPageControl *pages = [self pageControl];
 
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
-  NSString *title = self.currentTerm.terminal.title.length ? self.currentTerm.terminal.title : @"blink";
+  NSString *title = self.currentTerm.title.length ? self.currentTerm.title : @"blink";
   NSString *geometry = [NSString stringWithFormat:@"%ld x %ld",
                         (long)self.currentTerm.sessionParameters.rows
                         , (long)self.currentTerm.sessionParameters.cols];
@@ -451,8 +447,8 @@
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
             if (didComplete) {
-              [weakSelf displayHUD];
-              [weakSelf focusOnShell];
+              [weakSelf _displayHUD];
+              [weakSelf _focusOnShell];
             }
 				  }];
   } else {
@@ -463,14 +459,17 @@
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
-              [weakSelf displayHUD];
-              [weakSelf focusOnShell];
+              [weakSelf _displayHUD];
+              [weakSelf _focusOnShell];
 				    }
 				  }];
   }
 }
 
-- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity sessionStateKey:(NSString *)sessionStateKey animated:(BOOL)animated completion:(void (^)(BOOL finished))completion
+- (void)_createShellWithUserActivity:(NSUserActivity *) userActivity
+                     sessionStateKey:(NSString *)sessionStateKey
+                            animated:(BOOL)animated
+                          completion:(void (^)(BOOL finished))completion
 {
   TermController *term = [[TermController alloc] init];
   term.sessionStateKey = sessionStateKey;
@@ -501,8 +500,8 @@
 				  animated:animated
 				completion:^(BOOL didComplete) {
 				  if (didComplete) {
-            [weakSelf displayHUD];
-            [weakSelf focusOnShell];
+            [weakSelf _displayHUD];
+            [weakSelf _focusOnShell];
 				  }
           if (completion) {
             completion(didComplete);
@@ -522,7 +521,7 @@
 
 - (void)terminalDidResize:(TermController*)control
 {
-    [self displayHUD];
+  [self _displayHUD];
 }
 
 #pragma mark External Keyboard
@@ -616,17 +615,17 @@
 
 - (void)_increaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.terminal increaseFontSize];
+  [self.currentTerm.termView increaseFontSize];
 }
 
 - (void)_decreaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.terminal decreaseFontSize];
+  [self.currentTerm.termView decreaseFontSize];
 }
 
 - (void)_resetFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.terminal resetFontSize];
+  [self.currentTerm.termView resetFontSize];
 }
 
 - (void)playNext:(UIKeyCommand *)cmd
@@ -673,7 +672,7 @@
 - (void)switchShellIdx:(NSInteger)idx direction:(UIPageViewControllerNavigationDirection)direction animated:(BOOL) animated
 {
   if (idx < 0 || idx >= _viewports.count) {
-    [self displayHUD];
+    [self _displayHUD];
     return;
   }
   
@@ -685,11 +684,10 @@
 				  animated:animated
 				completion:^(BOOL didComplete) {
           if (didComplete) {
-            [weakSelf displayHUD];
-            [weakSelf focusOnShell];
+            [weakSelf _displayHUD];
+            [weakSelf _focusOnShell];
           }
 				}];
-  
 }
 
 - (void)nextShell:(UIKeyCommand *)cmd
@@ -757,7 +755,7 @@
     [_viewports addObject:ctrl];
   }
 
-  [self displayHUD];
+  [self _displayHUD];
 }
 
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController
@@ -766,12 +764,12 @@
   term.delegate = self;
   [_viewports addObject:term];
   [spaceController removeCurrentSpace];
-  [self displayHUD];
+  [self _displayHUD];
 }
 
 - (void)viewScreenWillBecomeActive
 {
-  [self displayHUD];
+  [self _displayHUD];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -807,7 +805,7 @@
   if (targetIdx == NSNotFound) {
     if (self.currentTerm.activityKey == nil) {
       [self.currentTerm restoreUserActivityState:activity];
-      [self focusOnShell];
+      [self _focusOnShell];
     } else {
       [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
     }
@@ -816,7 +814,7 @@
 
   // 3. We are already showing required term. So do nothing.
   if (idx == targetIdx) {
-    [self focusOnShell];
+    [self _focusOnShell];
     return;
   }
 

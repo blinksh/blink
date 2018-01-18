@@ -53,7 +53,7 @@
 @property (readonly) FILE *termin;
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
-@property (strong, nonatomic) TermView *terminal;
+@property (readonly, strong, nonatomic) TermView *termView;
 @property (readonly, strong, nonatomic) TermInput *termInput;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;

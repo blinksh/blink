@@ -284,14 +284,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return [super resignFirstResponder];
 }
 
-- (void)_resetDefaultControlKeys
-{
-  _controlKeys = [[NSMutableDictionary alloc] init];
-  _functionKeys = [[NSMutableDictionary alloc] init];
-  _functionTriggerKeys = [[NSMutableDictionary alloc] init];
-  _specialFKeysRow = @"1234567890";
-  [self _setKbdCommands];
-}
 
 - (void)insertText:(NSString *)text
 {
@@ -303,7 +295,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
-  BOOL capsWithoutSWKeyboard = [self capsMapped] & self.inputAccessoryView.hidden;
+  BOOL capsWithoutSWKeyboard = [self _capsMapped] & self.inputAccessoryView.hidden;
   if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
     text = [text lowercaseString];
   }
@@ -333,11 +325,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (NSString *)textInputContextIdentifier
 {
   return _textInputContextIdentifier;
-}
-
-- (BOOL)hasText
-{
-  return YES;
 }
 
 - (void)deleteBackward
@@ -508,7 +495,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return NO;
   }
   
-  // super returns NO, so we check ourselves.
+  // super returns NO (No text?), so we check ourselves.
   if (action == @selector(paste:) ||
       action == @selector(cut:) ||
       action == @selector(copy:) ||
@@ -680,7 +667,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return _kbdCommands;
 }
 
-- (BOOL)capsMapped
+- (BOOL)_capsMapped
 {
   NSNumber *key = [NSNumber numberWithInteger:UIKeyModifierAlphaShift];
   return ([[_controlKeys objectForKey:key] count] ||
@@ -694,6 +681,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (str) {
     [_termDelegate write:str];
   }
+}
+
+- (void)_resetDefaultControlKeys
+{
+  _controlKeys = [[NSMutableDictionary alloc] init];
+  _functionKeys = [[NSMutableDictionary alloc] init];
+  _functionTriggerKeys = [[NSMutableDictionary alloc] init];
+  _specialFKeysRow = @"1234567890";
+  [self _setKbdCommands];
 }
 
 - (void)_configureShotcuts

@@ -219,7 +219,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
   // Mosh does not support scroll. Disable it to avoid problems.
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_stream.control.terminal setScrollEnabled:NO];
+    [_stream.control.termView setScrollEnabled:NO];
   });
   
   BOOL mode = [_stream.control rawMode];
@@ -237,7 +237,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             );
   
   dispatch_async(dispatch_get_main_queue(), ^{
-    [_stream.control.terminal setScrollEnabled:YES];
+    [_stream.control.termView setScrollEnabled:YES];
   });
   
   [_stream.control setRawMode:mode];
