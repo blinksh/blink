@@ -441,28 +441,6 @@
   [self _evalJS:term_scale(_pinchGesture.scale) completionHandler:nil];
 }
 
-- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath
-{
-  [_webView evaluateJavaScript:[NSString stringWithFormat:@"term_loadFontFromCss(\"%@\", \"%@\");", cssPath, familyName] completionHandler:nil];
-}
-
-- (void)loadTerminalThemeJS:(NSString *)themeContent
-{
-  [self _evalJS:themeContent completionHandler:nil];
-}
-
-
-- (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent
-{
-  cssContent = [NSString stringWithFormat:@"data:text/css;utf-8,%@", cssContent];
-
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ cssContent ] options:0 error:nil];
-  NSString *jsString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-  NSString *jsScript = [NSString stringWithFormat:@"term_loadFontFromCss(%@[0], \"%@\")", jsString, familyName];
-  
-  [_webView evaluateJavaScript:jsScript completionHandler:nil];
-}
-
 - (void)copy:(id)sender
 {
   [_webView copy:sender];

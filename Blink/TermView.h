@@ -66,9 +66,6 @@
 - (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)write:(NSString *)data;
-- (void)loadTerminalThemeJS:(NSString *)themeContent;
-- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
-- (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
 - (void)copy:(id)sender;
 - (void)terminate;
