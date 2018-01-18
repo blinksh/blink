@@ -38,6 +38,7 @@
 #import "SmartKeysController.h"
 #import "TermController.h"
 #import "TermInput.h"
+#import <MediaPlayer/MediaPlayer.h>
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
@@ -61,6 +62,7 @@
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
   UIEdgeInsets _rootLayoutMargins;
   TermInput *_termInput;
+  
 }
 
 #pragma mark Setup
@@ -119,6 +121,11 @@
   if (_viewports == nil) {
     [self _createShellWithUserActivity: nil sessionStateKey:nil animated:YES completion:nil];
   }
+}
+
+- (void)copy:(id)sender
+{
+  
 }
 
 - (BOOL)canBecomeFirstResponder
@@ -515,9 +522,7 @@
 
 - (void)terminalDidResize:(TermController*)control
 {
-//  if ([control.view isFirstResponder]) {
     [self displayHUD];
-//  }
 }
 
 #pragma mark External Keyboard
@@ -541,30 +546,51 @@
 
 - (void)setKbdCommands
 {
-  [BKUserConfigurationManager shortCutModifierFlags];
+  UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
+  
   _kbdCommands = [[NSMutableArray alloc] initWithObjects:
-   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags:modifierFlags
                               action: @selector(newShell:)
                 discoverabilityTitle: @"New shell"],
-   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
                               action: @selector(closeShell:)
                 discoverabilityTitle: @"Close shell"],
-   [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: modifierFlags
                               action: @selector(nextShell:)
                 discoverabilityTitle: @"Next shell"],
-   [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: modifierFlags
                               action: @selector(prevShell:)
                 discoverabilityTitle: @"Previous shell"],
 
-   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
                               action: @selector(otherScreen:)
                 discoverabilityTitle: @"Other Screen"],
-   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
                               action: @selector(moveToOtherScreen:)
                 discoverabilityTitle: @"Move schell to other Screen"],
-   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
                               action: @selector(showConfig:)
                 discoverabilityTitle: @"Show config"],
+                  
+    [UIKeyCommand keyCommandWithInput: @"m" modifierFlags: modifierFlags
+                               action: @selector(playNext:)
+                 discoverabilityTitle: @"Music Next track"],
+    [UIKeyCommand keyCommandWithInput: @"p" modifierFlags: modifierFlags
+                               action: @selector(playPrev:)
+                 discoverabilityTitle: @"Music Next track"],
+                  
+    [UIKeyCommand keyCommandWithInput:@"+"
+                        modifierFlags:modifierFlags
+                               action:@selector(_increaseFontSize:)
+                 discoverabilityTitle:@"Zoom In"],
+    [UIKeyCommand keyCommandWithInput:@"-"
+                        modifierFlags:modifierFlags
+                               action:@selector(_decreaseFontSize:)
+                 discoverabilityTitle:@"Zoom Out"],
+    [UIKeyCommand keyCommandWithInput:@"="
+                        modifierFlags:modifierFlags
+                               action:@selector(_resetFontSize:)
+                 discoverabilityTitle:@"Reset Zoom"],
   nil];
   
   for (NSInteger i = 1; i < 11; i++) {
@@ -572,7 +598,7 @@
     NSString *input = [NSString stringWithFormat:@"%li", (long)keyN];
     NSString *title = [NSString stringWithFormat:@"Switch to shell %li", (long)i];
     UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: input
-                                             modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
+                                             modifierFlags: modifierFlags
                                                     action: @selector(switchToShellN:)
                                       discoverabilityTitle: title];
     
@@ -585,6 +611,32 @@
     [_kbdCommandsWithoutDiscoverability addObject:commandWithoutDiscoverability];
   }
   
+}
+
+
+- (void)_increaseFontSize:(UIKeyCommand *)cmd
+{
+  [self.currentTerm.terminal increaseFontSize];
+}
+
+- (void)_decreaseFontSize:(UIKeyCommand *)cmd
+{
+  [self.currentTerm.terminal decreaseFontSize];
+}
+
+- (void)_resetFontSize:(UIKeyCommand *)cmd
+{
+  [self.currentTerm.terminal resetFontSize];
+}
+
+- (void)playNext:(UIKeyCommand *)cmd
+{
+  [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
+}
+
+- (void)playPrev:(UIKeyCommand *)cmd
+{
+  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
 }
 
 - (void)otherScreen:(UIKeyCommand *)cmd

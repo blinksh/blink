@@ -220,9 +220,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.inputAccessoryView = [_smartKeys view];
     
     [self _configureNotifications];
-    [self resetDefaultControlKeys];
-    [self configureTerminal];
-    [self listenToControlEvents];
+    [self _configureShotcuts];
   }
   
   return self;
@@ -250,8 +248,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   [defaultCenter addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
   [defaultCenter addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-//  [defaultCenter addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-//  [defaultCenter addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(_configureShotcuts)
+                        name:BKKeyboardConfigChanged
+                      object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(_configureShotcuts)
+                        name:BKKeyboardFuncTriggerChanged
+                      object:nil];
 }
 
 - (void)_willResignActive
@@ -278,13 +284,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return [super resignFirstResponder];
 }
 
-- (void)resetDefaultControlKeys
+- (void)_resetDefaultControlKeys
 {
   _controlKeys = [[NSMutableDictionary alloc] init];
   _functionKeys = [[NSMutableDictionary alloc] init];
   _functionTriggerKeys = [[NSMutableDictionary alloc] init];
   _specialFKeysRow = @"1234567890";
-  [self setKbdCommands];
+  [self _setKbdCommands];
 }
 
 - (void)insertText:(NSString *)text
@@ -415,7 +421,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  if ([sender isKindOfClass:[UIMenuController class]]) {
+  if ([sender isKindOfClass:[UIMenuController class]] || !_cmdAsModifier) {
     [_termDelegate.termView copy:sender];
   } else {
     [_termDelegate write:[CC CTRL:@"c"]];
@@ -502,11 +508,29 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return NO;
   }
   
-  return [super canPerformAction:action withSender:sender];
+  // super returns NO, so we check ourselves.
+  if (action == @selector(paste:) ||
+      action == @selector(cut:) ||
+      action == @selector(copy:) ||
+      action == @selector(select:) ||
+      action == @selector(selectAll:) ||
+      action == @selector(delete:) ||
+      action == @selector(makeTextWritingDirectionLeftToRight:) ||
+      action == @selector(makeTextWritingDirectionRightToLeft:) ||
+      action == @selector(toggleBoldface:) ||
+      action == @selector(toggleItalics:) ||
+      action == @selector(toggleUnderline:)
+      ) {
+    return YES;
+  }
+  
+  BOOL result = [super canPerformAction:action withSender:sender];
+  return result;
 }
 
 #pragma mark External Keyboard
-- (void)setKbdCommands
+
+- (void)_setKbdCommands
 {
   _kbdCommands = [NSMutableArray array];
   
@@ -521,10 +545,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_kbdCommands addObjectsFromArray:_functionTriggerKeys[modifier]];
   }
   
-  [_kbdCommands addObjectsFromArray:self.functionModifierKeys];
+  [_kbdCommands addObjectsFromArray:self._functionModifierKeys];
 }
 
-- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
+- (void)_assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
 {
   if (seq) {
     NSMutableArray *cmds = [NSMutableArray array];
@@ -558,7 +582,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                
                                // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
                                if (modifier == UIKeyModifierAlphaShift) {
-                                 [cmds addObjectsFromArray:[self shiftMaps]];
+                                 [cmds addObjectsFromArray:[self _shiftMaps]];
                                }
                              }];
     
@@ -570,26 +594,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     [_controlKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
   }
-  [self setKbdCommands];
 }
 
-- (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
+- (void)_assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
 {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
   
   if (key == UIKeyInputEscape) {
     [cmds addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)]];
     if (modifier == UIKeyModifierAlphaShift) {
-      [cmds addObjectsFromArray:[self shiftMaps]];
+      [cmds addObjectsFromArray:[self _shiftMaps]];
     }
     [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   } else {
     [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   }
-  [self setKbdCommands];
 }
 
-- (NSArray *)shiftMaps
+- (NSArray *)_shiftMaps
 {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
   NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
@@ -603,7 +625,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return cmds;
 }
 
-- (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers
+- (void)_assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers
 {
   // And Removing the Seq?
   NSMutableArray *functions = [[NSMutableArray alloc] init];
@@ -623,29 +645,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   [_functionTriggerKeys setObject:functions forKey:function];
-  [self setKbdCommands];
 }
 
 - (NSArray *)presetShortcuts
 {
-  return @[ [UIKeyCommand keyCommandWithInput:@"+"
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(increaseFontSize:)
-                         discoverabilityTitle:@"Zoom In"],
-            [UIKeyCommand keyCommandWithInput:@"-"
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(decreaseFontSize:)
-                         discoverabilityTitle:@"Zoom Out"],
-            [UIKeyCommand keyCommandWithInput:@"="
-                                modifierFlags:[BKUserConfigurationManager shortCutModifierFlags]
-                                       action:@selector(resetFontSize:)
-                         discoverabilityTitle:@"Reset Zoom"],
-            [UIKeyCommand keyCommandWithInput: @"v" modifierFlags: [BKUserConfigurationManager shortCutModifierFlags]
-                                       action: @selector(yank:)
-                         discoverabilityTitle: @"Paste"]];
+  UIKeyModifierFlags modifiers = [BKUserConfigurationManager shortCutModifierFlags];
+  return @[ 
+            [UIKeyCommand keyCommandWithInput: @"v"
+                                modifierFlags:modifiers
+//                                       action: @selector(yank:)
+                                       action: @selector(paste:)
+                         discoverabilityTitle: @"Paste"],
+            ];
 }
 
-- (NSArray *)functionModifierKeys
+- (NSArray *)_functionModifierKeys
 {
   NSMutableArray *f = [NSMutableArray array];
   
@@ -668,8 +682,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (BOOL)capsMapped
 {
-  return ([[_controlKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count] ||
-          [[_functionKeys objectForKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]] count]);
+  NSNumber *key = [NSNumber numberWithInteger:UIKeyModifierAlphaShift];
+  return ([[_controlKeys objectForKey:key] count] ||
+          [[_functionKeys objectForKey:key] count]);
 }
 
 - (void)yank:(id)sender
@@ -681,102 +696,49 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)increaseFontSize:(UIKeyCommand *)cmd
+- (void)_configureShotcuts
 {
-  [_termDelegate.termView increaseFontSize];
-}
+  [self _resetDefaultControlKeys];
 
-- (void)decreaseFontSize:(UIKeyCommand *)cmd
-{
-  [_termDelegate.termView decreaseFontSize];
-}
+  if ([BKDefaults autoRepeatKeys]) {
+    [self _assignSequence:TermViewAutoRepeateSeq toModifier:0];
+  }
 
-- (void)resetFontSize:(UIKeyCommand *)cmd
-{
-  [_termDelegate.termView resetFontSize];
-}
-
-
-- (void)configureTerminal
-{
-    [self resetDefaultControlKeys];
-  
-    if ([BKDefaults autoRepeatKeys]) {
-      [self assignSequence:TermViewAutoRepeateSeq toModifier:0];
+  for (NSString *key in [BKDefaults keyboardKeyList]) {
+    NSString *sequence = [BKDefaults keyboardMapping][key];
+    NSInteger modifier = [bkModifierMaps[key] integerValue];
+    if ([sequence isEqual:BKKeyboardSeqNone]) {
+      [self _assignSequence:nil toModifier:modifier];
+    } else if ([sequence isEqual:BKKeyboardSeqCtrl]) {
+      [self _assignSequence:TermViewCtrlSeq toModifier:modifier];
+    } else if ([sequence isEqual:BKKeyboardSeqEsc]) {
+      [self _assignSequence:TermViewEscSeq toModifier:modifier];
     }
-  
-    for (NSString *key in [BKDefaults keyboardKeyList]) {
-      NSString *sequence = [BKDefaults keyboardMapping][key];
-      [self assignSequence2:sequence toModifier:[bkModifierMaps[key] integerValue]];
-    }
-  
-    if ([BKDefaults isShiftAsEsc]) {
-      [self assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
-    }
-  
-    if ([BKDefaults isCapsAsEsc]) {
-      [self assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
-    }
-  
-//    for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
-//      NSArray *triggers = [BKDefaults keyboardFuncTriggers][func];
-//      [self assignFunction2:func toTriggers:triggers];
-//    }
-}
+  }
 
-- (void)assignSequence2:(NSString *)seq toModifier:(NSInteger)modifier
-{
-    if ([seq isEqual:BKKeyboardSeqNone]) {
-      [self assignSequence:nil toModifier:modifier];
-    } else if ([seq isEqual:BKKeyboardSeqCtrl]) {
-      [self assignSequence:TermViewCtrlSeq toModifier:modifier];
-    } else if ([seq isEqual:BKKeyboardSeqEsc]) {
-      [self assignSequence:TermViewEscSeq toModifier:modifier];
-    }
-}
+  if ([BKDefaults isShiftAsEsc]) {
+    [self _assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
+  }
 
-- (void)assignFunction2:(NSString *)func toTriggers:(NSArray *)triggers
-{
+  if ([BKDefaults isCapsAsEsc]) {
+    [self _assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
+  }
+
+  for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
+    NSArray *triggers = [BKDefaults keyboardFuncTriggers][func];
     UIKeyModifierFlags modifiers = 0;
     for (NSString *t in triggers) {
       NSNumber *modifier = bkModifierMaps[t];
       modifiers = modifiers | modifier.intValue;
     }
     if ([func isEqual:BKKeyboardFuncCursorTriggers]) {
-      [self assignFunction:TermViewCursorFuncSeq toTriggers:modifiers];
+      [self _assignFunction:TermViewCursorFuncSeq toTriggers:modifiers];
     } else if ([func isEqual:BKKeyboardFuncFTriggers]) {
-      [self assignFunction:TermViewFFuncSeq toTriggers:modifiers];
+      [self _assignFunction:TermViewFFuncSeq toTriggers:modifiers];
     }
-}
-
-- (void)listenToControlEvents
-{
-  // With this one as delegate, we would just listen to a keyboardChanged event, and remap the keyboard.
-  // Like seriously remapping all keys anyway doesn't take that long, and you are in the settings of the app.
-  // I separated it in different functions here because I really didn't want to regenerate everthing here and in the TV.
-  // The other thing is that I can actually embed the info in the dictionary, and just redo here, instead of multiple events.
-  // (But in the end those would have to be separate strings anyway, so it is pretty much the same).
-  // And that was the thing, here we were mapping Defaults -> TC -> TV, even in the functions, and that doesn't make any sense anymore.
+  }
   
-  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-  
-  [defaultCenter addObserver:self
-                    selector:@selector(_keyboardConfigChanged:)
-                        name:BKKeyboardConfigChanged
-                      object:nil];
-  
-  [defaultCenter addObserver:self
-                    selector:@selector(_keyboardConfigChanged:)
-                        name:BKKeyboardFuncTriggerChanged
-                      object:nil];
-  
-}
-
-#pragma mark Notifications
-
-- (void)_keyboardConfigChanged:(NSNotification *)notification
-{
-  [self configureTerminal];
+  [self _setKbdCommands];
 }
 
 

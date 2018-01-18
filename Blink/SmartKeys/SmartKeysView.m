@@ -92,6 +92,11 @@ NSString *const KbdTabKey = @"⇥";
   return CGSizeZero;
 }
 
+- (BOOL)enableInputClicksWhenVisible
+{
+  return YES;
+}
+
 - (void)setupModifierButtons {
 
   UITapGestureRecognizer *ctrlTapGesture = [[UITapGestureRecognizer alloc]
@@ -238,6 +243,7 @@ NSString *const KbdTabKey = @"⇥";
       return;
     }
   }
+
   [self.delegate symbolDown:sender.currentTitle];
 }
 
