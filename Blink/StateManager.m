@@ -54,7 +54,15 @@ NSString * const StatesKey = @"StatesKey";
 
 - (NSURL *)_filePath {
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSURL *url = [[[fileManager URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject] filePathURL];
+  NSError *error = nil;
+  NSURL *url = [fileManager URLForDirectory:NSApplicationSupportDirectory
+                                   inDomain:NSUserDomainMask
+                          appropriateForURL:nil
+                                     create:YES
+                                      error:&error];
+  if (error) {
+    NSLog(@"Error: %@", error);
+  }
   return [url URLByAppendingPathComponent:@"states"] ;
 }
 
