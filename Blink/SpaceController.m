@@ -528,7 +528,7 @@
     [_viewports removeLastObject];
     [_viewportsController setViewControllers:@[ _viewports[idx - 1] ]
 				   direction:UIPageViewControllerNavigationDirectionReverse
-				    animated:NO
+				    animated:YES
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
             if (didComplete) {
@@ -540,7 +540,7 @@
     [_viewports removeObjectAtIndex:idx];
     [_viewportsController setViewControllers:@[ _viewports[idx] ]
 				   direction:UIPageViewControllerNavigationDirectionForward
-				    animated:NO
+				    animated:YES
 				  completion:^(BOOL didComplete) {
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
