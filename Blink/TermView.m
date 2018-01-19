@@ -59,6 +59,7 @@
 
 @implementation TermView {
   WKWebView *_webView;
+
   UITapGestureRecognizer *_tapBackground;
   UILongPressGestureRecognizer *_longPressBackground;
   UIPinchGestureRecognizer *_pinchGesture;
@@ -69,6 +70,9 @@
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
+  
+  UIVisualEffectView *_overlayView;
+  BOOL _readyToDelete;
 }
 
 
@@ -110,15 +114,80 @@
   _webView = [[BLWebView alloc] initWithFrame:self.bounds configuration:configuration];
   
   _webView.navigationDelegate = self;
-  [_webView.scrollView setScrollEnabled:NO];
-  [_webView.scrollView setBounces:NO];
   _webView.scrollView.delaysContentTouches = NO;
+  _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
+  _webView.scrollView.panGestureRecognizer.minimumNumberOfTouches = 2;
   _webView.opaque = NO;
   _webView.backgroundColor = [UIColor clearColor];
   
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
   [self addSubview:_webView];
+}
+
+- (UIView *)_overlayView
+{
+  if (!_overlayView) {
+    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
+    _overlayView = [[UIVisualEffectView alloc] initWithEffect:effect];
+    _overlayView.frame = self.bounds;
+    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:nil];
+    btn.tintColor = [UIColor redColor];
+    UIToolbar * toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 50, 60)];
+    toolbar.clipsToBounds = YES;
+    toolbar.backgroundColor = [UIColor blackColor];
+    toolbar.barTintColor = [UIColor blackColor];
+    [toolbar setItems:@[btn]];
+    [toolbar setBackgroundImage:[UIImage new]
+      forToolbarPosition:UIToolbarPositionAny
+      barMetrics:UIBarMetricsDefault];
+    
+    [toolbar setBackgroundColor:[UIColor clearColor]];
+    toolbar.center = _webView.center;
+    
+    toolbar.transform = CGAffineTransformMakeScale(3.0, 3.0);
+    [_overlayView.contentView addSubview:toolbar];
+  }
+  
+  return _overlayView;
+}
+
+- (BOOL)readyToDelete
+{
+  return _readyToDelete;
+}
+
+- (void)setReadyToDelete:(BOOL)ready
+{
+  _readyToDelete = ready;
+  if (ready) {
+    UIView *overlay = [self _overlayView];
+    [self addSubview:overlay];
+    
+    overlay.alpha = 0;
+    
+    [UIView animateWithDuration:0.3 animations:^{
+      overlay.alpha = 0.6;
+    }];
+  } else {
+    [UIView animateWithDuration:0.3 animations:^{
+      _overlayView.alpha = 0;
+    } completion:^(BOOL finished) {
+      [_overlayView removeFromSuperview];
+      _overlayView = nil;
+    }];
+  }
+}
+
+- (void)setFreezed:(BOOL)freezed
+{
+  BOOL enabled = !freezed;
+  self.userInteractionEnabled = enabled;
+  [_webView.scrollView setScrollEnabled:enabled];
+  _webView.userInteractionEnabled = enabled;
+  _pinchGesture.enabled = enabled;
+  _longPressBackground.enabled = enabled;
+  _tapBackground.enabled = enabled;
 }
 
 - (void)_addGestures
@@ -155,9 +224,8 @@
 
 - (void)load
 {
-  NSString *userScript = [self _termInitScript];
-  WKUserScript *script = [[WKUserScript alloc] initWithSource:userScript injectionTime:WKUserScriptInjectionTimeAtDocumentEnd forMainFrameOnly:YES];
-  [_webView.configuration.userContentController addUserScript:script];
+//  [_webView.configuration.userContentController removeAllUserScripts];
+  [_webView.configuration.userContentController addUserScript:[self _termInitScript]];
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
   NSURL *url = [NSURL fileURLWithPath:path];
@@ -166,14 +234,11 @@
   [_webView loadRequest:request];
 }
 
-
 - (void)reload
 {
-  // Can't make webview to reload properly. So we create new one:
-  [self terminate];
-  [_webView removeFromSuperview];
-  [self _addWebView];
-  [self load];
+  [_webView.configuration.userContentController removeAllUserScripts];
+  [_webView.configuration.userContentController addUserScript:[self _termInitScript]];
+  [_webView reload];
 }
 
 - (void)setWidth:(NSInteger)count
@@ -298,6 +363,7 @@
   if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
     return YES;
   }
+    
   return NO;
 }
 
@@ -381,11 +447,12 @@
       }
       NSURL *url = result.URL;
       
-      if (url != nil && result.range.location <= offset && result.range.location + result.range.length >= offset) {
+      if (url && result.range.location <= offset && result.range.location + result.range.length >= offset) {
         _detectedLink = url;
         *stop = YES;
       }
     }];
+
     block();
   }];
 }
@@ -446,7 +513,7 @@
   [_webView copy:sender];
 }
 
-- (NSString *)_termInitScript
+- (WKUserScript *)_termInitScript
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
   
@@ -474,7 +541,10 @@
 
   [script addObject:term_init()];
 
-  return [script componentsJoinedByString:@"\n"];
+  return [[WKUserScript alloc] initWithSource:
+          [script componentsJoinedByString:@"\n"]
+                                injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
+                             forMainFrameOnly:YES];
 }
 
 - (void)terminate

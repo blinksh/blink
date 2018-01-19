@@ -58,6 +58,7 @@
 @property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) NSURL *detectedLink;
 @property (nonatomic, readonly) NSString *selectedText;
+@property BOOL readyToDelete;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)load;
@@ -77,5 +78,6 @@
 - (void)increaseFontSize;
 - (void)decreaseFontSize;
 - (void)resetFontSize;
+- (void)setFreezed:(BOOL)enabled;
 
 @end

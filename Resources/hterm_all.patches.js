@@ -80,7 +80,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     'font-family: monospace;' +
     'font-size: 15px;' +
     //    'font-variant-ligatures: none;' + // Blink: We use ligatures a lot
-    // '-webkit-overflow-scrolling: touch;' +  // <-- for inertial scroll Blink: We love smooth scrolling
+//     '-webkit-overflow-scrolling: touch;' +  // <-- for inertial scroll Blink: We love smooth scrolling
     'height: 100%;' +
     'overflow-y: scroll; overflow-x: hidden;' +
     'white-space: pre;' +
@@ -108,7 +108,8 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   this.rowNodes_.id = 'hterm:row-nodes';
   this.rowNodes_.style.cssText =
     'display: block;' +
-    'position: fixed;' +
+//    'position: fixed;' +
+  'position: absolute;' +
     'overflow: hidden;' +
     '-webkit-user-select: text;' +
     '-moz-user-select: text;';

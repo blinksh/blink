@@ -5,7 +5,7 @@
     <meta name="viewport" content="viewport-fit=cover, width=device-width, height=device-height, initial-scale=1, user-scalable=no">
     <script src="webfontloader.js"></script>
     <link rel="stylesheet" type="text/css" href="term.css">
-    <script src="hterm_all.min.js"></script>
+    <script src="hterm_all.js"></script>
     <script src="hterm_all.patches.js"></script>
     <script src="term.js"></script>
     <style>
@@ -14,6 +14,13 @@
         height:100%;
         width:100%;
         overflow: hidden;
+      }
+      #terminal {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        right: 0;
       }
       * {
         font-feature-settings: "liga" 0;

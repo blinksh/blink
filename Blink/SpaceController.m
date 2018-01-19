@@ -62,7 +62,6 @@
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
   UIEdgeInsets _rootLayoutMargins;
   TermInput *_termInput;
-  
 }
 
 #pragma mark Setup
@@ -131,12 +130,6 @@
   return YES;
 }
 
-//- (BOOL)becomeFirstResponder
-//{
-//  [self _focusOnShell];
-//  return [_termInput becomeFirstResponder];
-//}
-//
 - (BOOL)prefersStatusBarHidden
 {
   return YES;
@@ -226,7 +219,7 @@
 - (void)addGestures
 {
   if (!_twoFingersTap) {
-    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersTap:)];
+    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTwoFingersTap:)];
     [_twoFingersTap setNumberOfTouchesRequired:2];
     [_twoFingersTap setNumberOfTapsRequired:1];
     _twoFingersTap.delegate = self;
@@ -234,10 +227,11 @@
   }
 
   if (!_twoFingersDrag) {
-    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(handleTwoFingersDrag:)];
+    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTwoFingersDrag:)];
     [_twoFingersDrag setMinimumNumberOfTouches:2];
     [_twoFingersDrag setMaximumNumberOfTouches:2];
     _twoFingersDrag.delegate = self;
+    _twoFingersDrag.cancelsTouchesInView = NO;
     [self.view addGestureRecognizer:_twoFingersDrag];
   }
 }
@@ -245,6 +239,9 @@
 #pragma mark Events
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
 {
+  if (gestureRecognizer == _twoFingersTap && otherGestureRecognizer == _twoFingersDrag) {
+    return YES;
+  }
   if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
     return YES;
   }
@@ -297,38 +294,120 @@
   }
 }
 
-- (void)handleTwoFingersTap:(UITapGestureRecognizer *)sender
+- (void)_handleTwoFingersTap:(UITapGestureRecognizer *)sender
 {
-  [self _createShellWithUserActivity: nil sessionStateKey: nil animated:YES completion:nil];
+  if (sender.state == UIGestureRecognizerStateRecognized) {
+    [self _createShellWithUserActivity: nil sessionStateKey: nil animated:YES completion:nil];
+  }
 }
 
-- (void)handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
-{
-  CGFloat y = [sender translationInView:self.view].y;
-  CGFloat height = self.view.frame.size.height;
-  CGRect frame = self.view.frame;
+- (CGAffineTransform)_transformForTranslation:(CGPoint)translation {
   
-  if (y > 0) {
-    [self.view setFrame:CGRectMake(frame.origin.x, y, frame.size.width, frame.size.height)];
-    _viewportsController.view.alpha = 1 - (y * 2/ height);
+  CGFloat scale = 0.5;//MAX(MIN(1 - (-translation.y * 3/ height), 0.5), 0.3);
+  
+  CGAffineTransform move = CGAffineTransformMakeScale(scale, scale);
+  return CGAffineTransformTranslate(move, translation.x, translation.y);
+}
+
+- (void)_setAnimationState:(TermView *)termView on:(BOOL)on {
+  [termView setFreezed:on];
+  if (on) {
+    termView.layer.shadowColor = [UIColor whiteColor].CGColor;
+    termView.layer.shadowOffset = CGSizeMake(0, 20);
+    termView.layer.shadowOpacity = 0.7;
+    termView.layer.shadowRadius = 40;
+    
+  } else {
+    termView.layer.shadowColor = [UIColor whiteColor].CGColor;
+    termView.layer.shadowOffset = CGSizeMake(0, 0);
+    termView.layer.shadowOpacity = 0;
+    termView.layer.shadowRadius = 0;
+    termView.alpha = 1;
+  }
+}
+
+- (void)_handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
+{
+  TermView *v = self.currentTerm.termView;
+  CGPoint t = [sender translationInView:self.view];
+  
+  if (sender.state == UIGestureRecognizerStateBegan) {
+    [self _setAnimationState:v on:YES];
+  
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:0.7
+          initialSpringVelocity:1.0
+                        options:kNilOptions
+                     animations:^{
+       v.transform = [self _transformForTranslation:t];
+       
+    } completion:nil];
+  }
+  
+  if (sender.state == UIGestureRecognizerStateChanged) {
+    if (ABS(t.y) > _viewportsController.view.bounds.size.height * 0.25) {
+      if (!v.readyToDelete) {
+        [v setReadyToDelete:YES];
+      }
+    } else {
+      if (v.readyToDelete) {
+        [v setReadyToDelete:NO];
+      }
+    }
+    v.transform = [self _transformForTranslation:t];
+  }
+  
+  if (sender.state == UIGestureRecognizerStateCancelled) {
+    v.readyToDelete = NO;
+    v.transform = CGAffineTransformIdentity;
+    [self _setAnimationState:v on: NO];
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:0.6
+          initialSpringVelocity:1.0
+                        options:kNilOptions
+                     animations:^{
+                       v.transform = CGAffineTransformIdentity;
+                     } completion:nil];
   }
   
   if (sender.state == UIGestureRecognizerStateEnded) {
-    CGPoint velocity = [sender velocityInView:self.view];
-    [self.view setFrame:CGRectMake(frame.origin.x, 0, frame.size.width, frame.size.height)];
-    
-    if (velocity.y > height * 2) {
-      _viewportsController.view.alpha = 1;
-      [self closeCurrentSpace];
-    } else {
-      _viewportsController.view.alpha = 1;
-      // Rollback up animated
-      [UIView animateWithDuration:0.25
-                       animations:^{
-                         [self.view layoutIfNeeded];
-                       }];
+    if (v.readyToDelete) {
+      CGAffineTransform transform =  CGAffineTransformScale(CGAffineTransformTranslate(v.transform, 0, -self.view.bounds.size.height), 0.4, 0.4);
+    [UIView animateWithDuration:0.4
+                          delay:0
+         usingSpringWithDamping:0.9
+          initialSpringVelocity:1.0
+                        options:kNilOptions
+                     animations:^{
+                       v.transform = transform;
+                     } completion:^(BOOL complete){
+                          [self closeCurrentSpace];
+                     }];
+      return;
     }
+    [self _setAnimationState:v on: NO];
+    v.readyToDelete = NO;
+  
+    [UIView animateWithDuration:0.5
+                          delay:0
+         usingSpringWithDamping:0.6
+          initialSpringVelocity:1.0
+                        options:kNilOptions
+                     animations:^{
+        v.transform = CGAffineTransformIdentity;
+    } completion:nil];
   }
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  if (gestureRecognizer == _twoFingersDrag) {
+    return [_twoFingersDrag translationInView:self.view].y < 0;
+  }
+  
+  return YES;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
