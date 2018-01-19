@@ -383,6 +383,7 @@
                      animations:^{
                        v.transform = transform;
                      } completion:^(BOOL complete){
+                          [self _setAnimationState:v on: NO];
                           [self closeCurrentSpace];
                      }];
       return;
