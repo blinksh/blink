@@ -40,7 +40,6 @@
 #import "TermInput.h"
 #import <MediaPlayer/MediaPlayer.h>
 
-
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
 
@@ -384,6 +383,7 @@
                        v.transform = transform;
                      } completion:^(BOOL complete){
                           [self _setAnimationState:v on: NO];
+                          v.alpha = 0;
                           [self closeCurrentSpace];
                      }];
       return;
@@ -697,7 +697,6 @@
   }
   
 }
-
 
 - (void)_increaseFontSize:(UIKeyCommand *)cmd
 {
