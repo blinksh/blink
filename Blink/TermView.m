@@ -363,7 +363,6 @@
   if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
     return YES;
   }
-    
   return NO;
 }
 
@@ -387,6 +386,7 @@
   if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
     return;
   }
+
   
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
