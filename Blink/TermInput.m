@@ -170,7 +170,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
   NSString *_textInputContextIdentifier;
-
   
   // option + e on iOS lets introduce an accented character, that we override
   BOOL _disableAccents;

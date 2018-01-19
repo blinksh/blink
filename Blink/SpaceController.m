@@ -262,32 +262,29 @@
 - (void)_keyboardWillChangeFrame:(NSNotification *)sender
 {
   CGRect kbEndFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  CGRect kbFame = [self.view convertRect: kbEndFrame fromView:nil];
+  CGRect kbFrame = [self.view convertRect: kbEndFrame fromView:nil];
   
   CGFloat bottomInset = 0;
-  if (CGRectGetMaxY(kbFame) >= self.view.bounds.size.height) {
-    bottomInset = self.view.bounds.size.height - kbFame.origin.y;
+  if (CGRectGetMaxY(kbFrame) >= self.view.bounds.size.height) {
+    bottomInset = self.view.bounds.size.height - kbFrame.origin.y;
   }
   
-  _rootLayoutMargins.bottom = bottomInset;
+//  _termInput.inputAccessoryView.hidden = NO;
   
-  if ([UIView areAnimationsEnabled]) {
-    [UIView beginAnimations:@"kb" context:nil];
-
-    NSNumber *durationValue = sender.userInfo[UIKeyboardAnimationDurationUserInfoKey];
-    NSTimeInterval animationDuration = durationValue.doubleValue;
-
-    NSNumber *curveValue = sender.userInfo[UIKeyboardAnimationCurveUserInfoKey];
-    UIViewAnimationCurve curve = curveValue.integerValue;
-    [UIView setAnimationCurve:curve];
-    [UIView setAnimationDuration:animationDuration];
-    [UIView setAnimationBeginsFromCurrentState: YES];
-
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-
-    [UIView commitAnimations];
+  if (_termInput.inputAccessoryView.bounds.size.height == bottomInset) {
+    if (![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
+        bottomInset -= _termInput.inputAccessoryView.bounds.size.height;
+        _termInput.inputAccessoryView.hidden = YES;
+    } else {
+      _termInput.inputAccessoryView.hidden = NO;
+    }
   } else {
+    _termInput.inputAccessoryView.hidden = NO;
+  }
+  
+  if (_rootLayoutMargins.bottom  != bottomInset) {
+    _rootLayoutMargins.bottom = bottomInset;
+    
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
   }
@@ -488,17 +485,23 @@
 
   NSInteger idx = [_viewports indexOfObject:self.currentTerm];
   NSString *title = self.currentTerm.title.length ? self.currentTerm.title : @"blink";
-  NSString *geometry = [NSString stringWithFormat:@"%ld x %ld",
-                        (long)self.currentTerm.sessionParameters.rows
-                        , (long)self.currentTerm.sessionParameters.cols];
+  
+  MCPSessionParameters *params = self.currentTerm.sessionParameters;
+  if (params.rows == 0 && params.cols == 0) {
+    _hud.label.numberOfLines = 1;
+    _hud.label.text = title;
+  } else {
+    NSString *geometry =
+      [NSString stringWithFormat:@"%ld x %ld", (long)params.rows, (long)params.cols];
 
-  _hud.label.numberOfLines = 2;
-  _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];
+    _hud.label.numberOfLines = 2;
+    _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];
+  }
 
   pages.currentPage = idx;
   _hud.customView = pages;
 
-  [_hud showAnimated:YES];
+  [_hud showAnimated:NO];
   _hud.alpha = 0.6;
 
   [_hud hideAnimated:YES afterDelay:1.f];
