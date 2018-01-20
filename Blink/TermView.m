@@ -351,6 +351,12 @@
       _webView.frame = self.bounds;
       _webView.scrollView.contentInset = UIEdgeInsetsZero;
       _webView.scrollView.contentSize = self.bounds.size;
+      
+      if (_focused) {
+        [self focus];
+      } else {
+        [self blur];
+      }
     }
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     if ([_termDelegate respondsToSelector:@selector(fontSizeChanged:)]) {

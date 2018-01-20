@@ -50,6 +50,7 @@ function term_setup() {
   };
 
   t.decorate(document.getElementById('terminal'));
+  term_blur();
 }
 
 function term_init() {

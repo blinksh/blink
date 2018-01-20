@@ -195,7 +195,6 @@ hterm.ScrollPort.prototype.focus = function() {
 // Do not show resize notifications. We show ours
 hterm.Terminal.prototype.overlaySize = function() {};
 
-
 hterm.Terminal.prototype.copyStringToClipboard = function(str) {
   if (this.prefs_.get('enable-clipboard-notice')) {
     setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
