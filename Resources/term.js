@@ -124,10 +124,10 @@ function term_setFontFamily(name) {
 
 function term_appendUserCss(css) {
   var style = document.createElement('style');
-  
+
   style.type = 'text/css';
   style.appendChild(document.createTextNode(css));
-  
+
   document.head.appendChild(style);
 }
 
@@ -174,4 +174,10 @@ function waitForFontFamily(callback) {
     active: callback,
     inactive: callback,
   });
+}
+
+function term_applySexyTheme(theme) {
+  term_set('color-palette-overrides', theme.color);
+  term_set('foreground-color', theme.foreground);
+  term_set('background-color', theme.background);
 }

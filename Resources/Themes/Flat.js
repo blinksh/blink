@@ -16,12 +16,12 @@ var cyan =       "#1ABC9C";
 var green =      "#2ECC71";
 
 term_set('color-palette-overrides',
-		 [ base02 , red     , green  , yellow,
+		 [ base02   , red     , green  , yellow,
 		   blue     , magenta , cyan   , base2,
 		   base03   , orange  , base01 , base00,
 		   base0    , violet  , base1  , base3 ]);
 
 term_set('cursor-color', 'rgba(229, 190, 12, 0.5)');
 term_set('cursor-blink', false);
-term_set('foreground-color', "#BDC3C7");
+term_set('foreground-color', base3);
 term_set('background-color', "#1A242F");

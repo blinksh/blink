@@ -549,13 +549,13 @@
   
   [script addObject:@"function applyUserSettings() {"];
   {
+    if (fontFamily) {
+      [script addObject: term_setFontFamily(fontFamily)];
+    }
+    
     BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
     if (theme) {
       [script addObject:theme.content];
-    }
-    
-    if (fontFamily) {
-      [script addObject: term_setFontFamily(fontFamily)];
     }
     
     [script addObject:term_setFontSize([BKDefaults selectedFontSize])];
