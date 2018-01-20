@@ -68,6 +68,50 @@
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
+// List of all commands available, sorted alphabetically:
+// Extracted at runtime from ios_system() plus blinkshell commands:
+NSArray* commandList;
+// Commands that don't take a file as argument (uname, ssh, mosh...):
+NSArray* commandsNoFile;
+
+void initializeCommandListForCompletion() {
+  // set up the list of commands for auto-complete:
+  NSMutableArray* combinedCommands = [[NSMutableArray alloc] init];
+  // add commands from Blinkshell:
+  [combinedCommands addObjectsFromArray:@[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"]];
+  // sort alphabetically:
+  commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
+  commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"];
+}
+
+void completion(const char *command, linenoiseCompletions *lc) {
+  // autocomplete command for lineNoise
+  NSString* commandString = [NSString stringWithUTF8String:command];
+  if ([commandString rangeOfString:@" "].location == NSNotFound) {
+    // No spaces. The user is typing a command
+    // check for pre-defined commands:
+    for (NSString* existingCommand in commandList) {
+      if ([existingCommand hasPrefix:commandString]) {
+        linenoiseAddCompletion(lc, existingCommand.UTF8String);
+      }
+    }
+  }
+}
+
+char* hints(const char * line, int *color, int *bold)
+{
+  NSString* commandString = [NSString stringWithUTF8String:line];
+  if ([commandString rangeOfString:@" "].location == NSNotFound) {
+    for (NSString* existingCommand in commandList) {
+      if ([existingCommand hasPrefix:commandString]) {
+        *color = 7;
+        return [existingCommand substringFromIndex: commandString.length].UTF8String;
+      }
+    }
+  }
+  return NULL;
+}
+
 - (int)main:(int)argc argv:(char **)argv
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
@@ -81,6 +125,8 @@
   char *line;
   argc = 0;
   argv = nil;
+  
+  initializeCommandListForCompletion();
 
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
@@ -93,7 +139,10 @@
                                 linenoiseUtf8NextCharLen,
                                 linenoiseUtf8ReadCode);
 
+  linenoiseHistorySetMaxLen(1000);
   linenoiseHistoryLoad(history);
+  linenoiseSetCompletionCallback(completion);
+  linenoiseSetHintsCallback(hints);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
