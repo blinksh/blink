@@ -227,7 +227,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (UIKeyboardAppearance)keyboardAppearance
 {
-  return UIKeyboardAppearanceDark;
+  return [BKDefaults isLightKeyboard] ? UIKeyboardAppearanceLight : UIKeyboardAppearanceDark;
 }
 
 - (void)didMoveToWindow

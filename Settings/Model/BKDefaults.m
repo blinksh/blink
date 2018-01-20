@@ -69,6 +69,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _shiftAsEsc = [coder decodeBoolForKey:@"shiftAsEsc"];
   _autoRepeatKeys = [coder decodeBoolForKey:@"autoRepeatKeys"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
+  _lightKeyboard = [coder decodeBoolForKey:@"lightKeyboard"];
   return self;
 }
 
@@ -84,6 +85,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_shiftAsEsc forKey:@"shiftAsEsc"];
   [encoder encodeBool:_autoRepeatKeys forKey:@"autoRepeatKeys"];
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
+  [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
 }
 
 + (void)initialize
@@ -177,6 +179,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   defaults.cursorBlink = state;
 }
 
++ (void)setLightKeyboard:(BOOL)state
+{
+  defaults.lightKeyboard = state;
+}
+
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func
 {
   if (triggers.count && [@[BKKeyboardFuncFTriggers, BKKeyboardFuncCursorTriggers, BKKeyboardFuncShortcutTriggers] containsObject:func]) {
@@ -262,6 +269,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)isCursorBlink
 {
   return defaults.cursorBlink;
+}
+
++ (BOOL)isLightKeyboard
+{
+  return defaults.lightKeyboard;
 }
 
 + (NSString*)defaultUserName

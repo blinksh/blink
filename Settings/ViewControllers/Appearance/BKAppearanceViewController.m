@@ -38,12 +38,14 @@
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
 #define CURSOR_BLINK_TAG 2003
+#define LIGHT_KEYBOARD_TAG 2004
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
     BKAppearance_Themes,
     BKAppearance_Fonts,
-    BKAppearance_FontSize
+    BKAppearance_FontSize,
+    BKAppearance_KeyboardAppearance
 };
 
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
@@ -61,6 +63,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 @implementation BKAppearanceViewController {
   UISwitch *_cursorBlinkSwitch;
   BOOL _cursorBlinkValue;
+  
+  UISwitch *_lightKeyboardSwitch;
+  BOOL _lightKeyboardValue;
 }
 
 - (void)viewDidLoad
@@ -94,6 +99,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:BKAppearance_Fonts];
   }
   _cursorBlinkValue = [BKDefaults isCursorBlink];
+  _lightKeyboardValue = [BKDefaults isLightKeyboard];
 }
 
 - (void)saveDefaultValues
@@ -109,6 +115,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   [BKDefaults setCursorBlink:_cursorBlinkValue];
+  [BKDefaults setLightKeyboard:_lightKeyboardValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -120,7 +127,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 4;
+  return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -131,6 +138,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return [[BKTheme all] count] + 1;
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
+  } else if (section == BKAppearance_KeyboardAppearance) {
+    return 1;
   } else {
     return 2;
   }
@@ -186,7 +195,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     } else {
       cellIdentifier = @"cursorBlinkCell";
     }
+  } else if (section == BKAppearance_KeyboardAppearance) {
+    cellIdentifier = @"lightKeyboardCell";
   }
+  
   return cellIdentifier;
 }
 
@@ -205,6 +217,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return @"THEMES";
   case BKAppearance_Fonts:
     return @"FONTS";
+  case BKAppearance_KeyboardAppearance:
+    return @"Keyboard Appearance";
   default:
     return nil;
   }
@@ -236,6 +250,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
     _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
     _cursorBlinkSwitch.on = _cursorBlinkValue;
+  } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
+    _lightKeyboardSwitch = [cell viewWithTag:LIGHT_KEYBOARD_TAG];
+    _lightKeyboardSwitch.on = _lightKeyboardValue;
   }
   return cell;
 }
@@ -349,6 +366,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _cursorBlinkValue = _cursorBlinkSwitch.on;
   [_termView setCursorBlink:_cursorBlinkValue];
 }
+
+- (IBAction)lightKeyboardSwitchChanged:(id)sender
+{
+  _lightKeyboardValue = _lightKeyboardSwitch.on;
+}
+
 
 #pragma mark - Terminal
 
