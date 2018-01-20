@@ -517,9 +517,35 @@
   [_webView copy:sender];
 }
 
+- (NSString *)_detectFontFamilyFromContent:(NSString *)content
+{
+  NSRegularExpression *regex = [NSRegularExpression
+                                regularExpressionWithPattern:@"font-family:\\s*(.+);"
+                                options:NSRegularExpressionCaseInsensitive
+                                error:nil];
+  __block NSString *result = nil;
+  [regex enumerateMatchesInString:content
+                          options:0
+                            range:NSMakeRange(0, [content length])
+                       usingBlock:^(NSTextCheckingResult *match, NSMatchingFlags flags, BOOL *stop)
+  {
+    if (match && match.numberOfRanges == 2) {
+     result = [content substringWithRange:[match rangeAtIndex:1]];
+    }
+    *stop = YES;
+  }];
+  return result;
+}
+
 - (WKUserScript *)_termInitScript
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
+  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  NSString *fontFamily = font.name;
+  if (font && font.isCustom && font.content) {
+    [script addObject:term_appendUserCss(font.content)];
+    fontFamily = [self _detectFontFamilyFromContent:font.content] ?: font.name;
+  }
   
   [script addObject:@"function applyUserSettings() {"];
   {
@@ -528,16 +554,11 @@
       [script addObject:theme.content];
     }
     
-    BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+    if (fontFamily) {
+      [script addObject: term_setFontFamily(fontFamily)];
+    }
     
     [script addObject:term_setFontSize([BKDefaults selectedFontSize])];
-    
-    if (font) {
-      [script addObject: term_setFontFamily(font.name)];
-      if (font.isCustom) {
-        [script addObject:term_appendUserCss(font.content)];
-      }
-    }
     
     [script addObject: term_setCursorBlink([BKDefaults isCursorBlink])];
   }

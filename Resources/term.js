@@ -123,12 +123,12 @@ function term_setFontFamily(name) {
 }
 
 function term_appendUserCss(css) {
-  var current = t.prefs_.get('user-css');
-  if (!current) {
-    current = 'data:text/css;utf-8,';
-  }
-  current += '\n' + css;
-  term_set('user-css', current);
+  var style = document.createElement('style');
+  
+  style.type = 'text/css';
+  style.appendChild(document.createTextNode(css));
+  
+  document.head.appendChild(style);
 }
 
 function term_loadFontFromCss(url, name) {
