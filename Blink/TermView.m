@@ -101,6 +101,10 @@
   }
 }
 
+- (BOOL)isDragging {
+  return _webView.scrollView.panGestureRecognizer.state == UIGestureRecognizerStateRecognized;
+}
+
 - (BOOL)canBecomeFirstResponder {
   return NO;
 }

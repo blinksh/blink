@@ -261,28 +261,33 @@
 // In this case we make sure we take the SmartBar/Keys into account.
 - (void)_keyboardWillChangeFrame:(NSNotification *)sender
 {
-  CGRect kbEndFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  CGRect kbFrame = [self.view convertRect: kbEndFrame fromView:nil];
-  
   CGFloat bottomInset = 0;
-  if (CGRectGetMaxY(kbFrame) >= self.view.bounds.size.height) {
-    bottomInset = self.view.bounds.size.height - kbFrame.origin.y;
+  
+  CGRect kbFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  
+  CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
+  if (CGRectGetMaxY(kbFrame) >= viewHeight) {
+    bottomInset = viewHeight - kbFrame.origin.y;
   }
   
-//  _termInput.inputAccessoryView.hidden = NO;
+  UIView *accessoryView = _termInput.inputAccessoryView;
+  CGFloat accessoryHeight = accessoryView.frame.size.height;
   
-  if (_termInput.inputAccessoryView.bounds.size.height == bottomInset) {
-    if (![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard]) {
-        bottomInset -= _termInput.inputAccessoryView.bounds.size.height;
-        _termInput.inputAccessoryView.hidden = YES;
+  if (bottomInset > accessoryHeight) {
+    accessoryView.hidden = NO;
+  } else if (bottomInset == accessoryHeight) {
+    if ([self.currentTerm.termView isDragging]) {
+      accessoryView.hidden = YES;
     } else {
-      _termInput.inputAccessoryView.hidden = NO;
+      accessoryView.hidden = ![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard];
     }
-  } else {
-    _termInput.inputAccessoryView.hidden = NO;
   }
   
-  if (_rootLayoutMargins.bottom  != bottomInset) {
+  if (accessoryView.hidden) {
+    bottomInset -= accessoryHeight;
+  }
+  
+  if (_rootLayoutMargins.bottom != bottomInset) {
     _rootLayoutMargins.bottom = bottomInset;
     
     [self.view setNeedsLayout];

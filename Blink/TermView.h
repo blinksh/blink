@@ -79,5 +79,6 @@
 - (void)decreaseFontSize;
 - (void)resetFontSize;
 - (void)setFreezed:(BOOL)enabled;
+- (BOOL)isDragging;
 
 @end
