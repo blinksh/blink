@@ -105,7 +105,8 @@ char* hints(const char * line, int *color, int *bold)
     for (NSString* existingCommand in commandList) {
       if ([existingCommand hasPrefix:commandString]) {
         *color = 7;
-        return [existingCommand substringFromIndex: commandString.length].UTF8String;
+        const char *hint = [existingCommand substringFromIndex: commandString.length].UTF8String;
+        return (char *)hint;
       }
     }
   }
