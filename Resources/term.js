@@ -27,7 +27,6 @@ function term_get(key) {
 }
 
 function term_setupDefaults() {
-  term_set('enable-bold', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
   term_set('allow-images-inline', true); // need to make it work
