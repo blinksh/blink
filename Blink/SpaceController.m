@@ -283,6 +283,8 @@
     } else {
       accessoryView.hidden = ![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard];
     }
+  } else if (kbFrame.size.height == 0) { // Other screen kb
+    accessoryView.hidden = YES;
   }
   
   if (accessoryView.hidden) {
