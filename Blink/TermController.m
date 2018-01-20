@@ -270,6 +270,9 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)focus {
   _termInput.termDelegate = self;
   [_termView focus];
+  if (![_termView.window isKeyWindow]) {
+    [_termView.window makeKeyWindow];
+  }
   if (![_termInput isFirstResponder]) {
     [_termInput becomeFirstResponder];
   }
