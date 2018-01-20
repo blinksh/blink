@@ -91,7 +91,7 @@
                                     <subviews>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="8RZ-A0-yTp" customClass="SKNonModifierButton">
                                             <rect key="frame" x="0.0" y="0.0" width="43.5" height="36"/>
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↑">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -104,7 +104,7 @@
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="bGu-3Y-xyl" customClass="SKNonModifierButton">
                                             <rect key="frame" x="43.5" y="0.0" width="43.5" height="36"/>
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↓">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -117,7 +117,7 @@
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="YR8-Kv-37f" customClass="SKNonModifierButton">
                                             <rect key="frame" x="87" y="0.0" width="43.5" height="36"/>
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="←">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -130,7 +130,7 @@
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="HQL-Qw-FWv" customClass="SKNonModifierButton">
                                             <rect key="frame" x="130.5" y="0.0" width="43.5" height="36"/>
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="→">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -215,6 +215,7 @@
                 </stackView>
             </subviews>
             <constraints>
+                <constraint firstItem="o5R-mY-Oea" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="NiB-SB-3i0"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="gqw-Dy-Ipc" userLabel="leading = Stack.leading"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="uNz-4C-Iq6"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="voi-FJ-sD9" userLabel="top=Stack.top"/>

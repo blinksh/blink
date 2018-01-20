@@ -30,6 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "SKNonModifierButton.h"
+
+#define DEFAULT_BG_COLOR  [UIColor viewFlipsideBackgroundColor];
+#define SELECTED_BG_COLOR [UIColor blueColor]
+
 @implementation SKNonModifierButton
 
 - (void)setHighlighted:(BOOL)highlighted{
