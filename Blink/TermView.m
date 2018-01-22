@@ -516,7 +516,6 @@
   switch (gestureRecognizer.state) {
     case UIGestureRecognizerStateBegan:
       [_pinchSamplingTimer invalidate];
-      [_webView evaluateJavaScript: term_scaleStart() completionHandler:nil];
       _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
                                                              target:self
                                                            selector:@selector(_pinchSampling:)
@@ -533,7 +532,10 @@
 
 - (void)_pinchSampling:(NSTimer *)timer
 {
-  [_webView evaluateJavaScript: term_scale(_pinchGesture.scale) completionHandler:nil];
+  [_webView evaluateJavaScript: term_scale(_pinchGesture.scale)
+             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+    _pinchGesture.scale = 1;
+  }];
 }
 
 - (void)copy:(id)sender

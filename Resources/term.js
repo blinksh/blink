@@ -96,17 +96,12 @@ function term_resetFontSize() {
   term_setFontSize();
 }
 
-var _fontSizeOnScaleStart = 0;
-
-function term_scaleStart() {
-  _fontSizeOnScaleStart = t.getFontSize();
-}
-
 function term_scale(scale) {
   var minScale = 0.5;
   var maxScale = 2.0;
   scale = Math.max(minScale, Math.min(maxScale, scale));
-  term_setFontSize(Math.round(_fontSizeOnScaleStart * scale));
+  var fontSize = t.getFontSize()
+  term_setFontSize(Math.round(fontSize * scale));
 }
 
 function term_setFontSize(size) {
