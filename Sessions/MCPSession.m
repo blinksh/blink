@@ -159,7 +159,7 @@ char* hints(const char * line, int *color, int *bold)
     if (parts.count == 2 && ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"])) {
       NSString *prefix = parts[1];
       NSString *hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
-      if (hint == nil) {
+      if (hint.length == 0) {
         return NULL;
       }
       
