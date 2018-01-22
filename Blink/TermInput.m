@@ -524,6 +524,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   [_kbdCommands addObjectsFromArray:self._functionModifierKeys];
+
+  // This dummy command to hand stuck cmd key
+  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:UIKeyModifierCommand action:@selector(_kbCmd:)]];
+}
+
+- (void)_kbCmd:(UIKeyCommand *)cmd {
 }
 
 - (void)_assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
