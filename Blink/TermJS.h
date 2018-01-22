@@ -64,11 +64,6 @@ NSString *term_resetFontSize()
   return @"term_resetFontSize();";
 }
 
-NSString *term_scaleStart()
-{
-  return @"term_scaleStart();";
-}
-
 NSString *term_scale(CGFloat scale)
 {
   return [NSString stringWithFormat:@"term_scale(%f);", scale];
