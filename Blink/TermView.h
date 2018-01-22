@@ -48,7 +48,7 @@
 - (void)blur;
 @end
 
-@interface BLWebView: WKWebView
+@interface BKWebView: WKWebView
 
 @end
 

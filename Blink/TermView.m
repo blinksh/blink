@@ -39,7 +39,7 @@
 #import "BKTheme.h"
 #import "TermJS.h"
 
-@implementation BLWebView
+@implementation BKWebView
 
 - (BOOL)canResignFirstResponder
 {
@@ -51,10 +51,31 @@
   return NO;
 }
 
+- (void)_keyboardDidChangeFrame:(id)sender
+{
+  
+}
+
+- (void)_keyboardWillChangeFrame:(id)sender
+{
+  
+}
+
+- (void)_keyboardWillShow:(id)sender
+{
+  
+}
+
+- (void)_keyboardWillHide:(id)sender
+{
+  
+}
+
+
 @end
 
 
-@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler, WKNavigationDelegate>
+@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler>
 @end
 
 @implementation TermView {
@@ -115,9 +136,8 @@
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BLWebView alloc] initWithFrame:self.bounds configuration:configuration];
+  _webView = [[BKWebView alloc] initWithFrame:self.bounds configuration:configuration];
   
-  _webView.navigationDelegate = self;
   _webView.scrollView.delaysContentTouches = NO;
   _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
   _webView.scrollView.panGestureRecognizer.minimumNumberOfTouches = 2;
@@ -197,20 +217,20 @@
 - (void)_addGestures
 {
   if (!_tapBackground) {
-    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(activeControl:)];
+    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
     [_tapBackground setNumberOfTapsRequired:1];
     _tapBackground.delegate = self;
     [self addGestureRecognizer:_tapBackground];
   }
 
   if (!_longPressBackground) {
-    _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(longPress:)];
+    _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_longPress:)];
     _longPressBackground.delegate = self;
     [self addGestureRecognizer:_longPressBackground];
   }
 
   if (!_pinchGesture) {
-    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(handlePinch:)];
+    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
     _pinchGesture.delegate = self;
     [self addGestureRecognizer:_pinchGesture];
   }
@@ -221,14 +241,8 @@
   return _webView.title;
 }
 
-- (void)_evalJS:(NSString *)script completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler
-{
-  [_webView evaluateJavaScript:script completionHandler:completionHandler];
-}
-
 - (void)load
 {
-//  [_webView.configuration.userContentController removeAllUserScripts];
   [_webView.configuration.userContentController addUserScript:[self _termInitScript]];
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
@@ -247,58 +261,58 @@
 
 - (void)setWidth:(NSInteger)count
 {
-  [self _evalJS:term_setWidth(count) completionHandler:nil];
+  [_webView evaluateJavaScript:term_setWidth(count) completionHandler:nil];
 }
 
 - (void)setFontSize:(NSNumber *)newSize
 {
-  [self _evalJS:term_setFontSize(newSize) completionHandler:nil];
+  [_webView evaluateJavaScript:term_setFontSize(newSize) completionHandler:nil];
 }
 
 - (void)clear
 {
-  [self _evalJS:term_clear() completionHandler:nil];
+  [_webView evaluateJavaScript:term_clear() completionHandler:nil];
 }
 
 - (void)cleanSelection
 {
-  [self _evalJS:term_cleanSelection() completionHandler:nil];
+  [_webView evaluateJavaScript:term_cleanSelection() completionHandler:nil];
 }
 
 - (void)setCursorBlink:(BOOL)state
 {
-  [self _evalJS:term_setCursorBlink(state) completionHandler:nil];
+  [_webView evaluateJavaScript:term_setCursorBlink(state) completionHandler:nil];
 }
 
 - (void)reset
 {
-  [self _evalJS:term_reset() completionHandler:nil];
+  [_webView evaluateJavaScript:term_reset() completionHandler:nil];
 }
 
 - (void)increaseFontSize
 {
-  [self _evalJS:term_increaseFontSize() completionHandler:nil];
+  [_webView evaluateJavaScript:term_increaseFontSize() completionHandler:nil];
 }
 
 - (void)decreaseFontSize
 {
-  [self _evalJS:term_decreaseFontSize() completionHandler:nil];
+  [_webView evaluateJavaScript:term_decreaseFontSize() completionHandler:nil];
 }
 
 - (void)resetFontSize
 {
-  [self _evalJS:term_resetFontSize() completionHandler:nil];
+  [_webView evaluateJavaScript:term_resetFontSize() completionHandler:nil];
 }
 
 - (void)focus {
   _focused = YES;
-  [self _evalJS:term_focus() completionHandler:nil];
+  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
 - (void)blur
 {
   _focused = NO;
-  [self _evalJS:term_blur() completionHandler:nil];
+  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
 // Write data to terminal control
@@ -319,7 +333,7 @@
     NSString *jsScript = term_write(buffer);
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      [self _evalJS: jsScript completionHandler:^(id result, NSError *error) {
+      [_webView evaluateJavaScript: jsScript completionHandler:^(id result, NSError *error) {
         dispatch_async(_jsQueue, ^{
           _jsIsBusy = NO;
           if (_jsBuffer.length > 0) {
@@ -348,9 +362,6 @@
   } else if ([operation isEqualToString:@"terminalReady"]) {
     if ([_termDelegate respondsToSelector:@selector(terminalIsReady:)]) {
       [_termDelegate terminalIsReady:data[@"size"]];
-      _webView.frame = self.bounds;
-      _webView.scrollView.contentInset = UIEdgeInsetsZero;
-      _webView.scrollView.contentSize = self.bounds.size;
       
       if (_focused) {
         [self focus];
@@ -378,6 +389,9 @@
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
+  if (gestureRecognizer == _pinchGesture) {
+    return NO;
+  }
   if (gestureRecognizer == _tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
     // We cancel the one from the WebView from executing, as it will wait for this one to fail.
     // We return yes, to make sure that is understood.
@@ -391,7 +405,7 @@
   return NO;
 }
 
-- (void)longPress:(UILongPressGestureRecognizer *)gestureRecognizer
+- (void)_longPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
     return;
@@ -434,7 +448,8 @@
 
 - (void)_detectLinkInSelection:(void (^)(void)) block {
   _detectedLink = nil;
-  [self _evalJS:term_getCurrentSelection() completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+  [_webView evaluateJavaScript: term_getCurrentSelection()
+             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
     if (error) {
       block();
       return;
@@ -486,7 +501,7 @@
 {
 }
 
-- (void)activeControl:(UITapGestureRecognizer *)gestureRecognizer
+- (void)_activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
     return;
@@ -496,26 +511,29 @@
   [_termDelegate focus];
 }
 
-- (void)handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
+- (void)_handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
 {
-  if (gestureRecognizer.state == UIGestureRecognizerStateBegan) {
-    [self _evalJS: term_scaleStart() completionHandler:nil];
-    if (_pinchSamplingTimer) {
+  switch (gestureRecognizer.state) {
+    case UIGestureRecognizerStateBegan:
       [_pinchSamplingTimer invalidate];
-    }
-
-    _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 target:self selector:@selector(pinchSampling:) userInfo:nil repeats:YES];
-    [_pinchSamplingTimer fire];
-  }
-  
-  if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-    [_pinchSamplingTimer invalidate];    
+      [_webView evaluateJavaScript: term_scaleStart() completionHandler:nil];
+      _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
+                                                             target:self
+                                                           selector:@selector(_pinchSampling:)
+                                                           userInfo:nil repeats:YES];
+      break;
+    case UIGestureRecognizerStateEnded:
+    case UIGestureRecognizerStateCancelled:
+      [_pinchSamplingTimer invalidate];
+      break;
+    default:
+      break;
   }
 }
 
-- (void)pinchSampling:(NSTimer *)timer
+- (void)_pinchSampling:(NSTimer *)timer
 {
-  [self _evalJS:term_scale(_pinchGesture.scale) completionHandler:nil];
+  [_webView evaluateJavaScript: term_scale(_pinchGesture.scale) completionHandler:nil];
 }
 
 - (void)copy:(id)sender
@@ -583,5 +601,6 @@
   // Disconnect message handler
   [_webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
 }
+
 
 @end
