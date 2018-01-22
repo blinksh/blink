@@ -543,8 +543,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
     } else if (seq == TermViewAutoRepeateSeq){
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
-    }
-    else {
+    } else {
       return;
     }
     

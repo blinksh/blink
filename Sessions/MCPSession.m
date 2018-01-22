@@ -40,6 +40,7 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
+#import "BKHosts.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -68,46 +69,104 @@
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
-// List of all commands available, sorted alphabetically:
-// Extracted at runtime from ios_system() plus blinkshell commands:
-NSArray* commandList;
-// Commands that don't take a file as argument (uname, ssh, mosh...):
-NSArray* commandsNoFile;
+NSArray *__commandList;
+NSDictionary *__commandHints;
 
-void initializeCommandListForCompletion() {
-  // set up the list of commands for auto-complete:
-  NSMutableArray* combinedCommands = [[NSMutableArray alloc] init];
-  // add commands from Blinkshell:
-  [combinedCommands addObjectsFromArray:@[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"]];
-  // sort alphabetically:
-  commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
-  commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"];
++ (void)initialize
+{
+  __commandList = [
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"]
+                   sortedArrayUsingSelector:@selector(compare:)
+  ];
+  
+  __commandHints =
+  @{
+    @"help": @"help - Prints all commands. 🧐",
+    @"mosh": @"mosh - Runs mosh client. 🦄",
+    @"ssh": @"ssh - Runs ssh client. 🐌",
+    @"config": @"config - Add keys, hosts, themes, etc... 💅",
+    @"exit": @"exit - Exits current session. 👋"
+  };
 }
 
-void completion(const char *command, linenoiseCompletions *lc) {
-  // autocomplete command for lineNoise
-  NSString* commandString = [NSString stringWithUTF8String:command];
-  if ([commandString rangeOfString:@" "].location == NSNotFound) {
-    // No spaces. The user is typing a command
-    // check for pre-defined commands:
-    for (NSString* existingCommand in commandList) {
-      if ([existingCommand hasPrefix:commandString]) {
-        linenoiseAddCompletion(lc, existingCommand.UTF8String);
+NSArray<NSString *> *commandsByPrefix(NSString *prefix)
+{
+  if (prefix.length == 0) {
+    return @[@"help"];
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [__commandList filteredArrayUsingPredicate:prefixPred];
+}
+
+NSArray<NSString *> *hostsByPrefix(NSString *prefix)
+{
+  NSMutableArray *hostsNames = [[NSMutableArray alloc] init];
+  for (BKHosts *h in [BKHosts all]) {
+    [hostsNames addObject:h.host];
+  }
+  
+  if (prefix.length == 0) {
+    return hostsNames;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [hostsNames filteredArrayUsingPredicate:prefixPred];
+}
+
+void completion(const char *line, linenoiseCompletions *lc) {
+  NSString* prefix = [NSString stringWithUTF8String:line];
+  
+  NSArray *commands = commandsByPrefix(prefix);
+  
+  if (commands.count == 0) {
+    NSArray *parts = [prefix componentsSeparatedByString:@" "];
+    NSString *cmd = parts[0];
+    if (parts.count == 2 && ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"])) {
+      NSString *prefix = parts[1];
+      NSArray *hosts = hostsByPrefix(prefix);
+      for (NSString *h in hosts) {
+        linenoiseAddCompletion(lc, [@[cmd, h] componentsJoinedByString:@" "].UTF8String);
       }
     }
+    return;
   }
+  
+  for (NSString * cmd in commands) {
+    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+      linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
+    } else {
+      linenoiseAddCompletion(lc, cmd.UTF8String);
+    }
+  }
+  
 }
 
 char* hints(const char * line, int *color, int *bold)
 {
-  NSString* commandString = [NSString stringWithUTF8String:line];
-  if ([commandString rangeOfString:@" "].location == NSNotFound) {
-    for (NSString* existingCommand in commandList) {
-      if ([existingCommand hasPrefix:commandString]) {
-        *color = 7;
-        const char *hint = [existingCommand substringFromIndex: commandString.length].UTF8String;
-        return (char *)hint;
+  NSString* prefix = [NSString stringWithUTF8String:line];
+  if (prefix.length == 0) {
+    return NULL;
+  }
+  NSString *cmd = [commandsByPrefix(prefix) firstObject];
+  if (cmd) {
+    NSString *hint = __commandHints[cmd];
+    if (hint) {
+      *color = 33;
+      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+    }
+  } else {
+    NSArray *parts = [prefix componentsSeparatedByString:@" "];
+    NSString *cmd = parts[0];
+    if (parts.count == 2 && ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"])) {
+      NSString *prefix = parts[1];
+      NSString *hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
+      if (hint == nil) {
+        return NULL;
       }
+      
+      *color = 33;
+      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+    } else {
+      
     }
   }
   return NULL;
@@ -119,15 +178,11 @@ char* hints(const char * line, int *color, int *bold)
     _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
-    // If it exits it goes to default
-    //return 0;
   }
   
   char *line;
   argc = 0;
   argv = nil;
-  
-  initializeCommandListForCompletion();
 
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
