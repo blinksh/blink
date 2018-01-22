@@ -33,6 +33,7 @@
 #import <WebKit/WebKit.h>
 
 @class TermView;
+@class TermInput;
 
 @protocol TerminalDelegate <NSObject>
 
@@ -46,6 +47,7 @@
 - (void)fontSizeChanged:(NSNumber *)size;
 - (void)focus;
 - (void)blur;
+- (void)attachInput:(TermInput *)termInput;
 @end
 
 @interface BKWebView: WKWebView

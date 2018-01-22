@@ -61,6 +61,7 @@
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
   UIEdgeInsets _rootLayoutMargins;
   TermInput *_termInput;
+  BOOL _unfocused;
 }
 
 #pragma mark Setup
@@ -134,7 +135,7 @@
   return YES;
 }
 
-- (void)_focusOnShell
+- (void)_attachInputToCurrentTerm
 {
   [self.currentTerm attachInput:_termInput];
 }
@@ -166,7 +167,7 @@
                                   animated:NO
                                 completion:^(BOOL complete) {
                                   if (complete) {
-                                    [weakSelf _focusOnShell];
+                                    [weakSelf _attachInputToCurrentTerm];
                                   }
                                 }];
   [self.view setNeedsLayout];
@@ -202,9 +203,38 @@
                       object:nil];
   
   [defaultCenter addObserver:self
+                    selector:@selector(_appDidBecomeActive)
+                        name:UIApplicationDidBecomeActiveNotification
+                      object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(_appWillResignActive)
+                        name:UIApplicationWillResignActiveNotification
+                      object:nil];
+  
+  
+  [defaultCenter addObserver:self
 		    selector:@selector(keyboardFuncTriggerChanged:)
 			name:BKKeyboardFuncTriggerChanged
 		      object:nil];
+}
+
+- (void)_appDidBecomeActive
+{
+  if ([_termInput isFirstResponder]) {
+    [self _attachInputToCurrentTerm];
+    return;
+  }
+
+  if (!_unfocused) {
+    [_termInput becomeFirstResponder];
+    [self _attachInputToCurrentTerm];
+  }
+}
+
+-(void)_appWillResignActive
+{
+  _unfocused = ![_termInput isFirstResponder];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -456,7 +486,7 @@
     }
 
     [self _displayHUD];
-    [self _focusOnShell];
+    [self _attachInputToCurrentTerm];
   }
 }
 
@@ -546,7 +576,7 @@
 				    // Remove viewport from the list after animation
             if (didComplete) {
               [weakSelf _displayHUD];
-              [weakSelf _focusOnShell];
+              [weakSelf _attachInputToCurrentTerm];
             }
 				  }];
   } else {
@@ -558,7 +588,7 @@
 				    // Remove viewport from the list after animation
 				    if (didComplete) {
               [weakSelf _displayHUD];
-              [weakSelf _focusOnShell];
+              [weakSelf _attachInputToCurrentTerm];
 				    }
 				  }];
   }
@@ -599,7 +629,7 @@
 				completion:^(BOOL didComplete) {
 				  if (didComplete) {
             [weakSelf _displayHUD];
-            [weakSelf _focusOnShell];
+            [weakSelf _attachInputToCurrentTerm];
 				  }
           if (completion) {
             completion(didComplete);
@@ -782,7 +812,7 @@
 				completion:^(BOOL didComplete) {
           if (didComplete) {
             [weakSelf _displayHUD];
-            [weakSelf _focusOnShell];
+            [weakSelf _attachInputToCurrentTerm];
           }
 				}];
 }
@@ -870,21 +900,6 @@
   [_termInput becomeFirstResponder];
 }
 
-- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
-{
-  // Fix for github issue #299
-  // Even app is not in active state it still recieves actions like CMD+T and etc.
-  // So we filter them here.
-  
-  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
-  
-  if (appState != UIApplicationStateActive) {
-    return NO;
-  }
-  
-  return [super canPerformAction:action withSender:sender];
-}
-
 - (void)restoreUserActivityState:(NSUserActivity *)activity
 {
   // somehow we don't have current term... so we just create new one
@@ -903,7 +918,7 @@
   if (targetIdx == NSNotFound) {
     if (self.currentTerm.activityKey == nil) {
       [self.currentTerm restoreUserActivityState:activity];
-      [self _focusOnShell];
+      [self _attachInputToCurrentTerm];
     } else {
       [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
     }
@@ -912,7 +927,7 @@
 
   // 3. We are already showing required term. So do nothing.
   if (idx == targetIdx) {
-    [self _focusOnShell];
+    [self _attachInputToCurrentTerm];
     return;
   }
 

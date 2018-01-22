@@ -49,7 +49,7 @@ function term_setup() {
   };
 
   t.decorate(document.getElementById('terminal'));
-  term_blur();
+//  term_blur();
 }
 
 function term_init() {
@@ -71,11 +71,11 @@ function term_reset() {
 }
 
 function term_focus() {
-  t.onFocusChange_(true);
+  t.onFocusChange__(true);
 }
 
 function term_blur() {
-  t.onFocusChange_(false);
+  t.onFocusChange__(false);
 }
 
 function term_setWidth(cols) {

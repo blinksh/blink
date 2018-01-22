@@ -198,7 +198,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   self = [super initWithFrame:frame];
   
   if (self) {
-    _textInputContextIdentifier = [NSProcessInfo.processInfo globallyUniqueString];
+    _textInputContextIdentifier = @"terminput";
     
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
@@ -245,9 +245,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
   [defaultCenter removeObserver:self];
   
-  [defaultCenter addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-  [defaultCenter addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-  
   [defaultCenter addObserver:self
                     selector:@selector(_configureShotcuts)
                         name:BKKeyboardConfigChanged
@@ -259,22 +256,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                       object:nil];
 }
 
-- (void)_willResignActive
-{
-//  [self reloadInputViews];
-}
-
-- (void)_didBecomeActive
-{
-  [self reloadInputViews];
-}
-
 - (BOOL)becomeFirstResponder
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [self reloadInputViews];
-  });
-  return [super becomeFirstResponder];
+  BOOL res = [super becomeFirstResponder];
+  if (res) {
+    // reload input views to get rid of kb input views from other apps.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self reloadInputViews];
+    });
+    [_termDelegate focus];
+  } else {
+    [_termDelegate blur];
+  }
+  return res;
 }
 
 - (BOOL)resignFirstResponder
@@ -282,7 +276,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_termDelegate blur];
   return [super resignFirstResponder];
 }
-
 
 - (void)insertText:(NSString *)text
 {
@@ -520,7 +513,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   _kbdCommands = [NSMutableArray array];
   
-  [_kbdCommands addObjectsFromArray:self.presetShortcuts];
   for (NSNumber *modifier in _controlKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
   }
@@ -631,18 +623,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   [_functionTriggerKeys setObject:functions forKey:function];
-}
-
-- (NSArray *)presetShortcuts
-{
-  UIKeyModifierFlags modifiers = [BKUserConfigurationManager shortCutModifierFlags];
-  return @[ 
-            [UIKeyCommand keyCommandWithInput: @"v"
-                                modifierFlags:modifiers
-//                                       action: @selector(yank:)
-                                       action: @selector(paste:)
-                         discoverabilityTitle: @"Paste"],
-            ];
 }
 
 - (NSArray *)_functionModifierKeys

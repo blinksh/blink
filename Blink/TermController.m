@@ -76,22 +76,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
-- (void)attachInput:(TermInput *)termInput
-{
-  _termInput = termInput;
-  if (termInput) {
-    _termInput.raw = _rawMode;
-    _termInput.termDelegate = self;
-    if ([_termInput isFirstResponder]) {
-      [_termView focus];
-    } else {
-      [_termView blur];
-    }
-  } else {
-    [_termView blur];
-  }
-}
-
 - (void)indexCommand:(NSString *)cmdLine {
   
   NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
@@ -268,7 +252,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 }
 
 - (void)focus {
-  _termInput.termDelegate = self;
   [_termView focus];
   if (![_termView.window isKeyWindow]) {
     [_termView.window makeKeyWindow];
@@ -279,8 +262,30 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 }
 
 - (void)blur {
-  _termInput.termDelegate = nil;
   [_termView blur];
 }
+
+- (void)attachInput:(TermInput *)termInput
+{
+  _termInput = termInput;
+  if (!termInput) {
+    [_termView blur];
+  }
+  
+  if (_termInput.termDelegate != self) {
+    [_termInput.termDelegate attachInput:nil];
+  }
+  
+  _termInput.raw = _rawMode;
+  _termInput.termDelegate = self;
+  
+  if ([_termInput isFirstResponder]) {
+    [_termView focus];
+  } else {
+    [_termView blur];
+  }
+}
+
+
 
 @end

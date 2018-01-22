@@ -189,8 +189,25 @@ hterm.ScrollPort.prototype.decorate = function(div) {
 
 hterm.ScrollPort.prototype.focus = function() {
   //  this.iframe_.focus(); // Blink: No iframe anymore
-  this.screen_.focus();
+  //this.screen_.focus();
 };
+
+hterm.Terminal.prototype.onFocusChange_ = function(focused) {
+};
+
+hterm.Terminal.prototype.onFocusChange__ = function(focused) {
+  this.cursorNode_.setAttribute('focus', focused);
+  this.restyleCursor_();
+  
+  if (this.reportFocus) {
+    this.io.sendString(focused === true ? '\x1b[I' : '\x1b[O')
+  }
+  
+  if (focused === true)
+    this.closeBellNotifications_();
+};
+
+
 
 // Do not show resize notifications. We show ours
 hterm.Terminal.prototype.overlaySize = function() {};
