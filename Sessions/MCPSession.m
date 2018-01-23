@@ -43,6 +43,7 @@
 #import "BKHosts.h"
 #import "BKTheme.h"
 #import "BKDefaults.h"
+#import "MusicManager.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -85,6 +86,18 @@ NSArray<NSString *> *hostsByPrefix(NSString *prefix)
   return [hostsNames filteredArrayUsingPredicate:prefixPred];
 }
 
+NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
+{
+  NSArray<NSString *> * actions = @[@"next", @"prev", @"pause", @"play", @"resume", @"info"];
+  
+  if (prefix.length == 0) {
+    return actions;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [actions filteredArrayUsingPredicate:prefixPred];
+}
+
+
 NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   NSMutableArray *themeNames = [[NSMutableArray alloc] init];
   for (BKTheme *theme in [BKTheme all]) {
@@ -100,74 +113,72 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
 
 void completion(const char *line, linenoiseCompletions *lc) {
   NSString* prefix = [NSString stringWithUTF8String:line];
-  
   NSArray *commands = commandsByPrefix(prefix);
   
-  if (commands.count == 0) {
-    NSArray *parts = [prefix componentsSeparatedByString:@" "];
-    NSString *cmd = parts[0];
-    if (parts.count == 2 && ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"])) {
-      NSString *prefix = parts[1];
-      NSArray *hosts = hostsByPrefix(prefix);
-      for (NSString *h in hosts) {
-        linenoiseAddCompletion(lc, [@[cmd, h] componentsJoinedByString:@" "].UTF8String);
-      }
-    } else if (parts.count >= 2 && [cmd isEqualToString:@"theme"]) {
-      NSString *prefix = [[parts subarrayWithRange:NSMakeRange(1, parts.count - 1)] componentsJoinedByString:@" "];
-      NSArray *themes = themesByPrefix(prefix);
-      for (NSString *theme in themes) {
-        linenoiseAddCompletion(lc, [@[cmd, theme] componentsJoinedByString:@" "].UTF8String);
+  if (commands.count > 0) {
+    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music"];
+    for (NSString * cmd in commands) {
+      if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
+        linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
+      } else {
+        linenoiseAddCompletion(lc, cmd.UTF8String);
       }
     }
     return;
   }
   
-  NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme"];
-  for (NSString * cmd in commands) {
-    if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-      linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
-    } else {
-      linenoiseAddCompletion(lc, cmd.UTF8String);
-    }
+  NSArray *cmdAndArgs = splitCommandAndArgs(prefix);
+  NSString *cmd = cmdAndArgs[0];
+  NSString *args = cmdAndArgs[1];
+  NSArray *completions = @[];
+  
+  if ([args isEqualToString:@""]) {
+    return;
   }
   
+  if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+    completions = hostsByPrefix(args);
+  } else if ([cmd isEqualToString:@"music"]) {
+    completions = musicActionsByPrefix(args);
+  } else if ([cmd isEqualToString:@"theme"]) {
+    completions = themesByPrefix(args);
+  }
+  
+  for (NSString *c in completions) {
+    linenoiseAddCompletion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
+  }
 }
 
 char* hints(const char * line, int *color, int *bold)
 {
-  NSString* prefix = [NSString stringWithUTF8String:line];
+  NSString *hint = nil;
+  NSString *prefix = [NSString stringWithUTF8String:line];
   if (prefix.length == 0) {
     return NULL;
   }
+  
   NSString *cmd = [commandsByPrefix(prefix) firstObject];
   if (cmd) {
-    NSString *hint = __commandHints[cmd];
-    if (hint) {
-      *color = 33;
-      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
-    }
+    hint = __commandHints[cmd];
   } else {
-    NSArray *parts = [prefix componentsSeparatedByString:@" "];
-    NSString *cmd = parts[0];
-    if (parts.count == 2 && ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"])) {
-      NSString *prefix = parts[1];
-      NSString *hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
-      if (hint.length == 0) {
-        return NULL;
-      }
-      
-      *color = 33;
-      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
-    } else if (parts.count >= 2 && [cmd isEqualToString:@"theme"]) {
-      NSString *prefix = [[parts subarrayWithRange:NSMakeRange(1, parts.count - 1)] componentsJoinedByString:@" "];
-      NSString *hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
-      if (hint.length == 0) {
-        return NULL;
-      }
-      *color = 33;
-      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+    NSArray *cmdAndArgs = splitCommandAndArgs(prefix);
+    cmd = cmdAndArgs[0];
+    prefix = cmdAndArgs[1];
+    
+    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+      hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"theme"]) {
+      hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"music"]) {
+      hint = [musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
     }
   }
+  
+  if ([hint length] > 0) {
+    *color = 33;
+    return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+  }
+  
   return NULL;
 }
 
@@ -186,7 +197,7 @@ char* hints(const char * line, int *color, int *bold)
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme"]
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -197,15 +208,16 @@ char* hints(const char * line, int *color, int *bold)
     @"ssh": @"ssh - Runs ssh client. 🐌",
     @"config": @"config - Add keys, hosts, themes, etc... ⚙️",
     @"theme": @"theme - Choose a theme 💅",
+    @"music": @"music - Control music player 🎧",
     @"exit": @"exit - Exits current session. 👋"
   };
 }
 
-
 - (int)main:(int)argc argv:(char **)argv
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
-    _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+    _childSession = [[MoshSession alloc] initWithStream:_stream
+                                           andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
   }
@@ -253,12 +265,13 @@ char* hints(const char * line, int *color, int *bold)
       } else if ([cmd isEqualToString:@"ssh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
-
         [self _runSSHWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"theme"]) {
         [self _switchTheme: args];
+      } else if ([cmd isEqualToString:@"music"]) {
+        [self _controlMusic: args];
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
         [self _runSSHCopyIDWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"config"]) {
@@ -284,9 +297,9 @@ char* hints(const char * line, int *color, int *bold)
   });
 }
 
-- (void)_switchTheme: (NSString *)args
+- (void)_switchTheme:(NSString *)args
 {
-  if ([args isEqualToString:@""]) {
+  if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
     NSString *themeName = [BKDefaults selectedThemeName];
     [self out:[NSString stringWithFormat:@"Current theme: %@", themeName].UTF8String];
     BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
@@ -306,6 +319,37 @@ char* hints(const char * line, int *color, int *bold)
       [_stream.control terminate];
       [_stream.control resume];
     });
+  }
+}
+
+- (void)_controlMusic:(NSString *)args
+{
+  if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
+    __block NSString * info = nil;
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      info = [MusicManager trackInfo];
+    });
+    if (info) {
+      [self out:[NSString stringWithFormat:@"Current track: %@", info].UTF8String];
+    }
+  } else if ([args isEqualToString:@"next"] || [args isEqualToString:@"n"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [MusicManager playNext];
+    });
+  } else if ([args isEqualToString:@"prev"] || [args isEqualToString:@"r"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [MusicManager playPrev];
+    });
+  } else if ([args isEqualToString:@"pause"] || [args isEqualToString:@"p"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [MusicManager pause];
+    });
+  } else if ([args isEqualToString:@"play"] || [args isEqualToString:@"resume"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [MusicManager play];
+    });
+  } else {
+    [self out: @"Unknown parameter".UTF8String];
   }
 }
 
@@ -364,6 +408,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  ssh-copy-id: Copy an identity to the server.",
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  theme: Switch theme.",
+    @"  music: Control music player.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",

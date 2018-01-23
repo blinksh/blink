@@ -38,7 +38,7 @@
 #import "SmartKeysController.h"
 #import "TermController.h"
 #import "TermInput.h"
-#import <MediaPlayer/MediaPlayer.h>
+
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate>
@@ -757,12 +757,12 @@
 
 - (void)playNext:(UIKeyCommand *)cmd
 {
-  [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
+//  [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
 }
 
 - (void)playPrev:(UIKeyCommand *)cmd
 {
-  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
+//  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
 }
 
 - (void)otherScreen:(UIKeyCommand *)cmd
