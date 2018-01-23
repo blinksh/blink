@@ -74,8 +74,8 @@ void *run_session(void *params)
   free(params);
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
-
   session.stream = nil;
+
   return NULL;
 }
 

@@ -269,7 +269,10 @@ char* hints(const char * line, int *color, int *bold)
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"theme"]) {
-        [self _switchTheme: args];
+        BOOL reload = [self _switchTheme: args];
+        if (reload) {
+          return 0;
+        }
       } else if ([cmd isEqualToString:@"music"]) {
         [self _controlMusic: args];
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
@@ -297,7 +300,7 @@ char* hints(const char * line, int *color, int *bold)
   });
 }
 
-- (void)_switchTheme:(NSString *)args
+- (BOOL)_switchTheme:(NSString *)args
 {
   if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
     NSString *themeName = [BKDefaults selectedThemeName];
@@ -306,19 +309,21 @@ char* hints(const char * line, int *color, int *bold)
     if (!theme) {
       [self out:@"Not found".UTF8String];
     }
+    return NO;
   } else {
     BKTheme *theme = [BKTheme withName:args];
     if (!theme) {
       [self out:@"Theme not found".UTF8String];
+      return NO;
     }
     
     [BKDefaults setThemeName:theme.name];
     [BKDefaults saveDefaults];
     
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_stream.control terminate];
-      [_stream.control resume];
+      [_stream.control reload];
     });
+    return YES;
   }
 }
 

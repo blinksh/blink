@@ -48,6 +48,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   int _pinput[2];
   MCPSession *_session;
   NSDictionary *_activityUserInfo;
+  BOOL _isReloading;
 }
 
 - (void)loadView
@@ -227,7 +228,14 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)sessionFinished
 {
-  [_delegate terminalHangup:self];
+  if (_isReloading) {
+    _isReloading = NO;
+    [self destroyPTY];
+    [self createPTY];
+    [_termView reload];
+  } else {
+    [_delegate terminalHangup:self];
+  }
 }
 
 #pragma mark Notifications
@@ -236,9 +244,14 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)terminate
 {
   [_termView terminate];
-  
   [_session kill];
 }
+
+- (void)reload
+{
+  _isReloading = YES;
+}
+
 - (void)suspend
 {
   [_session suspend];

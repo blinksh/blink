@@ -143,6 +143,7 @@
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
 {
+  _unfocused = [coder decodeBoolForKey:@"_infocused"];
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
   _viewports = [[NSMutableArray alloc] init];
@@ -190,6 +191,7 @@
   }
   [coder encodeInteger:idx forKey:@"idx"];
   [coder encodeObject:sessionStateKeys forKey:@"sessionStateKeys"];
+  [coder encodeBool:_unfocused forKey:@"_infocused"];
 }
 
 - (void)registerForNotifications
@@ -535,11 +537,14 @@
   _hud.bezelView.color = [UIColor darkGrayColor];
   _hud.contentColor = [UIColor whiteColor];
   _hud.userInteractionEnabled = NO;
+  _hud.alpha = 0.6;
   
   UIPageControl *pages = [[UIPageControl alloc] init];
   pages.currentPageIndicatorTintColor = [UIColor cyanColor];
   pages.numberOfPages = [_viewports count];
   pages.currentPage = [_viewports indexOfObject:self.currentTerm];
+  
+  _hud.customView = pages;
   
   NSString *title = self.currentTerm.title.length ? self.currentTerm.title : @"blink";
   
@@ -554,9 +559,6 @@
     _hud.label.numberOfLines = 2;
     _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];
   }
-
-  _hud.customView = pages;
-  _hud.alpha = 0.6;
 
   [_hud hideAnimated:YES afterDelay:1.f];
 }

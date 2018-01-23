@@ -67,6 +67,7 @@
 - (void)resume;
 - (void)focus;
 - (void)blur;
+- (void)reload;
 
 - (void)attachInput:(TermInput *)termInput;
 
