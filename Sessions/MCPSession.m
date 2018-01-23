@@ -317,10 +317,9 @@ char* hints(const char * line, int *color, int *bold)
       return NO;
     }
     
-    [BKDefaults setThemeName:theme.name];
-    [BKDefaults saveDefaults];
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [BKDefaults setThemeName:theme.name];
+      [BKDefaults saveDefaults];
       [_stream.control reload];
     });
     return YES;
