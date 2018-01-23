@@ -17,5 +17,4 @@
 + (void)playBack;
 + (NSString *)trackInfo;
 
-
 @end

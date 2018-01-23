@@ -11,34 +11,39 @@
 
 @implementation MusicManager
 
++ (MPMusicPlayerController *)_player
+{
+  return [MPMusicPlayerController systemMusicPlayer];
+}
+
 + (void)playNext
 {
-  [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
+  [[self _player] skipToNextItem];
 }
 
 + (void)playPrev
 {
-  [[MPMusicPlayerController systemMusicPlayer] skipToPreviousItem];
+  [[self _player] skipToPreviousItem];
 }
 
 + (void)playBack
 {
-  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
+  [[self _player] skipToBeginning];
 }
 
 + (void)pause
 {
-  [[MPMusicPlayerController systemMusicPlayer] pause];
+  [[self _player] pause];
 }
 
 + (void)play
 {
-  [[MPMusicPlayerController systemMusicPlayer] play];
+  [[self _player] play];
 }
 
 + (NSString *)trackInfo
 {
-  MPMediaItem *item = [[MPMusicPlayerController systemMusicPlayer] nowPlayingItem];
+  MPMediaItem *item = [[self _player] nowPlayingItem];
   if (!item) {
     return @"Unknown";
   }
@@ -55,11 +60,5 @@
   
   return [components componentsJoinedByString:@". "];
 }
-
-+ (NSString *)currentAlbumTitle
-{
-  return [[MPMusicPlayerController systemMusicPlayer] nowPlayingItem].albumTitle;
-}
-
 
 @end
