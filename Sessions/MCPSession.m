@@ -41,52 +41,25 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 #import "BKHosts.h"
+#import "BKTheme.h"
+#import "BKDefaults.h"
 
 #define MCP_MAX_LINE 4096
 
+NSArray *__commandList;
+NSDictionary *__commandHints;
 
-@implementation MCPSession {
-  Session *_childSession;
-}
-
-@dynamic sessionParameters;
-
-- (NSArray *)splitCommandAndArgs:(NSString *)cmdline
+NSArray<NSString *> *splitCommandAndArgs(NSString *cmdline)
 {
   NSRange rng = [cmdline rangeOfString:@" "];
   if (rng.location == NSNotFound) {
     return @[ cmdline, @"" ];
   } else {
     return @[
-      [cmdline substringToIndex:rng.location],
-      [cmdline substringFromIndex:rng.location + 1]
+       [cmdline substringToIndex:rng.location],
+       [cmdline substringFromIndex:rng.location + 1]
     ];
   }
-}
-
-- (void)setTitle
-{
-  fprintf(_stream.control.termout, "\033]0;blink\007");
-}
-
-NSArray *__commandList;
-NSDictionary *__commandHints;
-
-+ (void)initialize
-{
-  __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config"]
-                   sortedArrayUsingSelector:@selector(compare:)
-  ];
-  
-  __commandHints =
-  @{
-    @"help": @"help - Prints all commands. 🧐",
-    @"mosh": @"mosh - Runs mosh client. 🦄",
-    @"ssh": @"ssh - Runs ssh client. 🐌",
-    @"config": @"config - Add keys, hosts, themes, etc... 💅",
-    @"exit": @"exit - Exits current session. 👋"
-  };
 }
 
 NSArray<NSString *> *commandsByPrefix(NSString *prefix)
@@ -112,6 +85,19 @@ NSArray<NSString *> *hostsByPrefix(NSString *prefix)
   return [hostsNames filteredArrayUsingPredicate:prefixPred];
 }
 
+NSArray<NSString *> *themesByPrefix(NSString *prefix) {
+  NSMutableArray *themeNames = [[NSMutableArray alloc] init];
+  for (BKTheme *theme in [BKTheme all]) {
+    [themeNames addObject:theme.name];
+  }
+  
+  if (prefix.length == 0) {
+    return themeNames;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [themeNames filteredArrayUsingPredicate:prefixPred];
+}
+
 void completion(const char *line, linenoiseCompletions *lc) {
   NSString* prefix = [NSString stringWithUTF8String:line];
   
@@ -126,12 +112,19 @@ void completion(const char *line, linenoiseCompletions *lc) {
       for (NSString *h in hosts) {
         linenoiseAddCompletion(lc, [@[cmd, h] componentsJoinedByString:@" "].UTF8String);
       }
+    } else if (parts.count >= 2 && [cmd isEqualToString:@"theme"]) {
+      NSString *prefix = [[parts subarrayWithRange:NSMakeRange(1, parts.count - 1)] componentsJoinedByString:@" "];
+      NSArray *themes = themesByPrefix(prefix);
+      for (NSString *theme in themes) {
+        linenoiseAddCompletion(lc, [@[cmd, theme] componentsJoinedByString:@" "].UTF8String);
+      }
     }
     return;
   }
   
+  NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme"];
   for (NSString * cmd in commands) {
-    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+    if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
       linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
     } else {
       linenoiseAddCompletion(lc, cmd.UTF8String);
@@ -165,12 +158,49 @@ char* hints(const char * line, int *color, int *bold)
       
       *color = 33;
       return (char *)[hint substringFromIndex: prefix.length].UTF8String;
-    } else {
-      
+    } else if (parts.count >= 2 && [cmd isEqualToString:@"theme"]) {
+      NSString *prefix = [[parts subarrayWithRange:NSMakeRange(1, parts.count - 1)] componentsJoinedByString:@" "];
+      NSString *hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
+      if (hint.length == 0) {
+        return NULL;
+      }
+      *color = 33;
+      return (char *)[hint substringFromIndex: prefix.length].UTF8String;
     }
   }
   return NULL;
 }
+
+
+@implementation MCPSession {
+  Session *_childSession;
+}
+
+@dynamic sessionParameters;
+
+- (void)setTitle
+{
+  fprintf(_stream.control.termout, "\033]0;blink\007");
+}
+
++ (void)initialize
+{
+  __commandList = [
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme"]
+        sortedArrayUsingSelector:@selector(compare:)
+  ];
+  
+  __commandHints =
+  @{
+    @"help": @"help - Prints all commands. 🧐",
+    @"mosh": @"mosh - Runs mosh client. 🦄",
+    @"ssh": @"ssh - Runs ssh client. 🐌",
+    @"config": @"config - Add keys, hosts, themes, etc... ⚙️",
+    @"theme": @"theme - Choose a theme 💅",
+    @"exit": @"exit - Exits current session. 👋"
+  };
+}
+
 
 - (int)main:(int)argc argv:(char **)argv
 {
@@ -206,36 +236,39 @@ char* hints(const char * line, int *color, int *bold)
       linenoiseHistorySave(history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
+      free(line);
+
       cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-      NSArray *arr = [self splitCommandAndArgs:cmdline];
+      NSArray *arr = splitCommandAndArgs(cmdline);
       NSString *cmd = arr[0];
+      NSString *args = arr[1];
 
       if ([cmd isEqualToString:@"help"]) {
-        [self showHelp];
+        [self _showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
 
-        [self runMoshWithArgs:cmdline];
+        [self _runMoshWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"ssh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
 
-        [self runSSHWithArgs:cmdline];
+        [self _runSSHWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
+      } else if ([cmd isEqualToString:@"theme"]) {
+        [self _switchTheme: args];
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-        [self runSSHCopyIDWithArgs:cmdline];
+        [self _runSSHCopyIDWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"config"]) {
-        [self showConfig];
+        [self _showConfig];
       } else {
         [self out:"Unknown command. Type 'help' for a list of available operations"];
       }
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
-
-    free(line);
   }
 
   [self out:"Bye!"];
@@ -243,7 +276,7 @@ char* hints(const char * line, int *color, int *bold)
   return 0;
 }
 
-- (void)showConfig
+- (void)_showConfig
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIApplication sharedApplication]
@@ -251,7 +284,32 @@ char* hints(const char * line, int *color, int *bold)
   });
 }
 
-- (void)runSSHCopyIDWithArgs:(NSString *)args
+- (void)_switchTheme: (NSString *)args
+{
+  if ([args isEqualToString:@""]) {
+    NSString *themeName = [BKDefaults selectedThemeName];
+    [self out:[NSString stringWithFormat:@"Current theme: %@", themeName].UTF8String];
+    BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+    if (!theme) {
+      [self out:@"Not found".UTF8String];
+    }
+  } else {
+    BKTheme *theme = [BKTheme withName:args];
+    if (!theme) {
+      [self out:@"Theme not found".UTF8String];
+    }
+    
+    [BKDefaults setThemeName:theme.name];
+    [BKDefaults saveDefaults];
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [_stream.control terminate];
+      [_stream.control resume];
+    });
+  }
+}
+
+- (void)_runSSHCopyIDWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
   _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
@@ -260,7 +318,7 @@ char* hints(const char * line, int *color, int *bold)
   _childSession = nil;
 }
 
-- (void)runMoshWithArgs:(NSString *)args
+- (void)_runMoshWithArgs:(NSString *)args
 {
   [self.delegate indexCommand:args];
   self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
@@ -271,7 +329,7 @@ char* hints(const char * line, int *color, int *bold)
   _childSession = nil;
 }
 
-- (void)runSSHWithArgs:(NSString *)args
+- (void)_runSSHWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
@@ -281,7 +339,7 @@ char* hints(const char * line, int *color, int *bold)
   _childSession = nil;
 }
 
-- (NSString *)shortVersionString
+- (NSString *)_shortVersionString
 {
   NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
 
@@ -294,17 +352,18 @@ char* hints(const char * line, int *color, int *bold)
                                     appDisplayName, majorVersion, minorVersion, compileDate];
 }
 
-- (void)showHelp
+- (void)_showHelp
 {
   NSString *help = [@[
     @"",
-    [self shortVersionString],
+    [self _shortVersionString],
     @"",
     @"Available commands:",
     @"  mosh: mosh client.",
     @"  ssh: ssh client.",
     @"  ssh-copy-id: Copy an identity to the server.",
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
+    @"  theme: Switch theme.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",

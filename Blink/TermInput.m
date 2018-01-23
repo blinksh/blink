@@ -530,6 +530,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 
 - (void)_kbCmd:(UIKeyCommand *)cmd {
+  if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
+    [self resignFirstResponder];
+  }
 }
 
 - (void)_assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
