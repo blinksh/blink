@@ -7,14 +7,21 @@
 //
 
 #import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 @interface MusicManager : NSObject
 
-+ (void)playPrev;
-+ (void)playNext;
-+ (void)pause;
-+ (void)play;
-+ (void)playBack;
-+ (NSString *)trackInfo;
++ (MusicManager *)shared;
+
+- (void)onShow;
+- (void)onHide;
+
+- (UIView *)hudView;
+
+- (NSArray<UIKeyCommand *> *)keyCommands;
+- (void)handleCommand:(UIKeyCommand *)cmd;
+
+- (NSArray<NSString *> *)commands;
+- (NSString *)runWithInput:(NSString *)input;
 
 @end

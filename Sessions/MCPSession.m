@@ -88,7 +88,7 @@ NSArray<NSString *> *hostsByPrefix(NSString *prefix)
 
 NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
 {
-  NSArray<NSString *> * actions = @[@"info", @"back", @"prev", @"pause", @"play", @"resume", @"next"];
+  NSArray<NSString *> * actions = [[MusicManager shared] commands];
   
   if (prefix.length == 0) {
     return actions;
@@ -322,38 +322,15 @@ char* hints(const char * line, int *color, int *bold)
   }
 }
 
-- (void)_controlMusic:(NSString *)args
+- (void)_controlMusic:(NSString *)input
 {
-  if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
-    __block NSString * info = nil;
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      info = [MusicManager trackInfo];
-    });
-    if (info) {
-      [self out:[NSString stringWithFormat:@"Current track: %@", info].UTF8String];
-    }
-  } else if ([args isEqualToString:@"next"] || [args isEqualToString:@"n"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [MusicManager playNext];
-    });
-  } else if ([args isEqualToString:@"prev"] || [args isEqualToString:@"r"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [MusicManager playPrev];
-    });
-  } else if ([args isEqualToString:@"pause"] || [args isEqualToString:@"p"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [MusicManager pause];
-    });
-  } else if ([args isEqualToString:@"play"] || [args isEqualToString:@"resume"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [MusicManager play];
-    });
-  } else if ([args isEqualToString:@"back"] || [args isEqualToString:@"b"]) {
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [MusicManager playBack];
-    });
-  } else {
-    [self out: @"Unknown parameter".UTF8String];
+  __block NSString *output = nil;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    output = [[MusicManager shared] runWithInput:input];
+  });
+
+  if (output) {
+    [self out:output.UTF8String];
   }
 }
 
@@ -425,6 +402,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  cmd+o: Switch to other screen (Airplay mode).",
     @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
     @"  cmd+,: Open config.",
+    @"  cmd+m: Toggle music controls. (Control with cmd+n/p/s/r).",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];

@@ -38,6 +38,7 @@
 #import "SmartKeysController.h"
 #import "TermController.h"
 #import "TermInput.h"
+#import "MusicManager.h"
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
@@ -56,6 +57,7 @@
   
   UIPageControl *_pageControl;
   MBProgressHUD *_hud;
+  MBProgressHUD *_musicHUD;
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
@@ -508,8 +510,37 @@
   return _pageControl;
 }
 
+- (void)_toggleMusicHUD
+{
+  if (_musicHUD) {
+    [_musicHUD hideAnimated:YES];
+    _musicHUD = nil;
+    [[MusicManager shared] onHide];
+    return;
+  }
+
+  [_hud hideAnimated:NO];
+
+  _musicHUD = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:YES];
+  _musicHUD.mode = MBProgressHUDModeCustomView;
+  _musicHUD.bezelView.color = [UIColor darkGrayColor];
+  _musicHUD.contentColor = [UIColor whiteColor];
+  [_musicHUD setMargin: 0];
+  [[MusicManager shared] onShow];
+  _musicHUD.customView = [[MusicManager shared] hudView];
+  
+  UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_toggleMusicHUD)];
+  [_musicHUD.backgroundView addGestureRecognizer:tapRecognizer];
+}
+
 - (void)_displayHUD
 {
+  if (_musicHUD) {
+    [_musicHUD hideAnimated:YES];
+    _musicHUD = nil;
+    return;
+  }
+
   if (!_hud) {
     _hud = [[MBProgressHUD alloc] initWithView:_viewportsController.view];
     _hud.mode = MBProgressHUDModeCustomView;
@@ -656,6 +687,10 @@
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
+  if (_musicHUD) {
+    return [[MusicManager shared] keyCommands];
+  }
+
   NSMutableDictionary *kbMapping = [NSMutableDictionary dictionaryWithDictionary:[BKDefaults keyboardMapping]];
   if([kbMapping objectForKey:@"⌘ Cmd"] && ![[kbMapping objectForKey:@"⌘ Cmd"]isEqualToString:@"None"]){
     return _kbdCommandsWithoutDiscoverability;
@@ -700,11 +735,8 @@
                 discoverabilityTitle: @"Show config"],
                   
     [UIKeyCommand keyCommandWithInput: @"m" modifierFlags: modifierFlags
-                               action: @selector(playNext:)
-                 discoverabilityTitle: @"Music Next track"],
-    [UIKeyCommand keyCommandWithInput: @"p" modifierFlags: modifierFlags
-                               action: @selector(playPrev:)
-                 discoverabilityTitle: @"Music Next track"],
+                               action: @selector(_toggleMusicHUD)
+                 discoverabilityTitle: @"Music Controls"],
                   
     [UIKeyCommand keyCommandWithInput:@"+"
                         modifierFlags:modifierFlags
@@ -954,6 +986,11 @@
     [stateManager restoreState:term];
     [term resume];
   };
+}
+
+- (void)musicCommand:(UIKeyCommand *)cmd
+{
+  [[MusicManager shared] handleCommand:cmd];
 }
 
 
