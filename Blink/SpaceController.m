@@ -244,8 +244,6 @@
   [super viewDidAppear:animated];
   if (self.view.window.screen == [UIScreen mainScreen]) {
     [self addGestures];
-  } else {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
   }
 }
 
@@ -930,6 +928,11 @@
 {
   [self _displayHUD];
   [_termInput becomeFirstResponder];
+}
+
+- (void)viewScreenDidBecomeInactive
+{
+  [_termInput resignFirstResponder];
 }
 
 - (void)restoreUserActivityState:(NSUserActivity *)activity

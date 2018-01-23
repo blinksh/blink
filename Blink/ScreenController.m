@@ -179,6 +179,8 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   [[willBeKeyWindow spaceController] viewScreenWillBecomeActive];
  
   [willBeKeyWindow makeKeyAndVisible];
+  
+  [[[self nonKeyWindow] spaceController] viewScreenDidBecomeInactive];
 }
 
 - (void)moveCurrentShellToOtherScreen

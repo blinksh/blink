@@ -36,6 +36,7 @@
 @interface SpaceController : UIViewController
 
 - (void)viewScreenWillBecomeActive;
+- (void)viewScreenDidBecomeInactive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
 - (void)suspendWith:(StateManager *)stateManager;
