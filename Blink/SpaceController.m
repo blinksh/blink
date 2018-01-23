@@ -55,7 +55,6 @@
   UITapGestureRecognizer *_twoFingersTap;
   UIPanGestureRecognizer *_twoFingersDrag;
   
-  UIPageControl *_pageControl;
   MBProgressHUD *_hud;
   MBProgressHUD *_musicHUD;
 
@@ -496,18 +495,6 @@
   return _viewportsController.viewControllers[0];
 }
 
-- (UIPageControl *)pageControl
-{
-  if (!_pageControl) {
-    _pageControl = [[UIPageControl alloc] init];
-    _pageControl.currentPageIndicatorTintColor = [UIColor cyanColor];
-  }
-
-  _pageControl.numberOfPages = [_viewports count];
-
-  return _pageControl;
-}
-
 - (void)_toggleMusicHUD
 {
   if (_musicHUD) {
@@ -538,20 +525,22 @@
     _musicHUD = nil;
     return;
   }
-
-  if (!_hud) {
-    _hud = [[MBProgressHUD alloc] initWithView:_viewportsController.view];
-    _hud.mode = MBProgressHUDModeCustomView;
-    _hud.bezelView.color = [UIColor darkGrayColor];
-    _hud.contentColor = [UIColor whiteColor];
-    [_viewportsController.view addSubview:_hud];
+  
+  if (_hud) {
+    [_hud hideAnimated:NO];
   }
 
+  _hud = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:_hud == nil];
+  _hud.mode = MBProgressHUDModeCustomView;
+  _hud.bezelView.color = [UIColor darkGrayColor];
+  _hud.contentColor = [UIColor whiteColor];
   _hud.userInteractionEnabled = NO;
-
-  UIPageControl *pages = [self pageControl];
-
-  NSInteger idx = [_viewports indexOfObject:self.currentTerm];
+  
+  UIPageControl *pages = [[UIPageControl alloc] init];
+  pages.currentPageIndicatorTintColor = [UIColor cyanColor];
+  pages.numberOfPages = [_viewports count];
+  pages.currentPage = [_viewports indexOfObject:self.currentTerm];
+  
   NSString *title = self.currentTerm.title.length ? self.currentTerm.title : @"blink";
   
   MCPSessionParameters *params = self.currentTerm.sessionParameters;
@@ -566,10 +555,7 @@
     _hud.label.text = [NSString stringWithFormat:@"%@\n%@", title, geometry];
   }
 
-  pages.currentPage = idx;
   _hud.customView = pages;
-
-  [_hud showAnimated:NO];
   _hud.alpha = 0.6;
 
   [_hud hideAnimated:YES afterDelay:1.f];
