@@ -249,6 +249,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)reload
 {
+  _sessionParameters.childSessionType = nil;
+  _sessionParameters.childSessionParameters =  nil;
   _isReloading = YES;
 }
 

@@ -28,7 +28,7 @@ NSString * const FontSizeKey = @"fontSize";
     self.childSessionParameters = [aDecoder decodeObjectOfClasses:classes forKey:ChildSessionParametersKey];
     self.rows = [aDecoder decodeIntegerForKey:RowsKey];
     self.cols = [aDecoder decodeIntegerForKey:ColsKey];
-    self.fontSize = [aDecoder decodeObjectForKey:FontSizeKey];
+    self.fontSize = [aDecoder decodeIntegerForKey:FontSizeKey];
   }
   
   return self;
