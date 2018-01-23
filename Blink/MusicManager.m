@@ -21,6 +21,11 @@
   [[MPMusicPlayerController systemMusicPlayer] skipToPreviousItem];
 }
 
++ (void)playBack
+{
+  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
+}
+
 + (void)pause
 {
   [[MPMusicPlayerController systemMusicPlayer] pause];
@@ -30,7 +35,6 @@
 {
   [[MPMusicPlayerController systemMusicPlayer] play];
 }
-
 
 + (NSString *)trackInfo
 {

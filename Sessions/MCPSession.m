@@ -88,7 +88,7 @@ NSArray<NSString *> *hostsByPrefix(NSString *prefix)
 
 NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
 {
-  NSArray<NSString *> * actions = @[@"next", @"prev", @"pause", @"play", @"resume", @"info"];
+  NSArray<NSString *> * actions = @[@"info", @"back", @"prev", @"pause", @"play", @"resume", @"next"];
   
   if (prefix.length == 0) {
     return actions;
@@ -347,6 +347,10 @@ char* hints(const char * line, int *color, int *bold)
   } else if ([args isEqualToString:@"play"] || [args isEqualToString:@"resume"]) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [MusicManager play];
+    });
+  } else if ([args isEqualToString:@"back"] || [args isEqualToString:@"b"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [MusicManager playBack];
     });
   } else {
     [self out: @"Unknown parameter".UTF8String];

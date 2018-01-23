@@ -14,6 +14,7 @@
 + (void)playNext;
 + (void)pause;
 + (void)play;
++ (void)playBack;
 + (NSString *)trackInfo;
 
 
