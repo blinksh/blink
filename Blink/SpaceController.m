@@ -982,6 +982,7 @@
 - (void)musicCommand:(UIKeyCommand *)cmd
 {
   [[MusicManager shared] handleCommand:cmd];
+  [self _toggleMusicHUD];
 }
 
 
