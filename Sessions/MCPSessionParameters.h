@@ -16,6 +16,8 @@
 @property NSInteger rows;
 @property NSInteger cols;
 @property NSInteger fontSize;
+@property NSString *fontName;
+@property NSString *themeName;
 
 @end
 

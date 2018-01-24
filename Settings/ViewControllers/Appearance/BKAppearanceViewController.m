@@ -76,7 +76,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _termView = [[TermView alloc] initWithFrame:self.view.bounds];
   _termView.termDelegate = self;
   _termView.backgroundColor = [UIColor blackColor];
-  [_termView load];
+  [_termView loadWith:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -272,7 +272,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
       [BKDefaults setThemeName:[theme name]];
-      [_termView reload];
+      [_termView reloadWith:nil];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
@@ -287,7 +287,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKFont *font = [[BKFont all] objectAtIndex:_selectedFontIndexPath.row];
       [BKDefaults setFontName:[font name]];
-      [_termView reload];
+      [_termView reloadWith:nil];
     }
   }
 }

@@ -40,10 +40,11 @@ function term_setup() {
       _postMessage('sigwinch', { cols, rows });
     };
 
-    _postMessage('terminalReady', {
+    var size = {
       cols: t.screenSize.width,
       rows: t.screenSize.height,
-    });
+    }
+    _postMessage('terminalReady', {size});
 
     t.uninstallKeyboard();
   };

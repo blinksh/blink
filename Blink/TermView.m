@@ -241,9 +241,9 @@
   return _webView.title;
 }
 
-- (void)load
+- (void)loadWith:(MCPSessionParameters *)params;
 {
-  [_webView.configuration.userContentController addUserScript:[self _termInitScript]];
+  [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
   NSURL *url = [NSURL fileURLWithPath:path];
@@ -252,10 +252,11 @@
   [_webView loadRequest:request];
 }
 
-- (void)reload
+
+- (void)reloadWith:(MCPSessionParameters *)params;
 {
   [_webView.configuration.userContentController removeAllUserScripts];
-  [_webView.configuration.userContentController addUserScript:[self _termInitScript]];
+  [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];
   [_webView reload];
 }
 
@@ -563,10 +564,10 @@
   return result;
 }
 
-- (WKUserScript *)_termInitScript
+- (WKUserScript *)_termInitScriptWith:(MCPSessionParameters *)params;
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
+  BKFont *font = [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
   NSString *fontFamily = font.name;
   if (font && font.isCustom && font.content) {
     [script addObject:term_appendUserCss(font.content)];
@@ -579,12 +580,12 @@
       [script addObject: term_setFontFamily(fontFamily)];
     }
     
-    BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+    BKTheme *theme = [BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]];
     if (theme) {
       [script addObject:theme.content];
     }
     
-    [script addObject:term_setFontSize([BKDefaults selectedFontSize])];
+    [script addObject:term_setFontSize(params.fontSize == 0 ? [BKDefaults selectedFontSize] : @(params.fontSize))];
     
     [script addObject: term_setCursorBlink([BKDefaults isCursorBlink])];
   }
