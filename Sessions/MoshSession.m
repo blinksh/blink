@@ -206,6 +206,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
+  BOOL mode = [_stream.control rawMode];
+  [_stream.control setRawMode:YES];
 
   if (self.sessionParameters.encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
@@ -216,10 +218,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
   NSString *locales_path = [[NSBundle mainBundle] pathForResource:@"locales" ofType:@"bundle"];
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
-
-
-  BOOL mode = [_stream.control rawMode];
-  [_stream.control setRawMode:YES];
   
   mosh_main(
             _stream.in, _stream.out, _stream.sz,
