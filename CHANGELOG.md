@@ -1,3 +1,32 @@
+# Version 10.0
+	- Secured Mosh Persistent Connections and Restore.
+	- URL Links detection!
+	- Autocomplete for commands and hosts!
+	- Two fingers closes on-screen keyboard.
+	- Two fingers up now closes terminals.
+	- New WWDC16 theme.
+	- Added Light/Dark keyboard setting.
+
+	- Faster Terminal rendering thanks to better writing flows.
+	- Updated HTerm!
+	- Updated Mosh to 1.3!
+
+	- Fixed stuck Cmd key (deal with iOS issues).
+	- Fixed swipe ups triggering SmartKeys.
+	- Fixed Cmd as Ctrl for Ctrl+C
+	- Fixed resize glitches.
+	- Improved loading time for terminal and custom fonts.
+	- Improved focus when switching between apps.
+	- Improved and smoother animations.
+	- Improved accessoryView handling if other screen is active.
+	- Fixed tab caching after closed.
+	- Fixed issues with irregular character widths misaligning columns.
+	- Fixed vertical rendering of fonts in some specific scenarios.
+	- Fixed issues with resizes and focus.
+	- Fixed unselect on tap.
+	- Fixed ssh restores crashing the app.
+	- Fixed external screen focus.
+
 # Version 9.0
 	- Index and run commands from Spotlight
 	- Tune Selection
