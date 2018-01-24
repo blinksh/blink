@@ -38,6 +38,8 @@ NSString * const ChildSessionParametersKey = @"childSessionParameters";
 NSString * const RowsKey = @"rows";
 NSString * const ColsKey = @"cols";
 NSString * const FontSizeKey = @"fontSize";
+NSString * const FontNameKey = @"fontName";
+NSString * const ThemeNameKey = @"themeName";
 
 @implementation MCPSessionParameters
 
@@ -52,6 +54,8 @@ NSString * const FontSizeKey = @"fontSize";
     self.rows = [aDecoder decodeIntegerForKey:RowsKey];
     self.cols = [aDecoder decodeIntegerForKey:ColsKey];
     self.fontSize = [aDecoder decodeIntegerForKey:FontSizeKey];
+    self.fontName = [aDecoder decodeObjectOfClass:[NSString class] forKey:FontNameKey];
+    self.themeName = [aDecoder decodeObjectOfClass:[NSString class] forKey:ThemeNameKey];
   }
   
   return self;
@@ -65,6 +69,8 @@ NSString * const FontSizeKey = @"fontSize";
   [coder encodeInteger:_rows forKey:RowsKey];
   [coder encodeInteger:_cols forKey:ColsKey];
   [coder encodeInteger:_fontSize forKey:FontSizeKey];
+  [coder encodeObject:_fontName forKey:FontNameKey];
+  [coder encodeObject:_themeName forKey:ThemeNameKey];
 }
 
 + (BOOL)supportsSecureCoding

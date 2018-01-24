@@ -123,13 +123,20 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [super viewDidLoad];
   
   if (_sessionParameters == nil) {
-    _sessionParameters = [[MCPSessionParameters alloc] init];
-    _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
+    [self _initSessionParameters];
   }
 
-  [_termView load];
+  [_termView loadWith:_sessionParameters];
 
   [self createPTY];
+}
+
+- (void)_initSessionParameters
+{
+  _sessionParameters = [[MCPSessionParameters alloc] init];
+  _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
+  _sessionParameters.fontName = [BKDefaults selectedFontName];
+  _sessionParameters.themeName = [BKDefaults selectedThemeName];
 }
 
 - (void)createPTY
@@ -232,7 +239,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _isReloading = NO;
     [self destroyPTY];
     [self createPTY];
-    [_termView reload];
+    [self _initSessionParameters];
+    [_termView reloadWith:_sessionParameters];
   } else {
     [_delegate terminalHangup:self];
   }

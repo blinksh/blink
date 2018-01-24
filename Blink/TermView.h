@@ -31,6 +31,7 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import "MCPSessionParameters.h"
 
 @class TermView;
 @class TermInput;
@@ -63,8 +64,8 @@
 @property BOOL readyToDelete;
 
 - (id)initWithFrame:(CGRect)frame;
-- (void)load;
-- (void)reload;
+- (void)loadWith:(MCPSessionParameters *)params;
+- (void)reloadWith:(MCPSessionParameters *)params;
 - (void)clear;
 - (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;

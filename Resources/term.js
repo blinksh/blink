@@ -11,6 +11,33 @@ hterm.copySelectionToClipboard = function(document, content) {
   _postMessage('copy', { content });
 };
 
+hterm.ScrollPort.prototype.getTopRowIndex = function() {
+  if (!this._scrollCache) {
+    this._scrollCache = { top: this.screen_.scrollTop };
+  }
+  return Math.round(this._scrollCache.top / this.characterSize.height);
+};
+
+hterm.ScrollPort.prototype.onScroll_ = function(e) {
+  this._scrollCache = null;
+  var screenSize = this.getScreenSize();
+  if (
+    screenSize.width != this.lastScreenWidth_ ||
+    screenSize.height != this.lastScreenHeight_
+  ) {
+    // This event may also fire during a resize (but before the resize event!).
+    // This happens when the browser moves the scrollbar as part of the resize.
+    // In these cases, we want to ignore the scroll event and let onResize
+    // handle things.  If we don't, then we end up scrolling to the wrong
+    // position after a resize.
+    this.resize();
+    return;
+  }
+
+  this.redraw_();
+  this.publish('scroll', { scrollPort: this });
+};
+
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
 
@@ -40,16 +67,16 @@ function term_setup() {
       _postMessage('sigwinch', { cols, rows });
     };
 
-    _postMessage('terminalReady', {
+    var size = {
       cols: t.screenSize.width,
       rows: t.screenSize.height,
-    });
+    };
+    _postMessage('terminalReady', { size });
 
     t.uninstallKeyboard();
   };
 
   t.decorate(document.getElementById('terminal'));
-//  term_blur();
 }
 
 function term_init() {
@@ -100,7 +127,7 @@ function term_scale(scale) {
   var minScale = 0.5;
   var maxScale = 2.0;
   scale = Math.max(minScale, Math.min(maxScale, scale));
-  var fontSize = t.getFontSize()
+  var fontSize = t.getFontSize();
   term_setFontSize(Math.round(fontSize * scale));
 }
 

@@ -773,16 +773,6 @@
   [self.currentTerm.termView resetFontSize];
 }
 
-- (void)playNext:(UIKeyCommand *)cmd
-{
-//  [[MPMusicPlayerController systemMusicPlayer] skipToNextItem];
-}
-
-- (void)playPrev:(UIKeyCommand *)cmd
-{
-//  [[MPMusicPlayerController systemMusicPlayer] skipToBeginning];
-}
-
 - (void)otherScreen:(UIKeyCommand *)cmd
 {
   [[ScreenController shared] switchToOtherScreen];
