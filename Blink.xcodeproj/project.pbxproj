@@ -258,6 +258,20 @@
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
 		};
+		0747D6382018182D00CF8F0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
+			remoteInfo = "MBProgressHUD Framework tvOS";
+		};
+		0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 148993CF1D8F2515000132F7;
+			remoteInfo = TestHost;
+		};
 		076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
@@ -645,6 +659,7 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
+				0747D6392018182D00CF8F0C /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -655,6 +670,7 @@
 				0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */,
 				0732F1191D062CA000AB5438 /* libUICKeyChainStore.a */,
 				0732F11B1D062CA000AB5438 /* UICKeyChainStoreTests.xctest */,
+				0747D63E2018182D00CF8F0C /* TestHost.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1185,6 +1201,20 @@
 			remoteRef = 0732F11A1D062CA000AB5438 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		0747D6392018182D00CF8F0C /* MBProgressHUD.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBProgressHUD.framework;
+			remoteRef = 0747D6382018182D00CF8F0C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0747D63E2018182D00CF8F0C /* TestHost.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TestHost.app;
+			remoteRef = 0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1670,7 +1700,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1705,7 +1735,7 @@
 				PROVISIONING_PROFILE = "";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
