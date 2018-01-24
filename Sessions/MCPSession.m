@@ -406,7 +406,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  cmd+o: Switch to other screen (Airplay mode).",
     @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
     @"  cmd+,: Open config.",
-    @"  cmd+m: Toggle music controls. (Control with cmd+n/p/s/r).",
+    @"  cmd+m: Toggle music controls. (Control with cmd+n/p/s/r/b).",
     @"  pinch: Change font size.",
     @""
   ] componentsJoinedByString:@"\r\n"];

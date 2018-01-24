@@ -604,5 +604,4 @@
   [_webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
 }
 
-
 @end
