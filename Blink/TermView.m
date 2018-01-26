@@ -82,7 +82,6 @@
   WKWebView *_webView;
 
   UITapGestureRecognizer *_tapBackground;
-  UILongPressGestureRecognizer *_longPressBackground;
   UIPinchGestureRecognizer *_pinchGesture;
   
   NSTimer *_pinchSamplingTimer;
@@ -141,6 +140,7 @@
   _webView.scrollView.delaysContentTouches = NO;
   _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
   _webView.scrollView.panGestureRecognizer.minimumNumberOfTouches = 2;
+  _webView.scrollView.panGestureRecognizer.cancelsTouchesInView = NO;
   _webView.opaque = NO;
   _webView.backgroundColor = [UIColor clearColor];
   
@@ -210,30 +210,28 @@
   [_webView.scrollView setScrollEnabled:enabled];
   _webView.userInteractionEnabled = enabled;
   _pinchGesture.enabled = enabled;
-  _longPressBackground.enabled = enabled;
   _tapBackground.enabled = enabled;
 }
 
 - (void)_addGestures
 {
-  if (!_tapBackground) {
-    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
-    [_tapBackground setNumberOfTapsRequired:1];
-    _tapBackground.delegate = self;
-    [self addGestureRecognizer:_tapBackground];
-  }
+  
+//  if (!_tapBackground) {
+//    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
+//    [_tapBackground setNumberOfTapsRequired:1];
+//    _tapBackground.delegate = self;
+//    [_webView addGestureRecognizer:_tapBackground];
+//  }
 
-  if (!_longPressBackground) {
-    _longPressBackground = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_longPress:)];
-    _longPressBackground.delegate = self;
-    [self addGestureRecognizer:_longPressBackground];
-  }
 
-  if (!_pinchGesture) {
-    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
-    _pinchGesture.delegate = self;
-    [self addGestureRecognizer:_pinchGesture];
-  }
+//  if (!_pinchGesture) {
+//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
+//    _pinchGesture.delegate = self;
+//    [_webView addGestureRecognizer:_pinchGesture];
+  
+//    [_webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail: _pinchGesture];
+//    [_longPressBackground requireGestureRecognizerToFail: _pinchGesture];
+//  }
 }
 
 - (NSString *)title
@@ -307,12 +305,14 @@
 
 - (void)focus {
   _focused = YES;
+  _tapBackground.enabled = NO;
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
 - (void)blur
 {
   _focused = NO;
+  _tapBackground.enabled = YES;
   [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
@@ -356,7 +356,9 @@
   NSString *operation = sentData[@"op"];
   NSDictionary *data = sentData[@"data"];
 
-  if ([operation isEqualToString:@"sigwinch"]) {
+  if ([operation isEqualToString:@"selectionchange"]) {
+    NSLog(@"%@", data);
+  } else if ([operation isEqualToString:@"sigwinch"]) {
     if ([_termDelegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
       [_termDelegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
     }
@@ -380,31 +382,36 @@
 }
 
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
-    return YES;
-  }
-  return NO;
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _pinchGesture) {
-    return NO;
-  }
-  if (gestureRecognizer == _tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-    // We cancel the one from the WebView from executing, as it will wait for this one to fail.
-    // We return yes, to make sure that is understood.
-    [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
-    return YES;
-  }
-  if (gestureRecognizer == _longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-    return YES;
-  }
-
-  return NO;
-}
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
+//{
+//  if (gestureRecognizer == _pinchGesture) {
+//    NSLog(@"[\n%@\n------------\n%@\n]", gestureRecognizer, otherGestureRecognizer);
+//  }
+////  if (gestureRecognizer == _pinchGesture /* && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]*/) {
+////    return YES;
+////  }
+//  return NO;
+//}
+//
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//  if (gestureRecognizer == _pinchGesture) {
+//    return NO;
+//  }
+////
+//////  return YES;
+//////  if (gestureRecognizer == _tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+//////    // We cancel the one from the WebView from executing, as it will wait for this one to fail.
+//////    // We return yes, to make sure that is understood.
+//////    [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
+//////    return YES;
+//////  }
+////  if (gestureRecognizer == _longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
+////    return YES;
+////  }
+////
+//  return YES;
+//}
 
 - (void)_longPress:(UILongPressGestureRecognizer *)gestureRecognizer
 {
@@ -415,14 +422,14 @@
   
   UIMenuController *menuController = [UIMenuController sharedMenuController];
 
-  if (menuController.isMenuVisible) {
-    [menuController setMenuVisible:NO animated:YES];
-  } else {
+//  if (menuController.isMenuVisible) {
+//    [menuController setMenuVisible:NO animated:YES];
+//  } else {
     CGPoint touchPoint = [gestureRecognizer locationInView:self];
     CGRect targetRect = CGRectMake(touchPoint.x - 10, touchPoint.y - 10, 10, 10);
     
     [self _detectLinkInSelection: ^{
-      [menuController setTargetRect: targetRect inView:self];
+      
       
       NSMutableArray *items = [[NSMutableArray alloc] init];
       
@@ -438,13 +445,19 @@
                                                     action:@selector(openLink:)]];
       }
       
-//      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Unselect"
-//                                                  action:@selector(unselect:)]];
-//
+      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Unselect"
+                                                  action:@selector(unselect:)]];
+
       [menuController setMenuItems:items];
-      [menuController setMenuVisible:YES animated:YES];
+      
+      if (menuController.isMenuVisible) {
+        [menuController update];
+      } else {
+        [menuController setTargetRect: targetRect inView:self];
+        [menuController setMenuVisible:YES animated:YES];
+      }
     }];
-  }
+//  }
 }
 
 - (void)_detectLinkInSelection:(void (^)(void)) block {
@@ -502,13 +515,18 @@
 {
 }
 
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  return !_focused;
+}
+
 - (void)_activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
     return;
   }
   
-  [self cleanSelection];
+//  [self cleanSelection];
   [_termDelegate focus];
 }
 

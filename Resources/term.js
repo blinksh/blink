@@ -41,6 +41,10 @@ hterm.ScrollPort.prototype.onScroll_ = function(e) {
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
 
+document.addEventListener('selectionchange', function() {
+  _postMessage('selectionchange', term_getCurrentSelection());
+});
+
 // Before we fully load hterm. We set options here.
 var _prefs = new hterm.PreferenceManager('blink');
 var t = { prefs_: _prefs }; // <- `t` will become actual hterm instance after decorate.
@@ -54,6 +58,7 @@ function term_get(key) {
 }
 
 function term_setupDefaults() {
+  term_set('copy-on-select', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
   term_set('allow-images-inline', true); // need to make it work
@@ -168,14 +173,17 @@ function term_loadFontFromCss(url, name) {
 
 function term_getCurrentSelection() {
   const selection = document.getSelection();
-  if (!selection || document.rangeCount == 0) {
+  if (!selection || selection.rangeCount == 0) {
     return { base: '', offset: 0, text: '' };
   }
+  
+  const rect = selection.getRangeAt(0).getBoundingClientRect()
 
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
     text: selection.toString(),
+    rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
   };
 }
 

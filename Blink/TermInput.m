@@ -192,7 +192,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableDictionary *_functionKeys;
   NSMutableDictionary *_functionTriggerKeys;
   NSString *_specialFKeysRow;
-  NSString *_textInputContextIdentifier;
   
   // option + e on iOS lets introduce an accented character, that we override
   BOOL _disableAccents;
@@ -221,8 +220,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   self = [super initWithFrame:frame];
   
   if (self) {
-    _textInputContextIdentifier = @"terminput";
-    
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
     
@@ -261,6 +258,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (self.window && self.window.screen != [UIScreen mainScreen]) {
     self.inputAccessoryView = nil;
   }
+}
+
+- (NSString *)textInputContextIdentifier
+{
+  return @"terminput";
 }
 
 - (void)_configureNotifications
@@ -335,11 +337,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       [_termDelegate write:[CC KEY:text MOD:0 RAW:_raw]];
     }
   }
-}
-
-- (NSString *)textInputContextIdentifier
-{
-  return _textInputContextIdentifier;
 }
 
 - (void)deleteBackward
