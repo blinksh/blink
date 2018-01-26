@@ -202,8 +202,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
       // Remove empty strings (extra spaces)
       NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
                                    [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-      [self.delegate indexCommand:listArgv];
+      if (listArgv.count <= 0) continue; // if user typed only spaces. Avoid crashing here.
       
+      [self.delegate indexCommand:listArgv];
       NSString *cmd = listArgv[0];
       
       if ([cmd isEqualToString:@"help"]) {
