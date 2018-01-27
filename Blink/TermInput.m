@@ -711,6 +711,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if ([input isEqualToString:@"b"]) {
     if (cmd.modifierFlags == UIKeyModifierControl) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];
+    } else if (cmd.modifierFlags == (UIKeyModifierControl | UIKeyModifierAlternate)) {
+      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     } else {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     }
@@ -719,6 +721,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if ([input isEqualToString:@"f"]) {
     if (cmd.modifierFlags == UIKeyModifierControl) {
        [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"character"];
+    } else if (cmd.modifierFlags == (UIKeyModifierControl | UIKeyModifierAlternate)) {
+      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"y"]) {
     [self copy: self];
@@ -762,7 +766,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     // EMACS
     [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"n" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"p" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
   
     
     [UIKeyCommand keyCommandWithInput:@"x" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
