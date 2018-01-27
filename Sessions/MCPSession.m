@@ -401,14 +401,14 @@ char* hints(const char * line, int *color, int *bold)
     @"  two fingers tap or cmd+t: New shell.",
     @"  two fingers swipe up or cmd+w: Close shell.",
     @"  two fingers drag down dismiss keyboard.",
-    @"  one finger swipe left/right or cmd+shift+[/]: Switch between shells.",
+    @"  one finger swipe left/right or cmd+shift+[]: Switch between shells.",
     @"  cmd+alt+N: Switch to shell number N.",
     @"  cmd+o: Switch to other screen (Airplay mode).",
     @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
     @"  cmd+,: Open config.",
-    @"  cmd+m: Toggle music controls. (Control with cmd+n/p/s/r/b).",
+    @"  cmd+m: Toggle music controls. (Control with cmd+npsrb).",
     @"  pinch: Change font size.",
-    @"  selection mode: VIM users: hjklwboy, EMACS: C-fbx, OTHER: arrows and fingers",
+    @"  selection mode: VIM users: hjklwboy, EMACS: C-fbnpx, OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\r\n"];
 

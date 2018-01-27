@@ -695,13 +695,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)_changeSelection:(UIKeyCommand *) cmd
 {
   NSString *input = cmd.input;
+  UIKeyModifierFlags flags = cmd.modifierFlags;
   
   if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
     [_termDelegate.termView modifySelectionInDirection:@"left" granularity:
-     cmd.modifierFlags == UIKeyModifierShift ? @"word" : @"character"];
+     flags == UIKeyModifierShift ? @"word" : @"character"];
   } else if ([input isEqualToString:UIKeyInputRightArrow] || [input isEqualToString:@"l"]) {
     [_termDelegate.termView modifySelectionInDirection:@"right" granularity:
-     cmd.modifierFlags == UIKeyModifierShift ? @"word" : @"character"];
+     flags == UIKeyModifierShift ? @"word" : @"character"];
   } else if ([input isEqualToString:UIKeyInputUpArrow] || [input isEqualToString:@"k"]) {
     [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
   } else if ([input isEqualToString:UIKeyInputDownArrow] || [input isEqualToString:@"j"]) {
@@ -709,19 +710,23 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if ([input isEqualToString:@"o"] || [input isEqualToString:@"x"]) {
     [_termDelegate.termView modifySideOfSelection];
   } else if ([input isEqualToString:@"b"]) {
-    if (cmd.modifierFlags == UIKeyModifierControl) {
+    if (flags == UIKeyModifierControl) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];
-    } else if (cmd.modifierFlags == (UIKeyModifierControl | UIKeyModifierAlternate)) {
+    } else if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     } else {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"w"]) {
-    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
+    if (flags == UIKeyModifierAlternate)  {
+      [self copy: self];
+    } else {
+      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
+    }
   } else if ([input isEqualToString:@"f"]) {
-    if (cmd.modifierFlags == UIKeyModifierControl) {
+    if (flags == UIKeyModifierControl) {
        [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"character"];
-    } else if (cmd.modifierFlags == (UIKeyModifierControl | UIKeyModifierAlternate)) {
+    } else if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"y"]) {
@@ -766,11 +771,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     // EMACS
     [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags: UIKeyModifierAlternate action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierAlternate action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"n" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
     [UIKeyCommand keyCommandWithInput:@"p" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"w" modifierFlags:UIKeyModifierAlternate action:@selector(_changeSelection:)],
   
     
     [UIKeyCommand keyCommandWithInput:@"x" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
