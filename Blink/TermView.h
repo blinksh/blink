@@ -84,4 +84,6 @@
 - (void)setFreezed:(BOOL)enabled;
 - (BOOL)isDragging;
 
+- (void)modifySideOfSelection;
+- (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;
 @end

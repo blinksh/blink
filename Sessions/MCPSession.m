@@ -408,6 +408,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  cmd+,: Open config.",
     @"  cmd+m: Toggle music controls. (Control with cmd+n/p/s/r/b).",
     @"  pinch: Change font size.",
+    @"  selection mode: VIM users: hjklwboy, EMACS: C-fbx, OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\r\n"];
 

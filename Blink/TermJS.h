@@ -91,12 +91,22 @@ NSString *term_setFontFamily(NSString *family)
 
 NSString *term_appendUserCss(NSString *css)
 {
-  return [NSString stringWithFormat:@"\nterm_appendUserCss(%@[0])", _encodeString(css)];
+  return [NSString stringWithFormat:@"term_appendUserCss(%@[0])", _encodeString(css)];
 }
 
 NSString *term_cleanSelection()
 {
   return @"term_cleanSelection();";
+}
+
+NSString *term_modifySelection(NSString *direction, NSString *granularity)
+{
+  return [NSString stringWithFormat:@"term_modifySelection(%@[0], %@[0])", _encodeString(direction), _encodeString(granularity)];
+}
+
+NSString *term_modifySideSelection()
+{
+  return @"term_modifySideSelection();";
 }
 
 

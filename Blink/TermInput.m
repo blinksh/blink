@@ -198,6 +198,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   BOOL _dismissInput;
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
+  NSArray<UIKeyCommand *> *_selectionCommands;
   SmartKeysController *_smartKeys;
   
   BOOL _inputEnabled;
@@ -496,10 +497,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
     if (action == @selector(paste:) ||
-        action == @selector(copy:) ||
-        action == @selector(copyLink:) ||
-        action == @selector(openLink:) ||
-        action == @selector(unselect:)
+        (action == @selector(copy:) && _termDelegate.termView.selectedText.length > 0) ||
+        (action == @selector(copyLink:) && _termDelegate.termView.detectedLink) ||
+        (action == @selector(openLink:) && _termDelegate.termView.detectedLink)
       ) {
       return YES;
     }
@@ -514,8 +514,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       action == @selector(select:) ||
       action == @selector(selectAll:) ||
       action == @selector(delete:) ||
-      action == @selector(makeTextWritingDirectionLeftToRight:) ||
-      action == @selector(makeTextWritingDirectionRightToLeft:) ||
       action == @selector(toggleBoldface:) ||
       action == @selector(toggleItalics:) ||
       action == @selector(toggleUnderline:)
@@ -671,6 +669,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
+  if (_termDelegate.termView.selectedText.length > 0) {
+    return _selectionCommands;
+  }
   return _kbdCommands;
 }
 
@@ -688,6 +689,40 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (str) {
     [_termDelegate write:str];
   }
+  [_termDelegate.termView cleanSelection];
+}
+
+- (void)_changeSelection:(UIKeyCommand *) cmd
+{
+  NSString *input = cmd.input;
+  
+  if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
+    [_termDelegate.termView modifySelectionInDirection:@"left" granularity:
+     cmd.modifierFlags == UIKeyModifierShift ? @"word" : @"character"];
+  } else if ([input isEqualToString:UIKeyInputRightArrow] || [input isEqualToString:@"l"]) {
+    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:
+     cmd.modifierFlags == UIKeyModifierShift ? @"word" : @"character"];
+  } else if ([input isEqualToString:UIKeyInputUpArrow] || [input isEqualToString:@"k"]) {
+    [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
+  } else if ([input isEqualToString:UIKeyInputDownArrow] || [input isEqualToString:@"j"]) {
+    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
+  } else if ([input isEqualToString:@"o"] || [input isEqualToString:@"x"]) {
+    [_termDelegate.termView modifySideOfSelection];
+  } else if ([input isEqualToString:@"b"]) {
+    if (cmd.modifierFlags == UIKeyModifierControl) {
+      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];
+    } else {
+      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
+    }
+  } else if ([input isEqualToString:@"w"]) {
+    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
+  } else if ([input isEqualToString:@"f"]) {
+    if (cmd.modifierFlags == UIKeyModifierControl) {
+       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"character"];
+    }
+  } else if ([input isEqualToString:@"y"]) {
+    [self copy: self];
+  }
 }
 
 - (void)_resetDefaultControlKeys
@@ -699,9 +734,46 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _setKbdCommands];
 }
 
+- (void)_configureSelectionShortcuts
+{
+  _selectionCommands =
+  @[
+    // Default
+    [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    
+    [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
+    
+    // VIM
+    [UIKeyCommand keyCommandWithInput:@"j" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"k" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"h" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"l" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"w" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"y" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    
+    [UIKeyCommand keyCommandWithInput:@"o" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
+    
+    // EMACS
+    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+  
+    
+    [UIKeyCommand keyCommandWithInput:@"x" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
+  ];
+}
+
 - (void)_configureShotcuts
 {
   [self _resetDefaultControlKeys];
+  
+  [self _configureSelectionShortcuts];
 
   if ([BKDefaults autoRepeatKeys]) {
     [self _assignSequence:TermViewAutoRepeateSeq toModifier:0];

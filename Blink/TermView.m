@@ -81,8 +81,10 @@
 @implementation TermView {
   WKWebView *_webView;
 
-  UITapGestureRecognizer *_tapBackground;
+  UITapGestureRecognizer *_tapGesture;
   UIPinchGestureRecognizer *_pinchGesture;
+  
+  BOOL _shouldSkipPasteMenu;
   
   NSTimer *_pinchSamplingTimer;
   BOOL _focused;
@@ -210,28 +212,28 @@
   [_webView.scrollView setScrollEnabled:enabled];
   _webView.userInteractionEnabled = enabled;
   _pinchGesture.enabled = enabled;
-  _tapBackground.enabled = enabled;
+  _tapGesture.enabled = enabled;
 }
 
 - (void)_addGestures
 {
   
-//  if (!_tapBackground) {
-//    _tapBackground = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
-//    [_tapBackground setNumberOfTapsRequired:1];
-//    _tapBackground.delegate = self;
-//    [_webView addGestureRecognizer:_tapBackground];
-//  }
+  if (!_tapGesture) {
+    _tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
+    [_tapGesture setNumberOfTapsRequired:1];
+    _tapGesture.delegate = self;
+    [_webView addGestureRecognizer:_tapGesture];
+  }
 
 
-//  if (!_pinchGesture) {
-//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
-//    _pinchGesture.delegate = self;
-//    [_webView addGestureRecognizer:_pinchGesture];
+  if (!_pinchGesture) {
+    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
+    _pinchGesture.delegate = self;
+    [_webView addGestureRecognizer:_pinchGesture];
   
-//    [_webView.scrollView.panGestureRecognizer requireGestureRecognizerToFail: _pinchGesture];
-//    [_longPressBackground requireGestureRecognizerToFail: _pinchGesture];
-//  }
+//    [_pinchGesture requireGestureRecognizerToFail:_webView.scrollView.panGestureRecognizer];
+    [_pinchGesture requireGestureRecognizerToFail: _tapGesture];
+  }
 }
 
 - (NSString *)title
@@ -305,14 +307,12 @@
 
 - (void)focus {
   _focused = YES;
-  _tapBackground.enabled = NO;
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
 - (void)blur
 {
   _focused = NO;
-  _tapBackground.enabled = YES;
   [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
@@ -357,7 +357,7 @@
   NSDictionary *data = sentData[@"data"];
 
   if ([operation isEqualToString:@"selectionchange"]) {
-    NSLog(@"%@", data);
+    [self _handleSelectionChange:data];
   } else if ([operation isEqualToString:@"sigwinch"]) {
     if ([_termDelegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
       [_termDelegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
@@ -381,119 +381,95 @@
   }
 }
 
-
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-//{
-//  if (gestureRecognizer == _pinchGesture) {
-//    NSLog(@"[\n%@\n------------\n%@\n]", gestureRecognizer, otherGestureRecognizer);
-//  }
-////  if (gestureRecognizer == _pinchGesture /* && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]*/) {
-////    return YES;
-////  }
-//  return NO;
-//}
-//
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//  if (gestureRecognizer == _pinchGesture) {
-//    return NO;
-//  }
-////
-//////  return YES;
-//////  if (gestureRecognizer == _tapBackground && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-//////    // We cancel the one from the WebView from executing, as it will wait for this one to fail.
-//////    // We return yes, to make sure that is understood.
-//////    [otherGestureRecognizer requireGestureRecognizerToFail:gestureRecognizer];
-//////    return YES;
-//////  }
-////  if (gestureRecognizer == _longPressBackground && [otherGestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
-////    return YES;
-////  }
-////
-//  return YES;
-//}
-
-- (void)_longPress:(UILongPressGestureRecognizer *)gestureRecognizer
+- (void)_handleSelectionChange:(NSDictionary *)data
 {
-  if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
+  _selectedText = data[@"text"];
+  BOOL isSelectionEmpty = _selectedText.length == 0;
+  _webView.scrollView.scrollEnabled = isSelectionEmpty;
+  
+  if (isSelectionEmpty) {
     return;
   }
-
   
-  UIMenuController *menuController = [UIMenuController sharedMenuController];
-
-//  if (menuController.isMenuVisible) {
-//    [menuController setMenuVisible:NO animated:YES];
-//  } else {
-    CGPoint touchPoint = [gestureRecognizer locationInView:self];
-    CGRect targetRect = CGRectMake(touchPoint.x - 10, touchPoint.y - 10, 10, 10);
+  NSMutableArray *items = [[NSMutableArray alloc] init];
+  UIMenuController * menu = [UIMenuController sharedMenuController];
+  
+  _detectedLink = [self _detectLinkInSelection:data];
+  
+  if (_detectedLink) {
+    NSString *host = [_detectedLink host];
+    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:host]
+                                                action:@selector(copyLink:)]];
     
-    [self _detectLinkInSelection: ^{
-      
-      
-      NSMutableArray *items = [[NSMutableArray alloc] init];
-      
-      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste"
-                                                  action:@selector(yank:)]];
-      
-      if (_detectedLink) {
-        NSString *host = [_detectedLink host];
-        [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:host]
-                                                    action:@selector(copyLink:)]];
-        
-        [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Open " stringByAppendingString:host]
-                                                    action:@selector(openLink:)]];
-      }
-      
-      [items addObject:[[UIMenuItem alloc] initWithTitle:@"Unselect"
-                                                  action:@selector(unselect:)]];
+    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Open " stringByAppendingString:host]
+                                                action:@selector(openLink:)]];
+  }
 
-      [menuController setMenuItems:items];
-      
-      if (menuController.isMenuVisible) {
-        [menuController update];
-      } else {
-        [menuController setTargetRect: targetRect inView:self];
-        [menuController setMenuVisible:YES animated:YES];
-      }
-    }];
-//  }
+  CGRect rect = CGRectFromString(data[@"rect"]);
+  [menu setMenuItems:items];
+  [menu setTargetRect:rect inView:self];
+  [menu setMenuVisible:YES animated:NO];
 }
 
-- (void)_detectLinkInSelection:(void (^)(void)) block {
-  _detectedLink = nil;
-  [_webView evaluateJavaScript: term_getCurrentSelection()
-             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-    if (error) {
-      block();
-      return;
-    }
-    _selectedText = res[@"text"];
-    NSString *text = res[@"base"];
-    NSInteger offset = [res[@"offset"] integerValue];
-    
-    if (text == nil || [text length] == 0) {
-      block();
-      return;
-    }
-    
-    NSDataDetector * dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
-    [dataDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, [text length])
-        usingBlock:^(NSTextCheckingResult * _Nullable result, NSMatchingFlags flags, BOOL * _Nonnull stop) {
-          
-      if (result == nil) {
-        return;
-      }
-      NSURL *url = result.URL;
-      
-      if (url && result.range.location <= offset && result.range.location + result.range.length >= offset) {
-        _detectedLink = url;
-        *stop = YES;
-      }
-    }];
+- (void)modifySideOfSelection
+{
+  [_webView evaluateJavaScript:term_modifySideSelection() completionHandler:nil];
+}
+- (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity
+{
+  [_webView evaluateJavaScript:term_modifySelection(direction, granularity) completionHandler:nil];
+}
 
-    block();
-  }];
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+  if (gestureRecognizer == _tapGesture) {
+    return YES;
+  }
+
+  return YES;
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
+{
+  if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
+    return YES;
+  }
+  return NO;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  if (gestureRecognizer == _tapGesture) {
+    return _selectedText.length == 0;
+  }
+  return YES;
+}
+
+- (NSURL *)_detectLinkInSelection:(NSDictionary *)data
+{
+  __block NSURL *result = nil;
+  NSString *text = data[@"base"];
+  NSInteger offset = [data[@"offset"] integerValue];
+  
+  if (text == nil || [text length] == 0) {
+    return nil;
+  }
+  
+  NSDataDetector * dataDetector = [NSDataDetector dataDetectorWithTypes:NSTextCheckingTypeLink error:nil];
+  [dataDetector enumerateMatchesInString:text options:kNilOptions range:NSMakeRange(0, [text length])
+                              usingBlock:^(NSTextCheckingResult * _Nullable res, NSMatchingFlags flags, BOOL * _Nonnull stop) {
+                                
+                                if (res == nil) {
+                                  return;
+                                }
+                                NSURL *url = res.URL;
+                                
+                                if (url && res.range.location <= offset && res.range.location + res.range.length >= offset) {
+                                  result = url;
+                                  *stop = YES;
+                                }
+                              }];
+  return result;
 }
 
 
@@ -515,19 +491,32 @@
 {
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  return !_focused;
-}
 
 - (void)_activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
-  if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
-    return;
-  }
+    if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
+        return;
+    }
+    
+    if (!_focused) {
+        [_termDelegate focus];
+        return;
+    }
+    
+    if (!_shouldSkipPasteMenu) {
+        [self performSelector:@selector(_showPasteMenu) withObject:nil afterDelay:0.4];
+    }
+    _shouldSkipPasteMenu = !_shouldSkipPasteMenu;
+}
+
+- (void)_showPasteMenu
+{
+  UIMenuController * menu = [UIMenuController sharedMenuController];
+  NSMutableArray *items = [[NSMutableArray alloc] init];
   
-//  [self cleanSelection];
-  [_termDelegate focus];
+  [menu setMenuItems:items];
+  [menu setTargetRect:CGRectMake(0, self.bounds.size.height - 10, self.bounds.size.width, 10) inView:self];
+  [menu setMenuVisible:YES animated:YES];
 }
 
 - (void)_handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer

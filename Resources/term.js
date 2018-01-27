@@ -173,18 +173,38 @@ function term_loadFontFromCss(url, name) {
 
 function term_getCurrentSelection() {
   const selection = document.getSelection();
-  if (!selection || selection.rangeCount == 0) {
+  if (!selection || selection.rangeCount === 0) {
     return { base: '', offset: 0, text: '' };
   }
   
-  const rect = selection.getRangeAt(0).getBoundingClientRect()
+  const r = selection.getRangeAt(0).getBoundingClientRect()
 
+  const rect = ["{{", r.x, ",", r.y, "},{", r.width, ",", r.height, "}}"].join('');
+  
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
     text: selection.toString(),
-    rect: { x: rect.x, y: rect.y, width: rect.width, height: rect.height }
+    rect
   };
+}
+
+function term_modifySelection(direction, granularity) {
+  var selection = document.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+  
+  selection.modify("extend", direction, granularity);
+}
+
+function term_modifySideSelection() {
+  var selection = document.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+  
+  selection.setBaseAndExtent(selection.focusNode, selection.focusOffset, selection.anchorNode, selection.anchorOffset);
 }
 
 function term_cleanSelection() {
