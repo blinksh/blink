@@ -198,7 +198,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   BOOL _dismissInput;
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
-  NSArray<UIKeyCommand *> *_selectionCommands;
   SmartKeysController *_smartKeys;
   
   BOOL _inputEnabled;
@@ -318,6 +317,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     text = [text lowercaseString];
   }
   
+  if  (_termDelegate.termView.hasSelection) {
+    // If the key is a special key, we do not apply modifiers.
+    if (text.length > 1) {
+      // Check if we have a function key
+      NSRange range = [text rangeOfString:@"FKEY"];
+      if (range.location == NSNotFound) {
+        [self _changeSelectionWithInput:text andFlags: kNilOptions];
+      }
+    } else {
+      NSUInteger modifiers = [[_smartKeys view] modifiers];
+      [self _changeSelectionWithInput:text andFlags:modifiers];
+    }
+    return;
+  }
+  
   // If the key is a special key, we do not apply modifiers.
   if (text.length > 1) {
     // Check if we have a function key
@@ -353,7 +367,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
 {
-  [_termDelegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelection:cmd];
+  } else {
+    [_termDelegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
+  }
 }
 
 // Shift prints uppercase in the case CAPSLOCK is blocked
@@ -368,7 +386,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)ctrlSeq:(UIKeyCommand *)cmd
 {
-  [_termDelegate write:[CC CTRL:cmd.input]];
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelection:cmd];
+  } else {
+    [_termDelegate write:[CC CTRL:cmd.input]];
+  }
 }
 
 - (void)metaSeq:(UIKeyCommand *)cmd
@@ -377,11 +399,20 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     //_disableAccents = YES;
   }
   
-  [_termDelegate write:[CC ESC:cmd.input]];
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelection:cmd];
+  } else {
+    [_termDelegate write:[CC ESC:cmd.input]];
+  }
 }
 
 - (void)cursorSeq:(UIKeyCommand *)cmd
 {
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelection:cmd];
+    return;
+  }
+  
   if (cmd.input == UIKeyInputUpArrow) {
     [_termDelegate write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
   }
@@ -410,7 +441,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)autoRepeatSeq:(id)sender
 {
   UIKeyCommand *command = (UIKeyCommand*)sender;
-  [_termDelegate write:command.input];
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelection:command];
+  } else {
+    [_termDelegate write:command.input];
+  }
 }
 
 // This are all key commands capture by UIKeyInput and triggered
@@ -497,7 +532,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
     if (action == @selector(paste:) ||
-        (action == @selector(copy:) && _termDelegate.termView.selectedText.length > 0) ||
+        (action == @selector(copy:) && _termDelegate.termView.hasSelection) ||
         (action == @selector(copyLink:) && _termDelegate.termView.detectedLink) ||
         (action == @selector(openLink:) && _termDelegate.termView.detectedLink)
       ) {
@@ -669,9 +704,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (NSArray<UIKeyCommand *> *)keyCommands
 {
-  if (_termDelegate.termView.selectedText.length > 0) {
-    return _selectionCommands;
-  }
   return _kbdCommands;
 }
 
@@ -696,6 +728,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   NSString *input = cmd.input;
   UIKeyModifierFlags flags = cmd.modifierFlags;
+  [self _changeSelectionWithInput:input andFlags:flags];
+}
+
+- (void)_changeSelectionWithInput:(NSString *)input andFlags: (UIKeyModifierFlags)flags
+{
   
   if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
     [_termDelegate.termView modifySelectionInDirection:@"left" granularity:
@@ -731,6 +768,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
   } else if ([input isEqualToString:@"y"]) {
     [self copy: self];
+  } else if ([input isEqualToString:UIKeyInputEscape]) {
+    [_termDelegate.termView cleanSelection];
   }
 }
 
@@ -743,53 +782,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _setKbdCommands];
 }
 
-- (void)_configureSelectionShortcuts
-{
-  _selectionCommands =
-  @[
-    // Default
-    [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    
-    [UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:UIKeyModifierShift action:@selector(_changeSelection:)],
-    
-    // VIM
-    [UIKeyCommand keyCommandWithInput:@"j" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"k" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"h" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"l" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"w" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"y" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    
-    [UIKeyCommand keyCommandWithInput:@"o" modifierFlags:kNilOptions action:@selector(_changeSelection:)],
-    
-    // EMACS
-    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags: UIKeyModifierAlternate action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"b" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierAlternate action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"f" modifierFlags:UIKeyModifierControl | UIKeyModifierAlternate action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"n" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"p" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
-    [UIKeyCommand keyCommandWithInput:@"w" modifierFlags:UIKeyModifierAlternate action:@selector(_changeSelection:)],
-  
-    
-    [UIKeyCommand keyCommandWithInput:@"x" modifierFlags:UIKeyModifierControl action:@selector(_changeSelection:)],
-  ];
-}
 
 - (void)_configureShotcuts
 {
   [self _resetDefaultControlKeys];
-  
-  [self _configureSelectionShortcuts];
 
   if ([BKDefaults autoRepeatKeys]) {
     [self _assignSequence:TermViewAutoRepeateSeq toModifier:0];

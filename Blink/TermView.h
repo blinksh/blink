@@ -59,6 +59,7 @@
 
 @property (weak) id<TerminalDelegate> termDelegate;
 @property (nonatomic, readonly) NSString *title;
+@property (nonatomic, readonly) BOOL hasSelection;
 @property (nonatomic, readonly) NSURL *detectedLink;
 @property (nonatomic, readonly) NSString *selectedText;
 @property BOOL readyToDelete;

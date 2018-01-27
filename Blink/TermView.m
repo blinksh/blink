@@ -384,10 +384,10 @@
 - (void)_handleSelectionChange:(NSDictionary *)data
 {
   _selectedText = data[@"text"];
-  BOOL isSelectionEmpty = _selectedText.length == 0;
-  _webView.scrollView.scrollEnabled = isSelectionEmpty;
+  _hasSelection =  _selectedText.length > 0;
+  _webView.scrollView.scrollEnabled = !_hasSelection;
   
-  if (isSelectionEmpty) {
+  if (!_hasSelection) {
     return;
   }
   
@@ -440,7 +440,7 @@
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
   if (gestureRecognizer == _tapGesture) {
-    return _selectedText.length == 0;
+    return !_hasSelection;
   }
   return YES;
 }
