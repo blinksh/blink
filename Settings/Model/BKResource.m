@@ -202,7 +202,7 @@ static NSURL *DocumentsDirectory = nil;
 
 + (NSInteger)defaultResourcesCount
 {
-  return [self.defaultResources count];
+  return self.all.count - self.customResources.count;
 }
 
 + (BOOL)saveAll

@@ -697,46 +697,46 @@
   UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
   
   _kbdCommands = [[NSMutableArray alloc] initWithObjects:
-   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags:modifierFlags
-                              action: @selector(newShell:)
-                discoverabilityTitle: @"New shell"],
-   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
-                              action: @selector(closeShell:)
-                discoverabilityTitle: @"Close shell"],
-   [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: modifierFlags
-                              action: @selector(nextShell:)
-                discoverabilityTitle: @"Next shell"],
-   [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: modifierFlags
-                              action: @selector(prevShell:)
-                discoverabilityTitle: @"Previous shell"],
-
-   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
-                              action: @selector(otherScreen:)
-                discoverabilityTitle: @"Other Screen"],
-   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
-                              action: @selector(moveToOtherScreen:)
-                discoverabilityTitle: @"Move schell to other Screen"],
-   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
-                              action: @selector(showConfig:)
-                discoverabilityTitle: @"Show config"],
+                  [UIKeyCommand keyCommandWithInput: @"t" modifierFlags:modifierFlags
+                                             action: @selector(newShell:)
+                               discoverabilityTitle: @"New shell"],
+                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
+                                             action: @selector(closeShell:)
+                               discoverabilityTitle: @"Close shell"],
+                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: modifierFlags
+                                             action: @selector(nextShell:)
+                               discoverabilityTitle: @"Next shell"],
+                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: modifierFlags
+                                             action: @selector(prevShell:)
+                               discoverabilityTitle: @"Previous shell"],
                   
-    [UIKeyCommand keyCommandWithInput: @"m" modifierFlags: modifierFlags
-                               action: @selector(_toggleMusicHUD)
-                 discoverabilityTitle: @"Music Controls"],
+                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
+                                             action: @selector(otherScreen:)
+                               discoverabilityTitle: @"Other Screen"],
+                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
+                                             action: @selector(moveToOtherScreen:)
+                               discoverabilityTitle: @"Move schell to other Screen"],
+                  [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
+                                             action: @selector(showConfig:)
+                               discoverabilityTitle: @"Show config"],
                   
-    [UIKeyCommand keyCommandWithInput:@"+"
-                        modifierFlags:modifierFlags
-                               action:@selector(_increaseFontSize:)
-                 discoverabilityTitle:@"Zoom In"],
-    [UIKeyCommand keyCommandWithInput:@"-"
-                        modifierFlags:modifierFlags
-                               action:@selector(_decreaseFontSize:)
-                 discoverabilityTitle:@"Zoom Out"],
-    [UIKeyCommand keyCommandWithInput:@"="
-                        modifierFlags:modifierFlags
-                               action:@selector(_resetFontSize:)
-                 discoverabilityTitle:@"Reset Zoom"],
-  nil];
+                  [UIKeyCommand keyCommandWithInput: @"m" modifierFlags: modifierFlags
+                                             action: @selector(_toggleMusicHUD)
+                               discoverabilityTitle: @"Music Controls"],
+                  
+                  [UIKeyCommand keyCommandWithInput:@"+"
+                                      modifierFlags:modifierFlags
+                                             action:@selector(_increaseFontSize:)
+                               discoverabilityTitle:@"Zoom In"],
+                  [UIKeyCommand keyCommandWithInput:@"-"
+                                      modifierFlags:modifierFlags
+                                             action:@selector(_decreaseFontSize:)
+                               discoverabilityTitle:@"Zoom Out"],
+                  [UIKeyCommand keyCommandWithInput:@"="
+                                      modifierFlags:modifierFlags
+                                             action:@selector(_resetFontSize:)
+                               discoverabilityTitle:@"Reset Zoom"],
+                  nil];
   
   for (NSInteger i = 1; i < 11; i++) {
     NSInteger keyN = i % 10;

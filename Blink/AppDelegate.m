@@ -63,7 +63,8 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif 
+#endif
+
 
   [[ScreenController shared] setup];
   return YES;

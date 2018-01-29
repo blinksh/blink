@@ -576,9 +576,10 @@
   NSMutableArray *script = [[NSMutableArray alloc] init];
   BKFont *font = [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
   NSString *fontFamily = font.name;
-  if (font && font.isCustom && font.content) {
-    [script addObject:term_appendUserCss(font.content)];
-    fontFamily = [self _detectFontFamilyFromContent:font.content] ?: font.name;
+  NSString *content = font.content;
+  if (font && font.isCustom && content) {
+    [script addObject:term_appendUserCss(content)];
+    fontFamily = [self _detectFontFamilyFromContent:content] ?: font.name;
   }
   
   [script addObject:@"function applyUserSettings() {"];

@@ -34,4 +34,7 @@
 #import "BKResource.h"
 
 @interface BKFont : BKResource
+
+@property BOOL systemWide;
+
 @end
