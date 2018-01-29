@@ -140,9 +140,9 @@
   _webView = [[BKWebView alloc] initWithFrame:self.bounds configuration:configuration];
   
   _webView.scrollView.delaysContentTouches = NO;
-  _webView.scrollView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
-  _webView.scrollView.panGestureRecognizer.minimumNumberOfTouches = 2;
-  _webView.scrollView.panGestureRecognizer.cancelsTouchesInView = NO;
+  _webView.scrollView.scrollEnabled = NO;
+  _webView.scrollView.panGestureRecognizer.enabled = NO;
+
   _webView.opaque = NO;
   _webView.backgroundColor = [UIColor clearColor];
   
@@ -209,8 +209,6 @@
 {
   BOOL enabled = !freezed;
   self.userInteractionEnabled = enabled;
-  [_webView.scrollView setScrollEnabled:enabled];
-  _webView.userInteractionEnabled = enabled;
   _pinchGesture.enabled = enabled;
   _tapGesture.enabled = enabled;
 }
@@ -227,12 +225,11 @@
 
 
   if (!_pinchGesture) {
-    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
-    _pinchGesture.delegate = self;
-    [_webView addGestureRecognizer:_pinchGesture];
-  
-//    [_pinchGesture requireGestureRecognizerToFail:_webView.scrollView.panGestureRecognizer];
-    [_pinchGesture requireGestureRecognizerToFail: _tapGesture];
+//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
+//    _pinchGesture.delegate = self;
+//    [_webView addGestureRecognizer:_pinchGesture];
+//  
+//    [_pinchGesture requireGestureRecognizerToFail: _tapGesture];
   }
 }
 
@@ -385,7 +382,6 @@
 {
   _selectedText = data[@"text"];
   _hasSelection =  _selectedText.length > 0;
-  _webView.scrollView.scrollEnabled = !_hasSelection;
   
   if (!_hasSelection) {
     return;
@@ -544,6 +540,14 @@
              completionHandler:^(id _Nullable res, NSError * _Nullable error) {
     _pinchGesture.scale = 1;
   }];
+}
+
+- (void)scaleWith:(UIPinchGestureRecognizer *)recognizer
+{
+  [_webView evaluateJavaScript: term_scale(recognizer.scale)
+             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
+               recognizer.scale = 1;
+             }];
 }
 
 - (void)copy:(id)sender

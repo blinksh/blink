@@ -39,10 +39,11 @@
 #import "TermController.h"
 #import "TermInput.h"
 #import "MusicManager.h"
+#import "TouchOverlay.h"
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
-  UIGestureRecognizerDelegate, TermControlDelegate>
+  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate>
 
 @property (readonly) TermController *currentTerm;
 
@@ -52,11 +53,10 @@
   UIPageViewController *_viewportsController;
   NSMutableArray *_viewports;
   
-  UITapGestureRecognizer *_twoFingersTap;
-  UIPanGestureRecognizer *_twoFingersDrag;
-  
   MBProgressHUD *_hud;
   MBProgressHUD *_musicHUD;
+  
+  TouchOverlay *_touchOverlay;
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
@@ -92,6 +92,12 @@
   _viewportsController.view.frame = self.view.bounds;
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
+  
+  _touchOverlay = [[TouchOverlay alloc] initWithFrame:self.view.bounds];
+  [_touchOverlay attachPageViewController:_viewportsController];
+  [self.view addSubview:_touchOverlay];
+  _touchOverlay.touchDelegate = self;
+  
   
   [self registerForNotifications];
 }
@@ -240,54 +246,27 @@
   _unfocused = ![_termInput isFirstResponder];
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-  [super viewDidAppear:animated];
-  if (self.view.window.screen == [UIScreen mainScreen]) {
-    [self addGestures];
-  }
-}
-
-- (void)addGestures
-{
-  if (!_twoFingersTap) {
-    _twoFingersTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTwoFingersTap:)];
-    [_twoFingersTap setNumberOfTouchesRequired:2];
-    [_twoFingersTap setNumberOfTapsRequired:1];
-    _twoFingersTap.delegate = self;
-    [self.view addGestureRecognizer:_twoFingersTap];
-  }
-
-  if (!_twoFingersDrag) {
-    _twoFingersDrag = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_handleTwoFingersDrag:)];
-    [_twoFingersDrag setMinimumNumberOfTouches:2];
-    [_twoFingersDrag setMaximumNumberOfTouches:2];
-    _twoFingersDrag.delegate = self;
-    _twoFingersDrag.cancelsTouchesInView = NO;
-    [self.view addGestureRecognizer:_twoFingersDrag];
-  }
-}
 
 #pragma mark Events
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _twoFingersTap && otherGestureRecognizer == _twoFingersDrag) {
-    return YES;
-  }
-  if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-    return YES;
-  }
-  return NO;
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _twoFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
-    return YES;
-  }
-
-  return NO;
-}
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
+//{
+//  if (gestureRecognizer == _twoFingersTap && otherGestureRecognizer == _twoFingersDrag) {
+//    return YES;
+//  }
+//  if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+//    return YES;
+//  }
+//  return NO;
+//}
+//
+//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+//{
+//  if (gestureRecognizer == _twoFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
+//    return YES;
+//  }
+//
+//  return NO;
+//}
 
 // The Space will be responsible to accommodate the work environment for widgets, adjusting the size, making sure it doesn't overlap content,
 // moving widgets or scrolling to them when necessary, etc...
@@ -439,14 +418,14 @@
   }
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  if (gestureRecognizer == _twoFingersDrag) {
-    return [_twoFingersDrag translationInView:self.view].y < 0;
-  }
-  
-  return YES;
-}
+//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+//{
+//  if (gestureRecognizer == _twoFingersDrag) {
+//    return [_twoFingersDrag translationInView:self.view].y < 0;
+//  }
+//  
+//  return YES;
+//}
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
        viewControllerAfterViewController:(UIViewController *)viewController
@@ -988,6 +967,27 @@
 {
   [[MusicManager shared] handleCommand:cmd];
   [self _toggleMusicHUD];
+}
+
+- (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer
+{
+  [self.currentTerm focus];
+}
+
+- (void)touchOverlay:(TouchOverlay *)overlay onTwoFingerTap:(UITapGestureRecognizer *)recognizer
+{
+  [self _createShellWithUserActivity: nil sessionStateKey: nil animated:YES completion:nil];
+}
+
+- (void)touchOverlay:(TouchOverlay *)overlay onPinch:(UIPinchGestureRecognizer *)recognizer
+{
+  [self.currentTerm.termView scaleWith:recognizer];
+}
+
+- (void)touchOverlay:(TouchOverlay *)overlay onScrollY:(CGFloat) y
+{
+  NSLog(@"%@", @(y));
+  self.view.transform = CGAffineTransformTranslate(CGAffineTransformIdentity, 0, MIN(-y, 0));
 }
 
 

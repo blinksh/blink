@@ -85,6 +85,8 @@
 - (void)setFreezed:(BOOL)enabled;
 - (BOOL)isDragging;
 
+- (void)scaleWith:(UIPinchGestureRecognizer *)recognizer;
+
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;
 @end

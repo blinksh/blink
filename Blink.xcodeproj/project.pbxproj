@@ -204,6 +204,7 @@
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B82004DCC9001FB2AA /* hterm_all.js */; };
+		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
 		D2A92352201732B600043596 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A92351201732B600043596 /* MusicManager.m */; };
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 /* End PBXBuildFile section */
@@ -508,6 +509,8 @@
 		D29392AB2004C6C3001FB2AA /* FiraCode.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FiraCode.ttf; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
+		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
+		D2A8C153201F377D002F415A /* TouchOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchOverlay.m; sourceTree = "<group>"; };
 		D2A92350201732B600043596 /* MusicManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
 		D2A92351201732B600043596 /* MusicManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MusicManager.m; sourceTree = "<group>"; };
 		D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCPSessionParameters.h; sourceTree = "<group>"; };
@@ -587,6 +590,8 @@
 				D215E59B2010C77E00D893EB /* TermJS.h */,
 				D2A92350201732B600043596 /* MusicManager.h */,
 				D2A92351201732B600043596 /* MusicManager.m */,
+				D2A8C152201F377D002F415A /* TouchOverlay.h */,
+				D2A8C153201F377D002F415A /* TouchOverlay.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1416,6 +1421,7 @@
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
+				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
