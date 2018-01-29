@@ -143,7 +143,7 @@
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
 {
-  _unfocused = [coder decodeBoolForKey:@"_infocused"];
+  _unfocused = [coder decodeBoolForKey:@"_unfocused"];
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
   _viewports = [[NSMutableArray alloc] init];
@@ -191,7 +191,7 @@
   }
   [coder encodeInteger:idx forKey:@"idx"];
   [coder encodeObject:sessionStateKeys forKey:@"sessionStateKeys"];
-  [coder encodeBool:_unfocused forKey:@"_infocused"];
+  [coder encodeBool:_unfocused forKey:@"_unfocused"];
 }
 
 - (void)registerForNotifications
@@ -911,6 +911,21 @@
 - (void)viewScreenDidBecomeInactive
 {
   [_termInput resignFirstResponder];
+}
+
+- (BOOL)canPerformAction:(SEL)action withSender:(id)sender
+{
+  // Fix for github issue #299
+  // Even app is not in active state it still recieves actions like CMD+T and etc.
+  // So we filter them here.
+  
+  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+  
+  if (appState != UIApplicationStateActive) {
+    return NO;
+  }
+  
+  return [super canPerformAction:action withSender:sender];
 }
 
 - (void)restoreUserActivityState:(NSUserActivity *)activity
