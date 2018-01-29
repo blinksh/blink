@@ -43,7 +43,7 @@
 
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
-  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate>
+  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, ControlPanelDelegate>
 
 @property (readonly) TermController *currentTerm;
 
@@ -97,6 +97,7 @@
   [_touchOverlay attachPageViewController:_viewportsController];
   [self.view addSubview:_touchOverlay];
   _touchOverlay.touchDelegate = self;
+  _touchOverlay.controlPanel.controlPanelDelegate = self;
   
   
   [self registerForNotifications];
@@ -120,6 +121,7 @@
   }
   
   _viewportsController.view.frame = rect;
+  _touchOverlay.frame = rect;
 }
 
 - (void)viewDidLoad
@@ -288,7 +290,7 @@
   if (bottomInset > accessoryHeight) {
     accessoryView.hidden = NO;
   } else if (bottomInset == accessoryHeight) {
-    if ([self.currentTerm.termView isDragging]) {
+    if (_touchOverlay.panGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
       accessoryView.hidden = YES;
     } else {
       accessoryView.hidden = ![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard];
@@ -322,100 +324,6 @@
   
   CGAffineTransform move = CGAffineTransformMakeScale(scale, scale);
   return CGAffineTransformTranslate(move, translation.x, translation.y);
-}
-
-- (void)_setAnimationState:(TermView *)termView on:(BOOL)on {
-  [termView setFreezed:on];
-  if (on) {
-    termView.layer.shadowColor = [UIColor whiteColor].CGColor;
-    termView.layer.shadowOffset = CGSizeMake(0, 20);
-    termView.layer.shadowOpacity = 0.7;
-    termView.layer.shadowRadius = 40;
-    
-  } else {
-    termView.layer.shadowColor = [UIColor whiteColor].CGColor;
-    termView.layer.shadowOffset = CGSizeMake(0, 0);
-    termView.layer.shadowOpacity = 0;
-    termView.layer.shadowRadius = 0;
-    termView.alpha = 1;
-  }
-}
-
-- (void)_handleTwoFingersDrag:(UIPanGestureRecognizer *)sender
-{
-  TermView *v = self.currentTerm.termView;
-  CGPoint t = [sender translationInView:self.view];
-  
-  if (sender.state == UIGestureRecognizerStateBegan) {
-    [self _setAnimationState:v on:YES];
-  
-    [UIView animateWithDuration:0.5
-                          delay:0
-         usingSpringWithDamping:0.7
-          initialSpringVelocity:1.0
-                        options:kNilOptions
-                     animations:^{
-       v.transform = [self _transformForTranslation:t];
-       
-    } completion:nil];
-  }
-  
-  if (sender.state == UIGestureRecognizerStateChanged) {
-    if (ABS(t.y) > _viewportsController.view.bounds.size.height * 0.25) {
-      if (!v.readyToDelete) {
-        [v setReadyToDelete:YES];
-      }
-    } else {
-      if (v.readyToDelete) {
-        [v setReadyToDelete:NO];
-      }
-    }
-    v.transform = [self _transformForTranslation:t];
-  }
-  
-  if (sender.state == UIGestureRecognizerStateCancelled) {
-    v.readyToDelete = NO;
-    v.transform = CGAffineTransformIdentity;
-    [self _setAnimationState:v on: NO];
-    [UIView animateWithDuration:0.5
-                          delay:0
-         usingSpringWithDamping:0.6
-          initialSpringVelocity:1.0
-                        options:kNilOptions
-                     animations:^{
-                       v.transform = CGAffineTransformIdentity;
-                     } completion:nil];
-  }
-  
-  if (sender.state == UIGestureRecognizerStateEnded) {
-    if (v.readyToDelete) {
-      CGAffineTransform transform =  CGAffineTransformScale(CGAffineTransformTranslate(v.transform, 0, -self.view.bounds.size.height), 0.4, 0.4);
-    [UIView animateWithDuration:0.4
-                          delay:0
-         usingSpringWithDamping:0.9
-          initialSpringVelocity:1.0
-                        options:kNilOptions
-                     animations:^{
-                       v.transform = transform;
-                     } completion:^(BOOL complete){
-                          [self _setAnimationState:v on: NO];
-                          v.alpha = 0;
-                          [self closeCurrentSpace];
-                     }];
-      return;
-    }
-    [self _setAnimationState:v on: NO];
-    v.readyToDelete = NO;
-  
-    [UIView animateWithDuration:0.5
-                          delay:0
-         usingSpringWithDamping:0.6
-          initialSpringVelocity:1.0
-                        options:kNilOptions
-                     animations:^{
-        v.transform = CGAffineTransformIdentity;
-    } completion:nil];
-  }
 }
 
 //- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -481,7 +389,6 @@
   if (_musicHUD) {
     [_musicHUD hideAnimated:YES];
     _musicHUD = nil;
-    [[MusicManager shared] onHide];
     return;
   }
 
@@ -489,10 +396,10 @@
 
   _musicHUD = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:YES];
   _musicHUD.mode = MBProgressHUDModeCustomView;
-  _musicHUD.bezelView.color = [UIColor darkGrayColor];
+  _musicHUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
+  _musicHUD.bezelView.color = [UIColor clearColor];
   _musicHUD.contentColor = [UIColor whiteColor];
-  [_musicHUD setMargin: 0];
-  [[MusicManager shared] onShow];
+
   _musicHUD.customView = [[MusicManager shared] hudView];
   
   UITapGestureRecognizer *tapRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_toggleMusicHUD)];
@@ -986,8 +893,17 @@
 
 - (void)touchOverlay:(TouchOverlay *)overlay onScrollY:(CGFloat) y
 {
-  NSLog(@"%@", @(y));
-  self.view.transform = CGAffineTransformTranslate(CGAffineTransformIdentity, 0, MIN(-y, 0));
+//  self.view.transform = CGAffineTransformTranslate(CGAffineTransformIdentity, 0, MIN(-y, 0));
+}
+
+-(void)controlPanelOnPaste
+{
+  [_termInput paste:nil];
+}
+
+- (void)controlPanelOnClose
+{
+  [self closeCurrentSpace];
 }
 
 

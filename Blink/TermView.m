@@ -84,17 +84,12 @@
   UITapGestureRecognizer *_tapGesture;
   UIPinchGestureRecognizer *_pinchGesture;
   
-  BOOL _shouldSkipPasteMenu;
-  
   NSTimer *_pinchSamplingTimer;
   BOOL _focused;
   
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
-  
-  UIVisualEffectView *_overlayView;
-  BOOL _readyToDelete;
 }
 
 
@@ -151,67 +146,6 @@
   [self addSubview:_webView];
 }
 
-- (UIView *)_overlayView
-{
-  if (!_overlayView) {
-    UIBlurEffect *effect = [UIBlurEffect effectWithStyle:UIBlurEffectStyleDark];
-    _overlayView = [[UIVisualEffectView alloc] initWithEffect:effect];
-    _overlayView.frame = self.bounds;
-    UIBarButtonItem *btn = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:nil];
-    btn.tintColor = [UIColor redColor];
-    UIToolbar * toolbar = [[UIToolbar alloc] initWithFrame:CGRectMake(0, 0, 50, 60)];
-    toolbar.clipsToBounds = YES;
-    toolbar.backgroundColor = [UIColor blackColor];
-    toolbar.barTintColor = [UIColor blackColor];
-    [toolbar setItems:@[btn]];
-    [toolbar setBackgroundImage:[UIImage new]
-      forToolbarPosition:UIToolbarPositionAny
-      barMetrics:UIBarMetricsDefault];
-    
-    [toolbar setBackgroundColor:[UIColor clearColor]];
-    toolbar.center = _webView.center;
-    
-    toolbar.transform = CGAffineTransformMakeScale(3.0, 3.0);
-    [_overlayView.contentView addSubview:toolbar];
-  }
-  
-  return _overlayView;
-}
-
-- (BOOL)readyToDelete
-{
-  return _readyToDelete;
-}
-
-- (void)setReadyToDelete:(BOOL)ready
-{
-  _readyToDelete = ready;
-  if (ready) {
-    UIView *overlay = [self _overlayView];
-    [self addSubview:overlay];
-    
-    overlay.alpha = 0;
-    
-    [UIView animateWithDuration:0.3 animations:^{
-      overlay.alpha = 0.6;
-    }];
-  } else {
-    [UIView animateWithDuration:0.3 animations:^{
-      _overlayView.alpha = 0;
-    } completion:^(BOOL finished) {
-      [_overlayView removeFromSuperview];
-      _overlayView = nil;
-    }];
-  }
-}
-
-- (void)setFreezed:(BOOL)freezed
-{
-  BOOL enabled = !freezed;
-  self.userInteractionEnabled = enabled;
-  _pinchGesture.enabled = enabled;
-  _tapGesture.enabled = enabled;
-}
 
 - (void)_addGestures
 {
@@ -483,36 +417,13 @@
 {
 }
 
-- (void)unselect:(id)sender
-{
-}
-
-
 - (void)_activeControl:(UITapGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
         return;
     }
-    
-    if (!_focused) {
-        [_termDelegate focus];
-        return;
-    }
-    
-    if (!_shouldSkipPasteMenu) {
-        [self performSelector:@selector(_showPasteMenu) withObject:nil afterDelay:0.4];
-    }
-    _shouldSkipPasteMenu = !_shouldSkipPasteMenu;
-}
-
-- (void)_showPasteMenu
-{
-  UIMenuController * menu = [UIMenuController sharedMenuController];
-  NSMutableArray *items = [[NSMutableArray alloc] init];
   
-  [menu setMenuItems:items];
-  [menu setTargetRect:CGRectMake(0, self.bounds.size.height - 10, self.bounds.size.width, 10) inView:self];
-  [menu setMenuVisible:YES animated:YES];
+    [_termDelegate focus];
 }
 
 - (void)_handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer

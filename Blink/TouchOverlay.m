@@ -8,6 +8,9 @@
 
 #import "TouchOverlay.h"
 
+
+const CGFloat kToolBarHeight = 82;
+
 @interface TouchOverlay () <UIGestureRecognizerDelegate, UIScrollViewDelegate>
 @end
 
@@ -18,6 +21,8 @@
   UIPinchGestureRecognizer *_pinchGestureRecognizer;
   
   UIPanGestureRecognizer *_pagedPanGestureRecognizer;
+  
+  ControlPanel *_controlPanel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -30,8 +35,6 @@
     self.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
-    
-    
     
     self.alwaysBounceVertical = YES;
     self.alwaysBounceHorizontal = NO;
@@ -62,6 +65,8 @@
     
     [_twoFingerTapGestureRecognizer requireGestureRecognizerToFail:_pinchGestureRecognizer];
     
+    _controlPanel = [[ControlPanel alloc] initWithFrame:self.bounds];
+    [self addSubview:_controlPanel];
     self.delegate = self;
   }
   
@@ -96,7 +101,8 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  self.contentSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height + 80.0f);
+  self.contentSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height + kToolBarHeight);
+  _controlPanel.frame = CGRectMake(0, self.contentSize.height - kToolBarHeight, self.bounds.size.width, kToolBarHeight);
 }
 
 - (void)didMoveToSuperview
@@ -155,16 +161,15 @@
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
 {
   // Determine which table cell the scrolling will stop on.
-  CGFloat cellHeight = 80.0f;
-  NSInteger cellIndex = floor(targetContentOffset->y / cellHeight);
+  NSInteger cellIndex = floor(targetContentOffset->y / kToolBarHeight);
   
   // Round to the next cell if the scrolling will stop over halfway to the next cell.
-  if ((targetContentOffset->y - (floor(targetContentOffset->y / cellHeight) * cellHeight)) > cellHeight) {
+  if ((targetContentOffset->y - (floor(targetContentOffset->y / kToolBarHeight) * kToolBarHeight)) > kToolBarHeight) {
     cellIndex++;
   }
   
   // Adjust stopping point to exact beginning of cell.
-  targetContentOffset->y = cellIndex * cellHeight;
+  targetContentOffset->y = cellIndex * kToolBarHeight;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
@@ -175,7 +180,8 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-  if (gestureRecognizer == _oneFingerTapGestureRecognizer || gestureRecognizer == _twoFingerTapGestureRecognizer || gestureRecognizer == _pinchGestureRecognizer) {
+  if (gestureRecognizer == _oneFingerTapGestureRecognizer
+      || gestureRecognizer == _twoFingerTapGestureRecognizer) {
     return self.isDecelerating;
   }
   

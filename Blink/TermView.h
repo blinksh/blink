@@ -82,8 +82,6 @@
 - (void)increaseFontSize;
 - (void)decreaseFontSize;
 - (void)resetFontSize;
-- (void)setFreezed:(BOOL)enabled;
-- (BOOL)isDragging;
 
 - (void)scaleWith:(UIPinchGestureRecognizer *)recognizer;
 

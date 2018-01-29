@@ -32,9 +32,11 @@
 #import "MusicManager.h"
 #import <MediaPlayer/MediaPlayer.h>
 #import "BKUserConfigurationManager.h"
+#import "RoundedToolbar.h"
 
 @implementation MusicManager {
   UIToolbar *_toolbar;
+  UIToolbar *_controlPanelToolbar;
   NSArray<UIKeyCommand *> *_keyCommands;
 }
 
@@ -55,33 +57,35 @@
     [center addObserver:self
                selector:@selector(_playbackStateDidChange)
                    name:MPMusicPlayerControllerPlaybackStateDidChangeNotification object:nil];
+
+    [[self _player] beginGeneratingPlaybackNotifications];
   }
   
   return self;
 }
 
-- (void)onShow
-{
-  [[self _player] beginGeneratingPlaybackNotifications];
-}
-
-- (void)onHide
-{
-  [[self _player] endGeneratingPlaybackNotifications];
-}
-
-
 - (UIView *)hudView
 {
   if (!_toolbar) {
-    _toolbar = [[UIToolbar alloc] initWithFrame:CGRectZero];
-    _toolbar.barStyle = UIBarStyleBlack;
+    _toolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
   }
   
-  [_toolbar setItems:[self _toolbarItems]];
+  _toolbar.items = [self _toolbarItems];
   
   return _toolbar;
 }
+
+- (UIView *)controlPanelView
+{
+  if (!_controlPanelToolbar) {
+    _controlPanelToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
+  }
+  
+  _controlPanelToolbar.items = [self _toolbarItems];
+  
+  return _controlPanelToolbar;
+}
+
 
 - (NSArray<UIBarButtonItem *> *)_toolbarItems
 {
@@ -102,7 +106,8 @@
 
 - (void)_playbackStateDidChange
 {
-  [_toolbar setItems:[self _toolbarItems]];
+  _toolbar.items = [self _toolbarItems];
+  _controlPanelToolbar.items = [self _toolbarItems];
 }
 
 - (NSArray<UIKeyCommand *> *)keyCommands

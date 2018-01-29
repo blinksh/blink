@@ -7,6 +7,7 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "ControlPanel.h"
 
 @class TouchOverlay;
 
@@ -22,6 +23,7 @@
 @interface TouchOverlay : UIScrollView
 
 @property (weak) id<TouchOverlayDelegate> touchDelegate;
+@property (readonly) ControlPanel *controlPanel;
 
 - (void)attachPageViewController:(UIPageViewController *)ctrl;
 

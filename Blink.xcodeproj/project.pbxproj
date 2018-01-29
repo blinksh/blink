@@ -132,6 +132,8 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E70201F8A230090E974 /* RoundedToolbar.m */; };
+		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
 		85A34309200A8FAF009324F1 /* term.css in Resources */ = {isa = PBXBuildFile; fileRef = 85A34308200A8FAF009324F1 /* term.css */; };
 		85A34312200A9AED009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */; };
@@ -409,6 +411,10 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
+		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
+		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
+		85047E76201F9B0E0090E974 /* ControlPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ControlPanel.m; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
 		85A34308200A8FAF009324F1 /* term.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = term.css; sourceTree = "<group>"; };
 		85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Bold-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
@@ -592,6 +598,10 @@
 				D2A92351201732B600043596 /* MusicManager.m */,
 				D2A8C152201F377D002F415A /* TouchOverlay.h */,
 				D2A8C153201F377D002F415A /* TouchOverlay.m */,
+				85047E6F201F8A230090E974 /* RoundedToolbar.h */,
+				85047E70201F8A230090E974 /* RoundedToolbar.m */,
+				85047E75201F9B0E0090E974 /* ControlPanel.h */,
+				85047E76201F9B0E0090E974 /* ControlPanel.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1399,6 +1409,7 @@
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
+				85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
@@ -1423,6 +1434,7 @@
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
+				85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,

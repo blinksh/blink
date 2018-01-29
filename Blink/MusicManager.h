@@ -13,10 +13,8 @@
 
 + (MusicManager *)shared;
 
-- (void)onShow;
-- (void)onHide;
-
 - (UIView *)hudView;
+- (UIView *)controlPanelView;
 
 - (NSArray<UIKeyCommand *> *)keyCommands;
 - (void)handleCommand:(UIKeyCommand *)cmd;
