@@ -19,6 +19,7 @@ const CGFloat kToolBarHeight = 82;
   UITapGestureRecognizer *_oneFingerTapGestureRecognizer;
   UITapGestureRecognizer *_twoFingerTapGestureRecognizer;
   UIPinchGestureRecognizer *_pinchGestureRecognizer;
+  UILongPressGestureRecognizer *_longPressGestureRecognizer;
   
   UIScrollView *_pagedScrollView;
   
@@ -47,7 +48,6 @@ const CGFloat kToolBarHeight = 82;
     self.panGestureRecognizer.maximumNumberOfTouches = 2;
     
     _oneFingerTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleOneFingerTap:)];
-    _oneFingerTapGestureRecognizer.numberOfTapsRequired = 1;
     _oneFingerTapGestureRecognizer.numberOfTouchesRequired = 1;
     _oneFingerTapGestureRecognizer.delegate = self;
     
@@ -58,6 +58,14 @@ const CGFloat kToolBarHeight = 82;
     
     _pinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
     _pinchGestureRecognizer.delegate = self;
+    
+    // The goal of this gesture recognizer is two guard long press selection.
+    _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_handleLongPress:)];
+    _longPressGestureRecognizer.numberOfTouchesRequired = 1;
+    _longPressGestureRecognizer.delegate = self;
+    [_oneFingerTapGestureRecognizer requireGestureRecognizerToFail:_longPressGestureRecognizer];
+    
+    
     
     _controlPanel = [[ControlPanel alloc] initWithFrame:self.bounds];
     [self addSubview:_controlPanel];
@@ -72,10 +80,15 @@ const CGFloat kToolBarHeight = 82;
   // Make recognizers and scroll view to forget of their current touches
   _oneFingerTapGestureRecognizer.enabled = NO;
   _twoFingerTapGestureRecognizer.enabled = NO;
+  _longPressGestureRecognizer.enabled = NO;
+  
   _pagedScrollView.scrollEnabled = NO;
+  
   
   _oneFingerTapGestureRecognizer.enabled = YES;
   _twoFingerTapGestureRecognizer.enabled = YES;
+  _longPressGestureRecognizer.enabled = YES;
+  
   _pagedScrollView.scrollEnabled = YES;
 }
 
@@ -116,7 +129,13 @@ const CGFloat kToolBarHeight = 82;
     [self.superview addGestureRecognizer:_oneFingerTapGestureRecognizer];
     [self.superview addGestureRecognizer:_twoFingerTapGestureRecognizer];
     [self.superview addGestureRecognizer:_pinchGestureRecognizer];
+    [self.superview addGestureRecognizer:_longPressGestureRecognizer];
   }
+}
+
+- (void)_handleLongPress:(UILongPressGestureRecognizer *)recognizer
+{
+  
 }
 
 - (void)_handleOneFingerTap:(UITapGestureRecognizer *)recognizer

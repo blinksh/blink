@@ -71,6 +71,7 @@
 {
   [_controlPanelDelegate controlPanelOnClose];
 }
+
 - (void)_paste
 {
   [_controlPanelDelegate controlPanelOnPaste];

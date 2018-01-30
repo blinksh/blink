@@ -849,15 +849,25 @@
   [self.currentTerm scaleWithPich:recognizer];
 }
 
-
 -(void)controlPanelOnPaste
 {
+  [self _attachInputToCurrentTerm];
   [_termInput paste:nil];
 }
 
 - (void)controlPanelOnClose
 {
   [self closeCurrentSpace];
+}
+
+- (void)copy:(id)sender
+{
+  [_termInput copy: sender];
+}
+
+- (void)paste:(id)sender
+{
+  [self controlPanelOnPaste];
 }
 
 
