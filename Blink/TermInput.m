@@ -362,7 +362,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)escSeq:(UIKeyCommand *)cmd
 {
-  [_termDelegate write:[CC ESC:cmd.input]];
+  if  (_termDelegate.termView.hasSelection) {
+    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
+  } else {
+    [_termDelegate write:[CC ESC:cmd.input]];
+  }
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
@@ -387,7 +391,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)ctrlSeq:(UIKeyCommand *)cmd
 {
   if  (_termDelegate.termView.hasSelection) {
-    [self _changeSelection:cmd];
+    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl];
   } else {
     [_termDelegate write:[CC CTRL:cmd.input]];
   }
@@ -400,7 +404,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   if  (_termDelegate.termView.hasSelection) {
-    [self _changeSelection:cmd];
+    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
   } else {
     [_termDelegate write:[CC ESC:cmd.input]];
   }
@@ -739,7 +743,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)_changeSelectionWithInput:(NSString *)input andFlags: (UIKeyModifierFlags)flags
 {
-  
   if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
     [_termDelegate.termView modifySelectionInDirection:@"left" granularity:
      flags == UIKeyModifierShift ? @"word" : @"character"];
@@ -752,17 +755,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
   } else if ([input isEqualToString:@"o"] || [input isEqualToString:@"x"]) {
     [_termDelegate.termView modifySideOfSelection];
+  } else if ([input isEqualToString:@"n"] && flags == UIKeyModifierControl)  {
+      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
+  } else if ([input isEqualToString:@"p"] && flags == UIKeyModifierControl)  {
+      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
   } else if ([input isEqualToString:@"b"]) {
     if (flags == UIKeyModifierControl) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];
-    } else if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
+    } else if ( (flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     } else {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"w"]) {
     if (flags == UIKeyModifierAlternate)  {
-      [self copy: self];
+      [_termDelegate.termView copy:self];
     } else {
       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
     }
@@ -773,7 +780,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"y"]) {
-    [self copy: self];
+    [_termDelegate.termView copy:self];
   } else if ([input isEqualToString:UIKeyInputEscape]) {
     [_termDelegate.termView cleanSelection];
   }
@@ -787,7 +794,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   _specialFKeysRow = @"1234567890";
   [self _setKbdCommands];
 }
-
 
 - (void)_configureShotcuts
 {
