@@ -304,12 +304,18 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
        viewControllerAfterViewController:(UIViewController *)viewController
 {
+  NSInteger viewPortsCount = [_viewports count];
+  
+  if (viewPortsCount == 0) {
+    return nil;
+  }
+  
   if (nil == viewController) {
     return _viewports[0];
   }
   NSInteger idx = [_viewports indexOfObject:viewController];
 
-  if (idx >= [_viewports count] - 1) {
+  if (idx == NSNotFound || idx >= viewPortsCount - 1) {
     return nil;
   }
   return _viewports[idx + 1];
@@ -318,12 +324,17 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
       viewControllerBeforeViewController:(UIViewController *)viewController
 {
+  NSInteger viewPortsCount = [_viewports count];
+  if (viewPortsCount == 0) {
+    return nil;
+  }
+  
   if (nil == viewController) {
     return _viewports[0];
   }
   NSInteger idx = [_viewports indexOfObject:viewController];
 
-  if (idx <= 0) {
+  if (idx == NSNotFound || idx <= 0) {
     return nil;
   }
   return _viewports[idx - 1];
