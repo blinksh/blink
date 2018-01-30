@@ -12,7 +12,6 @@
 
 @implementation ControlPanel {
   UIStackView *_stackView;
-  UIStackView *_vStackView;
   
   UIToolbar *_closeToolbar;
   UIToolbar *_clipboardToolbar;
@@ -22,20 +21,23 @@
 {
   self = [super initWithFrame:frame];
   if (self) {
-    _vStackView =[[UIStackView alloc] initWithFrame:self.bounds];
-    _vStackView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self addSubview:_vStackView];
     
-    _vStackView.axis = UILayoutConstraintAxisVertical;
-    _vStackView.alignment = UIStackViewAlignmentCenter;
-    _vStackView.distribution = UIStackViewDistributionEqualSpacing;
+    // Vertical stack to keep all centered
+    UIStackView *vStackView = [[UIStackView alloc] initWithFrame:self.bounds];
+    vStackView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.alignment = UIStackViewAlignmentCenter;
+    vStackView.distribution = UIStackViewDistributionEqualSpacing;
+    [self addSubview:vStackView];
     
-    _stackView =[[UIStackView alloc] initWithFrame:self.bounds];
-    
+    // Horizontal stack of toolbars
+    _stackView = [[UIStackView alloc] initWithFrame:self.bounds];
     _stackView.axis = UILayoutConstraintAxisHorizontal;
     _stackView.alignment = UIStackViewAlignmentCenter;
     _stackView.distribution = UIStackViewDistributionEqualSpacing;
     _stackView.spacing = 12;
+    [_stackView setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
+                                                forAxis:UILayoutConstraintAxisHorizontal];
     
     _clipboardToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
     
@@ -50,7 +52,9 @@
     
     _closeToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
     
-    UIBarButtonItem * closeButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(_close)];
+    UIBarButtonItem * closeButton = [[UIBarButtonItem alloc]
+                                     initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
+                                     target:self action:@selector(_close)];
     
     [_closeToolbar setItems:@[closeButton]];
     
@@ -58,10 +62,8 @@
     [_stackView addArrangedSubview:_closeToolbar];
     [_stackView addArrangedSubview:_clipboardToolbar];
     
-    [_stackView setContentCompressionResistancePriority:UILayoutPriorityDefaultLow forAxis:UILayoutConstraintAxisHorizontal];
     
-    [_vStackView addArrangedSubview:_stackView];
-    
+    [vStackView addArrangedSubview:_stackView];
   }
   return self;
 }

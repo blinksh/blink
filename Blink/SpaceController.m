@@ -870,5 +870,17 @@
   [self controlPanelOnPaste];
 }
 
+- (void)copyLink:(id)sender
+{
+  [self _attachInputToCurrentTerm];
+  [_termInput copyLink:sender];
+}
+
+- (void)openLink:(id)sender
+{
+  [self _attachInputToCurrentTerm];
+  [_termInput openLink:sender];
+}
+
 
 @end

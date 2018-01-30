@@ -15,4 +15,7 @@
 @property BOOL raw;
 @property (weak) id<TerminalDelegate> termDelegate;
 
+- (void)copyLink:(id)sender;
+- (void)openLink:(id)sender;
+
 @end
