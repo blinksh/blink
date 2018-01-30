@@ -43,7 +43,7 @@
 - (void)write:(NSString *)input;
 
 @optional
-- (void)terminalIsReady: (NSDictionary *)size;
+- (void)terminalIsReady: (NSDictionary *)data;
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 - (void)fontSizeChanged:(NSNumber *)size;
 - (void)focus;

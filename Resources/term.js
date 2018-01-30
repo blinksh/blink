@@ -45,6 +45,14 @@ document.addEventListener('selectionchange', function() {
   _postMessage('selectionchange', term_getCurrentSelection());
 });
 
+function _colorComponents(colorStr) {
+  if (!colorStr) {
+    return [0, 0, 0]; // Default is black
+  }
+  
+  return colorStr.replace(/[^0-9,]/g, '').split(',').map(s => parseInt(s));
+}
+
 // Before we fully load hterm. We set options here.
 var _prefs = new hterm.PreferenceManager('blink');
 var t = { prefs_: _prefs }; // <- `t` will become actual hterm instance after decorate.
@@ -76,7 +84,9 @@ function term_setup() {
       cols: t.screenSize.width,
       rows: t.screenSize.height,
     };
-    _postMessage('terminalReady', { size });
+    document.body.style.backgroundColor = t.scrollPort_.screen_.style.backgroundColor;
+    var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
+    _postMessage('terminalReady', { size, bgColor });
 
     t.uninstallKeyboard();
   };

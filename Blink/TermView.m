@@ -126,9 +126,14 @@
   _webView.scrollView.canCancelContentTouches = NO;
   _webView.scrollView.scrollEnabled = NO;
   _webView.scrollView.panGestureRecognizer.enabled = NO;
-
+  
+  self.opaque = NO;
   _webView.opaque = NO;
+
+  self.alpha = 0;
+  _webView.alpha = 0;
   _webView.backgroundColor = [UIColor clearColor];
+  self.backgroundColor = [UIColor clearColor];
   
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
@@ -138,6 +143,15 @@
 - (NSString *)title
 {
   return _webView.title;
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor
+{
+  [super setBackgroundColor:backgroundColor];
+  _webView.backgroundColor = backgroundColor;
+  _webView.alpha = 1;
+  self.opaque = YES;
+  _webView.opaque = YES;
 }
 
 - (void)loadWith:(MCPSessionParameters *)params;
@@ -262,8 +276,9 @@
       [_termDelegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
     }
   } else if ([operation isEqualToString:@"terminalReady"]) {
+    self.alpha = 1;
     if ([_termDelegate respondsToSelector:@selector(terminalIsReady:)]) {
-      [_termDelegate terminalIsReady:data[@"size"]];
+      [_termDelegate terminalIsReady:data];
       
       if (_focused) {
         [self focus];
@@ -303,6 +318,7 @@
                                                 action:@selector(openLink:)]];
   }
 
+  
   CGRect rect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
   [menu setTargetRect:rect inView:self];

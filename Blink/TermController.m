@@ -211,13 +211,22 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.fontSize = [newSize integerValue];
 }
 
-- (void)terminalIsReady: (NSDictionary *)size
+- (void)terminalIsReady: (NSDictionary *)data
 {
+  NSDictionary *size = data[@"size"];
   _sessionParameters.rows = [size[@"rows"] integerValue];
   _sessionParameters.cols = [size[@"cols"] integerValue];
 
   _termsz->ws_row = _sessionParameters.rows;
   _termsz->ws_col = _sessionParameters.cols;
+  
+  NSArray *bgColor = data[@"bgColor"];
+  if (bgColor && bgColor.count == 3) {
+    self.view.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
+                                                green:[bgColor[1] floatValue] / 255.0f
+                                                 blue:[bgColor[2] floatValue] / 255.0f
+                                                alpha:1];
+  }
   
   [self startSession];
   if (self.userActivity) {

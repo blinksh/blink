@@ -556,6 +556,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return YES;
   }
   
+  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+  
+  if (appState != UIApplicationStateActive) {
+    return NO;
+  }
+  
   BOOL result = [super canPerformAction:action withSender:sender];
   return result;
 }

@@ -16,7 +16,7 @@ const CGFloat kToolBarHeight = 82;
 
 @implementation TouchOverlay
 {
-  UITapGestureRecognizer *_oneFingerTapGestureRecognizer;
+  
   UITapGestureRecognizer *_twoFingerTapGestureRecognizer;
   UIPinchGestureRecognizer *_pinchGestureRecognizer;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;

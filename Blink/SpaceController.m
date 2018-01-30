@@ -260,6 +260,7 @@
   CGFloat bottomInset = 0;
   
   CGRect kbFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
+  NSTimeInterval duration = [sender.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   
   CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
   if (CGRectGetMaxY(kbFrame) >= viewHeight) {
@@ -290,6 +291,13 @@
     
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
+    
+    // Workaround broken KB... suspend tap recognizers for a little bit;
+    _touchOverlay.oneFingerTapGestureRecognizer.enabled = NO;
+    
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (duration + 0.3) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+      _touchOverlay.oneFingerTapGestureRecognizer.enabled = YES;
+    });
   }
 }
 
@@ -375,6 +383,14 @@
   if (_hud) {
     [_hud hideAnimated:NO];
   }
+  
+  TermController *currentTerm = self.currentTerm;
+  
+  if (currentTerm.view.backgroundColor != [UIColor clearColor]) {
+    self.view.backgroundColor = currentTerm.view.backgroundColor;
+    _viewportsController.view.backgroundColor = currentTerm.view.backgroundColor;
+    self.view.window.backgroundColor = currentTerm.view.backgroundColor;
+  }
 
   _hud = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:_hud == nil];
   _hud.mode = MBProgressHUDModeCustomView;
@@ -386,13 +402,13 @@
   UIPageControl *pages = [[UIPageControl alloc] init];
   pages.currentPageIndicatorTintColor = [UIColor cyanColor];
   pages.numberOfPages = [_viewports count];
-  pages.currentPage = [_viewports indexOfObject:self.currentTerm];
+  pages.currentPage = [_viewports indexOfObject:currentTerm];
   
   _hud.customView = pages;
   
-  NSString *title = self.currentTerm.title.length ? self.currentTerm.title : @"blink";
+  NSString *title = currentTerm.title.length ? currentTerm.title : @"blink";
   
-  MCPSessionParameters *params = self.currentTerm.sessionParameters;
+  MCPSessionParameters *params = currentTerm.sessionParameters;
   if (params.rows == 0 && params.cols == 0) {
     _hud.label.numberOfLines = 1;
     _hud.label.text = title;
@@ -510,7 +526,9 @@
 
 - (void)terminalDidResize:(TermController*)control
 {
-  [self _displayHUD];
+  if (control == self.currentTerm) {
+    [self _displayHUD];
+  }
 }
 
 #pragma mark External Keyboard

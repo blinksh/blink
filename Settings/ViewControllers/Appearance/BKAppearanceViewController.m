@@ -375,7 +375,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 #pragma mark - Terminal
 
-- (void)terminalIsReady:(NSDictionary *)size
+- (void)terminalIsReady:(NSDictionary *)data
 {
   [_termView setCursorBlink:_cursorBlinkValue];
   [_termView setWidth:60];
