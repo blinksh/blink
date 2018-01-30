@@ -16,7 +16,6 @@
 - (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer;
 - (void)touchOverlay:(TouchOverlay *)overlay onTwoFingerTap:(UITapGestureRecognizer *)recognizer;
 - (void)touchOverlay:(TouchOverlay *)overlay onPinch:(UIPinchGestureRecognizer *)recognizer;
-- (void)touchOverlay:(TouchOverlay *)overlay onScrollY:(CGFloat) y;
 
 @end
 

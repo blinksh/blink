@@ -94,10 +94,11 @@
   [_viewportsController didMoveToParentViewController:self];
   
   _touchOverlay = [[TouchOverlay alloc] initWithFrame:self.view.bounds];
-  [_touchOverlay attachPageViewController:_viewportsController];
+  
   [self.view addSubview:_touchOverlay];
   _touchOverlay.touchDelegate = self;
   _touchOverlay.controlPanel.controlPanelDelegate = self;
+  [_touchOverlay attachPageViewController:_viewportsController];
   
   
   [self registerForNotifications];
@@ -250,25 +251,6 @@
 
 
 #pragma mark Events
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-//{
-//  if (gestureRecognizer == _twoFingersTap && otherGestureRecognizer == _twoFingersDrag) {
-//    return YES;
-//  }
-//  if (gestureRecognizer == _twoFingersTap && [otherGestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
-//    return YES;
-//  }
-//  return NO;
-//}
-//
-//- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-//{
-//  if (gestureRecognizer == _twoFingersDrag && ![otherGestureRecognizer isKindOfClass:[UIPinchGestureRecognizer class]]) {
-//    return YES;
-//  }
-//
-//  return NO;
-//}
 
 // The Space will be responsible to accommodate the work environment for widgets, adjusting the size, making sure it doesn't overlap content,
 // moving widgets or scrolling to them when necessary, etc...
@@ -310,30 +292,6 @@
     [self.view layoutIfNeeded];
   }
 }
-
-- (void)_handleTwoFingersTap:(UITapGestureRecognizer *)sender
-{
-  if (sender.state == UIGestureRecognizerStateRecognized) {
-    [self _createShellWithUserActivity: nil sessionStateKey: nil animated:YES completion:nil];
-  }
-}
-
-- (CGAffineTransform)_transformForTranslation:(CGPoint)translation {
-  
-  CGFloat scale = 0.5;//MAX(MIN(1 - (-translation.y * 3/ height), 0.5), 0.3);
-  
-  CGAffineTransform move = CGAffineTransformMakeScale(scale, scale);
-  return CGAffineTransformTranslate(move, translation.x, translation.y);
-}
-
-//- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-//{
-//  if (gestureRecognizer == _twoFingersDrag) {
-//    return [_twoFingersDrag translationInView:self.view].y < 0;
-//  }
-//  
-//  return YES;
-//}
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
        viewControllerAfterViewController:(UIViewController *)viewController
@@ -888,13 +846,9 @@
 
 - (void)touchOverlay:(TouchOverlay *)overlay onPinch:(UIPinchGestureRecognizer *)recognizer
 {
-  [self.currentTerm.termView scaleWith:recognizer];
+  [self.currentTerm scaleWithPich:recognizer];
 }
 
-- (void)touchOverlay:(TouchOverlay *)overlay onScrollY:(CGFloat) y
-{
-//  self.view.transform = CGAffineTransformTranslate(CGAffineTransformIdentity, 0, MIN(-y, 0));
-}
 
 -(void)controlPanelOnPaste
 {

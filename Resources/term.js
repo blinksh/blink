@@ -129,11 +129,15 @@ function term_resetFontSize() {
 }
 
 function term_scale(scale) {
-  var minScale = 0.5;
-  var maxScale = 2.0;
+  var minScale = 0.3;
+  var maxScale = 3.0;
   scale = Math.max(minScale, Math.min(maxScale, scale));
   var fontSize = t.getFontSize();
-  term_setFontSize(Math.round(fontSize * scale));
+  var newFontSize = Math.round(fontSize * scale);
+  if (fontSize == newFontSize) {
+    return;
+  }
+  term_setFontSize(newFontSize);
 }
 
 function term_setFontSize(size) {

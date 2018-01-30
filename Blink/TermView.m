@@ -80,11 +80,7 @@
 
 @implementation TermView {
   WKWebView *_webView;
-
-  UITapGestureRecognizer *_tapGesture;
-  UIPinchGestureRecognizer *_pinchGesture;
   
-  NSTimer *_pinchSamplingTimer;
   BOOL _focused;
   
   BOOL _jsIsBusy;
@@ -112,14 +108,6 @@
 - (void)didMoveToWindow
 {
   [super didMoveToWindow];
-  
-  if (self.window.screen == [UIScreen mainScreen]) {
-    [self _addGestures];
-  }
-}
-
-- (BOOL)isDragging {
-  return _webView.scrollView.panGestureRecognizer.state == UIGestureRecognizerStateRecognized;
 }
 
 - (BOOL)canBecomeFirstResponder {
@@ -135,6 +123,7 @@
   _webView = [[BKWebView alloc] initWithFrame:self.bounds configuration:configuration];
   
   _webView.scrollView.delaysContentTouches = NO;
+  _webView.scrollView.canCancelContentTouches = NO;
   _webView.scrollView.scrollEnabled = NO;
   _webView.scrollView.panGestureRecognizer.enabled = NO;
 
@@ -144,27 +133,6 @@
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
   [self addSubview:_webView];
-}
-
-
-- (void)_addGestures
-{
-  
-  if (!_tapGesture) {
-    _tapGesture = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_activeControl:)];
-    [_tapGesture setNumberOfTapsRequired:1];
-    _tapGesture.delegate = self;
-    [_webView addGestureRecognizer:_tapGesture];
-  }
-
-
-  if (!_pinchGesture) {
-//    _pinchGesture = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
-//    _pinchGesture.delegate = self;
-//    [_webView addGestureRecognizer:_pinchGesture];
-//  
-//    [_pinchGesture requireGestureRecognizerToFail: _tapGesture];
-  }
 }
 
 - (NSString *)title
@@ -315,7 +283,7 @@
 - (void)_handleSelectionChange:(NSDictionary *)data
 {
   _selectedText = data[@"text"];
-  _hasSelection =  _selectedText.length > 0;
+  _hasSelection = _selectedText.length > 0;
   
   if (!_hasSelection) {
     return;
@@ -345,34 +313,10 @@
 {
   [_webView evaluateJavaScript:term_modifySideSelection() completionHandler:nil];
 }
+
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity
 {
   [_webView evaluateJavaScript:term_modifySelection(direction, granularity) completionHandler:nil];
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _tapGesture) {
-    return YES;
-  }
-
-  return YES;
-}
-
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldBeRequiredToFailByGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer
-{
-  if (gestureRecognizer == _pinchGesture && [otherGestureRecognizer isKindOfClass:[UISwipeGestureRecognizer class]]) {
-    return YES;
-  }
-  return NO;
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  if (gestureRecognizer == _tapGesture) {
-    return !_hasSelection;
-  }
-  return YES;
 }
 
 - (NSURL *)_detectLinkInSelection:(NSDictionary *)data
@@ -415,50 +359,6 @@
 
 - (void)yank:(id)sender
 {
-}
-
-- (void)_activeControl:(UITapGestureRecognizer *)gestureRecognizer
-{
-    if (gestureRecognizer.state != UIGestureRecognizerStateRecognized) {
-        return;
-    }
-  
-    [_termDelegate focus];
-}
-
-- (void)_handlePinch:(UIPinchGestureRecognizer *)gestureRecognizer
-{
-  switch (gestureRecognizer.state) {
-    case UIGestureRecognizerStateBegan:
-      [_pinchSamplingTimer invalidate];
-      _pinchSamplingTimer = [NSTimer scheduledTimerWithTimeInterval:0.2
-                                                             target:self
-                                                           selector:@selector(_pinchSampling:)
-                                                           userInfo:nil repeats:YES];
-      break;
-    case UIGestureRecognizerStateEnded:
-    case UIGestureRecognizerStateCancelled:
-      [_pinchSamplingTimer invalidate];
-      break;
-    default:
-      break;
-  }
-}
-
-- (void)_pinchSampling:(NSTimer *)timer
-{
-  [_webView evaluateJavaScript: term_scale(_pinchGesture.scale)
-             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-    _pinchGesture.scale = 1;
-  }];
-}
-
-- (void)scaleWith:(UIPinchGestureRecognizer *)recognizer
-{
-  [_webView evaluateJavaScript: term_scale(recognizer.scale)
-             completionHandler:^(id _Nullable res, NSError * _Nullable error) {
-               recognizer.scale = 1;
-             }];
 }
 
 - (void)copy:(id)sender

@@ -68,6 +68,7 @@
 - (void)focus;
 - (void)blur;
 - (void)reload;
+- (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
 
 - (void)attachInput:(TermInput *)termInput;
 

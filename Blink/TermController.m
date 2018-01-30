@@ -49,6 +49,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   MCPSession *_session;
   NSDictionary *_activityUserInfo;
   BOOL _isReloading;
+  NSInteger _fontSizeBeforeScaling;
 }
 
 - (void)loadView
@@ -306,6 +307,24 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     [_termView focus];
   } else {
     [_termView blur];
+  }
+}
+
+- (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch
+{
+  switch (pinch.state) {
+    case UIGestureRecognizerStateBegan:
+    case UIGestureRecognizerStateEnded:
+      _fontSizeBeforeScaling = _sessionParameters.fontSize;
+      break;
+    case UIGestureRecognizerStateChanged: {
+      NSInteger newSize = (NSInteger)round(_fontSizeBeforeScaling * pinch.scale);
+      if (newSize != _sessionParameters.fontSize) {
+        [_termView setFontSize:@(newSize)];
+      }
+    }
+    default:
+      break;
   }
 }
 

@@ -35,7 +35,7 @@
     _stackView.axis = UILayoutConstraintAxisHorizontal;
     _stackView.alignment = UIStackViewAlignmentCenter;
     _stackView.distribution = UIStackViewDistributionEqualSpacing;
-    _stackView.spacing = 14;
+    _stackView.spacing = 12;
     
     _clipboardToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
     

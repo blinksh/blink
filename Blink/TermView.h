@@ -77,13 +77,11 @@
 - (void)reset;
 
 - (void)blur;
-- (void)focus;
+- (void)focus; 
 - (void)cleanSelection;
 - (void)increaseFontSize;
 - (void)decreaseFontSize;
 - (void)resetFontSize;
-
-- (void)scaleWith:(UIPinchGestureRecognizer *)recognizer;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;

@@ -20,7 +20,7 @@ const CGFloat kToolBarHeight = 82;
   UITapGestureRecognizer *_twoFingerTapGestureRecognizer;
   UIPinchGestureRecognizer *_pinchGestureRecognizer;
   
-  UIPanGestureRecognizer *_pagedPanGestureRecognizer;
+  UIScrollView *_pagedScrollView;
   
   ControlPanel *_controlPanel;
 }
@@ -36,7 +36,7 @@ const CGFloat kToolBarHeight = 82;
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     
-    self.alwaysBounceVertical = YES;
+    self.alwaysBounceVertical = NO;
     self.alwaysBounceHorizontal = NO;
     self.delaysContentTouches = NO;
     
@@ -59,12 +59,6 @@ const CGFloat kToolBarHeight = 82;
     _pinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
     _pinchGestureRecognizer.delegate = self;
     
-    // Scroll should wait for us
-    [self.panGestureRecognizer requireGestureRecognizerToFail:_oneFingerTapGestureRecognizer];
-    [self.panGestureRecognizer requireGestureRecognizerToFail:_twoFingerTapGestureRecognizer];
-    
-    [_twoFingerTapGestureRecognizer requireGestureRecognizerToFail:_pinchGestureRecognizer];
-    
     _controlPanel = [[ControlPanel alloc] initWithFrame:self.bounds];
     [self addSubview:_controlPanel];
     self.delegate = self;
@@ -73,22 +67,32 @@ const CGFloat kToolBarHeight = 82;
   return self;
 }
 
-- (void)attachPageViewController:(UIPageViewController *)ctrl
+- (void)_resetOtherInteractions
 {
-  for (UIGestureRecognizer * r in ctrl.view.subviews.firstObject.gestureRecognizers) {
-    if ([r isKindOfClass:[UIPanGestureRecognizer class]]) {
-      _pagedPanGestureRecognizer = (UIPanGestureRecognizer *)r;
-      break;
-    }
-  }
+  // Make recognizers and scroll view to forget of their current touches
+  _oneFingerTapGestureRecognizer.enabled = NO;
+  _twoFingerTapGestureRecognizer.enabled = NO;
+  _pagedScrollView.scrollEnabled = NO;
   
-  [_oneFingerTapGestureRecognizer requireGestureRecognizerToFail:_pagedPanGestureRecognizer];
-  [_twoFingerTapGestureRecognizer requireGestureRecognizerToFail:_pagedPanGestureRecognizer];
+  _oneFingerTapGestureRecognizer.enabled = YES;
+  _twoFingerTapGestureRecognizer.enabled = YES;
+  _pagedScrollView.scrollEnabled = YES;
 }
 
-// We pass hit test to super view.
+- (void)attachPageViewController:(UIPageViewController *)ctrl
+{
+  // Need to find that scrollview
+  if ([ctrl.view.subviews.firstObject isKindOfClass:[UIScrollView class]]) {
+    _pagedScrollView = (UIScrollView *)ctrl.view.subviews.firstObject;
+  } else {
+    _pagedScrollView = nil;
+  }
+}
+
+
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
+  // We pass hit test to super view.
   UIView *res = [super hitTest:point withEvent:event];
   
   if (res == self) {
@@ -131,31 +135,18 @@ const CGFloat kToolBarHeight = 82;
 
 - (void)_handlePinch:(UIPinchGestureRecognizer *)recognizer
 {
-  CGFloat scale = recognizer.scale;
+  [_touchDelegate touchOverlay:self onPinch:recognizer];
   
-  if (recognizer.state != UIGestureRecognizerStateChanged) {
-    self.scrollEnabled = YES;
-    self.delaysContentTouches = NO;
-    _twoFingerTapGestureRecognizer.enabled = YES;
+  if (recognizer.state == UIGestureRecognizerStatePossible) {
     return;
   }
   
-  if (scale < 0.6 || scale > 1.3) {
+  CGFloat scale = recognizer.scale;
+  if (scale < 0.95 || scale >= 1.05) {
+    [self _resetOtherInteractions];
     self.scrollEnabled = NO;
-    self.delaysContentTouches = NO;
-    _twoFingerTapGestureRecognizer.enabled = NO;
-    
-    [_touchDelegate touchOverlay:self onPinch:recognizer];
-  } else {
-    _twoFingerTapGestureRecognizer.enabled = YES;
     self.scrollEnabled = YES;
-    self.delaysContentTouches = NO;
   }
-}
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-  [_touchDelegate touchOverlay:self onScrollY:self.contentOffset.y];
 }
 
 - (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
@@ -172,25 +163,27 @@ const CGFloat kToolBarHeight = 82;
   targetContentOffset->y = cellIndex * kToolBarHeight;
 }
 
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+  _pinchGestureRecognizer.enabled = NO;
+  _pinchGestureRecognizer.enabled = YES;
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+  [self _resetOtherInteractions];
+}
+
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   // We should start all our recognizers
   return YES;
 }
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  if (gestureRecognizer == _oneFingerTapGestureRecognizer
-      || gestureRecognizer == _twoFingerTapGestureRecognizer) {
-    return self.isDecelerating;
-  }
-  
-  return YES;
-}
-
 - (void)dealloc
 {
   self.delegate = nil;
+  _pagedScrollView = nil;
 }
 
 @end
