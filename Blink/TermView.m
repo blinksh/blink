@@ -292,6 +292,8 @@
     }
   } else if ([operation isEqualToString:@"copy"]) {
     [[UIPasteboard generalPasteboard] setString:data[@"content"]];
+  } else if ([operation isEqualToString:@"sendString"]) {
+    [_termDelegate write:data[@"string"]];
   }
 }
 
