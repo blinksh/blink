@@ -870,7 +870,7 @@
 -(void)controlPanelOnPaste
 {
   [self _attachInputToCurrentTerm];
-  [_termInput paste:nil];
+  [_termInput yank:self];
 }
 
 - (void)controlPanelOnClose
