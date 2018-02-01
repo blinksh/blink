@@ -70,11 +70,6 @@
   return YES;
 }
 
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  return YES;
-}
-
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
   // TODO: pass completion handler.
@@ -92,7 +87,36 @@
   return YES;
 }
 
-// MARK: State saving and restoring
+#pragma mark - State saving and restoring
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+{
+  if (_suspendedMode) {
+    return;
+  }
+  
+  [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+  if (_suspendedMode) {
+    return;
+  }
+  
+  // Actually we should close connections here.
+  [self _suspendApplicationOnWillTerminate];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+  if (_suspendedMode) {
+    [[ScreenController shared] resume];
+  }
+
+  [self _cancelApplicationSuspend];
+}
+
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
@@ -109,63 +133,18 @@
   }
   
   _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
-    [self _suspendApplication];
+    [self _suspendApplicationWithExpirationHandler];
   }];
   
   NSTimeInterval time = MIN(application.backgroundTimeRemaining * 0.9, 5 * 60);
   [_suspendTimer invalidate];
   _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time
                                                    target:self
-                                                 selector:@selector(_suspendApplication)
+                                                 selector:@selector(_suspendApplicationWithSuspendTimer)
                                                  userInfo:nil
                                                   repeats:NO];
 }
 
-- (void)_suspendApplication
-{
-  [_suspendTimer invalidate];
-  
-  if (_suspendedMode) {
-    return;
-  }
-  
-  if (_suspendTaskId == UIBackgroundTaskInvalid) {
-    return;
-  }
-  
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[ScreenController shared] suspend];
-    _suspendedMode = YES;
-    UIApplication *application = [UIApplication sharedApplication];
-    [application endBackgroundTask:_suspendTaskId];
-    _suspendTaskId = UIBackgroundTaskInvalid;
-  });
-}
-
-- (void)_cancelApplicationSuspend
-{
-  [_suspendTimer invalidate];
-  _suspendedMode = NO;
-  UIApplication *application = [UIApplication sharedApplication];
-  [application endBackgroundTask:_suspendTaskId];
-  _suspendTaskId = UIBackgroundTaskInvalid;
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-  if (!_suspendedMode) {
-    [self _startMonitoringForSuspending];
-    [self _suspendApplication];
-  }
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-  if (_suspendedMode) {
-    [[ScreenController shared] resume];
-  }
-  [self _cancelApplicationSuspend];
-}
 
 - (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
 {
@@ -182,12 +161,56 @@
   [[ScreenController shared] finishRestoring];
 }
 
-- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+- (void)_cancelApplicationSuspend
 {
-  if (!_suspendedMode) {
-    [self _startMonitoringForSuspending];
-    [self _suspendApplication];
+  [_suspendTimer invalidate];
+  _suspendedMode = NO;
+  UIApplication *application = [UIApplication sharedApplication];
+  [application endBackgroundTask:_suspendTaskId];
+  _suspendTaskId = UIBackgroundTaskInvalid;
+}
+
+// Simple wrappers to get the reason of failure from call stack
+- (void)_suspendApplicationWithSuspendTimer
+{
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationWithExpirationHandler
+{
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationOnWillTerminate
+{
+  [self _startMonitoringForSuspending];
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
+{
+  [self _startMonitoringForSuspending];
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplication
+{
+  [_suspendTimer invalidate];
+  
+  if (_suspendedMode) {
+    return;
   }
+  
+  if (_suspendTaskId == UIBackgroundTaskInvalid) {
+    return;
+  }
+  
+  
+  [[ScreenController shared] suspend];
+  _suspendedMode = YES;
+  UIApplication *application = [UIApplication sharedApplication];
+  [application endBackgroundTask:_suspendTaskId];
+  _suspendTaskId = UIBackgroundTaskInvalid;
 }
 
 
