@@ -285,6 +285,7 @@ char* hints(const char * line, int *color, int *bold)
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
+    [self.stream.control setRawMode:NO];
   }
 
   [self out:"Bye!"];
