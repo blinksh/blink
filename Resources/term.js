@@ -214,7 +214,18 @@ function term_modifySelection(direction, granularity) {
     return;
   }
   
+  var fNode = selection.focusNode;
+  var fOffset = selection.focusOffset;
+  var aNode = selection.anchorNode;
+  var aOffset = selection.anchorOffset;
+  
   selection.modify("extend", direction, granularity);
+  
+  // we collapse selection, so swap direction and rerun modification again
+  if (selection.isCollapsed) {
+    selection.setBaseAndExtent(fNode, fOffset, aNode, aOffset);
+    selection.modify("extend", direction, granularity);
+  }
 }
 
 function term_modifySideSelection() {
