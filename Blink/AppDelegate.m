@@ -91,20 +91,13 @@
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
-  if (_suspendedMode) {
-    return;
-  }
   
   [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-  if (_suspendedMode) {
-    return;
-  }
-  
-  // Actually we should close connections here.
+
   [self _suspendApplicationOnWillTerminate];
 }
 
@@ -125,6 +118,7 @@
 
 - (void)_startMonitoringForSuspending
 {
+  NSLog(@"_startMonitoringForSuspending");
   _suspendedMode = NO;
   UIApplication *application = [UIApplication sharedApplication];
   
@@ -173,23 +167,25 @@
 // Simple wrappers to get the reason of failure from call stack
 - (void)_suspendApplicationWithSuspendTimer
 {
+  NSLog(@"_suspendApplicationWithSuspendTimer");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationWithExpirationHandler
 {
+  NSLog(@"_suspendApplicationWithExpirationHandler");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationOnWillTerminate
 {
-  [self _startMonitoringForSuspending];
+  NSLog(@"_suspendApplicationOnWillTerminate");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
 {
-  [self _startMonitoringForSuspending];
+  NSLog(@"_suspendApplicationOnProtectedDataWillBecomeUnavailable");
   [self _suspendApplication];
 }
 
@@ -201,13 +197,13 @@
     return;
   }
   
+  [[ScreenController shared] suspend];
+  _suspendedMode = YES;
+  
   if (_suspendTaskId == UIBackgroundTaskInvalid) {
     return;
   }
   
-  
-  [[ScreenController shared] suspend];
-  _suspendedMode = YES;
   UIApplication *application = [UIApplication sharedApplication];
   [application endBackgroundTask:_suspendTaskId];
   _suspendTaskId = UIBackgroundTaskInvalid;
