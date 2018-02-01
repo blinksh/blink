@@ -96,7 +96,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   NSString *selectedFontName = [BKDefaults selectedFontName];
   BKFont *selectedFont = [BKFont withName:selectedFontName];
   if (selectedFont != nil) {
-    _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:BKAppearance_Fonts];
+    NSInteger row = [[BKFont all] indexOfObject:selectedFont];
+    // User have deleted the font, so we set it back to default
+    if (row == NSNotFound) {
+      [BKDefaults setFontName:@"Source Code Pro"]; // TODO get it right
+      selectedFontName = [BKDefaults selectedFontName];
+      selectedFont = [BKFont withName:selectedFontName];
+      row = [[BKFont all] indexOfObject:selectedFont];
+    }
+    _selectedFontIndexPath = [NSIndexPath indexPathForRow:row inSection:BKAppearance_Fonts];
   }
   _cursorBlinkValue = [BKDefaults isCursorBlink];
   _lightKeyboardValue = [BKDefaults isLightKeyboard];
