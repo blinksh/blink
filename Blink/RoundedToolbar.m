@@ -103,8 +103,19 @@ UIBezierPath* bezierPathWithIOS7(CGRect rect, CGFloat radius)
 - (CGSize)intrinsicContentSize
 {
   CGSize size = [super intrinsicContentSize];
-  
   size.height = 56;
+  
+  if (@available(iOS 11.0, *)) {
+    return size;
+  } else {
+    // on iOS 10 UIToolbar colapsed to 0. So we need this hack here.
+    CGRect frame = self.frame;
+    frame.size = CGSizeMake(self.window.bounds.size.width, 56);
+    self.frame = frame;
+    [self layoutSubviews];
+    CGFloat x = CGRectGetMaxX([self.subviews lastObject].frame);
+    size.width = x + 16;
+  }
   return size;
 }
 

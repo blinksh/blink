@@ -45,6 +45,7 @@
     [pasteBtn setTitle:@"Paste" forState:UIControlStateNormal];
     pasteBtn.tintColor = [UIColor whiteColor];
     [pasteBtn addTarget:self action:@selector(_paste) forControlEvents:UIControlEventTouchUpInside];
+    [pasteBtn sizeToFit];
     
     UIBarButtonItem * pasteButton = [[UIBarButtonItem alloc] initWithCustomView:pasteBtn];
     
