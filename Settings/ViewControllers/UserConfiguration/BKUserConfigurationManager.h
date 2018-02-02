@@ -43,4 +43,6 @@ extern NSString *const BKUserConfigShowSmartKeysWithXKeyBoard;
 + (BOOL)userSettingsValueForKey:(NSString *)key;
 + (UIKeyModifierFlags)shortCutModifierFlags;
 
++ (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags;
+
 @end

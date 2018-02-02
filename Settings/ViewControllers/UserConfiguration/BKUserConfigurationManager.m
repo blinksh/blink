@@ -86,4 +86,27 @@ NSString *const BKUserConfigShowSmartKeysWithXKeyBoard = @"ShowSmartKeysWithXKey
   }
   return UIKeyModifierCommand;
 }
+
++ (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags
+{
+  NSMutableArray *components = [[NSMutableArray alloc] init];
+  
+  if ((flags & UIKeyModifierShift) == UIKeyModifierShift) {
+    [components addObject:@"⇧"];
+  }
+  
+  if ((flags & UIKeyModifierControl) == UIKeyModifierControl) {
+    [components addObject:@"⌃"];
+  }
+  
+  if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
+    [components addObject:@"⌥"];
+  }
+  
+  if ((flags & UIKeyModifierCommand) == UIKeyModifierCommand) {
+    [components addObject:@"⌘"];
+  }
+  
+  return [components componentsJoinedByString:@""];
+}
 @end

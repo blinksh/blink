@@ -44,6 +44,7 @@
 #import "BKTheme.h"
 #import "BKDefaults.h"
 #import "MusicManager.h"
+#import "BKUserConfigurationManager.h"
 
 #define MCP_MAX_LINE 4096
 
@@ -384,6 +385,8 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)_showHelp
 {
+  UIKeyModifierFlags flags = [BKUserConfigurationManager shortCutModifierFlags];
+  NSString *flagsStr = [BKUserConfigurationManager UIKeyModifiersToString:flags];
   NSString *help = [@[
     @"",
     [self _shortVersionString],
@@ -399,18 +402,18 @@ char* hints(const char * line, int *color, int *bold)
     @"  exit: Close this shell.",
     @"",
     @"Available gestures and keyboard shortcuts:",
-    @"  two fingers tap or cmd+t: New shell.",
+    [NSString stringWithFormat:@"  two fingers tap or %@+t: New shell.", flagsStr],
     @"  two fingers swipe up: Show control panel.",
     @"  two fingers drag down dismiss keyboard.",
-    @"  one finger swipe left/right or cmd+shift+[]: Switch between shells.",
-    @"  cmd+alt+N: Switch to shell number N.",
-    @"  cmd+w: Close shell.",
-    @"  cmd+o: Switch to other screen (Airplay mode).",
-    @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
-    @"  cmd+,: Open config.",
-    @"  cmd+m: Toggle music controls. (Control with cmd+npsrb).",
+    [NSString stringWithFormat:@"  one finger swipe left/right or %@+[]: Switch between shells.", flagsStr],
+    [NSString stringWithFormat:@"  %@+N: Switch to shell number N.", flagsStr],
+    [NSString stringWithFormat:@"  %@+w: Close shell.", flagsStr],
+    [NSString stringWithFormat:@"  %@+o: Switch to other screen (Airplay mode).", flagsStr],
+    [NSString stringWithFormat:@"  %@+O: Move current shell to other screen (Airplay mode).", flagsStr],
+    [NSString stringWithFormat:@"  %@+,: Open config.", flagsStr],
+    [NSString stringWithFormat:@"  %@+m: Toggle music controls. (Control with %@+npsrb).", flagsStr, flagsStr],
     @"  pinch: Change font size.",
-    @"  selection mode: VIM users: hjklwboy, EMACS: C-fbnpx, OTHER: arrows and fingers",
+    @"  selection mode: VIM users: hjklwboy, EMACS: ⌃-fbnpx, OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\r\n"];
 
