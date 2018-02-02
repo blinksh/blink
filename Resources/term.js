@@ -50,6 +50,8 @@ hterm.Terminal.IO.prototype.sendString = function(string) {
   _postMessage('sendString', { string });
 };
 
+hterm.msg = function() {}; // TODO: show messages
+
 function _colorComponents(colorStr) {
   if (!colorStr) {
     return [0, 0, 0]; // Default is black
@@ -75,7 +77,7 @@ function term_setupDefaults() {
   term_set('copy-on-select', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
-//  term_set('allow-images-inline', true); // need to make it work
+  term_set('allow-images-inline', true); // need to make it work
 }
 
 function term_setup() {
