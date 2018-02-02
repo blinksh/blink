@@ -131,12 +131,12 @@ function term_setWidth(cols) {
 
 function term_increaseFontSize() {
   var size = t.getFontSize();
-  term_setFontSize(++size);
+  term_setFontSize((size + 1) + "px");
 }
 
 function term_decreaseFontSize() {
   var size = t.getFontSize();
-  term_setFontSize(--size);
+  term_setFontSize((size - 1) + "px");
 }
 
 function term_resetFontSize() {
