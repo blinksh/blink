@@ -118,8 +118,12 @@
 
 - (void)_startMonitoringForSuspending
 {
+  if (_suspendedMode) {
+    return;
+  }
+  
   NSLog(@"_startMonitoringForSuspending");
-  _suspendedMode = NO;
+  
   UIApplication *application = [UIApplication sharedApplication];
   
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -159,8 +163,9 @@
 {
   [_suspendTimer invalidate];
   _suspendedMode = NO;
-  UIApplication *application = [UIApplication sharedApplication];
-  [application endBackgroundTask:_suspendTaskId];
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
+  }
   _suspendTaskId = UIBackgroundTaskInvalid;
 }
 
@@ -200,12 +205,10 @@
   [[ScreenController shared] suspend];
   _suspendedMode = YES;
   
-  if (_suspendTaskId == UIBackgroundTaskInvalid) {
-    return;
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
   }
   
-  UIApplication *application = [UIApplication sharedApplication];
-  [application endBackgroundTask:_suspendTaskId];
   _suspendTaskId = UIBackgroundTaskInvalid;
 }
 
