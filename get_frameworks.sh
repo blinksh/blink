@@ -29,7 +29,7 @@ curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF
 # ios_system
 echo "Downloading ios_system.framework.zip"
 curl -OL $HHROOT/ios_system/releases/download/v$IOS_SYSTEM_VER/ios_system.framework.tar.gz
-( tar -xzf ios_system.framework.tar.gz && rm ios_system.framework.tar.gz ) || { echo "ios_system failed to download"; exit 1; }
+( tar -xzf ios_system.framework.tar.gz && rm ios_system.framework.tar.gz && mv release/* . ) || { echo "ios_system failed to download"; exit 1; }
 )
 
 # We need ios_system for the sources of curl_static too:
