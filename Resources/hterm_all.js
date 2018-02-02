@@ -5324,13 +5324,11 @@ lib.wc.substring = function(str, start, end) {
   return lib.wc.substr(str, start, end - start);
 };
 lib.resource.add('libdot/changelog/version', 'text/plain',
-'1.21' +
-''
+'1.21'
 );
 
 lib.resource.add('libdot/changelog/date', 'text/plain',
-'2018-01-05' +
-''
+'2018-01-05'
 );
 
 
@@ -5354,8 +5352,7 @@ lib.resource.add('hterm/audio/bell', 'audio/ogg;base64',
 '           --version         Print version number' +
 '' +
 'by John Walker' +
-'http://www.fourmilab.ch/' +
-''
+'http://www.fourmilab.ch/'
 );
 
 lib.resource.add('hterm/images/icon-96', 'image/png;base64',
@@ -5371,28 +5368,23 @@ lib.resource.add('hterm/images/icon-96', 'image/png;base64',
 '           --version         Print version number' +
 '' +
 'by John Walker' +
-'http://www.fourmilab.ch/' +
-''
+'http://www.fourmilab.ch/'
 );
 
 lib.resource.add('hterm/concat/date', 'text/plain',
-'Mon, 08 Jan 2018 10:52:02 +0000' +
-''
+'Fri, 02 Feb 2018 11:09:26 +0000'
 );
 
 lib.resource.add('hterm/changelog/version', 'text/plain',
-'1.77' +
-''
+'1.78'
 );
 
 lib.resource.add('hterm/changelog/date', 'text/plain',
-'2018-01-05' +
-''
+'2018-01-29'
 );
 
 lib.resource.add('hterm/git/HEAD', 'text/plain',
-'git rev-parse HEAD' +
-''
+'a8d402c0d12b1a88186cedaab208a91ce9f261f8'
 );
 
 
@@ -5870,6 +5862,7 @@ hterm.Frame.prototype.onMessage_ = function(e) {
       // Show the finished frame, and then rebind our message handler to the
       // callback below.
       this.container_.style.display = 'flex';
+      this.postMessage('visible');
       this.messageChannel_.port1.onmessage = this.onMessage.bind(this);
       this.onLoad();
       return;
@@ -9381,6 +9374,8 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
                  !cursorNode.asciiNode ||
                  cursorNode.tileNode ||
                  cursorNode.style.textDecoration ||
+                 cursorNode.style.textDecorationStyle ||
+                 cursorNode.style.textDecorationLine ||
                  cursorNode.style.backgroundColor)) {
       // Second best case, the current node is able to hold the whitespace.
       setNodeText(cursorNode, (cursorNodeText += ws));
@@ -10229,7 +10224,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   this.screen_.setAttribute('spellcheck', 'false');
   this.screen_.setAttribute('autocomplete', 'off');
   this.screen_.setAttribute('autocorrect', 'off');
-  this.screen_.setAttribute('autocaptalize', 'none');
+  this.screen_.setAttribute('autocapitalize', 'none');
   this.screen_.setAttribute('role', 'textbox');
   this.screen_.setAttribute('tabindex', '-1');
   this.screen_.style.cssText = (
@@ -15293,11 +15288,13 @@ hterm.TextAttributes = function(document) {
   // number       (representing the index from color palette to use)
   this.foregroundSource = this.SRC_DEFAULT;
   this.backgroundSource = this.SRC_DEFAULT;
+  this.underlineSource = this.SRC_DEFAULT;
 
   // These properties cache the value in the color table, but foregroundSource
   // and backgroundSource contain the canonical values.
   this.foreground = this.DEFAULT_COLOR;
   this.background = this.DEFAULT_COLOR;
+  this.underlineColor = this.DEFAULT_COLOR;
 
   this.defaultForeground = 'rgb(255, 255, 255)';
   this.defaultBackground = 'rgb(0, 0, 0)';
@@ -15310,7 +15307,6 @@ hterm.TextAttributes = function(document) {
   this.italic = false;
   this.blink = false;
   this.underline = false;
-  this.doubleUnderline = false;
   this.strikethrough = false;
   this.inverse = false;
   this.invisible = false;
@@ -15383,14 +15379,15 @@ hterm.TextAttributes.prototype.clone = function() {
 hterm.TextAttributes.prototype.reset = function() {
   this.foregroundSource = this.SRC_DEFAULT;
   this.backgroundSource = this.SRC_DEFAULT;
+  this.underlineSource = this.SRC_DEFAULT;
   this.foreground = this.DEFAULT_COLOR;
   this.background = this.DEFAULT_COLOR;
+  this.underlineColor = this.DEFAULT_COLOR;
   this.bold = false;
   this.faint = false;
   this.italic = false;
   this.blink = false;
   this.underline = false;
-  this.doubleUnderline = false;
   this.strikethrough = false;
   this.inverse = false;
   this.invisible = false;
@@ -15421,7 +15418,6 @@ hterm.TextAttributes.prototype.isDefault = function() {
           !this.italic &&
           !this.blink &&
           !this.underline &&
-          !this.doubleUnderline &&
           !this.strikethrough &&
           !this.inverse &&
           !this.invisible &&
@@ -15480,26 +15476,19 @@ hterm.TextAttributes.prototype.createContainer = function(opt_textContent) {
   }
 
   let textDecorationLine = '';
-  let textDecorationStyle = '';
+  span.underline = this.underline;
   if (this.underline) {
     textDecorationLine += ' underline';
-    span.underline = true;
+    style.textDecorationStyle = this.underline;
   }
-  if (this.doubleUnderline) {
-    // The web platform doesn't like the same keyword twice.
-    if (!this.underline)
-      textDecorationLine += ' underline';
-    textDecorationStyle = 'double';
-    span.doubleUnderline = true;
-  }
+  if (this.underlineSource != this.SRC_DEFAULT)
+    style.textDecorationColor = this.underlineColor;
   if (this.strikethrough) {
     textDecorationLine += ' line-through';
     span.strikethrough = true;
   }
   if (textDecorationLine)
     style.textDecorationLine = textDecorationLine;
-  if (textDecorationStyle)
-    style.textDecorationStyle = textDecorationStyle;
 
   if (this.wcNode) {
     classes.push('wc-node');
@@ -15560,11 +15549,11 @@ hterm.TextAttributes.prototype.matchesContainer = function(obj) {
           this.uriId == obj.uriId &&
           this.foreground == style.color &&
           this.background == style.backgroundColor &&
+          this.underlineColor == style.textDecorationColor &&
           (this.enableBold && this.bold) == !!style.fontWeight &&
           this.blink == !!obj.blinkNode &&
           this.italic == !!style.fontStyle &&
-          !!this.underline == !!obj.underline &&
-          !!this.doubleUnderline == !!obj.doubleUnderline &&
+          this.underline == obj.underline &&
           !!this.strikethrough == !!obj.strikethrough);
 };
 
@@ -15639,6 +15628,13 @@ hterm.TextAttributes.prototype.syncColors = function() {
   // Process invisible settings last to keep it simple.
   if (this.invisible)
     this.foreground = this.background;
+
+  if (this.underlineSource == this.SRC_DEFAULT)
+    this.underlineColor = '';
+  else if (Number.isInteger(this.underlineSource))
+    this.underlineColor = this.colorPalette[this.underlineSource];
+  else
+    this.underlineColor = this.underlineSource;
 };
 
 /**
@@ -15666,9 +15662,13 @@ hterm.TextAttributes.containersMatch = function(obj1, obj2) {
 
   return (style1.color == style2.color &&
           style1.backgroundColor == style2.backgroundColor &&
+          style1.backgroundColor == style2.backgroundColor &&
           style1.fontWeight == style2.fontWeight &&
           style1.fontStyle == style2.fontStyle &&
-          style1.textDecoration == style2.textDecoration);
+          style1.textDecoration == style2.textDecoration &&
+          style1.textDecorationColor == style2.textDecorationColor &&
+          style1.textDecorationStyle == style2.textDecorationStyle &&
+          style1.textDecorationLine == style2.textDecorationLine);
 };
 
 /**
@@ -18324,7 +18324,23 @@ hterm.VT.CSI['m'] = function(parseState) {
       } else if (arg == 3) {  // Italic.
         attrs.italic = true;
       } else if (arg == 4) {  // Underline.
-        attrs.underline = true;
+        if (parseState.argHasSubargs(i)) {
+          const uarg = parseState.args[i].split(':')[1];
+          if (uarg == 0)
+            attrs.underline = false;
+          else if (uarg == 1)
+            attrs.underline = 'solid';
+          else if (uarg == 2)
+            attrs.underline = 'double';
+          else if (uarg == 3)
+            attrs.underline = 'wavy';
+          else if (uarg == 4)
+            attrs.underline = 'dotted';
+          else if (uarg == 5)
+            attrs.underline = 'dashed';
+        } else {
+          attrs.underline = 'solid';
+        }
       } else if (arg == 5) {  // Blink.
         attrs.blink = true;
       } else if (arg == 7) {  // Inverse.
@@ -18334,7 +18350,7 @@ hterm.VT.CSI['m'] = function(parseState) {
       } else if (arg == 9) {  // Crossed out.
         attrs.strikethrough = true;
       } else if (arg == 21) {  // Double underlined.
-        attrs.doubleUnderline = true;
+        attrs.underline = 'double';
       } else if (arg == 22) {  // Not bold & not faint.
         attrs.bold = false;
         attrs.faint = false;
@@ -18342,7 +18358,6 @@ hterm.VT.CSI['m'] = function(parseState) {
         attrs.italic = false;
       } else if (arg == 24) {  // Not underlined.
         attrs.underline = false;
-        attrs.doubleUnderline = false;
       } else if (arg == 25) {  // Not blink.
         attrs.blink = false;
       } else if (arg == 27) {  // Steady.
@@ -18381,6 +18396,15 @@ hterm.VT.CSI['m'] = function(parseState) {
       } else {
         attrs.backgroundSource = attrs.SRC_DEFAULT;
       }
+
+    } else if (arg == 58) {  // Underline coloring.
+      const result = this.parseSgrExtendedColors(parseState, i, attrs);
+      if (result.color !== undefined)
+        attrs.underlineSource = result.color;
+      i += result.skipCount;
+
+    } else if (arg == 59) {  // Disable underline coloring.
+      attrs.underlineSource = attrs.SRC_DEFAULT;
 
     } else if (arg >= 90 && arg <= 97) {
       attrs.foregroundSource = arg - 90 + 8;
@@ -19165,8 +19189,7 @@ lib.resource.add('hterm/audio/bell', 'audio/ogg;base64',
 '           --version         Print version number' +
 '' +
 'by John Walker' +
-'http://www.fourmilab.ch/' +
-''
+'http://www.fourmilab.ch/'
 );
 
 lib.resource.add('hterm/images/icon-96', 'image/png;base64',
@@ -19182,28 +19205,23 @@ lib.resource.add('hterm/images/icon-96', 'image/png;base64',
 '           --version         Print version number' +
 '' +
 'by John Walker' +
-'http://www.fourmilab.ch/' +
-''
+'http://www.fourmilab.ch/'
 );
 
 lib.resource.add('hterm/concat/date', 'text/plain',
-'Mon, 08 Jan 2018 10:52:03 +0000' +
-''
+'Fri, 02 Feb 2018 11:09:27 +0000'
 );
 
 lib.resource.add('hterm/changelog/version', 'text/plain',
-'1.77' +
-''
+'1.78'
 );
 
 lib.resource.add('hterm/changelog/date', 'text/plain',
-'2018-01-05' +
-''
+'2018-01-29'
 );
 
 lib.resource.add('hterm/git/HEAD', 'text/plain',
-'git rev-parse HEAD' +
-''
+'a8d402c0d12b1a88186cedaab208a91ce9f261f8'
 );
 
 
