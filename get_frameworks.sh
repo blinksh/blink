@@ -4,7 +4,7 @@ LIBSSH2_VER="1.7.0"
 OPENSSL_VER="1.0.2j"
 LIBMOSH_VER="1.2.5-8671e87"
 PROTOBF_VER="2.6.1"
-IOS_SYSTEM_VER="0.6"
+IOS_SYSTEM_VER="1.0"
 
 GHROOT="https://github.com/blinksh"
 HHROOT="https://github.com/holzschu"
@@ -28,7 +28,7 @@ curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF
 ( tar -zxf protobuf-*.tar.gz && cp protobuf-*/lib/libprotobuf.a ./lib/ && rm -rf protobuf-* ) || { echo "Protobuf framework failed to download"; exit 1; }
 # ios_system
 echo "Downloading ios_system.framework.zip"
-curl -OL $HHROOT/blink/releases/download/v$IOS_SYSTEM_VER/ios_system.framework.tar.gz
+curl -OL $HHROOT/ios_system/releases/download/v$IOS_SYSTEM_VER/ios_system.framework.tar.gz
 ( tar -xzf ios_system.framework.tar.gz && rm ios_system.framework.tar.gz ) || { echo "ios_system failed to download"; exit 1; }
 )
 
@@ -39,19 +39,6 @@ git clone https://github.com/holzschu/ios_system
 cd "ios_system"
 sh ./get_sources.sh
 )
-# 
-# ( # Python_ios
-# cd "${BASH_SOURCE%/*}/.."
-# git clone https://github.com/holzschu/python_ios
-# cd "python_ios"
-# sh ./getPackages.sh
-# )
-# ( # lua_ios 
-# cd "${BASH_SOURCE%/*}/.."
-# git clone https://github.com/holzschu/lua_ios
-# cd "lua_ios"
-# sh ./get_lua_source.sh
-# )
 
 
 
