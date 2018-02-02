@@ -600,14 +600,18 @@
                                discoverabilityTitle:@"Reset Zoom"],
                   nil];
   
+  UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: @"0-9"
+                                         modifierFlags: modifierFlags
+                                                action: @selector(switchToShellN:)
+                                  discoverabilityTitle: @"Switch to shell 0-9" ];
+  [_kbdCommands addObject:cmd];
+  
   for (NSInteger i = 1; i < 11; i++) {
     NSInteger keyN = i % 10;
     NSString *input = [NSString stringWithFormat:@"%li", (long)keyN];
-    NSString *title = [NSString stringWithFormat:@"Switch to shell %li", (long)i];
     UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: input
                                              modifierFlags: modifierFlags
-                                                    action: @selector(switchToShellN:)
-                                      discoverabilityTitle: title];
+                                                    action: @selector(switchToShellN:)];
     
     [_kbdCommands addObject:cmd];
   }
