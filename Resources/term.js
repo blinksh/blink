@@ -71,6 +71,7 @@ function term_get(key) {
 }
 
 function term_setupDefaults() {
+  term_set('enable-bold', true);
   term_set('copy-on-select', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
