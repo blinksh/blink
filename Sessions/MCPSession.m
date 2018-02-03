@@ -458,11 +458,7 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)suspend
 {
-  if (_childSession == nil) {
-    [self out:@"\r\n".UTF8String];
-  } else {
-    [_childSession suspend];
-  }
+  [_childSession suspend];
 }
 
 @end

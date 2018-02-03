@@ -78,5 +78,16 @@ NSString * const ThemeNameKey = @"themeName";
   return YES;
 }
 
+- (BOOL)hasEncodedState
+{
+  return _childSessionParameters.encodedState;
+}
+
+- (void)cleanEncodedState
+{
+  [_childSessionParameters cleanEncodedState];
+  [super cleanEncodedState];
+}
+
 @end
 

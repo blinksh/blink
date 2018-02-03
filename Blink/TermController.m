@@ -274,11 +274,16 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)suspend
 {
+  [_sessionParameters cleanEncodedState];
   [_session suspend];
 }
 
 - (void)resume
 {
+  if (![_sessionParameters hasEncodedState]) {
+    return;
+  }
+
   [self destroyPTY];
   [self createPTY];
   [self startSession];

@@ -10,4 +10,6 @@
 
 @interface SessionParameters: NSObject<NSSecureCoding>
 @property NSData *encodedState;
+
+- (void)cleanEncodedState;
 @end

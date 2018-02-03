@@ -179,8 +179,4 @@ void *run_session(void *params)
 {
 }
 
-- (void)resume
-{
-}
-
 @end

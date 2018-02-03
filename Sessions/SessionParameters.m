@@ -52,4 +52,9 @@ NSString * const EncodedStateKey = @"EncodedStateKey";
   return YES;
 }
 
+- (void)cleanEncodedState
+{
+  _encodedState = nil;
+}
+
 @end

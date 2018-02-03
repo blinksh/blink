@@ -69,6 +69,7 @@ typedef struct SessionParams {
 
 @property (strong, atomic) SessionParameters *sessionParameters;
 @property TermStream *stream;
+
 @property (weak) NSObject<SessionDelegate>* delegate;
 
 - (id)init __unavailable;

@@ -19,5 +19,7 @@
 @property NSString *fontName;
 @property NSString *themeName;
 
+- (BOOL)hasEncodedState;
+
 @end
 
