@@ -67,12 +67,12 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   // Some of these attributes are standard while others are browser specific,
   // but should be safely ignored by other browsers.
   this.screen_ = doc.createElement('x-screen');
-//  this.screen_.setAttribute('contenteditable', 'false'); // Blink: Set this to `false` makes selection on iOS possible.
-//  this.screen_.setAttribute('spellcheck', 'false');
-//  this.screen_.setAttribute('autocomplete', 'off');
-//  this.screen_.setAttribute('autocorrect', 'off');
-//  this.screen_.setAttribute('autocaptalize', 'none');
-//  this.screen_.setAttribute('role', 'textbox');
+  //  this.screen_.setAttribute('contenteditable', 'false'); // Blink: Set this to `false` makes selection on iOS possible.
+  //  this.screen_.setAttribute('spellcheck', 'false');
+  //  this.screen_.setAttribute('autocomplete', 'off');
+  //  this.screen_.setAttribute('autocorrect', 'off');
+  //  this.screen_.setAttribute('autocaptalize', 'none');
+  //  this.screen_.setAttribute('role', 'textbox');
   this.screen_.setAttribute('tabindex', '-1');
   this.screen_.style.cssText =
     'caret-color: transparent;' +
@@ -80,7 +80,7 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     'font-family: monospace;' +
     'font-size: 15px;' +
     //    'font-variant-ligatures: none;' + // Blink: We use ligatures a lot
-//     '-webkit-overflow-scrolling: touch;' +  // <-- for inertial scroll Blink: We love smooth scrolling
+    //     '-webkit-overflow-scrolling: touch;' +  // <-- for inertial scroll Blink: We love smooth scrolling
     'height: 100%;' +
     'overflow-y: scroll; overflow-x: hidden;' +
     'white-space: pre;' +
@@ -99,17 +99,17 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   */
   this.screen_.addEventListener('copy', this.onCopy_.bind(this));
   this.screen_.addEventListener('paste', this.onPaste_.bind(this));
-  this.screen_.addEventListener('drop', this.onDragAndDrop_.bind(this));
+  //  this.screen_.addEventListener('drop', this.onDragAndDrop_.bind(this));
 
-  doc.body.addEventListener('keydown', this.onBodyKeyDown_.bind(this));
+  //  doc.body.addEventListener('keydown', this.onBodyKeyDown_.bind(this));
 
   // This is the main container for the fixed rows.
   this.rowNodes_ = doc.createElement('div');
   this.rowNodes_.id = 'hterm:row-nodes';
   this.rowNodes_.style.cssText =
     'display: block;' +
-//    'position: fixed;' +
-  'position: absolute;' +
+    //    'position: fixed;' +
+    'position: absolute;' +
     'overflow: hidden;' +
     '-webkit-user-select: text;' +
     '-moz-user-select: text;';
@@ -192,22 +192,52 @@ hterm.ScrollPort.prototype.focus = function() {
   //this.screen_.focus();
 };
 
-hterm.Terminal.prototype.onFocusChange_ = function(focused) {
+hterm.TextAttributes.nodeWidth = function(node) {
+  if (node._len !== undefined) {
+    return node._len;
+  }
+  if (!node.asciiNode) {
+    return lib.wc.strWidth(node.textContent);
+  } else {
+    return node.textContent.length;
+  }
 };
+
+hterm.Screen.prototype.splitNode_ = function(node, offset) {
+  var afterNode = node.cloneNode(false);
+  
+  afterNode.asciiNode = node.asciiNode;
+  afterNode._len = node._len;
+  if (node.wcNode) {
+    afterNode.wcNode = node.wcNode;
+  }
+  
+  var textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
+  var afterTextContent = hterm.TextAttributes.nodeSubstr(node, offset);
+  
+  if (afterTextContent) {
+    setNodeText(afterNode, afterTextContent);
+    node.parentNode.insertBefore(afterNode, node.nextSibling);
+  }
+  if (textContent) {
+    setNodeText(node, textContent);
+  } else {
+    node.parentNode.removeChild(node);
+  }
+};
+
+hterm.Terminal.prototype.onFocusChange_ = function(focused) {};
 
 hterm.Terminal.prototype.onFocusChange__ = function(focused) {
   this.cursorNode_.setAttribute('focus', focused);
   this.restyleCursor_();
-  
+
   if (this.reportFocus) {
-    this.io.sendString(focused === true ? '\x1b[I' : '\x1b[O')
+    this.io.sendString(focused === true ? '\x1b[I' : '\x1b[O');
   }
-  
-  if (focused === true)
-    this.closeBellNotifications_();
+
+  if (focused === true) this.closeBellNotifications_();
 };
-
-
 
 // Do not show resize notifications. We show ours
 hterm.Terminal.prototype.overlaySize = function() {};
@@ -224,7 +254,7 @@ hterm.Terminal.prototype.copyStringToClipboard = function(str) {
 
 hterm.Terminal.prototype.setCursorVisible = function(state) {
   this.options_.cursorVisible = state;
-  
+
   if (!state) {
     if (this.timeouts_.cursorBlink) {
       clearTimeout(this.timeouts_.cursorBlink);
@@ -233,15 +263,14 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
     this.cursorNode_.style.opacity = '0';
     return;
   }
-  
+
   this.syncCursorPosition_();
-  
+
   this.cursorNode_.style.opacity = '1';
-  
+
   if (this.options_.cursorBlink) {
-    if (this.timeouts_.cursorBlink)
-      return;
-    
+    if (this.timeouts_.cursorBlink) return;
+
     // Blink: Switch the cursor off, so that the manual (first) blink trigger sets it on again
     this.cursorNode_.style.opacity = '0';
     this.onCursorBlink_();
@@ -256,21 +285,20 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
 hterm.Terminal.prototype.syncCursorPosition_ = function() {
   var topRowIndex = this.scrollPort_.getTopRowIndex();
   var bottomRowIndex = this.scrollPort_.getBottomRowIndex(topRowIndex);
-  var cursorRowIndex = this.scrollbackRows_.length +
-  this.screen_.cursorPosition.row;
-  
+  var cursorRowIndex =
+    this.scrollbackRows_.length + this.screen_.cursorPosition.row;
+
   if (cursorRowIndex > bottomRowIndex) {
     // Cursor is scrolled off screen, move it outside of the visible area.
     this.setCssVar('cursor-offset-row', '-1');
     return;
   }
-  
-  if (this.options_.cursorVisible &&
-      this.cursorNode_.style.display == 'none') {
+
+  if (this.options_.cursorVisible && this.cursorNode_.style.display == 'none') {
     // Re-display the terminal cursor if it was hidden by the mouse cursor.
     this.cursorNode_.style.display = '';
   }
-  
+
   // Position the cursor using CSS variable math.  If we do the math in JS,
   // the float math will end up being more precise than the CSS which will
   // cause the cursor tracking to be off.
@@ -281,19 +309,93 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
                  `${this.scrollPort_.visibleRowTopMargin}px`);
   */
   this.setCssVar(
-                 'cursor-offset-row',
-                 `${cursorRowIndex - topRowIndex + this.scrollPort_.visibleRowTopMargin}`);
+    'cursor-offset-row',
+    `${cursorRowIndex - topRowIndex + this.scrollPort_.visibleRowTopMargin}`,
+  );
 
   this.setCssVar('cursor-offset-col', this.screen_.cursorPosition.column);
-  
-  this.cursorNode_.setAttribute('title',
-                                '(' + this.screen_.cursorPosition.column +
-                                ', ' + this.screen_.cursorPosition.row +
-                                ')');
-  
+
+  this.cursorNode_.setAttribute(
+    'title',
+    '(' +
+      this.screen_.cursorPosition.column +
+      ', ' +
+      this.screen_.cursorPosition.row +
+      ')',
+  );
+
   // Update the caret for a11y purposes.
   var selection = this.document_.getSelection();
   if (selection && selection.isCollapsed)
     this.screen_.syncSelectionCaret(selection);
 };
 
+//lib.wc.strWidth = function(str) {
+//var h, l;
+//var s = 0,
+//n,
+//len = str.length;
+
+//for (var i = 0; i < len; i++) {
+//h = str.charCodeAt(i);
+//if (h >= 0xd800 && h <= 0xdbff) {
+//l = str.charCodeAt(++i);
+//if (l >= 0xdc00 && l <= 0xdfff)
+//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
+//else i--;
+//}
+//n = lib.wc.charWidth(h);
+//if (n < 0) return -1;
+//s += n;
+//}
+
+//return s;
+//};
+
+//lib.wc.substr = function(str, start, opt_width) {
+//var startIndex = 0,
+//len = str.length;
+//var endIndex, width, h, l;
+
+//// Fun edge case: Normally we associate zero width codepoints (like combining
+//// characters) with the previous codepoint, so we skip any leading ones while
+//// including trailing ones.  However, if there are zero width codepoints at
+//// the start of the string, and the substring starts at 0, lets include them
+//// in the result.  This also makes for a simple optimization for a common
+//// request.
+//if (start) {
+//for (width = 0; startIndex < len; startIndex++) {
+//h = str.codePointAt(startIndex);
+//if (h >= 0xd800 && h <= 0xdbff) {
+//l = str.charCodeAt(++startIndex);
+//if (l >= 0xdc00 && l <= 0xdfff)
+//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
+//else startIndex--;
+//}
+
+//width += lib.wc.charWidth(h);
+//if (width > start) {
+//break;
+//}
+//}
+//}
+
+//if (opt_width != undefined) {
+//for (endIndex = startIndex, width = 0; endIndex < len; endIndex++) {
+//h = str.codePointAt(endIndex);
+//if (h >= 0xd800 && h <= 0xdbff) {
+//l = str.charCodeAt(++endIndex);
+//if (l >= 0xdc00 && l <= 0xdfff)
+//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
+//else endIndex--;
+//}
+//width += lib.wc.charWidth(h);
+//if (width > opt_width) {
+//break;
+//}
+//}
+//return str.substring(startIndex, endIndex);
+//}
+
+//return str.substr(startIndex);
+//};

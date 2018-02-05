@@ -29,19 +29,24 @@
 
 function setNodeText(node, text) {
   node.textContent = text;
-  if (node && node.nodeName === 'SPAN') {
-    if (node.wcNode) {
-      return;
-    }
-    var len = text.length
-    
-    if (node._len !== len) {
-      node._len = len;
-      node.style.display = 'inline-block';
-      node.style.overflowX = 'hidden';
-      node.style.width = 'calc(var(--hterm-charsize-width) * ' + len + ')';
-    }
+  var len = text.length;
+  
+  if (node.nodeName !== 'SPAN') {
+    return;
   }
+  
+  if (len && !node.asciiNode) {
+    len = lib.wc.strWidth(text);
+  }
+  
+  if (node._len === len) {
+    return;
+  }
+  
+  node._len = len;
+  node.style.display = 'inline-block';
+  node.style.overflowX = 'hidden';
+  node.style.width = 'calc(var(--hterm-charsize-width) * ' + len + ')';
 }
 
 if (typeof lib != 'undefined')
@@ -15630,7 +15635,7 @@ hterm.TextAttributes.prototype.syncColors = function() {
     this.foreground = this.background;
 
   if (this.underlineSource == this.SRC_DEFAULT)
-    this.underlineColor = '';
+    this.underlineColor = undefined;
   else if (Number.isInteger(this.underlineSource))
     this.underlineColor = this.colorPalette[this.underlineSource];
   else

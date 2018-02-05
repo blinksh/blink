@@ -11,15 +11,17 @@ hterm.copySelectionToClipboard = function(document, content) {
   _postMessage('copy', { content });
 };
 
+var _scrollCache = null;
+
 hterm.ScrollPort.prototype.getTopRowIndex = function() {
-  if (!this._scrollCache) {
-    this._scrollCache = { top: this.screen_.scrollTop };
+  if (!_scrollCache) {
+    _scrollCache = { top: this.screen_.scrollTop };
   }
-  return Math.round(this._scrollCache.top / this.characterSize.height);
+  return Math.round(_scrollCache.top / this.characterSize.height);
 };
 
 hterm.ScrollPort.prototype.onScroll_ = function(e) {
-  this._scrollCache = null;
+  _scrollCache = null;
   var screenSize = this.getScreenSize();
   if (
     screenSize.width != this.lastScreenWidth_ ||
@@ -36,6 +38,12 @@ hterm.ScrollPort.prototype.onScroll_ = function(e) {
 
   this.redraw_();
   this.publish('scroll', { scrollPort: this });
+};
+hterm.Screen.prototype._insertString = hterm.Screen.prototype.insertString;
+
+hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
+  this._insertString(str, wcwidth);
+  _scrollCache = null; // we need safari to reflow...
 };
 
 // Speedup a little bit.
