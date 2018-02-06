@@ -413,7 +413,7 @@ char* hints(const char * line, int *color, int *bold)
     [NSString stringWithFormat:@"  %@+,: Open config.", flagsStr],
     [NSString stringWithFormat:@"  %@+m: Toggle music controls. (Control with %@+npsrb).", flagsStr, flagsStr],
     @"  pinch: Change font size.",
-    @"  selection mode: VIM users: hjklwboy, EMACS: ⌃-fbnpx, OTHER: arrows and fingers",
+    @"  selection mode: VIM users: hjklwboyp, EMACS: ⌃-fbnpx, OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\r\n"];
 

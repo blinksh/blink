@@ -18,5 +18,6 @@
 - (void)copyLink:(id)sender;
 - (void)openLink:(id)sender;
 - (void)yank:(id)sender;
+- (void)pasteSelection:(id)sender;
 
 @end

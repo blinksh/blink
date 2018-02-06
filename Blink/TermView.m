@@ -309,6 +309,9 @@
   NSMutableArray *items = [[NSMutableArray alloc] init];
   UIMenuController * menu = [UIMenuController sharedMenuController];
   
+  [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste selection"
+                                              action:@selector(pasteSelection:)]];
+  
   _detectedLink = [self _detectLinkInSelection:data];
   
   if (_detectedLink) {
@@ -377,6 +380,11 @@
 
 - (void)yank:(id)sender
 {
+}
+  
+- (void)pasteSelection:(id)sender
+{
+  
 }
 
 - (void)copy:(id)sender

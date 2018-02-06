@@ -480,6 +480,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate write:[CC CTRL:@"v"]];
   }
 }
+  
+- (void)pasteSelection:(id)sender
+{
+  NSString *str = _termDelegate.termView.selectedText;
+  if (str) {
+    [_termDelegate write:str];
+  }
+  [_termDelegate.termView cleanSelection];
+}
 
 // Cmd+a
 - (void)selectAll:(id)sender
@@ -537,6 +546,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     // The menu can only perform paste methods
     if (action == @selector(paste:) ||
         (action == @selector(copy:) && _termDelegate.termView.hasSelection) ||
+        (action == @selector(pasteSelection:) && _termDelegate.termView.hasSelection) ||
         (action == @selector(copyLink:) && _termDelegate.termView.detectedLink) ||
         (action == @selector(openLink:) && _termDelegate.termView.detectedLink)
       ) {
@@ -757,8 +767,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate.termView modifySideOfSelection];
   } else if ([input isEqualToString:@"n"] && flags == UIKeyModifierControl)  {
       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
-  } else if ([input isEqualToString:@"p"] && flags == UIKeyModifierControl)  {
+  } else if ([input isEqualToString:@"p"])  {
+    if (flags == UIKeyModifierControl) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
+    } else if (flags == kNilOptions) {
+      [self pasteSelection:self];
+    }
   } else if ([input isEqualToString:@"b"]) {
     if (flags == UIKeyModifierControl) {
       [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];

@@ -891,6 +891,12 @@
 {
   [self controlPanelOnPaste];
 }
+  
+- (void)pasteSelection:(id)sender
+{
+  [self _attachInputToCurrentTerm];
+  [_termInput pasteSelection:sender];
+}
 
 - (void)copyLink:(id)sender
 {
