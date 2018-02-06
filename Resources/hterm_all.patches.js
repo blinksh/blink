@@ -327,6 +327,8 @@ hterm.Screen.prototype.deleteChars = function(count) {
         setNodeText(node, hterm.TextAttributes.nodeSubstr(node, count));
         endLength = hterm.TextAttributes.nodeWidth(node);
       }
+    } else if (offset === startLength) {
+      endLength = startLength;
     } else {
       setNodeText(
         node,
@@ -406,20 +408,20 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
     return;
   }
 
-  // Blink: make operations on fragment
-  var nextSibling = this.cursorRowNode_.nextSibling;
-  var prevSibling = this.cursorRowNode_.previousSibling;
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(this.cursorRowNode_);
+  // Blink: make operations on detached node
+//  var parentNode = this.cursorRowNode_.parentNode;
+//  var nextSibling = this.cursorRowNode_.nextSibling;
+//  var fragment = document.createDocumentFragment();
+//  fragment.appendChild(this.cursorRowNode_);
   
   this.deleteChars(Math.min(wcwidth, maxLength));
   this.insertString(str, wcwidth);
   
-  if (nextSibling) {
-    nextSibling.parentNode.insertBefore(fragment, nextSibling);
-  } else if (prevSibling) {
-    prevSibling.parentNode.appendChild(fragment);
-  }
+//  if (nextSibling) {
+//    parentNode.insertBefore(fragment, nextSibling);
+//  } else {
+//    parentNode.appendChild(fragment);
+//  }
 };
 
 
@@ -427,11 +429,12 @@ hterm.TextAttributes.nodeWidth = function(node) {
   if (node._len !== undefined) {
     return node._len;
   }
-  if (!node.asciiNode) {
-    return lib.wc.strWidth(node.textContent);
-  } else {
-    return node.textContent.length;
+  var content = node.textContent;
+  if (node.asciiNode || node.nodeType === Node.TEXT_NODE) {
+    return content.length;
   }
+  
+  return lib.wc.strWidth(content);
 };
 
 

@@ -44,6 +44,7 @@ function setNodeText(node, text) {
   }
   
   node._len = len;
+  
   node.style.display = 'inline-block';
   node.style.overflowX = 'hidden';
   node.style.width = 'calc(var(--hterm-charsize-width) * ' + len + ')';
@@ -15452,7 +15453,10 @@ hterm.TextAttributes.prototype.createContainer = function(opt_textContent) {
     // Only attach attributes where we need an explicit default for the
     // matchContainer logic below.
     const node = this.document_.createTextNode(opt_textContent);
-    node.asciiNode = true;
+//    node.asciiNode = true;
+//    if (opt_textContent != null) {
+//      node._len = opt_textContent.length;
+//    }
     return node;
   }
 

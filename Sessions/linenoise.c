@@ -765,7 +765,7 @@ static void refreshLine(struct linenoiseState *l) {
  *
  * On error writing to the terminal -1 is returned, otherwise 0. */
 int linenoiseEditInsert(struct linenoiseState *l, const char *cbuf, int clen) {
-    if (l->len < l->buflen) {
+    if (l->len+clen <= l->buflen) {
         if (l->len == l->pos) {
             memcpy(&l->buf[l->pos],cbuf,clen);
             l->pos+=clen;
