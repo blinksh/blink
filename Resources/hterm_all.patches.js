@@ -192,39 +192,6 @@ hterm.ScrollPort.prototype.focus = function() {
   //this.screen_.focus();
 };
 
-hterm.TextAttributes.nodeWidth = function(node) {
-  if (node._len !== undefined) {
-    return node._len;
-  }
-  if (!node.asciiNode) {
-    return lib.wc.strWidth(node.textContent);
-  } else {
-    return node.textContent.length;
-  }
-};
-
-hterm.Screen.prototype.splitNode_ = function(node, offset) {
-  var afterNode = node.cloneNode(false);
-  
-  afterNode.asciiNode = node.asciiNode;
-  afterNode._len = node._len;
-  if (node.wcNode) {
-    afterNode.wcNode = node.wcNode;
-  }
-  
-  var textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
-  var afterTextContent = hterm.TextAttributes.nodeSubstr(node, offset);
-  
-  if (afterTextContent) {
-    setNodeText(afterNode, afterTextContent);
-    node.parentNode.insertBefore(afterNode, node.nextSibling);
-  }
-  if (textContent) {
-    setNodeText(node, textContent);
-  } else {
-    node.parentNode.removeChild(node);
-  }
-};
 
 hterm.Terminal.prototype.onFocusChange_ = function(focused) {};
 
@@ -330,72 +297,178 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
     this.screen_.syncSelectionCaret(selection);
 };
 
-//lib.wc.strWidth = function(str) {
-//var h, l;
-//var s = 0,
-//n,
-//len = str.length;
+// Optimizations
 
-//for (var i = 0; i < len; i++) {
-//h = str.charCodeAt(i);
-//if (h >= 0xd800 && h <= 0xdbff) {
-//l = str.charCodeAt(++i);
-//if (l >= 0xdc00 && l <= 0xdfff)
-//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
-//else i--;
-//}
-//n = lib.wc.charWidth(h);
-//if (n < 0) return -1;
-//s += n;
-//}
+hterm.Screen.prototype.deleteChars = function(count) {
+  var node = this.cursorNode_;
+  var offset = this.cursorOffset_;
 
-//return s;
-//};
+  var currentCursorColumn = this.cursorPosition.column;
+  count = Math.min(count, this.columnCount_ - currentCursorColumn);
+  if (!count) return 0;
 
-//lib.wc.substr = function(str, start, opt_width) {
-//var startIndex = 0,
-//len = str.length;
-//var endIndex, width, h, l;
+  var rv = count;
+  var startLength, endLength;
 
-//// Fun edge case: Normally we associate zero width codepoints (like combining
-//// characters) with the previous codepoint, so we skip any leading ones while
-//// including trailing ones.  However, if there are zero width codepoints at
-//// the start of the string, and the substring starts at 0, lets include them
-//// in the result.  This also makes for a simple optimization for a common
-//// request.
-//if (start) {
-//for (width = 0; startIndex < len; startIndex++) {
-//h = str.codePointAt(startIndex);
-//if (h >= 0xd800 && h <= 0xdbff) {
-//l = str.charCodeAt(++startIndex);
-//if (l >= 0xdc00 && l <= 0xdfff)
-//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
-//else startIndex--;
-//}
+  while (node && count) {
+    // Sanity check so we don't loop forever, but we don't also go quietly.
+    if (count < 0) {
+      console.error(`Deleting ${rv} chars went negative: ${count}`);
+      break;
+    }
 
-//width += lib.wc.charWidth(h);
-//if (width > start) {
-//break;
-//}
-//}
-//}
+    startLength = hterm.TextAttributes.nodeWidth(node);
+    // Blink: optimization path with offset 0
+    if (offset === 0) {
+      if (count >= startLength) {
+        node.textContent = '';
+        endLength = 0;
+      } else {
+        setNodeText(node, hterm.TextAttributes.nodeSubstr(node, count));
+        endLength = hterm.TextAttributes.nodeWidth(node);
+      }
+    } else {
+      setNodeText(
+        node,
+        hterm.TextAttributes.nodeSubstr(node, 0, offset) +
+          hterm.TextAttributes.nodeSubstr(node, offset + count),
+      );
+      endLength = hterm.TextAttributes.nodeWidth(node);
+    }
 
-//if (opt_width != undefined) {
-//for (endIndex = startIndex, width = 0; endIndex < len; endIndex++) {
-//h = str.codePointAt(endIndex);
-//if (h >= 0xd800 && h <= 0xdbff) {
-//l = str.charCodeAt(++endIndex);
-//if (l >= 0xdc00 && l <= 0xdfff)
-//h = (h - 0xd800) * 0x400 + (l - 0xdc00) + 0x10000;
-//else endIndex--;
-//}
-//width += lib.wc.charWidth(h);
-//if (width > opt_width) {
-//break;
-//}
-//}
-//return str.substring(startIndex, endIndex);
-//}
+    // Deal with splitting wide characters.  There are two ways: we could delete
+    // the first column or the second column.  In both cases, we delete the wide
+    // character and replace one of the columns with a space (since the other
+    // was deleted).  If there are more chars to delete, the next loop will pick
+    // up the slack.
+    if (
+      node.wcNode &&
+      offset < startLength &&
+      ((endLength && startLength == endLength) || (!endLength && offset == 1))
+    ) {
+      // No characters were deleted when there should be.  We're probably trying
+      // to delete one column width from a wide character node.  We remove the
+      // wide character node here and replace it with a single space.
+      var spaceNode = this.textAttributes.createContainer(' ');
+      node.parentNode.insertBefore(spaceNode, offset ? node : node.nextSibling);
+      setNodeText(node, '');
+      endLength = 0;
+      count -= 1;
+    } else count -= startLength - endLength;
 
-//return str.substr(startIndex);
-//};
+    var nextNode = node.nextSibling;
+    if (endLength == 0 && node != this.cursorNode_) {
+      node.parentNode.removeChild(node);
+    }
+    node = nextNode;
+    offset = 0;
+  }
+
+  // Remove this.cursorNode_ if it is an empty non-text node.
+  if (
+    this.cursorNode_.nodeType != Node.TEXT_NODE &&
+    !this.cursorNode_.textContent
+  ) {
+    var cursorNode = this.cursorNode_;
+    if (cursorNode.previousSibling) {
+      this.cursorNode_ = cursorNode.previousSibling;
+      this.cursorOffset_ = hterm.TextAttributes.nodeWidth(
+        cursorNode.previousSibling,
+      );
+    } else if (cursorNode.nextSibling) {
+      this.cursorNode_ = cursorNode.nextSibling;
+      this.cursorOffset_ = 0;
+    } else {
+      var emptyNode = this.cursorRowNode_.ownerDocument.createTextNode('');
+      this.cursorRowNode_.appendChild(emptyNode);
+      this.cursorNode_ = emptyNode;
+      this.cursorOffset_ = 0;
+    }
+    this.cursorRowNode_.removeChild(cursorNode);
+  }
+
+  return rv;
+};
+
+hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
+  var maxLength = this.columnCount_ - this.cursorPosition.column;
+  if (!maxLength) return [str];
+
+  if (wcwidth === undefined) wcwidth = lib.wc.strWidth(str);
+
+  if (
+    this.textAttributes.matchesContainer(this.cursorNode_) &&
+    this.cursorNode_.textContent.substr(this.cursorOffset_) == str
+  ) {
+    // This overwrite would be a no-op, just move the cursor and return.
+    this.cursorOffset_ += wcwidth;
+    this.cursorPosition.column += wcwidth;
+    return;
+  }
+
+  // Blink: make operations on fragment
+  var nextSibling = this.cursorRowNode_.nextSibling;
+  var prevSibling = this.cursorRowNode_.previousSibling;
+  var fragment = document.createDocumentFragment();
+  fragment.appendChild(this.cursorRowNode_);
+  
+  this.deleteChars(Math.min(wcwidth, maxLength));
+  this.insertString(str, wcwidth);
+  
+  if (nextSibling) {
+    nextSibling.parentNode.insertBefore(fragment, nextSibling);
+  } else if (prevSibling) {
+    prevSibling.parentNode.appendChild(fragment);
+  }
+};
+
+
+hterm.TextAttributes.nodeWidth = function(node) {
+  if (node._len !== undefined) {
+    return node._len;
+  }
+  if (!node.asciiNode) {
+    return lib.wc.strWidth(node.textContent);
+  } else {
+    return node.textContent.length;
+  }
+};
+
+
+hterm.Screen.prototype.splitNode_ = function(node, offset) {
+  var afterNode = node.cloneNode(false);
+
+  // Blink: Copy attributes back to afterNode
+  afterNode.asciiNode = node.asciiNode;
+  afterNode._len = node._len;
+  if (node.wcNode) {
+    afterNode.wcNode = node.wcNode;
+  }
+  
+  var textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
+  var afterTextContent = hterm.TextAttributes.nodeSubstr(node, offset);
+  
+  if (afterTextContent) {
+    setNodeText(afterNode, afterTextContent);
+    node.parentNode.insertBefore(afterNode, node.nextSibling);
+  }
+  if (textContent) {
+    setNodeText(node, textContent);
+  } else {
+    node.parentNode.removeChild(node);
+  }
+};
+
+hterm.Terminal.prototype.scheduleSyncCursorPosition_ = function() {
+  if (this.timeouts_.syncCursor)
+    return;
+  
+  var self = this;
+  this.timeouts_.syncCursor = requestAnimationFrame(function() {
+                                         self.syncCursorPosition_();
+                                         delete self.timeouts_.syncCursor;
+                                         });
+};
+
+
+

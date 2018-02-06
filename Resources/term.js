@@ -39,12 +39,12 @@ hterm.ScrollPort.prototype.onScroll_ = function(e) {
   this.redraw_();
   this.publish('scroll', { scrollPort: this });
 };
-hterm.Screen.prototype._insertString = hterm.Screen.prototype.insertString;
-
-hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
-  this._insertString(str, wcwidth);
-  _scrollCache = null; // we need safari to reflow...
-};
+//hterm.Screen.prototype._insertString = hterm.Screen.prototype.insertString;
+//
+//hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
+//  this._insertString(str, wcwidth);
+//  _scrollCache = null; // we need safari to reflow...
+//};
 
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
