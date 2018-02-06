@@ -409,19 +409,19 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
   }
 
   // Blink: make operations on detached node
-//  var parentNode = this.cursorRowNode_.parentNode;
-//  var nextSibling = this.cursorRowNode_.nextSibling;
-//  var fragment = document.createDocumentFragment();
-//  fragment.appendChild(this.cursorRowNode_);
+  var prevSibling = this.cursorRowNode_.previousSibling;
+  var nextSibling = this.cursorRowNode_.nextSibling;
+  var fragment = document.createDocumentFragment();
+  fragment.appendChild(this.cursorRowNode_);
   
   this.deleteChars(Math.min(wcwidth, maxLength));
   this.insertString(str, wcwidth);
   
-//  if (nextSibling) {
-//    parentNode.insertBefore(fragment, nextSibling);
-//  } else {
-//    parentNode.appendChild(fragment);
-//  }
+  if (nextSibling) {
+    nextSibling.parentNode.insertBefore(fragment, nextSibling);
+  } else if (prevSibling) {
+    prevSibling.parentNode.appendChild(fragment);
+  }
 };
 
 
