@@ -56,6 +56,8 @@
     UIBarButtonItem * closeButton = [[UIBarButtonItem alloc]
                                      initWithBarButtonSystemItem:UIBarButtonSystemItemTrash
                                      target:self action:@selector(_close)];
+    closeButton.tintColor = [UIColor colorWithRed:253/255.0f green:67/255.0f blue:85/255.0f alpha:1];
+
     
     [_closeToolbar setItems:@[closeButton]];
     
