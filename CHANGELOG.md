@@ -1,15 +1,23 @@
 # Version 10.0
 	- Secured Mosh Persistent Connections and Restore.
+	- Image rendering!
 	- URL Links detection!
 	- Autocomplete for commands and hosts!
-	- Two fingers closes on-screen keyboard.
-	- Two fingers up now closes terminals.
+	- Two fingers swipe up shows a new "control command" section.
+	- Support for Remote Copy under SSH.
+	- iPhone users, two fingers closes on-screen keyboard.
+	- More and better emojis support.
 	- New WWDC16 theme.
 	- Added Light/Dark keyboard setting.
+	- Support for installed fonts, so no more CSS is required.
+	- Control selections with keyboard! Read help for more information.
+	- Copy - Paste now works in unfocused mode too.
+	- Paste Selection.
 
 	- Faster Terminal rendering thanks to better writing flows.
 	- Updated HTerm!
 	- Updated Mosh to 1.3!
+	- Updated MBProgressHUD to fix race conditions.
 
 	- Fixed stuck Cmd key (deal with iOS issues).
 	- Fixed swipe ups triggering SmartKeys.
@@ -19,6 +27,7 @@
 	- Improved focus when switching between apps.
 	- Improved and smoother animations.
 	- Improved accessoryView handling if other screen is active.
+	- Improved all gestures internally.
 	- Fixed tab caching after closed.
 	- Fixed issues with irregular character widths misaligning columns.
 	- Fixed vertical rendering of fonts in some specific scenarios.
