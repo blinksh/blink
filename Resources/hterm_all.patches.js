@@ -1,3 +1,5 @@
+'use strict';
+
 // Blink: this function is copied from htrem_all.js. Search for `Blink:` for our modification
 hterm.ScrollPort.prototype.decorate = function(div) {
   this.div_ = div;
@@ -409,19 +411,20 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
     return;
   }
 
-  // Blink: make operations on detached node
-  var prevSibling = this.cursorRowNode_.previousSibling;
-  var nextSibling = this.cursorRowNode_.nextSibling;
-  var fragment = document.createDocumentFragment();
-  fragment.appendChild(this.cursorRowNode_);
+
+  var node = this.cursorRowNode_;
+  var parent = this.cursorRowNode_.parentNode;
+  var next = this.cursorRowNode_.nextSibling
+  
+  if (parent) {
+    parent.removeChild(node);
+  }
   
   this.deleteChars(Math.min(wcwidth, maxLength));
   this.insertString(str, wcwidth);
   
-  if (nextSibling) {
-    nextSibling.parentNode.insertBefore(fragment, nextSibling);
-  } else if (prevSibling) {
-    prevSibling.parentNode.appendChild(fragment);
+  if (parent) {
+    parent[next ? "insertBefore":"append"](node, next);
   }
 };
 
@@ -434,21 +437,32 @@ hterm.TextAttributes.nodeWidth = function(node) {
   
   var content = node.textContent;
   // 2. If it asciiNode or text node use content length
-  if (node.asciiNode || node.nodeType === Node.TEXT_NODE) {
+  if (node.nodeType === Node.TEXT_NODE || node.asciiNode) {
     return content.length;
   }
   
-  // 3. We need to calculate wide char width
+  // 3. it is a row. Get width with nodeWidth in children
+  if (node.nodeName === 'X-ROW') {
+    var res = 0;
+    var n = node.firstChild;
+    while (n) {
+      res += hterm.TextAttributes.nodeWidth(n);
+      n = n.nextSibling;
+    }
+    return res;
+  }
+  
+  // 4. We need to calculate wide char width
   return lib.wc.strWidth(content);
 };
 
 hterm.TextAttributes.nodeSubstr = function(node, start, width) {
   var content = node.textContent;
 
-  if (node.asciiNode || node.nodeType === Node.TEXT_NODE) {
+  if (node.nodeType === Node.TEXT_NODE || node.asciiNode) {
     return content.substr(start, width);
   }
-  
+
   return lib.wc.substr(content, start, width);
 }
 
