@@ -27,27 +27,35 @@
 
 'use strict';
 
-function setNodeText(node, text) {
+function setNodeText(node, text, opt_wcwidth) {
   node.textContent = text;
   
   if (node.nodeType === Node.TEXT_NODE) {
     return;
   }
   
-  var len = text.length;
-  if (len && !node.asciiNode) {
-    len = lib.wc.strWidth(text);
+  var len = 0;
+  if (typeof opt_wcwidth !== 'undefined') {
+    len = opt_wcwidth;
+  } else {
+    len = text.length;
+    if (len && !node.asciiNode) {
+      len = lib.wc.strWidth(text);
+    }
   }
   
-  if (node._len === len) {
+  var prevLen = node._len;
+  if (prevLen === len) {
     return;
   }
   
-  node._len = len;
-  
-  node.style.display = 'inline-block';
-  node.style.overflowX = 'hidden';
+  if (prevLen === undefined) {
+    node.style.display = 'inline-block';
+    node.style.overflowX = 'hidden';
+  }
   node.style.width = 'calc(var(--hterm-charsize-width) * ' + len + ')';
+  
+  node._len = len;
 }
 
 if (typeof lib != 'undefined')
@@ -9429,7 +9437,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
       return;
     }
 
-    var newNode = this.textAttributes.createContainer(str);
+    var newNode = this.textAttributes.createContainer(str, wcwidth);
     this.cursorRowNode_.insertBefore(newNode, cursorNode);
     this.cursorNode_ = newNode;
     this.cursorOffset_ = wcwidth;
@@ -9447,7 +9455,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
       return;
     }
 
-    var newNode = this.textAttributes.createContainer(str);
+    var newNode = this.textAttributes.createContainer(str, wcwidth);
     this.cursorRowNode_.insertBefore(newNode, nextSibling);
     this.cursorNode_ = newNode;
     // We specifically need to include any missing whitespace here, since it's
@@ -9459,7 +9467,7 @@ hterm.Screen.prototype.insertString = function(str, wcwidth=undefined) {
   // Worst case, we're somewhere in the middle of the cursor node.  We'll
   // have to split it into two nodes and insert our new container in between.
   this.splitNode_(cursorNode, offset);
-  var newNode = this.textAttributes.createContainer(str);
+  var newNode = this.textAttributes.createContainer(str, wcwidth);
   this.cursorRowNode_.insertBefore(newNode, cursorNode.nextSibling);
   this.cursorNode_ = newNode;
   this.cursorOffset_ = wcwidth;
@@ -9538,7 +9546,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
       // No characters were deleted when there should be.  We're probably trying
       // to delete one column width from a wide character node.  We remove the
       // wide character node here and replace it with a single space.
-      var spaceNode = this.textAttributes.createContainer(' ');
+      var spaceNode = this.textAttributes.createContainer(' ', 1);
       node.parentNode.insertBefore(spaceNode, offset ? node : node.nextSibling);
       setNodeText(node, '');
       endLength = 0;
@@ -15448,7 +15456,7 @@ hterm.TextAttributes.prototype.isDefault = function() {
  * @return {HTMLNode} An HTML span or text nodes styled to match the current
  *     attributes.
  */
-hterm.TextAttributes.prototype.createContainer = function(opt_textContent) {
+hterm.TextAttributes.prototype.createContainer = function(opt_textContent, opt_wcwidth) {
   if (this.isDefault()) {
     // Only attach attributes where we need an explicit default for the
     // matchContainer logic below.
@@ -15512,7 +15520,7 @@ hterm.TextAttributes.prototype.createContainer = function(opt_textContent) {
   }
 
   if (opt_textContent) {
-    setNodeText(span, opt_textContent);
+    setNodeText(span, opt_textContent, opt_wcwidth);
   }
 
   if (this.uri) {
