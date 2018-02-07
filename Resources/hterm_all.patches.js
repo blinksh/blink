@@ -318,7 +318,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
     }
 
     startLength = hterm.TextAttributes.nodeWidth(node);
-    // Blink: optimization path with offset 0
+    // Blink: optimization path for offset 0
     if (offset === 0) {
       if (count >= startLength) {
         node.textContent = '';
@@ -327,7 +327,8 @@ hterm.Screen.prototype.deleteChars = function(count) {
         setNodeText(node, hterm.TextAttributes.nodeSubstr(node, count));
         endLength = hterm.TextAttributes.nodeWidth(node);
       }
-    } else if (offset === startLength) {
+      // Blink: optimization path for offset >= startLength
+    } else if (offset >= startLength) {
       endLength = startLength;
     } else {
       setNodeText(
@@ -426,16 +427,30 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
 
 
 hterm.TextAttributes.nodeWidth = function(node) {
+  // 1. Try to use cached version. see hterm.setNodeText
   if (node._len !== undefined) {
     return node._len;
   }
+  
   var content = node.textContent;
+  // 2. If it asciiNode or text node use content length
   if (node.asciiNode || node.nodeType === Node.TEXT_NODE) {
     return content.length;
   }
   
+  // 3. We need to calculate wide char width
   return lib.wc.strWidth(content);
 };
+
+hterm.TextAttributes.nodeSubstr = function(node, start, width) {
+  var content = node.textContent;
+
+  if (node.asciiNode || node.nodeType === Node.TEXT_NODE) {
+    return content.substr(start, width);
+  }
+  
+  return lib.wc.substr(content, start, width);
+}
 
 
 hterm.Screen.prototype.splitNode_ = function(node, offset) {
@@ -472,6 +487,22 @@ hterm.Terminal.prototype.scheduleSyncCursorPosition_ = function() {
                                          delete self.timeouts_.syncCursor;
                                          });
 };
+
+lib.wc.strWidth = function(str) {
+  var width, rv = 0;
+  
+  for (var i = 0, len = str.length; i < len;) {
+    var codePoint = str.codePointAt(i);
+    width = lib.wc.charWidth(codePoint);
+    if (width < 0)
+      return -1;
+    rv += width;
+    i += (codePoint <= 0xffff) ? 1 : 2;
+  }
+  
+  return rv;
+};
+
 
 
 

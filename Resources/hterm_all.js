@@ -29,12 +29,12 @@
 
 function setNodeText(node, text) {
   node.textContent = text;
-  var len = text.length;
   
-  if (node.nodeName !== 'SPAN') {
+  if (node.nodeType === Node.TEXT_NODE) {
     return;
   }
   
+  var len = text.length;
   if (len && !node.asciiNode) {
     len = lib.wc.strWidth(text);
   }
