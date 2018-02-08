@@ -49,9 +49,15 @@
   UIBackgroundTaskIdentifier _suspendTaskId;
   BOOL _suspendedMode;
 }
+  
+void _on_pipebroken_signal(int signum){
+  NSLog(@"PIPE is broken");
+}
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  signal(SIGPIPE, _on_pipebroken_signal);
+  
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
   // Override point for customization after application launch.
 #if HOCKEYSDK

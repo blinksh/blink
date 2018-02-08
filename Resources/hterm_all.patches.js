@@ -305,9 +305,9 @@ hterm.Screen.prototype.deleteChars = function(count) {
   var node = this.cursorNode_;
   var offset = this.cursorOffset_;
 
-  var currentCursorColumn = this.cursorPosition.column;
-  count = Math.min(count, this.columnCount_ - currentCursorColumn);
-  if (!count) return 0;
+//  var currentCursorColumn = this.cursorPosition.column;
+//  count = Math.min(count, this.columnCount_ - currentCursorColumn);
+//  if (!count) return 0;
 
   var rv = count;
   var startLength, endLength;
@@ -410,21 +410,16 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
     this.cursorPosition.column += wcwidth;
     return;
   }
-
-
-  var node = this.cursorRowNode_;
-  var parent = this.cursorRowNode_.parentNode;
-  var next = this.cursorRowNode_.nextSibling
   
-  if (parent) {
-    parent.removeChild(node);
-  }
-  
-  this.deleteChars(Math.min(wcwidth, maxLength));
-  this.insertString(str, wcwidth);
-  
-  if (parent) {
-    parent[next ? "insertBefore":"append"](node, next);
+  // Blink optimization: Nothing to delete, just insert
+  if (this.cursorOffset_ === 0 &&
+      this.cursorPosition.column === 0 &&
+      this.cursorRowNode_.textContent.length === 0) {
+      this.insertString(str, wcwidth);
+  } else {
+    // Blink optimization: if we insert first. It is more likly we will match text
+    this.insertString(str, wcwidth);
+    this.deleteChars(wcwidth);
   }
 };
 
