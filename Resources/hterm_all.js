@@ -31,6 +31,15 @@ function setNodeText(node, text, opt_wcwidth) {
   node.textContent = text;
   
   if (node.nodeType === Node.TEXT_NODE) {
+
+    var parent = node.parentNode;
+    var next = node.nextSibling;
+    
+    if (parent) {
+      parent.removeChild(node);
+      parent[next ? "insertBefore":"appendChild"](node, next);
+    }
+    
     return;
   }
   
