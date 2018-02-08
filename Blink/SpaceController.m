@@ -884,6 +884,11 @@
 
 - (void)copy:(id)sender
 {
+  // Accessibility speak try to copy selection. (notices on iphone)
+  if (sender == nil) {
+    return;
+  }
+
   [_termInput copy: sender];
 }
 
