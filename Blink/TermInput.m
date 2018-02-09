@@ -298,6 +298,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (NSString *)textInputContextIdentifier
 {
+  // Remember current input
   return @"terminput";
 }
 
@@ -444,9 +445,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)metaSeq:(UIKeyCommand *)cmd
 {
-  if ([cmd.input isEqual:@"e"]) {
+//  if ([cmd.input isEqual:@"e"]) {
     //_disableAccents = YES;
-  }
+//  }
   
   if  (_termDelegate.termView.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
@@ -497,10 +498,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-
 - (BOOL)_remapCmdSeqWidthSender:(id)sender andInput:(NSString *)input
 {
-  if (!_cmdModifierSequence || [sender isKindOfClass:[UIMenuController class]]) {
+  if (!_cmdModifierSequence ||
+      [sender isKindOfClass:[UIMenuController class]]) {
     return NO;
   }
 
@@ -552,15 +553,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _remapCmdSeqWidthSender:manager andInput:@"Z"];
 }
 
-- (void)pasteSelection:(id)sender
-{
-  NSString *str = _termDelegate.termView.selectedText;
-  if (str) {
-    [_termDelegate write:str];
-  }
-  [_termDelegate.termView cleanSelection];
-}
-
 // Cmd+a
 - (void)selectAll:(id)sender
 {
@@ -580,6 +572,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)toggleUnderline:(id)sender
 {
   [self _remapCmdSeqWidthSender:sender andInput:@"u"];
+}
+
+- (void)pasteSelection:(id)sender
+{
+  NSString *str = _termDelegate.termView.selectedText;
+  if (str) {
+    [_termDelegate write:str];
+  }
+  [_termDelegate.termView cleanSelection];
 }
 
 - (void)copyLink:(id)sender
@@ -687,7 +688,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     if (seq == TermViewCtrlSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
     } else if (seq == TermViewEscSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
+      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]{}\\|;':\",./<>?";
     } else if (seq == TermViewAutoRepeateSeq){
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
     } else {
