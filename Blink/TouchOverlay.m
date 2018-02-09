@@ -195,11 +195,6 @@ const CGFloat kToolBarHeight = 82;
   [self _resetOtherInteractions];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-  
-}
-
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
   
