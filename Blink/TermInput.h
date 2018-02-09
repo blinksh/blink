@@ -10,6 +10,17 @@
 #import <UIKit/UIKit.h>
 #import "TermView.h"
 
+@class UndoManager;
+
+@protocol UndoManagerDelegate
+- (void)undoWithManager:(UndoManager *)manager;
+- (void)redoWithManager:(UndoManager *)manager;
+@end
+
+@interface UndoManager: NSUndoManager
+@property (weak) id<UndoManagerDelegate> undoManagerDelegate;
+@end
+
 @interface TermInput : UITextView
 
 @property BOOL raw;
