@@ -231,6 +231,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 
   // Free the BIO key memory
   BIO_free(fpub);
+  free(pEncoding);
 
   NSString *commentedKey = [NSString stringWithFormat:@"%@ %@",key, comment];
   return commentedKey;
