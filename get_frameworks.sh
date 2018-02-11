@@ -10,7 +10,11 @@ GHROOT="https://github.com/blinksh"
 HHROOT="https://github.com/holzschu"
 
 (cd "${BASH_SOURCE%/*}/Frameworks"
-# libssh2
+# ios_system
+echo "Downloading ios_system.framework.zip"
+curl -OL $HHROOT/ios_system/releases/download/v$IOS_SYSTEM_VER/release.tar.gz
+( tar -xzf release.tar.gz --strip 1 && rm release.tar.gz ) || { echo "ios_system failed to download"; exit 1; }
+#libssh2
 echo "Downloading libssh2-$LIBSSH2_VER.framework.tar.gz"
 curl -OL $GHROOT/libssh2-for-iOS/releases/download/$LIBSSH2_VER/libssh2-$LIBSSH2_VER.framework.tar.gz
 ( tar -zxf libssh2-*.tar.gz && rm libssh2-*.tar.gz ) || { echo "Libssh2 framework failed to download"; exit 1; }
@@ -26,10 +30,6 @@ curl -OL $GHROOT/build-mosh/releases/download/$LIBMOSH_VER/libmoshios-$LIBMOSH_V
 echo "Downloading protobuf-$PROTOBF_VER.framework.tar.gz"
 curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF_VER.tar.gz
 ( tar -zxf protobuf-*.tar.gz && cp protobuf-*/lib/libprotobuf.a ./lib/ && rm -rf protobuf-* ) || { echo "Protobuf framework failed to download"; exit 1; }
-# ios_system
-echo "Downloading ios_system.framework.zip"
-curl -OL $HHROOT/ios_system/releases/download/v$IOS_SYSTEM_VER/release.tar.gz
-( tar -xzf release.tar.gz && rm release.tar.gz && mv release/* . ) || { echo "ios_system failed to download"; exit 1; }
 )
 
 # We need ios_system for the sources of curl_static too:
