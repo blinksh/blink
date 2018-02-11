@@ -45,7 +45,6 @@
 
 // from ios_system:
 #include "ios_system/ios_system.h"
-extern int curl_static_main(int argc, char** argv);
 
 #define MCP_MAX_LINE 4096
 
@@ -176,7 +175,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
   NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   initializeEnvironment(); // initialize environment variables for iOS system
-  replaceCommand(@"curl", curl_static_main, true); // replace curl in ios_system with our own, accessing Blink keys.
+  replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
