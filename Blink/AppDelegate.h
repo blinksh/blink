@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -15,15 +15,15 @@
 // but WITHOUT ANY WARRANTY; without even the implied warranty of
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 // GNU General Public License for more details.
-// 
+//
 // You should have received a copy of the GNU General Public License
 // along with Blink. If not, see <http://www.gnu.org/licenses/>.
-// 
+//
 // In addition, Blink is also subject to certain additional terms under
 // GNU GPL version 3 section 7.
 //
-// You should have received a copy of these additional terms immediately 
-// following the terms and conditions of the GNU General Public License 
+// You should have received a copy of these additional terms immediately
+// following the terms and conditions of the GNU General Public License
 // which accompanied the Blink Source Code. If not, see
 // <http://www.github.com/blinksh/blink>.
 //
