@@ -32,10 +32,14 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+extern const NSNotificationName BKUserAuthenticated;
 
 @interface BKTouchIDAuthManager : NSObject
 
-+ (id)sharedManager;
+@property (nonatomic, strong) UIViewController *rootViewController;
+@property (nonatomic, strong) UIViewController *lockViewController;
+
++ (instancetype)sharedManager;
 + (BOOL)requiresTouchAuth;
 - (void)registerforDeviceLockNotif;
 

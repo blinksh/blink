@@ -33,6 +33,8 @@
 #import "BKUserConfigurationManager.h"
 #import "Blink-swift.h"
 
+const NSNotificationName BKUserAuthenticated = @"BKUserAuthenticated";
+
 @import LocalAuthentication;
 
 #define MAX_INTERVAL_INACTIVE 10 * 60
@@ -40,18 +42,11 @@
 static BKTouchIDAuthManager *sharedManager = nil;
 static BOOL authRequired = NO;
 
-@interface BKTouchIDAuthManager ()
-
-@property (nonatomic, strong) UIViewController *rootViewController;
-@property (nonatomic, strong) PasscodeLockViewController *lockViewController;
-
-@end
-
 @implementation BKTouchIDAuthManager {
   NSTimeInterval inactiveTimeStamp;
 }
 
-+ (id)sharedManager
++ (instancetype)sharedManager
 {
   if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock]) {
     if (sharedManager == nil) {
@@ -129,24 +124,23 @@ static BOOL authRequired = NO;
   
   UIApplication *app = [UIApplication sharedApplication];
   
-  _lockViewController = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];
+  PasscodeLockViewController *ctrl = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];
 
   __weak BKTouchIDAuthManager *weakSelf = self;
   
-  _lockViewController.dismissCompletionCallback = ^{
+  ctrl.dismissCompletionCallback = ^{
     authRequired = NO;
     [[app keyWindow] setRootViewController:weakSelf.rootViewController];
     
     weakSelf.lockViewController = nil;
     weakSelf.rootViewController = nil;
     
-    // HACK: focusOnShell is an action. so no type dependency here. But still action dependency.
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-      [[[app keyWindow] rootViewController] becomeFirstResponder];
-      [app sendAction:NSSelectorFromString(@"focusOnShell") to:nil from:nil forEvent:nil];
+      [[NSNotificationCenter defaultCenter] postNotificationName:BKUserAuthenticated object:nil];
     }];
   };
   
+  _lockViewController = ctrl;
   _rootViewController = [[app keyWindow] rootViewController];
   [[app keyWindow] setRootViewController:_lockViewController];
 }
