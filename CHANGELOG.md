@@ -7,6 +7,8 @@
 	- Support for Remote Copy under SSH.
 	- iPhone users, two fingers closes on-screen keyboard.
 	- More and better emojis support.
+	- Added "history" command to cleanup the history file.
+	- Bold fonts now with an option for bold or bright.
 	- New WWDC16 theme.
 	- Added Light/Dark keyboard setting.
 	- Support for installed fonts, so no more CSS is required.
@@ -21,7 +23,7 @@
 
 	- Fixed stuck Cmd key (deal with iOS issues).
 	- Fixed swipe ups triggering SmartKeys.
-	- Fixed Cmd as Ctrl for Ctrl+C
+	- Fixed Cmd as Ctrl for Ctrl+C and Ctlr+Z
 	- Fixed resize glitches.
 	- Improved loading time for terminal and custom fonts.
 	- Improved focus when switching between apps.
