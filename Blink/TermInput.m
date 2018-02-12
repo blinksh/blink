@@ -445,10 +445,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)metaSeq:(UIKeyCommand *)cmd
 {
-//  if ([cmd.input isEqual:@"e"]) {
-    //_disableAccents = YES;
-//  }
-  
   if  (_termDelegate.termView.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
   } else {
@@ -498,7 +494,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (BOOL)_remapCmdSeqWidthSender:(id)sender andInput:(NSString *)input
+- (BOOL)_remapCmdSeqWithSender:(id)sender andInput:(NSString *)input
 {
   if (!_cmdModifierSequence ||
       [sender isKindOfClass:[UIMenuController class]]) {
@@ -524,19 +520,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  if (![self _remapCmdSeqWidthSender:sender andInput:@"c"]) {
+  if (![self _remapCmdSeqWithSender:sender andInput:@"c"]) {
     [_termDelegate.termView copy:sender];
   }
 }
 // Cmd+x
 - (void)cut:(id)sender
 {
-  [self _remapCmdSeqWidthSender:sender andInput:@"x"];
+  [self _remapCmdSeqWithSender:sender andInput:@"x"];
 }
 // Cmd+v
 - (void)paste:(id)sender
 {
-  if (![self _remapCmdSeqWidthSender:sender andInput:@"v"]) {
+  if (![self _remapCmdSeqWithSender:sender andInput:@"v"]) {
     [self yank:sender];
   }
 }
@@ -544,34 +540,34 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+z
 - (void)undoWithManager:(UndoManager *)manager
 {
-  [self _remapCmdSeqWidthSender:manager andInput:@"z"];
+  [self _remapCmdSeqWithSender:manager andInput:@"z"];
 }
 
 // Cmd+Z
 - (void)redoWithManager:(UndoManager *)manager
 {
-  [self _remapCmdSeqWidthSender:manager andInput:@"Z"];
+  [self _remapCmdSeqWithSender:manager andInput:@"Z"];
 }
 
 // Cmd+a
 - (void)selectAll:(id)sender
 {
-  [self _remapCmdSeqWidthSender:sender andInput:@"a"];
+  [self _remapCmdSeqWithSender:sender andInput:@"a"];
 }
 // Cmd+b
 - (void)toggleBoldface:(id)sender
 {
-  [self _remapCmdSeqWidthSender:sender andInput:@"b"];
+  [self _remapCmdSeqWithSender:sender andInput:@"b"];
 }
 // Cmd+i
 - (void)toggleItalics:(id)sender
 {
-  [self _remapCmdSeqWidthSender:sender andInput:@"i"];
+  [self _remapCmdSeqWithSender:sender andInput:@"i"];
 }
 // Cmd+u
 - (void)toggleUnderline:(id)sender
 {
-  [self _remapCmdSeqWidthSender:sender andInput:@"u"];
+  [self _remapCmdSeqWithSender:sender andInput:@"u"];
 }
 
 - (void)pasteSelection:(id)sender

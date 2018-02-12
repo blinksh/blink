@@ -184,12 +184,14 @@ const CGFloat kToolBarHeight = 82;
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
 {
+  // The NO / YES process makes it forget about previous events and avoids collisions.
   _pinchGestureRecognizer.enabled = NO;
   _pinchGestureRecognizer.enabled = YES;
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+  // The NO / YES process makes it forget about previous events and avoids collisions.
   _pinchGestureRecognizer.enabled = NO;
   _pinchGestureRecognizer.enabled = YES;
   [self _resetOtherInteractions];
