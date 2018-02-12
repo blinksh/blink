@@ -38,7 +38,9 @@
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
 #define CURSOR_BLINK_TAG 2003
-#define LIGHT_KEYBOARD_TAG 2004
+#define BOLD_AS_BRIGHT_TAG 2004
+#define LIGHT_KEYBOARD_TAG 2005
+#define ENABLE_BOLD_TAG 2006
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -64,8 +66,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   UISwitch *_cursorBlinkSwitch;
   BOOL _cursorBlinkValue;
   
+  UISwitch *_boldAsBrightSwitch;
+  BOOL _boldAsBrightValue;
+  
   UISwitch *_lightKeyboardSwitch;
   BOOL _lightKeyboardValue;
+  
+  UISegmentedControl *_enableBoldSegmentedControl;
+  NSUInteger _enableBoldValue;
 }
 
 - (void)viewDidLoad
@@ -107,7 +115,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     _selectedFontIndexPath = [NSIndexPath indexPathForRow:row inSection:BKAppearance_Fonts];
   }
   _cursorBlinkValue = [BKDefaults isCursorBlink];
+  _boldAsBrightValue = [BKDefaults isBoldAsBright];
   _lightKeyboardValue = [BKDefaults isLightKeyboard];
+  _enableBoldValue = [BKDefaults enableBold];
 }
 
 - (void)saveDefaultValues
@@ -123,7 +133,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   [BKDefaults setCursorBlink:_cursorBlinkValue];
+  [BKDefaults setBoldAsBright:_boldAsBrightValue];
   [BKDefaults setLightKeyboard:_lightKeyboardValue];
+  [BKDefaults setEnableBold: _enableBoldValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -149,7 +161,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_KeyboardAppearance) {
     return 1;
   } else {
-    return 2;
+    return 4;
   }
 }
 
@@ -200,6 +212,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_FontSize) {
     if (indexPath.row == 0) {
       cellIdentifier = @"fontSizeCell";
+    } else if (indexPath.row == 1) {
+      cellIdentifier = @"enableBoldCell";
+    } else if (indexPath.row == 2) {
+      cellIdentifier = @"boldAsBrightCell";
     } else {
       cellIdentifier = @"cursorBlinkCell";
     }
@@ -256,6 +272,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _fontSizeField.placeholder = @"";
     }
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
+    _enableBoldSegmentedControl = [cell viewWithTag:ENABLE_BOLD_TAG];
+    _enableBoldSegmentedControl.selectedSegmentIndex = _enableBoldValue;
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 2) {
+    _boldAsBrightSwitch = [cell viewWithTag:BOLD_AS_BRIGHT_TAG];
+    _boldAsBrightSwitch.on = _boldAsBrightValue;
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 3) {
     _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
     _cursorBlinkSwitch.on = _cursorBlinkValue;
   } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
@@ -375,6 +397,18 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [_termView setCursorBlink:_cursorBlinkValue];
 }
 
+- (IBAction)boldAsBrightSwitchChanged:(id)sender
+{
+  _boldAsBrightValue = _boldAsBrightSwitch.on;
+  [_termView setBoldAsBright:_boldAsBrightValue];
+}
+
+- (IBAction)enableBoldChanged:(UISegmentedControl *)sender
+{
+  _enableBoldValue = sender.selectedSegmentIndex;
+  [_termView setBoldEnabled:_enableBoldValue];
+}
+
 - (IBAction)lightKeyboardSwitchChanged:(id)sender
 {
   _lightKeyboardValue = _lightKeyboardSwitch.on;
@@ -386,6 +420,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (void)terminalIsReady:(NSDictionary *)data
 {
   [_termView setCursorBlink:_cursorBlinkValue];
+  [_termView setBoldAsBright:_boldAsBrightValue];
   [_termView setWidth:60];
   [self _writeColorShowcase];
 }

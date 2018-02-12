@@ -69,6 +69,8 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _shiftAsEsc = [coder decodeBoolForKey:@"shiftAsEsc"];
   _autoRepeatKeys = [coder decodeBoolForKey:@"autoRepeatKeys"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
+  _enableBold = [coder decodeIntegerForKey:@"enableBold"];
+  _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
   _lightKeyboard = [coder decodeBoolForKey:@"lightKeyboard"];
   return self;
 }
@@ -85,6 +87,8 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_shiftAsEsc forKey:@"shiftAsEsc"];
   [encoder encodeBool:_autoRepeatKeys forKey:@"autoRepeatKeys"];
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
+  [encoder encodeInteger:_enableBold forKey:@"enableBold"];
+  [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
   [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
 }
 
@@ -179,9 +183,19 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   defaults.cursorBlink = state;
 }
 
++ (void)setBoldAsBright:(BOOL)state
+{
+  defaults.boldAsBright = state;
+}
+
 + (void)setLightKeyboard:(BOOL)state
 {
   defaults.lightKeyboard = state;
+}
+
++ (void)setEnableBold:(NSUInteger)state
+{
+  defaults.enableBold = state;
 }
 
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func
@@ -269,6 +283,16 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)isCursorBlink
 {
   return defaults.cursorBlink;
+}
+
++ (NSUInteger)enableBold
+{
+  return defaults.enableBold;
+}
+
++ (BOOL)isBoldAsBright
+{
+  return defaults.boldAsBright;
 }
 
 + (BOOL)isLightKeyboard

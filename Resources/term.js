@@ -81,7 +81,6 @@ function term_get(key) {
 }
 
 function term_setupDefaults() {
-  term_set('enable-bold', true);
   term_set('copy-on-select', false);
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
@@ -169,10 +168,6 @@ function term_scale(scale) {
 function term_setFontSize(size) {
   term_set('font-size', size);
   _postMessage('fontSizeChanged', { size: parseInt(size) });
-}
-
-function term_setCursorBlink(state) {
-  term_set('cursor-blink', state);
 }
 
 function term_setFontFamily(name) {

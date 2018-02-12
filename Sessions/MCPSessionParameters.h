@@ -18,6 +18,8 @@
 @property NSInteger fontSize;
 @property NSString *fontName;
 @property NSString *themeName;
+@property BOOL boldAsBright;
+@property NSUInteger enableBold;
 
 - (BOOL)hasEncodedState;
 

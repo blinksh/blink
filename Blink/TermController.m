@@ -138,6 +138,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
   _sessionParameters.fontName = [BKDefaults selectedFontName];
   _sessionParameters.themeName = [BKDefaults selectedThemeName];
+  _sessionParameters.enableBold = [BKDefaults enableBold];
+  _sessionParameters.boldAsBright = [BKDefaults isBoldAsBright];
 }
 
 - (void)createPTY
