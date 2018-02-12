@@ -219,7 +219,6 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   // Filter
   fpub = BIO_push(b64, fpub);
   BIO_write(fpub, pEncoding, encodingLength);
-  BIO_write(fpub, "\0", 1);
   BIO_flush(fpub);
   fpub = BIO_pop(b64);
 
