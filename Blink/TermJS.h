@@ -81,7 +81,23 @@ NSString *term_getCurrentSelection()
 
 NSString *term_setCursorBlink(BOOL state)
 {
-  return [NSString stringWithFormat:@"term_setCursorBlink(%@)", state ? @"true" : @"false"];
+  return [NSString stringWithFormat:@"term_set('cursor-blink', %@)", state ? @"true" : @"false"];
+}
+
+NSString *term_setBoldAsBright(BOOL state)
+{
+  return [NSString stringWithFormat:@"term_set('enable-bold-as-bright', %@)", state ? @"true" : @"false"];
+}
+
+NSString *term_setBoldEnabled(NSUInteger state)
+{
+  NSString *stateStr = @"null";
+  if (state == 1) {
+    stateStr = @"true";
+  } else if (state == 2) {
+    stateStr = @"false";
+  }
+  return [NSString stringWithFormat:@"term_set('enable-bold', %@)", stateStr];
 }
 
 NSString *term_setFontFamily(NSString *family)

@@ -47,6 +47,7 @@
 #import "BKUserConfigurationManager.h"
 
 #define MCP_MAX_LINE 4096
+#define MCP_MAX_HISTORY 1000
 
 NSArray *__commandList;
 NSDictionary *__commandHints;
@@ -98,6 +99,12 @@ NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
   return [actions filteredArrayUsingPredicate:prefixPred];
 }
 
+NSArray<NSString *> *historyActionsByPrefix(NSString *prefix)
+{
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [@[@"-c", @"10", @"-10"] filteredArrayUsingPredicate:prefixPred];
+}
+
 
 NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   NSMutableArray *themeNames = [[NSMutableArray alloc] init];
@@ -117,7 +124,7 @@ void completion(const char *line, linenoiseCompletions *lc) {
   NSArray *commands = commandsByPrefix(prefix);
   
   if (commands.count > 0) {
-    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music"];
+    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
     for (NSString * cmd in commands) {
       if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
         linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
@@ -143,7 +150,10 @@ void completion(const char *line, linenoiseCompletions *lc) {
     completions = musicActionsByPrefix(args);
   } else if ([cmd isEqualToString:@"theme"]) {
     completions = themesByPrefix(args);
+  } else if ([cmd isEqualToString:@"history"]) {
+    completions = historyActionsByPrefix(args);
   }
+  
   
   for (NSString *c in completions) {
     linenoiseAddCompletion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
@@ -198,7 +208,7 @@ char* hints(const char * line, int *color, int *bold)
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music"]
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -210,8 +220,15 @@ char* hints(const char * line, int *color, int *bold)
     @"config": @"config - Add keys, hosts, themes, etc... ⚙️ ",
     @"theme": @"theme - Choose a theme 💅",
     @"music": @"music - Control music player 🎧",
+    @"history": @"history - Use -c option to clear history. 🙈 ",
     @"exit": @"exit - Exits current session. 👋"
   };
+}
+
+- (NSString *)_historyFilePath
+{
+  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  return [docsPath stringByAppendingPathComponent:@"history.txt"];
 }
 
 - (int)main:(int)argc argv:(char **)argv
@@ -227,10 +244,7 @@ char* hints(const char * line, int *color, int *bold)
   argc = 0;
   argv = nil;
 
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
-
-  const char *history = [filePath UTF8String];
+  
 
   [self.stream.control setRawMode:NO];
 
@@ -238,7 +252,8 @@ char* hints(const char * line, int *color, int *bold)
                                 linenoiseUtf8NextCharLen,
                                 linenoiseUtf8ReadCode);
 
-  linenoiseHistorySetMaxLen(1000);
+  const char *history = [[self _historyFilePath] UTF8String];
+  linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
   linenoiseHistoryLoad(history);
   linenoiseSetCompletionCallback(completion);
   linenoiseSetHintsCallback(hints);
@@ -280,6 +295,8 @@ char* hints(const char * line, int *color, int *bold)
         [self _runSSHCopyIDWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"config"]) {
         [self _showConfig];
+      } else if ([cmd isEqualToString:@"history"]) {
+        [self _execHistoryWithArgs: args];
       } else {
         [self out:"Unknown command. Type 'help' for a list of available operations"];
       }
@@ -292,6 +309,44 @@ char* hints(const char * line, int *color, int *bold)
   [self out:"Bye!"];
 
   return 0;
+}
+
+- (void)_execHistoryWithArgs:(NSString *)args
+{
+  NSInteger number = [args integerValue];
+  if (number != 0) {
+    NSString *history = [NSString stringWithContentsOfFile:[self _historyFilePath]
+                                                  encoding:NSUTF8StringEncoding error:nil];
+    NSArray *lines = [history componentsSeparatedByString:@"\n"];
+    if (!lines) {
+      return;
+    }
+    lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
+    
+    NSInteger len = lines.count;
+    NSInteger start = 0;
+    if (number > 0) {
+      len = MIN(len, number);
+    } else {
+      start = MAX(len + number , 0);
+    }
+
+    for (NSInteger i = start; i < len; i++) {
+      [self out:[NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String];
+    }
+  } else if ([args isEqualToString:@"-c"]) {
+    linenoiseHistorySetMaxLen(1);
+    linenoiseHistoryAdd(@"".UTF8String);
+    linenoiseHistorySave([self _historyFilePath].UTF8String);
+    linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
+  } else {
+    NSString *usage = [@[
+                         @"history usage:",
+                         @"history <number> - Show history",
+                         @"history -c       - Clear history",
+                        ] componentsJoinedByString:@"\r\n"];
+    [self out:usage.UTF8String];
+  }
 }
 
 - (void)_showConfig
@@ -398,6 +453,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
     @"  theme: Switch theme.",
     @"  music: Control music player.",
+    @"  history: Manage history.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",

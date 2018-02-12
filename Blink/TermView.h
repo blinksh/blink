@@ -72,6 +72,8 @@
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)write:(NSString *)data;
 - (void)setCursorBlink:(BOOL)state;
+- (void)setBoldAsBright:(BOOL)state;
+- (void)setBoldEnabled:(NSUInteger)state;
 - (void)copy:(id)sender;
 - (void)terminate;
 - (void)reset;

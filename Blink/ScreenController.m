@@ -33,6 +33,7 @@
 #import "ScreenController.h"
 #import "SpaceController.h"
 #import "StateManager.h"
+#import "BKTouchIDAuthManager.h"
 
 NSString * const MainSpaceControllerKey = @"MainSpaceControllerKey";
 NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
@@ -44,7 +45,13 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 @implementation UIWindow (ScreenController)
 - (SpaceController *)spaceController
 {
-  return (SpaceController *)self.rootViewController;
+  UIViewController *ctrl = self.rootViewController;
+  if ([ctrl isKindOfClass:[SpaceController class]]) {
+    return (SpaceController *)self.rootViewController;
+  } if (ctrl == [BKTouchIDAuthManager sharedManager].lockViewController) {
+    return (SpaceController *)[BKTouchIDAuthManager sharedManager].rootViewController;
+  }
+  return nil;
 }
 @end
 

@@ -186,6 +186,32 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 @end
 
 
+@implementation UndoManager
+- (BOOL)canRedo
+{
+  return YES;
+}
+
+- (BOOL)canUndo
+{
+  return YES;
+}
+
+-(void)undo
+{
+  [_undoManagerDelegate undoWithManager:self];
+}
+
+- (void)redo
+{
+  [_undoManagerDelegate redoWithManager:self];
+}
+
+@end
+
+@interface TermInput () <UndoManagerDelegate>
+@end
+
 @implementation TermInput {
 
   NSMutableDictionary *_controlKeys;
@@ -201,7 +227,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   SmartKeysController *_smartKeys;
   
   BOOL _inputEnabled;
-  BOOL _cmdAsModifier;
+  NSString *_cmdModifierSequence;
+  
+  UndoManager *_undoManager;
 }
 
 + (void)initialize
@@ -238,11 +266,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     _smartKeys.textInputDelegate = self;
     self.inputAccessoryView = [_smartKeys view];
     
+    _undoManager = [[UndoManager alloc] init];
+    _undoManager.undoManagerDelegate = self;
+    
     [self _configureNotifications];
     [self _configureShotcuts];
   }
   
   return self;
+}
+
+- (NSUndoManager *)undoManager
+{
+  return _cmdModifierSequence ? _undoManager : [super undoManager];
 }
 
 - (UIKeyboardAppearance)keyboardAppearance
@@ -262,6 +298,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (NSString *)textInputContextIdentifier
 {
+  // Remember current input
   return @"terminput";
 }
 
@@ -360,18 +397,22 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_termDelegate write:@"\x7f"];
 }
 
+- (void)_escSeqWithInput:(NSString *)input
+{
+  if (_termDelegate.termView.hasSelection) {
+    [self _changeSelectionWithInput:input andFlags:UIKeyModifierAlternate];
+  } else {
+    [_termDelegate write:[CC ESC:input]];
+  }
+}
 - (void)escSeq:(UIKeyCommand *)cmd
 {
-  if  (_termDelegate.termView.hasSelection) {
-    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
-  } else {
-    [_termDelegate write:[CC ESC:cmd.input]];
-  }
+  [self _escSeqWithInput:cmd.input];
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
 {
-  if  (_termDelegate.termView.hasSelection) {
+  if (_termDelegate.termView.hasSelection) {
     [self _changeSelection:cmd];
   } else {
     [_termDelegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
@@ -388,20 +429,25 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
+- (void)_ctrlSeqWithInput:(NSString *)input
+{
+  if (_termDelegate.termView.hasSelection) {
+    [self _changeSelectionWithInput:input andFlags:UIKeyModifierControl];
+  } else {
+    [_termDelegate write:[CC CTRL:input]];
+  }
+}
+
 - (void)ctrlSeq:(UIKeyCommand *)cmd
 {
-  if  (_termDelegate.termView.hasSelection) {
-    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl];
-  } else {
-    [_termDelegate write:[CC CTRL:cmd.input]];
-  }
+  [self _ctrlSeqWithInput:cmd.input];
 }
 
 - (void)metaSeq:(UIKeyCommand *)cmd
 {
-  if ([cmd.input isEqual:@"e"]) {
+//  if ([cmd.input isEqual:@"e"]) {
     //_disableAccents = YES;
-  }
+//  }
   
   if  (_termDelegate.termView.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
@@ -452,6 +498,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
+- (BOOL)_remapCmdSeqWidthSender:(id)sender andInput:(NSString *)input
+{
+  if (!_cmdModifierSequence ||
+      [sender isKindOfClass:[UIMenuController class]]) {
+    return NO;
+  }
+
+  if (_cmdModifierSequence == TermViewCtrlSeq) {
+    [self _ctrlSeqWithInput:input];
+  } else if (_cmdModifierSequence == TermViewEscSeq) {
+    [self _escSeqWithInput:input];
+  } else {
+    // return NO?
+  }
+  
+  return YES;
+}
+
 // This are all key commands capture by UIKeyInput and triggered
 // straight to the handler. A different firstresponder than UIKeyInput could
 // capture them, but we would not capture normal keys. We remap them
@@ -460,27 +524,56 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Cmd+c
 - (void)copy:(id)sender
 {
-  if ([sender isKindOfClass:[UIMenuController class]] || !_cmdAsModifier) {
+  if (![self _remapCmdSeqWidthSender:sender andInput:@"c"]) {
     [_termDelegate.termView copy:sender];
-  } else {
-    [_termDelegate write:[CC CTRL:@"c"]];
   }
 }
 // Cmd+x
 - (void)cut:(id)sender
 {
-  [_termDelegate write:[CC CTRL:@"x"]];
+  [self _remapCmdSeqWidthSender:sender andInput:@"x"];
 }
 // Cmd+v
 - (void)paste:(id)sender
 {
-  if ([sender isKindOfClass:[UIMenuController class]] || !_cmdAsModifier) {
+  if (![self _remapCmdSeqWidthSender:sender andInput:@"v"]) {
     [self yank:sender];
-  } else {
-    [_termDelegate write:[CC CTRL:@"v"]];
   }
 }
-  
+
+// Cmd+z
+- (void)undoWithManager:(UndoManager *)manager
+{
+  [self _remapCmdSeqWidthSender:manager andInput:@"z"];
+}
+
+// Cmd+Z
+- (void)redoWithManager:(UndoManager *)manager
+{
+  [self _remapCmdSeqWidthSender:manager andInput:@"Z"];
+}
+
+// Cmd+a
+- (void)selectAll:(id)sender
+{
+  [self _remapCmdSeqWidthSender:sender andInput:@"a"];
+}
+// Cmd+b
+- (void)toggleBoldface:(id)sender
+{
+  [self _remapCmdSeqWidthSender:sender andInput:@"b"];
+}
+// Cmd+i
+- (void)toggleItalics:(id)sender
+{
+  [self _remapCmdSeqWidthSender:sender andInput:@"i"];
+}
+// Cmd+u
+- (void)toggleUnderline:(id)sender
+{
+  [self _remapCmdSeqWidthSender:sender andInput:@"u"];
+}
+
 - (void)pasteSelection:(id)sender
 {
   NSString *str = _termDelegate.termView.selectedText;
@@ -488,27 +581,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_termDelegate write:str];
   }
   [_termDelegate.termView cleanSelection];
-}
-
-// Cmd+a
-- (void)selectAll:(id)sender
-{
-  [_termDelegate write:[CC CTRL:@"a"]];
-}
-// Cmd+b
-- (void)toggleBoldface:(id)sender
-{
-  [_termDelegate write:[CC CTRL:@"b"]];
-}
-// Cmd+i
-- (void)toggleItalics:(id)sender
-{
-  [_termDelegate write:[CC CTRL:@"i"]];
-}
-// Cmd+u
-- (void)toggleUnderline:(id)sender
-{
-  [_termDelegate write:[CC CTRL:@"u"]];
 }
 
 - (void)copyLink:(id)sender
@@ -616,7 +688,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     if (seq == TermViewCtrlSeq) {
       charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
     } else if (seq == TermViewEscSeq) {
-      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]\{}|;':\",./<>?/";
+      charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]{}\\|;':\",./<>?";
     } else if (seq == TermViewAutoRepeateSeq){
       charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
     } else {
@@ -625,7 +697,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     // Cmd is default for iOS shortcuts, so we control whether or not we are re-mapping those ourselves.
     if (modifier == UIKeyModifierCommand) {
-      _cmdAsModifier = YES;
+      _cmdModifierSequence = seq;
     }
     
     NSUInteger length = charset.length;
@@ -648,7 +720,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_controlKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
   } else {
     if (modifier == UIKeyModifierCommand) {
-      _cmdAsModifier = NO;
+      _cmdModifierSequence = nil;
     }
     
     [_controlKeys setObject:@[] forKey:[NSNumber numberWithInteger:modifier]];
@@ -820,6 +892,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   for (NSString *key in [BKDefaults keyboardKeyList]) {
     NSString *sequence = [BKDefaults keyboardMapping][key];
     NSInteger modifier = [bkModifierMaps[key] integerValue];
+    
     if ([sequence isEqual:BKKeyboardSeqNone]) {
       [self _assignSequence:nil toModifier:modifier];
     } else if ([sequence isEqual:BKKeyboardSeqCtrl]) {

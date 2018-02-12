@@ -190,12 +190,23 @@ const CGFloat kToolBarHeight = 82;
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
 {
+  _pinchGestureRecognizer.enabled = NO;
+  _pinchGestureRecognizer.enabled = YES;
   [self _resetOtherInteractions];
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
+  
   // We should start all our recognizers
+  return YES;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  if (gestureRecognizer == _pinchGestureRecognizer) {
+    return ABS(self.contentOffset.y) <= kToolBarHeight * 0.5 || self.contentOffset.y == kToolBarHeight;
+  }
   return YES;
 }
 

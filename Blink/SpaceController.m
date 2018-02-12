@@ -40,7 +40,7 @@
 #import "TermInput.h"
 #import "MusicManager.h"
 #import "TouchOverlay.h"
-
+#import "BKTouchIDAuthManager.h"
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
   UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, ControlPanelDelegate>
@@ -220,6 +220,11 @@
                       object:nil];
   
   [defaultCenter addObserver:self
+                    selector:@selector(_focusOnShell)
+                        name:BKUserAuthenticated
+                      object:nil];
+  
+  [defaultCenter addObserver:self
                     selector:@selector(_appWillResignActive)
                         name:UIApplicationWillResignActiveNotification
                       object:nil];
@@ -239,9 +244,14 @@
   }
 
   if (!_unfocused) {
-    [_termInput becomeFirstResponder];
-    [self _attachInputToCurrentTerm];
+    [self _focusOnShell];
   }
+}
+
+- (void)_focusOnShell
+{
+  [_termInput becomeFirstResponder];
+  [self _attachInputToCurrentTerm];
 }
 
 -(void)_appWillResignActive

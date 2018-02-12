@@ -198,6 +198,16 @@
   [_webView evaluateJavaScript:term_setCursorBlink(state) completionHandler:nil];
 }
 
+- (void)setBoldAsBright:(BOOL)state
+{
+  [_webView evaluateJavaScript:term_setBoldAsBright(state) completionHandler:nil];
+}
+
+- (void)setBoldEnabled:(NSUInteger)state
+{
+  [_webView evaluateJavaScript:term_setBoldEnabled(state) completionHandler:nil];
+}
+
 - (void)reset
 {
   [_webView evaluateJavaScript:term_reset() completionHandler:nil];
@@ -428,6 +438,9 @@
     if (fontFamily) {
       [script addObject: term_setFontFamily(fontFamily)];
     }
+    
+    [script addObject:term_setBoldEnabled(params.enableBold)];
+    [script addObject:term_setBoldAsBright(params.boldAsBright)];
     
     BKTheme *theme = [BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]];
     if (theme) {
