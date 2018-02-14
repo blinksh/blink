@@ -509,14 +509,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   if (cmd.input == UIKeyInputUpArrow) {
     [_termDelegate write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputDownArrow) {
+  } else if (cmd.input == UIKeyInputDownArrow) {
     [_termDelegate write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputLeftArrow) {
+  } else if (cmd.input == UIKeyInputLeftArrow) {
     [_termDelegate write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
-  }
-  if (cmd.input == UIKeyInputRightArrow) {
+  } else if (cmd.input == UIKeyInputRightArrow) {
     [_termDelegate write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
   }
 }
@@ -857,9 +854,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (lang && [_imeLangSet containsObject:lang]) {
     commands = _kbdCommandsWithoutAutoRepeat;
   }
-  NSLog(@"%@", self.textInputMode.primaryLanguage);
 
-//  return self.markedTextRange ? [super keyCommands] : commands;
   return commands;
 }
 

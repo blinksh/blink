@@ -870,6 +870,13 @@
 
 - (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer
 {
+  // We are in IME mode.
+  if (_termInput.isHidden == NO) {
+    [_termInput setHidden:YES];
+    _termInput.text = @"";
+    return;
+  }
+  
   [self.currentTerm focus];
 }
 
