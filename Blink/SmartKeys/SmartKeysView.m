@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "SmartKeysView.h"
-#import "SKNonModifierButton.h"
+#import "CustomViews/Button/SKNonModifierButton.h"
 
 NSString *const KbdLeftArrowKey = @"←";
 NSString *const KbdRightArrowKey = @"→";
