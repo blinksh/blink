@@ -327,7 +327,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
         endLength = 0;
       } else {
         setNodeText(node, hterm.TextAttributes.nodeSubstr(node, count));
-        endLength = hterm.TextAttributes.nodeWidth(node);
+        endLength = startLength - count;
       }
       // Blink: optimization path for offset >= startLength
     } else if (offset >= startLength) {
@@ -371,7 +371,7 @@ hterm.Screen.prototype.deleteChars = function(count) {
 
   // Remove this.cursorNode_ if it is an empty non-text node.
   if (
-    this.cursorNode_.nodeType != Node.TEXT_NODE &&
+    this.cursorNode_.nodeType !== Node.TEXT_NODE &&
     !this.cursorNode_.textContent
   ) {
     var cursorNode = this.cursorNode_;
@@ -418,8 +418,21 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
       this.insertString(str, wcwidth);
   } else {
     // Blink optimization: if we insert first. It is more likly we will match text
+    var node = this.cursorRowNode_;
+    
+    var parent = node.parentNode;
+    var next = node.nextSibling;
+    
+    if (parent) {
+      parent.removeChild(node);
+    }
+    
     this.insertString(str, wcwidth);
     this.deleteChars(wcwidth);
+    
+    if (parent) {
+      parent[next ? "insertBefore":"appendChild"](node, next);
+    }
   }
 };
 
