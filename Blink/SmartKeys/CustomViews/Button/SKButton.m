@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -34,6 +34,27 @@
 @implementation SKButton
 @synthesize backgroundLayer;
 
+// Remove underline. See https://github.com/blinksh/blink/issues/73
+// For buttons from StoryBoard
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+  self = [super initWithCoder:aDecoder];
+  if (self) {
+    [self setBackgroundImage:[[UIImage alloc] init] forState:UIControlStateNormal];
+  }
+  return self;
+}
+
+// For other SKButtons
+- (instancetype)initWithFrame:(CGRect)frame
+{
+  self = [super initWithFrame:frame];
+  if (self) {
+    [self setBackgroundImage:[[UIImage alloc] init] forState:UIControlStateNormal];
+  }
+  return self;
+}
+
 - (void)animatedButtonSelection:(BOOL)selected
 {
   if (selected) {
@@ -62,7 +83,7 @@
     theAnimation.toValue = [NSNumber numberWithFloat:0.0];
     [CATransaction setCompletionBlock:^{
       if (self.backgroundLayer != nil) {
-	[self.backgroundLayer removeFromSuperlayer];
+        [self.backgroundLayer removeFromSuperlayer];
       }
     }];
     [self.backgroundLayer addAnimation:theAnimation forKey:@"animateOpacity"];

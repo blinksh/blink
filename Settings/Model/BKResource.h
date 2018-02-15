@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -47,6 +47,8 @@
 + (NSInteger)count;
 // Funcs to return the default and custom arrays, and then counts on top
 + (NSInteger)defaultResourcesCount;
++ (NSMutableArray *)defaultResources;
++ (NSMutableArray *)customResources;
 
 - (BOOL)isCustom;
 - (NSString *)fullPath;

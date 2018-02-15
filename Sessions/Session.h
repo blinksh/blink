@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -34,6 +34,7 @@
 #include <sys/ioctl.h>
 
 #import "TermController.h"
+#import "SessionParameters.h"
 
 
 typedef struct SessionParams {
@@ -66,15 +67,18 @@ typedef struct SessionParams {
   pthread_t _tid;
 }
 
+@property (strong, atomic) SessionParameters *sessionParameters;
 @property TermStream *stream;
+
 @property (weak) NSObject<SessionDelegate>* delegate;
 
 - (id)init __unavailable;
-- (id)initWithStream:(TermStream *)stream;
+- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv;
 - (void)sigwinch;
 - (void)kill;
+- (void)suspend;
 
 @end

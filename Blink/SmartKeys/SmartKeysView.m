@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -80,10 +80,21 @@ NSString *const KbdTabKey = @"⇥";
 
 - (void)awakeFromNib {
   [super awakeFromNib];
-  self.translatesAutoresizingMaskIntoConstraints = NO;
-  _nonModifierScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+//  self.translatesAutoresizingMaskIntoConstraints = NO;
+//  _nonModifierScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _nonModifierScrollView.backgroundColor = [UIColor grayColor];
+  self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   [self setupModifierButtons];
+}
+
+- (CGSize)intrinsicContentSize
+{
+  return CGSizeZero;
+}
+
+- (BOOL)enableInputClicksWhenVisible
+{
+  return YES;
 }
 
 - (void)setupModifierButtons {
@@ -208,8 +219,9 @@ NSString *const KbdTabKey = @"⇥";
     [stack addArrangedSubview:button];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchUpInside];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchUpOutside];
+    [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchCancel];
     [button addTarget:nil action:@selector(nonModifierUp:) forControlEvents:UIControlEventTouchDragExit];
-    [button addTarget:nil action:@selector(nonModifierDown:) forControlEvents:UIControlEventTouchDown];
+    [button addTarget:nil action:@selector(nonModifierDown:forEvent:) forControlEvents:UIControlEventTouchDown];
   }
 
   return stack;
@@ -220,8 +232,18 @@ NSString *const KbdTabKey = @"⇥";
   [self.delegate symbolUp:sender.currentTitle];
 }
 
-- (IBAction)nonModifierDown:(UIButton *)sender
+- (IBAction)nonModifierDown:(UIButton *)sender forEvent:(UIEvent *)event
 {
+  UITouch * touch = [[event.allTouches allObjects] firstObject];
+  
+  if (touch) {
+    CGPoint p = [touch locationInView:touch.window];
+    
+    if ((CGRectGetMaxY(touch.window.bounds) - p.y) <= 10) {
+      return;
+    }
+  }
+
   [self.delegate symbolDown:sender.currentTitle];
 }
 

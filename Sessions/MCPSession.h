@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -32,14 +32,10 @@
 #import <Foundation/Foundation.h>
 
 #import "Session.h"
-
+#import "MCPSessionParameters.h"
 
 @interface MCPSession : Session
 
-- (id)initWithInputStream:(FILE *)tIn outputStream:(FILE *)tOut;
-- (int)main:(int)argc argv:(char **)argv;
-- (void)executeWithArgs:(NSString *)args;
-- (void)sigwinch;
-- (void)close;
+@property (strong) MCPSessionParameters *sessionParameters;
 
 @end

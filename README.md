@@ -85,7 +85,6 @@ We made a ton easier to build and install Blink yourself on your iOS devices thr
 git clone --recursive https://github.com/holzschu/blink.git && \
 cd blink && ./get_frameworks.sh
 ```
-
 This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 
 Although this is the quickest method to get you up and running, if you would like to compile all libraries and resources yourself, refer to [BUILD](https://github.com/holzschu/blink/blob/master/BUILD.md). Please let us know if you find any issues. Blink is a complex project with multiple low level dependencies and we are still looking for ways to simplify and automate the full compilation process.
@@ -110,7 +109,6 @@ mv Lib lib/python2.7
 cd ~
 ```
 
-
 # Using Blink
 Our UI is very straightforward and optimizes the experience on touch devices for the really important part, the terminal. You will jump right into a very simple shell, so you will know what to do. Here are a few more tricks:
 - Type 'help' to find information at the shell.
@@ -124,14 +122,45 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 9.0
-	- Index and run commands from Spotlight
-	- Tune Selection
+# Version 10.0
+	- Secured Mosh Persistent Connections and Restore.
+	- Image rendering!
+	- URL Links detection!
+	- Autocomplete for commands and hosts!
+	- Two fingers swipe up shows a new "control command" section.
+	- Support for Remote Copy under SSH.
+	- iPhone users, two fingers closes on-screen keyboard.
+	- More and better emojis support.
+	- Added "history" command to cleanup the history file.
+	- Bold fonts now with an option for bold or bright.
+	- New WWDC16 theme.
+	- Added Light/Dark keyboard setting.
+	- Support for installed fonts, so no more CSS is required.
+	- Control selections with keyboard! Read help for more information.
+	- Copy - Paste now works in unfocused mode too.
+	- Paste Selection.
 
-	- Updated Layout guides for terminal. Better behaviour on iOS11 and iPhone X
-	- Shortcuts working again.
-	- Send INTerrupt instead of TERMinate to Mosh.
-	- Ignore commands when app doesn't have focus. Should fix empty tabs and improve stability.
+	- Faster Terminal rendering thanks to better writing flows.
+	- Updated HTerm!
+	- Updated Mosh to 1.3!
+	- Updated MBProgressHUD to fix race conditions.
+
+	- Fixed stuck Cmd key (deal with iOS issues).
+	- Fixed swipe ups triggering SmartKeys.
+	- Fixed Cmd as Ctrl for Ctrl+C and Ctlr+Z
+	- Fixed resize glitches.
+	- Improved loading time for terminal and custom fonts.
+	- Improved focus when switching between apps.
+	- Improved and smoother animations.
+	- Improved accessoryView handling if other screen is active.
+	- Improved all gestures internally.
+	- Fixed tab caching after closed.
+	- Fixed issues with irregular character widths misaligning columns.
+	- Fixed vertical rendering of fonts in some specific scenarios.
+	- Fixed issues with resizes and focus.
+	- Fixed unselect on tap.
+	- Fixed ssh restores crashing the app.
+	- Fixed external screen focus.
 
 [View all changes](CHANGELOG.md)
 

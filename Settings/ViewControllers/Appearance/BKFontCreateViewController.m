@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -47,17 +47,6 @@
 
 @implementation BKFontCreateViewController
 
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
-
-  // Uncomment the following line to preserve selection between presentations.
-  // self.clearsSelectionOnViewWillAppear = NO;
-
-  // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-  // self.navigationItem.rightBarButtonItem = self.editButtonItem;
-}
-
 - (void)viewWillDisappear:(BOOL)animated
 {
   if ([self.navigationController.viewControllers indexOfObject:self] == NSNotFound) {
@@ -66,13 +55,6 @@
     [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
   }
   [super viewWillDisappear:animated];
-}
-
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Validations

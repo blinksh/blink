@@ -7,15 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */ = {isa = PBXBuildFile; fileRef = 070058EB1D12FA6D00D133E3 /* termcontrol.js */; };
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
-		0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52E1CFFAB9300268B5B /* Main.storyboard */; };
 		0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
 		0716B5961CFFAB9300268B5B /* TermController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5621CFFAB9300268B5B /* TermController.m */; };
 		0716B5A71CFFABB000268B5B /* BlinkUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5A51CFFABB000268B5B /* BlinkUITests.m */; };
 		0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728A1D91E0AE80400ABD31B /* SmartKeysController.m */; };
-		0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
@@ -86,18 +83,13 @@
 		076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		076FBE4B1DB80AC900F6D997 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
 		076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
-		076FBE4D1DB80AC900F6D997 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52E1CFFAB9300268B5B /* Main.storyboard */; };
-		076FBE4E1DB80AC900F6D997 /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = 0732F0491D062B9A00AB5438 /* hterm_all.js */; };
 		076FBE4F1DB80AC900F6D997 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		076FBE501DB80AC900F6D997 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
-		076FBE511DB80AC900F6D997 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
 		076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */ = {isa = PBXBuildFile; fileRef = 070058EB1D12FA6D00D133E3 /* termcontrol.js */; };
 		076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		079635881D0E6602000473B1 /* fterm.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635851D0E6602000473B1 /* fterm.m */; };
-		079635DC1D0F8219000473B1 /* webfont.js in Resources */ = {isa = PBXBuildFile; fileRef = 079635DA1D0F8219000473B1 /* webfont.js */; };
 		07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06331E08B12E008310B7 /* PasscodeLock.strings */; };
 		07AA064A1E08B12E008310B7 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06351E08B12E008310B7 /* Functions.swift */; };
 		07AA064B1E08B12E008310B7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06361E08B12E008310B7 /* Info.plist */; };
@@ -135,36 +127,32 @@
 		07F670731D05EEE200C0A53C /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
-		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; settings = {COMPILER_FLAGS = "-I Frameworks/libssh2.framework/Headers/"; }; };
-		2206C511202F95A60041D005 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2206C512202F95CB0041D005 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2257829D1FDB53340050F312 /* libncurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 2257829C1FDB53340050F312 /* libncurses.tbd */; };
-		225C53C31EEAB0C900395C6F /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 225C53C21EEAB0C900395C6F /* CloudKit.framework */; };
-		22C199BD1FE1CA0800494DDA /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C199BC1FE1CA0800494DDA /* ios_system.framework */; };
-		22C6715C1EEC370D00A44443 /* libc.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715B1EEC370D00A44443 /* libc.tbd */; };
-		22C671601EEC3C8400A44443 /* libiconv.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22C6715F1EEC3C8400A44443 /* libiconv.tbd */; };
-		22CA6C8D2030D0A10029E042 /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C52A202F97D40041D005 /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22CA6C8E2030D0A10029E042 /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C527202F97B30041D005 /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22E837E62021E4C4004B6BA1 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2236F34B1FDA7886000D3229 /* curl_ios_static.framework */; };
-		22E837EC2021EAA3004B6BA1 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 22E837EB2021EAA3004B6BA1 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I ../ios_system/curl/curl/include/ -I ../ios_system/curl/curl/lib/ -I ../ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I ../ios_system/"; }; };
-		22F0613720309412000C33B3 /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22F0613420308D41000C33B3 /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F0613820309436000C33B3 /* libnetwork_ios.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C536202F9B520041D005 /* libnetwork_ios.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613920309436000C33B3 /* libbibtex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C52C202F9ADB0041D005 /* libbibtex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613A20309436000C33B3 /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C530202F9ADC0041D005 /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613B20309436000C33B3 /* libluatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C52D202F9ADC0041D005 /* libluatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613C20309436000C33B3 /* libpdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C52F202F9ADC0041D005 /* libpdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613D20309436000C33B3 /* libtexlua52.5.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C52E202F9ADC0041D005 /* libtexlua52.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613E2030943E000C33B3 /* libawk.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C51A202F96150041D005 /* libawk.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0613F2030943E000C33B3 /* libcurl.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C519202F96150041D005 /* libcurl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F061402030943E000C33B3 /* libfiles.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C518202F96150041D005 /* libfiles.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F061412030943E000C33B3 /* libshell.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C515202F96150041D005 /* libshell.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F061422030943E000C33B3 /* libssh_cmd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C516202F96150041D005 /* libssh_cmd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F061432030943E000C33B3 /* libtar.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C513202F96150041D005 /* libtar.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F061442030943E000C33B3 /* libtext.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C514202F96150041D005 /* libtext.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22F0614520309505000C33B3 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C525202F969E0041D005 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F061462030950A000C33B3 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2206C517202F96150041D005 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22F738111F0A563E00048A48 /* libxml2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738101F0A563E00048A48 /* libxml2.tbd */; };
-		22F738131F0A564B00048A48 /* libbz2.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 22F738121F0A564B00048A48 /* libbz2.tbd */; };
+		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E70201F8A230090E974 /* RoundedToolbar.m */; };
+		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
+		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
+		85A34309200A8FAF009324F1 /* term.css in Resources */ = {isa = PBXBuildFile; fileRef = 85A34308200A8FAF009324F1 /* term.css */; };
+		85A34312200A9AED009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */; };
+		85A34313200A9AEE009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */; };
+		85A3431B200A9AF5009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */; };
+		85A3431C200A9AF5009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */; };
+		85A3431D200A9AF5009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */; };
+		85A3431E200A9AF5009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */; };
+		85A3431F200A9AF5009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */; };
+		85A34320200A9AF5009324F1 /* Menlo-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */; };
+		85A34321200A9AF5009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */; };
+		85A34322200A9AF5009324F1 /* FiraCode-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */; };
+		85A34323200A9AF5009324F1 /* FiraCode.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AB2004C6C3001FB2AA /* FiraCode.ttf */; };
+		85A34324200A9AF6009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */; };
+		85A34325200A9AF6009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */; };
+		85A34326200A9AF6009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */; };
+		85A34327200A9AF6009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */; };
+		85A34328200A9AF7009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */; };
+		85A34329200A9AF7009324F1 /* Menlo-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */; };
+		85A3432A200A9AF7009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */; };
+		85A3432B200A9AF7009324F1 /* FiraCode-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */; };
+		85A3432C200A9AF7009324F1 /* FiraCode.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AB2004C6C3001FB2AA /* FiraCode.ttf */; };
+		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
 		B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */; };
@@ -202,6 +190,21 @@
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
+		D217129C200C99130044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */; };
+		D217129D200C99130044BC90 /* Source-Code-Pro-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */; };
+		D217129E200C99130044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */; };
+		D217129F200C99130044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */; };
+		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
+		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
+		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
+		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
+		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
+		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
+		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
+		D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B82004DCC9001FB2AA /* hterm_all.js */; };
+		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
+		D2A92352201732B600043596 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A92351201732B600043596 /* MusicManager.m */; };
+		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -254,7 +257,21 @@
 			remoteGlobalIDString = 2219DFCE1FD73AF500675252;
 			remoteInfo = curl_ios_static;
 		};
-		22FE48BA1FDC722100899DA7 /* PBXContainerItemProxy */ = {
+		0747D6382018182D00CF8F0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
+			remoteInfo = "MBProgressHUD Framework tvOS";
+		};
+		0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 148993CF1D8F2515000132F7;
+			remoteInfo = TestHost;
+		};
+		076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
 			proxyType = 2;
@@ -326,11 +343,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		070058EB1D12FA6D00D133E3 /* termcontrol.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = termcontrol.js; sourceTree = "<group>"; };
 		0716B5291CFFAB9300268B5B /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0716B52A1CFFAB9300268B5B /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
-		0716B52F1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0716B53C1CFFAB9300268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0716B5581CFFAB9300268B5B /* SpaceController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SpaceController.h; sourceTree = "<group>"; };
 		0716B5591CFFAB9300268B5B /* SpaceController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SpaceController.m; sourceTree = "<group>"; };
@@ -340,7 +355,6 @@
 		0716B5A61CFFABB000268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0728A1D81E0AE80400ABD31B /* SmartKeysController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysController.h; sourceTree = "<group>"; };
 		0728A1D91E0AE80400ABD31B /* SmartKeysController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysController.m; sourceTree = "<group>"; };
-		0732F0491D062B9A00AB5438 /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
 		0732F05F1D062BB300AB5438 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
@@ -370,7 +384,6 @@
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
 		079635851D0E6602000473B1 /* fterm.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = fterm.m; sourceTree = "<group>"; };
 		079635861D0E6602000473B1 /* fterm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fterm.h; sourceTree = "<group>"; };
-		079635DA1D0F8219000473B1 /* webfont.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfont.js; sourceTree = "<group>"; };
 		07AA06341E08B12E008310B7 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/PasscodeLock.strings; sourceTree = "<group>"; };
 		07AA06351E08B12E008310B7 /* Functions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Functions.swift; sourceTree = "<group>"; };
 		07AA06361E08B12E008310B7 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -415,46 +428,21 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
-		2206C4F2202F913C0041D005 /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtar.dylib; sourceTree = "<group>"; };
-		2206C4F9202F913C0041D005 /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtext.dylib; sourceTree = "<group>"; };
-		2206C4FA202F913C0041D005 /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libshell.dylib; sourceTree = "<group>"; };
-		2206C4FB202F913C0041D005 /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libssh_cmd.dylib; sourceTree = "<group>"; };
-		2206C4FC202F913D0041D005 /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfiles.dylib; sourceTree = "<group>"; };
-		2206C4FD202F913D0041D005 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcurl.dylib; sourceTree = "<group>"; };
-		2206C4FE202F913D0041D005 /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libawk.dylib; sourceTree = "<group>"; };
-		2206C513202F96150041D005 /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtar.dylib; path = Frameworks/libtar.dylib; sourceTree = "<group>"; };
-		2206C514202F96150041D005 /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtext.dylib; path = Frameworks/libtext.dylib; sourceTree = "<group>"; };
-		2206C515202F96150041D005 /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshell.dylib; path = Frameworks/libshell.dylib; sourceTree = "<group>"; };
-		2206C516202F96150041D005 /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssh_cmd.dylib; path = Frameworks/libssh_cmd.dylib; sourceTree = "<group>"; };
-		2206C517202F96150041D005 /* lua_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = lua_ios.framework; path = Frameworks/lua_ios.framework; sourceTree = "<group>"; };
-		2206C518202F96150041D005 /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfiles.dylib; path = Frameworks/libfiles.dylib; sourceTree = "<group>"; };
-		2206C519202F96150041D005 /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = Frameworks/libcurl.dylib; sourceTree = "<group>"; };
-		2206C51A202F96150041D005 /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libawk.dylib; path = Frameworks/libawk.dylib; sourceTree = "<group>"; };
-		2206C523202F96270041D005 /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnetwork_ios.dylib; path = Frameworks/libnetwork_ios.dylib; sourceTree = "<group>"; };
-		2206C525202F969E0041D005 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Python_ios.framework; path = Frameworks/Python_ios.framework; sourceTree = "<group>"; };
-		2206C527202F97B30041D005 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = Frameworks/openssl.framework; sourceTree = "<group>"; };
-		2206C52A202F97D40041D005 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libssh2.framework; path = Frameworks/libssh2.framework; sourceTree = "<group>"; };
-		2206C52C202F9ADB0041D005 /* libbibtex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libbibtex.dylib; path = Frameworks/libbibtex.dylib; sourceTree = "<group>"; };
-		2206C52D202F9ADC0041D005 /* libluatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libluatex.dylib; path = Frameworks/libluatex.dylib; sourceTree = "<group>"; };
-		2206C52E202F9ADC0041D005 /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtexlua52.5.dylib; path = Frameworks/libtexlua52.5.dylib; sourceTree = "<group>"; };
-		2206C52F202F9ADC0041D005 /* libpdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libpdftex.dylib; path = Frameworks/libpdftex.dylib; sourceTree = "<group>"; };
-		2206C530202F9ADC0041D005 /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libkpathsea.6.dylib; path = Frameworks/libkpathsea.6.dylib; sourceTree = "<group>"; };
-		2206C536202F9B520041D005 /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnetwork_ios.dylib; path = Frameworks/libnetwork_ios.dylib; sourceTree = "<group>"; };
-		2236F3461FDA7885000D3229 /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
-		22534A581FDC975100E9922E /* libbibtex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbibtex.dylib; sourceTree = "<group>"; };
-		22534A591FDC975100E9922E /* libluatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libluatex.dylib; sourceTree = "<group>"; };
-		22534A5A1FDC975100E9922E /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtexlua52.5.dylib; sourceTree = "<group>"; };
-		22534A5B1FDC975200E9922E /* libpdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libpdftex.dylib; sourceTree = "<group>"; };
-		22534A5C1FDC975200E9922E /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libkpathsea.6.dylib; sourceTree = "<group>"; };
-		2257829C1FDB53340050F312 /* libncurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libncurses.tbd; path = usr/lib/libncurses.tbd; sourceTree = SDKROOT; };
-		225C53C21EEAB0C900395C6F /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		22C199BC1FE1CA0800494DDA /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
-		22C6715B1EEC370D00A44443 /* libc.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libc.tbd; path = usr/lib/libc.tbd; sourceTree = SDKROOT; };
-		22C6715F1EEC3C8400A44443 /* libiconv.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.tbd; path = usr/lib/libiconv.tbd; sourceTree = SDKROOT; };
-		22E837EB2021EAA3004B6BA1 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
-		22F0613420308D41000C33B3 /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ios_system.framework; path = Frameworks/ios_system.framework; sourceTree = "<group>"; };
-		22F738101F0A563E00048A48 /* libxml2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.tbd; path = usr/lib/libxml2.tbd; sourceTree = SDKROOT; };
-		22F738121F0A564B00048A48 /* libbz2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.tbd; path = usr/lib/libbz2.tbd; sourceTree = SDKROOT; };
+		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
+		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
+		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
+		85047E76201F9B0E0090E974 /* ControlPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ControlPanel.m; sourceTree = "<group>"; };
+		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
+		85A34308200A8FAF009324F1 /* term.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = term.css; sourceTree = "<group>"; };
+		85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Bold-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Bold-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Bold-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
+		85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Bold-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
+		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
 		B752EE291DFEF19D00E305C8 /* BKUserConfigurationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKUserConfigurationManager.h; sourceTree = "<group>"; };
@@ -525,6 +513,31 @@
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
+		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
+		D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Italic-for-Powerline.otf"; sourceTree = "<group>"; };
+		D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-for-Powerline.otf"; sourceTree = "<group>"; };
+		D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Bold-for-Powerline.otf"; sourceTree = "<group>"; };
+		D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Bold-Italic-for-Powerline.otf"; sourceTree = "<group>"; };
+		D23B18831FF7CEBA00A6C903 /* StateManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateManager.h; sourceTree = "<group>"; };
+		D23B18841FF7CEBA00A6C903 /* StateManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StateManager.m; sourceTree = "<group>"; };
+		D23B18891FFB76B300A6C903 /* SessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionParameters.h; sourceTree = "<group>"; };
+		D23B188A1FFB76B300A6C903 /* SessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SessionParameters.m; sourceTree = "<group>"; };
+		D23B188C1FFB776000A6C903 /* MoshSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MoshSessionParameters.h; sourceTree = "<group>"; };
+		D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoshSessionParameters.m; sourceTree = "<group>"; };
+		D23D0FAB2008DAEB00B33A9F /* TermInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermInput.h; sourceTree = "<group>"; };
+		D23D0FAC2008DAEB00B33A9F /* TermInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermInput.m; sourceTree = "<group>"; };
+		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
+		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
+		D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Bold.ttf"; sourceTree = "<group>"; };
+		D29392AB2004C6C3001FB2AA /* FiraCode.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FiraCode.ttf; sourceTree = "<group>"; };
+		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
+		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
+		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
+		D2A8C153201F377D002F415A /* TouchOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchOverlay.m; sourceTree = "<group>"; };
+		D2A92350201732B600043596 /* MusicManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
+		D2A92351201732B600043596 /* MusicManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MusicManager.m; sourceTree = "<group>"; };
+		D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCPSessionParameters.h; sourceTree = "<group>"; };
+		D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCPSessionParameters.m; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA0BA1A41C0CC57B00719C1A /* Blink.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Blink.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -589,7 +602,6 @@
 				0716B5291CFFAB9300268B5B /* AppDelegate.h */,
 				0716B52A1CFFAB9300268B5B /* AppDelegate.m */,
 				0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */,
-				0716B52E1CFFAB9300268B5B /* Main.storyboard */,
 				0716B5581CFFAB9300268B5B /* SpaceController.h */,
 				0716B5591CFFAB9300268B5B /* SpaceController.m */,
 				0716B5611CFFAB9300268B5B /* TermController.h */,
@@ -600,6 +612,19 @@
 				D20A28BD1E185BDB00055791 /* ScreenController.m */,
 				079635851D0E6602000473B1 /* fterm.m */,
 				079635861D0E6602000473B1 /* fterm.h */,
+				D23B18831FF7CEBA00A6C903 /* StateManager.h */,
+				D23B18841FF7CEBA00A6C903 /* StateManager.m */,
+				D23D0FAB2008DAEB00B33A9F /* TermInput.h */,
+				D23D0FAC2008DAEB00B33A9F /* TermInput.m */,
+				D215E59B2010C77E00D893EB /* TermJS.h */,
+				D2A92350201732B600043596 /* MusicManager.h */,
+				D2A92351201732B600043596 /* MusicManager.m */,
+				D2A8C152201F377D002F415A /* TouchOverlay.h */,
+				D2A8C153201F377D002F415A /* TouchOverlay.m */,
+				85047E6F201F8A230090E974 /* RoundedToolbar.h */,
+				85047E70201F8A230090E974 /* RoundedToolbar.m */,
+				85047E75201F9B0E0090E974 /* ControlPanel.h */,
+				85047E76201F9B0E0090E974 /* ControlPanel.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -616,14 +641,18 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				85A34303200A837A009324F1 /* webfontloader.js */,
+				0732F04B1D062B9A00AB5438 /* term.html */,
+				D2496F402003941B00E75FE9 /* term.js */,
+				85A34308200A8FAF009324F1 /* term.css */,
+				D29392B82004DCC9001FB2AA /* hterm_all.js */,
+				D2496F3B20038B3300E75FE9 /* hterm_all.min.js */,
+				D29392B62004D785001FB2AA /* hterm_all.patches.js */,
+				D266E19F2007802D007365FD /* fonts */,
 				C94437641D838ABF0096F84E /* Fonts */,
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
-				070058EB1D12FA6D00D133E3 /* termcontrol.js */,
-				079635DA1D0F8219000473B1 /* webfont.js */,
-				0732F0491D062B9A00AB5438 /* hterm_all.js */,
 				0732F04A1D062B9A00AB5438 /* locales.bundle */,
-				0732F04B1D062B9A00AB5438 /* term.html */,
 			);
 			path = Resources;
 			sourceTree = "<group>";
@@ -686,6 +715,7 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
+				0747D6392018182D00CF8F0C /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -696,7 +726,7 @@
 				0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */,
 				0732F1191D062CA000AB5438 /* libUICKeyChainStore.a */,
 				0732F11B1D062CA000AB5438 /* UICKeyChainStoreTests.xctest */,
-				22FE48BB1FDC722100899DA7 /* TestHost.app */,
+				0747D63E2018182D00CF8F0C /* TestHost.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -820,10 +850,16 @@
 				D210E99D1D5B89910012E1C5 /* utf8.h */,
 				07F670631D05EEE200C0A53C /* linenoise.c */,
 				07F670641D05EEE200C0A53C /* linenoise.h */,
+				D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */,
+				D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */,
 				07F670651D05EEE200C0A53C /* MCPSession.h */,
 				07F670661D05EEE200C0A53C /* MCPSession.m */,
+				D23B188C1FFB776000A6C903 /* MoshSessionParameters.h */,
+				D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */,
 				07F670671D05EEE200C0A53C /* MoshSession.h */,
 				07F670681D05EEE200C0A53C /* MoshSession.m */,
+				D23B18891FFB76B300A6C903 /* SessionParameters.h */,
+				D23B188A1FFB76B300A6C903 /* SessionParameters.m */,
 				07F6706B1D05EEE200C0A53C /* Session.h */,
 				07F6706C1D05EEE200C0A53C /* Session.m */,
 				07F6706D1D05EEE200C0A53C /* SSHCopyIDSession.h */,
@@ -1004,6 +1040,27 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		D266E19F2007802D007365FD /* fonts */ = {
+			isa = PBXGroup;
+			children = (
+				D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */,
+				D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */,
+				D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */,
+				D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */,
+				85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */,
+				85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */,
+				85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */,
+				85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */,
+				85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */,
+				85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */,
+				85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */,
+				85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */,
+				D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */,
+				D29392AB2004C6C3001FB2AA /* FiraCode.ttf */,
+			);
+			name = fonts;
+			sourceTree = "<group>";
+		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
@@ -1117,9 +1174,8 @@
 			isa = PBXProject;
 			attributes = {
 				CLASSPREFIX = "";
-				LastSwiftUpdateCheck = 0900;
-				LastUpgradeCheck = 0830;
-				ORGANIZATIONNAME = "Nicolas Holzschuch";
+				LastUpgradeCheck = 0920;
+				ORGANIZATIONNAME = "Carlos Cabañero Projects SL";
 				TargetAttributes = {
 					076FBE0B1DB80AC900F6D997 = {
 						DevelopmentTeam = FCX3DQP2U9;
@@ -1130,11 +1186,8 @@
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
-							com.apple.ApplicationGroups.iOS = {
-								enabled = 0;
-							};
-							com.apple.BackgroundModes = {
-								enabled = 0;
+							com.apple.DataProtection = {
+								enabled = 1;
 							};
 							com.apple.Keychain = {
 								enabled = 1;
@@ -1245,11 +1298,18 @@
 			remoteRef = 2236F34A1FDA7886000D3229 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		22FE48BB1FDC722100899DA7 /* TestHost.app */ = {
+		0747D6392018182D00CF8F0C /* MBProgressHUD.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBProgressHUD.framework;
+			remoteRef = 0747D6382018182D00CF8F0C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		0747D63E2018182D00CF8F0C /* TestHost.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = TestHost.app;
-			remoteRef = 22FE48BA1FDC722100899DA7 /* PBXContainerItemProxy */;
+			remoteRef = 0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1263,18 +1323,24 @@
 				076FBE441DB80AC900F6D997 /* css in Resources */,
 				076FBE451DB80AC900F6D997 /* Themes in Resources */,
 				076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */,
+				85A34326200A9AF6009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */,
+				85A3432B200A9AF7009324F1 /* FiraCode-Bold.ttf in Resources */,
 				076FBE471DB80AC900F6D997 /* locales.bundle in Resources */,
+				85A3432C200A9AF7009324F1 /* FiraCode.ttf in Resources */,
 				076FBE481DB80AC900F6D997 /* about.html in Resources */,
 				076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */,
 				076FBE4B1DB80AC900F6D997 /* Fonts in Resources */,
+				85A34328200A9AF7009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */,
 				076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */,
-				076FBE4D1DB80AC900F6D997 /* Main.storyboard in Resources */,
-				076FBE4E1DB80AC900F6D997 /* hterm_all.js in Resources */,
 				076FBE4F1DB80AC900F6D997 /* term.html in Resources */,
 				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
-				076FBE511DB80AC900F6D997 /* webfont.js in Resources */,
+				85A34324200A9AF6009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */,
 				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
-				076FBE531DB80AC900F6D997 /* termcontrol.js in Resources */,
+				85A34313200A9AEE009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */,
+				85A34329200A9AF7009324F1 /* Menlo-for-Powerline.ttf in Resources */,
+				85A34325200A9AF6009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */,
+				85A3432A200A9AF7009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */,
+				85A34327200A9AF6009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1282,24 +1348,40 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D217129C200C99130044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf in Resources */,
 				07E3AED31D919272007BC086 /* css in Resources */,
+				D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */,
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
+				85A34321200A9AF5009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */,
+				85A34312200A9AED009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
+				85A34322200A9AF5009324F1 /* FiraCode-Bold.ttf in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
+				D217129F200C99130044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
+				85A34320200A9AF5009324F1 /* Menlo-for-Powerline.ttf in Resources */,
+				D217129E200C99130044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf in Resources */,
+				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
+				D217129D200C99130044BC90 /* Source-Code-Pro-for-Powerline.otf in Resources */,
+				D2496F412003941B00E75FE9 /* term.js in Resources */,
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
-				0716B5751CFFAB9300268B5B /* Main.storyboard in Resources */,
+				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
+				85A3431B200A9AF5009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
-				0732F04C1D062B9A00AB5438 /* hterm_all.js in Resources */,
+				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
-				079635DC1D0F8219000473B1 /* webfont.js in Resources */,
+				85A3431D200A9AF5009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */,
+				85A3431F200A9AF5009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
-				070058EC1D12FA6D00D133E3 /* termcontrol.js in Resources */,
+				D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */,
+				85A34323200A9AF5009324F1 /* FiraCode.ttf in Resources */,
+				85A3431C200A9AF5009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */,
+				85A3431E200A9AF5009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1387,10 +1469,12 @@
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				07AA06551E08B12E008310B7 /* PasscodeLockType.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
+				D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
+				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
@@ -1406,26 +1490,33 @@
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
+				85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
+				D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				22E837EC2021EAA3004B6BA1 /* tool_main.c in Sources */,
 				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
+				D2A92352201732B600043596 /* MusicManager.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
+				D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
 				07AA06521E08B12E008310B7 /* PasscodeLockViewController.swift in Sources */,
+				D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
+				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
+				85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
@@ -1469,14 +1560,6 @@
 				0716B52D1CFFAB9300268B5B /* Base */,
 			);
 			name = LaunchScreen.storyboard;
-			sourceTree = "<group>";
-		};
-		0716B52E1CFFAB9300268B5B /* Main.storyboard */ = {
-			isa = PBXVariantGroup;
-			children = (
-				0716B52F1CFFAB9300268B5B /* Base */,
-			);
-			name = Main.storyboard;
 			sourceTree = "<group>";
 		};
 		07AA06331E08B12E008310B7 /* PasscodeLock.strings */ = {
@@ -1575,14 +1658,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1622,14 +1711,20 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -1685,7 +1780,7 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1701,7 +1796,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -1711,9 +1806,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
+				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				CODE_SIGN_STYLE = Manual;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
@@ -1726,7 +1821,7 @@
 				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1739,11 +1834,11 @@
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
-				PROVISIONING_PROFILE = "";
-				PROVISIONING_PROFILE_SPECIFIER = "";
+				PROVISIONING_PROFILE = "ef71f761-fcc0-457d-ad7c-07e520594656";
+				PROVISIONING_PROFILE_SPECIFIER = Com.CarlosCabanero.BlinkShell.Dist;
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = "armv7 arm64";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};

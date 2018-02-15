@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -34,4 +34,7 @@
 #import "BKResource.h"
 
 @interface BKFont : BKResource
+
+@property BOOL systemWide;
+
 @end

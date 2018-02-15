@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKFont.h"
+#import <UIKit/UIKit.h>
 
 @implementation BKFont
 
@@ -42,5 +43,93 @@
 {
   return @"css";
 }
+
++ (NSArray *)all
+{
+  return [[
+          self.defaultResources
+          arrayByAddingObjectsFromArray: [self _systemWideFonts]]
+          arrayByAddingObjectsFromArray: self.customResources];
+}
+
+
++ (NSArray<BKFont *> *)_systemWideFonts
+{
+  NSMutableDictionary *map = [[NSMutableDictionary alloc] init];
+  NSMutableArray *result = [[NSMutableArray alloc] init];
+  for (BKFont *f in self.defaultResources) {
+    map[f.name] = f;
+  }
+  map[@"Apple Color Emoji"] = @(YES);
+  
+  NSDictionary *traitsAttributes = @{UIFontSymbolicTrait: @(UIFontDescriptorTraitMonoSpace)};
+  NSDictionary *fontAttributes = @{UIFontDescriptorTraitsAttribute: traitsAttributes};
+  UIFontDescriptor *fontDescriptor = [UIFontDescriptor fontDescriptorWithFontAttributes:fontAttributes];
+  NSArray *array = [fontDescriptor matchingFontDescriptorsWithMandatoryKeys:nil];
+  for (UIFontDescriptor *descriptor in array) {
+    UIFont *f = [UIFont fontWithDescriptor:descriptor size:10];
+    if (map[f.familyName]) {
+      continue;
+    }
+  
+    BKFont * font = [[BKFont alloc] init];
+    font.name = f.familyName;
+    font.systemWide = YES;
+    map[font.name] = font;
+    [result addObject:font];
+  }
+  
+  return result;
+}
+
+- (NSString *)content
+{
+  if (!_systemWide) {
+    return [super content];
+  }
+  
+  NSString * css = [
+  @[
+      @"@font-face {",
+      @" font-family: '[[family]]';",
+      @" src: local('[[family]]');",
+      @" font-weight: normal;",
+      @" font-style: normal;",
+      @"}",
+      @"",
+      @"@font-face {",
+      @" font-family: '[[family]]';",
+      @" src: local('[[family]]');",
+      @" font-weight: bold;",
+      @" font-style: normal;",
+      @"}",
+      @"",
+      @"@font-face {",
+      @" font-family: '[[family]]';",
+      @" src: local('[[family]]');",
+      @" font-weight: normal;",
+      @" font-style: italic;",
+      @" }",
+      @" ",
+      @"@font-face {",
+      @" font-family: '[[family]]';",
+      @" src: local('[[family]]');",
+      @" font-weight: bold;",
+      @" font-style: italic;",
+      @"}",
+      @"",
+  ] componentsJoinedByString:@"\n"];
+  
+  return [css stringByReplacingOccurrencesOfString:@"[[family]]" withString:self.name];
+}
+
+-(BOOL)isCustom
+{
+  if (_systemWide) {
+    return YES;
+  }
+  return [super isCustom];
+}
+
 
 @end

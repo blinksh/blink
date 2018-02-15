@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -933,7 +933,7 @@ static void kbd_callback(const char *name, int name_len,
 
   if (_tty_flag) {
     [self set_nonblock:fileno(_stream.in)];
-    mode = [self.stream.control.terminal rawMode];
+    mode = [self.stream.control rawMode];
     [self.stream.control setRawMode:YES];
   }
 

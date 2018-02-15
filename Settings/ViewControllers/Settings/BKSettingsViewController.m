@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -46,10 +46,22 @@
 @end
 
 @implementation BKSettingsViewController
+{
+  NSArray *_kbCommands;
+}
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
+  
+  _kbCommands = @[
+                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
+                                             action: @selector(_closeConfig:)
+                               discoverabilityTitle: @"Close Settings"]
+                  ];
+  
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
 
@@ -60,6 +72,21 @@
   }
 }
 
+- (void)_closeConfig:(UIKeyCommand *)cmd
+{
+  [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (NSArray<UIKeyCommand *> *)keyCommands
+{
+  return _kbCommands;
+}
+
+- (BOOL)canBecomeFirstResponder
+{
+  return YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
@@ -67,13 +94,6 @@
   self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] == true ? @"On" : @"Off";
   self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] == true ? @"On" : @"Off";
 }
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
-
 
 - (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
 {

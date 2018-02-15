@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -31,53 +31,60 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
+#import "MCPSessionParameters.h"
 
-extern NSString * const TermViewCtrlSeq;
-extern NSString * const TermViewEscSeq;
-extern NSString * const TermViewCursorFuncSeq;
-extern NSString * const TermViewFFuncSeq;
-extern NSString * const TermViewAutoRepeateSeq;
+@class TermView;
+@class TermInput;
 
 @protocol TerminalDelegate <NSObject>
+
+@property (readonly, nonatomic) TermView *termView;
 
 - (void)write:(NSString *)input;
 
 @optional
-- (void)terminalIsReady;
+- (void)terminalIsReady: (NSDictionary *)data;
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
 - (void)fontSizeChanged:(NSNumber *)size;
+- (void)focus;
+- (void)blur;
+- (void)attachInput:(TermInput *)termInput;
 @end
 
-@interface BLWebView: WKWebView
+@interface BKWebView: WKWebView
+
 @end
 
 @interface TermView : UIView
 
-@property (nonatomic) WKWebView *webView;
-@property (weak) id<TerminalDelegate> delegate;
-@property (nonatomic, readonly, weak) NSString *title;
-@property (readwrite, copy) UITextRange *selectedTextRange;
-@property (nonatomic, readonly) UITextRange *markedTextRange;
-@property (nonatomic, assign) int rowCount;
-@property (nonatomic, assign) int columnCount;
+@property (weak) id<TerminalDelegate> termDelegate;
+@property (nonatomic, readonly) NSString *title;
+@property (nonatomic, readonly) BOOL hasSelection;
+@property (nonatomic, readonly) NSURL *detectedLink;
+@property (nonatomic, readonly) NSString *selectedText;
+@property BOOL readyToDelete;
 
 - (id)initWithFrame:(CGRect)frame;
-- (void)setScrollEnabled:(BOOL)scroll;
-- (void)setRawMode:(BOOL)raw;
-- (BOOL)rawMode;
+- (void)loadWith:(MCPSessionParameters *)params;
+- (void)reloadWith:(MCPSessionParameters *)params;
 - (void)clear;
-- (void)setColumnNumber:(NSInteger)count;
+- (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
-- (void)setInputEnabled:(BOOL)enabled;
-- (void)loadTerminal;
 - (void)write:(NSString *)data;
-- (void)assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier;
-- (void)assignFunction:(NSString *)function toTriggers:(UIKeyModifierFlags)triggers;
-- (void)loadTerminalThemeJS:(NSString *)themeContent;
-- (void)loadTerminalFont:(NSString *)familyName fromCSS:(NSString *)cssPath;
-- (void)loadTerminalFont:(NSString *)familyName cssFontContent:(NSString *)cssContent;
 - (void)setCursorBlink:(BOOL)state;
+- (void)setBoldAsBright:(BOOL)state;
+- (void)setBoldEnabled:(NSUInteger)state;
+- (void)copy:(id)sender;
+- (void)terminate;
 - (void)reset;
-- (void)resetDefaultControlKeys;
+
+- (void)blur;
+- (void)focus; 
+- (void)cleanSelection;
+- (void)increaseFontSize;
+- (void)decreaseFontSize;
+- (void)resetFontSize;
+
+- (void)modifySideOfSelection;
+- (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;
 @end

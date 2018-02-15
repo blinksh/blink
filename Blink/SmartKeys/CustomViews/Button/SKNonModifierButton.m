@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,6 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "SKNonModifierButton.h"
+
+#define DEFAULT_BG_COLOR  [UIColor viewFlipsideBackgroundColor];
+#define SELECTED_BG_COLOR [UIColor blueColor]
+
 @implementation SKNonModifierButton
 
 - (void)setHighlighted:(BOOL)highlighted{
