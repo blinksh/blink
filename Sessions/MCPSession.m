@@ -208,7 +208,7 @@ char* hints(const char * line, int *color, int *bold)
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history"]
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"clear"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -221,6 +221,7 @@ char* hints(const char * line, int *color, int *bold)
     @"theme": @"theme - Choose a theme 💅",
     @"music": @"music - Control music player 🎧",
     @"history": @"history - Use -c option to clear history. 🙈 ",
+    @"clear": @"clear - Clear screen. 🙊",
     @"exit": @"exit - Exits current session. 👋"
   };
 }
@@ -297,6 +298,8 @@ char* hints(const char * line, int *color, int *bold)
         [self _showConfig];
       } else if ([cmd isEqualToString:@"history"]) {
         [self _execHistoryWithArgs: args];
+      } else if ([cmd isEqualToString:@"clear"]) {
+        [self _execClear];
       } else {
         [self out:"Unknown command. Type 'help' for a list of available operations"];
       }
@@ -309,6 +312,11 @@ char* hints(const char * line, int *color, int *bold)
   [self out:"Bye!"];
 
   return 0;
+}
+
+- (void)_execClear
+{
+  [self.stream.control write:@"\xC"];
 }
 
 - (void)_execHistoryWithArgs:(NSString *)args
@@ -454,6 +462,7 @@ char* hints(const char * line, int *color, int *bold)
     @"  theme: Switch theme.",
     @"  music: Control music player.",
     @"  history: Manage history.",
+    @"  clear: Clear screen.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",
