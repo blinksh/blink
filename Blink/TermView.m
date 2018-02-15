@@ -32,7 +32,7 @@
 #include <sys/ioctl.h>
 
 #import "SmartKeysController.h"
-#import "SmartKeysView.h"
+#import "SmartKeys/SmartKeysView.h"
 #import "TermView.h"
 #import "BKUserConfigurationManager.h"
 
