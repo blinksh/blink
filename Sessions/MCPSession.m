@@ -391,9 +391,8 @@ void completion(const char *command, linenoiseCompletions *lc) {
         // Is it one of the shell commands?
         // Re-evalute column number before each command
         char columnCountString[10];
-        // TODO: I need the column count for the current window. This used to work:
-        // sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
-        // setenv("COLUMNS", columnCountString, 1); // force rewrite of value
+        sprintf(columnCountString, "%i", self.stream.sz->ws_col);
+        setenv("COLUMNS", columnCountString, 1); // force rewrite of value
         // Redirect all output to console:
         FILE* saved_out = stdout;
         FILE* saved_err = stderr;
