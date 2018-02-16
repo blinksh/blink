@@ -364,6 +364,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
       NSString *cmd = arr[0];
       NSString *args = arr[1];
 
+=======
+      
+>>>>>>> fa8989615c8b50cbd6170eb143e6564687cafc4a
       if ([cmd isEqualToString:@"help"]) {
         [self _showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {

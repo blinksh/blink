@@ -150,7 +150,6 @@ void _on_pipebroken_signal(int signum){
                                                   repeats:NO];
 }
 
-
 - (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
 {
   return YES;
