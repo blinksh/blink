@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -42,5 +42,7 @@ extern NSString *const BKUserConfigShowSmartKeysWithXKeyBoard;
 + (void)setUserSettingsValue:(BOOL)value forKey:(NSString *)key;
 + (BOOL)userSettingsValueForKey:(NSString *)key;
 + (UIKeyModifierFlags)shortCutModifierFlags;
+
++ (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags;
 
 @end

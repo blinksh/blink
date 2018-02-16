@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -142,6 +142,8 @@ static NSArray *CursorKeys = nil;
 
 - (void)viewDidLoad
 {
+  [super viewDidLoad];
+  
   [self.view setNonModifiers:HelperKeys];
   [self.view setAlternateKeys:AlternateKeys];
   [self.view showNonModifierKeySection:SKNonModifierButtonTypeNormal];
@@ -153,15 +155,13 @@ static NSArray *CursorKeys = nil;
   [self.allKeys addObjectsFromArray:AlternateKeys];
   [self.allKeys addObjectsFromArray:CursorKeys];
   [self.allKeys addObject:[[SmartKey alloc] initWithName:KbdEscKey symbol:UIKeyInputEscape]];
-  [super viewDidLoad];
+
 }
 
 - (void)invalidateTimer
 {
-  if (_timer != nil) {
-    [_timer invalidate];
-    _timer = nil;
-  }
+  [_timer invalidate];
+  _timer = nil;
 }
 
 - (void)symbolUp:(NSString *)symbol
@@ -195,10 +195,7 @@ static NSArray *CursorKeys = nil;
 
 - (void)nonModifierKeysSwitched
 {
-  if (_timer != nil) {
-    [_timer invalidate];
-    _timer = nil;
-  }
+  [self invalidateTimer];
 }
 
 @end

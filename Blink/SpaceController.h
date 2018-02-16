@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,14 +30,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
+#import "StateManager.h"
 
 
 @interface SpaceController : UIViewController
 
 - (void)viewScreenWillBecomeActive;
+- (void)viewScreenDidBecomeInactive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
-- (BOOL)executeCommand:(NSMutableArray*) listArgv; 
-- (void)newShellWithActivity:(NSUserActivity *)activity;
+- (void)suspendWith:(StateManager *)stateManager;
+- (void)resumeWith: (StateManager *)stateManager;
+- (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager;
 
 @end

@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -33,9 +33,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
-// Required for commands
-#import "SpaceController.h"
-#import <pthread.h>
+
 @import CloudKit;
 
 #undef HOCKEYSDK
@@ -47,11 +45,19 @@
 @end
 
 @implementation AppDelegate {
-  NSString *docsPath;
+  NSTimer *_suspendTimer;
+  UIBackgroundTaskIdentifier _suspendTaskId;
+  BOOL _suspendedMode;
+}
+  
+void _on_pipebroken_signal(int signum){
+  NSLog(@"PIPE is broken");
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  signal(SIGPIPE, _on_pipebroken_signal);
+  
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
   
   docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
@@ -66,163 +72,21 @@
   //[[BITHockeyManager sharedHockeyManager] setDebugLogEnabled: YES];
   [[BITHockeyManager sharedHockeyManager] startManager];
   [[BITHockeyManager sharedHockeyManager].authenticator authenticateInstallation]; // This line is obsolete in the crash only build
-#endif 
-  
+#endif
+
+
   [[ScreenController shared] setup];
-
   return YES;
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-  // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
-  // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
-  // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-  // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-  // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-  // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
-}
-
-
-- (NSString*)uniqueFileName:(NSString*)filename {
-  NSString* extension = [filename pathExtension];
-  NSString* basename = [filename stringByDeletingPathExtension];
-  int nameSuffix = 1;
-  
-  NSURL* target = [NSURL fileURLWithPath:filename];
-  /*
-   Find a suitable filename that doesn't already exist on disk.
-   Do not use `fileManager.fileExistsAtPath(target.path!)` because
-   the document might not have downloaded yet.
-   */
-  NSError* error;
-  while ([target checkPromisedItemIsReachableAndReturnError:(&error)]) {
-    NSString* suffix = [NSString stringWithFormat:@"-%d.", nameSuffix];
-    NSString* newName = [[basename stringByAppendingString:suffix] stringByAppendingString:extension];
-    target = [NSURL fileURLWithPath:newName];
-    nameSuffix += 1;
-  }
-  return target.path;
-}
-
-- (BOOL)application:(UIApplication *)app
-            openURL:(NSURL *)url
-            options:(NSDictionary<UIApplicationOpenURLOptionsKey, id> *)options {
-  // Two different possibilities:
-  // a) we have been sent a file (by "open in Blink").
-  //         --> we either save it or copy it in Documents.
-  // b) we have been sent a command (by "blinkshell://command%20plus%20arguments").
-  //         --> we extract the command and execute it.
-  if (url.isFileURL) {
-    BOOL shouldOpenInPlace = options[UIApplicationOpenURLOptionsOpenInPlaceKey];
-    if (shouldOpenInPlace) [url startAccessingSecurityScopedResource];
-    NSData *data = [NSData dataWithContentsOfURL:url];
-    if (shouldOpenInPlace) [url stopAccessingSecurityScopedResource];
-    // The place where we will write the data:
-    NSString* filename = [url lastPathComponent];
-    NSString* path = [docsPath stringByAppendingPathComponent:filename];
-    NSString* pathUnique = [self uniqueFileName:path];
-    
-    if (shouldOpenInPlace && (data != nil)) {
-      if ([data writeToFile:pathUnique atomically:YES]) {
-        // If it worked and it was a file in our Inbox, we delete it:
-        if (([url isFileURL]) && (
-                                  ([[url path] isEqualToString:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]) ||
-                                  ([[url path] isEqualToString:[@"/private" stringByAppendingPathComponent:[[docsPath stringByAppendingPathComponent:@"Inbox/"] stringByAppendingPathComponent:filename]]])
-                                  )) {
-          NSError *e;
-          if (![[NSFileManager defaultManager] removeItemAtPath:url.path error:&e]) {
-            fprintf(stderr, "Could not remove file: %s, reason = %s\n", [url.path UTF8String],  [[e localizedDescription] UTF8String]);
-          }
-        }
-      }
-      // TODO? automatic expansion of archives. Should be a preference. Security risk?
-      return YES;
-    } else {
-      // can not open in place. Need to import.
-      // HOW can I debug that with iOS11?
-      NSFileAccessIntent *readIntent = [NSFileAccessIntent readingIntentWithURL:url options:0];
-      NSFileAccessIntent *writeIntent = [NSFileAccessIntent writingIntentWithURL:[NSURL  fileURLWithPath:pathUnique] options:NSFileCoordinatorWritingForReplacing];
-      NSFileCoordinator* fileCoordinator = [[NSFileCoordinator alloc] initWithFilePresenter:nil];
-      NSOperationQueue* queue = [[NSOperationQueue alloc] init];
-      [fileCoordinator coordinateAccessWithIntents:@[readIntent] queue:queue byAccessor:^(NSError * _Nullable error) {
-        if (error != nil) return;
-        [[NSFileManager defaultManager]  copyItemAtURL:readIntent.URL toURL:writeIntent.URL error:0];
-      }];
-      return YES;
-    }
-  } else if ([url.scheme isEqualToString:@"blinkshell"]) {
-    // extract the command:
-    NSString *command = [url.absoluteString stringByReplacingOccurrencesOfString:@"blinkshell://" withString:@""];
-    SpaceController*  spaceC = (SpaceController *)ScreenController.shared.mainScreenRootViewController;
-    // parse into composants, if needed:
-    if ([command containsString:@"%1E"]) {
-      // We separated arguments with %1E. Let's parse:
-      // Corresponds to programs that create arguments with spaces in them.
-      // e.g. python, when calling "python -c vast command with spaces"
-      NSArray *listArgvMaybeEmpty = [command componentsSeparatedByString:@"%1E"];
-      NSMutableArray *listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
-                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-      for (int i = 0; i < [listArgv count]; i++)
-           [listArgv replaceObjectAtIndex:i withObject:[listArgv[i] stringByRemovingPercentEncoding]];
-      return [spaceC executeCommand:listArgv];
-    } else {
-      // no %1E inside. Simpler case.
-      // First, remove percent encoding
-      command = [command stringByRemovingPercentEncoding];
-      // Separate arr into arguments and parse (env vars, ~)
-      NSArray *listArgvMaybeEmpty = [command componentsSeparatedByString:@" "];
-      // Remove empty strings (extra spaces)
-      NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
-                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-      if ([listArgv count] == 0) return NULL; // unlikely
-      // Set the working directory to the first (existing) file on the command line
-      NSString* workingDirectory = @"";
-      for (NSString* argument in listArgv) {
-        BOOL isDir;
-        if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir]  && (!isDir)) {
-          workingDirectory = argument.stringByDeletingLastPathComponent;
-          break;
-        }
-      }
-      NSString* currentDir = [[NSFileManager defaultManager] currentDirectoryPath];
-      if (workingDirectory.length > 0) {
-        [[NSFileManager defaultManager] changeCurrentDirectoryPath:workingDirectory];
-      }
-      [spaceC executeCommand:listArgv];
-      if (workingDirectory.length > 0) {
-        [[NSFileManager defaultManager] changeCurrentDirectoryPath:currentDir];
-      }
-      return YES;
-    }
-  } else return NO; // Not a scheme we can handle, sorry
+  // TODO: pass completion handler.
 }
 
 // MARK: NSUserActivity
 
 - (BOOL)application:(UIApplication *)application willContinueUserActivityWithType:(NSString *)userActivityType {
-
   return YES;
 }
 
@@ -231,5 +95,131 @@
   restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
   return YES;
 }
+
+#pragma mark - State saving and restoring
+
+- (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
+{
+  
+  [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+
+  [self _suspendApplicationOnWillTerminate];
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+  if (_suspendedMode) {
+    [[ScreenController shared] resume];
+  }
+
+  [self _cancelApplicationSuspend];
+}
+
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+  [self _startMonitoringForSuspending];
+}
+
+- (void)_startMonitoringForSuspending
+{
+  if (_suspendedMode) {
+    return;
+  }
+  
+  NSLog(@"_startMonitoringForSuspending");
+  
+  UIApplication *application = [UIApplication sharedApplication];
+  
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [application endBackgroundTask:_suspendTaskId];
+  }
+  
+  _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
+    [self _suspendApplicationWithExpirationHandler];
+  }];
+  
+  NSTimeInterval time = MIN(application.backgroundTimeRemaining * 0.9, 5 * 60);
+  [_suspendTimer invalidate];
+  _suspendTimer = [NSTimer scheduledTimerWithTimeInterval:time
+                                                   target:self
+                                                 selector:@selector(_suspendApplicationWithSuspendTimer)
+                                                 userInfo:nil
+                                                  repeats:NO];
+}
+
+
+- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
+{
+  return YES;
+}
+
+- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
+{
+  return YES;
+}
+
+- (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
+{
+  [[ScreenController shared] finishRestoring];
+}
+
+- (void)_cancelApplicationSuspend
+{
+  [_suspendTimer invalidate];
+  _suspendedMode = NO;
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
+  }
+  _suspendTaskId = UIBackgroundTaskInvalid;
+}
+
+// Simple wrappers to get the reason of failure from call stack
+- (void)_suspendApplicationWithSuspendTimer
+{
+  NSLog(@"_suspendApplicationWithSuspendTimer");
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationWithExpirationHandler
+{
+  NSLog(@"_suspendApplicationWithExpirationHandler");
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationOnWillTerminate
+{
+  NSLog(@"_suspendApplicationOnWillTerminate");
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
+{
+  NSLog(@"_suspendApplicationOnProtectedDataWillBecomeUnavailable");
+  [self _suspendApplication];
+}
+
+- (void)_suspendApplication
+{
+  [_suspendTimer invalidate];
+  
+  if (_suspendedMode) {
+    return;
+  }
+  
+  [[ScreenController shared] suspend];
+  _suspendedMode = YES;
+  
+  if (_suspendTaskId != UIBackgroundTaskInvalid) {
+    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
+  }
+  
+  _suspendTaskId = UIBackgroundTaskInvalid;
+}
+
 
 @end

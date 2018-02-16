@@ -1,4 +1,4 @@
-#Create your own Fonts & Themes
+# Create your own Fonts & Themes
 
 With [Blink Shell](http://blink.sh) you can have your terminal, your way. That's why we have built in a simple way to create and add themes and fonts to your terminal. Themes are JS code that can modify colors and cursor behavior, and fonts are just CSS that Blink will download for you. And don't forget to share them with others too!
 

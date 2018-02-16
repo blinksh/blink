@@ -120,18 +120,18 @@
 #define LINENOISE_DEFAULT_HISTORY_MAX_LEN 100
 #define LINENOISE_MAX_LINE 4096
 #define UNUSED(x) (void)(x)
-static char *unsupported_term[] = {"dumb","cons25","emacs",NULL};
-static linenoiseCompletionCallback *completionCallback = NULL;
-static linenoiseHintsCallback *hintsCallback = NULL;
-static linenoiseFreeHintsCallback *freeHintsCallback = NULL;
+static __thread char *unsupported_term[] = {"dumb","cons25","emacs",NULL};
+static __thread linenoiseCompletionCallback *completionCallback = NULL;
+static __thread linenoiseHintsCallback *hintsCallback = NULL;
+static __thread linenoiseFreeHintsCallback *freeHintsCallback = NULL;
 
 //static struct termios orig_termios; /* In order to restore at exit.*/
-static int rawmode = 0; /* For atexit() function to check if restore is needed*/
-static int mlmode = 0;  /* Multi line mode. Default is single line. */
-static int atexit_registered = 0; /* Register atexit just 1 time. */
-static int history_max_len = LINENOISE_DEFAULT_HISTORY_MAX_LEN;
-static int history_len = 0;
-static char **history = NULL;
+static __thread int rawmode = 0; /* For atexit() function to check if restore is needed*/
+static __thread int mlmode = 0;  /* Multi line mode. Default is single line. */
+static __thread int atexit_registered = 0; /* Register atexit just 1 time. */
+static __thread int history_max_len = LINENOISE_DEFAULT_HISTORY_MAX_LEN;
+static __thread int history_len = 0;
+static __thread char **history = NULL;
 
 /* The linenoiseState structure represents the state during line editing.
  * We pass this state to functions implementing specific editing
@@ -223,9 +223,9 @@ static size_t defaultReadCode(int fd, char *buf, size_t buf_len, int* c) {
 }
 
 /* Set default encoding functions */
-static linenoisePrevCharLen *prevCharLen = defaultPrevCharLen;
-static linenoiseNextCharLen *nextCharLen = defaultNextCharLen;
-static linenoiseReadCode *readCode = defaultReadCode;
+static __thread linenoisePrevCharLen *prevCharLen = defaultPrevCharLen;
+static __thread linenoiseNextCharLen *nextCharLen = defaultNextCharLen;
+static __thread linenoiseReadCode *readCode = defaultReadCode;
 
 /* Set used defined encoding functions */
 void linenoiseSetEncodingFunctions(
@@ -765,7 +765,7 @@ static void refreshLine(struct linenoiseState *l) {
  *
  * On error writing to the terminal -1 is returned, otherwise 0. */
 int linenoiseEditInsert(struct linenoiseState *l, const char *cbuf, int clen) {
-    if (l->len < l->buflen) {
+    if (l->len+clen <= l->buflen) {
         if (l->len == l->pos) {
             memcpy(&l->buf[l->pos],cbuf,clen);
             l->pos+=clen;
@@ -950,7 +950,6 @@ int linenoiseEdit(int stdin_fd, FILE *fstdout, char *buf, size_t buflen, const c
             history_len--;
             free(history[history_len]);
             if (mlmode) linenoiseEditMoveEnd(&l);
-	    fprintf(l.ofd, "\r\n");
             if (hintsCallback) {
                 /* Force a refresh without hints to leave the previous
                  * line as the user typed it after a newline. */
@@ -959,6 +958,7 @@ int linenoiseEdit(int stdin_fd, FILE *fstdout, char *buf, size_t buflen, const c
                 refreshLine(&l);
                 hintsCallback = hc;
             }
+            fprintf(l.ofd, "\r\n");
             return (int)l.len;
         case CTRL_C:     /* ctrl-c */
             errno = EAGAIN;

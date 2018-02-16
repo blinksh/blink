@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -59,6 +59,9 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 @property (nonatomic) BOOL shiftAsEsc;
 @property (nonatomic) BOOL autoRepeatKeys;
 @property (nonatomic) BOOL cursorBlink;
+@property (nonatomic) NSUInteger enableBold;
+@property (nonatomic) BOOL boldAsBright;
+@property (nonatomic) BOOL lightKeyboard;
 
 + (void)initialize;
 + (BOOL)saveDefaults;
@@ -67,6 +70,9 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (void)setShiftAsEsc:(BOOL)state;
 + (void)setAutoRepeatKeys: (BOOL)state;
 + (void)setCursorBlink:(BOOL)state;
++ (void)setBoldAsBright:(BOOL)state;
++ (void)setEnableBold:(NSUInteger)state;
++ (void)setLightKeyboard:(BOOL)state;
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
@@ -83,6 +89,9 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (BOOL)isShiftAsEsc;
 + (BOOL)autoRepeatKeys;
 + (BOOL)isCursorBlink;
++ (NSUInteger)enableBold;
++ (BOOL)isBoldAsBright;
++ (BOOL)isLightKeyboard;
 + (void)setDefaultUserName:(NSString*)name;
 + (NSString*)defaultUserName;
 @end

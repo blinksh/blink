@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -42,20 +42,132 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
+#import "BKHosts.h"
+#import "BKTheme.h"
+#import "BKDefaults.h"
+#import "MusicManager.h"
+#import "BKUserConfigurationManager.h"
 
 // from ios_system:
 #include "ios_system/ios_system.h"
 
 #define MCP_MAX_LINE 4096
+#define MCP_MAX_HISTORY 1000
 
-@implementation MCPSession {
-  Session *_childSession;
-}
+NSArray *__commandList;
+NSDictionary *__commandHints;
 
 // for file completion
 // do recompute directoriesInPath only if $PATH has changed
 static NSString* fullCommandPath = @"";
 static NSArray *directoriesInPath;
+
+NSArray<NSString *> *splitCommandAndArgs(NSString *cmdline)
+{
+  NSRange rng = [cmdline rangeOfString:@" "];
+  if (rng.location == NSNotFound) {
+    return @[ cmdline, @"" ];
+  } else {
+    return @[
+       [cmdline substringToIndex:rng.location],
+       [cmdline substringFromIndex:rng.location + 1]
+    ];
+  }
+}
+
+NSArray<NSString *> *commandsByPrefix(NSString *prefix)
+{
+  if (prefix.length == 0) {
+    return @[@"help"];
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [__commandList filteredArrayUsingPredicate:prefixPred];
+}
+
+NSArray<NSString *> *hostsByPrefix(NSString *prefix)
+{
+  NSMutableArray *hostsNames = [[NSMutableArray alloc] init];
+  for (BKHosts *h in [BKHosts all]) {
+    [hostsNames addObject:h.host];
+  }
+  
+  if (prefix.length == 0) {
+    return hostsNames;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [hostsNames filteredArrayUsingPredicate:prefixPred];
+}
+
+NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
+{
+  NSArray<NSString *> * actions = [[MusicManager shared] commands];
+  
+  if (prefix.length == 0) {
+    return actions;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [actions filteredArrayUsingPredicate:prefixPred];
+}
+
+NSArray<NSString *> *historyActionsByPrefix(NSString *prefix)
+{
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [@[@"-c", @"10", @"-10"] filteredArrayUsingPredicate:prefixPred];
+}
+
+
+NSArray<NSString *> *themesByPrefix(NSString *prefix) {
+  NSMutableArray *themeNames = [[NSMutableArray alloc] init];
+  for (BKTheme *theme in [BKTheme all]) {
+    [themeNames addObject:theme.name];
+  }
+  
+  if (prefix.length == 0) {
+    return themeNames;
+  }
+  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  return [themeNames filteredArrayUsingPredicate:prefixPred];
+}
+
+char* hints(const char * line, int *color, int *bold)
+{
+  NSString *hint = nil;
+  NSString *prefix = [NSString stringWithUTF8String:line];
+  if (prefix.length == 0) {
+    return NULL;
+  }
+  
+  NSString *cmd = [commandsByPrefix(prefix) firstObject];
+  if (cmd) {
+    hint = __commandHints[cmd];
+  } else {
+    NSArray *cmdAndArgs = splitCommandAndArgs(prefix);
+    cmd = cmdAndArgs[0];
+    prefix = cmdAndArgs[1];
+    
+    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+      hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"theme"]) {
+      hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"music"]) {
+      hint = [musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
+    }
+  }
+  
+  if ([hint length] > 0) {
+    *color = 33;
+    return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+  }
+  
+  return NULL;
+}
+
+
+@implementation MCPSession {
+  Session *_childSession;
+}
+
+@dynamic sessionParameters;
 
 - (void)setTitle
 {
@@ -166,8 +278,41 @@ void completion(const char *command, linenoiseCompletions *lc) {
   }
 }
 
+(void)initialize
+{
+  __commandList = [
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history"]
+        sortedArrayUsingSelector:@selector(compare:)
+  ];
+  
+  __commandHints =
+  @{
+    @"help": @"help - Prints all commands. 🧐 ",
+    @"mosh": @"mosh - Runs mosh client. 🦄",
+    @"ssh": @"ssh - Runs ssh client. 🐌",
+    @"config": @"config - Add keys, hosts, themes, etc... ⚙️ ",
+    @"theme": @"theme - Choose a theme 💅",
+    @"music": @"music - Control music player 🎧",
+    @"history": @"history - Use -c option to clear history. 🙈 ",
+    @"exit": @"exit - Exits current session. 👋"
+  };
+}
+
+- (NSString *)_historyFilePath
+{
+  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  return [docsPath stringByAppendingPathComponent:@"history.txt"];
+}
+
 - (int)main:(int)argc argv:(char **)argv
 {
+  if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
+    _childSession = [[MoshSession alloc] initWithStream:_stream
+                                           andParametes:self.sessionParameters.childSessionParameters];
+    [_childSession executeAttachedWithArgs:@""];
+    _childSession = nil;
+  }
+  
   char *line;
   argc = 0;
   argv = nil;
@@ -187,8 +332,11 @@ void completion(const char *command, linenoiseCompletions *lc) {
                                 linenoiseUtf8NextCharLen,
                                 linenoiseUtf8ReadCode);
 
+  const char *history = [[self _historyFilePath] UTF8String];
+  linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
   linenoiseHistoryLoad(history);
   linenoiseSetCompletionCallback(completion);
+  linenoiseSetHintsCallback(hints);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
@@ -196,6 +344,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
       linenoiseHistorySave(history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
+      /*
+       NH: wrote this as a more robust way to split command and args.
+       TODO: check if still required
       // separate into arguments, parse and execute:
       NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
       // Remove empty strings (extra spaces)
@@ -205,25 +356,40 @@ void completion(const char *command, linenoiseCompletions *lc) {
       
       [self.delegate indexCommand:listArgv];
       NSString *cmd = listArgv[0];
-      
+      */
+      free(line);
+
+      cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+      NSArray *arr = splitCommandAndArgs(cmdline);
+      NSString *cmd = arr[0];
+      NSString *args = arr[1];
+
       if ([cmd isEqualToString:@"help"]) {
-        [self showHelp];
+        [self _showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
 
-        [self runMoshWithArgs:cmdline];
+        [self _runMoshWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"ssh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
-
-        [self runSSHWithArgs:cmdline];
+        [self _runSSHWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
+      } else if ([cmd isEqualToString:@"theme"]) {
+        BOOL reload = [self _switchTheme: args];
+        if (reload) {
+          return 0;
+        }
+      } else if ([cmd isEqualToString:@"music"]) {
+        [self _controlMusic: args];
       } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-        [self runSSHCopyIDWithArgs:cmdline];
+        [self _runSSHCopyIDWithArgs:cmdline];
       } else if ([cmd isEqualToString:@"config"]) {
-        [self showConfig];
+        [self _showConfig];
+      } else if ([cmd isEqualToString:@"history"]) {
+        [self _execHistoryWithArgs: args];
       } else {
         // Is it one of the shell commands?
         // Re-evalute column number before each command
@@ -245,8 +411,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
-
-    free(line);
+    [self.stream.control setRawMode:NO];
   }
 
   [self out:"Bye!"];
@@ -254,7 +419,45 @@ void completion(const char *command, linenoiseCompletions *lc) {
   return 0;
 }
 
-- (void)showConfig
+- (void)_execHistoryWithArgs:(NSString *)args
+{
+  NSInteger number = [args integerValue];
+  if (number != 0) {
+    NSString *history = [NSString stringWithContentsOfFile:[self _historyFilePath]
+                                                  encoding:NSUTF8StringEncoding error:nil];
+    NSArray *lines = [history componentsSeparatedByString:@"\n"];
+    if (!lines) {
+      return;
+    }
+    lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
+    
+    NSInteger len = lines.count;
+    NSInteger start = 0;
+    if (number > 0) {
+      len = MIN(len, number);
+    } else {
+      start = MAX(len + number , 0);
+    }
+
+    for (NSInteger i = start; i < len; i++) {
+      [self out:[NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String];
+    }
+  } else if ([args isEqualToString:@"-c"]) {
+    linenoiseHistorySetMaxLen(1);
+    linenoiseHistoryAdd(@"".UTF8String);
+    linenoiseHistorySave([self _historyFilePath].UTF8String);
+    linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
+  } else {
+    NSString *usage = [@[
+                         @"history usage:",
+                         @"history <number> - Show history",
+                         @"history -c       - Clear history",
+                        ] componentsJoinedByString:@"\r\n"];
+    [self out:usage.UTF8String];
+  }
+}
+
+- (void)_showConfig
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [[UIApplication sharedApplication]
@@ -262,30 +465,75 @@ void completion(const char *command, linenoiseCompletions *lc) {
   });
 }
 
-- (void)runSSHCopyIDWithArgs:(NSString *)args
+- (BOOL)_switchTheme:(NSString *)args
 {
-  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream];
+  if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
+    NSString *themeName = [BKDefaults selectedThemeName];
+    [self out:[NSString stringWithFormat:@"Current theme: %@", themeName].UTF8String];
+    BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
+    if (!theme) {
+      [self out:@"Not found".UTF8String];
+    }
+    return NO;
+  } else {
+    BKTheme *theme = [BKTheme withName:args];
+    if (!theme) {
+      [self out:@"Theme not found".UTF8String];
+      return NO;
+    }
+    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [BKDefaults setThemeName:theme.name];
+      [BKDefaults saveDefaults];
+      [_stream.control reload];
+    });
+    return YES;
+  }
+}
+
+- (void)_controlMusic:(NSString *)input
+{
+  __block NSString *output = nil;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    output = [[MusicManager shared] runWithInput:input];
+  });
+
+  if (output) {
+    [self out:output.UTF8String];
+  }
+}
+
+- (void)_runSSHCopyIDWithArgs:(NSString *)args
+{
+  self.sessionParameters.childSessionParameters = nil;
+  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"sshcopyid";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
 
-- (void)runMoshWithArgs:(NSString *)args
+- (void)_runMoshWithArgs:(NSString *)args
 {
+  [self.delegate indexCommand:args];
+  self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
+  self.sessionParameters.childSessionType = @"mosh";
+  _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  [_childSession executeAttachedWithArgs:args];
   
-  _childSession = [[MoshSession alloc] initWithStream:_stream];
-  [_childSession executeAttachedWithArgs:args];
-  
   _childSession = nil;
 }
 
-- (void)runSSHWithArgs:(NSString *)args
+- (void)_runSSHWithArgs:(NSString *)args
 {
-  _childSession = [[SSHSession alloc] initWithStream:_stream];
+  self.sessionParameters.childSessionParameters = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SSHSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
 
-- (NSString *)shortVersionString
+- (NSString *)_shortVersionString
 {
   NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
 
@@ -298,29 +546,38 @@ void completion(const char *command, linenoiseCompletions *lc) {
                                     appDisplayName, majorVersion, minorVersion, compileDate];
 }
 
-- (void)showHelp
+- (void)_showHelp
 {
+  UIKeyModifierFlags flags = [BKUserConfigurationManager shortCutModifierFlags];
+  NSString *flagsStr = [BKUserConfigurationManager UIKeyModifiersToString:flags];
   NSString *help = [@[
     @"",
-    [self shortVersionString],
+    [self _shortVersionString],
     @"",
     @"Available commands:",
     @"  mosh: mosh client.",
     @"  ssh: ssh client.",
     @"  ssh-copy-id: Copy an identity to the server.",
     @"  config: Configure Blink. Add keys, hosts, themes, etc...",
+    @"  theme: Switch theme.",
+    @"  music: Control music player.",
+    @"  history: Manage history.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",
     @"Available gestures and keyboard shortcuts:",
-    @"  two fingers tap or cmd+t: New shell.",
-    @"  two fingers swipe down or cmd+w: Close shell.",
-    @"  one finger swipe left/right or cmd+shift+[/]: Switch between shells.",
-    @"  cmd+alt+N: Switch to shell number N.",
-    @"  cmd+o: Switch to other screen (Airplay mode).",
-    @"  cmd+shift+o: Move current shell to other screen (Airplay mode).",
-    @"  cmd+,: Open config.",
+    [NSString stringWithFormat:@"  two fingers tap or %@+t: New shell.", flagsStr],
+    @"  two fingers swipe up: Show control panel.",
+    @"  two fingers drag down dismiss keyboard.",
+    [NSString stringWithFormat:@"  one finger swipe left/right or %@+[]: Switch between shells.", flagsStr],
+    [NSString stringWithFormat:@"  %@+N: Switch to shell number N.", flagsStr],
+    [NSString stringWithFormat:@"  %@+w: Close shell.", flagsStr],
+    [NSString stringWithFormat:@"  %@+o: Switch to other screen (Airplay mode).", flagsStr],
+    [NSString stringWithFormat:@"  %@+O: Move current shell to other screen (Airplay mode).", flagsStr],
+    [NSString stringWithFormat:@"  %@+,: Open config.", flagsStr],
+    [NSString stringWithFormat:@"  %@+m: Toggle music controls. (Control with %@+npsrb).", flagsStr, flagsStr],
     @"  pinch: Change font size.",
+    @"  selection mode: VIM users: hjklwboyp, EMACS: ⌃-fbnpx, OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\n"];
 
@@ -361,6 +618,11 @@ void completion(const char *command, linenoiseCompletions *lc) {
     fclose(_stream.in);
     _stream.in = NULL;
   }
+}
+
+- (void)suspend
+{
+  [_childSession suspend];
 }
 
 @end

@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -32,7 +32,9 @@
 #import <UIKit/UIKit.h>
 
 #import "TermView.h"
-
+#import "MCPSessionParameters.h"
+#import "StateManager.h"
+#import "TermInput.h"
 
 @class TermController;
 
@@ -45,22 +47,29 @@
 
 @end
 
-@interface TermController : UIViewController
+@interface TermController : UIViewController<SecureRestoration>
 
 @property (readonly) FILE *termout;
 @property (readonly) FILE *termin;
 @property (readonly) FILE *termerr;
 @property (readonly) struct winsize *termsz;
-@property (strong, nonatomic) TermView *terminal;
-@property (strong, nonatomic) UIScrollView *containerView;
+@property (readonly, strong, nonatomic) TermView *termView;
+@property (readonly, strong, nonatomic) TermInput *termInput;
+@property (nonatomic) BOOL rawMode;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
+@property (strong) NSString* sessionStateKey;
+@property (strong) MCPSessionParameters *sessionParameters;
 
-- (void)setRawMode:(BOOL)raw;
-- (BOOL)rawMode;
+- (void)write:(NSString *)input;
 - (void)terminate;
-- (void)sigwinch;
-- (BOOL)executeCommand:(NSMutableArray*)listArgv;
-- (void)createPTY;
+- (void)suspend;
+- (void)resume;
+- (void)focus;
+- (void)blur;
+- (void)reload;
+- (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
+
+- (void)attachInput:(TermInput *)termInput;
 
 @end

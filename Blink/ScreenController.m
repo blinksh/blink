@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -32,6 +32,11 @@
 #import <UIKit/UIKit.h>
 #import "ScreenController.h"
 #import "SpaceController.h"
+#import "StateManager.h"
+#import "BKTouchIDAuthManager.h"
+
+NSString * const MainSpaceControllerKey = @"MainSpaceControllerKey";
+NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 
 @interface UIWindow (ScreenController)
 - (SpaceController *)spaceController;
@@ -40,7 +45,13 @@
 @implementation UIWindow (ScreenController)
 - (SpaceController *)spaceController
 {
-  return (SpaceController *)self.rootViewController;
+  UIViewController *ctrl = self.rootViewController;
+  if ([ctrl isKindOfClass:[SpaceController class]]) {
+    return (SpaceController *)self.rootViewController;
+  } if (ctrl == [BKTouchIDAuthManager sharedManager].lockViewController) {
+    return (SpaceController *)[BKTouchIDAuthManager sharedManager].rootViewController;
+  }
+  return nil;
 }
 @end
 
@@ -48,6 +59,7 @@
 @implementation ScreenController
 {
   NSMutableArray<UIWindow *> *_windows;
+  NSMutableDictionary *_bootControllers;
 }
 
 + (ScreenController *)shared {
@@ -64,6 +76,7 @@
   self = [super init];
   if (self) {
     _windows = [[NSMutableArray alloc] init];
+    _bootControllers = [[NSMutableDictionary alloc] init];
   }
   return self;
 }
@@ -92,28 +105,41 @@
   
   [self setupWindowForScreen:[UIScreen mainScreen]];
   
-  [[_windows firstObject] makeKeyAndVisible];
-
+  UIWindow *mainWindow = [_windows firstObject];
+  [mainWindow makeKeyAndVisible];
+  
+  SpaceController * secondarySC = _bootControllers[SecondarySpaceControllerKey];
+  
   // We have already connected external screen
   if ([UIScreen screens].count > 1) {
     [self setupWindowForScreen:[[UIScreen screens] lastObject]];
+  } else if (secondarySC) {
+    SpaceController *mainSC = [mainWindow spaceController];
+    [mainSC moveAllShellsFromSpaceController:secondarySC];
   }
+  _bootControllers = nil;
 }
 
 - (void)setupWindowForScreen:(UIScreen *)screen
 {
   UIWindow *window = [[UIWindow alloc] initWithFrame:[screen bounds]];
+  
   [_windows addObject:window];
   
+  NSString *rootControllerIdentifier =
+    screen == [UIScreen mainScreen] ? MainSpaceControllerKey : SecondarySpaceControllerKey;
+  
   window.screen = screen;
-  window.rootViewController = [self createSpaceController];
+  window.rootViewController = [self createSpaceController: rootControllerIdentifier];
   window.hidden = NO;
 }
 
-- (SpaceController *)createSpaceController
+- (SpaceController *)createSpaceController: (NSString *)identifier;
 {
-  UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"Main" bundle: nil];
-  return [storyboard instantiateViewControllerWithIdentifier:@"SpaceController"];
+  SpaceController *spaceController = _bootControllers[identifier] ?: [[SpaceController alloc] init];
+  spaceController.restorationIdentifier = identifier;
+  spaceController.restorationClass = [ScreenController class];
+  return spaceController;
 }
 
 - (void)screenDidConnect:(NSNotification *) notification
@@ -160,6 +186,8 @@
   [[willBeKeyWindow spaceController] viewScreenWillBecomeActive];
  
   [willBeKeyWindow makeKeyAndVisible];
+  
+  [[[self nonKeyWindow] spaceController] viewScreenDidBecomeInactive];
 }
 
 - (void)moveCurrentShellToOtherScreen
@@ -172,6 +200,54 @@
   SpaceController *nonKeySpaceCtrl = [[self nonKeyWindow] spaceController];
   
   [nonKeySpaceCtrl moveCurrentShellFromSpaceController:keySpaceCtrl];
+}
+
++ (UIViewController *)viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder
+{
+  NSString *identifier = [identifierComponents lastObject];
+  
+  if ([identifier isEqualToString:MainSpaceControllerKey] || [identifier isEqualToString:SecondarySpaceControllerKey]) {
+    StateManager *stateManager = [[StateManager alloc] init];
+    [stateManager load];
+
+    SpaceController *spaceController = [[SpaceController alloc] init];
+    spaceController.restorationIdentifier = identifier;
+    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
+    [ScreenController shared]->_bootControllers[identifier] = spaceController;
+    return spaceController;
+  }
+  
+  return nil;
+}
+
+- (void)suspend
+{
+  StateManager *stateManager = [[StateManager alloc] init];
+  
+  for (UIWindow *win in _windows) {
+    [[win spaceController] suspendWith:stateManager];
+  }
+  
+  [stateManager save];
+}
+
+- (void)resume
+{
+  StateManager *stateManager = [[StateManager alloc] init];
+  [stateManager load];
+  
+  for (UIWindow *win in _windows) {
+    [[win spaceController] resumeWith:stateManager];
+  }
+  [stateManager reset];
+  [stateManager save];
+}
+
+- (void)finishRestoring
+{
+  StateManager *stateManager = [[StateManager alloc] init];
+  [stateManager reset];
+  [stateManager save];
 }
 
 

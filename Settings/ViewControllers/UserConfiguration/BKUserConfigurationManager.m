@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -85,5 +85,28 @@ NSString *const BKUserConfigShowSmartKeysWithXKeyBoard = @"ShowSmartKeysWithXKey
     return  modifiers;
   }
   return UIKeyModifierCommand;
+}
+
++ (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags
+{
+  NSMutableArray *components = [[NSMutableArray alloc] init];
+  
+  if ((flags & UIKeyModifierShift) == UIKeyModifierShift) {
+    [components addObject:@"⇧"];
+  }
+  
+  if ((flags & UIKeyModifierControl) == UIKeyModifierControl) {
+    [components addObject:@"⌃"];
+  }
+  
+  if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
+    [components addObject:@"⌥"];
+  }
+  
+  if ((flags & UIKeyModifierCommand) == UIKeyModifierCommand) {
+    [components addObject:@"⌘"];
+  }
+  
+  return [components componentsJoinedByString:@""];
 }
 @end

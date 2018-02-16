@@ -1,7 +1,11 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="11201" systemVersion="15G31" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="13771" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11161"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13772"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
@@ -17,10 +21,13 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" alignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="6Kk-Wl-VMp">
+                    <rect key="frame" x="0.0" y="0.0" width="680" height="36"/>
                     <subviews>
                         <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="gZY-hv-cSn">
+                            <rect key="frame" x="0.0" y="0.0" width="153.5" height="36"/>
                             <subviews>
                                 <button opaque="NO" alpha="0.84999999999999998" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="sH7-VZ-MHD" customClass="SKModifierButton">
+                                    <rect key="frame" x="0.0" y="0.0" width="51" height="36"/>
                                     <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -30,18 +37,20 @@
                                     </state>
                                 </button>
                                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="W8w-2K-eEd" customClass="SKNonModifierButton">
+                                    <rect key="frame" x="51" y="0.0" width="51.5" height="36"/>
                                     <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="19"/>
                                     <state key="normal" title="esc">
                                         <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     </state>
                                     <connections>
-                                        <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="mm6-zV-wJM"/>
+                                        <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="mm6-zV-wJM"/>
                                         <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="3XP-TH-ns0"/>
                                         <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="FfT-zf-Fzn"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" alpha="0.85000002384185791" tag="1" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="TSc-nI-KXb" customClass="SKModifierButton">
+                                    <rect key="frame" x="102.5" y="0.0" width="51" height="36"/>
                                     <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                     <color key="tintColor" red="0.0" green="0.0" blue="0.0" alpha="0.0" colorSpace="custom" customColorSpace="sRGB"/>
@@ -56,8 +65,11 @@
                             </constraints>
                         </stackView>
                         <scrollView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" placeholderIntrinsicWidth="276" placeholderIntrinsicHeight="36" alwaysBounceHorizontal="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" translatesAutoresizingMaskIntoConstraints="NO" id="hpT-52-KRm">
+                            <rect key="frame" x="153.5" y="0.0" width="352.5" height="36"/>
                             <subviews>
-                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kdC-6W-Bp4" userLabel="Content View"/>
+                                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="kdC-6W-Bp4" userLabel="Content View">
+                                    <rect key="frame" x="0.0" y="0.0" width="352.5" height="36"/>
+                                </view>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="kdC-6W-Bp4" firstAttribute="top" secondItem="hpT-52-KRm" secondAttribute="top" id="d9Z-1n-2nh"/>
@@ -72,53 +84,59 @@
                             </connections>
                         </scrollView>
                         <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="o5R-mY-Oea" userLabel="Cursor Keys Stack View">
+                            <rect key="frame" x="506" y="0.0" width="174" height="36"/>
                             <subviews>
                                 <stackView opaque="NO" contentMode="scaleToFill" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="JhD-P2-GLG">
+                                    <rect key="frame" x="0.0" y="0.0" width="174" height="36"/>
                                     <subviews>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="8RZ-A0-yTp" customClass="SKNonModifierButton">
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="43.5" height="36"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↑">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="8hJ-OU-jh0"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="8hJ-OU-jh0"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="jFW-lF-hFN"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="orl-9h-6Qv"/>
                                             </connections>
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="bGu-3Y-xyl" customClass="SKNonModifierButton">
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <rect key="frame" x="43.5" y="0.0" width="43.5" height="36"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↓">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="Pg4-O9-hKM"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="Pg4-O9-hKM"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="561-MJ-bBB"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="rLb-r4-gUt"/>
                                             </connections>
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="YR8-Kv-37f" customClass="SKNonModifierButton">
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <rect key="frame" x="87" y="0.0" width="43.5" height="36"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="←">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="4Yo-x7-drl"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="4Yo-x7-drl"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="DcM-os-ZgZ"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="fUx-O9-uqH"/>
                                             </connections>
                                         </button>
                                         <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" horizontalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="HQL-Qw-FWv" customClass="SKNonModifierButton">
-                                            <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <rect key="frame" x="130.5" y="0.0" width="43.5" height="36"/>
+                                            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="→">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="xpf-zs-YR5"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="xpf-zs-YR5"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="hfg-Xk-oqs"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="vbU-t3-VG7"/>
                                             </connections>
@@ -126,51 +144,56 @@
                                     </subviews>
                                 </stackView>
                                 <stackView hidden="YES" opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="8HL-3N-DBm">
+                                    <rect key="frame" x="-506" y="0.0" width="0.0" height="36"/>
                                     <subviews>
-                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="wQc-ho-jU6" customClass="SKNonModifierButton">
+                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="wQc-ho-jU6" customClass="SKNonModifierButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
                                             <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⇞">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="Uyb-4q-teO"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="Uyb-4q-teO"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="Z4x-gK-bsa"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="jwp-Y9-0U1"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="nH7-1b-zNF" customClass="SKNonModifierButton">
+                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="nH7-1b-zNF" customClass="SKNonModifierButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
                                             <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="⇟">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="mzB-2q-daE"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="mzB-2q-daE"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="X5J-lO-yTK"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="gq9-ws-eQ5"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="0ll-dA-fc7" customClass="SKNonModifierButton">
+                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="0ll-dA-fc7" customClass="SKNonModifierButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
                                             <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↖︎">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="tal-2o-62u"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="tal-2o-62u"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="VL5-oq-ZjJ"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="xTf-Tk-hHg"/>
                                             </connections>
                                         </button>
-                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="Tui-Wb-apg" customClass="SKNonModifierButton">
+                                        <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="Tui-Wb-apg" customClass="SKNonModifierButton">
+                                            <rect key="frame" x="0.0" y="0.0" width="0.0" height="36"/>
                                             <color key="backgroundColor" red="0.1215686275" green="0.12941176469999999" blue="0.14117647059999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             <fontDescription key="fontDescription" type="system" pointSize="20"/>
                                             <state key="normal" title="↘︎">
                                                 <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                             </state>
                                             <connections>
-                                                <action selector="nonModifierDown:" destination="i5M-Pr-FkT" eventType="touchDown" id="23D-22-Kva"/>
+                                                <action selector="nonModifierDown:forEvent:" destination="i5M-Pr-FkT" eventType="touchDown" id="23D-22-Kva"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpOutside" id="0KB-TN-DN2"/>
                                                 <action selector="nonModifierUp:" destination="i5M-Pr-FkT" eventType="touchUpInside" id="dFm-uR-3oL"/>
                                             </connections>
@@ -192,6 +215,7 @@
                 </stackView>
             </subviews>
             <constraints>
+                <constraint firstItem="o5R-mY-Oea" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="NiB-SB-3i0"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="gqw-Dy-Ipc" userLabel="leading = Stack.leading"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="uNz-4C-Iq6"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="voi-FJ-sD9" userLabel="top=Stack.top"/>
@@ -259,6 +283,7 @@
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <subviews>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="mqG-WJ-kux">
+                    <rect key="frame" x="0.0" y="0.0" width="59" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="*">
@@ -266,6 +291,7 @@
                     </state>
                 </button>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="yBj-Uh-yH9">
+                    <rect key="frame" x="59" y="0.0" width="58.5" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="~">
@@ -273,6 +299,7 @@
                     </state>
                 </button>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="HdU-Yi-JYs">
+                    <rect key="frame" x="117.5" y="0.0" width="59" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="-">
@@ -280,6 +307,7 @@
                     </state>
                 </button>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="IJa-fa-LwK">
+                    <rect key="frame" x="176.5" y="0.0" width="59" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="@">
@@ -287,6 +315,7 @@
                     </state>
                 </button>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="Iwc-1c-4uQ">
+                    <rect key="frame" x="235.5" y="0.0" width="58.5" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="⇥">
@@ -294,6 +323,7 @@
                     </state>
                 </button>
                 <button opaque="NO" alpha="0.85000002384185791" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="clip" translatesAutoresizingMaskIntoConstraints="NO" id="yOZ-kQ-LZ1">
+                    <rect key="frame" x="294" y="0.0" width="59" height="36"/>
                     <color key="backgroundColor" red="0.33333333333333331" green="0.33333333333333331" blue="0.33333333333333331" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <fontDescription key="fontDescription" type="system" pointSize="20"/>
                     <state key="normal" title="_">
@@ -306,7 +336,7 @@
             <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
             <view key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" id="Mbl-Va-JA2">
-                <frame key="frameInset"/>
+                <rect key="frame" x="0.0" y="0.0" width="240" height="128"/>
                 <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             </view>
             <blurEffect style="light"/>

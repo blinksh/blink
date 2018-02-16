@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -74,8 +74,8 @@ void *run_session(void *params)
   free(params);
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
-
   session.stream = nil;
+
   return NULL;
 }
 
@@ -103,12 +103,13 @@ void *run_session(void *params)
 
 @implementation Session
 
-- (id)initWithStream:(TermStream *)stream
+- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters
 {
   self = [super init];
 
   if (self) {
     _stream = [self duplicateStream:stream];
+    _sessionParameters = parameters;
   }
 
   return self;
@@ -122,11 +123,11 @@ void *run_session(void *params)
   // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
   dupe.out = fdopen(dup(fileno(stream.out)), "w");
   if (dupe.out == NULL) {
-    dupe.out = fterm_open(stream.control.terminal, 0);
+    dupe.out = fterm_open(stream.control.termView, 0);
   }
   dupe.err = fdopen(dup(fileno(stream.err)), "w");
   if (dupe.err == NULL) {
-    dupe.err = fterm_open(stream.control.terminal, 0);
+    dupe.err = fterm_open(stream.control.termView, 0);
   }
 
   dupe.control = stream.control;
@@ -162,6 +163,20 @@ void *run_session(void *params)
   params->attached = false;
 
   return params;
+}
+
+- (int)main:(int)argc argv:(char **)argv {
+  return 0;
+}
+
+- (void)sigwinch {
+}
+
+- (void)kill {
+}
+
+- (void)suspend
+{
 }
 
 @end

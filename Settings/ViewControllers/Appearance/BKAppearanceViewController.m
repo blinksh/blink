@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -38,12 +38,16 @@
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
 #define CURSOR_BLINK_TAG 2003
+#define BOLD_AS_BRIGHT_TAG 2004
+#define LIGHT_KEYBOARD_TAG 2005
+#define ENABLE_BOLD_TAG 2006
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
     BKAppearance_Themes,
     BKAppearance_Fonts,
-    BKAppearance_FontSize
+    BKAppearance_FontSize,
+    BKAppearance_KeyboardAppearance
 };
 
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
@@ -54,21 +58,34 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
-@property (weak, nonatomic) TermView *testTerminal;
+@property (strong, nonatomic) TermView *termView;
 
 @end
 
 @implementation BKAppearanceViewController {
   UISwitch *_cursorBlinkSwitch;
   BOOL _cursorBlinkValue;
+  
+  UISwitch *_boldAsBrightSwitch;
+  BOOL _boldAsBrightValue;
+  
+  UISwitch *_lightKeyboardSwitch;
+  BOOL _lightKeyboardValue;
+  
+  UISegmentedControl *_enableBoldSegmentedControl;
+  NSUInteger _enableBoldValue;
 }
 
 - (void)viewDidLoad
 {
   [self loadDefaultValues];
   [super viewDidLoad];
+  
+  _termView = [[TermView alloc] initWithFrame:self.view.bounds];
+  _termView.termDelegate = self;
+  _termView.backgroundColor = [UIColor blackColor];
+  [_termView loadWith:nil];
 }
-
 
 - (void)viewWillDisappear:(BOOL)animated
 {
@@ -87,9 +104,20 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   NSString *selectedFontName = [BKDefaults selectedFontName];
   BKFont *selectedFont = [BKFont withName:selectedFontName];
   if (selectedFont != nil) {
-    _selectedFontIndexPath = [NSIndexPath indexPathForRow:[[BKFont all] indexOfObject:selectedFont] inSection:BKAppearance_Fonts];
+    NSInteger row = [[BKFont all] indexOfObject:selectedFont];
+    // User have deleted the font, so we set it back to default
+    if (row == NSNotFound) {
+      [BKDefaults setFontName:@"Source Code Pro"]; // TODO get it right
+      selectedFontName = [BKDefaults selectedFontName];
+      selectedFont = [BKFont withName:selectedFontName];
+      row = [[BKFont all] indexOfObject:selectedFont];
+    }
+    _selectedFontIndexPath = [NSIndexPath indexPathForRow:row inSection:BKAppearance_Fonts];
   }
   _cursorBlinkValue = [BKDefaults isCursorBlink];
+  _boldAsBrightValue = [BKDefaults isBoldAsBright];
+  _lightKeyboardValue = [BKDefaults isLightKeyboard];
+  _enableBoldValue = [BKDefaults enableBold];
 }
 
 - (void)saveDefaultValues
@@ -105,6 +133,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   [BKDefaults setCursorBlink:_cursorBlinkValue];
+  [BKDefaults setBoldAsBright:_boldAsBrightValue];
+  [BKDefaults setLightKeyboard:_lightKeyboardValue];
+  [BKDefaults setEnableBold: _enableBoldValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -116,7 +147,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 4;
+  return 5;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -127,8 +158,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return [[BKTheme all] count] + 1;
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
+  } else if (section == BKAppearance_KeyboardAppearance) {
+    return 1;
   } else {
-    return 2;
+    return 4;
   }
 }
 
@@ -164,16 +197,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (void)attachTestTerminalToView:(UIView *)view
 {
-  if (!view.subviews.count) {
-    _testTerminal = [[TermView alloc] initWithFrame:CGRectMake(0, 0, view.frame.size.width, view.frame.size.height)];
-    [view addSubview:_testTerminal];
-  } else {
-    _testTerminal = view.subviews[0];
-  }
-  _testTerminal.delegate = self;
-  _testTerminal.backgroundColor = [UIColor blackColor];
-  [_testTerminal setInputEnabled:NO];
-  [_testTerminal loadTerminal];
+  [view addSubview:_termView];
+  _termView.frame = view.bounds;
 }
 
 - (NSString *)cellIdentifierForIndexPath:(NSIndexPath *)indexPath
@@ -187,10 +212,17 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_FontSize) {
     if (indexPath.row == 0) {
       cellIdentifier = @"fontSizeCell";
+    } else if (indexPath.row == 1) {
+      cellIdentifier = @"enableBoldCell";
+    } else if (indexPath.row == 2) {
+      cellIdentifier = @"boldAsBrightCell";
     } else {
       cellIdentifier = @"cursorBlinkCell";
     }
+  } else if (section == BKAppearance_KeyboardAppearance) {
+    cellIdentifier = @"lightKeyboardCell";
   }
+  
   return cellIdentifier;
 }
 
@@ -209,6 +241,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return @"THEMES";
   case BKAppearance_Fonts:
     return @"FONTS";
+  case BKAppearance_KeyboardAppearance:
+    return @"Keyboard Appearance";
   default:
     return nil;
   }
@@ -238,8 +272,17 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       _fontSizeField.placeholder = @"";
     }
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
+    _enableBoldSegmentedControl = [cell viewWithTag:ENABLE_BOLD_TAG];
+    _enableBoldSegmentedControl.selectedSegmentIndex = _enableBoldValue;
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 2) {
+    _boldAsBrightSwitch = [cell viewWithTag:BOLD_AS_BRIGHT_TAG];
+    _boldAsBrightSwitch.on = _boldAsBrightValue;
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 3) {
     _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
     _cursorBlinkSwitch.on = _cursorBlinkValue;
+  } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
+    _lightKeyboardSwitch = [cell viewWithTag:LIGHT_KEYBOARD_TAG];
+    _lightKeyboardSwitch.on = _lightKeyboardValue;
   }
   return cell;
 }
@@ -259,7 +302,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
       [BKDefaults setThemeName:[theme name]];
-      [self showcaseTheme:theme];
+      [_termView reloadWith:nil];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
     if (indexPath.row == [[BKFont all] count]) {
@@ -274,8 +317,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKFont *font = [[BKFont all] objectAtIndex:_selectedFontIndexPath.row];
       [BKDefaults setFontName:[font name]];
-      [self showcaseFont:font];
-    
+      [_termView reloadWith:nil];
     }
   }
 }
@@ -345,43 +387,45 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 - (IBAction)stepperValueChanged:(id)sender
 {
   NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
-  [_testTerminal setFontSize:newSize];
+  [_termView setFontSize:newSize];
+  [_termView setWidth:60];
 }
 
 - (IBAction)cursorBlinkSwitchChanged:(id)sender
 {
   _cursorBlinkValue = _cursorBlinkSwitch.on;
+  [_termView setCursorBlink:_cursorBlinkValue];
 }
 
+- (IBAction)boldAsBrightSwitchChanged:(id)sender
+{
+  _boldAsBrightValue = _boldAsBrightSwitch.on;
+  [_termView setBoldAsBright:_boldAsBrightValue];
+}
 
-#pragma mark - Navigation
+- (IBAction)enableBoldChanged:(UISegmentedControl *)sender
+{
+  _enableBoldValue = sender.selectedSegmentIndex;
+  [_termView setBoldEnabled:_enableBoldValue];
+}
 
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-//- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-//  // Get the new view controller using [segue destinationViewController].
-//  // Pass the selected object to the new view controller.
-//}
+- (IBAction)lightKeyboardSwitchChanged:(id)sender
+{
+  _lightKeyboardValue = _lightKeyboardSwitch.on;
+}
+
 
 #pragma mark - Terminal
 
-- (void)terminalIsReady
+- (void)terminalIsReady:(NSDictionary *)data
 {
-  NSLog(@"reset");
-  [_testTerminal setColumnNumber:60];
-  BKTheme *selectedTheme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (selectedTheme) {
-    [self showcaseTheme:selectedTheme];
-  }
-  
-  BKFont *selectedFont = [BKFont withName:[BKDefaults selectedFontName]];
-  if (selectedFont) {
-    [self showcaseFont:selectedFont];
-  }
-  
-  [_testTerminal setFontSize:[BKDefaults selectedFontSize]];
+  [_termView setCursorBlink:_cursorBlinkValue];
+  [_termView setBoldAsBright:_boldAsBrightValue];
+  [_termView setWidth:60];
+  [self _writeColorShowcase];
 }
 
-- (void)writeColorShowcase
+- (void)_writeColorShowcase
 {
   // Write content
   NSMutableArray *lines = [[NSMutableArray alloc] init];
@@ -395,7 +439,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     [lines addObject:[line componentsJoinedByString:@""]];
   }
   NSString *showcase = [lines componentsJoinedByString:@"\r\n"];
-  [_testTerminal write:showcase];
+  [_termView write:showcase];
 }
 
 - (void)fontSizeChanged:(NSNumber *)newSize
@@ -410,17 +454,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   // Nothing
 }
 
-- (void)showcaseTheme:(BKTheme *)theme
+- (void)focus
 {
-  [_testTerminal clear];
-  [_testTerminal loadTerminalThemeJS:theme.content];
-  // Wait for the terminal to setup everything internally
-  [self performSelector:@selector(writeColorShowcase) withObject:self afterDelay:0.25];
+  // Nothing
 }
 
-- (void)showcaseFont:(BKFont *)font
+- (void)blur
 {
-  [_testTerminal loadTerminalFont:font.name fromCSS:font.fullPath];
+  // Nothing
 }
 
 @end

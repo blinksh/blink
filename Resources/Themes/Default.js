@@ -1,3 +1,3 @@
-t.prefs_.resetAll();
-t.prefs_.set('cursor-color', 'rgba(63, 222, 233, 0.5)');
-t.prefs_.set('cursor-blink', true);
+// t.prefs_.resetAll();
+term_set('cursor-color', 'rgba(63, 222, 233, 0.5)');
+term_set('cursor-blink', true);

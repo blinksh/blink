@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016 Blink Mobile Shell Project
+// Copyright (C) 2016-2018 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -31,18 +31,15 @@
 
 #import "TermController.h"
 #import "BKDefaults.h"
-#import "BKKeyboardModifierViewController.h"
 #import "BKSettingsNotifications.h"
-#import "BKFont.h"
-#import "BKTheme.h"
 #import "MCPSession.h"
 #import "Session.h"
 #import "fterm.h"
+#import "StateManager.h"
 
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
-static NSDictionary *bkModifierMaps = nil;
 
 @interface TermController () <TerminalDelegate, SessionDelegate>
 @end
@@ -50,21 +47,28 @@ static NSDictionary *bkModifierMaps = nil;
 @implementation TermController {
   int _pinput[2];
   MCPSession *_session;
-  BOOL _viewIsLocked;
-  BOOL _appearanceChanged;
-  BOOL _disableFontSizeSelection;
   NSDictionary *_activityUserInfo;
+  BOOL _isReloading;
+  NSInteger _fontSizeBeforeScaling;
 }
 
-+ (void)initialize
+- (void)loadView
 {
-  bkModifierMaps = @{
-    BKKeyboardModifierCtrl : [NSNumber numberWithInt:UIKeyModifierControl],
-    BKKeyboardModifierAlt : [NSNumber numberWithInt:UIKeyModifierAlternate],
-    BKKeyboardModifierCmd : [NSNumber numberWithInt:UIKeyModifierCommand],
-    BKKeyboardModifierCaps : [NSNumber numberWithInt:UIKeyModifierAlphaShift],
-    BKKeyboardModifierShift : [NSNumber numberWithInt:UIKeyModifierShift]
-  };
+  [super loadView];
+  
+  if (_sessionStateKey == nil) {
+    _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
+  }
+  
+  _termView = [[TermView alloc] initWithFrame:self.view.frame];
+  _termView.restorationIdentifier = @"TermView";
+  _termView.termDelegate = self;
+  
+  self.view = _termView;
+}
+
+- (NSString *)title {
+  return _termView.title;
 }
 
 - (void)write:(NSString *)input
@@ -72,106 +76,6 @@ static NSDictionary *bkModifierMaps = nil;
   // Trasform the string and write it, with the correct sequence
   const char *str = [input UTF8String];
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
-}
-
-- (void)loadView
-{
-  [super loadView];
-
-  _terminal = [[TermView alloc] initWithFrame:self.view.frame];
-  _terminal.delegate = self;
-
-  self.view = _terminal;
-
-  [self configureTerminal];
-  [self listenToControlEvents];
-}
-
-- (void)configureTerminal
-{
-  [_terminal resetDefaultControlKeys];
-  
-  if ([BKDefaults autoRepeatKeys]) {
-    [_terminal assignSequence:TermViewAutoRepeateSeq toModifier:0];
-  }
-
-  for (NSString *key in [BKDefaults keyboardKeyList]) {
-    NSString *sequence = [BKDefaults keyboardMapping][key];
-    [self assignSequence:sequence toModifier:[bkModifierMaps[key] integerValue]];
-  }
-  
-  if ([BKDefaults isShiftAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
-  }
-
-  if ([BKDefaults isCapsAsEsc]) {
-    [_terminal assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
-  }
-
-  for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
-    NSArray *triggers = [BKDefaults keyboardFuncTriggers][func];
-    [self assignFunction:func toTriggers:triggers];
-  }
-}
-
-- (void)assignSequence:(NSString *)seq toModifier:(NSInteger)modifier
-{
-  if ([seq isEqual:BKKeyboardSeqNone]) {
-    [_terminal assignSequence:nil toModifier:modifier];
-  } else if ([seq isEqual:BKKeyboardSeqCtrl]) {
-    [_terminal assignSequence:TermViewCtrlSeq toModifier:modifier];
-  } else if ([seq isEqual:BKKeyboardSeqEsc]) {
-    [_terminal assignSequence:TermViewEscSeq toModifier:modifier];
-  }
-}
-
-- (void)assignFunction:(NSString *)func toTriggers:(NSArray *)triggers
-{
-  UIKeyModifierFlags modifiers = 0;
-  for (NSString *t in triggers) {
-    NSNumber *modifier = bkModifierMaps[t];
-    modifiers = modifiers | modifier.intValue;
-  }
-  if ([func isEqual:BKKeyboardFuncCursorTriggers]) {
-    [_terminal assignFunction:TermViewCursorFuncSeq toTriggers:modifiers];
-  } else if ([func isEqual:BKKeyboardFuncFTriggers]) {
-    [_terminal assignFunction:TermViewFFuncSeq toTriggers:modifiers];
-  }
-}
-
-- (void)listenToControlEvents
-{
-  // With this one as delegate, we would just listen to a keyboardChanged event, and remap the keyboard.
-  // Like seriously remapping all keys anyway doesn't take that long, and you are in the settings of the app.
-  // I separated it in different functions here because I really didn't want to regenerate everthing here and in the TV.
-  // The other thing is that I can actually embed the info in the dictionary, and just redo here, instead of multiple events.
-  // (But in the end those would have to be separate strings anyway, so it is pretty much the same).
-  // And that was the thing, here we were mapping Defaults -> TC -> TV, even in the functions, and that doesn't make any sense anymore.
-  
-  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardConfigChanged:)
-                        name:BKKeyboardConfigChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(keyboardConfigChanged:)
-                        name:BKKeyboardFuncTriggerChanged
-                      object:nil];
-
-  [defaultCenter addObserver:self
-                    selector:@selector(appearanceChanged:)
-                        name:BKAppearanceChanged
-                      object:nil];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-  if (_appearanceChanged) {
-    [self setAppearanceFromSettings];
-  }
-  [super viewDidAppear:animated];
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
@@ -215,112 +119,41 @@ static NSDictionary *bkModifierMaps = nil;
   }
 }
 
-- (void)setAppearanceFromSettings
-{
-  // Load theme
-  BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-  if (theme) {
-    [_terminal loadTerminalThemeJS:theme.content];
-  }
-
-  BKFont *font = [BKFont withName:[BKDefaults selectedFontName]];
-  if (font) {
-    if (font.isCustom) {
-      [_terminal loadTerminalFont:font.name cssFontContent:font.content];
-    } else {
-      [_terminal loadTerminalFont:font.name fromCSS:font.fullPath];
-    }
-  }
-
-  if (!_disableFontSizeSelection) {
-    NSNumber *fontSize = [BKDefaults selectedFontSize];
-    [_terminal setFontSize:fontSize];
-  }
-  
-  [_terminal setCursorBlink:[BKDefaults isCursorBlink]];
-
-  [_terminal reset];
-}
-
-- (void)terminate
-{
-  // Disconnect message handler
-  [_terminal.webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
-
-  [_session kill];
-}
-
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  if (_sessionParameters == nil) {
+    [self _initSessionParameters];
+  }
 
-  [_terminal loadTerminal];
+  [_termView loadWith:_sessionParameters];
 
   [self createPTY];
+}
+
+- (void)_initSessionParameters
+{
+  _sessionParameters = [[MCPSessionParameters alloc] init];
+  _sessionParameters.fontSize = [[BKDefaults selectedFontSize] integerValue];
+  _sessionParameters.fontName = [BKDefaults selectedFontName];
+  _sessionParameters.themeName = [BKDefaults selectedThemeName];
+  _sessionParameters.enableBold = [BKDefaults enableBold];
+  _sessionParameters.boldAsBright = [BKDefaults isBoldAsBright];
 }
 
 - (void)createPTY
 {
   pipe(_pinput);
-  _termout = fterm_open(_terminal, 0);
-  _termerr = fterm_open(_terminal, 0);
+  _termout = fterm_open(_termView, 0);
+  _termerr = fterm_open(_termView, 0);
   _termin = fdopen(_pinput[0], "r");
   _termsz = malloc(sizeof(struct winsize));
+  _termsz->ws_col = _sessionParameters.cols;
+  _termsz->ws_row = _sessionParameters.rows;
 }
 
-- (void)startSession
-{
-  // Until we are able to duplicate the streams, we have to recreate them.
-  TermStream *stream = [[TermStream alloc] init];
-  stream.in = _termin;
-  stream.out = _termout;
-  stream.err = _termerr;
-  stream.control = self;
-  stream.sz = _termsz;
-
-  _session = [[MCPSession alloc] initWithStream:stream];
-  _session.delegate = self;
-  [_session executeWithArgs:@""];
-}
-
-- (void)setRawMode:(BOOL)raw
-{
-  [_terminal setRawMode:raw];
-}
-
-- (BOOL)rawMode
-{
-  return [_terminal rawMode];
-}
-
-- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
-{
-  _termsz->ws_row = rows.shortValue;
-  _termsz->ws_col = cols.shortValue;
-  if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
-    [self.delegate terminalDidResize:self];
-  }
-  [_session sigwinch];
-}
-
-- (void)fontSizeChanged:(NSNumber *)newSize
-{
-  // Ignore the font size settings in case it was manually changed
-  if (!([newSize isEqualToNumber:[BKDefaults selectedFontSize]])) {
-    _disableFontSizeSelection = YES;
-  }
-}
-
-- (void)terminalIsReady
-{
-  [self setAppearanceFromSettings];
-  [self startSession];
-  if (self.userActivity) {
-    [self restoreUserActivityState:self.userActivity];
-  }
-}
-
-- (void)dealloc
+- (void)destroyPTY
 {
   if (_termin) {
     fclose(_termin);
@@ -338,6 +171,75 @@ static NSDictionary *bkModifierMaps = nil;
     free(_termsz);
     _termsz = NULL;
   }
+}
+
+- (void)startSession
+{
+  // Until we are able to duplicate the streams, we have to recreate them.
+  TermStream *stream = [[TermStream alloc] init];
+  stream.in = _termin;
+  stream.out = _termout;
+  stream.err = _termerr;
+  stream.control = self;
+  stream.sz = _termsz;
+
+  _session = [[MCPSession alloc] initWithStream:stream andParametes:_sessionParameters];
+  _session.delegate = self;
+  [_session executeWithArgs:@""];
+}
+
+- (void)setRawMode:(BOOL)raw
+{
+  _rawMode = raw;
+  _termInput.raw = raw;
+}
+
+- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
+{
+  _termsz->ws_row = rows.shortValue;
+  _termsz->ws_col = cols.shortValue;
+
+  _sessionParameters.rows = rows.shortValue;
+  _sessionParameters.cols = cols.shortValue;
+  
+  if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
+    [self.delegate terminalDidResize:self];
+  }
+  [_session sigwinch];
+}
+
+- (void)fontSizeChanged:(NSNumber *)newSize
+{
+  _sessionParameters.fontSize = [newSize integerValue];
+}
+
+- (void)terminalIsReady: (NSDictionary *)data
+{
+  NSDictionary *size = data[@"size"];
+  _sessionParameters.rows = [size[@"rows"] integerValue];
+  _sessionParameters.cols = [size[@"cols"] integerValue];
+
+  _termsz->ws_row = _sessionParameters.rows;
+  _termsz->ws_col = _sessionParameters.cols;
+  
+  NSArray *bgColor = data[@"bgColor"];
+  if (bgColor && bgColor.count == 3) {
+    self.view.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
+                                                green:[bgColor[1] floatValue] / 255.0f
+                                                 blue:[bgColor[2] floatValue] / 255.0f
+                                                alpha:1];
+  }
+  
+  [self startSession];
+  if (self.userActivity) {
+    [self restoreUserActivityState:self.userActivity];
+  }
+}
+
+- (void)dealloc
+{
+  [self destroyPTY];
+  
   [self.userActivity resignCurrent];
 }
 
@@ -345,23 +247,103 @@ static NSDictionary *bkModifierMaps = nil;
 
 - (void)sessionFinished
 {
-  [_delegate terminalHangup:self];
+  if (_isReloading) {
+    _isReloading = NO;
+    [self destroyPTY];
+    [self createPTY];
+    [self _initSessionParameters];
+    [_termView reloadWith:_sessionParameters];
+  } else {
+    [_delegate terminalHangup:self];
+  }
 }
 
 #pragma mark Notifications
 
-- (void)keyboardConfigChanged:(NSNotification *)notification
+
+- (void)terminate
 {
-  [self configureTerminal];
+  [_termView terminate];
+  [_session kill];
 }
 
-- (void)appearanceChanged:(NSNotification *)notification
+- (void)reload
 {
-  if (self.isViewLoaded && self.view.window) {
-    [self setAppearanceFromSettings];
-  } else {
-    _appearanceChanged = YES;
+  _sessionParameters.childSessionType = nil;
+  _sessionParameters.childSessionParameters =  nil;
+  _isReloading = YES;
+}
+
+- (void)suspend
+{
+  [_sessionParameters cleanEncodedState];
+  [_session suspend];
+}
+
+- (void)resume
+{
+  if (![_sessionParameters hasEncodedState]) {
+    return;
+  }
+
+  [self destroyPTY];
+  [self createPTY];
+  [self startSession];
+}
+
+- (void)focus {
+  [_termView focus];
+  if (![_termView.window isKeyWindow]) {
+    [_termView.window makeKeyWindow];
+  }
+  if (![_termInput isFirstResponder]) {
+    [_termInput becomeFirstResponder];
   }
 }
+
+- (void)blur {
+  [_termView blur];
+}
+
+- (void)attachInput:(TermInput *)termInput
+{
+  _termInput = termInput;
+  if (!termInput) {
+    [_termView blur];
+  }
+  
+  if (_termInput.termDelegate != self) {
+    [_termInput.termDelegate attachInput:nil];
+  }
+  
+  _termInput.raw = _rawMode;
+  _termInput.termDelegate = self;
+  
+  if ([_termInput isFirstResponder]) {
+    [_termView focus];
+  } else {
+    [_termView blur];
+  }
+}
+
+- (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch
+{
+  switch (pinch.state) {
+    case UIGestureRecognizerStateBegan:
+    case UIGestureRecognizerStateEnded:
+      _fontSizeBeforeScaling = _sessionParameters.fontSize;
+      break;
+    case UIGestureRecognizerStateChanged: {
+      NSInteger newSize = (NSInteger)round(_fontSizeBeforeScaling * pinch.scale);
+      if (newSize != _sessionParameters.fontSize) {
+        [_termView setFontSize:@(newSize)];
+      }
+    }
+    default:
+      break;
+  }
+}
+
+
 
 @end
