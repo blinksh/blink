@@ -59,9 +59,7 @@ void _on_pipebroken_signal(int signum){
   signal(SIGPIPE, _on_pipebroken_signal);
   
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
-  
-  docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  
+    
   // Override point for customization after application launch.
 #if HOCKEYSDK
   NSString *hockeyID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"HockeyID"];
