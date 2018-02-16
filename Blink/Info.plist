@@ -63,12 +63,12 @@
 	<true/>
 	<key>LSSupportsOpeningDocumentsInPlace</key>
 	<true/>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>Blink will show current track</string>
 	<key>NSBluetoothPeripheralUsageDescription</key>
 	<string>keyboard</string>
 	<key>NSSiriUsageDescription</key>
 	<string>storing commands</string>
-	<key>NSAppleMusicUsageDescription</key>
-	<string>Blink will show current track</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.blink.cmdline</string>

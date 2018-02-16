@@ -278,7 +278,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   }
 }
 
-(void)initialize
++ (void)initialize
 {
   __commandList = [
     @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history"]
@@ -318,13 +318,10 @@ void completion(const char *command, linenoiseCompletions *lc) {
   argv = nil;
 
   NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  NSString *filePath = [docsPath stringByAppendingPathComponent:@"history.txt"];
   initializeEnvironment(); // initialize environment variables for iOS system
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
-
-  const char *history = [filePath UTF8String];
 
   [self.stream.control setRawMode:NO];
 
@@ -364,9 +361,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
       NSString *cmd = arr[0];
       NSString *args = arr[1];
 
-=======
-      
->>>>>>> fa8989615c8b50cbd6170eb143e6564687cafc4a
       if ([cmd isEqualToString:@"help"]) {
         [self _showHelp];
       } else if ([cmd isEqualToString:@"mosh"]) {
@@ -397,8 +391,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
         // Is it one of the shell commands?
         // Re-evalute column number before each command
         char columnCountString[10];
-        sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
-        setenv("COLUMNS", columnCountString, 1); // force rewrite of value
+        // TODO: I need the column count for the current window. This used to work:
+        // sprintf(columnCountString, "%i", self.stream.control.terminal.columnCount);
+        // setenv("COLUMNS", columnCountString, 1); // force rewrite of value
         // Redirect all output to console:
         FILE* saved_out = stdout;
         FILE* saved_err = stderr;
