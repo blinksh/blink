@@ -341,19 +341,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
       linenoiseHistorySave(history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
-      /*
-       NH: wrote this as a more robust way to split command and args.
-       TODO: check if still required
-      // separate into arguments, parse and execute:
-      NSArray *listArgvMaybeEmpty = [cmdline componentsSeparatedByString:@" "];
-      // Remove empty strings (extra spaces)
-      NSMutableArray* listArgv = [[listArgvMaybeEmpty filteredArrayUsingPredicate:
-                                   [NSPredicate predicateWithFormat:@"length > 0"]] mutableCopy];
-      if (listArgv.count <= 0) continue; // if user typed only spaces. Avoid crashing here.
-      
-      [self.delegate indexCommand:listArgv];
-      NSString *cmd = listArgv[0];
-      */
       free(line);
 
       cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
