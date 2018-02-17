@@ -132,6 +132,17 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3232036ED62001FCC5C /* ios_system.framework */; };
+		22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3252036EDD5001FCC5C /* libtar.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3262036EDD5001FCC5C /* libtext.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3272036EDD5001FCC5C /* libshell.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3302036EDD6001FCC5C /* libfiles.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3292036EDD6001FCC5C /* libfiles.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32A2036EDD6001FCC5C /* libcurl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32B2036EDD6001FCC5C /* libawk.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3372036EEB8001FCC5C /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E70201F8A230090E974 /* RoundedToolbar.m */; };
 		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -261,13 +272,6 @@
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
 		};
-		0747D6382018182D00CF8F0C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
-			remoteInfo = "MBProgressHUD Framework tvOS";
-		};
 		0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
@@ -317,6 +321,16 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */,
+				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
+				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
+				22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */,
+				22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */,
+				22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */,
+				22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */,
+				22E1F3302036EDD6001FCC5C /* libfiles.dylib in Embed Frameworks */,
+				22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */,
+				22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
 			);
@@ -411,6 +425,17 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		22E1F3232036ED62001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
+		22E1F3252036EDD5001FCC5C /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtar.dylib; path = Frameworks/libtar.dylib; sourceTree = "<group>"; };
+		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtext.dylib; path = Frameworks/libtext.dylib; sourceTree = "<group>"; };
+		22E1F3272036EDD5001FCC5C /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshell.dylib; path = Frameworks/libshell.dylib; sourceTree = "<group>"; };
+		22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssh_cmd.dylib; path = Frameworks/libssh_cmd.dylib; sourceTree = "<group>"; };
+		22E1F3292036EDD6001FCC5C /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfiles.dylib; path = Frameworks/libfiles.dylib; sourceTree = "<group>"; };
+		22E1F32A2036EDD6001FCC5C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = Frameworks/libcurl.dylib; sourceTree = "<group>"; };
+		22E1F32B2036EDD6001FCC5C /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libawk.dylib; path = Frameworks/libawk.dylib; sourceTree = "<group>"; };
+		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = Frameworks/openssl.framework; sourceTree = "<group>"; };
+		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libssh2.framework; path = Frameworks/libssh2.framework; sourceTree = "<group>"; };
+		22E1F3372036EEB8001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ios_system.framework; path = Frameworks/ios_system.framework; sourceTree = "<group>"; };
 		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
 		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
 		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
@@ -547,6 +572,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
@@ -637,6 +663,7 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				22E1F3232036ED62001FCC5C /* ios_system.framework */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
@@ -674,7 +701,6 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
-				0747D6392018182D00CF8F0C /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1014,6 +1040,16 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
+				22E1F3342036EE86001FCC5C /* libssh2.framework */,
+				22E1F3332036EE86001FCC5C /* openssl.framework */,
+				22E1F32B2036EDD6001FCC5C /* libawk.dylib */,
+				22E1F32A2036EDD6001FCC5C /* libcurl.dylib */,
+				22E1F3292036EDD6001FCC5C /* libfiles.dylib */,
+				22E1F3272036EDD5001FCC5C /* libshell.dylib */,
+				22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */,
+				22E1F3252036EDD5001FCC5C /* libtar.dylib */,
+				22E1F3262036EDD5001FCC5C /* libtext.dylib */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
@@ -1114,7 +1150,7 @@
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = HV2S48975V;
+						DevelopmentTeam = VG8Z23C8YL;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -1215,13 +1251,6 @@
 			fileType = wrapper.cfbundle;
 			path = UICKeyChainStoreTests.xctest;
 			remoteRef = 0732F11A1D062CA000AB5438 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0747D6392018182D00CF8F0C /* MBProgressHUD.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBProgressHUD.framework;
-			remoteRef = 0747D6382018182D00CF8F0C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0747D63E2018182D00CF8F0C /* TestHost.app */ = {
@@ -1694,7 +1723,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1714,8 +1743,9 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1730,11 +1760,11 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1751,11 +1781,12 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
-				PROVISIONING_PROFILE = "ef71f761-fcc0-457d-ad7c-07e520594656";
-				PROVISIONING_PROFILE_SPECIFIER = Com.CarlosCabanero.BlinkShell.Dist;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = arm64;

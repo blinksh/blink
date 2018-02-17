@@ -79,7 +79,7 @@ static const char *usage_format =
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 

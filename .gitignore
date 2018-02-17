@@ -35,3 +35,15 @@ Frameworks/openssl.framework
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+# make and build files
+*.lst
+*.eep
+*.o
+*.lo
+*.la
+*.dylib
+*.lss
+*.map
+*.sym
+

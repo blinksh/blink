@@ -31,7 +31,6 @@
 
 #include <sys/ioctl.h>
 
-
 #import "TermView.h"
 #import "BKDefaults.h"
 #import "BKSettingsNotifications.h"
