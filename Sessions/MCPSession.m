@@ -281,7 +281,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history"]
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"clear"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -294,6 +294,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     @"theme": @"theme - Choose a theme 💅",
     @"music": @"music - Control music player 🎧",
     @"history": @"history - Use -c option to clear history. 🙈 ",
+    @"clear": @"clear - Clear screen. 🙊",
     @"exit": @"exit - Exits current session. 👋"
   };
 }
@@ -374,6 +375,8 @@ void completion(const char *command, linenoiseCompletions *lc) {
         [self _showConfig];
       } else if ([cmd isEqualToString:@"history"]) {
         [self _execHistoryWithArgs: args];
+      } else if ([cmd isEqualToString:@"clear"]) {
+        [self _execClear];
       } else {
         // Is it one of the shell commands?
         // Re-evalute column number before each command
@@ -401,6 +404,11 @@ void completion(const char *command, linenoiseCompletions *lc) {
   [self out:"Bye!"];
 
   return 0;
+}
+
+- (void)_execClear
+{
+  [self.stream.control write:@"\xC"];
 }
 
 - (void)_execHistoryWithArgs:(NSString *)args
@@ -546,6 +554,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     @"  theme: Switch theme.",
     @"  music: Control music player.",
     @"  history: Manage history.",
+    @"  clear: Clear screen.",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",
