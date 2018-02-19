@@ -279,11 +279,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     self.backgroundColor = [UIColor clearColor];
     self.textColor = [UIColor whiteColor];
-    self.textAlignment = NSTextAlignmentCenter;
     self.font = [UIFont fontWithName:@"Menlo" size:18];
-    self.tintColor = [UIColor colorWithRed:63/255.0f green:222/255.0f blue:233/255.0f alpha:1];
     
     [self setHidden:YES];
+    self.textContainerInset = UIEdgeInsetsMake(2, 0, 2, 0);
+    self.textContainer.lineFragmentPadding = 0;
     
     [self _configureLangSet];
   }
@@ -378,7 +378,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       if (!data) {
         return;
       }
-        
+      self.font = [UIFont fontWithName:@"Menlo" size:[data[@"fontSize"] integerValue]];
       CGRect rect = CGRectFromString(data[@"markedRect"]);
       self.frame = rect;
     }];
