@@ -315,7 +315,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   if (_termInput.termDelegate != self) {
     [_termInput.termDelegate attachInput:nil];
   }
-  
+  _termInput.text = @"";
   _termInput.raw = _rawMode;
   _termInput.termDelegate = self;
   

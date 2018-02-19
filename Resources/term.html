@@ -26,6 +26,15 @@
       * {
         font-feature-settings: "liga" 0;
       }
+    
+      ime {
+        position: absolute;
+        display: block;
+        min-height: var(--hterm-charsize-height);
+        max-width: 100%;
+        z-index:1000;
+        overflow-wrap: break-word;
+      }
     </style>
   <body>
     <div id="terminal"></div>

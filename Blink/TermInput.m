@@ -367,17 +367,36 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if (textView.text.length == 0) {
     [self setHidden:YES];
+    [self.termDelegate.termView setIme: @"" completionHandler:nil];
     return;
   }
+  
+  NSString *str = [self textInRange:self.markedTextRange];
   
   if (self.markedTextRange) {
-    [self setHidden:NO];
+    [self.termDelegate.termView setIme: str completionHandler:^(id data, NSError * _Nullable error) {
+      if (!data) {
+        return;
+      }
+        
+      CGRect rect = CGRectFromString(data[@"markedRect"]);
+      self.frame = rect;
+    }];
     return;
   }
   
+  [self.termDelegate.termView setIme: @"" completionHandler:nil];
   [self _insertText:self.text];
   self.text = @"";
-  [self setHidden:YES];
+
+//  if (self.markedTextRange) {
+//    [self setHidden:NO];
+//    return;
+//  }
+//  
+//  [self _insertText:self.text];
+//  self.text = @"";
+//  [self setHidden:YES];
 }
 
 - (void)_insertText:(NSString *)text
