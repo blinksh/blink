@@ -382,7 +382,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       CGRect rect = CGRectFromString(data[@"markedRect"]);
 
       CGFloat suggestionsHeight = 44;
-      CGFloat bottomThreashold = 60;
+      CGFloat bottomThreashold = 80;
       if (CGRectGetMaxY(rect) + bottomThreashold < self.superview.bounds.size.height) {
         rect.origin.y = CGRectGetMaxY(rect);
       } else {
