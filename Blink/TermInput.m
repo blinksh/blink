@@ -282,8 +282,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.font = [UIFont fontWithName:@"Menlo" size:18];
     
     [self setHidden:YES];
-    self.textContainerInset = UIEdgeInsetsMake(2, 0, 2, 0);
+    self.textContainerInset = UIEdgeInsetsZero;
     self.textContainer.lineFragmentPadding = 0;
+    self.font = [UIFont fontWithName:@"Menlo" size:0];
     
     [self _configureLangSet];
   }
@@ -366,7 +367,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (textView.text.length == 0) {
-    [self setHidden:YES];
     [self.termDelegate.termView setIme: @"" completionHandler:nil];
     return;
   }
@@ -378,8 +378,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       if (!data) {
         return;
       }
-      self.font = [UIFont fontWithName:@"Menlo" size:[data[@"fontSize"] integerValue]];
+      
       CGRect rect = CGRectFromString(data[@"markedRect"]);
+
+      CGFloat suggestionsHeight = 44;
+      CGFloat bottomThreashold = 60;
+      if (CGRectGetMaxY(rect) + bottomThreashold < self.superview.bounds.size.height) {
+        rect.origin.y = CGRectGetMaxY(rect);
+      } else {
+        rect.origin.y = CGRectGetMinY(rect) - suggestionsHeight;
+      }
+      rect.size.height = 0;
       self.frame = rect;
     }];
     return;
@@ -388,15 +397,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self.termDelegate.termView setIme: @"" completionHandler:nil];
   [self _insertText:self.text];
   self.text = @"";
-
-//  if (self.markedTextRange) {
-//    [self setHidden:NO];
-//    return;
-//  }
-//  
-//  [self _insertText:self.text];
-//  self.text = @"";
-//  [self setHidden:YES];
 }
 
 - (void)_insertText:(NSString *)text

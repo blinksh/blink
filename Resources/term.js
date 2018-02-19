@@ -166,10 +166,8 @@ function term_setIme(str) {
   var r = ime.getBoundingClientRect()
   
   const markedRect = ["{{", r.x, ",", r.y, "},{", r.width, ",", r.height, "}}"].join('');
-  r = t.cursorNode_.getBoundingClientRect();
-  const cursorRect = ["{{", r.x, ",", r.y, "},{", r.width, ",", r.height, "}}"].join('');
-  const fontSize = t.getFontSize();
-  return {markedRect, fontSize};
+  
+  return {markedRect};
 }
 
 function term_reset() {
