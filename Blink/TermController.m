@@ -311,11 +311,12 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   if (!termInput) {
     [_termView blur];
   }
-  
+
   if (_termInput.termDelegate != self) {
     [_termInput.termDelegate attachInput:nil];
+    [_termInput reset];
   }
-  _termInput.text = @"";
+
   _termInput.raw = _rawMode;
   _termInput.termDelegate = self;
   

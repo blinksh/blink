@@ -364,6 +364,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return [super resignFirstResponder];
 }
 
+- (void)reset
+{
+  self.text = @"";
+  [self.termDelegate.termView setIme: @"" completionHandler:nil];
+}
+
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (textView.text.length == 0) {
@@ -382,7 +388,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       CGRect rect = CGRectFromString(data[@"markedRect"]);
 
       CGFloat suggestionsHeight = 44;
-      CGFloat bottomThreashold = 80;
+      CGFloat bottomThreashold = 90;
       if (CGRectGetMaxY(rect) + bottomThreashold < self.superview.bounds.size.height) {
         rect.origin.y = CGRectGetMaxY(rect);
       } else {
