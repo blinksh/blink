@@ -377,31 +377,32 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return;
   }
   
-  if (self.markedTextRange) {
-    NSString *str = [self textInRange:self.markedTextRange];
-    [self.termDelegate.termView setIme: str completionHandler:^(id data, NSError * _Nullable error) {
-      if (!data) {
-        return;
-      }
-      
-      CGRect rect = CGRectFromString(data[@"markedRect"]);
-
-      CGFloat suggestionsHeight = 44;
-      CGFloat maxY = CGRectGetMaxY(rect);
-      CGFloat minY = CGRectGetMinY(rect);
-      if (maxY - suggestionsHeight < 0) {
-        rect.origin.y = maxY;
-      } else {
-        rect.origin.y = minY - suggestionsHeight;
-      }
-      rect.size.height = 0;
-      self.frame = rect;
-    }];
+  if (!self.markedTextRange) {
+    [self _insertText:self.text];
+    [self reset];
     return;
   }
-  
-  [self _insertText:self.text];
-  [self reset];
+
+  NSString *str = [self textInRange:self.markedTextRange];
+  [self.termDelegate.termView setIme: str
+                   completionHandler:^(id data, NSError * _Nullable error) {
+    if (!data) {
+      return;
+    }
+    
+    CGRect rect = CGRectFromString(data[@"markedRect"]);
+
+    CGFloat suggestionsHeight = 44;
+    CGFloat maxY = CGRectGetMaxY(rect);
+    CGFloat minY = CGRectGetMinY(rect);
+    if (maxY - suggestionsHeight < 0) {
+      rect.origin.y = maxY;
+    } else {
+      rect.origin.y = minY - suggestionsHeight;
+    }
+    rect.size.height = 0;
+    self.frame = rect;
+  }];
 }
 
 - (void)_insertText:(NSString *)text
