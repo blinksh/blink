@@ -387,11 +387,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       CGRect rect = CGRectFromString(data[@"markedRect"]);
 
       CGFloat suggestionsHeight = 44;
-      CGFloat y = CGRectGetMaxY(rect);
-      if (y - suggestionsHeight < 0) {
-        rect.origin.y = y;
+      CGFloat maxY = CGRectGetMaxY(rect);
+      CGFloat minY = CGRectGetMinY(rect);
+      if (maxY - suggestionsHeight < 0) {
+        rect.origin.y = maxY;
       } else {
-        rect.origin.y = CGRectGetMinY(rect) - suggestionsHeight;
+        rect.origin.y = minY - suggestionsHeight;
       }
       rect.size.height = 0;
       self.frame = rect;
