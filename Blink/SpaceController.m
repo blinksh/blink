@@ -100,8 +100,9 @@
   [_touchOverlay attachPageViewController:_viewportsController];
   
   _termInput = [[TermInput alloc] init];
-  [_touchOverlay addSubview:_termInput];
+  [self.view addSubview:_termInput];
   [self registerForNotifications];
+  
 }
 
 - (void)viewWillLayoutSubviews
@@ -123,8 +124,6 @@
   
   _viewportsController.view.frame = rect;
   _touchOverlay.frame = rect;
-  _termInput.frame = CGRectMake(rect.origin.x, rect.size.height - 110, rect.size.width, 30);
-  [self.view bringSubviewToFront:_termInput];
 }
 
 - (void)viewDidLoad
@@ -870,13 +869,7 @@
 
 - (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer
 {
-  // We are in IME mode.
-  if (_termInput.isHidden == NO) {
-    [_termInput setHidden:YES];
-    _termInput.text = @"";
-    return;
-  }
-  
+  [_termInput reset];
   [self.currentTerm focus];
 }
 
