@@ -124,10 +124,17 @@ function term_clear() {
 }
 
 function term_setIme(str) {
-  var scrollPort = t.scrollPort_;
+  
   var length = lib.wc.strWidth(str);
+  
+  var scrollPort = t.scrollPort_;
   var ime = scrollPort.ime_;
   ime.textContent = str;
+  
+  if (length === 0) {
+    return;
+  }
+
   ime.style.backgroundColor = lib.colors.setAlpha(t.getCursorColor(), 1);
   ime.style.color = scrollPort.getBackgroundColor()
   
@@ -136,7 +143,6 @@ function term_setIme(str) {
   
   ime.style.bottom = 'auto';
   ime.style.top = 'auto';
-  
   
   if (length >= screenCols) {
     // We are wider than the screen

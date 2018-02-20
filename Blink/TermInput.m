@@ -373,6 +373,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (textView.text.length == 0) {
+    [self reset];
     return;
   }
   
