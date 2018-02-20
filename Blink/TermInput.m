@@ -373,13 +373,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (textView.text.length == 0) {
-    [self.termDelegate.termView setIme: @"" completionHandler:nil];
     return;
   }
   
-  NSString *str = [self textInRange:self.markedTextRange];
-  
   if (self.markedTextRange) {
+    NSString *str = [self textInRange:self.markedTextRange];
     [self.termDelegate.termView setIme: str completionHandler:^(id data, NSError * _Nullable error) {
       if (!data) {
         return;
@@ -388,9 +386,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       CGRect rect = CGRectFromString(data[@"markedRect"]);
 
       CGFloat suggestionsHeight = 44;
-      CGFloat bottomThreashold = 90;
-      if (CGRectGetMaxY(rect) + bottomThreashold < self.superview.bounds.size.height) {
-        rect.origin.y = CGRectGetMaxY(rect);
+      CGFloat y = CGRectGetMaxY(rect);
+      if (y - suggestionsHeight < 0) {
+        rect.origin.y = y;
       } else {
         rect.origin.y = CGRectGetMinY(rect) - suggestionsHeight;
       }
@@ -400,9 +398,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return;
   }
   
-  [self.termDelegate.termView setIme: @"" completionHandler:nil];
   [self _insertText:self.text];
-  self.text = @"";
+  [self reset];
 }
 
 - (void)_insertText:(NSString *)text

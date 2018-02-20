@@ -211,6 +211,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)fontSizeChanged:(NSNumber *)newSize
 {
   _sessionParameters.fontSize = [newSize integerValue];
+  [_termInput reset];
 }
 
 - (void)terminalIsReady: (NSDictionary *)data
