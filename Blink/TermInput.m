@@ -209,7 +209,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 @end
 
-@interface TermInput () <UndoManagerDelegate, UITextViewDelegate>
+@interface TermInput () <UndoManagerDelegate, UITextViewDelegate, NSTextStorageDelegate>
 @end
 
 @implementation TermInput {
@@ -233,6 +233,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *_cmdModifierSequence;
   
   UndoManager *_undoManager;
+  BOOL _skipTextStorageDelete;
+  NSString * _markedText;
 }
 
 + (void)initialize
@@ -287,6 +289,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.font = [UIFont fontWithName:@"Menlo" size:0];
     
     [self _configureLangSet];
+    
+    _skipTextStorageDelete = NO;
+    self.textStorage.delegate = self;
   }
   
   return self;
@@ -299,6 +304,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                   @"zh-Hant",
                   @"ja-JP",
                   nil];
+}
+
+- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
+{
+  if (delta == -1 && !_skipTextStorageDelete && !_markedText) {
+    [_termDelegate write:@"\x7f"];
+  }
 }
 
 - (NSUndoManager *)undoManager
@@ -368,22 +380,40 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   self.text = @"";
   [self.termDelegate.termView setIme: @"" completionHandler:nil];
+  _markedText = nil;
+  _skipTextStorageDelete = NO;
 }
 
 - (void)textViewDidChange:(UITextView *)textView
 {
   if (textView.text.length == 0) {
+    _markedText = nil;
+    _skipTextStorageDelete = YES;
     [self reset];
+    _skipTextStorageDelete = NO;
     return;
   }
   
   if (!self.markedTextRange) {
-    [self _insertText:self.text];
-    [self reset];
+    if (_markedText) {
+      [self _insertText:_markedText];
+      [self reset];
+      _markedText = nil;
+      [self.termDelegate.termView setIme: @"" completionHandler:nil];
+      return;
+    }
+    
+    _skipTextStorageDelete = NO;
+    _markedText = nil;
+    
     return;
   }
+  
+  
 
   NSString *str = [self textInRange:self.markedTextRange];
+  _markedText = str;
+  
   [self.termDelegate.termView setIme: str
                    completionHandler:^(id data, NSError * _Nullable error) {
     if (!data) {
@@ -460,6 +490,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)insertText:(NSString *)text
 {
   [self _insertText:text];
+  
+  if (_markedText) {
+    return;
+  }
+  
+  [super insertText:text];
+  NSInteger wordsToKeepInLine = 3;
+  text = self.text;
+  NSArray *comps = [text componentsSeparatedByString:@" "];
+  if (comps.count > wordsToKeepInLine) {
+    comps = [comps subarrayWithRange:NSMakeRange(comps.count - wordsToKeepInLine, wordsToKeepInLine)];
+    self.text = [comps componentsJoinedByString:@" "];
+  }
 }
 
 - (void)deleteBackward
@@ -467,7 +510,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   // Send a delete backward key to the buffer
   [_termDelegate write:@"\x7f"];
   
+  _skipTextStorageDelete = YES;
   [super deleteBackward];
+  _skipTextStorageDelete = NO;
 }
 
 - (void)_escSeqWithInput:(NSString *)input
