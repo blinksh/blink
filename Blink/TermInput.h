@@ -54,4 +54,6 @@
 - (void)yank:(id)sender;
 - (void)pasteSelection:(id)sender;
 
+- (void)reset;
+
 @end
