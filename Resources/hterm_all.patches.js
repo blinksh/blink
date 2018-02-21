@@ -90,6 +90,9 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     'outline: none !important';
 
   doc.body.appendChild(this.screen_);
+  
+  this.ime_ = doc.createElement('ime')
+  this.screen_.appendChild(this.ime_);
 
   this.screen_.addEventListener('scroll', this.onScroll_.bind(this));
   this.screen_.addEventListener('wheel', this.onScrollWheel_.bind(this));
