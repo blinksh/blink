@@ -550,8 +550,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([cmd.input length] == 0) {
     return;
-  } else if ([cmd.input isEqualToString:@"\t"]) {
-    [_termDelegate write:@"\x1b\x5b\x5a"];
   } else {
     [_termDelegate write:[cmd.input uppercaseString]];
   }
@@ -794,6 +792,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                               modifierFlags:UIKeyModifierCommand
                                                      action:@selector(_kbCmd:)]];
   
+  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"\t"
+                                              modifierFlags:UIKeyModifierShift
+                                                     action:@selector(_shiftTab:)]];
+  
   if (_controlKeys != _controlKeysWithoutAutoRepeat) {
     _kbdCommandsWithoutAutoRepeat = [_kbdCommands mutableCopy];
     for (NSNumber *modifier in _controlKeysWithoutAutoRepeat.allKeys) {
@@ -805,6 +807,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   for (NSNumber *modifier in _controlKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
   }
+  
 }
 
 - (void)_kbCmd:(UIKeyCommand *)cmd
@@ -812,6 +815,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
     [self resignFirstResponder];
   }
+}
+
+- (void)_shiftTab:(UIKeyCommand *)cmd
+{
+  [_termDelegate write:@"\x1b\x5b\x5a"];
 }
 
 - (void)_assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
@@ -880,7 +888,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (NSArray *)_shiftMaps
 {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm\t";
+  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
   
   [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
                               options:NSStringEnumerationByComposedCharacterSequences
