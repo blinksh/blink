@@ -517,7 +517,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 // Alt+Backspace
 - (void)_deleteByWord
 {
-  [self _remapInput:@"\x7f" forModifier:BKKeyboardModifierAlt];
+  if (![self _remapInput:@"\x7f" forModifier:BKKeyboardModifierAlt]) {
+    // Default to `^[^?`. See https://github.com/blinksh/blink/issues/117
+    [_termDelegate write:[CC ESC:@"\x7f"]];
+  }
 }
 
 - (void)_escSeqWithInput:(NSString *)input
@@ -547,6 +550,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if ([cmd.input length] == 0) {
     return;
+  } else if ([cmd.input isEqualToString:@"\t"]) {
+    [_termDelegate write:@"\x1b\x5b\x5a"];
   } else {
     [_termDelegate write:[cmd.input uppercaseString]];
   }
@@ -789,7 +794,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                               modifierFlags:UIKeyModifierCommand
                                                      action:@selector(_kbCmd:)]];
   
-  
   if (_controlKeys != _controlKeysWithoutAutoRepeat) {
     _kbdCommandsWithoutAutoRepeat = [_kbdCommands mutableCopy];
     for (NSNumber *modifier in _controlKeysWithoutAutoRepeat.allKeys) {
@@ -803,7 +807,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)_kbCmd:(UIKeyCommand *)cmd {
+- (void)_kbCmd:(UIKeyCommand *)cmd
+{
   if ([UIApplication sharedApplication].applicationState != UIApplicationStateActive) {
     [self resignFirstResponder];
   }
@@ -875,7 +880,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (NSArray *)_shiftMaps
 {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
-  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm";
+  NSString *charset = @"qwertyuiopasdfghjklzxcvbnm\t";
   
   [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
                               options:NSStringEnumerationByComposedCharacterSequences
@@ -1030,15 +1035,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _setKbdCommands];
 }
 
-- (void)_remapInput:(NSString *)input forModifier:(const NSString *)modifer {
+- (BOOL)_remapInput:(NSString *)input forModifier:(const NSString *)modifer {
   NSString *sequence = [BKDefaults keyboardMapping][modifer];
-  if ([sequence isEqual:BKKeyboardSeqNone]) {
-    [_termDelegate write:input];
-  } else if ([sequence isEqual:BKKeyboardSeqCtrl]) {
+  if ([sequence isEqual:BKKeyboardSeqCtrl]) {
     [self _ctrlSeqWithInput:input];
+    return YES;
   } else if ([sequence isEqual:BKKeyboardSeqEsc]) {
     [self _escSeqWithInput:input];
+    return YES;
   }
+  
+  return NO;
 }
 
 - (void)_configureShotcuts
