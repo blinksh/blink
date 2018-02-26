@@ -279,10 +279,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [self _configureNotifications];
     [self _configureShotcuts];
     
-    self.backgroundColor = [UIColor clearColor];
-    self.textColor = [UIColor whiteColor];
-    self.font = [UIFont fontWithName:@"Menlo" size:18];
-    
     [self setHidden:YES];
     self.textContainerInset = UIEdgeInsetsZero;
     self.textContainer.lineFragmentPadding = 0;
@@ -306,7 +302,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                   nil];
 }
 
-- (void)textStorage:(NSTextStorage *)textStorage didProcessEditing:(NSTextStorageEditActions)editedMask range:(NSRange)editedRange changeInLength:(NSInteger)delta
+- (void)textStorage:(NSTextStorage *)textStorage
+  didProcessEditing:(NSTextStorageEditActions)editedMask
+              range:(NSRange)editedRange
+     changeInLength:(NSInteger)delta
 {
   if (delta == -1 && !_skipTextStorageDelete && !_markedText) {
     [_termDelegate write:@"\x7f"];
@@ -408,8 +407,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     return;
   }
-  
-  
 
   NSString *str = [self textInRange:self.markedTextRange];
   _markedText = str;
@@ -739,6 +736,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return NO;
   }
   
+  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+  
+  if (appState != UIApplicationStateActive) {
+    return NO;
+  }
+  
   // super returns NO (No text?), so we check ourselves.
   if (action == @selector(paste:) ||
       action == @selector(cut:) ||
@@ -751,12 +754,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       action == @selector(toggleUnderline:)
       ) {
     return YES;
-  }
-  
-  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
-  
-  if (appState != UIApplicationStateActive) {
-    return NO;
   }
   
   BOOL result = [super canPerformAction:action withSender:sender];
@@ -780,7 +777,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_kbdCommands addObjectsFromArray:self._functionModifierKeys];
 
   // This dummy command to hand stuck cmd key
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:UIKeyModifierCommand action:@selector(_kbCmd:)]];
+  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@""
+                                              modifierFlags:UIKeyModifierCommand
+                                                     action:@selector(_kbCmd:)]];
   
   
   if (_controlKeys != _controlKeysWithoutAutoRepeat) {
@@ -854,7 +853,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
   
   if (key == UIKeyInputEscape) {
-    [cmds addObject:[UIKeyCommand keyCommandWithInput:@"" modifierFlags:modifier action:@selector(escSeq:)]];
+    [cmds addObject:[UIKeyCommand keyCommandWithInput:@""
+                                        modifierFlags:modifier action:@selector(escSeq:)]];
     if (modifier == UIKeyModifierAlphaShift) {
       [cmds addObjectsFromArray:[self _shiftMaps]];
     }
@@ -872,7 +872,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
                               options:NSStringEnumerationByComposedCharacterSequences
                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                             [cmds addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:UIKeyModifierShift action:@selector(shiftSeq:)]];
+                             [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
+                                                                 modifierFlags:UIKeyModifierShift
+                                                                        action:@selector(shiftSeq:)]];
                            }];
   
   return cmds;
@@ -905,13 +907,23 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableArray *f = [NSMutableArray array];
   
   for (NSNumber *modifier in [CC FModifiers]) {
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
-    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow modifierFlags:modifier.intValue action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputDownArrow
+                                     modifierFlags:modifier.intValue
+                                            action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputUpArrow
+                                     modifierFlags:modifier.intValue
+                                            action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputRightArrow
+                                     modifierFlags:modifier.intValue
+                                            action:@selector(arrowSeq:)]];
+    [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputLeftArrow
+                                     modifierFlags:modifier.intValue
+                                            action:@selector(arrowSeq:)]];
   }
   
-  [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape modifierFlags:0 action:@selector(escSeq:)]];
+  [f addObject:[UIKeyCommand keyCommandWithInput:UIKeyInputEscape
+                                   modifierFlags:0
+                                          action:@selector(escSeq:)]];
   
   return f;
 }
@@ -1056,13 +1068,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   [self _setKbdCommands];
-}
-
-- (CGRect)caretRectForPosition:(UITextPosition *)position
-{
-  CGRect rect = [super caretRectForPosition:position];
-  rect.size.width = rect.size.height * 0.5;
-  return rect;
 }
 
 
