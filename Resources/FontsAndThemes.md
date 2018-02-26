@@ -40,7 +40,7 @@ t.prefs_.set('background-color', white);
 ```
 
 ### Colors
-Back in the old days terminals were only able to display 16 colors. Then more complex ones came with new sequences for 256 colors and nowadays there are even sequences to represent TruColor.
+Back in the old days terminals were only able to display 16 colors. Then more complex ones came with new sequences for 256 colors and nowadays there are even sequences to represent TrueColor.
 Terminal Emulators and applications still rely on the basic 16 color sequences for their applications. This is done by defining a set of basic colors, and then a "highlighted" / "accented" version of those.
 ```javascript
 t.prefs_.set('color-palette-overrides',
