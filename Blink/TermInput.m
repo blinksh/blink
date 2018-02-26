@@ -512,6 +512,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   _skipTextStorageDelete = NO;
 }
 
+// Alt+Backspace
+- (void)_deleteByWord
+{
+  [self _remapInput:@"\x7f" forModifier:BKKeyboardModifierAlt];
+}
+
 - (void)_escSeqWithInput:(NSString *)input
 {
   if (_termDelegate.termView.hasSelection) {
@@ -1020,6 +1026,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   _functionTriggerKeys = [[NSMutableDictionary alloc] init];
   _specialFKeysRow = @"1234567890";
   [self _setKbdCommands];
+}
+
+- (void)_remapInput:(NSString *)input forModifier:(const NSString *)modifer {
+  NSString *sequence = [BKDefaults keyboardMapping][modifer];
+  if ([sequence isEqual:BKKeyboardSeqNone]) {
+    [_termDelegate write:input];
+  } else if ([sequence isEqual:BKKeyboardSeqCtrl]) {
+    [self _ctrlSeqWithInput:input];
+  } else if ([sequence isEqual:BKKeyboardSeqEsc]) {
+    [self _escSeqWithInput:input];
+  }
 }
 
 - (void)_configureShotcuts
