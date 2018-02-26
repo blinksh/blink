@@ -498,7 +498,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSArray *comps = [text componentsSeparatedByString:@" "];
   if (comps.count > wordsToKeepInLine) {
     comps = [comps subarrayWithRange:NSMakeRange(comps.count - wordsToKeepInLine, wordsToKeepInLine)];
+    _skipTextStorageDelete = YES;
     self.text = [comps componentsJoinedByString:@" "];
+    _skipTextStorageDelete = NO;
   }
 }
 
