@@ -9,7 +9,7 @@ var theme = {
     '#d33682',
     '#2aa198',
     '#eee8d5',
-    '#002b36',
+    '#60757B', // tune bright color for zsh-autocompletion. See #381
     '#cb4b16',
     '#586e75',
     '#657b83',
