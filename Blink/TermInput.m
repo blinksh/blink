@@ -873,7 +873,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                                                         action:action]];
                              
                              // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
-                             if ((modifier & UIKeyModifierAlphaShift) == UIKeyModifierAlphaShift) {
+                             if (modifier == UIKeyModifierAlphaShift) {
                                [cmds addObjectsFromArray:[self _shiftMaps]];
                              }
                            }];
