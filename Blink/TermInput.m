@@ -448,12 +448,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (_disableAccents) {
     // If the accent switch is on, the next character should remove them.
     //CFStringTransform((__bridge CFMutableStringRef)mtext, nil, kCFStringTransformStripCombiningMarks, NO);
-    text = [[NSString alloc] initWithData:[text dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES] encoding:NSASCIIStringEncoding];
+    text = [[NSString alloc] initWithData:[text dataUsingEncoding:NSASCIIStringEncoding allowLossyConversion:YES]
+                                 encoding:NSASCIIStringEncoding];
     _disableAccents = NO;
   }
   
   // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
-  BOOL capsWithoutSWKeyboard = [self _capsMapped] & self.inputAccessoryView.hidden;
+  BOOL capsWithoutSWKeyboard = !self.softwareKB && [self _capsMapped];
   if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
     text = [text lowercaseString];
   }
@@ -927,7 +928,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_specialFKeysRow enumerateSubstringsInRange:NSMakeRange(0, [_specialFKeysRow length])
                                          options:NSStringEnumerationByComposedCharacterSequences
                                       usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
-                                        [functions addObject:[UIKeyCommand keyCommandWithInput:substring modifierFlags:triggers action:@selector(fkeySeq:)]];
+                                        [functions addObject:[UIKeyCommand keyCommandWithInput:substring
+                                                                                 modifierFlags:triggers
+                                                                                        action:@selector(fkeySeq:)]];
                                       }];
   }
   
@@ -974,7 +977,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (BOOL)_capsMapped
 {
-  NSNumber *key = [NSNumber numberWithInteger:UIKeyModifierAlphaShift];
+  NSNumber *key = @(UIKeyModifierAlphaShift);
+  
   return ([[_controlKeys objectForKey:key] count] ||
           [[_functionKeys objectForKey:key] count]);
 }
@@ -1127,6 +1131,5 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   [self _setKbdCommands];
 }
-
 
 @end
