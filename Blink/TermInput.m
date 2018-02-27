@@ -266,9 +266,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     self.delegate = self;
     
-    self.autocorrectionType = UITextAutocorrectionTypeNo;
-    self.autocapitalizationType = UITextAutocapitalizationTypeNone;
-    
     _smartKeys = [[SmartKeysController alloc] init];
     _smartKeys.textInputDelegate = self;
     self.inputAccessoryView = [_smartKeys view];
@@ -291,6 +288,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   return self;
+}
+
+// Autocorrection and autocapitalization should be implemented as overrides.
+// Fixes #370
+
+- (UITextAutocorrectionType)autocorrectionType
+{
+  return UITextAutocorrectionTypeNo;
+}
+
+- (UITextAutocapitalizationType)autocapitalizationType
+{
+  return UITextAutocapitalizationTypeNone;
 }
 
 - (void)_configureLangSet
@@ -1076,7 +1086,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   if ([BKDefaults autoRepeatKeys]) {
     _controlKeys = [_controlKeys mutableCopy];
-    [self _assignSequence:TermViewAutoRepeateSeq toModifier:0];
+    [self _assignSequence:TermViewAutoRepeateSeq toModifier:kNilOptions];
   }
 
   if ([BKDefaults isShiftAsEsc]) {
