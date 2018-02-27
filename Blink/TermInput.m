@@ -47,6 +47,7 @@ static NSString *CSI = nil;
 
 NSString *const TermViewCtrlSeq = @"ctrlSeq:";
 NSString *const TermViewEscSeq = @"escSeq:";
+NSString *const TermViewEscCtrlSeq = @"escCtrlSeq:";
 NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
 NSString *const TermViewFFuncSeq = @"fkeySeq:";
 NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
@@ -579,12 +580,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _ctrlSeqWithInput:cmd.input];
 }
 
-- (void)metaSeq:(UIKeyCommand *)cmd
+- (void)escCtrlSeq:(UIKeyCommand *)cmd
 {
-  if  (_termDelegate.termView.hasSelection) {
-    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierAlternate];
+  if (_termDelegate.termView.hasSelection) {
+    [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl | UIKeyModifierAlternate];
   } else {
-    [_termDelegate write:[CC ESC:cmd.input]];
+    NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:cmd.input]];
+    [_termDelegate write:seq];
   }
 }
 
@@ -787,7 +789,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   _kbdCommands = [NSMutableArray array];
   
-  
   for (NSNumber *modifier in _functionKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_functionKeys[modifier]];
   }
@@ -844,11 +845,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   NSMutableArray *cmds = [NSMutableArray array];
   NSString *charset;
-  if (seq == TermViewCtrlSeq) {
+  if (seq == TermViewCtrlSeq || seq == TermViewEscCtrlSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
   } else if (seq == TermViewEscSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]{}\\|;':\",./<>?";
-  } else if (seq == TermViewAutoRepeateSeq){
+  } else if (seq == TermViewAutoRepeateSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
   } else {
     return;
@@ -862,21 +863,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSUInteger length = charset.length;
   unichar buffer[length + 1];
   [charset getCharacters:buffer range:NSMakeRange(0, length)];
-  
+  SEL action = NSSelectorFromString(seq);
   [charset enumerateSubstringsInRange:NSMakeRange(0, length)
                               options:NSStringEnumerationByComposedCharacterSequences
                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
                              [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
                                                                  modifierFlags:modifier
-                                                                        action:NSSelectorFromString(seq)]];
+                                                                        action:action]];
                              
                              // Capture shift key presses to get transformed and not printed lowercase when CapsLock is Ctrl
-                             if (modifier == UIKeyModifierAlphaShift) {
+                             if ((modifier & UIKeyModifierAlphaShift) == UIKeyModifierAlphaShift) {
                                [cmds addObjectsFromArray:[self _shiftMaps]];
                              }
                            }];
   
-  [_controlKeys setObject:cmds forKey:[NSNumber numberWithInteger:modifier]];
+  [_controlKeys setObject:cmds forKey:@(modifier)];
 }
 
 - (void)_assignKey:(NSString *)key toModifier:(UIKeyModifierFlags)modifier
@@ -1070,6 +1071,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   [self _resetDefaultControlKeys];
   
+  NSMutableArray *ctrls = [[NSMutableArray alloc] init];
+  NSMutableArray *escs = [[NSMutableArray alloc] init];
+  
   for (NSString *key in [BKDefaults keyboardKeyList]) {
     NSString *sequence = [BKDefaults keyboardMapping][key];
     NSInteger modifier = [bkModifierMaps[key] integerValue];
@@ -1078,10 +1082,20 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       [self _assignSequence:nil toModifier:modifier];
     } else if ([sequence isEqual:BKKeyboardSeqCtrl]) {
       [self _assignSequence:TermViewCtrlSeq toModifier:modifier];
+      [ctrls addObject:@(modifier)];
     } else if ([sequence isEqual:BKKeyboardSeqEsc]) {
       [self _assignSequence:TermViewEscSeq toModifier:modifier];
+      [escs addObject:@(modifier)];
     }
   }
+  
+  for (NSNumber *ctrl in ctrls) {
+    for (NSNumber *esc in escs) {
+      NSInteger mod = ctrl.integerValue | esc.integerValue;
+      [self _assignSequence:TermViewEscCtrlSeq toModifier:mod];
+    }
+  }
+  
   _controlKeysWithoutAutoRepeat = _controlKeys;
   
   if ([BKDefaults autoRepeatKeys]) {
