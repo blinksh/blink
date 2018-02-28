@@ -283,11 +283,13 @@
   
   if (bottomInset > accessoryHeight) {
     accessoryView.hidden = NO;
+    _termInput.softwareKB = YES;
   } else if (bottomInset == accessoryHeight) {
     if (_touchOverlay.panGestureRecognizer.state == UIGestureRecognizerStateRecognized) {
       accessoryView.hidden = YES;
     } else {
       accessoryView.hidden = ![BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard];
+      _termInput.softwareKB = NO;
     }
   } else if (kbFrame.size.height == 0) { // Other screen kb
     accessoryView.hidden = YES;
@@ -295,6 +297,7 @@
   
   if (accessoryView.hidden) {
     bottomInset -= accessoryHeight;
+    _termInput.softwareKB = NO;
   }
   
   if (_rootLayoutMargins.bottom != bottomInset) {

@@ -150,26 +150,6 @@
 		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
 		85A34309200A8FAF009324F1 /* term.css in Resources */ = {isa = PBXBuildFile; fileRef = 85A34308200A8FAF009324F1 /* term.css */; };
-		85A34312200A9AED009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */; };
-		85A34313200A9AEE009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */; };
-		85A3431B200A9AF5009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */; };
-		85A3431C200A9AF5009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */; };
-		85A3431D200A9AF5009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */; };
-		85A3431E200A9AF5009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */; };
-		85A3431F200A9AF5009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */; };
-		85A34320200A9AF5009324F1 /* Menlo-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */; };
-		85A34321200A9AF5009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */; };
-		85A34322200A9AF5009324F1 /* FiraCode-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */; };
-		85A34323200A9AF5009324F1 /* FiraCode.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AB2004C6C3001FB2AA /* FiraCode.ttf */; };
-		85A34324200A9AF6009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */; };
-		85A34325200A9AF6009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */; };
-		85A34326200A9AF6009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */; };
-		85A34327200A9AF6009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */; };
-		85A34328200A9AF7009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */; };
-		85A34329200A9AF7009324F1 /* Menlo-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */; };
-		85A3432A200A9AF7009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */; };
-		85A3432B200A9AF7009324F1 /* FiraCode-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */; };
-		85A3432C200A9AF7009324F1 /* FiraCode.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D29392AB2004C6C3001FB2AA /* FiraCode.ttf */; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
@@ -208,10 +188,6 @@
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
-		D217129C200C99130044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */; };
-		D217129D200C99130044BC90 /* Source-Code-Pro-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */; };
-		D217129E200C99130044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */; };
-		D217129F200C99130044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf in Resources */ = {isa = PBXBuildFile; fileRef = D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */; };
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
@@ -463,14 +439,6 @@
 		85047E76201F9B0E0090E974 /* ControlPanel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ControlPanel.m; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
 		85A34308200A8FAF009324F1 /* term.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = term.css; sourceTree = "<group>"; };
-		85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Bold-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-Bold-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Menlo-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Bold-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
-		85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Roboto-Mono-Bold-Italic-for-Powerline.ttf"; sourceTree = "<group>"; };
 		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
@@ -543,10 +511,6 @@
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
-		D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Italic-for-Powerline.otf"; sourceTree = "<group>"; };
-		D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-for-Powerline.otf"; sourceTree = "<group>"; };
-		D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Bold-for-Powerline.otf"; sourceTree = "<group>"; };
-		D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "Source-Code-Pro-Bold-Italic-for-Powerline.otf"; sourceTree = "<group>"; };
 		D23B18831FF7CEBA00A6C903 /* StateManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateManager.h; sourceTree = "<group>"; };
 		D23B18841FF7CEBA00A6C903 /* StateManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StateManager.m; sourceTree = "<group>"; };
 		D23B18891FFB76B300A6C903 /* SessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionParameters.h; sourceTree = "<group>"; };
@@ -557,8 +521,6 @@
 		D23D0FAC2008DAEB00B33A9F /* TermInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermInput.m; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
-		D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "FiraCode-Bold.ttf"; sourceTree = "<group>"; };
-		D29392AB2004C6C3001FB2AA /* FiraCode.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = FiraCode.ttf; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
@@ -673,7 +635,6 @@
 				D29392B82004DCC9001FB2AA /* hterm_all.js */,
 				D2496F3B20038B3300E75FE9 /* hterm_all.min.js */,
 				D29392B62004D785001FB2AA /* hterm_all.patches.js */,
-				D266E19F2007802D007365FD /* fonts */,
 				C94437641D838ABF0096F84E /* Fonts */,
 				C944375F1D831CD30096F84E /* Themes */,
 				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
@@ -1048,27 +1009,6 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
-		D266E19F2007802D007365FD /* fonts */ = {
-			isa = PBXGroup;
-			children = (
-				D217129A200C99110044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf */,
-				D217129B200C99120044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf */,
-				D2171299200C99100044BC90 /* Source-Code-Pro-for-Powerline.otf */,
-				D2171295200C990F0044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf */,
-				85A3430E200A9335009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf */,
-				85A34311200A9336009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf */,
-				85A3430F200A9336009324F1 /* Roboto-Mono-for-Powerline.ttf */,
-				85A34310200A9336009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf */,
-				85A3430C200A9207009324F1 /* Menlo-Bold-for-Powerline.ttf */,
-				85A3430A200A9207009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf */,
-				85A3430D200A9207009324F1 /* Menlo-for-Powerline.ttf */,
-				85A3430B200A9207009324F1 /* Menlo-Italic-for-Powerline.ttf */,
-				D29392A72004C6C3001FB2AA /* FiraCode-Bold.ttf */,
-				D29392AB2004C6C3001FB2AA /* FiraCode.ttf */,
-			);
-			name = fonts;
-			sourceTree = "<group>";
-		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
@@ -1323,24 +1263,14 @@
 				076FBE441DB80AC900F6D997 /* css in Resources */,
 				076FBE451DB80AC900F6D997 /* Themes in Resources */,
 				076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */,
-				85A34326200A9AF6009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */,
-				85A3432B200A9AF7009324F1 /* FiraCode-Bold.ttf in Resources */,
 				076FBE471DB80AC900F6D997 /* locales.bundle in Resources */,
-				85A3432C200A9AF7009324F1 /* FiraCode.ttf in Resources */,
 				076FBE481DB80AC900F6D997 /* about.html in Resources */,
 				076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */,
 				076FBE4B1DB80AC900F6D997 /* Fonts in Resources */,
-				85A34328200A9AF7009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */,
 				076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */,
 				076FBE4F1DB80AC900F6D997 /* term.html in Resources */,
 				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
-				85A34324200A9AF6009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */,
 				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
-				85A34313200A9AEE009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */,
-				85A34329200A9AF7009324F1 /* Menlo-for-Powerline.ttf in Resources */,
-				85A34325200A9AF6009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */,
-				85A3432A200A9AF7009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */,
-				85A34327200A9AF6009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1348,40 +1278,26 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D217129C200C99130044BC90 /* Source-Code-Pro-Italic-for-Powerline.otf in Resources */,
 				07E3AED31D919272007BC086 /* css in Resources */,
 				D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */,
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
-				85A34321200A9AF5009324F1 /* Menlo-Italic-for-Powerline.ttf in Resources */,
-				85A34312200A9AED009324F1 /* Roboto-Mono-Bold-for-Powerline.ttf in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
-				85A34322200A9AF5009324F1 /* FiraCode-Bold.ttf in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
-				D217129F200C99130044BC90 /* Source-Code-Pro-Bold-Italic-for-Powerline.otf in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
-				85A34320200A9AF5009324F1 /* Menlo-for-Powerline.ttf in Resources */,
-				D217129E200C99130044BC90 /* Source-Code-Pro-Bold-for-Powerline.otf in Resources */,
 				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
-				D217129D200C99130044BC90 /* Source-Code-Pro-for-Powerline.otf in Resources */,
 				D2496F412003941B00E75FE9 /* term.js in Resources */,
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
-				85A3431B200A9AF5009324F1 /* Roboto-Mono-Bold-Italic-for-Powerline.ttf in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
-				85A3431D200A9AF5009324F1 /* Roboto-Mono-Italic-for-Powerline.ttf in Resources */,
-				85A3431F200A9AF5009324F1 /* Menlo-Bold-Italic-for-Powerline.ttf in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
 				D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */,
-				85A34323200A9AF5009324F1 /* FiraCode.ttf in Resources */,
-				85A3431C200A9AF5009324F1 /* Roboto-Mono-for-Powerline.ttf in Resources */,
-				85A3431E200A9AF5009324F1 /* Menlo-Bold-for-Powerline.ttf in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

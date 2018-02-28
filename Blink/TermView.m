@@ -104,11 +104,6 @@
   return self;
 }
 
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-}
-
 - (BOOL)canBecomeFirstResponder {
   return NO;
 }

@@ -190,7 +190,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   eBytes = (unsigned char *)malloc(eLen);
   BN_bn2bin(_rsa->e, eBytes);
 
-  encodingLength = 11 + 4 + eLen + 4 + nLen;
+  encodingLength = sizeof(pSshHeader) + 4 + eLen + 4 + nLen;
   // correct depending on the MSB of e and N
   if (eBytes[0] & 0x80) {
     encodingLength++;
@@ -200,11 +200,12 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   }
 
   pEncoding = (unsigned char *)malloc(encodingLength);
-  memcpy(pEncoding, pSshHeader, 11);
+  index = sizeof(pSshHeader);
+  memcpy(pEncoding, pSshHeader, index);
 
   // Encoding exponent and modulus
-  index = SshEncodeBuffer(&pEncoding[11], eLen, eBytes);
-  index = SshEncodeBuffer(&pEncoding[11 + index], nLen, nBytes);
+  index += SshEncodeBuffer(&pEncoding[index], eLen, eBytes);
+  index += SshEncodeBuffer(&pEncoding[index], nLen, nBytes);
 
   free(nBytes);
   free(eBytes);
@@ -218,7 +219,6 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   // Filter
   fpub = BIO_push(b64, fpub);
   BIO_write(fpub, pEncoding, encodingLength);
-  BIO_write(fpub, '\0', 1);
   BIO_flush(fpub);
   fpub = BIO_pop(b64);
 
@@ -230,6 +230,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 
   // Free the BIO key memory
   BIO_free(fpub);
+  free(pEncoding);
 
   NSString *commentedKey = [NSString stringWithFormat:@"%@ %@",key, comment];
   return commentedKey;

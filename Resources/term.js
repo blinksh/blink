@@ -267,9 +267,70 @@ function term_getCurrentSelection() {
   };
 }
 
+function _modifySelectionByLine(direction) {
+  var selection = document.getSelection();
+  var fNode = selection.focusNode;
+  var fOffset = selection.focusOffset;
+  var aNode = selection.anchorNode;
+  var aOffset = selection.anchorOffset;
+  
+  var fRow = t.screen_.getXRowAncestor_(fNode);
+  
+  var targetRow = direction === 'left' ?  fRow.previousSibling : fRow.nextSibling;
+  
+  // We out of screen
+  if (targetRow == null || targetRow.nodeName !== 'X-ROW') {
+    if (direction === 'left') {
+      selection.setBaseAndExtent(aNode, aOffset, fRow, 0);
+    } else {
+      selection.setBaseAndExtent(aNode, aOffset, fRow.nextSibling, 0);
+    }
+    
+    return;
+  }
+  
+  if (fNode.nodeName === 'X-ROW') {
+    if (direction === 'left') {
+      selection.setBaseAndExtent(aNode, aOffset, fNode.previousSibling, 0);
+      selection.modify("extend", direction, 'character');
+    } else {
+      selection.setBaseAndExtent(aNode, aOffset, fNode.nextSibling, 0);
+    }
+    
+    return;
+  }
+  
+  var position = t.screen_.getPositionWithinRow_(fRow, fNode, fOffset);
+  var nodeAndOffset = t.screen_.getNodeAndOffsetWithinRow_(targetRow, position);
+  
+  if (nodeAndOffset) {
+    selection.setBaseAndExtent(aNode, aOffset, nodeAndOffset[0], nodeAndOffset[1]);
+    
+    if (selection.isCollapsed) {
+      selection.setBaseAndExtent(fNode, fOffset, aNode, aOffset);
+      _modifySelectionByLine(direction);
+    }
+    return;
+  }
+  
+  if (direction === 'left') {
+    selection.setBaseAndExtent(aNode, aOffset, fRow, 0);
+    selection.modify("extend", direction, 'character');
+  } else {
+    selection.setBaseAndExtent(aNode, aOffset, targetRow, 0);
+    selection.modify("extend", direction, 'lineboundary');
+    selection.modify("extend", direction, 'character');
+  }
+}
+
 function term_modifySelection(direction, granularity) {
   var selection = document.getSelection();
   if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+  
+  if (granularity === 'line') {
+    _modifySelectionByLine(direction);
     return;
   }
   
