@@ -80,5 +80,6 @@ typedef struct SessionParams {
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;
+- (BOOL)handleControl:(NSString *)control;
 
 @end

@@ -421,18 +421,18 @@
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
 		2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
 		2236A8EC2038972C001CD2AD /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
-		2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libnetwork_ios.dylib; path = Frameworks/libnetwork_ios.dylib; sourceTree = "<group>"; };
+		2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnetwork_ios.dylib; sourceTree = "<group>"; };
 		22E1F3232036ED62001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
-		22E1F3252036EDD5001FCC5C /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtar.dylib; path = Frameworks/libtar.dylib; sourceTree = "<group>"; };
-		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libtext.dylib; path = Frameworks/libtext.dylib; sourceTree = "<group>"; };
-		22E1F3272036EDD5001FCC5C /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libshell.dylib; path = Frameworks/libshell.dylib; sourceTree = "<group>"; };
-		22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libssh_cmd.dylib; path = Frameworks/libssh_cmd.dylib; sourceTree = "<group>"; };
-		22E1F3292036EDD6001FCC5C /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libfiles.dylib; path = Frameworks/libfiles.dylib; sourceTree = "<group>"; };
-		22E1F32A2036EDD6001FCC5C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcurl.dylib; path = Frameworks/libcurl.dylib; sourceTree = "<group>"; };
-		22E1F32B2036EDD6001FCC5C /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libawk.dylib; path = Frameworks/libawk.dylib; sourceTree = "<group>"; };
-		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = openssl.framework; path = Frameworks/openssl.framework; sourceTree = "<group>"; };
-		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = libssh2.framework; path = Frameworks/libssh2.framework; sourceTree = "<group>"; };
-		22E1F3372036EEB8001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ios_system.framework; path = Frameworks/ios_system.framework; sourceTree = "<group>"; };
+		22E1F3252036EDD5001FCC5C /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtar.dylib; sourceTree = "<group>"; };
+		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtext.dylib; sourceTree = "<group>"; };
+		22E1F3272036EDD5001FCC5C /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libshell.dylib; sourceTree = "<group>"; };
+		22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libssh_cmd.dylib; sourceTree = "<group>"; };
+		22E1F3292036EDD6001FCC5C /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfiles.dylib; sourceTree = "<group>"; };
+		22E1F32A2036EDD6001FCC5C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcurl.dylib; sourceTree = "<group>"; };
+		22E1F32B2036EDD6001FCC5C /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libawk.dylib; sourceTree = "<group>"; };
+		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
+		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		22E1F3372036EEB8001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
 		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
 		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
@@ -647,6 +647,17 @@
 			isa = PBXGroup;
 			children = (
 				22E1F3232036ED62001FCC5C /* ios_system.framework */,
+				2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */,
+				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
+				22E1F3342036EE86001FCC5C /* libssh2.framework */,
+				22E1F3332036EE86001FCC5C /* openssl.framework */,
+				22E1F32B2036EDD6001FCC5C /* libawk.dylib */,
+				22E1F32A2036EDD6001FCC5C /* libcurl.dylib */,
+				22E1F3292036EDD6001FCC5C /* libfiles.dylib */,
+				22E1F3272036EDD5001FCC5C /* libshell.dylib */,
+				22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */,
+				22E1F3252036EDD5001FCC5C /* libtar.dylib */,
+				22E1F3262036EDD5001FCC5C /* libtext.dylib */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
@@ -1012,17 +1023,6 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
-				2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */,
-				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
-				22E1F3342036EE86001FCC5C /* libssh2.framework */,
-				22E1F3332036EE86001FCC5C /* openssl.framework */,
-				22E1F32B2036EDD6001FCC5C /* libawk.dylib */,
-				22E1F32A2036EDD6001FCC5C /* libcurl.dylib */,
-				22E1F3292036EDD6001FCC5C /* libfiles.dylib */,
-				22E1F3272036EDD5001FCC5C /* libshell.dylib */,
-				22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */,
-				22E1F3252036EDD5001FCC5C /* libtar.dylib */,
-				22E1F3262036EDD5001FCC5C /* libtext.dylib */,
 				2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,

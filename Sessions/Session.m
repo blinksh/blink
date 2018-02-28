@@ -179,4 +179,10 @@ void *run_session(void *params)
 {
 }
 
+- (BOOL)handleControl:(NSString *)control
+{
+  return NO;
+}
+
+
 @end

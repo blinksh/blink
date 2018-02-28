@@ -618,4 +618,16 @@ void completion(const char *command, linenoiseCompletions *lc) {
   [_childSession suspend];
 }
 
+- (BOOL)handleControl:(NSString *)control
+{
+  if (_childSession) {
+    return NO;
+  }
+  if ([control isEqualToString:@"c"]) {
+    ios_kill();
+    return YES;
+  }
+
+  return NO;
+}
 @end
