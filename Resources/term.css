@@ -2,14 +2,14 @@
 
 @font-face {
   font-family: 'Fira Code';
-  src: url('Fonts/FiraCode.ttf') format('truetype');
+  src: url('Fonts/FiraCode-Regular.woff2') format('woff2');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: 'Fira Code';
-  src: url('Fonts/FiraCode-Bold.ttf') format('truetype');
+  src: url('Fonts/FiraCode-Bold.woff2') format('woff2');
   font-weight: bold;
   font-style: normal;
 }
