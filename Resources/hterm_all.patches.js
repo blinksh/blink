@@ -90,8 +90,8 @@ hterm.ScrollPort.prototype.decorate = function(div) {
     'outline: none !important';
 
   doc.body.appendChild(this.screen_);
-  
-  this.ime_ = doc.createElement('ime')
+
+  this.ime_ = doc.createElement('ime');
   this.screen_.appendChild(this.ime_);
 
   this.screen_.addEventListener('scroll', this.onScroll_.bind(this));
@@ -192,11 +192,27 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   this.resize();
 };
 
+//hterm.Options = function(opt_copy) {
+//  // All attributes in this class are public to allow easy access by the
+//  // terminal.
+//
+//  this.wraparound = opt_copy ? opt_copy.wraparound : true;
+//  this.reverseWraparound = opt_copy ? opt_copy.reverseWraparound : false;
+//  this.originMode = opt_copy ? opt_copy.originMode : false;
+//  // iOS terminal change: need autoCarriageReturn now that commands output info
+//  // this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : false;
+//  this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : true;
+//  this.cursorVisible = opt_copy ? opt_copy.cursorVisible : false;
+//  this.cursorBlink = opt_copy ? opt_copy.cursorBlink : false;
+//  this.insertMode = opt_copy ? opt_copy.insertMode : false;
+//  this.reverseVideo = opt_copy ? opt_copy.reverseVideo : false;
+//  this.bracketedPaste = opt_copy ? opt_copy.bracketedPaste : false;
+//};
+
 hterm.ScrollPort.prototype.focus = function() {
   //  this.iframe_.focus(); // Blink: No iframe anymore
   //this.screen_.focus();
 };
-
 
 hterm.Terminal.prototype.onFocusChange_ = function(focused) {};
 
@@ -308,9 +324,9 @@ hterm.Screen.prototype.deleteChars = function(count) {
   var node = this.cursorNode_;
   var offset = this.cursorOffset_;
 
-//  var currentCursorColumn = this.cursorPosition.column;
-//  count = Math.min(count, this.columnCount_ - currentCursorColumn);
-//  if (!count) return 0;
+  //  var currentCursorColumn = this.cursorPosition.column;
+  //  count = Math.min(count, this.columnCount_ - currentCursorColumn);
+  //  if (!count) return 0;
 
   var rv = count;
   var startLength, endLength;
@@ -413,45 +429,46 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
     this.cursorPosition.column += wcwidth;
     return;
   }
-  
+
   // Blink optimization: Nothing to delete, just insert
-  if (this.cursorOffset_ === 0 &&
-      this.cursorPosition.column === 0 &&
-      this.cursorRowNode_.textContent.length === 0) {
-      this.insertString(str, wcwidth);
+  if (
+    this.cursorOffset_ === 0 &&
+    this.cursorPosition.column === 0 &&
+    this.cursorRowNode_.textContent.length === 0
+  ) {
+    this.insertString(str, wcwidth);
   } else {
     // Blink optimization: if we insert first. It is more likly we will match text
     var node = this.cursorRowNode_;
-    
+
     var parent = node.parentNode;
     var next = node.nextSibling;
-    
+
     if (parent) {
       parent.removeChild(node);
     }
-    
+
     this.insertString(str, wcwidth);
     this.deleteChars(wcwidth);
-    
+
     if (parent) {
-      parent[next ? "insertBefore":"appendChild"](node, next);
+      parent[next ? 'insertBefore' : 'appendChild'](node, next);
     }
   }
 };
-
 
 hterm.TextAttributes.nodeWidth = function(node) {
   // 1. Try to use cached version. see hterm.setNodeText
   if (node._len !== undefined) {
     return node._len;
   }
-  
+
   var content = node.textContent;
   // 2. If it asciiNode or text node use content length
   if (node.nodeType === Node.TEXT_NODE || node.asciiNode) {
     return content.length;
   }
-  
+
   // 3. it is a row. Get width with nodeWidth in children
   if (node.nodeName === 'X-ROW') {
     var res = 0;
@@ -462,7 +479,7 @@ hterm.TextAttributes.nodeWidth = function(node) {
     }
     return res;
   }
-  
+
   // 4. We need to calculate wide char width
   return lib.wc.strWidth(content);
 };
@@ -475,8 +492,7 @@ hterm.TextAttributes.nodeSubstr = function(node, start, width) {
   }
 
   return lib.wc.substr(content, start, width);
-}
-
+};
 
 hterm.Screen.prototype.splitNode_ = function(node, offset) {
   var afterNode = node.cloneNode(false);
@@ -487,10 +503,10 @@ hterm.Screen.prototype.splitNode_ = function(node, offset) {
   if (node.wcNode) {
     afterNode.wcNode = node.wcNode;
   }
-  
+
   var textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
   var afterTextContent = hterm.TextAttributes.nodeSubstr(node, offset);
-  
+
   if (afterTextContent) {
     setNodeText(afterNode, afterTextContent);
     node.parentNode.insertBefore(afterNode, node.nextSibling);
@@ -503,31 +519,111 @@ hterm.Screen.prototype.splitNode_ = function(node, offset) {
 };
 
 hterm.Terminal.prototype.scheduleSyncCursorPosition_ = function() {
-  if (this.timeouts_.syncCursor)
-    return;
-  
+  if (this.timeouts_.syncCursor) return;
+
   var self = this;
   this.timeouts_.syncCursor = requestAnimationFrame(function() {
-                                         self.syncCursorPosition_();
-                                         delete self.timeouts_.syncCursor;
-                                         });
+    self.syncCursorPosition_();
+    delete self.timeouts_.syncCursor;
+  });
 };
 
 lib.wc.strWidth = function(str) {
-  var width, rv = 0;
-  
-  for (var i = 0, len = str.length; i < len;) {
+  var width,
+    rv = 0;
+
+  for (var i = 0, len = str.length; i < len; ) {
     var codePoint = str.codePointAt(i);
     width = lib.wc.charWidth(codePoint);
-    if (width < 0)
-      return -1;
+    if (width < 0) return -1;
     rv += width;
-    i += (codePoint <= 0xffff) ? 1 : 2;
+    i += codePoint <= 0xffff ? 1 : 2;
   }
-  
+
   return rv;
 };
 
+//\u263A
+// https://medium.com/reactnative/emojis-in-javascript-f693d0eb79fb
+const _emojiRegex = /(?:[\u2700-\u27bf]|(?:\ud83c[\udde6-\uddff]){2}|[\ud800-\udbff][\udc00-\udfff]|[\u0023-\u0039]\ufe0f?\u20e3|\u3299|\u3297|\u303d|\u3030|\u24c2|\ud83c[\udd70-\udd71]|\ud83c[\udd7e-\udd7f]|\ud83c\udd8e|\ud83c[\udd91-\udd9a]|\ud83c[\udde6-\uddff]|[\ud83c[\ude01-\ude02]|\ud83c\ude1a|\ud83c\ude2f|[\ud83c[\ude32-\ude3a]|[\ud83c[\ude50-\ude51]|\u203c|\u2049|[\u25aa-\u25ab]|\u25b6|\u25c0|[\u25fb-\u25fe]|\u00a9|\u00ae|\u2122|\u2139|\ud83c\udc04|[\u2600-\u26FF]|\u2b05|\u2b06|\u2b07|\u2b1b|\u2b1c|\u2b50|\u2b55|\u231a|\u231b|\u2328|\u23cf|[\u23e9-\u23f3]|[\u23f8-\u23fa]|\ud83c\udccf|\u2934|\u2935|[\u2190-\u21ff])/;
 
+hterm.TextAttributes.prototype.createContainer = function(
+  opt_textContent,
+  opt_wcwidth,
+) {
+  if (this.isDefault()) {
+    // Only attach attributes where we need an explicit default for the
+    // matchContainer logic below.
+    const node = this.document_.createTextNode(opt_textContent);
+    //    node.asciiNode = true;
+    //    if (opt_textContent != null) {
+    //      node._len = opt_textContent.length;
+    //    }
+    return node;
+  }
 
+  var span = this.document_.createElement('span');
+  var style = span.style;
+  var classes = [];
 
+  if (this.foreground != this.DEFAULT_COLOR) style.color = this.foreground;
+
+  if (this.background != this.DEFAULT_COLOR)
+    style.backgroundColor = this.background;
+
+  if (this.enableBold && this.bold) style.fontWeight = 'bold';
+
+  if (this.faint) span.faint = true;
+
+  if (this.italic) style.fontStyle = 'italic';
+
+  if (this.blink) {
+    classes.push('blink-node');
+    span.blinkNode = true;
+  }
+
+  let textDecorationLine = '';
+  span.underline = this.underline;
+  if (this.underline) {
+    textDecorationLine += ' underline';
+    style.textDecorationStyle = this.underline;
+  }
+  if (this.underlineSource != this.SRC_DEFAULT)
+    style.textDecorationColor = this.underlineColor;
+  if (this.strikethrough) {
+    textDecorationLine += ' line-through';
+    span.strikethrough = true;
+  }
+  if (textDecorationLine) style.textDecorationLine = textDecorationLine;
+
+  if (this.wcNode) {
+    classes.push('wc-node');
+    span.wcNode = true;
+    if (_emojiRegex.test(opt_textContent)) {
+      classes.push('emoji');
+    }
+  }
+
+  span.asciiNode = this.asciiNode;
+
+  if (this.tileData != null) {
+    classes.push('tile');
+    classes.push('tile_' + this.tileData);
+    span.tileNode = true;
+  }
+
+  if (opt_textContent) {
+    setNodeText(span, opt_textContent, opt_wcwidth);
+  }
+
+  if (this.uri) {
+    classes.push('uri-node');
+    span.uriId = this.uriId;
+    span.title = this.uri;
+    span.addEventListener('click', hterm.openUrl.bind(this, this.uri));
+  }
+
+  if (classes.length) span.className = classes.join(' ');
+
+  return span;
+};

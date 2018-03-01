@@ -37,8 +37,4 @@ Frameworks/openssl.framework
 *.dSYM
 
 ## Fonts
-Resources/Fonts/PragmataProB_liga_0826.ttf
-Resources/Fonts/PragmataProI_liga_0826.ttf
-Resources/Fonts/PragmataProR_liga_0826.ttf
-Resources/Fonts/PragmataProZ_liga_0826.ttf
-Resources/Fonts/PragmataPro.css
+Resources/Fonts/PragmataPro*

@@ -104,3 +104,7 @@
   font-style: italic;
 }
 
+span.emoji {
+  -webkit-text-size-adjust: 90%;
+  vertical-align: top;
+}
