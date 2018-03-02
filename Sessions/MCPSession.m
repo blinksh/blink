@@ -188,9 +188,9 @@ char* hints(const char * line, int *color, int *bold)
     if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:argv[i]]]) != nil) {
       NSString* filename = [keypath stringByAppendingPathComponent:[NSString stringWithUTF8String:argv[i]]];
       // save private key:
-      [pk.privateKey writeToFile:filename atomically:NO];
+      [pk.privateKey writeToFile:filename atomically:NO encoding:NSUnicodeStringEncoding error:nil];
       filename = [filename stringByAppendingString:@".pub"];
-      [pk.publicKey writeToFile:filename atomically:NO];
+      [pk.publicKey writeToFile:filename atomically:NO encoding:NSUnicodeStringEncoding error:nil];
     }
   }
   if (argc < 1) {
