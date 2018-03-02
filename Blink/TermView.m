@@ -104,11 +104,6 @@
   return self;
 }
 
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-}
-
 - (BOOL)canBecomeFirstResponder {
   return NO;
 }
@@ -458,6 +453,11 @@
           [script componentsJoinedByString:@"\n"]
                                 injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
                              forMainFrameOnly:YES];
+}
+
+- (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler
+{
+  [_webView evaluateJavaScript:term_setIme(imeText) completionHandler:completionHandler];
 }
 
 - (void)terminate

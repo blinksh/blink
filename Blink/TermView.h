@@ -41,6 +41,7 @@
 @property (readonly, nonatomic) TermView *termView;
 
 - (void)write:(NSString *)input;
+- (BOOL)handleControl:(NSString *)control;
 
 @optional
 - (void)terminalIsReady: (NSDictionary *)data;
@@ -74,6 +75,7 @@
 - (void)setCursorBlink:(BOOL)state;
 - (void)setBoldAsBright:(BOOL)state;
 - (void)setBoldEnabled:(NSUInteger)state;
+- (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler;
 - (void)copy:(id)sender;
 - (void)terminate;
 - (void)reset;
