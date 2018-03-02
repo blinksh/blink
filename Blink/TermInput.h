@@ -45,8 +45,9 @@
 @end
 
 @interface TermInput : UITextView
-
 @property BOOL raw;
+@property BOOL softwareKB;
+
 @property (weak) id<TerminalDelegate> termDelegate;
 
 - (void)copyLink:(id)sender;
