@@ -408,14 +408,14 @@ hterm.Screen.prototype.deleteChars = function(count) {
     !this.cursorNode_.textContent
   ) {
     var cursorNode = this.cursorNode_;
-    if (cursorNode.previousSibling) {
+    if (cursorNode.nextSibling) {
+      this.cursorNode_ = cursorNode.nextSibling;
+      this.cursorOffset_ = 0;
+    } else if (cursorNode.previousSibling) {
       this.cursorNode_ = cursorNode.previousSibling;
       this.cursorOffset_ = hterm.TextAttributes.nodeWidth(
         cursorNode.previousSibling,
       );
-    } else if (cursorNode.nextSibling) {
-      this.cursorNode_ = cursorNode.nextSibling;
-      this.cursorOffset_ = 0;
     } else {
       var emptyNode = this.cursorRowNode_.ownerDocument.createTextNode('');
       this.cursorRowNode_.appendChild(emptyNode);
@@ -427,6 +427,8 @@ hterm.Screen.prototype.deleteChars = function(count) {
 
   return rv;
 };
+
+var _refresher = document.createTextNode('');
 
 hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
   var maxLength = this.columnCount_ - this.cursorPosition.column;
@@ -452,23 +454,236 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
   ) {
     this.insertString(str, wcwidth);
   } else {
-    // Blink optimization: if we insert first. It is more likly we will match text
-    var node = this.cursorRowNode_;
-
-    var parent = node.parentNode;
-    var next = node.nextSibling;
-
-    if (parent) {
-      parent.removeChild(node);
-    }
-
-    this.insertString(str, wcwidth);
-    this.deleteChars(wcwidth);
-
-    if (parent) {
-      parent[next ? 'insertBefore' : 'appendChild'](node, next);
+    var wcwidthLeft = this.overwriteNode_(str, wcwidth);
+    if (wcwidthLeft > 0) {
+      this.deleteChars(wcwidthLeft);
     }
   }
+};
+
+hterm.Screen.prototype.overwriteNode_ = function(str, wcwidth) {
+  var cursorNode = this.cursorNode_;
+  var cursorNodeText = cursorNode.textContent;
+
+  this.cursorRowNode_.removeAttribute('line-overflow');
+
+  var wcwidthLeft = wcwidth;
+
+  // No matter what, before this function exits the cursor column will have
+  // moved this much.
+  this.cursorPosition.column += wcwidth;
+
+  // Local cache of the cursor offset.
+  var offset = this.cursorOffset_;
+
+  // Reverse offset is the offset measured from the end of the string.
+  // Zero implies that the cursor is at the end of the cursor node.
+  var reverseOffset = hterm.TextAttributes.nodeWidth(cursorNode) - offset;
+
+  if (reverseOffset < 0) {
+    // A negative reverse offset means the cursor is positioned past the end
+    // of the characters on this line.  We'll need to insert the missing
+    // whitespace.
+    var ws = lib.f.getWhitespace(-reverseOffset);
+
+    // This whitespace should be completely unstyled.  Underline, background
+    // color, and strikethrough would be visible on whitespace, so we can't use
+    // one of those spans to hold the text.
+    if (
+      !(
+        this.textAttributes.underline ||
+        this.textAttributes.strikethrough ||
+        this.textAttributes.background ||
+        this.textAttributes.wcNode ||
+        !this.textAttributes.asciiNode ||
+        this.textAttributes.tileData != null
+      )
+    ) {
+      // Best case scenario, we can just pretend the spaces were part of the
+      // original string.
+      str = ws + str;
+      //      wcwidth += -reverseOffset;
+    } else if (
+      cursorNode.nodeType == Node.TEXT_NODE ||
+      !(
+        cursorNode.wcNode ||
+        !cursorNode.asciiNode ||
+        cursorNode.tileNode ||
+        cursorNode.style.textDecoration ||
+        cursorNode.style.textDecorationStyle ||
+        cursorNode.style.textDecorationLine ||
+        cursorNode.style.backgroundColor
+      )
+    ) {
+      // Second best case, the current node is able to hold the whitespace.
+      setNodeText(cursorNode, (cursorNodeText += ws));
+      //                 wcwidth += -reverseOffset;
+    } else {
+      // Worst case, we have to create a new node to hold the whitespace.
+      var wsNode = cursorNode.ownerDocument.createTextNode(ws);
+      this.cursorRowNode_.insertBefore(wsNode, cursorNode.nextSibling);
+      this.cursorNode_ = cursorNode = wsNode;
+      this.cursorOffset_ = offset = -reverseOffset;
+      cursorNodeText = ws;
+      //                 wcwidth = -reverseOffset;
+    }
+
+    // We now know for sure that we're at the last character of the cursor node.
+    reverseOffset = 0;
+  }
+
+  if (this.textAttributes.matchesContainer(cursorNode)) {
+    // The new text can be placed directly in the cursor node.
+    if (reverseOffset === 0) {
+      setNodeText(cursorNode, cursorNodeText + str);
+      if (!cursorNode.nextSibling) {
+        wcwidthLeft = 0;
+      }
+    } else if (offset === 0) {
+      var cursorNodeWCWidth = hterm.TextAttributes.nodeWidth(cursorNode);
+      if (wcwidth >= cursorNodeWCWidth) {
+        setNodeText(cursorNode, str, wcwidth);
+        if (cursorNode.nextSibling) {
+          wcwidthLeft = wcwidth - cursorNodeWCWidth;
+        } else {
+          wcwidthLeft = 0;
+        }
+      } else {
+        setNodeText(
+          cursorNode,
+          str + hterm.TextAttributes.nodeSubstr(cursorNode, wcwidth),
+        );
+        wcwidthLeft = 0;
+      }
+    } else {
+      var cursorNodeWCWidth = hterm.TextAttributes.nodeWidth(cursorNode);
+      if (wcwidth + offset >= cursorNodeWCWidth) {
+        setNodeText(
+          cursorNode,
+          hterm.TextAttributes.nodeSubstr(cursorNode, 0, offset) + str,
+        );
+        wcwidthLeft = wcwidth + offset - cursorNodeWCWidth;
+      } else {
+        setNodeText(
+          cursorNode,
+          hterm.TextAttributes.nodeSubstr(cursorNode, 0, offset) +
+            str +
+            hterm.TextAttributes.nodeSubstr(cursorNode, offset + wcwidth),
+        );
+        wcwidthLeft = 0;
+      }
+    }
+
+    this.cursorOffset_ += wcwidth;
+    return wcwidthLeft;
+  }
+
+  // The cursor node is the wrong style for the new text.  If we're at the
+  // beginning or end of the cursor node, then the adjacent node is also a
+  // potential candidate.
+
+  if (offset === 0) {
+    // At the beginning of the cursor node, the check the previous sibling.
+    var previousSibling = cursorNode.previousSibling;
+    if (
+      previousSibling &&
+      this.textAttributes.matchesContainer(previousSibling)
+    ) {
+      setNodeText(previousSibling, previousSibling.textContent + str);
+      this.cursorNode_ = previousSibling;
+      this.cursorOffset_ = hterm.TextAttributes.nodeWidth(previousSibling);
+      return wcwidthLeft;
+    }
+
+    var newNode = this.textAttributes.createContainer(str, wcwidth);
+    this.cursorRowNode_.insertBefore(newNode, cursorNode);
+    this.cursorNode_ = newNode;
+    this.cursorOffset_ = wcwidth;
+    var cursorNodeWCWidth = hterm.TextAttributes.nodeWidth(cursorNode);
+    if (cursorNodeWCWidth <= wcwidth) {
+      this.cursorRowNode_.removeChild(cursorNode);
+      wcwidthLeft = wcwidth - cursorNodeWCWidth;
+    } else {
+      setNodeText(
+        cursorNode,
+        hterm.TextAttributes.nodeSubstr(cursorNode, wcwidth),
+      );
+      wcwidthLeft = 0;
+    }
+    return wcwidthLeft;
+  }
+
+  if (reverseOffset === 0) {
+    // At the end of the cursor node, the check the next sibling.
+    var nextSibling = cursorNode.nextSibling;
+    if (nextSibling && this.textAttributes.matchesContainer(nextSibling)) {
+      setNodeText(nextSibling, str + nextSibling.textContent);
+      this.cursorNode_ = nextSibling;
+      this.cursorOffset_ = wcwidth;
+      return wcwidthLeft;
+    }
+
+    var newNode = this.textAttributes.createContainer(str, wcwidth);
+    this.cursorRowNode_.insertBefore(newNode, nextSibling);
+    this.cursorNode_ = newNode;
+    // We specifically need to include any missing whitespace here, since it's
+    // going in a new node.
+    this.cursorOffset_ = hterm.TextAttributes.nodeWidth(newNode);
+    if (!nextSibling) {
+      wcwidthLeft = 0;
+    }
+    return wcwidthLeft;
+  }
+
+  var cursorNodeWCWidth = hterm.TextAttributes.nodeWidth(cursorNode);
+  if (cursorNodeWCWidth <= offset + wcwidth) {
+    setNodeText(
+      cursorNode,
+      hterm.TextAttributes.nodeSubstr(cursorNode, 0, offset),
+    );
+    var newNode = this.textAttributes.createContainer(str, wcwidth);
+    this.cursorRowNode_.insertBefore(newNode, cursorNode.nextSibling);
+    this.cursorNode_ = newNode;
+    this.cursorOffset_ = wcwidth;
+    wcwidthLeft = offset + wcwidth - cursorNodeWCWidth;
+    return wcwidthLeft;
+  }
+
+  // Worst case, we're somewhere in the middle of the cursor node.  We'll
+  // have to split it into two nodes and insert our new container in between.
+  var newNode = this.textAttributes.createContainer(str, wcwidth);
+  this.insertNodeInTheMiddle(cursorNode, newNode, offset, wcwidth);
+  this.cursorNode_ = newNode;
+  this.cursorOffset_ = wcwidth;
+  wcwidthLeft = 0;
+  return wcwidthLeft;
+};
+
+hterm.TextAttributes.prototype.matchesContainer = function(obj) {
+  if (typeof obj == 'string' || obj.nodeType == Node.TEXT_NODE)
+    return this.isDefault();
+
+  var style = obj.style;
+
+  // We don't want to put multiple characters in a wcNode or a tile.
+  // See the comments in createContainer.
+  // For attributes that default to false, we do not require that obj have them
+  // declared, so always normalize them using !! (to turn undefined into false)
+  // in the compares below.
+  return (
+    !(this.wcNode || obj.wcNode) &&
+    //          this.asciiNode == obj.asciiNode &&
+    this.foreground == style.color &&
+    this.background == style.backgroundColor &&
+    this.underlineColor == style.textDecorationColor &&
+    (this.enableBold && this.bold) == !!style.fontWeight &&
+    this.blink == !!obj.blinkNode &&
+    this.italic == !!style.fontStyle &&
+    this.underline == obj.underline &&
+    !!this.strikethrough == !!obj.strikethrough &&
+    !(this.tileData != null || obj.tileNode) &&
+    this.uriId == obj.uriId
+  );
 };
 
 hterm.TextAttributes.nodeWidth = function(node) {
@@ -499,6 +714,9 @@ hterm.TextAttributes.nodeWidth = function(node) {
 };
 
 hterm.TextAttributes.nodeSubstr = function(node, start, width) {
+  if (!node) {
+    console.log('bla');
+  }
   var content = node.textContent;
 
   if (node.nodeType === Node.TEXT_NODE || node.asciiNode) {
@@ -532,14 +750,165 @@ hterm.Screen.prototype.splitNode_ = function(node, offset) {
   }
 };
 
-hterm.Terminal.prototype.scheduleSyncCursorPosition_ = function() {
-  if (this.timeouts_.syncCursor) return;
+hterm.Screen.prototype.insertNodeInTheMiddle = function(
+  node,
+  newNode,
+  offset,
+  wcwidth,
+) {
+  var afterNode = node.cloneNode(false);
 
-  var self = this;
-  this.timeouts_.syncCursor = requestAnimationFrame(function() {
-    self.syncCursorPosition_();
-    delete self.timeouts_.syncCursor;
-  });
+  // Blink: Copy attributes back to afterNode
+  afterNode.asciiNode = node.asciiNode;
+  afterNode._len = node._len;
+  if (node.wcNode) {
+    afterNode.wcNode = node.wcNode;
+  }
+
+  var textContent = hterm.TextAttributes.nodeSubstr(node, 0, offset);
+  var afterTextContent = hterm.TextAttributes.nodeSubstr(
+    node,
+    offset + wcwidth,
+  );
+
+  setNodeText(node, textContent);
+  setNodeText(afterNode, afterTextContent);
+
+  node.parentNode.insertBefore(afterNode, node.nextSibling);
+  node.parentNode.insertBefore(newNode, afterNode);
+};
+
+//hterm.Terminal.prototype.scheduleSyncCursorPosition_ = function() {
+//  if (this.timeouts_.syncCursor) return;
+//
+//  var self = this;
+//  this.timeouts_.syncCursor = requestAnimationFrame(function() {
+//    self.syncCursorPosition_();
+//    delete self.timeouts_.syncCursor;
+//  });
+//};
+
+hterm.VT.prototype.dispatch = function(type, code, parseState) {
+  var handler = hterm.VT[type][code];
+  if (!handler) {
+    if (this.warnUnimplemented)
+      console.warn('Unknown ' + type + ' code: ' + JSON.stringify(code));
+    return;
+  }
+
+  if (handler == hterm.VT.ignore) {
+    if (this.warnUnimplemented)
+      console.warn('Ignored ' + type + ' code: ' + JSON.stringify(code));
+    return;
+  }
+
+  if (parseState.subargs && !handler.supportsSubargs) {
+    if (this.warnUnimplemented)
+      console.warn(
+        'Ignored ' + type + ' code w/subargs: ' + JSON.stringify(code),
+      );
+    return;
+  }
+
+  if (type == 'CC1' && code > '\x7f' && !this.enable8BitControl) {
+    // It's kind of a hack to put this here, but...
+    //
+    // If we're dispatching a 'CC1' code, and it's got the eighth bit set,
+    // but we're not supposed to handle 8-bit codes?  Just ignore it.
+    //
+    // This prevents an errant (DCS, '\x90'), (OSC, '\x9d'), (PM, '\x9e') or
+    // (APC, '\x9f') from locking up the terminal waiting for its expected
+    // (ST, '\x9c') or (BEL, '\x07').
+    console.warn(
+      'Ignoring 8-bit control code: 0x' + code.charCodeAt(0).toString(16),
+    );
+    return;
+  }
+
+  if (!handler._binded) {
+    handler._binded = handler.bind(this);
+  }
+  handler._binded(parseState, code);
+  //  }
+  //  handler.apply(this, [parseState, code]);
+};
+
+hterm.Terminal.prototype.deleteLines = function(count) {
+  var cursor = this.saveCursor();
+
+  var top = cursor.row;
+  var bottom = this.getVTScrollBottom();
+
+  var maxCount = bottom - top + 1;
+  count = Math.min(count, maxCount);
+
+  var moveStart = bottom - count + 1;
+  if (count != maxCount) this.moveRows_(top, count, moveStart);
+
+  for (var i = 0; i < count; i++) {
+    this.setAbsoluteCursorPosition(moveStart + i, 0);
+    this.screen_.clearCursorRow_();
+  }
+
+  this.restoreCursor(cursor);
+  this.clearCursorOverflow();
+};
+
+hterm.Terminal.prototype.moveRows_ = function(fromIndex, count, toIndex) {
+  var ary = this.screen_.removeRows(fromIndex, count);
+  this.screen_.insertRows(toIndex, ary);
+
+  var start, end;
+  if (fromIndex < toIndex) {
+    start = fromIndex;
+    end = toIndex + count;
+  } else {
+    start = toIndex;
+    end = fromIndex + count;
+  }
+
+  this.renumberRows_(start, end);
+  this.scrollPort_.scheduleInvalidate();
+};
+
+hterm.Screen.prototype.clearCursorRow_ = function() {
+  this.cursorRowNode_.innerHTML = '';
+  this.cursorRowNode_.removeAttribute('line-overflow');
+  this.cursorOffset_ = 0;
+  this.cursorPosition.column = 0;
+  this.cursorPosition.overflow = false;
+
+  var node = document.createTextNode('');
+  this.cursorRowNode_.appendChild(node);
+  this.cursorNode_ = node;
+};
+
+hterm.Screen.prototype.clearCursorRow = function() {
+  this.cursorRowNode_.innerHTML = '';
+  this.cursorRowNode_.removeAttribute('line-overflow');
+  this.cursorOffset_ = 0;
+  this.cursorPosition.column = 0;
+  this.cursorPosition.overflow = false;
+
+  var text;
+  if (this.textAttributes.isDefault()) {
+    text = '';
+  } else {
+    text = lib.f.getWhitespace(this.columnCount_);
+  }
+
+  // We shouldn't honor inverse colors when clearing an area, to match
+  // xterm's back color erase behavior.
+  var inverse = this.textAttributes.inverse;
+  this.textAttributes.inverse = false;
+  this.textAttributes.syncColors();
+
+  var node = this.textAttributes.createContainer(text, text.length);
+  this.cursorRowNode_.appendChild(node);
+  this.cursorNode_ = node;
+
+  this.textAttributes.inverse = inverse;
+  this.textAttributes.syncColors();
 };
 
 lib.wc.strWidth = function(str) {
