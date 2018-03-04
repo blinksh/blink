@@ -906,6 +906,36 @@ hterm.Screen.prototype.clearCursorRow = function() {
   this.textAttributes.syncColors();
 };
 
+hterm.Terminal.prototype.appendRows_ = function(count) {
+  if (this.scrollbackRows_.length > 3000) {
+    this.scrollbackRows_.splice(0, 2000);
+  }
+  
+  var cursorRow = this.screen_.rowsArray.length;
+  var offset = this.scrollbackRows_.length + cursorRow;
+  for (var i = 0; i < count; i++) {
+    var row = this.document_.createElement('x-row');
+    row.appendChild(this.document_.createTextNode(''));
+    row.rowIndex = offset + i;
+    this.screen_.pushRow(row);
+  }
+  
+  var extraRows = this.screen_.rowsArray.length - this.screenSize.height;
+  if (extraRows > 0) {
+    var ary = this.screen_.shiftRows(extraRows);
+    Array.prototype.push.apply(this.scrollbackRows_, ary);
+    if (this.scrollPort_.isScrolledEnd)
+      this.scheduleScrollDown_();
+  }
+  
+  if (cursorRow >= this.screen_.rowsArray.length)
+    cursorRow = this.screen_.rowsArray.length - 1;
+  
+  this.setAbsoluteCursorPosition(cursorRow, 0);
+  
+};
+
+
 lib.wc.strWidth = function(str) {
   var width,
     rv = 0;
