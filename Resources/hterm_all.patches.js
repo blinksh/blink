@@ -428,8 +428,6 @@ hterm.Screen.prototype.deleteChars = function(count) {
   return rv;
 };
 
-var _refresher = document.createTextNode('');
-
 hterm.Screen.prototype.overwriteString = function(str, wcwidth = undefined) {
   var maxLength = this.columnCount_ - this.cursorPosition.column;
   if (!maxLength) return [str];
@@ -714,9 +712,6 @@ hterm.TextAttributes.nodeWidth = function(node) {
 };
 
 hterm.TextAttributes.nodeSubstr = function(node, start, width) {
-  if (!node) {
-    console.log('bla');
-  }
   var content = node.textContent;
 
   if (node.nodeType === Node.TEXT_NODE || node.asciiNode) {
