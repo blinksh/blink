@@ -636,7 +636,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if  (_termDelegate.termView.hasSelection) {
     [self _changeSelection:command];
   } else {
-    [_termDelegate write:command.input];
+    if (self.inputAccessoryView.hidden) {
+      return [_termDelegate write:command.input];
+    }
+    
+    NSString *text = command.input;
+    NSUInteger modifiers = [[_smartKeys view] modifiers];
+    if (modifiers == KbdCtrlModifier) {
+      [self _ctrlSeqWithInput:text];
+    } else if (modifiers == KbdAltModifier) {
+      [self _escSeqWithInput:text];
+    } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
+      [self _escCtrlSeqWithInput: text];
+    } else {
+      [_termDelegate write:text];
+    }
   }
 }
 
