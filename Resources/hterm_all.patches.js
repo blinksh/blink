@@ -206,23 +206,6 @@ hterm.ScrollPort.prototype.decorate = function(div) {
   this.resize();
 };
 
-//hterm.Options = function(opt_copy) {
-//  // All attributes in this class are public to allow easy access by the
-//  // terminal.
-//
-//  this.wraparound = opt_copy ? opt_copy.wraparound : true;
-//  this.reverseWraparound = opt_copy ? opt_copy.reverseWraparound : false;
-//  this.originMode = opt_copy ? opt_copy.originMode : false;
-//  // iOS terminal change: need autoCarriageReturn now that commands output info
-//  // this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : false;
-//  this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : true;
-//  this.cursorVisible = opt_copy ? opt_copy.cursorVisible : false;
-//  this.cursorBlink = opt_copy ? opt_copy.cursorBlink : false;
-//  this.insertMode = opt_copy ? opt_copy.insertMode : false;
-//  this.reverseVideo = opt_copy ? opt_copy.reverseVideo : false;
-//  this.bracketedPaste = opt_copy ? opt_copy.bracketedPaste : false;
-//};
-
 hterm.ScrollPort.prototype.focus = function() {
   //  this.iframe_.focus(); // Blink: No iframe anymore
   //this.screen_.focus();
