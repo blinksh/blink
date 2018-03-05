@@ -204,7 +204,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   return 0;
 }
 
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   BOOL mode = [_stream.control rawMode];
   [_stream.control setRawMode:YES];

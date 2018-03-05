@@ -160,7 +160,7 @@ static void kbd_callback(const char *name, int name_len,
   }
 }
 
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   // Options
   // port -p

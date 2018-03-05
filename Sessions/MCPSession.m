@@ -42,6 +42,7 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
+#import "SystemSession.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
 #import "BKDefaults.h"
@@ -305,14 +306,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   return [docsPath stringByAppendingPathComponent:@"history.txt"];
 }
 
-- (void)_setAutoCarriageReturn:(BOOL)state
-{
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [_stream.control.termView setAutoCarriageReturn:state];
-  });
-}
-
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     [self.stream.control setRawMode:YES];
@@ -347,7 +341,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
-      [self _setAutoCarriageReturn:NO];
       linenoiseHistoryAdd(line);
       linenoiseHistorySave(history);
 
@@ -388,27 +381,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
       } else if ([cmd isEqualToString:@"clear"]) {
         [self _execClear];
       } else {
-        // Is it one of the shell commands?
-        // Re-evalute column number before each command
-        [self _setAutoCarriageReturn:YES];
-        NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
-        setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
-        char columnCountString[10];
-        sprintf(columnCountString, "%i", self.stream.sz->ws_col);
-        setenv("COLUMNS", columnCountString, 1); // force rewrite of value
-        // Redirect all output to console:
-        FILE* saved_out = stdout;
-        FILE* saved_err = stderr;
-        stdin = _stream.in;
-        stdout = _stream.out;
-        stderr = stdout;
-        ios_system(cmdline.UTF8String);
-        // get all output back:
-        stdout = saved_out;
-        stderr = saved_err;
-        stdin = _stream.in;
-        unsetenv("SSL_CERT_FILE");
-//        [self _setAutoCarriageReturn:NO];
+        [self _runSystemCommandWithArgs:cmdline];
       }
     }
 
@@ -530,6 +503,17 @@ void completion(const char *command, linenoiseCompletions *lc) {
   _childSession = nil;
 }
 
+- (void)_runSystemCommandWithArgs:(NSString *)args
+{
+  self.sessionParameters.childSessionParameters = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SystemSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"system";
+  [_childSession executeAttachedWithArgs:args];
+  _childSession = nil;
+}
+
+
 - (void)_runSSHWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
@@ -636,11 +620,10 @@ void completion(const char *command, linenoiseCompletions *lc) {
 - (BOOL)handleControl:(NSString *)control
 {
   if (_childSession) {
-    return NO;
+    return [_childSession handleControl:control];
   }
 
   if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
-    ios_kill();
     return YES;
   }
 

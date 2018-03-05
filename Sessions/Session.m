@@ -69,7 +69,7 @@ void *run_session(void *params)
   Session *session = (Session *)CFBridgingRelease(p->session);
   char **argv;
   int argc = makeargs(p->args, &argv);
-  [session main:argc argv:argv];
+  [session main:argc argv:argv args: p->args];
   free(argv);
   free(params);
   [session.stream close];
@@ -165,7 +165,7 @@ void *run_session(void *params)
   return params;
 }
 
-- (int)main:(int)argc argv:(char **)argv {
+- (int)main:(int)argc argv:(char **)argv args:(char *)args {
   return 0;
 }
 
