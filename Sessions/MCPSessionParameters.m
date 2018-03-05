@@ -42,6 +42,8 @@ NSString * const FontNameKey = @"fontName";
 NSString * const ThemeNameKey = @"themeName";
 NSString * const EnableBoldKey = @"enableBold";
 NSString * const BoldAsBrightKey = @"boldAsBright";
+NSString * const ViewWidth = @"viewWidth";
+NSString * const ViewHeight = @"viewHeight";
 
 @implementation MCPSessionParameters
 
@@ -60,6 +62,8 @@ NSString * const BoldAsBrightKey = @"boldAsBright";
     self.themeName = [aDecoder decodeObjectOfClass:[NSString class] forKey:ThemeNameKey];
     self.enableBold = [aDecoder decodeIntegerForKey:EnableBoldKey];
     self.boldAsBright = [aDecoder decodeBoolForKey:BoldAsBrightKey];
+    self.viewWidth = [aDecoder decodeFloatForKey:ViewWidth];
+    self.viewHeight = [aDecoder decodeFloatForKey:ViewHeight];
   }
   
   return self;
@@ -77,6 +81,8 @@ NSString * const BoldAsBrightKey = @"boldAsBright";
   [coder encodeObject:_themeName forKey:ThemeNameKey];
   [coder encodeInteger:_enableBold forKey:EnableBoldKey];
   [coder encodeBool:_boldAsBright forKey:BoldAsBrightKey];
+  [coder encodeFloat:_viewWidth forKey:ViewWidth];
+  [coder encodeFloat:_viewHeight forKey:ViewHeight];
 }
 
 + (BOOL)supportsSecureCoding
