@@ -486,10 +486,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
   } else {
     NSUInteger modifiers = [[_smartKeys view] modifiers];
-    if (modifiers & KbdCtrlModifier) {
-      [_termDelegate write:[CC CTRL:text]];
-    } else if (modifiers & KbdAltModifier) {
-      [_termDelegate write:[CC ESC:text]];
+    if (modifiers == KbdCtrlModifier) {
+      [self _ctrlSeqWithInput:text];
+    } else if (modifiers == KbdAltModifier) {
+      [self _escSeqWithInput:text];
+    } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
+      [self _escCtrlSeqWithInput: text];
     } else {
       [_termDelegate write:[CC KEY:text MOD:0 RAW:_raw]];
     }
@@ -584,13 +586,18 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _ctrlSeqWithInput:cmd.input];
 }
 
+- (void)_escCtrlSeqWithInput:(NSString *)input
+{
+  NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:input]];
+  [_termDelegate write:seq];
+}
+
 - (void)escCtrlSeq:(UIKeyCommand *)cmd
 {
   if (_termDelegate.termView.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl | UIKeyModifierAlternate];
   } else {
-    NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:cmd.input]];
-    [_termDelegate write:seq];
+    [self _escCtrlSeqWithInput:cmd.input];
   }
 }
 
