@@ -391,6 +391,8 @@ void completion(const char *command, linenoiseCompletions *lc) {
         // Is it one of the shell commands?
         // Re-evalute column number before each command
         [self _setAutoCarriageReturn:YES];
+        NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
+        setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
         char columnCountString[10];
         sprintf(columnCountString, "%i", self.stream.sz->ws_col);
         setenv("COLUMNS", columnCountString, 1); // force rewrite of value
@@ -405,6 +407,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
         stdout = saved_out;
         stderr = saved_err;
         stdin = _stream.in;
+        unsetenv("SSL_CERT_FILE");
 //        [self _setAutoCarriageReturn:NO];
       }
     }

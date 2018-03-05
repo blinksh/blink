@@ -185,6 +185,7 @@
 		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
@@ -506,6 +507,7 @@
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
+		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
@@ -628,6 +630,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D209465B204D3FC5003C4F72 /* cacert.pem */,
 				85A34303200A837A009324F1 /* webfontloader.js */,
 				0732F04B1D062B9A00AB5438 /* term.html */,
 				D2496F402003941B00E75FE9 /* term.js */,
@@ -1293,6 +1296,7 @@
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
+				D2094662204D3FC5003C4F72 /* cacert.pem in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
