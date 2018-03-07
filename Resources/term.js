@@ -119,7 +119,30 @@ function term_write(data) {
   t.interpret(data);
 }
 
-const _utf8TextDecoder = new TextDecoder('utf8');
+
+var term_write_b64 = null;
+
+if (typeof TextDecoder !== 'undefined') {
+  var _utf8TextDecoder = new TextDecoder('utf8');
+  term_write_b64 = function term_write_b64_TextDecoder(b64str) {
+    var bytes = base64js.toByteArray(b64str); // b64_to_uint8_array(b64str);
+    var data = _utf8TextDecoder.decode(bytes);
+    t.interpret(data);
+  }
+} else {
+  // ios 10 support
+  var _fileReader = new FileReader();
+  var _blobOptions = {type: 'text/plain; charset=utf-8'};
+  
+  _fileReader.onload = function () {
+    t.interpret(_fileReader.result);
+  };
+  
+  term_write_b64 = function term_write_b64_blob(b64str) {
+    var bytes = base64js.toByteArray(b64str); // b64_to_uint8_array(b64str);
+    _fileReader.readAsText(new Blob([bytes], _blobOptions));
+  }
+}
 
 function b64_to_uint8_array(b64Str) {
   var s = atob(b64Str);
@@ -131,11 +154,6 @@ function b64_to_uint8_array(b64Str) {
   return res;
 }
 
-function term_write_b64(b64str) {
-  var bytes = base64js.toByteArray(b64str); // b64_to_uint8_array(b64str);
-  var data = _utf8TextDecoder.decode(bytes);
-  t.interpret(data);
-}
 
 function term_clear() {
   t.clear();
