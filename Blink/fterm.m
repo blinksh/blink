@@ -139,16 +139,19 @@ static int closefn(void *handler)
   if (_splitChar) {
     NSUInteger outLength = len - [_splitChar length];
     output = [[NSString alloc] initWithBytes:[data bytes] length:outLength encoding:NSUTF8StringEncoding];
-    if (!output) {
-      output = [[NSString alloc] initWithBytes:[data bytes] length:outLength encoding:NSASCIIStringEncoding];
+    if (output) {
+      [_wv write:output];
+    } else {
+      [_wv writeB64:[data subdataWithRange:NSMakeRange(0, outLength)]];
     }
-  } else {
-    output = [[NSString alloc] initWithBytes:[data bytes] length:len encoding:NSUTF8StringEncoding];
-    if (!output) {
-      output = [[NSString alloc] initWithBytes:[data bytes] length:len encoding:NSASCIIStringEncoding];
-    }
+    return;
   }
-
-  [_wv write:output];
+  
+  output = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+  if (output) {
+    [_wv write:output];
+  } else {
+    [_wv writeB64:data];
+  }
 }
 @end

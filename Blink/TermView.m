@@ -85,6 +85,7 @@
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
+  NSMutableData *_jsDataBuffer;
 }
 
 
@@ -96,6 +97,7 @@
     
     _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
     _jsBuffer = [[NSMutableString alloc] init];
+    _jsDataBuffer = [[NSMutableData alloc] init];
 
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
@@ -264,6 +266,15 @@
   });
 }
 
+- (void)writeB64:(NSData *)data
+{
+  dispatch_async(_jsQueue, ^{
+    NSString *jsScript = term_writeB64(data);
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [_webView evaluateJavaScript: jsScript completionHandler:nil];
+    });
+  });
+}
 
 //  Since TermView is a WKScriptMessageHandler, it must implement the userContentController:didReceiveScriptMessage method. This is the method that is triggered each time 'interOp' is sent a message from the JavaScript code.
 - (void)userContentController:(WKUserContentController *)userContentController

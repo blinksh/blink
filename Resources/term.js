@@ -119,6 +119,24 @@ function term_write(data) {
   t.interpret(data);
 }
 
+const _utf8TextDecoder = new TextDecoder('utf8');
+
+function b64_to_uint8_array(b64Str) {
+  var s = atob(b64Str);
+  var len = s.length;
+  var res = new Uint8Array(len);
+  for (var i = 0; i < len; i++) {
+    res[i] = s.charCodeAt(i);
+  }
+  return res;
+}
+
+function term_write_b64(b64str) {
+  var bytes = base64js.toByteArray(b64str); // b64_to_uint8_array(b64str);
+  var data = _utf8TextDecoder.decode(bytes);
+  t.interpret(data);
+}
+
 function term_clear() {
   t.clear();
 }
