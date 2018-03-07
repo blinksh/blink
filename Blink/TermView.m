@@ -83,7 +83,6 @@
   BOOL _focused;
   
   BOOL _jsIsBusy;
-  BOOL _allowBuffering;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
 }
@@ -97,7 +96,6 @@
     
     _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
     _jsBuffer = [[NSMutableString alloc] init];
-    _allowBuffering = YES;
 
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
@@ -241,43 +239,51 @@
   dispatch_async(_jsQueue, ^{
     [_jsBuffer appendString:data];
     
-    if (_jsIsBusy && !_allowBuffering) {
+    if (_jsIsBusy) {
+      return;
+    }
+
+    NSString * buffer = _jsBuffer;
+    if (buffer.length == 0) {
       return;
     }
   
     _jsIsBusy = YES;
-    
-    NSString * buffer = _jsBuffer;
     _jsBuffer = [[NSMutableString alloc] init];
     
     NSString *jsScript = term_write(buffer);
-    
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_webView evaluateJavaScript: jsScript completionHandler:^(id result, NSError *error) {
-        dispatch_async(_jsQueue, ^{
-          _jsIsBusy = NO;
-          if (_jsBuffer.length > 0) {
-            [self write:@""];
-          }
-        });
-      }];
-    });
-    
+    [self _evalJSScript:jsScript];
   });
 }
 
 - (void)writeB64:(NSData *)data
 {
   dispatch_async(_jsQueue, ^{
-    _allowBuffering = NO;
+    _jsIsBusy = YES;
+
+    NSString * buffer = _jsBuffer;
+    _jsBuffer = [[NSMutableString alloc] init];
+    
     NSString *jsScript = term_writeB64(data);
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [_webView evaluateJavaScript: jsScript completionHandler:^(id result, NSError *error) {
-        dispatch_async(_jsQueue, ^{
-          _allowBuffering = YES;
-        });
-      }];
-    });
+    
+    if (buffer.length > 0) {
+      jsScript = [term_write(buffer) stringByAppendingString:jsScript];
+    }
+    [self _evalJSScript:jsScript];
+  });
+}
+
+- (void)_evalJSScript:(NSString *)jsScript
+{
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [_webView evaluateJavaScript: jsScript completionHandler:^(id result, NSError *error) {
+      dispatch_async(_jsQueue, ^{
+        _jsIsBusy = NO;
+        if (_jsBuffer.length > 0) {
+          [self write:@""];
+        }
+      });
+    }];
   });
 }
 
