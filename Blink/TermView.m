@@ -268,7 +268,7 @@
 
 - (void)writeB64:(NSData *)data
 {
-  dispatch_barrier_async(_jsQueue, ^{
+  dispatch_async(_jsQueue, ^{
     NSString *jsScript = term_writeB64(data);
     dispatch_async(dispatch_get_main_queue(), ^{
       [_webView evaluateJavaScript: jsScript completionHandler:nil];
