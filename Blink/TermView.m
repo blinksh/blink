@@ -83,9 +83,9 @@
   BOOL _focused;
   
   BOOL _jsIsBusy;
+  BOOL _allowBuffering;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
-  NSMutableData *_jsDataBuffer;
 }
 
 
@@ -97,7 +97,7 @@
     
     _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
     _jsBuffer = [[NSMutableString alloc] init];
-    _jsDataBuffer = [[NSMutableData alloc] init];
+    _allowBuffering = YES;
 
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
@@ -241,7 +241,7 @@
   dispatch_async(_jsQueue, ^{
     [_jsBuffer appendString:data];
     
-    if (_jsIsBusy) {
+    if (_jsIsBusy && !_allowBuffering) {
       return;
     }
   
@@ -269,9 +269,14 @@
 - (void)writeB64:(NSData *)data
 {
   dispatch_async(_jsQueue, ^{
+    _allowBuffering = NO;
     NSString *jsScript = term_writeB64(data);
     dispatch_async(dispatch_get_main_queue(), ^{
-      [_webView evaluateJavaScript: jsScript completionHandler:nil];
+      [_webView evaluateJavaScript: jsScript completionHandler:^(id result, NSError *error) {
+        dispatch_async(_jsQueue, ^{
+          _allowBuffering = YES;
+        });
+      }];
     });
   });
 }
