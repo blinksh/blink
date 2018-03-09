@@ -108,8 +108,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     return;
   }
   
-  return;
-  
   // May be we have incomplete utf8 seq at the end;
   const char *buffer = [nsData bytes];
   size_t len = nsData.length;
