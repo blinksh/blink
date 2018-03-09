@@ -143,8 +143,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 {
   TermInput *input = _termDevice.input;
   _termDevice = [[TermDevice alloc] init];
-  _termDevice.sz->ws_col = _sessionParameters.cols;
-  _termDevice.sz->ws_row = _sessionParameters.rows;
+  _termDevice->win.ws_col = _sessionParameters.cols;
+  _termDevice->win.ws_row = _sessionParameters.rows;
 
   [_termDevice attachView:_termView];
   [_termDevice attachInput:input];
@@ -156,8 +156,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
 {
-  _termDevice.sz->ws_row = rows.shortValue;
-  _termDevice.sz->ws_col = cols.shortValue;
+  _termDevice->win.ws_row = rows.shortValue;
+  _termDevice->win.ws_col = cols.shortValue;
 
   _sessionParameters.rows = rows.shortValue;
   _sessionParameters.cols = cols.shortValue;

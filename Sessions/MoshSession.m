@@ -206,8 +206,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
-  BOOL mode = [self.device rawMode];
-  [self.device setRawMode:YES];
+  BOOL mode = [_device rawMode];
+  [_device setRawMode:YES];
 
   if (self.sessionParameters.encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
@@ -220,7 +220,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
   
   mosh_main(
-            self.stream.in, self.stream.out, self.device.sz,
+            _stream.in, _stream.out, &_device->win,
             &__state_callback, (__bridge void *) self,
             [self.sessionParameters.ip UTF8String],
             [self.sessionParameters.port UTF8String],
@@ -230,10 +230,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             self.sessionParameters.encodedState.length
             );
   
-  [self.device setRawMode:mode];
+  [_device setRawMode:mode];
 
-  fprintf(self.stream.out, "\r\nMosh session finished!\r\n");
-  fprintf(self.stream.out, "\r\n");
+  fprintf(_stream.out, "\r\nMosh session finished!\r\n");
+  fprintf(_stream.out, "\r\n");
 
   return 0;
 }
@@ -294,7 +294,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *sshCmd = [sshArgs componentsJoinedByString:@" "];
   [self debugMsg:sshCmd];
 
-  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:self.device andParametes:nil];
+  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParametes:nil];
 
   int poutput[2];
   pipe(poutput);
@@ -334,7 +334,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       self.sessionParameters.key = [line substringWithRange:matchRange];
       break;
     } else {
-      fwrite(buf, 1, n, self.stream.out);
+      fwrite(buf, 1, n, _stream.out);
     }
   }
 
@@ -352,13 +352,13 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 - (void)debugMsg:(NSString *)msg
 {
   if (_debug) {
-    fprintf(self.stream.out, "MoshClient:DEBUG:%s\r\n", [msg UTF8String]);
+    fprintf(_stream.out, "MoshClient:DEBUG:%s\r\n", [msg UTF8String]);
   }
 }
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(self.stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
   return -1;
 }
 
@@ -376,7 +376,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   _lock = [[NSLock alloc] init];
   [_lock lock];
-  [self.device write:@"\x1e\x1a"];
+  [_device write:@"\x1e\x1a"];
   NSTimeInterval timeout = 2;
   NSDate *d = [[NSDate date] dateByAddingTimeInterval:timeout];
   if ([_lock lockBeforeDate: d]) {

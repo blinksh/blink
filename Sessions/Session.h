@@ -53,11 +53,13 @@ typedef struct SessionParams {
 
 @interface Session : NSObject {
   pthread_t _tid;
+  TermStream *_stream;
+  TermDevice *_device;
 }
 
 @property (strong, atomic) SessionParameters *sessionParameters;
-@property TermStream *stream;
-@property TermDevice *device;
+@property (strong) TermStream *stream;
+@property (strong) TermDevice *device;
 
 @property (weak) NSObject<SessionDelegate>* delegate;
 

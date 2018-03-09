@@ -26,4 +26,17 @@
   }
 }
 
+- (instancetype) dublicate {
+  TermStream *dupe = [[TermStream alloc] init];
+  dupe.in = fdopen(dup(fileno(_in)), "r");
+
+  // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
+  dupe.out = fdopen(dup(fileno(_out)), "w");
+  dupe.err = fdopen(dup(fileno(_err)), "w");
+  setvbuf(dupe.out, NULL, _IONBF, 0);
+  setvbuf(dupe.err, NULL, _IONBF, 0);
+
+  return dupe;
+}
+
 @end

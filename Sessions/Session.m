@@ -87,25 +87,11 @@ void *run_session(void *params)
 
   if (self) {
     _device = device;
-    _stream = [self duplicateStream:_device.stream];
+    _stream = [_device.stream dublicate];
     _sessionParameters = parameters;
   }
 
   return self;
-}
-
-- (TermStream *)duplicateStream:(TermStream *)stream
-{
-  TermStream *dupe = [[TermStream alloc] init];
-  dupe.in = fdopen(dup(fileno(stream.in)), "r");
-  
-  // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
-  dupe.out = fdopen(dup(fileno(stream.out)), "w");
-  dupe.err = fdopen(dup(fileno(stream.err)), "w");
-  setvbuf(dupe.out, NULL, _IONBF, 0);
-  setvbuf(dupe.err, NULL, _IONBF, 0);
-
-  return dupe;
 }
 
 - (void)executeWithArgs:(NSString *)args

@@ -6,11 +6,13 @@
 #include <sys/ioctl.h>
 
 @interface TermDevice : NSObject
+{
+  @public struct winsize win;
+}
 
 @property (readonly) TermStream *stream;
 @property (readonly) TermView *view;
 @property (readonly) TermInput *input;
-@property (readonly) struct winsize *sz;
 @property (nonatomic) BOOL rawMode;
 
 - (void)attachInput:(TermInput *)termInput;

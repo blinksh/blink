@@ -16,4 +16,6 @@
 
 - (void)close;
 
+- (instancetype)dublicate;
+
 @end

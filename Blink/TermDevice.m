@@ -70,10 +70,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     setvbuf(_stream.err, NULL, _IONBF, 0);
     setvbuf(_stream.in, NULL, _IONBF, 0);
     
-    // TODO: Can we take the size outside the stream too?
-    // Although in some way the size should belong to the pty.
-    _sz = malloc(sizeof(struct winsize));
-    
     // Create channel with a callback
     
     _queue = dispatch_queue_create("blink.TermDevice", NULL);
@@ -90,7 +86,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
                      ^(bool done, dispatch_data_t data, int error) {
                        [self _parseStream:data];
                      });
-    
   }
   
   return self;
@@ -112,6 +107,8 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [_view write:output];
     return;
   }
+  
+  return;
   
   // May be we have incomplete utf8 seq at the end;
   const char *buffer = [nsData bytes];
@@ -150,13 +147,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)close
 {
-  // TODO: Close the channel
   // TODO: Closing the streams!! But they are duplicated!!!!
   [_stream close];
-  if (_sz) {
-    free(_sz);
-    _sz = NULL;
-  }
+  dispatch_io_close(_channel, DISPATCH_IO_STOP);
 }
 
 - (void)attachView:(TermView *)termView
