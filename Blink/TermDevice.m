@@ -114,8 +114,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   }
   
   // May be we have incomplete utf8 seq at the end;
+  const char *buffer = [nsData bytes];
   size_t len = nsData.length;
-  int incompleteSize = __sizeOfIncompleteSequenceAtTheEnd([nsData bytes], len);
+  int incompleteSize = __sizeOfIncompleteSequenceAtTheEnd(buffer, len);
   
   if (incompleteSize == 0) {
     // No, we didn't find any incomplete seq at the end.
@@ -129,15 +130,16 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   // We stripped incomplete seq.
   // Let's try to create string again with range
-  nsData = [nsData subdataWithRange:NSMakeRange(0, len - incompleteSize)];
-  output = [[NSString alloc] initWithData:nsData encoding:NSUTF8StringEncoding];
+  
+  output = [[NSString alloc] initWithBytes:buffer length:len - incompleteSize encoding:NSUTF8StringEncoding];
   if (output) {
     // Good seq. Write it as string.
     [_view write:output];
-  } else {
-    // Nope, fallback to base64
-    [_view writeB64:nsData];
+    return;
   }
+  
+  // Nope, fallback to base64
+  [_view writeB64:[nsData subdataWithRange:NSMakeRange(0, len - incompleteSize)]];
 }
 
 - (void)write:(NSString *)input
