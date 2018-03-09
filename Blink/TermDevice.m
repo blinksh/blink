@@ -1,7 +1,39 @@
 
 #import "TermDevice.h"
 
+static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
+  // Find the first UTF mark and compare with the iterator.
+  int i = 1;
+  size_t count = ((len >= 3) ? 3 : len);
+  for (; i <= count; i++) {
+    unsigned char c = buffer[len - i];
+    
+    if (i == 1 && (c & 0x80) == 0) {
+      // Single simple character, all good
+      return 0;
+    }
+    
+    // 10XXX XXXX
+    if (c >> 6 == 0x02) {
+      continue;
+    }
+    
+    // Check if the character corresponds to the sequence by ORing with it
+    if ((i == 2 && ((c | 0xDF) == 0xDF)) || // 110X XXXX 1 1101 1111
+        (i == 3 && ((c | 0xEF) == 0xEF)) || // 1110 XXXX 2 1110 1111
+        (i == 4 && ((c | 0xF7) == 0xF7))) { // 1111 0XXX 3 1111 0111
+      // Complete sequence
+      return 0;
+    } else {
+      return i;
+    }
+  }
+  return 0;
+}
 
+
+@interface TermDevice () <TerminalDelegate>
+@end
 
 // The TermStream is the PTYDevice
 // They might actually be different. The Device listens, the stream is lower level.
@@ -13,31 +45,9 @@
   int _pinput[2];
   int _poutput[2];
   int _perror[2];
-  struct winsize *_termsz;
   dispatch_io_t _channel;
   dispatch_queue_t _queue;
   dispatch_data_t _splitChar;
-  TermController *_control;
-}
-
-// Creates descriptors
-// NO. This should be part of the control. Opens / runs a session on a pty device
-//   When creating the session, we pass it the descriptors
-// Manages master / slave transparently between the descriptors.
-// Replaces fterm
-// Signals here too instead of in TermController? Signals might depend on the Session though. How is this done in real UNIX? How is the signal sent to the process if the pty knows nothing?
-
-// TODO: Temporary fix, get rid of the control in the Stream?
-// This smells like the Device will have to implement this functions, wrapping the Widget. Wait and see...
-- (void)setControl:(TermController *)control
-{
-  _control = control;
-  _stream.control = control;
-}
-
-- (TermController *)control
-{
-  return _control;
 }
 
 - (id)init
@@ -45,6 +55,7 @@
   self = [super init];
   
   if (self) {
+    
     pipe(_pinput);
     pipe(_poutput);
     pipe(_perror);
@@ -61,8 +72,7 @@
     
     // TODO: Can we take the size outside the stream too?
     // Although in some way the size should belong to the pty.
-    _termsz = malloc(sizeof(struct winsize));
-    _stream.sz = _termsz;
+    _sz = malloc(sizeof(struct winsize));
     
     // Create channel with a callback
     
@@ -99,62 +109,34 @@
   
   // Best case. We got good utf8 seq.
   if (output) {
-    [_control.termView write:output];
+    [_view write:output];
     return;
   }
   
   // May be we have incomplete utf8 seq at the end;
+  size_t len = nsData.length;
+  int incompleteSize = __sizeOfIncompleteSequenceAtTheEnd([nsData bytes], len);
   
-  size_t len = dispatch_data_get_size(data);
-  const char *buffer = [nsData bytes];
-
-  // Find the first UTF mark and compare with the iterator.
-  int i = 1;
-  for (; i <= ((len >= 3) ? 3 : len); i++) {
-    unsigned char c = buffer[len - i];
-    
-    if (i == 1 && (c & 0x80) == 0) {
-      // Single simple character, all good
-      i=0;
-      break;
-    }
-    
-    // 10XXX XXXX
-    if (c >> 6 == 0x02) {
-      continue;
-    }
-    
-    // Check if the character corresponds to the sequence by ORing with it
-    if ((i == 2 && ((c | 0xDF) == 0xDF)) || // 110X XXXX 1 1101 1111
-        (i == 3 && ((c | 0xEF) == 0xEF)) || // 1110 XXXX 2 1110 1111
-        (i == 4 && ((c | 0xF7) == 0xF7))) { // 1111 0XXX 3 1111 0111
-      // Complete sequence
-      i=0;
-      break;
-    } else {
-      // Save splitted sequences
-      _splitChar = dispatch_data_create_subrange(data, len - i, i);
-      break;
-    }
-  }
-  
-  // No, we didn't find any incomplete seq at the end.
-  // pass base64 data. JS will heal it.
-  if (!_splitChar) {
-    [_control.termView writeB64:nsData];
+  if (incompleteSize == 0) {
+    // No, we didn't find any incomplete seq at the end.
+    // We have wrong seq in the middle. Pass base64 data. JS will heal it.
+    [_view writeB64:nsData];
     return;
   }
+
+  // Save splitted sequences
+  _splitChar = dispatch_data_create_subrange(data, len - incompleteSize, incompleteSize);
   
   // We stripped incomplete seq.
   // Let's try to create string again with range
-  nsData = [nsData subdataWithRange:NSMakeRange(0, len - i)];
+  nsData = [nsData subdataWithRange:NSMakeRange(0, len - incompleteSize)];
   output = [[NSString alloc] initWithData:nsData encoding:NSUTF8StringEncoding];
   if (output) {
     // Good seq. Write it as string.
-    [_control.termView write:output];
+    [_view write:output];
   } else {
     // Nope, fallback to base64
-    [_control.termView writeB64:nsData];
+    [_view writeB64:nsData];
   }
 }
 
@@ -169,19 +151,58 @@
   // TODO: Close the channel
   // TODO: Closing the streams!! But they are duplicated!!!!
   [_stream close];
-//  if (_pinput) {
-//    fclose(_pinput);
-//  }
-//  if (_poutput) {
-//    fclose(_poutput);
-//  }
-//  if (_perror) {
-//    fclose(_perror);
-//  }
-  if (_termsz) {
-    free(_termsz);
-    _termsz = NULL;
+  if (_sz) {
+    free(_sz);
+    _sz = NULL;
   }
+}
+
+- (void)attachView:(TermView *)termView
+{
+  _view = termView;
+//  _view.termDelegate = self;
+}
+
+- (void)setRawMode:(BOOL)rawMode
+{
+  _rawMode = rawMode;
+  _input.raw = rawMode;
+}
+
+- (void)attachInput:(TermInput *)termInput
+{
+  _input = termInput;
+  if (!_input) {
+    [_view blur];
+  }
+  
+  if (_input.device != self) {
+    [_input.device attachInput:nil];
+    [_input reset];
+  }
+  
+  _input.raw = _rawMode;
+  _input.device = self;
+  
+  if ([_input isFirstResponder]) {
+    [_view focus];
+  } else {
+    [_view blur];
+  }
+}
+
+- (void)focus {
+  [_view focus];
+  if (![_view.window isKeyWindow]) {
+    [_view.window makeKeyWindow];
+  }
+  if (![_input isFirstResponder]) {
+    [_input becomeFirstResponder];
+  }
+}
+
+- (void)blur {
+  [_view blur];
 }
 
 - (void)dealloc

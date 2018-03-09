@@ -203,7 +203,7 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)setTitle
 {
-  fprintf(_stream.out, "\033]0;blink\007");
+  fprintf(self.stream.out, "\033]0;blink\007");
 }
 
 + (void)initialize
@@ -236,7 +236,7 @@ char* hints(const char * line, int *color, int *bold)
 - (int)main:(int)argc argv:(char **)argv
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
-    _childSession = [[MoshSession alloc] initWithStream:_stream
+    _childSession = [[MoshSession alloc] initWithDevice: self.device
                                            andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
@@ -248,7 +248,7 @@ char* hints(const char * line, int *color, int *bold)
 
   
 
-  [self.stream.control setRawMode:NO];
+  [self.device setRawMode:NO];
 
   linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,
                                 linenoiseUtf8NextCharLen,
@@ -311,7 +311,7 @@ char* hints(const char * line, int *color, int *bold)
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
-    [self.stream.control setRawMode:NO];
+    [self.device setRawMode:NO];
   }
 
   [self out:"Bye!"];
@@ -321,7 +321,7 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)_execClear
 {
-  [self.stream.control write:@"\xC"];
+  [self.device write:@"\xC"];
 }
 
 - (void)_execHistoryWithArgs:(NSString *)args
@@ -390,7 +390,8 @@ char* hints(const char * line, int *color, int *bold)
     dispatch_sync(dispatch_get_main_queue(), ^{
       [BKDefaults setThemeName:theme.name];
       [BKDefaults saveDefaults];
-      [_stream.control reload];
+      // TODO: reload device?
+//      [_stream.control reload];
     });
     return YES;
   }
@@ -411,7 +412,7 @@ char* hints(const char * line, int *color, int *bold)
 - (void)_runSSHCopyIDWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
-  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SSHCopyIDSession alloc] initWithDevice:self.device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"sshcopyid";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
@@ -422,7 +423,7 @@ char* hints(const char * line, int *color, int *bold)
   [self.delegate indexCommand:args];
   self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
   self.sessionParameters.childSessionType = @"mosh";
-  _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[MoshSession alloc] initWithDevice:self.device andParametes:self.sessionParameters.childSessionParameters];
   [_childSession executeAttachedWithArgs:args];
   
   _childSession = nil;
@@ -432,7 +433,7 @@ char* hints(const char * line, int *color, int *bold)
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SSHSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SSHSession alloc] initWithDevice:self.device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
@@ -442,7 +443,7 @@ char* hints(const char * line, int *color, int *bold)
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SSHSession2 alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SSHSession2 alloc] initWithDevice:self.device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"ssh2";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
@@ -503,17 +504,17 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)out:(const char *)str
 {
-  fprintf(_stream.out, "%s\r\n", str);
+  fprintf(self.stream.out, "%s\r\n", str);
 }
 
 - (char *)linenoise:(char *)prompt
 {
   char buf[MCP_MAX_LINE];
-  if (_stream.in == NULL) {
+  if (self.stream.in == NULL) {
     return nil;
   }
 
-  int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, _stream.sz);
+  int count = linenoiseEdit(fileno(self.stream.in), self.stream.out, buf, MCP_MAX_LINE, prompt, self.device.sz);
   if (count == -1) {
     return nil;
   }
@@ -531,9 +532,8 @@ char* hints(const char * line, int *color, int *bold)
   [_childSession kill];
 
   // Close stdin to end the linenoise loop.
-  if (_stream.in) {
-    fclose(_stream.in);
-    _stream.in = NULL;
+  if (self.stream.in) {
+    fclose(self.stream.in);
   }
 }
 

@@ -56,7 +56,7 @@ static const char *usage_format =
   }
   const char *public_key = [[pkcard publicKey] UTF8String];
 
-  SSHSession *sshSession = [[SSHSession alloc] initWithStream:_stream andParametes:nil];
+  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:self.device andParametes:nil];
   
   // Pipe public key
   int pinput[2];
@@ -79,7 +79,7 @@ static const char *usage_format =
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(self.stream.out, "%s\r\n", [msg UTF8String]);
   return -1;
 }
 

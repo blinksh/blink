@@ -74,40 +74,20 @@ void *run_session(void *params)
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
   session.stream = nil;
+  session.device = nil;
 
   return NULL;
 }
 
-@implementation TermStream
-
-- (void)close
-{
-  if (_in) {
-    fclose(_in);
-    _in = NULL;
-  }
-  if (_out) {
-    fclose(_out);
-    _out = NULL;
-  }
-  if (_err) {
-    fclose(_err);
-    _err = NULL;
-  }
-  _sz = NULL;
-  _control = nil;
-}
-
-@end
-
 @implementation Session
 
-- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters
+- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
 {
   self = [super init];
 
   if (self) {
-    _stream = [self duplicateStream:stream];
+    _device = device;
+    _stream = [self duplicateStream:_device.stream];
     _sessionParameters = parameters;
   }
 
@@ -124,9 +104,6 @@ void *run_session(void *params)
   dupe.err = fdopen(dup(fileno(stream.err)), "w");
   setvbuf(dupe.out, NULL, _IONBF, 0);
   setvbuf(dupe.err, NULL, _IONBF, 0);
-  
-  dupe.control = stream.control;
-  dupe.sz = stream.sz;
 
   return dupe;
 }

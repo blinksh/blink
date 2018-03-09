@@ -35,7 +35,8 @@
 #import "MCPSession.h"
 #import "Session.h"
 #import "StateManager.h"
-#import "TermDevice.h"
+#import "TermView.h"
+
 
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
@@ -50,6 +51,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   BOOL _isReloading;
   NSInteger _fontSizeBeforeScaling;
   TermDevice *_termDevice;
+  TermView *_termView;
 }
 
 - (void)loadView
@@ -64,18 +66,13 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termView.restorationIdentifier = @"TermView";
   _termView.termDelegate = self;
   
+  _termDevice = [[TermDevice alloc] init];
+  
   self.view = _termView;
 }
 
 - (NSString *)title {
-  return _termView.title;
-}
-
-- (void)write:(NSString *)input
-{
-  // Trasform the string and write it, with the correct sequence
-  // TODO: Write to the device, and let it handle whatever it has to handle in the right encoding, etc...
-  [_termDevice write:input];
+  return _termDevice.view.title;
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
@@ -115,7 +112,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   NSString *cmdLine = [activity.userInfo objectForKey:BKUserActivityCommandLineKey];
   if (cmdLine) {
     // TODO: investigate lost first char on iPad
-    [self write:[NSString stringWithFormat:@" %@\n", cmdLine]];
+    [_termDevice write:[NSString stringWithFormat:@" %@\n", cmdLine]];
   }
 }
 
@@ -144,27 +141,23 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)startSession
 {
+  TermInput *input = _termDevice.input;
   _termDevice = [[TermDevice alloc] init];
-  _termDevice.stream.sz->ws_col = _sessionParameters.cols;
-  _termDevice.stream.sz->ws_row = _sessionParameters.rows;
+  _termDevice.sz->ws_col = _sessionParameters.cols;
+  _termDevice.sz->ws_row = _sessionParameters.rows;
 
-  _termDevice.control = self;
+  [_termDevice attachView:_termView];
+  [_termDevice attachInput:input];
 
-  _session = [[MCPSession alloc] initWithStream:_termDevice.stream andParametes:_sessionParameters];
+  _session = [[MCPSession alloc] initWithDevice:_termDevice andParametes:_sessionParameters];
   _session.delegate = self;
   [_session executeWithArgs:@""];
 }
 
-- (void)setRawMode:(BOOL)raw
-{
-  _rawMode = raw;
-  _termInput.raw = raw;
-}
-
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
 {
-  _termDevice.stream.sz->ws_row = rows.shortValue;
-  _termDevice.stream.sz->ws_col = cols.shortValue;
+  _termDevice.sz->ws_row = rows.shortValue;
+  _termDevice.sz->ws_col = cols.shortValue;
 
   _sessionParameters.rows = rows.shortValue;
   _sessionParameters.cols = cols.shortValue;
@@ -178,7 +171,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)fontSizeChanged:(NSNumber *)newSize
 {
   _sessionParameters.fontSize = [newSize integerValue];
-  [_termInput reset];
+  [_termDevice.input reset];
 }
 
 - (void)terminalIsReady: (NSDictionary *)data
@@ -203,7 +196,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)dealloc
 {
-  _termDevice.control = nil;
   _termDevice = nil;
   [self.userActivity resignCurrent];
 }
@@ -261,40 +253,14 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   }
 }
 
-- (void)focus {
-  [_termView focus];
-  if (![_termView.window isKeyWindow]) {
-    [_termView.window makeKeyWindow];
-  }
-  if (![_termInput isFirstResponder]) {
-    [_termInput becomeFirstResponder];
-  }
-}
-
-- (void)blur {
-  [_termView blur];
-}
-
-- (void)attachInput:(TermInput *)termInput
+- (void)focus
 {
-  _termInput = termInput;
-  if (!termInput) {
-    [_termView blur];
-  }
+  [_termDevice focus];
+}
 
-  if (_termInput.termDelegate != self) {
-    [_termInput.termDelegate attachInput:nil];
-    [_termInput reset];
-  }
-
-  _termInput.raw = _rawMode;
-  _termInput.termDelegate = self;
-  
-  if ([_termInput isFirstResponder]) {
-    [_termView focus];
-  } else {
-    [_termView blur];
-  }
+- (void)blur
+{
+  [_termDevice blur];
 }
 
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch

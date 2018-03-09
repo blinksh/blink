@@ -148,7 +148,7 @@
 
 - (void)_attachInputToCurrentTerm
 {
-  [self.currentTerm attachInput:_termInput];
+  [self.currentTerm.termDevice attachInput:_termInput];
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
@@ -350,7 +350,7 @@
 {
   if (completed) {
     for (TermController *term in previousViewControllers) {
-      [term attachInput:nil];
+      [term.termDevice attachInput:nil];
     }
 
     [self _displayHUD];
@@ -640,17 +640,17 @@
 
 - (void)_increaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termView increaseFontSize];
+  [self.currentTerm.termDevice.view increaseFontSize];
 }
 
 - (void)_decreaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termView decreaseFontSize];
+  [self.currentTerm.termDevice.view decreaseFontSize];
 }
 
 - (void)_resetFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termView resetFontSize];
+  [self.currentTerm.termDevice.view resetFontSize];
 }
 
 - (void)otherScreen:(UIKeyCommand *)cmd

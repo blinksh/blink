@@ -33,7 +33,7 @@
 
 #include <sys/ioctl.h>
 
-#import "TermController.h"
+#import "TermDevice.h"
 #import "SessionParameters.h"
 
 
@@ -43,17 +43,6 @@ typedef struct SessionParams {
   bool attached;
 } SessionParams;
 
-@interface TermStream : NSObject
-
-@property FILE *in;
-@property FILE *out;
-@property FILE *err;
-@property TermController *control;
-@property struct winsize *sz;
-
-- (void)close;
-
-@end
 
 @protocol SessionDelegate
 
@@ -63,17 +52,17 @@ typedef struct SessionParams {
 @end
 
 @interface Session : NSObject {
-  TermStream *_stream;
   pthread_t _tid;
 }
 
 @property (strong, atomic) SessionParameters *sessionParameters;
 @property TermStream *stream;
+@property TermDevice *device;
 
 @property (weak) NSObject<SessionDelegate>* delegate;
 
 - (id)init __unavailable;
-- (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters;
+- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv;

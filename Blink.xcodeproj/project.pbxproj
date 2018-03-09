@@ -178,6 +178,7 @@
 		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
+		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B82004DCC9001FB2AA /* hterm_all.js */; };
 		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
@@ -475,6 +476,8 @@
 		D23D0FAC2008DAEB00B33A9F /* TermInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermInput.m; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
+		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
+		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
@@ -571,6 +574,8 @@
 				85047E76201F9B0E0090E974 /* ControlPanel.m */,
 				D2D6D78420527651003CBEC4 /* TermDevice.h */,
 				D2D6D78520527651003CBEC4 /* TermDevice.m */,
+				D27BBA1A20529FFF00AEA303 /* TermStream.h */,
+				D27BBA1B20529FFF00AEA303 /* TermStream.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1308,6 +1313,7 @@
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
 				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
+				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,

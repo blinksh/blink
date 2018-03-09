@@ -169,7 +169,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   ssh_userauth_none(_session, NULL);
   char *banner = ssh_get_issue_banner(_session);
   if (banner) {
-    fprintf(_stream.out, "%s\r\n", banner);
+    fprintf(self.stream.out, "%s\r\n", banner);
     free(banner);
   }
   
@@ -212,7 +212,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   if (_options.verbosity) {
     //    ssh_options_set(_session, SSH_OPTIONS_LOG_VERBOSITY, &_options.verbosity);
     ssh_set_log_callback(loggingEvent);
-    ssh_set_log_userdata(_stream.out);
+    ssh_set_log_userdata(self.stream.out);
     ssh_set_log_level(_options.verbosity);
   }
   
@@ -275,7 +275,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
     }
     
     char *password = NULL;
-    fprintf(_stream.out, "Password: ");
+    fprintf(self.stream.out, "Password: ");
     if ([self promptUser:&password] < 0) {
       return SSH_AUTH_ERROR;
     }
@@ -295,7 +295,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   
   banner = ssh_get_issue_banner(_session);
   if (banner) {
-    fprintf(_stream.out, "%s\r\n", banner);
+    fprintf(self.stream.out, "%s\r\n", banner);
     ssh_string_free_char(banner);
   }
   
@@ -332,9 +332,9 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   return SSH_AUTH_DENIED;
 }
 
-- (int)prompt:(char *)prompt output:(char *)buf
+- (ssize_t)prompt:(const char *)prompt output:(char *)buf
 {
-  fprintf(_stream.out, "%s", prompt);
+  fprintf(self.stream.out, "%s", prompt);
   return [self promptUser:&buf];
 }
 
@@ -342,7 +342,7 @@ static int authCallback(const char *prompt, char *buf, size_t len,
                         int echo, int verify, void *userdata)
 {
   SSHSession2 *s = (__bridge SSHSession2 *)(userdata);
-  return [s prompt:prompt output:buf];
+  return (int)[s prompt:prompt output:buf];
 }
 
 - (NSArray *)getIdentities
@@ -368,7 +368,7 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 - (int)authInteractive:(const char *)password
 {
   int err;
-  FILE *out = _stream.out;
+  FILE *out = self.stream.out;
   
   err = ssh_userauth_kbdint(_session, NULL, NULL);
   while (err == SSH_AUTH_INFO) {
@@ -448,7 +448,7 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   size_t size = 0;
   ssize_t sz = 0;
   
-  FILE *termin = _stream.in;
+  FILE *termin = self.stream.in;
   if ((sz = getdelim(resp, &size, '\r', termin)) == -1) {
     return -1;
   } else {
@@ -480,8 +480,8 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 
 - (void)refreshSize {
   ssh_channel_change_pty_size(_channel,
-                              _stream.sz->ws_col,
-                              _stream.sz->ws_row);
+                              self.device.sz->ws_col,
+                              self.device.sz->ws_row);
 }
 
 - (void)processUserHostSettings:(NSString *)userhost
@@ -530,12 +530,12 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   /* stdin */
   connector_in = ssh_connector_new(_session);
   ssh_connector_set_out_channel(connector_in, _channel, SSH_CONNECTOR_STDOUT);
-  ssh_connector_set_in_fd(connector_in, fileno(_stream.in));
+  ssh_connector_set_in_fd(connector_in, fileno(self.stream.in));
   ssh_event_add_connector(event, connector_in);
   
   /* stdout */
   connector_out = ssh_connector_new(_session);
-  ssh_connector_set_out_fd(connector_out, fileno(_stream.out));
+  ssh_connector_set_out_fd(connector_out, fileno(self.stream.out));
   ssh_connector_set_in_channel(connector_out, _channel, SSH_CONNECTOR_STDOUT);
   ssh_event_add_connector(event, connector_out);
   
@@ -564,19 +564,19 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(self.stream.out, "%s\r\n", [msg UTF8String]);
   return -1;
 }
 
 - (void)errMsg:(NSString *)msg
 {
-  fprintf(_stream.err, "%s\r\n", [msg UTF8String]);
+  fprintf(self.stream.err, "%s\r\n", [msg UTF8String]);
 }
 
 - (void)debugMsg:(NSString *)msg
 {
   //if (_debug) {
-  fprintf(_stream.out, "SSHSession:DEBUG:%s\r\n", [msg UTF8String]);
+  fprintf(self.stream.out, "SSHSession:DEBUG:%s\r\n", [msg UTF8String]);
   //}
 }
 

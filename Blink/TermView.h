@@ -38,9 +38,7 @@
 
 @protocol TerminalDelegate <NSObject>
 
-@property (readonly, nonatomic) TermView *termView;
-
-- (void)write:(NSString *)input;
+- (void)write:(NSString *)output;
 
 @optional
 - (void)terminalIsReady: (NSDictionary *)data;
