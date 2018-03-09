@@ -126,7 +126,7 @@ static void kbd_callback(const char *name, int name_len,
   SSHSession *s = (__bridge SSHSession *)(*abstract);
   // We want to write straight to the control
   // ssh does the same and writes straight to /dev/tty or stderr
-  FILE *termout = s->_stream.control.termout;
+  FILE *termout = s->_stream.out;
   if (name_len > 0) {
     fwrite(name, 1, name_len, termout);
     fprintf(termout, "\r\n");
@@ -149,7 +149,7 @@ static void kbd_callback(const char *name, int name_len,
   size_t size = 0;
   ssize_t sz = 0;
 
-  FILE *termin = _stream.control.termin;
+  FILE *termin = _stream.in;
   if ((sz = getdelim(resp, &size, '\r', termin)) == -1) {
     return -1;
   } else {
@@ -519,9 +519,9 @@ static void kbd_callback(const char *name, int name_len,
   do {
     int rc;
     if (!password) {
-      fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
+      fprintf(_stream.out, "%s@%s's password: ", user, _options.hostname);
       [self promptUser:&password];
-      fprintf(_stream.control.termout, "\r\n");
+      fprintf(_stream.out, "\r\n");
     }
 
     if (strlen(password) != 0) {
@@ -577,9 +577,9 @@ static void kbd_callback(const char *name, int name_len,
 
     // Request passphrase from user
     if ([pk isEncrypted]) {
-      fprintf(_stream.control.termout, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
+      fprintf(_stream.out, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
       [self promptUser:&passphrase];
-      fprintf(_stream.control.termout, "\r\n");
+      fprintf(_stream.out, "\r\n");
     }
 
     while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
@@ -878,7 +878,7 @@ static void kbd_callback(const char *name, int name_len,
       char c;
       ssize_t n;
 
-      if ((n = read(fileno(_stream.control.termin), &c, 1)) <= 0) {
+      if ((n = read(fileno(_stream.in), &c, 1)) <= 0) {
 	break;
       }
 

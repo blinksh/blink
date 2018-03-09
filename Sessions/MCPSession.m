@@ -40,6 +40,7 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
+#import "SSHSession2.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
 #import "BKDefaults.h"
@@ -202,7 +203,7 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)setTitle
 {
-  fprintf(_stream.control.termout, "\033]0;blink\007");
+  fprintf(_stream.out, "\033]0;blink\007");
 }
 
 + (void)initialize
@@ -283,6 +284,10 @@ char* hints(const char * line, int *color, int *bold)
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
         [self _runSSHWithArgs:cmdline];
+      } else if ([cmd isEqualToString:@"ssh2"]) {
+        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+        // Probably passing a Server struct of some type.
+        [self _runSSH2WithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"theme"]) {
@@ -432,6 +437,17 @@ char* hints(const char * line, int *color, int *bold)
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
+
+- (void)_runSSH2WithArgs:(NSString *)args
+{
+  self.sessionParameters.childSessionParameters = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SSHSession2 alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"ssh2";
+  [_childSession executeAttachedWithArgs:args];
+  _childSession = nil;
+}
+
 
 - (NSString *)_shortVersionString
 {

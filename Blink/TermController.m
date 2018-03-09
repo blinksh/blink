@@ -34,8 +34,8 @@
 #import "BKSettingsNotifications.h"
 #import "MCPSession.h"
 #import "Session.h"
-#import "fterm.h"
 #import "StateManager.h"
+#import "TermDevice.h"
 
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
@@ -45,11 +45,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 @end
 
 @implementation TermController {
-  int _pinput[2];
   MCPSession *_session;
   NSDictionary *_activityUserInfo;
   BOOL _isReloading;
   NSInteger _fontSizeBeforeScaling;
+  TermDevice *_termDevice;
 }
 
 - (void)loadView
@@ -74,8 +74,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)write:(NSString *)input
 {
   // Trasform the string and write it, with the correct sequence
-  const char *str = [input UTF8String];
-  write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+  // TODO: Write to the device, and let it handle whatever it has to handle in the right encoding, etc...
+  [_termDevice write:input];
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
@@ -128,8 +128,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   }
 
   [_termView loadWith:_sessionParameters];
-
-  [self createPTY];
 }
 
 - (void)_initSessionParameters
@@ -144,48 +142,15 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.viewHeight = self.view.bounds.size.height;
 }
 
-- (void)createPTY
-{
-  pipe(_pinput);
-  _termout = fterm_open(_termView, 0);
-  _termerr = fterm_open(_termView, 0);
-  _termin = fdopen(_pinput[0], "r");
-  _termsz = malloc(sizeof(struct winsize));
-  _termsz->ws_col = _sessionParameters.cols;
-  _termsz->ws_row = _sessionParameters.rows;
-}
-
-- (void)destroyPTY
-{
-  if (_termin) {
-    fclose(_termin);
-    _termin = NULL;
-  }
-  if (_termout) {
-    fclose(_termout);
-    _termout = NULL;
-  }
-  if (_termerr) {
-    fclose(_termerr);
-    _termerr = NULL;
-  }
-  if (_termsz) {
-    free(_termsz);
-    _termsz = NULL;
-  }
-}
-
 - (void)startSession
 {
-  // Until we are able to duplicate the streams, we have to recreate them.
-  TermStream *stream = [[TermStream alloc] init];
-  stream.in = _termin;
-  stream.out = _termout;
-  stream.err = _termerr;
-  stream.control = self;
-  stream.sz = _termsz;
+  _termDevice = [[TermDevice alloc] init];
+  _termDevice.stream.sz->ws_col = _sessionParameters.cols;
+  _termDevice.stream.sz->ws_row = _sessionParameters.rows;
 
-  _session = [[MCPSession alloc] initWithStream:stream andParametes:_sessionParameters];
+  _termDevice.control = self;
+
+  _session = [[MCPSession alloc] initWithStream:_termDevice.stream andParametes:_sessionParameters];
   _session.delegate = self;
   [_session executeWithArgs:@""];
 }
@@ -198,8 +163,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
 {
-  _termsz->ws_row = rows.shortValue;
-  _termsz->ws_col = cols.shortValue;
+  _termDevice.stream.sz->ws_row = rows.shortValue;
+  _termDevice.stream.sz->ws_col = cols.shortValue;
 
   _sessionParameters.rows = rows.shortValue;
   _sessionParameters.cols = cols.shortValue;
@@ -222,9 +187,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.rows = [size[@"rows"] integerValue];
   _sessionParameters.cols = [size[@"cols"] integerValue];
 
-  _termsz->ws_row = _sessionParameters.rows;
-  _termsz->ws_col = _sessionParameters.cols;
-  
   NSArray *bgColor = data[@"bgColor"];
   if (bgColor && bgColor.count == 3) {
     self.view.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
@@ -241,8 +203,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)dealloc
 {
-  [self destroyPTY];
-  
+  _termDevice.control = nil;
+  _termDevice = nil;
   [self.userActivity resignCurrent];
 }
 
@@ -252,8 +214,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 {
   if (_isReloading) {
     _isReloading = NO;
-    [self destroyPTY];
-    [self createPTY];
     [self _initSessionParameters];
     [_termView reloadWith:_sessionParameters];
   } else {
@@ -293,8 +253,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     return;
   }
 
-  [self destroyPTY];
-  [self createPTY];
   [self startSession];
   
   if (self.view.bounds.size.width != _sessionParameters.viewWidth ||

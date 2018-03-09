@@ -49,10 +49,6 @@
 
 @interface TermController : UIViewController<SecureRestoration>
 
-@property (readonly) FILE *termout;
-@property (readonly) FILE *termin;
-@property (readonly) FILE *termerr;
-@property (readonly) struct winsize *termsz;
 @property (readonly, strong, nonatomic) TermView *termView;
 @property (readonly, strong, nonatomic) TermInput *termInput;
 @property (nonatomic) BOOL rawMode;
