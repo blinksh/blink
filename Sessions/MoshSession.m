@@ -85,11 +85,11 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 + (void)initialize
 {
   predictionModeStrings = @{
-  [NSNumber numberWithInt:BKMoshPredictionAdaptive]: @"adaptive",
-  [NSNumber numberWithInt:BKMoshPredictionAlways]: @"always",
-  [NSNumber numberWithInt:BKMoshPredictionNever]: @"never",
-  [NSNumber numberWithInt:BKMoshPredictionExperimental]: @"experimental",
-  [NSNumber numberWithInt:BKMoshPredictionUnknown]: @"adaptive"
+    @(BKMoshPredictionAdaptive): @"adaptive",
+    @(BKMoshPredictionAlways): @"always",
+    @(BKMoshPredictionNever): @"never",
+    @(BKMoshPredictionExperimental): @"experimental",
+    @(BKMoshPredictionUnknown): @"adaptive"
   };
 }
 
