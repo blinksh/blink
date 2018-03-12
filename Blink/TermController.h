@@ -46,7 +46,6 @@
 @end
 
 @interface TermController : UIViewController<SecureRestoration>
-
 @property (readonly, strong, nonatomic) TermDevice *termDevice;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
@@ -56,9 +55,6 @@
 - (void)terminate;
 - (void)suspend;
 - (void)resume;
-- (void)focus;
-- (void)blur;
-- (void)reload;
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
 
 @end

@@ -389,8 +389,7 @@ char* hints(const char * line, int *color, int *bold)
     dispatch_sync(dispatch_get_main_queue(), ^{
       [BKDefaults setThemeName:theme.name];
       [BKDefaults saveDefaults];
-      // TODO: reload device?
-//      [_stream.control reload];
+      [self.delegate reloadSession];
     });
     return YES;
   }

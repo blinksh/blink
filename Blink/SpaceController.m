@@ -46,6 +46,7 @@
   UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, ControlPanelDelegate>
 
 @property (readonly) TermController *currentTerm;
+@property (readonly) TermDevice *currentDevice;
 
 @end
 
@@ -148,7 +149,7 @@
 
 - (void)_attachInputToCurrentTerm
 {
-  [self.currentTerm.termDevice attachInput:_termInput];
+  [self.currentDevice attachInput:_termInput];
 }
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
@@ -360,8 +361,14 @@
 
 
 #pragma mark Spaces
-- (TermController *)currentTerm {
+- (TermController *)currentTerm
+{
   return _viewportsController.viewControllers[0];
+}
+
+- (TermDevice *)currentDevice
+{
+  return self.currentTerm.termDevice;
 }
 
 - (void)_toggleMusicHUD
@@ -640,17 +647,17 @@
 
 - (void)_increaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termDevice.view increaseFontSize];
+  [self.currentDevice.view increaseFontSize];
 }
 
 - (void)_decreaseFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termDevice.view decreaseFontSize];
+  [self.currentDevice.view decreaseFontSize];
 }
 
 - (void)_resetFontSize:(UIKeyCommand *)cmd
 {
-  [self.currentTerm.termDevice.view resetFontSize];
+  [self.currentDevice.view resetFontSize];
 }
 
 - (void)otherScreen:(UIKeyCommand *)cmd
@@ -873,7 +880,7 @@
 - (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer
 {
   [_termInput reset];
-  [self.currentTerm focus];
+  [self.currentDevice focus];
 }
 
 - (void)touchOverlay:(TouchOverlay *)overlay onTwoFingerTap:(UITapGestureRecognizer *)recognizer

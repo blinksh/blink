@@ -177,6 +177,13 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   }
 }
 
+- (void)reloadSession
+{
+  _sessionParameters.childSessionType = nil;
+  _sessionParameters.childSessionParameters =  nil;
+  _isReloading = YES;
+}
+
 #pragma mark - TermDeviceDelegate
 
 - (void)deviceIsReady
@@ -213,13 +220,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [_session kill];
 }
 
-- (void)reload
-{
-  _sessionParameters.childSessionType = nil;
-  _sessionParameters.childSessionParameters =  nil;
-  _isReloading = YES;
-}
-
 - (void)suspend
 {
   [_sessionParameters cleanEncodedState];
@@ -244,16 +244,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   }
 }
 
-- (void)focus
-{
-  [_termDevice focus];
-}
-
-- (void)blur
-{
-  [_termDevice blur];
-}
-
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch
 {
   switch (pinch.state) {
@@ -266,6 +256,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
       if (newSize != _sessionParameters.fontSize) {
         [_termView setFontSize:@(newSize)];
       }
+      break;
     }
     default:
       break;

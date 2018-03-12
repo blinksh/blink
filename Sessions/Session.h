@@ -48,6 +48,7 @@ typedef struct SessionParams {
 
 - (void)sessionFinished;
 - (void)indexCommand:(NSString *)cmdLine;
+- (void)reloadSession;
 
 @end
 
