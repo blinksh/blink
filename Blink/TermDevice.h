@@ -24,6 +24,7 @@
 @property (readonly) TermInput *input;
 @property (weak) id<TermDeviceDelegate> delegate;
 @property (nonatomic) BOOL rawMode;
+@property (nonatomic) BOOL secureTextEntry;
 
 - (void)attachInput:(TermInput *)termInput;
 - (void)attachView:(TermView *)termView;

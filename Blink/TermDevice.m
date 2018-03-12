@@ -161,6 +161,19 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   _input.raw = rawMode;
 }
 
+- (void)setSecureTextEntry:(BOOL)secureTextEntry
+{
+  _secureTextEntry = secureTextEntry;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (secureTextEntry == _input.secureTextEntry) {
+      return;
+    }
+    _input.secureTextEntry = secureTextEntry;
+    [_input reset];
+    [_input reloadInputViews];
+  });
+}
+
 - (void)dealloc
 {
   [self close];
@@ -182,6 +195,11 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   _input.raw = _rawMode;
   _input.device = self;
+  if (_secureTextEntry != _input.secureTextEntry) {
+    _input.secureTextEntry = _secureTextEntry;
+    [_input reset];
+    [_input reloadInputViews];
+  }
   
   if ([_input isFirstResponder]) {
     [_view focus];
