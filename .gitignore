@@ -35,3 +35,6 @@ Frameworks/openssl.framework
 *.ipa
 *.dSYM.zip
 *.dSYM
+
+## Fonts
+Resources/Fonts/PragmataPro*

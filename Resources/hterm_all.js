@@ -27,19 +27,22 @@
 
 'use strict';
 
+function _reattachNode(node) {
+  var parent = node.parentNode;
+  var next = node.nextSibling;
+  
+  if (parent) {
+    parent.removeChild(node);
+    parent[next ? 'insertBefore' : 'appendChild'](node, next);
+  }
+}
+
+
 function setNodeText(node, text, opt_wcwidth) {
   node.textContent = text;
   
   if (node.nodeType === Node.TEXT_NODE) {
-
-    var parent = node.parentNode;
-    var next = node.nextSibling;
-    
-    if (parent) {
-      parent.removeChild(node);
-      parent[next ? "insertBefore":"appendChild"](node, next);
-    }
-    
+    _reattachNode(node);
     return;
   }
   
@@ -9506,6 +9509,8 @@ hterm.Screen.prototype.overwriteString = function(str, wcwidth=undefined) {
     this.cursorPosition.column += wcwidth;
     return;
   }
+                         
+
 
   this.deleteChars(Math.min(wcwidth, maxLength));
   this.insertString(str, wcwidth);
@@ -16472,31 +16477,32 @@ hterm.VT.prototype.parseUnknown_ = function(parseState) {
  *
  * See [CSI] for some useful information about these codes.
  */
+                           
+function finishParsing_(parseState) {
+  // Resetting the arguments isn't strictly necessary, but it makes debugging
+  // less confusing (otherwise args will stick around until the next sequence
+  // that needs arguments).
+  parseState.resetArguments();
+  // We need to clear subargs since we explicitly set it.
+  parseState.subargs = null;
+  parseState.resetParseFunction();
+};
+                           
 hterm.VT.prototype.parseCSI_ = function(parseState) {
   var ch = parseState.peekChar();
   var args = parseState.args;
-
-  const finishParsing = () => {
-    // Resetting the arguments isn't strictly necessary, but it makes debugging
-    // less confusing (otherwise args will stick around until the next sequence
-    // that needs arguments).
-    parseState.resetArguments();
-    // We need to clear subargs since we explicitly set it.
-    parseState.subargs = null;
-    parseState.resetParseFunction();
-  };
 
   if (ch >= '@' && ch <= '~') {
     // This is the final character.
     this.dispatch('CSI', this.leadingModifier_ + this.trailingModifier_ + ch,
                   parseState);
-    finishParsing();
+    finishParsing_(parseState);
 
   } else if (ch == ';') {
     // Parameter delimiter.
     if (this.trailingModifier_) {
       // Parameter delimiter after the trailing modifier.  That's a paddlin'.
-      finishParsing();
+      finishParsing_(parseState);
 
     } else {
       if (!args.length) {
@@ -16512,7 +16518,7 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
 
     if (this.trailingModifier_) {
       // Numeric parameter after the trailing modifier.  That's a paddlin'.
-      finishParsing();
+      finishParsing_(parseState);
     } else {
       if (!args.length) {
         args[0] = ch;
@@ -16539,7 +16545,7 @@ hterm.VT.prototype.parseCSI_ = function(parseState) {
 
   } else {
     // Unexpected character in sequence, bail out.
-    finishParsing();
+    finishParsing_(parseState);
   }
 
   parseState.advance(1);
@@ -17184,37 +17190,42 @@ hterm.VT.ESC['\\'] = hterm.VT.ignore;
  *
  * Commands relating to the operating system.
  */
+
+var parseOSCReg_ = /^(\d+);(.*)$/;
+
+function parseOSC_(parseState) {
+  if (!this.parseUntilStringTerminator_(parseState)) {
+    // The string sequence was too long.
+    return;
+  }
+
+  if (parseState.func === parseOSC_) {
+    // We're not done parsing the string yet.
+    return;
+  }
+
+  // We're done.
+  var ary = parseState.args[0].match(parseOSCReg_);
+  if (ary) {
+    parseState.args[0] = ary[2];
+    this.dispatch('OSC', ary[1], parseState);
+  } else {
+    console.warn('Invalid OSC: ' + JSON.stringify(parseState.args));
+  }
+
+  // Resetting the arguments isn't strictly necessary, but it makes debugging
+  // less confusing (otherwise args will stick around until the next sequence
+  // that needs arguments).
+  parseState.resetArguments();
+};
+                           
 hterm.VT.CC1['\x9d'] =
 hterm.VT.ESC[']'] = function(parseState) {
   parseState.resetArguments();
 
-  function parseOSC(parseState) {
-    if (!this.parseUntilStringTerminator_(parseState)) {
-      // The string sequence was too long.
-      return;
-    }
+  
 
-    if (parseState.func == parseOSC) {
-      // We're not done parsing the string yet.
-      return;
-    }
-
-    // We're done.
-    var ary = parseState.args[0].match(/^(\d+);(.*)$/);
-    if (ary) {
-      parseState.args[0] = ary[2];
-      this.dispatch('OSC', ary[1], parseState);
-    } else {
-      console.warn('Invalid OSC: ' + JSON.stringify(parseState.args[0]));
-    }
-
-    // Resetting the arguments isn't strictly necessary, but it makes debugging
-    // less confusing (otherwise args will stick around until the next sequence
-    // that needs arguments).
-    parseState.resetArguments();
-  };
-
-  parseState.func = parseOSC;
+  parseState.func = parseOSC_;
 };
 
 /**

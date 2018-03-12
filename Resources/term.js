@@ -123,6 +123,59 @@ function term_clear() {
   t.clear();
 }
 
+function term_setIme(str) {
+  
+  var length = lib.wc.strWidth(str);
+  
+  var scrollPort = t.scrollPort_;
+  var ime = scrollPort.ime_;
+  ime.textContent = str;
+  
+  if (length === 0) {
+    return;
+  }
+
+  ime.style.backgroundColor = lib.colors.setAlpha(t.getCursorColor(), 1);
+  ime.style.color = scrollPort.getBackgroundColor()
+  
+  var screenCols = t.screenSize.width;
+  var cursorCol = t.screen_.cursorPosition.column + t.screen_.cursorOffset_;
+  
+  ime.style.bottom = 'auto';
+  ime.style.top = 'auto';
+  
+  if (length >= screenCols) {
+    // We are wider than the screen
+    ime.style.left = '0px';
+    ime.style.right = '0px';
+    if (t.screen_.cursorPosition.row < t.screenSize.height * 0.8) {
+      ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) + 1))'
+    } else {
+      ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - ' + (Math.floor(length / (screenCols + 1))) + ' - 1))'
+    }
+  } else if ((cursorCol + length - 2) <= screenCols ) {
+    // we are inlined
+    ime.style.left = 'calc(var(--hterm-charsize-width) * var(--hterm-cursor-offset-col))';
+    ime.style.top = 'calc(var(--hterm-charsize-height) * var(--hterm-cursor-offset-row))';
+    ime.style.right = 'auto';
+  } else if (t.screen_.cursorPosition.row == 0) {
+    // we are at the end of line but need more space at the bottom
+    ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) + 1))';
+    ime.style.left = 'auto';
+    ime.style.right = '0px';
+  } else {
+    // we are at the end of line but need more space at the top
+    ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - 1))';
+    ime.style.left = 'auto';
+    ime.style.right = '0px';
+  }
+  var r = ime.getBoundingClientRect()
+  
+  const markedRect = ["{{", r.x, ",", r.y, "},{", r.width, ",", r.height, "}}"].join('');
+  
+  return {markedRect};
+}
+
 function term_reset() {
   t.reset();
 }
@@ -214,9 +267,70 @@ function term_getCurrentSelection() {
   };
 }
 
+function _modifySelectionByLine(direction) {
+  var selection = document.getSelection();
+  var fNode = selection.focusNode;
+  var fOffset = selection.focusOffset;
+  var aNode = selection.anchorNode;
+  var aOffset = selection.anchorOffset;
+  
+  var fRow = t.screen_.getXRowAncestor_(fNode);
+  
+  var targetRow = direction === 'left' ?  fRow.previousSibling : fRow.nextSibling;
+  
+  // We out of screen
+  if (targetRow == null || targetRow.nodeName !== 'X-ROW') {
+    if (direction === 'left') {
+      selection.setBaseAndExtent(aNode, aOffset, fRow, 0);
+    } else {
+      selection.setBaseAndExtent(aNode, aOffset, fRow.nextSibling, 0);
+    }
+    
+    return;
+  }
+  
+  if (fNode.nodeName === 'X-ROW') {
+    if (direction === 'left') {
+      selection.setBaseAndExtent(aNode, aOffset, fNode.previousSibling, 0);
+      selection.modify("extend", direction, 'character');
+    } else {
+      selection.setBaseAndExtent(aNode, aOffset, fNode.nextSibling, 0);
+    }
+    
+    return;
+  }
+  
+  var position = t.screen_.getPositionWithinRow_(fRow, fNode, fOffset);
+  var nodeAndOffset = t.screen_.getNodeAndOffsetWithinRow_(targetRow, position);
+  
+  if (nodeAndOffset) {
+    selection.setBaseAndExtent(aNode, aOffset, nodeAndOffset[0], nodeAndOffset[1]);
+    
+    if (selection.isCollapsed) {
+      selection.setBaseAndExtent(fNode, fOffset, aNode, aOffset);
+      _modifySelectionByLine(direction);
+    }
+    return;
+  }
+  
+  if (direction === 'left') {
+    selection.setBaseAndExtent(aNode, aOffset, fRow, 0);
+    selection.modify("extend", direction, 'character');
+  } else {
+    selection.setBaseAndExtent(aNode, aOffset, targetRow, 0);
+    selection.modify("extend", direction, 'lineboundary');
+    selection.modify("extend", direction, 'character');
+  }
+}
+
 function term_modifySelection(direction, granularity) {
   var selection = document.getSelection();
   if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+  
+  if (granularity === 'line') {
+    _modifySelectionByLine(direction);
     return;
   }
   

@@ -122,11 +122,17 @@ static NSURL *DocumentsDirectory = nil;
       includingPropertiesForKeys:properties
 			 options:(NSDirectoryEnumerationSkipsHiddenFiles)
 			   error:&error];
-    NSString *fileExt = [NSString stringWithFormat:@".%@", self.resourcesExtension];
-
+    
+    NSString *resExt = self.resourcesExtension;
+    NSString *fileExt = [NSString stringWithFormat:@".%@", resExt];
+    
     if (resourceFiles != nil) {
       for (NSURL *file in resourceFiles) {
+        if (![[file pathExtension] isEqualToString:resExt]) {
+          continue;
+        }
 	NSString *fileName = [file lastPathComponent];
+        
 	BKResource *res = [[self alloc] initWithName:[fileName stringByReplacingOccurrencesOfString:fileExt withString:@""]
 					 andFileName:fileName
 					       onURL:self.defaultResourcesLocation];

@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKDefaults.h"
+#import "BKFont.h"
 #import "UIDevice+DeviceName.h"
 
 static NSURL *DocumentsDirectory = nil;
@@ -118,7 +119,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   }
 
   if (!defaults.fontName) {
-    [defaults setFontName:@"Source Code Pro"];
+    if ([BKFont withName:@"Pragmata Pro Mono"] != nil) {
+      [defaults setFontName:@"Pragmata Pro Mono"];
+    } else {
+      [defaults setFontName:@"Source Code Pro"];
+    }
   }
   if (!defaults.themeName) {
     [defaults setThemeName:@"Default"];
