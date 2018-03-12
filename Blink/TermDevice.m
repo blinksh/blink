@@ -31,9 +31,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   return 0;
 }
 
-
-@interface TermDevice () <TerminalDelegate>
+@interface TermDevice () <TermViewDeviceProtocol>
 @end
+
 
 // The TermStream is the PTYDevice
 // They might actually be different. The Device listens, the stream is lower level.
@@ -84,14 +84,14 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     // TODO: Get read of the main queue on TermView write. It will always happen here.
     dispatch_io_read(_channel, 0, SIZE_MAX, _queue,
                      ^(bool done, dispatch_data_t data, int error) {
-                       [self _parseStream:data];
+                       [self _processStream:data];
                      });
   }
   
   return self;
 }
 
-- (void)_parseStream:(dispatch_data_t)data
+- (void)_processStream:(dispatch_data_t)data
 {
   if (_splitChar) {
     data = dispatch_data_create_concat(_splitChar, data);
@@ -152,13 +152,20 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 - (void)attachView:(TermView *)termView
 {
   _view = termView;
-//  _view.termDelegate = self;
+  _view.device = self;
 }
 
 - (void)setRawMode:(BOOL)rawMode
 {
   _rawMode = rawMode;
   _input.raw = rawMode;
+}
+
+- (void)dealloc
+{
+  [self close];
+  _input = nil;
+  _view = nil;
 }
 
 - (void)attachInput:(TermInput *)termInput
@@ -197,9 +204,38 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [_view blur];
 }
 
-- (void)dealloc
+
+#pragma mark - TermViewDeviceProtocol
+
+- (void)viewIsReady
 {
-  [self close];
+  [_delegate deviceIsReady];
 }
+
+- (void)viewFontSizeChanged:(NSInteger)size
+{
+  [_delegate viewFontSizeChanged:size];
+}
+
+- (void)viewWinSizeChanged:(struct winsize)newWinSize
+{
+  if (win.ws_col != newWinSize.ws_col && win.ws_row != newWinSize.ws_row) {
+    win.ws_col = newWinSize.ws_col;
+    win.ws_row = newWinSize.ws_row;
+
+    [_delegate deviceSizeChanged];
+  }
+}
+
+- (void)viewSendString:(NSString *)data
+{
+  [self write:data];
+}
+
+- (void)viewCopyString:(NSString *)text
+{
+  [[UIPasteboard generalPasteboard] setString:text];
+}
+
 
 @end

@@ -34,6 +34,7 @@
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermView.h"
+#import "TermDevice.h"
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
@@ -52,7 +53,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
-@interface BKAppearanceViewController () <TerminalDelegate>
+@interface BKAppearanceViewController () <TermViewDeviceProtocol>
 
 @property (nonatomic, strong) NSIndexPath *selectedFontIndexPath;
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
@@ -82,7 +83,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [super viewDidLoad];
   
   _termView = [[TermView alloc] initWithFrame:self.view.bounds];
-  _termView.termDelegate = self;
+  _termView.device = self;
   _termView.backgroundColor = [UIColor blackColor];
   [_termView loadWith:nil];
 }
@@ -415,14 +416,36 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 }
 
 
-#pragma mark - Terminal
+#pragma mark - TermViewDeviceProtocol
 
-- (void)terminalIsReady:(NSDictionary *)data
+- (void)viewIsReady
 {
   [_termView setCursorBlink:_cursorBlinkValue];
   [_termView setBoldAsBright:_boldAsBrightValue];
   [_termView setWidth:60];
   [self _writeColorShowcase];
+}
+
+- (void)viewFontSizeChanged:(NSInteger)size
+{
+  [BKDefaults setFontSize:@(size)];
+  _fontSizeStepper.value = size;
+  [_fontSizeField setText:[NSString stringWithFormat:@"%@ px", @(size)]];
+}
+
+- (void)viewWinSizeChanged:(struct winsize)win
+{
+  
+}
+
+- (void)viewSendString:(NSString *)data
+{
+  
+}
+
+- (void)viewCopyString:(NSString *)text
+{
+  
 }
 
 - (void)_writeColorShowcase
@@ -442,26 +465,5 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [_termView write:showcase];
 }
 
-- (void)fontSizeChanged:(NSNumber *)newSize
-{
-  [BKDefaults setFontSize:newSize];
-  _fontSizeStepper.value = newSize.integerValue;
-  [_fontSizeField setText:[NSString stringWithFormat:@"%@ px", newSize]];
-}
-
-- (void)write:(NSString *)input
-{
-  // Nothing
-}
-
-- (void)focus
-{
-  // Nothing
-}
-
-- (void)blur
-{
-  // Nothing
-}
 
 @end

@@ -42,13 +42,13 @@ NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
 NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 
-@interface TermController () <TerminalDelegate, SessionDelegate>
+@interface TermController () <SessionDelegate, TermDeviceDelegate>
 @end
 
 @implementation TermController {
-  MCPSession *_session;
   NSDictionary *_activityUserInfo;
   BOOL _isReloading;
+  MCPSession *_session;
   NSInteger _fontSizeBeforeScaling;
   TermDevice *_termDevice;
   TermView *_termView;
@@ -62,11 +62,12 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     _sessionStateKey = [[NSProcessInfo processInfo] globallyUniqueString];
   }
   
+  _termDevice = [[TermDevice alloc] init];
+  _termDevice.delegate = self;
+  
   _termView = [[TermView alloc] initWithFrame:self.view.frame];
   _termView.restorationIdentifier = @"TermView";
-  _termView.termDelegate = self;
-  
-  _termDevice = [[TermDevice alloc] init];
+  [_termDevice attachView:_termView];
   
   self.view = _termView;
 }
@@ -145,6 +146,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termDevice = [[TermDevice alloc] init];
   _termDevice->win.ws_col = _sessionParameters.cols;
   _termDevice->win.ws_row = _sessionParameters.rows;
+  
+  _termDevice.delegate = self;
 
   [_termDevice attachView:_termView];
   [_termDevice attachInput:input];
@@ -154,45 +157,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [_session executeWithArgs:@""];
 }
 
-- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols
-{
-  _termDevice->win.ws_row = rows.shortValue;
-  _termDevice->win.ws_col = cols.shortValue;
-
-  _sessionParameters.rows = rows.shortValue;
-  _sessionParameters.cols = cols.shortValue;
-  
-  if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
-    [self.delegate terminalDidResize:self];
-  }
-  [_session sigwinch];
-}
-
-- (void)fontSizeChanged:(NSNumber *)newSize
-{
-  _sessionParameters.fontSize = [newSize integerValue];
-  [_termDevice.input reset];
-}
-
-- (void)terminalIsReady: (NSDictionary *)data
-{
-  NSDictionary *size = data[@"size"];
-  _sessionParameters.rows = [size[@"rows"] integerValue];
-  _sessionParameters.cols = [size[@"cols"] integerValue];
-
-  NSArray *bgColor = data[@"bgColor"];
-  if (bgColor && bgColor.count == 3) {
-    self.view.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
-                                                green:[bgColor[1] floatValue] / 255.0f
-                                                 blue:[bgColor[2] floatValue] / 255.0f
-                                                alpha:1];
-  }
-  
-  [self startSession];
-  if (self.userActivity) {
-    [self restoreUserActivityState:self.userActivity];
-  }
-}
 
 - (void)dealloc
 {
@@ -211,6 +175,33 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   } else {
     [_delegate terminalHangup:self];
   }
+}
+
+#pragma mark - TermDeviceDelegate
+
+- (void)deviceIsReady
+{
+  [self startSession];
+  if (self.userActivity) {
+    [self restoreUserActivityState:self.userActivity];
+  }
+}
+
+- (void)deviceSizeChanged
+{
+  _sessionParameters.rows = _termDevice->win.ws_row;
+  _sessionParameters.cols = _termDevice->win.ws_col;
+  
+  if ([self.delegate respondsToSelector:@selector(terminalDidResize:)]) {
+    [self.delegate terminalDidResize:self];
+  }
+  [_session sigwinch];
+}
+
+- (void)viewFontSizeChanged:(NSInteger)newSize
+{
+  _sessionParameters.fontSize = newSize;
+  [_termDevice.input reset];
 }
 
 #pragma mark Notifications

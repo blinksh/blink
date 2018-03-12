@@ -29,14 +29,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <sys/ioctl.h>
-
 #import "TermView.h"
+#import "TermDevice.h"
 #import "BKDefaults.h"
 #import "BKSettingsNotifications.h"
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
+
+struct winsize __winSizeFromJSON(NSDictionary *json) {
+  struct winsize res;
+  res.ws_col = [json[@"cols"] integerValue];
+  res.ws_row = [json[@"rows"] integerValue];
+  
+  return res;
+}
 
 @implementation BKWebView
 
@@ -298,28 +305,38 @@
   if ([operation isEqualToString:@"selectionchange"]) {
     [self _handleSelectionChange:data];
   } else if ([operation isEqualToString:@"sigwinch"]) {
-    if ([_termDelegate respondsToSelector:@selector(updateTermRows:Cols:)]) {
-      [_termDelegate updateTermRows:data[@"rows"] Cols:data[@"cols"]];
-    }
+    [_device viewWinSizeChanged:__winSizeFromJSON(data)];
   } else if ([operation isEqualToString:@"terminalReady"]) {
-    self.alpha = 1;
-    if ([_termDelegate respondsToSelector:@selector(terminalIsReady:)]) {
-      [_termDelegate terminalIsReady:data];
-      
-      if (_focused) {
-        [self focus];
-      } else {
-        [self blur];
-      }
-    }
+    [self _onTerminalReady:data];
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
-    if ([_termDelegate respondsToSelector:@selector(fontSizeChanged:)]) {
-      [_termDelegate fontSizeChanged:data[@"size"]];
-    }
+    [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
-    [[UIPasteboard generalPasteboard] setString:data[@"content"]];
+    [_device viewCopyString: data[@"content"]];
   } else if ([operation isEqualToString:@"sendString"]) {
-    [_termDelegate write:data[@"string"]];
+    [_device viewSendString:data[@"string"]];
+  }
+}
+
+- (void)_onTerminalReady:(NSDictionary *)data
+{
+  NSArray *bgColor = data[@"bgColor"];
+  if (bgColor && bgColor.count == 3) {
+    self.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
+                                           green:[bgColor[1] floatValue] / 255.0f
+                                            blue:[bgColor[2] floatValue] / 255.0f
+                                           alpha:1];
+  }
+  
+  [_device viewWinSizeChanged:__winSizeFromJSON(data[@"size"])];
+  
+  self.alpha = 1;
+
+  [_device viewIsReady];
+    
+  if (_focused) {
+    [self focus];
+  } else {
+    [self blur];
   }
 }
 

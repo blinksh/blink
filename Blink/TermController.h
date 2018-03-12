@@ -61,5 +61,4 @@
 - (void)reload;
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
 
-
 @end

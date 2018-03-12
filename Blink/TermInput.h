@@ -31,7 +31,6 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-//#import "TermDevice.h"
 
 @class TermDevice;
 @class UndoManager;

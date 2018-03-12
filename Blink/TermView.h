@@ -34,20 +34,20 @@
 #import "MCPSessionParameters.h"
 
 @class TermView;
+@class TermDevice;
 @class TermInput;
 
-@protocol TerminalDelegate <NSObject>
 
-- (void)write:(NSString *)output;
+@protocol TermViewDeviceProtocol
 
-@optional
-- (void)terminalIsReady: (NSDictionary *)data;
-- (void)updateTermRows:(NSNumber *)rows Cols:(NSNumber *)cols;
-- (void)fontSizeChanged:(NSNumber *)size;
-- (void)focus;
-- (void)blur;
-- (void)attachInput:(TermInput *)termInput;
+- (void)viewIsReady;
+- (void)viewFontSizeChanged:(NSInteger)size;
+- (void)viewWinSizeChanged:(struct winsize)win;
+- (void)viewSendString:(NSString *)data;
+- (void)viewCopyString:(NSString *)text;
+
 @end
+
 
 @interface BKWebView: WKWebView
 
@@ -55,12 +55,11 @@
 
 @interface TermView : UIView
 
-@property (weak) id<TerminalDelegate> termDelegate;
 @property (nonatomic, readonly) NSString *title;
 @property (nonatomic, readonly) BOOL hasSelection;
 @property (nonatomic, readonly) NSURL *detectedLink;
 @property (nonatomic, readonly) NSString *selectedText;
-@property BOOL readyToDelete;
+@property (nonatomic) id<TermViewDeviceProtocol> device;
 
 - (id)initWithFrame:(CGRect)frame;
 - (void)loadWith:(MCPSessionParameters *)params;
