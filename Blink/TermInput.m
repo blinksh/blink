@@ -36,6 +36,7 @@
 #import "BKSettingsNotifications.h"
 #import "BKUserConfigurationManager.h"
 #import "BKKeyboardModifierViewController.h"
+#import "TermDevice.h"
 
 static NSDictionary *bkModifierMaps = nil;
 
@@ -319,7 +320,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
      changeInLength:(NSInteger)delta
 {
   if (delta == -1 && !_skipTextStorageDelete && !_markedText) {
-    [_termDelegate write:@"\x7f"];
+    [_device write:@"\x7f"];
   }
 }
 
@@ -373,23 +374,23 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     dispatch_async(dispatch_get_main_queue(), ^{
       [self reloadInputViews];
     });
-    [_termDelegate focus];
+    [_device focus];
   } else {
-    [_termDelegate blur];
+    [_device blur];
   }
   return res;
 }
 
 - (BOOL)resignFirstResponder
 {
-  [_termDelegate blur];
+  [_device blur];
   return [super resignFirstResponder];
 }
 
 - (void)reset
 {
   self.text = @"";
-  [self.termDelegate.termView setIme: @"" completionHandler:nil];
+  [_device.view setIme: @"" completionHandler:nil];
   _markedText = nil;
   _skipTextStorageDelete = NO;
 }
@@ -409,7 +410,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       [self _insertText:_markedText];
       [self reset];
       _markedText = nil;
-      [self.termDelegate.termView setIme: @"" completionHandler:nil];
+      [_device.view setIme: @"" completionHandler:nil];
       return;
     }
     
@@ -422,8 +423,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *str = [self textInRange:self.markedTextRange];
   _markedText = str;
   
-  [self.termDelegate.termView setIme: str
-                   completionHandler:^(id data, NSError * _Nullable error) {
+  [_device.view setIme: str
+       completionHandler:^(id data, NSError * _Nullable error) {
     if (!data) {
       return;
     }
@@ -459,7 +460,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     text = [text lowercaseString];
   }
   
-  if  (_termDelegate.termView.hasSelection) {
+  if  (_device.view.hasSelection) {
     // If the key is a special key, we do not apply modifiers.
     if (text.length > 1) {
       // Check if we have a function key
@@ -480,18 +481,18 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     NSRange range = [text rangeOfString:@"FKEY"];
     if (range.location != NSNotFound) {
       NSString *value = [text substringFromIndex:(range.length)];
-      [_termDelegate write:[CC FKEY:[value integerValue]]];
+      [_device write:[CC FKEY:[value integerValue]]];
     } else {
-      [_termDelegate write:[CC KEY:text MOD:0 RAW:_raw]];
+      [_device write:[CC KEY:text MOD:0 RAW:_raw]];
     }
   } else {
     NSUInteger modifiers = [[_smartKeys view] modifiers];
     if (modifiers & KbdCtrlModifier) {
-      [_termDelegate write:[CC CTRL:text]];
+      [_device write:[CC CTRL:text]];
     } else if (modifiers & KbdAltModifier) {
-      [_termDelegate write:[CC ESC:text]];
+      [_device write:[CC ESC:text]];
     } else {
-      [_termDelegate write:[CC KEY:text MOD:0 RAW:_raw]];
+      [_device write:[CC KEY:text MOD:0 RAW:_raw]];
     }
   }
 }
@@ -519,7 +520,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)deleteBackward
 {
   // Send a delete backward key to the buffer
-  [_termDelegate write:@"\x7f"];
+  [_device write:@"\x7f"];
   
   _skipTextStorageDelete = YES;
   [super deleteBackward];
@@ -531,16 +532,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   if (![self _remapInput:@"\x7f" forModifier:BKKeyboardModifierAlt]) {
     // Default to `^[^?`. See https://github.com/blinksh/blink/issues/117
-    [_termDelegate write:[CC ESC:@"\x7f"]];
+    [_device write:[CC ESC:@"\x7f"]];
   }
 }
 
 - (void)_escSeqWithInput:(NSString *)input
 {
-  if (_termDelegate.termView.hasSelection) {
+  if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:input andFlags:UIKeyModifierAlternate];
   } else {
-    [_termDelegate write:[CC ESC:input]];
+    [_device write:[CC ESC:input]];
   }
 }
 - (void)escSeq:(UIKeyCommand *)cmd
@@ -550,10 +551,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
 {
-  if (_termDelegate.termView.hasSelection) {
+  if (_device.view.hasSelection) {
     [self _changeSelection:cmd];
   } else {
-    [_termDelegate write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
+    [_device write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
   }
 }
 
@@ -563,16 +564,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([cmd.input length] == 0) {
     return;
   } else {
-    [_termDelegate write:[cmd.input uppercaseString]];
+    [_device write:[cmd.input uppercaseString]];
   }
 }
 
 - (void)_ctrlSeqWithInput:(NSString *)input
 {
-  if (_termDelegate.termView.hasSelection) {
+  if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:input andFlags:UIKeyModifierControl];
   } else {
-    [_termDelegate write:[CC CTRL:input]];
+    [_device write:[CC CTRL:input]];
   }
 }
 
@@ -583,29 +584,29 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)escCtrlSeq:(UIKeyCommand *)cmd
 {
-  if (_termDelegate.termView.hasSelection) {
+  if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl | UIKeyModifierAlternate];
   } else {
     NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:cmd.input]];
-    [_termDelegate write:seq];
+    [_device write:seq];
   }
 }
 
 - (void)cursorSeq:(UIKeyCommand *)cmd
 {
-  if  (_termDelegate.termView.hasSelection) {
+  if  (_device.view.hasSelection) {
     [self _changeSelection:cmd];
     return;
   }
   
   if (cmd.input == UIKeyInputUpArrow) {
-    [_termDelegate write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
   } else if (cmd.input == UIKeyInputDownArrow) {
-    [_termDelegate write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
   } else if (cmd.input == UIKeyInputLeftArrow) {
-    [_termDelegate write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
   } else if (cmd.input == UIKeyInputRightArrow) {
-    [_termDelegate write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
   }
 }
 
@@ -614,19 +615,19 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSInteger value = [cmd.input integerValue];
   
   if (value == 0) {
-    [_termDelegate write:[CC FKEY:10]];
+    [_device write:[CC FKEY:10]];
   } else {
-    [_termDelegate write:[CC FKEY:value]];
+    [_device write:[CC FKEY:value]];
   }
 }
 
 - (void)autoRepeatSeq:(id)sender
 {
   UIKeyCommand *command = (UIKeyCommand*)sender;
-  if  (_termDelegate.termView.hasSelection) {
+  if  (_device.view.hasSelection) {
     [self _changeSelection:command];
   } else {
-    [_termDelegate write:command.input];
+    [_device write:command.input];
   }
 }
 
@@ -657,7 +658,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)copy:(id)sender
 {
   if (![self _remapCmdSeqWithSender:sender andInput:@"c"]) {
-    [_termDelegate.termView copy:sender];
+    [_device.view copy:sender];
   }
 }
 // Cmd+x
@@ -708,24 +709,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)pasteSelection:(id)sender
 {
-  NSString *str = _termDelegate.termView.selectedText;
+  NSString *str = _device.view.selectedText;
   if (str) {
-    [_termDelegate write:str];
+    [_device write:str];
   }
-  [_termDelegate.termView cleanSelection];
+  [_device.view cleanSelection];
 }
 
 - (void)copyLink:(id)sender
 {
-  UIPasteboard.generalPasteboard.URL = [_termDelegate.termView detectedLink];
-  [_termDelegate.termView cleanSelection];
+  UIPasteboard.generalPasteboard.URL = [_device.view detectedLink];
+  [_device.view cleanSelection];
 }
 
 - (void)openLink:(id)sender
 {
-  NSURL * url = [_termDelegate.termView detectedLink];
+  NSURL * url = [_device.view detectedLink];
   
-  [_termDelegate.termView cleanSelection];
+  [_device.view cleanSelection];
   
   if (url == nil) {
     return;
@@ -736,12 +737,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return;
   }
   
-  [app openURL:url];
+  [app openURL:url options:@{} completionHandler:nil];
 }
 
 - (void)unselect:(id)sender
 {
-  [_termDelegate.termView cleanSelection];
+  [_device.view cleanSelection];
 }
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
@@ -749,10 +750,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([sender isKindOfClass:[UIMenuController class]]) {
     // The menu can only perform paste methods
     if (action == @selector(paste:) ||
-        (action == @selector(copy:) && _termDelegate.termView.hasSelection) ||
-        (action == @selector(pasteSelection:) && _termDelegate.termView.hasSelection) ||
-        (action == @selector(copyLink:) && _termDelegate.termView.detectedLink) ||
-        (action == @selector(openLink:) && _termDelegate.termView.detectedLink)
+        (action == @selector(copy:) && _device.view.hasSelection) ||
+        (action == @selector(pasteSelection:) && _device.view.hasSelection) ||
+        (action == @selector(copyLink:) && _device.view.detectedLink) ||
+        (action == @selector(openLink:) && _device.view.detectedLink)
       ) {
       return YES;
     }
@@ -831,7 +832,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)_shiftTab:(UIKeyCommand *)cmd
 {
-  [_termDelegate write:@"\x1b\x5b\x5a"];
+  [_device write:@"\x1b\x5b\x5a"];
 }
 
 - (void)_assignSequence:(NSString *)seq toModifier:(UIKeyModifierFlags)modifier
@@ -988,9 +989,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *str = [UIPasteboard generalPasteboard].string;
   
   if (str) {
-    [_termDelegate write:str];
+    [_device write:str];
   }
-  [_termDelegate.termView cleanSelection];
+  [_device.view cleanSelection];
 }
 
 - (void)_changeSelection:(UIKeyCommand *) cmd
@@ -1003,49 +1004,49 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)_changeSelectionWithInput:(NSString *)input andFlags: (UIKeyModifierFlags)flags
 {
   if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
-    [_termDelegate.termView modifySelectionInDirection:@"left" granularity:
+    [_device.view modifySelectionInDirection:@"left" granularity:
      flags == UIKeyModifierShift ? @"word" : @"character"];
   } else if ([input isEqualToString:UIKeyInputRightArrow] || [input isEqualToString:@"l"]) {
-    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:
+    [_device.view modifySelectionInDirection:@"right" granularity:
      flags == UIKeyModifierShift ? @"word" : @"character"];
   } else if ([input isEqualToString:UIKeyInputUpArrow] || [input isEqualToString:@"k"]) {
-    [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
+    [_device.view modifySelectionInDirection:@"left" granularity:@"line"];
   } else if ([input isEqualToString:UIKeyInputDownArrow] || [input isEqualToString:@"j"]) {
-    [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
+    [_device.view modifySelectionInDirection:@"right" granularity:@"line"];
   } else if ([input isEqualToString:@"o"] || [input isEqualToString:@"x"]) {
-    [_termDelegate.termView modifySideOfSelection];
+    [_device.view modifySideOfSelection];
   } else if ([input isEqualToString:@"n"] && flags == UIKeyModifierControl)  {
-      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"line"];
+      [_device.view modifySelectionInDirection:@"right" granularity:@"line"];
   } else if ([input isEqualToString:@"p"])  {
     if (flags == UIKeyModifierControl) {
-      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"line"];
+      [_device.view modifySelectionInDirection:@"left" granularity:@"line"];
     } else if (flags == kNilOptions) {
       [self pasteSelection:self];
     }
   } else if ([input isEqualToString:@"b"]) {
     if (flags == UIKeyModifierControl) {
-      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"character"];
+      [_device.view modifySelectionInDirection:@"left" granularity:@"character"];
     } else if ( (flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
-      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
+      [_device.view modifySelectionInDirection:@"left" granularity:@"word"];
     } else {
-      [_termDelegate.termView modifySelectionInDirection:@"left" granularity:@"word"];
+      [_device.view modifySelectionInDirection:@"left" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"w"]) {
     if (flags == UIKeyModifierAlternate)  {
-      [_termDelegate.termView copy:self];
+      [_device.view copy:self];
     } else {
-      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
+      [_device.view modifySelectionInDirection:@"right" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"f"]) {
     if (flags == UIKeyModifierControl) {
-       [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"character"];
+       [_device.view modifySelectionInDirection:@"right" granularity:@"character"];
     } else if ((flags & UIKeyModifierAlternate) == UIKeyModifierAlternate) {
-      [_termDelegate.termView modifySelectionInDirection:@"right" granularity:@"word"];
+      [_device.view modifySelectionInDirection:@"right" granularity:@"word"];
     }
   } else if ([input isEqualToString:@"y"]) {
-    [_termDelegate.termView copy:self];
+    [_device.view copy:self];
   } else if ([input isEqualToString:UIKeyInputEscape]) {
-    [_termDelegate.termView cleanSelection];
+    [_device.view cleanSelection];
   }
 }
 

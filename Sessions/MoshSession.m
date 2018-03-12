@@ -85,11 +85,11 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 + (void)initialize
 {
   predictionModeStrings = @{
-  [NSNumber numberWithInt:BKMoshPredictionAdaptive]: @"adaptive",
-  [NSNumber numberWithInt:BKMoshPredictionAlways]: @"always",
-  [NSNumber numberWithInt:BKMoshPredictionNever]: @"never",
-  [NSNumber numberWithInt:BKMoshPredictionExperimental]: @"experimental",
-  [NSNumber numberWithInt:BKMoshPredictionUnknown]: @"adaptive"
+    @(BKMoshPredictionAdaptive): @"adaptive",
+    @(BKMoshPredictionAlways): @"always",
+    @(BKMoshPredictionNever): @"never",
+    @(BKMoshPredictionExperimental): @"experimental",
+    @(BKMoshPredictionUnknown): @"adaptive"
   };
 }
 
@@ -206,8 +206,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
-  BOOL mode = [_stream.control rawMode];
-  [_stream.control setRawMode:YES];
+  BOOL mode = [_device rawMode];
+  [_device setRawMode:YES];
 
   if (self.sessionParameters.encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
@@ -220,7 +220,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
   
   mosh_main(
-            _stream.in, _stream.out, _stream.sz,
+            _stream.in, _stream.out, &_device->win,
             &__state_callback, (__bridge void *) self,
             [self.sessionParameters.ip UTF8String],
             [self.sessionParameters.port UTF8String],
@@ -230,7 +230,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             self.sessionParameters.encodedState.length
             );
   
-  [_stream.control setRawMode:mode];
+  [_device setRawMode:mode];
 
   fprintf(_stream.out, "\r\nMosh session finished!\r\n");
   fprintf(_stream.out, "\r\n");
@@ -294,7 +294,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *sshCmd = [sshArgs componentsJoinedByString:@" "];
   [self debugMsg:sshCmd];
 
-  SSHSession *sshSession = [[SSHSession alloc] initWithStream:_stream andParametes:nil];
+  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParametes:nil];
 
   int poutput[2];
   pipe(poutput);
@@ -376,7 +376,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   _lock = [[NSLock alloc] init];
   [_lock lock];
-  [_stream.control write:@"\x1e\x1a"];
+  [_device write:@"\x1e\x1a"];
   NSTimeInterval timeout = 2;
   NSDate *d = [[NSDate date] dateByAddingTimeInterval:timeout];
   if ([_lock lockBeforeDate: d]) {

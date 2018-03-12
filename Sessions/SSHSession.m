@@ -126,7 +126,7 @@ static void kbd_callback(const char *name, int name_len,
   SSHSession *s = (__bridge SSHSession *)(*abstract);
   // We want to write straight to the control
   // ssh does the same and writes straight to /dev/tty or stderr
-  FILE *termout = s->_stream.control.termout;
+  FILE *termout = s.device.stream.out;
   if (name_len > 0) {
     fwrite(name, 1, name_len, termout);
     fprintf(termout, "\r\n");
@@ -149,7 +149,7 @@ static void kbd_callback(const char *name, int name_len,
   size_t size = 0;
   ssize_t sz = 0;
 
-  FILE *termin = _stream.control.termin;
+  FILE *termin = _stream.in;
   if ((sz = getdelim(resp, &size, '\r', termin)) == -1) {
     return -1;
   } else {
@@ -519,9 +519,11 @@ static void kbd_callback(const char *name, int name_len,
   do {
     int rc;
     if (!password) {
-      fprintf(_stream.control.termout, "%s@%s's password: ", user, _options.hostname);
+      fprintf(_device.stream.out, "%s@%s's password: ", user, _options.hostname);
+      [_device setSecureTextEntry:YES];
       [self promptUser:&password];
-      fprintf(_stream.control.termout, "\r\n");
+      fprintf(_device.stream.out, "\r\n");
+      [_device setSecureTextEntry:NO];
     }
 
     if (strlen(password) != 0) {
@@ -577,9 +579,11 @@ static void kbd_callback(const char *name, int name_len,
 
     // Request passphrase from user
     if ([pk isEncrypted]) {
-      fprintf(_stream.control.termout, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
+      [_device setSecureTextEntry:YES];
+      fprintf(_device.stream.out, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
       [self promptUser:&passphrase];
-      fprintf(_stream.control.termout, "\r\n");
+      fprintf(_device.stream.out, "\r\n");
+      [_device setSecureTextEntry:NO];
     }
 
     while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
@@ -738,8 +742,8 @@ static void kbd_callback(const char *name, int name_len,
     }
     [self debugMsg:@"ssh_session_start: pty requested"];
     libssh2_channel_request_pty_size(_channel,
-				     _stream.sz->ws_col,
-				     _stream.sz->ws_row);
+				     _device->win.ws_col,
+				     _device->win.ws_row);
   }
 
   // Send command or start shell
@@ -878,7 +882,7 @@ static void kbd_callback(const char *name, int name_len,
       char c;
       ssize_t n;
 
-      if ((n = read(fileno(_stream.control.termin), &c, 1)) <= 0) {
+      if ((n = read(fileno(_stream.in), &c, 1)) <= 0) {
 	break;
       }
 
@@ -914,7 +918,7 @@ static void kbd_callback(const char *name, int name_len,
   ssize_t rc;
   char inputbuf[BUFSIZ];
   char streambuf[BUFSIZ];
-  BOOL mode;
+  BOOL mode = [_device rawMode];
 
   [self set_nonblock:_sock];
 
@@ -922,8 +926,8 @@ static void kbd_callback(const char *name, int name_len,
 
   if (_tty_flag) {
     [self set_nonblock:fileno(_stream.in)];
-    mode = [self.stream.control rawMode];
-    [self.stream.control setRawMode:YES];
+    mode = [_device rawMode];
+    [_device setRawMode:YES];
   }
 
   memset(pfds, 0, sizeof(struct pollfd) * numfds);
@@ -955,7 +959,7 @@ static void kbd_callback(const char *name, int name_len,
       do {
 	rc = libssh2_channel_read_stderr(_channel, inputbuf, BUFSIZ);
 	if (rc > 0) {
-	  fwrite(inputbuf, rc, 1, _stream.err);	  
+	  fwrite(inputbuf, rc, 1, _stream.err);
 	  pfds[0].events |= 0;
 	} else if (rc == LIBSSH2_ERROR_EAGAIN) {
 	  pfds[0].events = POLLIN;
@@ -1023,7 +1027,7 @@ static void kbd_callback(const char *name, int name_len,
   _channel = NULL;
 
   if (_tty_flag) {
-    [self.stream.control setRawMode:mode];
+    [_device setRawMode:mode];
   }
 
   if (rc < 0) {
@@ -1036,15 +1040,14 @@ static void kbd_callback(const char *name, int name_len,
 - (void)sigwinch
 {
   libssh2_channel_request_pty_size(_channel,
-				   _stream.sz->ws_col,
-				   _stream.sz->ws_row);
+				   _device->win.ws_col,
+				   _device->win.ws_row);
 }
 
 - (void)kill
 {
   if (_stream.in) {
     fclose(_stream.in);
-    _stream.in = NULL;
   }
 }
 

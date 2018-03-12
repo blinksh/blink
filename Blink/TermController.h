@@ -31,45 +31,30 @@
 
 #import <UIKit/UIKit.h>
 
-#import "TermView.h"
+#import "TermDevice.h"
 #import "MCPSessionParameters.h"
 #import "StateManager.h"
-#import "TermInput.h"
+
 
 @class TermController;
 
 @protocol TermControlDelegate <NSObject>
 
-// terminalReady to start a specific session from the delegate, instead of inside the class.
-//- (void)terminalReady:(TermStream *)stream;
 - (void)terminalHangup:(TermController *)control;
 - (void)terminalDidResize:(TermController*)control;
 
 @end
 
 @interface TermController : UIViewController<SecureRestoration>
-
-@property (readonly) FILE *termout;
-@property (readonly) FILE *termin;
-@property (readonly) FILE *termerr;
-@property (readonly) struct winsize *termsz;
-@property (readonly, strong, nonatomic) TermView *termView;
-@property (readonly, strong, nonatomic) TermInput *termInput;
-@property (nonatomic) BOOL rawMode;
+@property (readonly, strong, nonatomic) TermDevice *termDevice;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong) NSString* sessionStateKey;
 @property (strong) MCPSessionParameters *sessionParameters;
 
-- (void)write:(NSString *)input;
 - (void)terminate;
 - (void)suspend;
 - (void)resume;
-- (void)focus;
-- (void)blur;
-- (void)reload;
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
-
-- (void)attachInput:(TermInput *)termInput;
 
 @end
