@@ -76,8 +76,7 @@
 - (void)setBoldAsBright:(BOOL)state;
 - (void)setBoldEnabled:(NSUInteger)state;
 - (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler;
-- (void)copy:(id _Nullable )sender;
-- (void)setAutoCarriageReturn:(BOOL)state;
+- (void)copy:(id)sender;
 - (void)terminate;
 - (void)reset;
 
