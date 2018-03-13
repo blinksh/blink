@@ -935,8 +935,76 @@ hterm.Terminal.prototype.appendRows_ = function(count) {
   
 };
 
+var _asciiOnlyRegex = /^[\x00-\x7F]*$/;
+
+hterm.TextAttributes.splitWidecharString = function(str) {
+  if (_asciiOnlyRegex.test(str)) {
+    return [
+      { str: str,
+        asciiNode: true,
+        wcStrWidth: str.length
+      }
+    ];
+  }
+  
+  var rv = [];
+  var base = 0, length = 0, wcStrWidth = 0, wcCharWidth;
+  var asciiNode = true;
+  
+  var len = str.length;
+  for (var i = 0; i < len;) {
+    var c = str.codePointAt(i);
+    var increment;
+    if (c < 128) {
+      wcStrWidth += 1;
+      length += 1;
+      increment = 1;
+    } else {
+      increment = (c <= 0xffff) ? 1 : 2;
+      wcCharWidth = lib.wc.charWidth(c);
+      if (wcCharWidth <= 1) {
+        wcStrWidth += wcCharWidth;
+        length += increment;
+        asciiNode = false;
+      } else {
+        if (length) {
+          rv.push({
+                  str: str.substr(base, length),
+                  asciiNode: asciiNode,
+                  wcStrWidth: wcStrWidth,
+                  });
+          asciiNode = true;
+          wcStrWidth = 0;
+        }
+        rv.push({
+                str: str.substr(i, increment),
+                wcNode: true,
+                asciiNode: false,
+                wcStrWidth: 2,
+                });
+        base = i + increment;
+        length = 0;
+      }
+    }
+    i += increment;
+  }
+  
+  if (length) {
+    rv.push({
+            str: str.substr(base, length),
+            asciiNode: asciiNode,
+            wcStrWidth: wcStrWidth,
+            });
+  }
+  
+  return rv;
+};
 
 lib.wc.strWidth = function(str) {
+  if (_asciiOnlyRegex.test(str)) {
+    return str.length;
+  }
+  
   var width,
     rv = 0;
 

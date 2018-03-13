@@ -195,6 +195,9 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
     [self debugMsg:@"Yo!"];
   }
   
+  if (ssh_options_set(_session, SSH_OPTIONS_COMPRESSION, "yes") < 0) {
+    NSLog(@"hmmm");
+  }
   if (ssh_options_set(_session, SSH_OPTIONS_HOST, _options.hostname) < 0) {
     return [self dieMsg:@"Error setting Host"];
   }

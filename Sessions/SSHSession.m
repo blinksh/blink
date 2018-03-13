@@ -432,6 +432,7 @@ static void kbd_callback(const char *name, int name_len,
   }
   //libssh2_trace(_session, LIBSSH2_TRACE_SOCKET);
 
+  libssh2_session_flag(_session, LIBSSH2_FLAG_COMPRESS, 1);
   libssh2_session_set_blocking(_session, 0);
 
   // Set timeout for libssh2 controlled functions
@@ -876,7 +877,7 @@ static void kbd_callback(const char *name, int name_len,
   int ret = -1;
 
   for (msg = prompt;; msg = again) {
-    fprintf(_stream.err, "%s", msg);
+    fprintf(_device.stream.err, "%s", msg);
     len = 0;
     do {
       char c;
@@ -887,10 +888,10 @@ static void kbd_callback(const char *name, int name_len,
       }
 
       if (c == '\n' || c == '\r') {
-	fprintf(_stream.err, "\r\n");
+	fprintf(_device.stream.err, "\r\n");
 	break;
       }
-      fprintf(_stream.err, "%c", c);
+      fprintf(_device.stream.err, "%c", c);
       buffer[len++] = c;
       buffer[len] = '\0';
     } while (BUFSIZ - 1 - len > 0);
