@@ -76,7 +76,7 @@ typedef struct SessionParams {
 - (id)initWithStream:(TermStream *)stream andParametes:(SessionParameters *)parameters;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
-- (int)main:(int)argc argv:(char **)argv args:(char *)args;
+- (int)main:(int)argc argv:(char **)argv;
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;
