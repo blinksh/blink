@@ -381,7 +381,3 @@ function term_applySexyTheme(theme) {
   term_set('foreground-color', theme.foreground);
   term_set('background-color', theme.background);
 }
-
-function term_setAutoCarriageReturn(state) {
-  t.setAutoCarriageReturn(state);
-}
