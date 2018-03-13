@@ -145,6 +145,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.themeName = [BKDefaults selectedThemeName];
   _sessionParameters.enableBold = [BKDefaults enableBold];
   _sessionParameters.boldAsBright = [BKDefaults isBoldAsBright];
+  _sessionParameters.viewWidth = self.view.bounds.size.width;
+  _sessionParameters.viewHeight = self.view.bounds.size.height;
 }
 
 - (void)createPTY
@@ -283,6 +285,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)suspend
 {
   [_sessionParameters cleanEncodedState];
+  
+  _sessionParameters.viewWidth = self.view.bounds.size.width;
+  _sessionParameters.viewHeight = self.view.bounds.size.height;
+  
   [_session suspend];
 }
 
@@ -295,6 +301,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [self destroyPTY];
   [self createPTY];
   [self startSession];
+  
+  if (self.view.bounds.size.width != _sessionParameters.viewWidth ||
+      self.view.bounds.size.height != _sessionParameters.viewHeight) {
+    [_session sigwinch];
+  }
 }
 
 - (void)focus {
@@ -350,7 +361,5 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
       break;
   }
 }
-
-
 
 @end
