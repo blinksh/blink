@@ -42,7 +42,7 @@ static const char *usage_format =
 
 @implementation SSHCopyIDSession
 
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   if (argc != 3) {
     return [self dieMsg:@(usage_format)];
@@ -79,7 +79,7 @@ static const char *usage_format =
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
   return -1;
 }
 

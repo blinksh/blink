@@ -27,19 +27,22 @@
 
 'use strict';
 
+function _reattachNode(node) {
+  var parent = node.parentNode;
+  var next = node.nextSibling;
+  
+  if (parent) {
+    parent.removeChild(node);
+    parent[next ? 'insertBefore' : 'appendChild'](node, next);
+  }
+}
+
+
 function setNodeText(node, text, opt_wcwidth) {
   node.textContent = text;
   
   if (node.nodeType === Node.TEXT_NODE) {
-
-//    var parent = node.parentNode;
-//    var next = node.nextSibling;
-//
-//    if (parent) {
-//      parent.removeChild(node);
-//      parent[next ? "insertBefore":"appendChild"](node, next);
-//    }
-    
+    _reattachNode(node);
     return;
   }
   
@@ -7664,9 +7667,7 @@ hterm.Options = function(opt_copy) {
   this.wraparound = opt_copy ? opt_copy.wraparound : true;
   this.reverseWraparound = opt_copy ? opt_copy.reverseWraparound : false;
   this.originMode = opt_copy ? opt_copy.originMode : false;
-  // iOS terminal change: need autoCarriageReturn now that commands output info
-  // this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : false;
-  this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : true;
+  this.autoCarriageReturn = opt_copy ? opt_copy.autoCarriageReturn : false;
   this.cursorVisible = opt_copy ? opt_copy.cursorVisible : false;
   this.cursorBlink = opt_copy ? opt_copy.cursorBlink : false;
   this.insertMode = opt_copy ? opt_copy.insertMode : false;
