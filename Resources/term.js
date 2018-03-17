@@ -160,7 +160,7 @@ function term_clear() {
 }
 
 function term_setIme(str) {
-  
+  return;
   var length = lib.wc.strWidth(str);
   
   var scrollPort = t.scrollPort_;
