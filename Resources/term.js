@@ -11,40 +11,6 @@ hterm.copySelectionToClipboard = function(document, content) {
   _postMessage('copy', { content });
 };
 
-var _scrollCache = null;
-
-hterm.ScrollPort.prototype.getTopRowIndex = function() {
-  if (!_scrollCache) {
-    _scrollCache = { top: this.screen_.scrollTop };
-  }
-  return Math.round(_scrollCache.top / this.characterSize.height);
-};
-
-hterm.ScrollPort.prototype.onScroll_ = function(e) {
-  _scrollCache = null;
-  var screenSize = this.getScreenSize();
-  if (
-    screenSize.width != this.lastScreenWidth_ ||
-    screenSize.height != this.lastScreenHeight_
-  ) {
-    // This event may also fire during a resize (but before the resize event!).
-    // This happens when the browser moves the scrollbar as part of the resize.
-    // In these cases, we want to ignore the scroll event and let onResize
-    // handle things.  If we don't, then we end up scrolling to the wrong
-    // position after a resize.
-    this.resize();
-    return;
-  }
-
-  this.redraw_();
-  this.publish('scroll', { scrollPort: this });
-};
-//hterm.Screen.prototype._insertString = hterm.Screen.prototype.insertString;
-//
-//hterm.Screen.prototype.insertString = function(str, wcwidth = undefined) {
-//  this._insertString(str, wcwidth);
-//  _scrollCache = null; // we need safari to reflow...
-//};
 
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};

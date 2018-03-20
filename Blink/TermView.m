@@ -125,9 +125,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _webView.scrollView.delaysContentTouches = NO;
   _webView.scrollView.canCancelContentTouches = NO;
+  _webView.scrollView.panGestureRecognizer.maximumNumberOfTouches = 1;
   
   self.opaque = NO;
   _webView.opaque = NO;
+//  _webView.transform = CGAffineTransformMakeScale(0, -1);
 
   self.alpha = 0;
   _webView.alpha = 0;
