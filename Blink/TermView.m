@@ -165,7 +165,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView loadRequest:request];
 }
 
-
 - (void)reloadWith:(MCPSessionParameters *)params;
 {
   [_webView.configuration.userContentController removeAllUserScripts];
