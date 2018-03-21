@@ -129,7 +129,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   self.opaque = NO;
   _webView.opaque = NO;
-//  _webView.transform = CGAffineTransformMakeScale(0, -1);
 
   self.alpha = 0;
   _webView.alpha = 0;
