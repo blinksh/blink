@@ -1,7 +1,5 @@
 'use strict';
 
-var _screenSize = null;
-
 hterm.ScrollPort.prototype.focus = function() {
   //  this.iframe_.focus(); // Blink: No iframe anymore
   //this.screen_.focus();
@@ -71,7 +69,9 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
 
   if (cursorRowIndex > bottomRowIndex) {
     // Cursor is scrolled off screen, move it outside of the visible area.
-    this.setCssVar('cursor-offset-row', '-1');
+    if (this.getCssVar('cursor-offset-row') !== '-1') {
+      this.setCssVar('cursor-offset-row', '-1');
+    }
     return;
   }
 
@@ -109,51 +109,6 @@ hterm.Terminal.prototype.syncCursorPosition_ = function() {
   var selection = this.document_.getSelection();
   if (selection && selection.isCollapsed)
     this.screen_.syncSelectionCaret(selection);
-};
-
-hterm.VT.prototype.dispatch = function(type, code, parseState) {
-  var handler = hterm.VT[type][code];
-  if (!handler) {
-    if (this.warnUnimplemented)
-      console.warn('Unknown ' + type + ' code: ' + JSON.stringify(code));
-    return;
-  }
-
-  if (handler == hterm.VT.ignore) {
-    if (this.warnUnimplemented)
-      console.warn('Ignored ' + type + ' code: ' + JSON.stringify(code));
-    return;
-  }
-
-  if (parseState.subargs && !handler.supportsSubargs) {
-    if (this.warnUnimplemented)
-      console.warn(
-        'Ignored ' + type + ' code w/subargs: ' + JSON.stringify(code),
-      );
-    return;
-  }
-
-  if (type == 'CC1' && code > '\x7f' && !this.enable8BitControl) {
-    // It's kind of a hack to put this here, but...
-    //
-    // If we're dispatching a 'CC1' code, and it's got the eighth bit set,
-    // but we're not supposed to handle 8-bit codes?  Just ignore it.
-    //
-    // This prevents an errant (DCS, '\x90'), (OSC, '\x9d'), (PM, '\x9e') or
-    // (APC, '\x9f') from locking up the terminal waiting for its expected
-    // (ST, '\x9c') or (BEL, '\x07').
-    console.warn(
-      'Ignoring 8-bit control code: 0x' + code.charCodeAt(0).toString(16),
-    );
-    return;
-  }
-
-  if (!handler._binded) {
-    handler._binded = handler.bind(this);
-  }
-  handler._binded(parseState, code);
-  //  }
-  //  handler.apply(this, [parseState, code]);
 };
 
 var _asciiOnlyRegex = /^[\x00-\x7F]*$/;
@@ -220,6 +175,45 @@ hterm.TextAttributes.splitWidecharString = function(str) {
   
   return rv;
 };
+
+lib.wc.substr = function(str, start, opt_width) {
+  if (_asciiOnlyRegex.test(str)) {
+    return str.substr(start, opt_width);
+  }
+  
+  var startIndex = 0;
+  var endIndex, width;
+  
+  // Fun edge case: Normally we associate zero width codepoints (like combining
+  // characters) with the previous codepoint, so we skip any leading ones while
+  // including trailing ones.  However, if there are zero width codepoints at
+  // the start of the string, and the substring starts at 0, lets include them
+  // in the result.  This also makes for a simple optimization for a common
+  // request.
+  if (start) {
+    for (width = 0; startIndex < str.length;) {
+      const codePoint = str.codePointAt(startIndex);
+      width += lib.wc.charWidth(codePoint);
+      if (width > start)
+        break;
+      startIndex += (codePoint <= 0xffff) ? 1 : 2;
+    }
+  }
+  
+  if (opt_width != undefined) {
+    for (endIndex = startIndex, width = 0; endIndex < str.length;) {
+      const codePoint = str.codePointAt(endIndex);
+      width += lib.wc.charWidth(codePoint);
+      if (width > opt_width)
+        break;
+      endIndex += (codePoint <= 0xffff) ? 1 : 2;
+    }
+    return str.substring(startIndex, endIndex);
+  }
+  
+  return str.substr(startIndex);
+};
+
 
 lib.wc.strWidth = function(str) {
   if (_asciiOnlyRegex.test(str)) {
