@@ -214,10 +214,9 @@
                     </constraints>
                 </stackView>
             </subviews>
+            <color key="backgroundColor" cocoaTouchSystemColor="viewFlipsideBackgroundColor"/>
             <constraints>
                 <constraint firstItem="o5R-mY-Oea" firstAttribute="height" secondItem="i5M-Pr-FkT" secondAttribute="height" id="NiB-SB-3i0"/>
-                <constraint firstItem="6Kk-Wl-VMp" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="gqw-Dy-Ipc" userLabel="leading = Stack.leading"/>
-                <constraint firstItem="6Kk-Wl-VMp" firstAttribute="trailing" secondItem="i5M-Pr-FkT" secondAttribute="trailing" id="uNz-4C-Iq6"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="top" secondItem="i5M-Pr-FkT" secondAttribute="top" id="voi-FJ-sD9" userLabel="top=Stack.top"/>
                 <constraint firstItem="6Kk-Wl-VMp" firstAttribute="bottom" secondItem="i5M-Pr-FkT" secondAttribute="bottom" id="zxZ-0Y-hcL"/>
             </constraints>
