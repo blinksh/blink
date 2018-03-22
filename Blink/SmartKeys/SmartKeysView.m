@@ -84,6 +84,15 @@ NSString *const KbdTabKey = @"⇥";
 //  _nonModifierScrollView.translatesAutoresizingMaskIntoConstraints = NO;
   _nonModifierScrollView.backgroundColor = [UIColor grayColor];
   self.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+
+  if (@available(iOS 11.0, *)) {
+    [self.safeAreaLayoutGuide.leadingAnchor constraintEqualToAnchor:_stack.leadingAnchor].active = YES;
+    [self.safeAreaLayoutGuide.trailingAnchor constraintEqualToAnchor:_stack.trailingAnchor].active = YES;
+  } else {
+    [self.leadingAnchor constraintEqualToAnchor:_stack.leadingAnchor].active = YES;
+    [self.trailingAnchor constraintEqualToAnchor:_stack.trailingAnchor].active = YES;
+  }
+  
   [self setupModifierButtons];
 }
 
