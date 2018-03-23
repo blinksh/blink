@@ -384,6 +384,42 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [self blur];
   }
 }
+  
+- (NSString *)_menuTitleFromNSURL:(NSURL *)url
+{
+  if (!url) {
+    return @"";
+  }
+  
+  NSString *base = url.host;
+  
+  if (!base) {
+    if ([@"mailto" isEqualToString:url.scheme]) {
+      base = @"Email";
+    } else {
+      base = @"URL";
+    }
+  }
+  
+  if (url.fragment.length > 0 || url.path.length > 0 || url.query.length > 0) {
+    return [base stringByAppendingString:@"…"];
+  }
+  
+  return base;
+}
+  
+- (NSString *)_menuActionTitleFromNSURL:(NSURL *)url
+{
+  if (!url) {
+    return @"Open";
+  }
+
+  if ([@"mailto" isEqualToString:url.scheme]) {
+    return @"Compose";
+  }
+  
+  return @"Open";
+}
 
 - (void)_handleSelectionChange:(NSDictionary *)data
 {
@@ -403,11 +439,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _detectedLink = [self _detectLinkInSelection:data];
   
   if (_detectedLink) {
-    NSString *host = [_detectedLink host];
-    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:host]
+    NSString *urlName = [self _menuTitleFromNSURL: _detectedLink];
+    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:urlName]
                                                 action:@selector(copyLink:)]];
     
-    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Open " stringByAppendingString:host]
+    NSString *actionTitle = [NSString stringWithFormat:@"%@ %@",
+                             [self _menuActionTitleFromNSURL:_detectedLink], urlName];
+    [items addObject:[[UIMenuItem alloc] initWithTitle:actionTitle
                                                 action:@selector(openLink:)]];
   }
 
