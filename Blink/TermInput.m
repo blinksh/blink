@@ -210,7 +210,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 @end
 
-@interface TermInput () <UndoManagerDelegate, UITextViewDelegate, NSTextStorageDelegate>
+@interface TermInput () <UndoManagerDelegate, NSTextStorageDelegate>
 @end
 
 @implementation TermInput {
@@ -260,8 +260,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       self.smartQuotesType = UITextSmartQuotesTypeNo;
       self.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
     }
-    
-    self.delegate = self;
     
     _smartKeys = [[SmartKeysController alloc] init];
     _smartKeys.textInputDelegate = self;
@@ -469,16 +467,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self reset];
 }
   
-//- (void)textViewDidChange:(UITextView *)textView
-//{
-//  if (textView.text.length == 0) {
-////    _markedText = nil;
-//    _skipTextStorageDelete = YES;
-//    [self reset];
-//    _skipTextStorageDelete = NO;
-//  }
-//}
-
 - (void)insertText:(NSString *)text
 {
   [self _insertText:text];
