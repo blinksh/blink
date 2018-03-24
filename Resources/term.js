@@ -154,7 +154,7 @@ function term_setIme(str) {
     } else {
       ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - ' + (Math.floor(length / (screenCols + 1))) + ' - 1))'
     }
-  } else if ((cursorCol + length) <= screenCols ) {
+  } else if (cursorCol + length <= screenCols ) {
     // we are inlined
     ime.style.left = 'calc(var(--hterm-charsize-width) * var(--hterm-cursor-offset-col))';
     ime.style.top = 'calc(var(--hterm-charsize-height) * var(--hterm-cursor-offset-row))';
