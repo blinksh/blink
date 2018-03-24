@@ -135,6 +135,16 @@
 		2236A8ED2038972D001CD2AD /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2236A8EC2038972C001CD2AD /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I ../ios_system/curl/curl/include/ -I ../ios_system/curl/curl/lib/ -I ../ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I ../ios_system/"; }; };
 		2236A8EE203897E6001CD2AD /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8E720389643001CD2AD /* curl_ios_static.framework */; };
 		2236A8F02038982B001CD2AD /* libnetwork_ios.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224414452066C1C50033CB42 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 224414432066C1C50033CB42 /* commandDictionary.plist */; };
+		224414462066C1C50033CB42 /* extraCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 224414442066C1C50033CB42 /* extraCommandsDictionary.plist */; };
+		224414512066C2080033CB42 /* libbibtex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414472066C1F30033CB42 /* libbibtex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224414522066C2080033CB42 /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224414532066C2080033CB42 /* libluatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414482066C1F40033CB42 /* libluatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224414542066C2080033CB42 /* libpdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2244144A2066C1F40033CB42 /* libpdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		224414552066C2080033CB42 /* libtexlua52.5.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414492066C1F40033CB42 /* libtexlua52.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2244145C2066C22D0033CB42 /* libctags.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414562066C2170033CB42 /* libctags.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		2244145D2066C22D0033CB42 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414572066C2170033CB42 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		2244145E2066C22D0033CB42 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414582066C2180033CB42 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3232036ED62001FCC5C /* ios_system.framework */; };
 		22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3252036EDD5001FCC5C /* libtar.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3262036EDD5001FCC5C /* libtext.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
@@ -281,13 +291,6 @@
 			remoteGlobalIDString = 2219DFCF1FD73AF500675252;
 			remoteInfo = curl_ios_static;
 		};
-		D26CF0962039A88700A091EF /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
-			remoteInfo = "MBProgressHUD Framework tvOS";
-		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -320,6 +323,11 @@
 				22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */,
 				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
 				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
+				224414512066C2080033CB42 /* libbibtex.dylib in Embed Frameworks */,
+				224414522066C2080033CB42 /* libkpathsea.6.dylib in Embed Frameworks */,
+				224414532066C2080033CB42 /* libluatex.dylib in Embed Frameworks */,
+				224414542066C2080033CB42 /* libpdftex.dylib in Embed Frameworks */,
+				224414552066C2080033CB42 /* libtexlua52.5.dylib in Embed Frameworks */,
 				22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */,
 				22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */,
 				22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */,
@@ -327,6 +335,9 @@
 				22E1F3302036EDD6001FCC5C /* libfiles.dylib in Embed Frameworks */,
 				22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */,
 				22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */,
+				2244145C2066C22D0033CB42 /* libctags.dylib in Embed Frameworks */,
+				2244145D2066C22D0033CB42 /* lua_ios.framework in Embed Frameworks */,
+				2244145E2066C22D0033CB42 /* Python_ios.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
 			);
@@ -424,6 +435,16 @@
 		2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
 		2236A8EC2038972C001CD2AD /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
 		2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnetwork_ios.dylib; sourceTree = "<group>"; };
+		224414432066C1C50033CB42 /* commandDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandDictionary.plist; sourceTree = "<group>"; };
+		224414442066C1C50033CB42 /* extraCommandsDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = extraCommandsDictionary.plist; sourceTree = "<group>"; };
+		224414472066C1F30033CB42 /* libbibtex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbibtex.dylib; sourceTree = "<group>"; };
+		224414482066C1F40033CB42 /* libluatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libluatex.dylib; sourceTree = "<group>"; };
+		224414492066C1F40033CB42 /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtexlua52.5.dylib; sourceTree = "<group>"; };
+		2244144A2066C1F40033CB42 /* libpdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libpdftex.dylib; sourceTree = "<group>"; };
+		2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libkpathsea.6.dylib; sourceTree = "<group>"; };
+		224414562066C2170033CB42 /* libctags.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libctags.dylib; sourceTree = "<group>"; };
+		224414572066C2170033CB42 /* lua_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = lua_ios.framework; sourceTree = "<group>"; };
+		224414582066C2180033CB42 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Python_ios.framework; sourceTree = "<group>"; };
 		22E1F3232036ED62001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		22E1F3252036EDD5001FCC5C /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtar.dylib; sourceTree = "<group>"; };
 		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtext.dylib; sourceTree = "<group>"; };
@@ -633,6 +654,8 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				224414432066C1C50033CB42 /* commandDictionary.plist */,
+				224414442066C1C50033CB42 /* extraCommandsDictionary.plist */,
 				D209465B204D3FC5003C4F72 /* cacert.pem */,
 				85A34303200A837A009324F1 /* webfontloader.js */,
 				0732F04B1D062B9A00AB5438 /* term.html */,
@@ -652,6 +675,14 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				224414562066C2170033CB42 /* libctags.dylib */,
+				224414572066C2170033CB42 /* lua_ios.framework */,
+				224414582066C2180033CB42 /* Python_ios.framework */,
+				224414472066C1F30033CB42 /* libbibtex.dylib */,
+				2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */,
+				224414482066C1F40033CB42 /* libluatex.dylib */,
+				2244144A2066C1F40033CB42 /* libpdftex.dylib */,
+				224414492066C1F40033CB42 /* libtexlua52.5.dylib */,
 				22E1F3232036ED62001FCC5C /* ios_system.framework */,
 				2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */,
 				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
@@ -701,7 +732,6 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
-				D26CF0972039A88700A091EF /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1132,7 +1162,7 @@
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = HV2S48975V;
+						DevelopmentTeam = VG8Z23C8YL;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -1253,13 +1283,6 @@
 			remoteRef = 2236A8E620389643001CD2AD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		D26CF0972039A88700A091EF /* MBProgressHUD.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBProgressHUD.framework;
-			remoteRef = D26CF0962039A88700A091EF /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1288,9 +1311,11 @@
 			files = (
 				07E3AED31D919272007BC086 /* css in Resources */,
 				D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */,
+				224414452066C1C50033CB42 /* commandDictionary.plist in Resources */,
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
+				224414462066C1C50033CB42 /* extraCommandsDictionary.plist in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
@@ -1702,7 +1727,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1721,10 +1746,11 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1743,7 +1769,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = HV2S48975V;
+				DEVELOPMENT_TEAM = VG8Z23C8YL;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1759,10 +1785,11 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
+					"$(PROJECT_DIR)/Frameworks",
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
+				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
