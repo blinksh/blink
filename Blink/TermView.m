@@ -207,6 +207,11 @@
   [_webView evaluateJavaScript:term_reset() completionHandler:nil];
 }
 
+- (void)setAutoCarriageReturn:(BOOL)state
+{
+  [_webView evaluateJavaScript:term_setAutoCarriageReturn(state) completionHandler:nil];
+}
+
 - (void)increaseFontSize
 {
   [_webView evaluateJavaScript:term_increaseFontSize() completionHandler:nil];

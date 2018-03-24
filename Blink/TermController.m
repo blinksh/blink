@@ -78,6 +78,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   write(_pinput[1], str, [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
+- (BOOL)handleControl:(NSString *)control
+{
+  return [_session handleControl:control];
+}
+
 - (void)indexCommand:(NSString *)cmdLine {
   
   NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];

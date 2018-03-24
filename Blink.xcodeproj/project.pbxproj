@@ -132,6 +132,20 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		2236A8ED2038972D001CD2AD /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2236A8EC2038972C001CD2AD /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I ../ios_system/curl/curl/include/ -I ../ios_system/curl/curl/lib/ -I ../ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I ../ios_system/"; }; };
+		2236A8EE203897E6001CD2AD /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8E720389643001CD2AD /* curl_ios_static.framework */; };
+		2236A8F02038982B001CD2AD /* libnetwork_ios.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3232036ED62001FCC5C /* ios_system.framework */; };
+		22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3252036EDD5001FCC5C /* libtar.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3262036EDD5001FCC5C /* libtext.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3272036EDD5001FCC5C /* libshell.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3302036EDD6001FCC5C /* libfiles.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3292036EDD6001FCC5C /* libfiles.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32A2036EDD6001FCC5C /* libcurl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32B2036EDD6001FCC5C /* libawk.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
+		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3372036EEB8001FCC5C /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E70201F8A230090E974 /* RoundedToolbar.m */; };
 		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -171,6 +185,8 @@
 		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
+		D2094665204D4DB8003C4F72 /* SystemSession.m in Sources */ = {isa = PBXBuildFile; fileRef = D2094664204D4DB8003C4F72 /* SystemSession.m */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
@@ -237,13 +253,6 @@
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
 		};
-		0747D6382018182D00CF8F0C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
-			remoteInfo = "MBProgressHUD Framework tvOS";
-		};
 		0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
@@ -264,6 +273,20 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1D104D791ACA36CC00973364;
 			remoteInfo = "MBProgressHUD Framework";
+		};
+		2236A8E620389643001CD2AD /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 2219DFCF1FD73AF500675252;
+			remoteInfo = curl_ios_static;
+		};
+		D26CF0962039A88700A091EF /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
+			remoteInfo = "MBProgressHUD Framework tvOS";
 		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -293,6 +316,17 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				2236A8F02038982B001CD2AD /* libnetwork_ios.dylib in Embed Frameworks */,
+				22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */,
+				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
+				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
+				22E1F32C2036EDD6001FCC5C /* libtar.dylib in Embed Frameworks */,
+				22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */,
+				22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */,
+				22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */,
+				22E1F3302036EDD6001FCC5C /* libfiles.dylib in Embed Frameworks */,
+				22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */,
+				22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
 			);
@@ -387,6 +421,20 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
+		2236A8EC2038972C001CD2AD /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
+		2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnetwork_ios.dylib; sourceTree = "<group>"; };
+		22E1F3232036ED62001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
+		22E1F3252036EDD5001FCC5C /* libtar.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtar.dylib; sourceTree = "<group>"; };
+		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtext.dylib; sourceTree = "<group>"; };
+		22E1F3272036EDD5001FCC5C /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libshell.dylib; sourceTree = "<group>"; };
+		22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libssh_cmd.dylib; sourceTree = "<group>"; };
+		22E1F3292036EDD6001FCC5C /* libfiles.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libfiles.dylib; sourceTree = "<group>"; };
+		22E1F32A2036EDD6001FCC5C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcurl.dylib; sourceTree = "<group>"; };
+		22E1F32B2036EDD6001FCC5C /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libawk.dylib; sourceTree = "<group>"; };
+		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
+		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		22E1F3372036EEB8001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
 		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
 		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
@@ -460,6 +508,9 @@
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
+		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
+		D2094663204D4DB8003C4F72 /* SystemSession.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SystemSession.h; sourceTree = "<group>"; };
+		D2094664204D4DB8003C4F72 /* SystemSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SystemSession.m; sourceTree = "<group>"; };
 		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
@@ -509,6 +560,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2236A8EE203897E6001CD2AD /* curl_ios_static.framework in Frameworks */,
+				22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
@@ -580,6 +633,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D209465B204D3FC5003C4F72 /* cacert.pem */,
 				85A34303200A837A009324F1 /* webfontloader.js */,
 				0732F04B1D062B9A00AB5438 /* term.html */,
 				D2496F402003941B00E75FE9 /* term.js */,
@@ -598,6 +652,18 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				22E1F3232036ED62001FCC5C /* ios_system.framework */,
+				2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */,
+				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
+				22E1F3342036EE86001FCC5C /* libssh2.framework */,
+				22E1F3332036EE86001FCC5C /* openssl.framework */,
+				22E1F32B2036EDD6001FCC5C /* libawk.dylib */,
+				22E1F32A2036EDD6001FCC5C /* libcurl.dylib */,
+				22E1F3292036EDD6001FCC5C /* libfiles.dylib */,
+				22E1F3272036EDD5001FCC5C /* libshell.dylib */,
+				22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */,
+				22E1F3252036EDD5001FCC5C /* libtar.dylib */,
+				22E1F3262036EDD5001FCC5C /* libtext.dylib */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
@@ -635,7 +701,7 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
-				0747D6392018182D00CF8F0C /* MBProgressHUD.framework */,
+				D26CF0972039A88700A091EF /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -765,6 +831,7 @@
 		07F670621D05EEE200C0A53C /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
+				2236A8EC2038972C001CD2AD /* tool_main.c */,
 				D210E99C1D5B89910012E1C5 /* utf8.c */,
 				D210E99D1D5B89910012E1C5 /* utf8.h */,
 				07F670631D05EEE200C0A53C /* linenoise.c */,
@@ -785,9 +852,19 @@
 				07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */,
 				07F6706F1D05EEE200C0A53C /* SSHSession.h */,
 				07F670701D05EEE200C0A53C /* SSHSession.m */,
+				D2094663204D4DB8003C4F72 /* SystemSession.h */,
+				D2094664204D4DB8003C4F72 /* SystemSession.m */,
 			);
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
+		};
+		2236A8E320389643001CD2AD /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				2236A8E720389643001CD2AD /* curl_ios_static.framework */,
+			);
+			name = Products;
+			sourceTree = "<group>";
 		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
 			isa = PBXGroup;
@@ -954,6 +1031,7 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
@@ -1104,6 +1182,10 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
+					ProductGroup = 2236A8E320389643001CD2AD /* Products */;
+					ProjectRef = 2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */;
+				},
+				{
 					ProductGroup = 0732F1061D062BF700AB5438 /* Products */;
 					ProjectRef = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
 				},
@@ -1157,18 +1239,25 @@
 			remoteRef = 0732F11A1D062CA000AB5438 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0747D6392018182D00CF8F0C /* MBProgressHUD.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = MBProgressHUD.framework;
-			remoteRef = 0747D6382018182D00CF8F0C /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0747D63E2018182D00CF8F0C /* TestHost.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
 			path = TestHost.app;
 			remoteRef = 0747D63D2018182D00CF8F0C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		2236A8E720389643001CD2AD /* curl_ios_static.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = curl_ios_static.framework;
+			remoteRef = 2236A8E620389643001CD2AD /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		D26CF0972039A88700A091EF /* MBProgressHUD.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBProgressHUD.framework;
+			remoteRef = D26CF0962039A88700A091EF /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 /* End PBXReferenceProxy section */
@@ -1212,6 +1301,7 @@
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
 				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
+				D2094662204D3FC5003C4F72 /* cacert.pem in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
@@ -1345,6 +1435,7 @@
 				D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
+				2236A8ED2038972D001CD2AD /* tool_main.c in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
@@ -1355,6 +1446,7 @@
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				D2094665204D4DB8003C4F72 /* SystemSession.m in Sources */,
 				C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
@@ -1630,6 +1722,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
@@ -1646,9 +1739,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_ENTITLEMENTS = Blink/Blink.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Distribution";
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
-				CODE_SIGN_STYLE = Manual;
+				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
@@ -1667,11 +1760,12 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
 				);
+				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
-				PROVISIONING_PROFILE = "ef71f761-fcc0-457d-ad7c-07e520594656";
-				PROVISIONING_PROFILE_SPECIFIER = Com.CarlosCabanero.BlinkShell.Dist;
+				PROVISIONING_PROFILE = "";
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = arm64;
