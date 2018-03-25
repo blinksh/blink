@@ -203,21 +203,22 @@ char* hints(const char * line, int *color, int *bold)
 // Extracted at runtime from ios_system() plus blinkshell commands:
 NSArray* commandList;
 // Commands that don't take a file as argument (uname, ssh, mosh...):
-NSArray* commandsNoFile;
+NSArray* blinkShellCommands;
 
 void initializeCommandListForCompletion() {
   // set up the list of commands for auto-complete:
   // list of commands from ios_system:
   NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
   // add commands from Blinkshell:
-  [combinedCommands addObjectsFromArray:@[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config"]];
+  blinkShellCommands = @[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config", @"theme", @"clear", @"history", @"music"];
+  [combinedCommands addObjectsFromArray: blinkShellCommands];
   // sort alphabetically:
   commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
-  commandsNoFile = @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"ssh-save-id", @"config", @"setenv", @"unsetenv", @"printenv", @"pwd", @"uname", @"date", @"env", @"id", @"groups", @"whoami", @"uptime", @"w"];
 }
 
 void completion(const char *command, linenoiseCompletions *lc) {
   // autocomplete command for lineNoise
+  // TODO: get current working directory from ios_system
   BOOL isDir;
   NSString* commandString = [NSString stringWithUTF8String:command];
   if ([commandString rangeOfString:@" "].location == NSNotFound) {
@@ -248,8 +249,9 @@ void completion(const char *command, linenoiseCompletions *lc) {
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
     NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
-    if ([commandsNoFile containsObject:commandArray[0]]) return;
-
+    if ([blinkShellCommands containsObject:commandArray[0]]) return;
+    if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) return;
+    // If we made it this far, command operates on file or directory:
     // Last position of space in the command.
     // Would be better if I could get position of cursor.
     NSString* argument = commandArray.lastObject;
@@ -390,7 +392,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     [self setTitle]; // Temporary, until the apps restore the right state.
     [self.stream.control setRawMode:NO];
   }
-
+    ios_closeSession(_stream.out);
   [self out:"Bye!"];
 
   return 0;
@@ -590,6 +592,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     return nil;
   }
 
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:ios_currentDirectory(_stream.out)];
   int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, _stream.sz);
   if (count == -1) {
     return nil;
