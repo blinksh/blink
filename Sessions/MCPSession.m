@@ -202,16 +202,13 @@ char* hints(const char * line, int *color, int *bold)
 // List of all commands available, sorted alphabetically:
 // Extracted at runtime from ios_system() plus blinkshell commands:
 NSArray* commandList;
-// Commands that don't take a file as argument (uname, ssh, mosh...):
-NSArray* blinkShellCommands;
 
 void initializeCommandListForCompletion() {
   // set up the list of commands for auto-complete:
   // list of commands from ios_system:
   NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
   // add commands from Blinkshell:
-  blinkShellCommands = @[@"help",@"mosh",@"ssh",@"exit",@"ssh-copy-id",@"ssh-save-id",@"config", @"theme", @"clear", @"history", @"music"];
-  [combinedCommands addObjectsFromArray: blinkShellCommands];
+  [combinedCommands addObjectsFromArray: __commandList];
   // sort alphabetically:
   commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
 }
@@ -249,7 +246,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
     NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
-    if ([blinkShellCommands containsObject:commandArray[0]]) return;
+    if ([__commandList containsObject:commandArray[0]]) return;
     if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) return;
     // If we made it this far, command operates on file or directory:
     // Last position of space in the command.
