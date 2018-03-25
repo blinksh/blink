@@ -32,6 +32,7 @@
   stdin = _stream.in;
   stdout = _stream.out;
   stderr = stdout;
+  fprintf(stderr, "Launching ios_system, ession = %x stream = %x stdout = %x fileno = %x \n", (int) self, (int) _stream, (int)_stream.out, fileno(_stream.out));
   int res = ios_system(args);
   // get all output back:
   stdout = saved_out;
@@ -44,7 +45,7 @@
 - (BOOL)handleControl:(NSString *)control
 {
   if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
-    ios_kill(_stream.out);
+    ios_kill();
     return YES;
   }
   

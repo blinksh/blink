@@ -192,6 +192,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
   _session = [[MCPSession alloc] initWithStream:stream andParametes:_sessionParameters];
   _session.delegate = self;
+  [_session setActiveSession];
   [_session executeWithArgs:@""];
 }
 
@@ -310,6 +311,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)focus {
   [_termView focus];
+  [_session setActiveSession];
   if (![_termView.window isKeyWindow]) {
     [_termView.window makeKeyWindow];
   }
@@ -339,6 +341,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   
   if ([_termInput isFirstResponder]) {
     [_termView focus];
+    [_session setActiveSession]; 
   } else {
     [_termView blur];
   }

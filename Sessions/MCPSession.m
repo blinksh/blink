@@ -365,7 +365,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     [self setTitle]; // Temporary, until the apps restore the right state.
     [self.stream.control setRawMode:NO];
   }
-    ios_closeSession(_stream.out);
+  ios_closeSession(_stream.out);
   [self out:"Bye!"];
 
   return 0;
@@ -484,6 +484,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
+  fprintf(stderr, "Inside MCPSession, session = %x stream = %x stdout = %x fileno = %x \n", (int) self, (int) _stream, (int)_stream.out, fileno(_stream.out));
   _childSession = [[SystemSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"system";
   [_childSession executeAttachedWithArgs:args];
@@ -565,7 +566,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
     return nil;
   }
 
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:ios_currentDirectory(_stream.out)];
   int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, _stream.sz);
   if (count == -1) {
     return nil;
@@ -607,4 +607,10 @@ void completion(const char *command, linenoiseCompletions *lc) {
 
   return NO;
 }
+
+- (void)setActiveSession {
+  ios_switchSession((__bridge void*)self);
+}
+
+
 @end

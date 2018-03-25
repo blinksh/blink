@@ -184,5 +184,7 @@ void *run_session(void *params)
   return NO;
 }
 
+- (void)setActiveSession {
+}
 
 @end

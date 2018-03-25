@@ -81,5 +81,6 @@ typedef struct SessionParams {
 - (void)kill;
 - (void)suspend;
 - (BOOL)handleControl:(NSString *)control;
+- (void)setActiveSession;
 
 @end
