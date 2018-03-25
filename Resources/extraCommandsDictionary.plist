@@ -18,21 +18,21 @@
 	</array>
 	<key>chgrp</key>
 	<array>
-		<string>libfiles.dylib</string>
+		<string>files.framework/files</string>
 		<string>chown_main</string>
 		<string>HLPRfhv</string>
 		<string>file</string>
 	</array>
 	<key>chmod</key>
 	<array>
-		<string>libfiles.dylib</string>
+		<string>files.framework/files</string>
 		<string>chmod_main</string>
 		<string>ACEHILNPRVXafghinorstuvwx</string>
 		<string>file</string>
 	</array>
 	<key>chown</key>
 	<array>
-		<string>libfiles.dylib</string>
+		<string>files.framework/files</string>
 		<string>chown_main</string>
 		<string>HLPRfhv</string>
 		<string>file</string>
@@ -53,7 +53,7 @@
 	</array>
 	<key>df</key>
 	<array>
-		<string>libfiles.dylib</string>
+		<string>files.framework/files</string>
 		<string>df_main</string>
 		<string>abgHhiklmnPtT:</string>
 		<string>file</string>

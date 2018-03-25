@@ -32,7 +32,6 @@
   stdin = _stream.in;
   stdout = _stream.out;
   stderr = stdout;
-  fprintf(stderr, "Launching ios_system, ession = %x stream = %x stdout = %x fileno = %x \n", (int) self, (int) _stream, (int)_stream.out, fileno(_stream.out));
   int res = ios_system(args);
   // get all output back:
   stdout = saved_out;

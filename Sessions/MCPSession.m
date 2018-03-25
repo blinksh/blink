@@ -484,7 +484,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  fprintf(stderr, "Inside MCPSession, session = %x stream = %x stdout = %x fileno = %x \n", (int) self, (int) _stream, (int)_stream.out, fileno(_stream.out));
   _childSession = [[SystemSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"system";
   [_childSession executeAttachedWithArgs:args];
