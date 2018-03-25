@@ -175,30 +175,6 @@ char* hints(const char * line, int *color, int *bold)
   fprintf(_stream.control.termout, "\033]0;blink\007");
 }
 
-- (void)ssh_save_id:(int)argc argv:(char **)argv {
-  // Save specific IDs to ~/Documents/.ssh/...
-  // Useful for other Unix tools
-  BKPubKey *pk;
-  // Path = getenv(SSH_HOME) or ~/Documents
-  NSString* keypath;
-  if (getenv("SSH_HOME")) keypath = [NSString stringWithUTF8String:getenv("SSH_HOME")];
-  else keypath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  keypath = [keypath stringByAppendingPathComponent:@".ssh"];
-  
-  for (int i = 1; i < argc; i++) {
-    if ((pk = [BKPubKey withID:[NSString stringWithUTF8String:argv[i]]]) != nil) {
-      NSString* filename = [keypath stringByAppendingPathComponent:[NSString stringWithUTF8String:argv[i]]];
-      // save private key:
-      [pk.privateKey writeToFile:filename atomically:NO];
-      filename = [filename stringByAppendingString:@".pub"];
-      [pk.publicKey writeToFile:filename atomically:NO];
-    }
-  }
-  if (argc < 1) {
-    [self out:"Usage: ssh-save-id identity"];
-  }
-}
-
 // List of all commands available, sorted alphabetically:
 // Extracted at runtime from ios_system() plus blinkshell commands:
 NSArray* commandList;
