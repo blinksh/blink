@@ -31,8 +31,8 @@
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "TermView.h"
 
+@class TermDevice;
 @class UndoManager;
 
 @protocol UndoManagerDelegate
@@ -48,7 +48,7 @@
 @property BOOL raw;
 @property BOOL softwareKB;
 
-@property (weak) id<TerminalDelegate> termDelegate;
+@property TermDevice *device;
 
 - (void)copyLink:(id)sender;
 - (void)openLink:(id)sender;

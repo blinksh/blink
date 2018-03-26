@@ -42,9 +42,9 @@
 
   UIApplication *app = [UIApplication sharedApplication];
   if ([app canOpenURL:twitterApp]) {
-    [app openURL:twitterApp];
+    [app openURL:twitterApp options:@{} completionHandler:nil];
   } else {
-    [app openURL:twitterURL];
+    [app openURL:twitterURL options:@{} completionHandler:nil];
   }
 }
 
@@ -54,20 +54,20 @@
   if (location) {
     githubURL = [githubURL URLByAppendingPathComponent:location];
   }
-  [[UIApplication sharedApplication] openURL:githubURL];
+  [[UIApplication sharedApplication] openURL:githubURL options:@{} completionHandler:nil];
 }
 
 + (void)sendToAppStore
 {
   NSURL *appStoreLink = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1156707581?action=write-review"];
-  [[UIApplication sharedApplication] openURL:appStoreLink];
+  [[UIApplication sharedApplication] openURL:appStoreLink options:@{} completionHandler:nil];
 }
 
 + (void)sendToEmailApp
 {
   NSURL *mailURL = [NSURL URLWithString:@"mailto:support@blink.sh"];
 
-  [[UIApplication sharedApplication] openURL:mailURL];
+  [[UIApplication sharedApplication] openURL:mailURL options:@{} completionHandler:nil];
 }
 
 @end

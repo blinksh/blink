@@ -47,6 +47,10 @@ NSString *term_write(NSString *data) {
   return [NSString stringWithFormat:@"term_write(%@[0]);", _encodeString(data)];
 }
 
+NSString *term_writeB64(NSData *data) {
+  return [NSString stringWithFormat:@"term_write_b64(\"%@\");", [data base64EncodedStringWithOptions:kNilOptions]];
+}
+
 NSString *term_clear()
 {
   return @"term_clear();";

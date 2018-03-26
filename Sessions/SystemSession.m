@@ -14,7 +14,7 @@
 - (void)_setAutoCarriageReturn:(BOOL)state
 {
   dispatch_sync(dispatch_get_main_queue(), ^{
-    [_stream.control.termView setAutoCarriageReturn:state];
+    [_device.view setAutoCarriageReturn:state];
   });
 }
 
@@ -24,7 +24,7 @@
   // Re-evalute column number before each command
   [self _setAutoCarriageReturn:YES];
   char columnCountString[10];
-  sprintf(columnCountString, "%i", self.stream.sz->ws_col);
+  sprintf(columnCountString, "%i", _device->win.ws_col);
   setenv("COLUMNS", columnCountString, 1); // force rewrite of value
   // Redirect all output to console:
   FILE* saved_out = stdout;

@@ -43,6 +43,7 @@
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
 #import "SystemSession.h"
+#import "SSHSession2.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
 #import "BKDefaults.h"
@@ -172,7 +173,7 @@ char* hints(const char * line, int *color, int *bold)
 
 - (void)setTitle
 {
-  fprintf(_stream.control.termout, "\033]0;blink\007");
+  fprintf(_stream.out, "\033]0;blink\007");
 }
 
 // List of all commands available, sorted alphabetically:
@@ -284,10 +285,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
-    [self.stream.control setRawMode:YES];
-    
-    _childSession = [[MoshSession alloc] initWithStream:_stream
-                                           andParametes:self.sessionParameters.childSessionParameters];
+    _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
   }
@@ -304,7 +302,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
-  [self.stream.control setRawMode:NO];
+  [_device setRawMode:NO];
 
   linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,
                                 linenoiseUtf8NextCharLen,
@@ -340,6 +338,10 @@ void completion(const char *command, linenoiseCompletions *lc) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
         [self _runSSHWithArgs:cmdline];
+      } else if ([cmd isEqualToString:@"ssh2"]) {
+        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+        // Probably passing a Server struct of some type.
+        [self _runSSH2WithArgs:cmdline];
       } else if ([cmd isEqualToString:@"exit"]) {
         break;
       } else if ([cmd isEqualToString:@"theme"]) {
@@ -363,7 +365,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
-    [self.stream.control setRawMode:NO];
+    [_device setRawMode:NO];
   }
   ios_closeSession(_stream.out);
   [self out:"Bye!"];
@@ -373,7 +375,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 
 - (void)_execClear
 {
-  [self.stream.control write:@"\xC"];
+  [_device write:@"\xC"];
 }
 
 - (void)_execHistoryWithArgs:(NSString *)args
@@ -442,7 +444,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     dispatch_sync(dispatch_get_main_queue(), ^{
       [BKDefaults setThemeName:theme.name];
       [BKDefaults saveDefaults];
-      [_stream.control reload];
+      [self.delegate reloadSession];
     });
     return YES;
   }
@@ -463,7 +465,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 - (void)_runSSHCopyIDWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
-  _childSession = [[SSHCopyIDSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SSHCopyIDSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"sshcopyid";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
@@ -474,7 +476,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   [self.delegate indexCommand:args];
   self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
   self.sessionParameters.childSessionType = @"mosh";
-  _childSession = [[MoshSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
   [_childSession executeAttachedWithArgs:args];
   
   _childSession = nil;
@@ -484,7 +486,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SystemSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SystemSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"system";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
@@ -495,11 +497,22 @@ void completion(const char *command, linenoiseCompletions *lc) {
 {
   self.sessionParameters.childSessionParameters = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SSHSession alloc] initWithStream:_stream andParametes:self.sessionParameters.childSessionParameters];
+  _childSession = [[SSHSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
   self.sessionParameters.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
+
+- (void)_runSSH2WithArgs:(NSString *)args
+{
+  self.sessionParameters.childSessionParameters = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SSHSession2 alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"ssh2";
+  [_childSession executeAttachedWithArgs:args];
+  _childSession = nil;
+}
+
 
 - (NSString *)_shortVersionString
 {
@@ -565,7 +578,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
     return nil;
   }
 
-  int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, _stream.sz);
+  int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, &_device->win);
   if (count == -1) {
     return nil;
   }
@@ -585,7 +598,6 @@ void completion(const char *command, linenoiseCompletions *lc) {
   // Close stdin to end the linenoise loop.
   if (_stream.in) {
     fclose(_stream.in);
-    _stream.in = NULL;
   }
 }
 
