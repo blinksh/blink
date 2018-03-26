@@ -78,7 +78,6 @@
 		076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
 		076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
-		076FBE421DB80AC900F6D997 /* HockeySDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F11C1D062D9D00AB5438 /* HockeySDK.framework */; };
 		076FBE441DB80AC900F6D997 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
 		076FBE451DB80AC900F6D997 /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
@@ -134,28 +133,11 @@
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
 		2236A8ED2038972D001CD2AD /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2236A8EC2038972C001CD2AD /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I ../ios_system/curl/curl/include/ -I ../ios_system/curl/curl/lib/ -I ../ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I ../ios_system/"; }; };
 		2236A8EE203897E6001CD2AD /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8E720389643001CD2AD /* curl_ios_static.framework */; };
-		2236A8F02038982B001CD2AD /* libnetwork_ios.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		224414452066C1C50033CB42 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 224414432066C1C50033CB42 /* commandDictionary.plist */; };
-		224414462066C1C50033CB42 /* extraCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = 224414442066C1C50033CB42 /* extraCommandsDictionary.plist */; };
-		224414512066C2080033CB42 /* libbibtex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414472066C1F30033CB42 /* libbibtex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		224414522066C2080033CB42 /* libkpathsea.6.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		224414532066C2080033CB42 /* libluatex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414482066C1F40033CB42 /* libluatex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		224414542066C2080033CB42 /* libpdftex.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2244144A2066C1F40033CB42 /* libpdftex.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		224414552066C2080033CB42 /* libtexlua52.5.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414492066C1F40033CB42 /* libtexlua52.5.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		2244145C2066C22D0033CB42 /* libctags.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414562066C2170033CB42 /* libctags.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		2244145D2066C22D0033CB42 /* lua_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414572066C2170033CB42 /* lua_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		2244145E2066C22D0033CB42 /* Python_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 224414582066C2180033CB42 /* Python_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22A9494B2067FD5E003A0666 /* files.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A949492067FD5E003A0666 /* files.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3232036ED62001FCC5C /* ios_system.framework */; };
-		22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3262036EDD5001FCC5C /* libtext.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3272036EDD5001FCC5C /* libshell.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32A2036EDD6001FCC5C /* libcurl.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
-		22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F32B2036EDD6001FCC5C /* libawk.dylib */; settings = {ATTRIBUTES = (CodeSignOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3372036EEB8001FCC5C /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E70201F8A230090E974 /* RoundedToolbar.m */; };
 		85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */ = {isa = PBXBuildFile; fileRef = 85047E76201F9B0E0090E974 /* ControlPanel.m */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -208,6 +190,21 @@
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29392B92004DCCA001FB2AA /* hterm_all.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B82004DCC9001FB2AA /* hterm_all.js */; };
+		D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E120690B70006BB305 /* text.framework */; };
+		D2A3F4EC20690B71006BB305 /* shell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E320690B70006BB305 /* shell.framework */; };
+		D2A3F4F020690B71006BB305 /* tar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E720690B71006BB305 /* tar.framework */; };
+		D2A3F4F120690B71006BB305 /* network_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E820690B71006BB305 /* network_ios.framework */; };
+		D2A3F4F220690B71006BB305 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; };
+		D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F520690C24006BB305 /* awk.framework */; };
+		D2A3F4F820690CB0006BB305 /* awk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F520690C24006BB305 /* awk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F320690BE6006BB305 /* ios_system.framework */; };
+		D2A3F4FA20690CDF006BB305 /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F320690BE6006BB305 /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F4FC20690D08006BB305 /* shell.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E320690B70006BB305 /* shell.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F4FE20690D23006BB305 /* text.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E120690B70006BB305 /* text.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F50020690D44006BB305 /* network_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E820690B71006BB305 /* network_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; };
+		D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
 		D2A92352201732B600043596 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A92351201732B600043596 /* MusicManager.m */; };
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
@@ -291,6 +288,13 @@
 			remoteGlobalIDString = 2219DFCF1FD73AF500675252;
 			remoteInfo = curl_ios_static;
 		};
+		D2A3F4DC206909A8006BB305 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
+			remoteInfo = "MBProgressHUD Framework tvOS";
+		};
 		EA0BA1A51C0CC57B00719C1A /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -320,26 +324,18 @@
 			dstSubfolderSpec = 10;
 			files = (
 				22A9494B2067FD5E003A0666 /* files.framework in Embed Frameworks */,
+				D2A3F4FC20690D08006BB305 /* shell.framework in Embed Frameworks */,
 				22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */,
-				2236A8F02038982B001CD2AD /* libnetwork_ios.dylib in Embed Frameworks */,
-				22E1F3382036EEB8001FCC5C /* ios_system.framework in Embed Frameworks */,
 				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
 				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
-				224414512066C2080033CB42 /* libbibtex.dylib in Embed Frameworks */,
-				224414522066C2080033CB42 /* libkpathsea.6.dylib in Embed Frameworks */,
-				224414532066C2080033CB42 /* libluatex.dylib in Embed Frameworks */,
-				224414542066C2080033CB42 /* libpdftex.dylib in Embed Frameworks */,
-				224414552066C2080033CB42 /* libtexlua52.5.dylib in Embed Frameworks */,
-				22E1F32D2036EDD6001FCC5C /* libtext.dylib in Embed Frameworks */,
-				22E1F32E2036EDD6001FCC5C /* libshell.dylib in Embed Frameworks */,
-				22E1F32F2036EDD6001FCC5C /* libssh_cmd.dylib in Embed Frameworks */,
-				22E1F3312036EDD6001FCC5C /* libcurl.dylib in Embed Frameworks */,
-				22E1F3322036EDD6001FCC5C /* libawk.dylib in Embed Frameworks */,
-				2244145C2066C22D0033CB42 /* libctags.dylib in Embed Frameworks */,
-				2244145D2066C22D0033CB42 /* lua_ios.framework in Embed Frameworks */,
-				2244145E2066C22D0033CB42 /* Python_ios.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
+				D2A3F4F820690CB0006BB305 /* awk.framework in Embed Frameworks */,
+				D2A3F50020690D44006BB305 /* network_ios.framework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
+				D2A3F4FA20690CDF006BB305 /* ios_system.framework in Embed Frameworks */,
+				D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */,
+				D2A3F4FE20690D23006BB305 /* text.framework in Embed Frameworks */,
+				D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -365,7 +361,6 @@
 		0732F0841D062BB300AB5438 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBProgressHUD.xcodeproj; path = MBProgressHUD/MBProgressHUD.xcodeproj; sourceTree = "<group>"; };
 		0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UICKeyChainStore.xcodeproj; path = UICKeyChainStore/Lib/UICKeyChainStore.xcodeproj; sourceTree = "<group>"; };
-		0732F11C1D062D9D00AB5438 /* HockeySDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HockeySDK.framework; path = HockeySDK.embeddedframework/HockeySDK.framework; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		0732F12A1D06324B00AB5438 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
@@ -434,28 +429,11 @@
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
 		2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ../ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
 		2236A8EC2038972C001CD2AD /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
-		2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libnetwork_ios.dylib; sourceTree = "<group>"; };
 		224414432066C1C50033CB42 /* commandDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandDictionary.plist; sourceTree = "<group>"; };
-		224414442066C1C50033CB42 /* extraCommandsDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = extraCommandsDictionary.plist; sourceTree = "<group>"; };
-		224414472066C1F30033CB42 /* libbibtex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libbibtex.dylib; sourceTree = "<group>"; };
-		224414482066C1F40033CB42 /* libluatex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libluatex.dylib; sourceTree = "<group>"; };
-		224414492066C1F40033CB42 /* libtexlua52.5.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtexlua52.5.dylib; sourceTree = "<group>"; };
-		2244144A2066C1F40033CB42 /* libpdftex.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libpdftex.dylib; sourceTree = "<group>"; };
-		2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libkpathsea.6.dylib; sourceTree = "<group>"; };
-		224414562066C2170033CB42 /* libctags.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libctags.dylib; sourceTree = "<group>"; };
-		224414572066C2170033CB42 /* lua_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = lua_ios.framework; sourceTree = "<group>"; };
-		224414582066C2180033CB42 /* Python_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Python_ios.framework; sourceTree = "<group>"; };
 		22A949492067FD5E003A0666 /* files.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = files.framework; sourceTree = "<group>"; };
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
-		22E1F3232036ED62001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
-		22E1F3262036EDD5001FCC5C /* libtext.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libtext.dylib; sourceTree = "<group>"; };
-		22E1F3272036EDD5001FCC5C /* libshell.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libshell.dylib; sourceTree = "<group>"; };
-		22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libssh_cmd.dylib; sourceTree = "<group>"; };
-		22E1F32A2036EDD6001FCC5C /* libcurl.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libcurl.dylib; sourceTree = "<group>"; };
-		22E1F32B2036EDD6001FCC5C /* libawk.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; path = libawk.dylib; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
-		22E1F3372036EEB8001FCC5C /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		85047E6F201F8A230090E974 /* RoundedToolbar.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RoundedToolbar.h; sourceTree = "<group>"; };
 		85047E70201F8A230090E974 /* RoundedToolbar.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RoundedToolbar.m; sourceTree = "<group>"; };
 		85047E75201F9B0E0090E974 /* ControlPanel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ControlPanel.h; sourceTree = "<group>"; };
@@ -549,6 +527,15 @@
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29392B82004DCC9001FB2AA /* hterm_all.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.js; sourceTree = "<group>"; };
+		D2A3F4E120690B70006BB305 /* text.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text.framework; sourceTree = "<group>"; };
+		D2A3F4E220690B70006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
+		D2A3F4E320690B70006BB305 /* shell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = shell.framework; sourceTree = "<group>"; };
+		D2A3F4E620690B71006BB305 /* ssh_cmd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ssh_cmd.framework; sourceTree = "<group>"; };
+		D2A3F4E720690B71006BB305 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
+		D2A3F4E820690B71006BB305 /* network_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = network_ios.framework; sourceTree = "<group>"; };
+		D2A3F4E920690B71006BB305 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
+		D2A3F4F320690BE6006BB305 /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
+		D2A3F4F520690C24006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
 		D2A8C153201F377D002F415A /* TouchOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchOverlay.m; sourceTree = "<group>"; };
 		D2A92350201732B600043596 /* MusicManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
@@ -573,7 +560,6 @@
 				076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */,
 				076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */,
 				076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */,
-				076FBE421DB80AC900F6D997 /* HockeySDK.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -582,17 +568,24 @@
 			buildActionMask = 2147483647;
 			files = (
 				2236A8EE203897E6001CD2AD /* curl_ios_static.framework in Frameworks */,
-				22E1F3242036ED62001FCC5C /* ios_system.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
+				D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
+				D2A3F4EC20690B71006BB305 /* shell.framework in Frameworks */,
+				D2A3F4F020690B71006BB305 /* tar.framework in Frameworks */,
+				D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
+				D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */,
+				D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
 				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
+				D2A3F4F120690B71006BB305 /* network_ios.framework in Frameworks */,
+				D2A3F4F220690B71006BB305 /* curl_ios.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -655,7 +648,6 @@
 			isa = PBXGroup;
 			children = (
 				224414432066C1C50033CB42 /* commandDictionary.plist */,
-				224414442066C1C50033CB42 /* extraCommandsDictionary.plist */,
 				D209465B204D3FC5003C4F72 /* cacert.pem */,
 				85A34303200A837A009324F1 /* webfontloader.js */,
 				0732F04B1D062B9A00AB5438 /* term.html */,
@@ -675,33 +667,25 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				224414562066C2170033CB42 /* libctags.dylib */,
-				224414572066C2170033CB42 /* lua_ios.framework */,
-				224414582066C2180033CB42 /* Python_ios.framework */,
-				224414472066C1F30033CB42 /* libbibtex.dylib */,
-				2244144B2066C1F40033CB42 /* libkpathsea.6.dylib */,
-				224414482066C1F40033CB42 /* libluatex.dylib */,
-				2244144A2066C1F40033CB42 /* libpdftex.dylib */,
-				224414492066C1F40033CB42 /* libtexlua52.5.dylib */,
+				D2A3F4F520690C24006BB305 /* awk.framework */,
+				D2A3F4F320690BE6006BB305 /* ios_system.framework */,
+				D2A3F4E920690B71006BB305 /* curl_ios.framework */,
 				22A949492067FD5E003A0666 /* files.framework */,
 				22A9494A2067FD5E003A0666 /* tar.framework */,
-				22E1F3232036ED62001FCC5C /* ios_system.framework */,
-				2236A8EF2038982B001CD2AD /* libnetwork_ios.dylib */,
-				22E1F3372036EEB8001FCC5C /* ios_system.framework */,
+				D2A3F4E220690B70006BB305 /* awk.framework */,
+				D2A3F4E820690B71006BB305 /* network_ios.framework */,
+				D2A3F4E320690B70006BB305 /* shell.framework */,
+				D2A3F4E620690B71006BB305 /* ssh_cmd.framework */,
+				D2A3F4E720690B71006BB305 /* tar.framework */,
+				D2A3F4E120690B70006BB305 /* text.framework */,
 				22E1F3342036EE86001FCC5C /* libssh2.framework */,
 				22E1F3332036EE86001FCC5C /* openssl.framework */,
-				22E1F32B2036EDD6001FCC5C /* libawk.dylib */,
-				22E1F32A2036EDD6001FCC5C /* libcurl.dylib */,
-				22E1F3272036EDD5001FCC5C /* libshell.dylib */,
-				22E1F3282036EDD5001FCC5C /* libssh_cmd.dylib */,
-				22E1F3262036EDD5001FCC5C /* libtext.dylib */,
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
 				0732F12A1D06324B00AB5438 /* libstdc++.tbd */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
 				0732F1261D06323A00AB5438 /* libz.tbd */,
-				0732F11C1D062D9D00AB5438 /* HockeySDK.framework */,
 				0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */,
 				0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */,
 				0732F0541D062BB300AB5438 /* include */,
@@ -732,6 +716,7 @@
 			children = (
 				0732F10B1D062BF700AB5438 /* libMBProgressHUD.a */,
 				0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */,
+				D2A3F4DD206909A8006BB305 /* MBProgressHUD.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1162,7 +1147,7 @@
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = VG8Z23C8YL;
+						DevelopmentTeam = HV2S48975V;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -1283,6 +1268,13 @@
 			remoteRef = 2236A8E620389643001CD2AD /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		D2A3F4DD206909A8006BB305 /* MBProgressHUD.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = MBProgressHUD.framework;
+			remoteRef = D2A3F4DC206909A8006BB305 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
@@ -1315,7 +1307,6 @@
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
-				224414462066C1C50033CB42 /* extraCommandsDictionary.plist in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
@@ -1727,7 +1718,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = VG8Z23C8YL;
+				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1750,7 +1741,7 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -1769,7 +1760,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Automatic;
 				DEFINES_MODULE = YES;
-				DEVELOPMENT_TEAM = VG8Z23C8YL;
+				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1789,7 +1780,7 @@
 				);
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = "Nicolas-Holzschuch-blinkshell";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
