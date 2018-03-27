@@ -275,11 +275,15 @@ void completion(const char *command, linenoiseCompletions *lc) {
     @"exit": @"exit - Exits current session. 👋"
   };
 }
+  
+- (NSString *)_documentsPath
+{
+  return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+}
 
 - (NSString *)_historyFilePath
 {
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  return [docsPath stringByAppendingPathComponent:@"history.txt"];
+  return [[self _documentsPath] stringByAppendingPathComponent:@"history.txt"];
 }
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
@@ -299,6 +303,7 @@ void completion(const char *command, linenoiseCompletions *lc) {
   NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
   setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
+  ios_setMiniRoot([self _documentsPath]);
   initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 

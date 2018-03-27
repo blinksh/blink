@@ -23,8 +23,6 @@
   // Is it one of the shell commands?
   // Re-evalute column number before each command
   [self _setAutoCarriageReturn:YES];
-  NSURL *documentsURL = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-  ios_setMiniRoot([documentsURL path]);
   
   char columnCountString[10];
   sprintf(columnCountString, "%i", _device->win.ws_col);
