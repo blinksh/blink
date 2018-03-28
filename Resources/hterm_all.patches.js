@@ -117,6 +117,7 @@ hterm.TextAttributes.splitWidecharString = function(str) {
   if (_asciiOnlyRegex.test(str)) {
     return [
       { str: str,
+        wcNode: false,
         asciiNode: true,
         wcStrWidth: str.length
       }
@@ -146,6 +147,7 @@ hterm.TextAttributes.splitWidecharString = function(str) {
         if (length) {
           rv.push({
                   str: str.substr(base, length),
+                  wcNode: false,
                   asciiNode: asciiNode,
                   wcStrWidth: wcStrWidth,
                   });
@@ -168,6 +170,7 @@ hterm.TextAttributes.splitWidecharString = function(str) {
   if (length) {
     rv.push({
             str: str.substr(base, length),
+            wcNode: false,
             asciiNode: asciiNode,
             wcStrWidth: wcStrWidth,
             });
