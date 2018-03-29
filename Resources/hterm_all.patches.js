@@ -298,13 +298,13 @@ hterm.TextAttributes.prototype.createContainer = function(
   }
 
   span.asciiNode = this.asciiNode;
-
+                                                                                                                                                                                                                                                                                                                                                  
   if (this.tileData != null) {
     classes.push('tile');
     classes.push('tile_' + this.tileData);
     span.tileNode = true;
   }
-
+                                                                                                                                                                                                                                                                                                                                                  
   if (opt_textContent) {
     setNodeText(span, opt_textContent, opt_wcwidth);
   }
