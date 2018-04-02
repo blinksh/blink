@@ -190,6 +190,16 @@ function term_blur() {
   t.onFocusChange__(false);
 }
 
+function term_reportTouchInPoint(x, y) {
+  var mousedown = new MouseEvent("mousedown", {});
+  // One based row/column stored on the mouse event.
+  mousedown.terminalRow = parseInt((y - t.scrollPort_.visibleRowTopMargin) /
+                           t.scrollPort_.characterSize.height) + 1;
+  mousedown.terminalColumn = parseInt(x /
+                              t.scrollPort_.characterSize.width) + 1;
+  t.onMouse(mousedown);
+}
+
 function term_setWidth(cols) {
   t.setWidth(cols);
 }

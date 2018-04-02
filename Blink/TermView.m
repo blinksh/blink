@@ -233,6 +233,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
+- (void)reportTouchInPoint:(CGPoint)point
+{
+  [_webView evaluateJavaScript:term_reportTouchInPoint(point) completionHandler:nil];
+}
+
 - (void)blur
 {
   _focused = NO;

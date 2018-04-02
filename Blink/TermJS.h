@@ -71,6 +71,10 @@ NSString *term_blur()
   return @"term_blur();";
 }
 
+NSString *term_reportTouchInPoint(CGPoint point) {
+  return [NSString stringWithFormat:@"term_reportTouchInPoint(%@, %@);", @(point.x), @(point.y)];
+}
+
 NSString *term_setWidth(NSInteger count)
 {
   return [NSString stringWithFormat:@"term_setWidth(\"%ld\");", (long)count];

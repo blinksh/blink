@@ -77,7 +77,8 @@
 - (void)reset;
 
 - (void)blur;
-- (void)focus; 
+- (void)focus;
+- (void)reportTouchInPoint:(CGPoint)point;
 - (void)cleanSelection;
 - (void)increaseFontSize;
 - (void)decreaseFontSize;

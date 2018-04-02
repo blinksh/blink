@@ -880,7 +880,10 @@
 - (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer
 {
   [_termInput reset];
-  [self.currentDevice focus];
+  TermController * term = self.currentTerm;
+  CGPoint point = [recognizer locationInView:term.view];
+  [term.termDevice focus];
+  [term.termDevice.view reportTouchInPoint: point];
 }
 
 - (void)touchOverlay:(TouchOverlay *)overlay onTwoFingerTap:(UITapGestureRecognizer *)recognizer
