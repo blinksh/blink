@@ -198,6 +198,10 @@ function term_reportTouchInPoint(x, y) {
   mousedown.terminalColumn = parseInt(x /
                               t.scrollPort_.characterSize.width) + 1;
   t.onMouse(mousedown);
+  var mouseup = new MouseEvent("mouseup", {});
+  mouseup.terminalRow = mousedown.terminalRow;
+  mouseup.terminalColumn = mousedown.terminalColumn;
+  t.onMouse(mouseup);
 }
 
 function term_setWidth(cols) {
