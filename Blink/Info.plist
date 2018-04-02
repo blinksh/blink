@@ -8,6 +8,8 @@
 		<true/>
 		<key>NSExceptionDomains</key>
 		<dict>
+			<key>10.0.1.2</key>
+			<string></string>
 			<key>10.0.1.4</key>
 			<string></string>
 			<key>192.168.1.25</key>

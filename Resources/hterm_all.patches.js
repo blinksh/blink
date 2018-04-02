@@ -61,56 +61,6 @@ hterm.Terminal.prototype.setCursorVisible = function(state) {
   }
 };
 
-hterm.Terminal.prototype.syncCursorPosition_ = function() {
-  var topRowIndex = this.scrollPort_.getTopRowIndex();
-  var bottomRowIndex = this.scrollPort_.getBottomRowIndex(topRowIndex);
-  var cursorRowIndex =
-    this.scrollbackRows_.length + this.screen_.cursorPosition.row;
-
-  if (cursorRowIndex > bottomRowIndex) {
-    // Cursor is scrolled off screen, move it outside of the visible area.
-    if (this.getCssVar('cursor-offset-row') !== '-1') {
-      this.setCssVar('cursor-offset-row', '-1');
-    }
-    return;
-  }
-
-  if (this.options_.cursorVisible && this.cursorNode_.style.display == 'none') {
-    // Re-display the terminal cursor if it was hidden by the mouse cursor.
-    this.cursorNode_.style.display = '';
-  }
-
-  // Position the cursor using CSS variable math.  If we do the math in JS,
-  // the float math will end up being more precise than the CSS which will
-  // cause the cursor tracking to be off.
-  /* BLINK: safari in iOS 10 doesn't support this syntax. We will do hybrid here
-  this.setCssVar(
-                 'cursor-offset-row',
-                 `${cursorRowIndex - topRowIndex} + ` +
-                 `${this.scrollPort_.visibleRowTopMargin}px`);
-  */
-  this.setCssVar(
-    'cursor-offset-row',
-    `${cursorRowIndex - topRowIndex + this.scrollPort_.visibleRowTopMargin}`,
-  );
-
-  this.setCssVar('cursor-offset-col', this.screen_.cursorPosition.column);
-
-  this.cursorNode_.setAttribute(
-    'title',
-    '(' +
-      this.screen_.cursorPosition.column +
-      ', ' +
-      this.screen_.cursorPosition.row +
-      ')',
-  );
-
-  // Update the caret for a11y purposes.
-  var selection = this.document_.getSelection();
-  if (selection && selection.isCollapsed)
-    this.screen_.syncSelectionCaret(selection);
-};
-
 var _asciiOnlyRegex = /^[\x00-\x7F]*$/;
 
 hterm.TextAttributes.splitWidecharString = function(str) {
