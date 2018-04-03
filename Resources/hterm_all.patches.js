@@ -8,6 +8,11 @@ hterm.ScrollPort.prototype.focus = function() {
 hterm.Terminal.prototype.onFocusChange_ = function(focused) {};
 
 hterm.Terminal.prototype.onFocusChange__ = function(focused) {
+  var currentState = this.cursorNode_.getAttribute('focus');
+  if (currentState === focused + '') {
+    return;
+  }
+  
   this.cursorNode_.setAttribute('focus', focused);
   this.restyleCursor_();
 
