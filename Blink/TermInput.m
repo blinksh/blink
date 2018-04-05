@@ -847,10 +847,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   NSMutableArray *cmds = [NSMutableArray array];
   NSString *charset;
+  NSString *shiftCharset = nil;
   if (seq == TermViewCtrlSeq || seq == TermViewEscCtrlSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
   } else if (seq == TermViewEscSeq) {
-    charset = @"qwertyuiopasdfghjklzxcvbnm1234567890`~-=_+[]{}\\|;':\",./<>?";
+    shiftCharset = @"qwertyuiopasdfghjklzxcvbnm";
+    charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?"];
+    
   } else if (seq == TermViewAutoRepeateSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
   } else {
@@ -862,11 +865,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     _cmdModifierSequence = seq;
   }
   
-  NSUInteger length = charset.length;
-  unichar buffer[length + 1];
-  [charset getCharacters:buffer range:NSMakeRange(0, length)];
   SEL action = NSSelectorFromString(seq);
-  [charset enumerateSubstringsInRange:NSMakeRange(0, length)
+  [charset enumerateSubstringsInRange:NSMakeRange(0, charset.length)
                               options:NSStringEnumerationByComposedCharacterSequences
                            usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
                              [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
@@ -878,6 +878,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                                [cmds addObjectsFromArray:[self _shiftMaps]];
                              }
                            }];
+               
+   if (shiftCharset) {
+     [[shiftCharset uppercaseString] enumerateSubstringsInRange:NSMakeRange(0, shiftCharset.length)
+                                 options:NSStringEnumerationByComposedCharacterSequences
+                              usingBlock:^(NSString *substring, NSRange substringRange, NSRange enclosingRange, BOOL *stop) {
+                                [cmds addObject:[UIKeyCommand keyCommandWithInput:substring
+                                                                    modifierFlags:modifier | UIKeyModifierShift
+                                                                           action:action]];
+                              }];
+   }
   
   [_controlKeys setObject:cmds forKey:@(modifier)];
 }
