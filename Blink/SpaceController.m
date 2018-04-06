@@ -43,7 +43,7 @@
 #import "BKTouchIDAuthManager.h"
 
 @interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
-  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, ControlPanelDelegate>
+  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, UIDropInteractionDelegate>
 
 @property (readonly) TermController *currentTerm;
 @property (readonly) TermDevice *currentDevice;
@@ -134,6 +134,14 @@
   [self setKbdCommands];
   if (_viewports == nil) {
     [self _createShellWithUserActivity: nil sessionStateKey:nil animated:YES completion:nil];
+  }
+  
+  if (@available(iOS 11.0, *)) {
+    UIDropInteraction *catchDropInteraction = [[UIDropInteraction alloc] initWithDelegate:self];
+    [self.view addInteraction:catchDropInteraction];
+    
+    UIDropInteraction *termInputDropInteraction = [[UIDropInteraction alloc] initWithDelegate:self];
+    [_termInput addInteraction:termInputDropInteraction];
   }
 }
 
@@ -940,5 +948,50 @@
   [_termInput openLink:sender];
 }
 
+#pragma mark - UIDropInteractionDelegate
+
+- (BOOL)dropInteraction:(UIDropInteraction *)interaction canHandleSession:(id<UIDropSession>)session
+API_AVAILABLE(ios(11.0)){
+  BOOL res = [session canLoadObjectsOfClass:[NSString class]];
+  if (res) {
+    [_termInput reset];
+    _termInput.frame = self.view.bounds;
+    _termInput.alpha = 0.02;
+    _termInput.hidden = NO;
+    _termInput.backgroundColor = [UIColor clearColor];
+    [self.view bringSubviewToFront:_termInput];
+    [self _focusOnShell];
+  }
+   return res;
+}
+
+- (UIDropProposal *)dropInteraction:(UIDropInteraction *)interaction sessionDidUpdate:(id<UIDropSession>)session
+API_AVAILABLE(ios(11.0)){
+  return [[UIDropProposal alloc] initWithDropOperation:UIDropOperationCopy];
+}
+
+- (void)dropInteraction:(UIDropInteraction *)interaction performDrop:(id<UIDropSession>)session
+API_AVAILABLE(ios(11.0)){
+  [session loadObjectsOfClass:[NSString class] completion:^(NSArray<__kindof id<NSItemProviderReading>> * _Nonnull objects) {
+    NSString * str = [objects firstObject];
+    if (str) {
+      [self.currentDevice write:str];
+    }
+  }];
+}
+
+- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidEnd:(id<UIDropSession>)session
+API_AVAILABLE(ios(11.0)){
+  _termInput.frame = CGRectZero;
+  _termInput.hidden = YES;
+  [_termInput reset];
+}
+
+- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidExit:(id<UIDropSession>)session
+API_AVAILABLE(ios(11.0)){
+  _termInput.frame = CGRectZero;
+  _termInput.hidden = YES;
+  [_termInput reset];
+}
 
 @end
