@@ -31,6 +31,15 @@ hterm.Terminal.prototype.copyStringToClipboard = function(str) {
   hterm.copySelectionToClipboard(this.document_, str);
 };
 
+hterm.Terminal.prototype.copySelectionToClipboard = function() {
+  const selection = document.getSelection();
+  if (!selection || selection.rangeCount === 0) {
+    return;
+  }
+  
+  this.copyStringToClipboard(selection.toString());
+}
+
 hterm.Terminal.prototype.setCursorVisible = function(state) {
   this.options_.cursorVisible = state;
 
