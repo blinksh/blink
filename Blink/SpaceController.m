@@ -976,6 +976,7 @@ API_AVAILABLE(ios(11.0)){
     NSString * str = [objects firstObject];
     if (str) {
       [self.currentDevice write:str];
+      [self.currentDevice.view cleanSelection];
     }
   }];
 }
