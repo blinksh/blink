@@ -218,7 +218,7 @@ char* hints(const char * line, int *color, int *bold)
     @"help": @"help - Prints all commands. 🧐 ",
     @"mosh": @"mosh - Runs mosh client. 🦄",
     @"ssh": @"ssh - Runs ssh client. 🐌",
-    @"config": @"config - Add keys, hosts, themes, etc... ⚙️ ",
+    @"config": @"config - Add keys, hosts, themes, etc... 🔧 ",
     @"theme": @"theme - Choose a theme 💅",
     @"music": @"music - Control music player 🎧",
     @"history": @"history - Use -c option to clear history. 🙈 ",
