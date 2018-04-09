@@ -532,6 +532,7 @@ char* hints(const char * line, int *color, int *bold)
   // Close stdin to end the linenoise loop.
   if (_stream.in) {
     fclose(_stream.in);
+    _stream.in = NULL;
   }
 }
 

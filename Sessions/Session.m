@@ -65,16 +65,18 @@ void *run_session(void *params)
 {
   SessionParams *p = (SessionParams *)params;
   // Object back to ARC
-  Session *session = (Session *)CFBridgingRelease(p->session);
+  Session *session = (__bridge Session *)p->session;
   char **argv;
   int argc = makeargs(p->args, &argv);
   [session main:argc argv:argv];
-  free(argv);
-  free(params);
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
   session.stream = nil;
   session.device = nil;
+  session.delegate = nil;
+  CFRelease(p->session);
+  free(argv);
+  free(params);
 
   return NULL;
 }

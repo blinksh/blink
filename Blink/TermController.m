@@ -160,7 +160,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)dealloc
 {
+  [_termDevice attachView:nil];
   _termDevice = nil;
+  _session.device = nil;
+  _session = nil;
   [self.userActivity resignCurrent];
 }
 

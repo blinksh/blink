@@ -82,9 +82,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     dispatch_io_set_low_water(_channel, 1);
     //dispatch_io_set_high_water(_channel, SIZE_MAX);
     // TODO: Get read of the main queue on TermView write. It will always happen here.
+    __weak typeof(self) weakSelf = self;
     dispatch_io_read(_channel, 0, SIZE_MAX, _queue,
                      ^(bool done, dispatch_data_t data, int error) {
-                       [self _processStream:data];
+                       [weakSelf _processStream:data];
                      });
   }
   
@@ -151,8 +152,13 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)attachView:(TermView *)termView
 {
-  _view = termView;
-  _view.device = self;
+  if (termView) {
+    _view = termView;
+    _view.device = self;
+  } else {
+    _view.device = nil;
+    _view = nil;
+  }
 }
 
 - (void)setRawMode:(BOOL)rawMode

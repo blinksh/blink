@@ -33,5 +33,6 @@
 - (void)blur;
 
 - (void)write:(NSString *)input;
+- (void)close;
 
 @end
