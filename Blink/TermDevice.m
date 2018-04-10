@@ -31,63 +31,28 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   return 0;
 }
 
-@interface TermDevice () <TermViewDeviceProtocol>
+@interface ViewStream: NSObject
+  @property TermView *view;
 @end
 
-
-// The TermStream is the PTYDevice
-// They might actually be different. The Device listens, the stream is lower level.
-// The PTY never listens. The Device or Wigdget is a way to indicate that
-@implementation TermDevice {
-  // Initialized from stream, and make the stream duplicate itself.
-  // The stream then has access to the "device" or "widget"
-  // The Widget then has functions to read from the stream and pass it.
-  int _pinput[2];
-  int _poutput[2];
-  int _perror[2];
-  dispatch_io_t _channel;
-  dispatch_queue_t _queue;
+@implementation ViewStream {
   dispatch_data_t _splitChar;
+  dispatch_io_t _channel;
 }
 
-- (id)init
+- (instancetype) initWithQueue:(dispatch_queue_t) queue fd:(dispatch_fd_t)fd
 {
-  self = [super init];
-  
-  if (self) {
-    
-    pipe(_pinput);
-    pipe(_poutput);
-    pipe(_perror);
-    
-    // TODO: Change the interface
-    // Initialize on the stream
-    _stream = [[TermStream alloc] init];
-    _stream.in = fdopen(_pinput[0], "r");
-    _stream.out = fdopen(_poutput[1], "w");
-    _stream.err = fdopen(_perror[1], "w");
-    setvbuf(_stream.out, NULL, _IONBF, 0);
-    setvbuf(_stream.err, NULL, _IONBF, 0);
-    setvbuf(_stream.in, NULL, _IONBF, 0);
-    
-    // Create channel with a callback
-    
-    _queue = dispatch_queue_create("blink.TermDevice", NULL);
-    
-    _channel = dispatch_io_create(DISPATCH_IO_STREAM, _poutput[0], _queue,
-                                  ^(int error) {
-                                    printf("Error creating channel");
-                                  });
-    
+  if (self = [super init]) {
+    _channel = dispatch_io_create(DISPATCH_IO_STREAM, fd, queue,
+                                   ^(int error) {
+                                     printf("Error creating channel");
+                                   });
     dispatch_io_set_low_water(_channel, 1);
-    //dispatch_io_set_high_water(_channel, SIZE_MAX);
-    // TODO: Get read of the main queue on TermView write. It will always happen here.
-    dispatch_io_read(_channel, 0, SIZE_MAX, _queue,
+    dispatch_io_read(_channel, 0, SIZE_MAX, queue,
                      ^(bool done, dispatch_data_t data, int error) {
                        [self _processStream:data];
                      });
   }
-  
   return self;
 }
 
@@ -119,7 +84,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [_view writeB64:nsData];
     return;
   }
-
+  
   // Save splitted sequences
   _splitChar = dispatch_data_create_subrange(data, len - incompleteSize, incompleteSize);
   
@@ -137,6 +102,66 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [_view writeB64:[nsData subdataWithRange:NSMakeRange(0, len - incompleteSize)]];
 }
 
+- (void) close {
+  dispatch_io_close(_channel, DISPATCH_IO_STOP);
+}
+
+@end
+
+@interface TermDevice () <TermViewDeviceProtocol>
+@end
+
+
+// The TermStream is the PTYDevice
+// They might actually be different. The Device listens, the stream is lower level.
+// The PTY never listens. The Device or Wigdget is a way to indicate that
+@implementation TermDevice {
+  // Initialized from stream, and make the stream duplicate itself.
+  // The stream then has access to the "device" or "widget"
+  // The Widget then has functions to read from the stream and pass it.
+  int _pinput[2];
+  int _poutput[2];
+  int _perror[2];
+  
+  dispatch_queue_t _queue;
+  
+  ViewStream *_outStream;
+  ViewStream *_errStream;
+}
+
+- (id)init
+{
+  self = [super init];
+  
+  if (self) {
+    
+    pipe(_pinput);
+    pipe(_poutput);
+    pipe(_perror);
+    
+    // TODO: Change the interface
+    // Initialize on the stream
+    _stream = [[TermStream alloc] init];
+    _stream.in = fdopen(_pinput[0], "r");
+    _stream.out = fdopen(_poutput[1], "w");
+    _stream.err = fdopen(_perror[1], "w");
+    setvbuf(_stream.out, NULL, _IONBF, 0);
+    setvbuf(_stream.err, NULL, _IONBF, 0);
+    setvbuf(_stream.in, NULL, _IONBF, 0);
+    
+    // Create channel with a callback
+    
+    _queue = dispatch_queue_create("blink.TermDevice", NULL);
+    
+    _outStream = [[ViewStream alloc] initWithQueue:_queue fd:_poutput[0]];
+    _errStream = [[ViewStream alloc] initWithQueue:_queue fd:_perror[0]];
+  }
+  
+  return self;
+}
+
+
+
 - (void)write:(NSString *)input
 {
   write(_pinput[1], [input UTF8String], [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
@@ -146,7 +171,8 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 {
   // TODO: Closing the streams!! But they are duplicated!!!!
   [_stream close];
-  dispatch_io_close(_channel, DISPATCH_IO_STOP);
+  [_outStream close];
+  [_errStream close];
 }
 
 - (void)attachView:(TermView *)termView
@@ -154,7 +180,11 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   if (termView) {
     _view = termView;
     _view.device = self;
+    _outStream.view = termView;
+    _errStream.view = termView;
   } else {
+    _outStream.view = nil;
+    _errStream.view = nil;
     _view.device = nil;
     _view = nil;
   }

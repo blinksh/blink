@@ -13,7 +13,6 @@
 
 @end
 
-
 @interface TermDevice : NSObject
 {
   @public struct winsize win;

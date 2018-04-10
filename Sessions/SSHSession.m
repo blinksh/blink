@@ -877,7 +877,7 @@ static void kbd_callback(const char *name, int name_len,
   int ret = -1;
 
   for (msg = prompt;; msg = again) {
-    fprintf(_device.stream.err, "%s", msg);
+    fprintf(_stream.err, "%s", msg);
     len = 0;
     do {
       char c;
@@ -888,10 +888,10 @@ static void kbd_callback(const char *name, int name_len,
       }
 
       if (c == '\n' || c == '\r') {
-	fprintf(_device.stream.err, "\r\n");
+	fprintf(_stream.err, "\r\n");
 	break;
       }
-      fprintf(_device.stream.err, "%c", c);
+      fprintf(_stream.err, "%c", c);
       buffer[len++] = c;
       buffer[len] = '\0';
     } while (BUFSIZ - 1 - len > 0);
