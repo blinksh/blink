@@ -85,7 +85,6 @@
 		076FBE481DB80AC900F6D997 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AEC71D9191B4007BC086 /* about.html */; };
 		076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		076FBE4B1DB80AC900F6D997 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
-		076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */; };
 		076FBE4F1DB80AC900F6D997 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		076FBE501DB80AC900F6D997 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
 		076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
@@ -336,7 +335,6 @@
 		073D26BA1DC4137000965AB2 /* SmartKeysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysView.h; sourceTree = "<group>"; };
 		073D26BB1DC4137000965AB2 /* SmartKeysView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysView.m; sourceTree = "<group>"; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = HockeySDKResources.bundle; path = Frameworks/HockeySDK.embeddedframework/HockeySDK.framework/Versions/A/Resources/HockeySDKResources.bundle; sourceTree = SOURCE_ROOT; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
 		076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Blink Hockey.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -599,7 +597,6 @@
 				D29392B62004D785001FB2AA /* hterm_all.patches.js */,
 				C94437641D838ABF0096F84E /* Fonts */,
 				C944375F1D831CD30096F84E /* Themes */,
-				0759A8641D6361D1009CF12F /* HockeySDKResources.bundle */,
 				0732F04A1D062B9A00AB5438 /* locales.bundle */,
 			);
 			path = Resources;
@@ -1199,7 +1196,6 @@
 				076FBE481DB80AC900F6D997 /* about.html in Resources */,
 				076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */,
 				076FBE4B1DB80AC900F6D997 /* Fonts in Resources */,
-				076FBE4C1DB80AC900F6D997 /* HockeySDKResources.bundle in Resources */,
 				076FBE4F1DB80AC900F6D997 /* term.html in Resources */,
 				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
 				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
