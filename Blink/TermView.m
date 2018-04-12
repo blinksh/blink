@@ -176,6 +176,10 @@
 {
   [_webView evaluateJavaScript:term_setFontSize(newSize) completionHandler:nil];
 }
+- (UITextAutocapitalizationType)autocapitalizationType
+{
+  return UITextAutocapitalizationTypeNone;
+}
 
 - (void)clear
 {
