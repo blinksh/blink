@@ -850,10 +850,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *charset;
   NSString *shiftCharset = nil;
   if (seq == TermViewCtrlSeq || seq == TermViewEscCtrlSeq) {
-    charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ ";
+    charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ \t";
   } else if (seq == TermViewEscSeq) {
     shiftCharset = @"qwertyuiopasdfghjklzxcvbnm";
-    charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?"];
+    charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?\t"];
     
   } else if (seq == TermViewAutoRepeateSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
