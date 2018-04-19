@@ -69,6 +69,7 @@ const CGFloat kToolBarHeight = 82;
     // We want only two fingers
     self.panGestureRecognizer.minimumNumberOfTouches = 2;
     self.panGestureRecognizer.maximumNumberOfTouches = 2;
+    self.directionalLockEnabled = YES;
     
     _oneFingerTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleOneFingerTap:)];
     _oneFingerTapGestureRecognizer.numberOfTouchesRequired = 1;
@@ -120,6 +121,7 @@ const CGFloat kToolBarHeight = 82;
   // Need to find that scrollview
   if ([ctrl.view.subviews.firstObject isKindOfClass:[UIScrollView class]]) {
     _pagedScrollView = (UIScrollView *)ctrl.view.subviews.firstObject;
+    _pagedScrollView.directionalLockEnabled = YES;
   } else {
     _pagedScrollView = nil;
   }
