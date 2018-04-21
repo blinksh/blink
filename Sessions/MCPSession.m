@@ -218,6 +218,7 @@ char* hints(const char * line, int *color, int *bold)
     @"help": @"help - Prints all commands. 🧐 ",
     @"mosh": @"mosh - Runs mosh client. 🦄",
     @"ssh": @"ssh - Runs ssh client. 🐌",
+    @"ssh-copy-id": @"ssh-copy-id - Copy an identity to the server. 💌",
     @"config": @"config - Add keys, hosts, themes, etc... 🔧 ",
     @"theme": @"theme - Choose a theme 💅",
     @"music": @"music - Control music player 🎧",
