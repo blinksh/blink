@@ -86,6 +86,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 @implementation TermView {
   WKWebView *_webView;
+  UIImageView *_snapshotImageView;
   
   BOOL _focused;
   
@@ -107,8 +108,42 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     [self _addWebView];
   }
+  
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+  
+  [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+  
+  _snapshotImageView = [[UIImageView alloc] initWithFrame:self.bounds];
+  _snapshotImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
   return self;
+}
+
+- (void)dealloc
+{
+  [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)_willResignActive
+{
+  if (@available(iOS 11.0, *)) {
+    [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+      _snapshotImageView.image = snapshotImage;
+      [_webView removeFromSuperview];
+      [self addSubview:_snapshotImageView];
+      _snapshotImageView.frame = self.bounds;
+    }];
+  } else {
+    // Fallback on earlier versions
+  }
+}
+
+- (void)_didBecomeActive
+{
+  [_snapshotImageView removeFromSuperview];
+  [self addSubview:_webView];
+  _webView.frame = self.bounds;
 }
 
 - (BOOL)canBecomeFirstResponder {
