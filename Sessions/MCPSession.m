@@ -31,6 +31,8 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <libgen.h>
+#include <sys/stat.h>
 
 #include "linenoise.h"
 #include "utf8.h"
@@ -40,6 +42,7 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
+#import "SystemSession.h"
 #import "SSHSession2.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
@@ -47,11 +50,19 @@
 #import "MusicManager.h"
 #import "BKUserConfigurationManager.h"
 
+// from ios_system:
+#include "ios_system/ios_system.h"
+
 #define MCP_MAX_LINE 4096
 #define MCP_MAX_HISTORY 1000
 
 NSArray *__commandList;
 NSDictionary *__commandHints;
+
+// for file completion
+// do recompute directoriesInPath only if $PATH has changed
+static NSString* fullCommandPath = @"";
+static NSArray *directoriesInPath;
 
 NSArray<NSString *> *splitCommandAndArgs(NSString *cmdline)
 {
@@ -120,47 +131,6 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
-void completion(const char *line, linenoiseCompletions *lc) {
-  NSString* prefix = [NSString stringWithUTF8String:line];
-  NSArray *commands = commandsByPrefix(prefix);
-  
-  if (commands.count > 0) {
-    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
-    for (NSString * cmd in commands) {
-      if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-        linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
-      } else {
-        linenoiseAddCompletion(lc, cmd.UTF8String);
-      }
-    }
-    return;
-  }
-  
-  NSArray *cmdAndArgs = splitCommandAndArgs(prefix);
-  NSString *cmd = cmdAndArgs[0];
-  NSString *args = cmdAndArgs[1];
-  NSArray *completions = @[];
-  
-  if ([args isEqualToString:@""]) {
-    return;
-  }
-  
-  if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-    completions = hostsByPrefix(args);
-  } else if ([cmd isEqualToString:@"music"]) {
-    completions = musicActionsByPrefix(args);
-  } else if ([cmd isEqualToString:@"theme"]) {
-    completions = themesByPrefix(args);
-  } else if ([cmd isEqualToString:@"history"]) {
-    completions = historyActionsByPrefix(args);
-  }
-  
-  
-  for (NSString *c in completions) {
-    linenoiseAddCompletion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
-  }
-}
-
 char* hints(const char * line, int *color, int *bold)
 {
   NSString *hint = nil;
@@ -206,6 +176,85 @@ char* hints(const char * line, int *color, int *bold)
   fprintf(_stream.out, "\033]0;blink\007");
 }
 
+// List of all commands available, sorted alphabetically:
+// Extracted at runtime from ios_system() plus blinkshell commands:
+NSArray* commandList;
+
+void initializeCommandListForCompletion() {
+  // set up the list of commands for auto-complete:
+  // list of commands from ios_system:
+  NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
+  // add commands from Blinkshell:
+  [combinedCommands addObjectsFromArray: __commandList];
+  // sort alphabetically:
+  commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
+}
+
+void completion(const char *command, linenoiseCompletions *lc) {
+  // autocomplete command for lineNoise
+  // TODO: get current working directory from ios_system
+  BOOL isDir;
+  NSString* commandString = [NSString stringWithUTF8String:command];
+  if ([commandString rangeOfString:@" "].location == NSNotFound) {
+    // No spaces. The user is typing a command
+    // check for pre-defined commands:
+    for (NSString* existingCommand in commandList) {
+      if ([existingCommand hasPrefix:commandString]) linenoiseAddCompletion(lc, existingCommand.UTF8String);
+    }
+    // Commands in the PATH
+    // Do we have an interpreter? (otherwise, there's no point)
+    if (ios_executable("python") || ios_executable("lua")) {
+      NSString* checkingPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
+      if (! [fullCommandPath isEqualToString:checkingPath]) {
+        fullCommandPath = checkingPath;
+        directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
+      }
+      for (NSString* path in directoriesInPath) {
+        // If the path component doesn't exist, no point in continuing:
+        if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
+        if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
+        NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:Nil];
+        for (NSString *fileName in filenames) {
+          if ([fileName hasPrefix:commandString]) linenoiseAddCompletion(lc,[fileName UTF8String]);
+        }
+      }
+    }
+  } else {
+    // the user is typing an argument.
+    // Is this one the commands that want a file as an argument?
+    NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
+    if ([__commandList containsObject:commandArray[0]]) return;
+    if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) return;
+    // If we made it this far, command operates on file or directory:
+    // Last position of space in the command.
+    // Would be better if I could get position of cursor.
+    NSString* argument = commandArray.lastObject;
+    // which directory?
+    BOOL isDir;
+    NSString* directory;
+    NSString *file;
+    if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
+      directory = argument;
+      file = @"";
+    } else {
+      directory = [argument stringByDeletingLastPathComponent]; // can be empty.
+      if (directory.length == 0) directory = @".";
+      file = [argument lastPathComponent];
+    }
+    directory = [directory stringByExpandingTildeInPath];
+    if ([[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isDir] && isDir) {
+      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:Nil];
+      for (NSString *fileName in filenames) {
+        if ((file.length == 0) || [fileName hasPrefix:file]) {
+          NSString* addition = [fileName substringFromIndex:[file length]];
+          NSString * newCommand = [commandString stringByAppendingString:addition];
+          linenoiseAddCompletion(lc,[newCommand UTF8String]);
+        }
+      }
+    }
+  }
+}
+
 + (void)initialize
 {
   __commandList = [
@@ -227,14 +276,18 @@ char* hints(const char * line, int *color, int *bold)
     @"exit": @"exit - Exits current session. 👋"
   };
 }
+  
+- (NSString *)_documentsPath
+{
+  return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+}
 
 - (NSString *)_historyFilePath
 {
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-  return [docsPath stringByAppendingPathComponent:@"history.txt"];
+  return [[self _documentsPath] stringByAppendingPathComponent:@"history.txt"];
 }
 
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
@@ -246,7 +299,14 @@ char* hints(const char * line, int *color, int *bold)
   argc = 0;
   argv = nil;
 
-  
+  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  initializeEnvironment(); // initialize environment variables for iOS system
+  NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
+  setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
+  replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
+  ios_setMiniRoot([self _documentsPath]);
+  initializeCommandListForCompletion();
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
 
   [_device setRawMode:NO];
 
@@ -306,14 +366,14 @@ char* hints(const char * line, int *color, int *bold)
       } else if ([cmd isEqualToString:@"clear"]) {
         [self _execClear];
       } else {
-        [self out:"Unknown command. Type 'help' for a list of available operations"];
+        [self _runSystemCommandWithArgs:cmdline];
       }
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
     [_device setRawMode:NO];
   }
-
+  ios_closeSession(_stream.out);
   [self out:"Bye!"];
 
   return 0;
@@ -428,6 +488,17 @@ char* hints(const char * line, int *color, int *bold)
   _childSession = nil;
 }
 
+- (void)_runSystemCommandWithArgs:(NSString *)args
+{
+  self.sessionParameters.childSessionParameters = nil;
+  [self.delegate indexCommand:args];
+  _childSession = [[SystemSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParameters.childSessionType = @"system";
+  [_childSession executeAttachedWithArgs:args];
+  _childSession = nil;
+}
+
+
 - (void)_runSSHWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
@@ -541,5 +612,23 @@ char* hints(const char * line, int *color, int *bold)
 {
   [_childSession suspend];
 }
+
+- (BOOL)handleControl:(NSString *)control
+{
+  if (_childSession) {
+    return [_childSession handleControl:control];
+  }
+
+  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+    return YES;
+  }
+
+  return NO;
+}
+
+- (void)setActiveSession {
+  ios_switchSession((__bridge void*)self);
+}
+
 
 @end

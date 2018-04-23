@@ -154,6 +154,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
   _session = [[MCPSession alloc] initWithDevice:_termDevice andParametes:_sessionParameters];
   _session.delegate = self;
+  [_session setActiveSession];
   [_session executeWithArgs:@""];
 }
 
@@ -212,6 +213,16 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 {
   _sessionParameters.fontSize = newSize;
   [_termDevice.input reset];
+}
+  
+- (BOOL)handleControl:(NSString *)control
+{
+  return [_session handleControl:control];
+}
+  
+- (void)deviceFocused
+{
+  return [_session setActiveSession];
 }
 
 #pragma mark Notifications

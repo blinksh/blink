@@ -68,9 +68,11 @@ typedef struct SessionParams {
 - (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
-- (int)main:(int)argc argv:(char **)argv;
+- (int)main:(int)argc argv:(char **)argv args:(char *)args;
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;
+- (BOOL)handleControl:(NSString *)control;
+- (void)setActiveSession;
 
 @end

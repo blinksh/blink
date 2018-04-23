@@ -236,6 +236,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   if ([_input isFirstResponder]) {
     [_view focus];
+    [_delegate deviceFocused];
   } else {
     [_view blur];
   }
@@ -243,6 +244,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)focus {
   [_view focus];
+  [_delegate deviceFocused];
   if (![_view.window isKeyWindow]) {
     [_view.window makeKeyWindow];
   }

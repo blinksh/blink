@@ -488,10 +488,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
   } else {
     NSUInteger modifiers = [[_smartKeys view] modifiers];
-    if (modifiers & KbdCtrlModifier) {
-      [_device write:[CC CTRL:text]];
-    } else if (modifiers & KbdAltModifier) {
-      [_device write:[CC ESC:text]];
+    if (modifiers == KbdCtrlModifier) {
+      [self _ctrlSeqWithInput:text];
+    } else if (modifiers == KbdAltModifier) {
+      [self _escSeqWithInput:text];
+    } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
+      [self _escCtrlSeqWithInput: text];
     } else {
       [_device write:[CC KEY:text MOD:0 RAW:_raw]];
     }
@@ -574,6 +576,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:input andFlags:UIKeyModifierControl];
   } else {
+    if ([_device.delegate handleControl:input]) {
+      return;
+    }
     [_device write:[CC CTRL:input]];
   }
 }
@@ -583,13 +588,18 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _ctrlSeqWithInput:cmd.input];
 }
 
+- (void)_escCtrlSeqWithInput:(NSString *)input
+{
+  NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:input]];
+  [_device write:seq];
+}
+
 - (void)escCtrlSeq:(UIKeyCommand *)cmd
 {
   if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl | UIKeyModifierAlternate];
   } else {
-    NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:cmd.input]];
-    [_device write:seq];
+    [self _escCtrlSeqWithInput:cmd.input];
   }
 }
 
@@ -628,7 +638,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if  (_device.view.hasSelection) {
     [self _changeSelection:command];
   } else {
-    [_device write:command.input];
+    NSString *text = command.input;
+    NSUInteger modifiers = [[_smartKeys view] modifiers];
+    if (modifiers == KbdCtrlModifier) {
+      [self _ctrlSeqWithInput:text];
+    } else if (modifiers == KbdAltModifier) {
+      [self _escSeqWithInput:text];
+    } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
+      [self _escCtrlSeqWithInput: text];
+    } else {
+      [_device write:text];
+    }
   }
 }
 

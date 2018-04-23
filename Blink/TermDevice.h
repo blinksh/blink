@@ -10,6 +10,8 @@
 - (void)deviceIsReady;
 - (void)deviceSizeChanged;
 - (void)viewFontSizeChanged:(NSInteger)size;
+- (BOOL)handleControl:(NSString *)control;
+- (void)deviceFocused;
 
 @end
 

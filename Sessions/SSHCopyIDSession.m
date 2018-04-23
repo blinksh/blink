@@ -42,7 +42,7 @@ static const char *usage_format =
 
 @implementation SSHCopyIDSession
 
-- (int)main:(int)argc argv:(char **)argv
+- (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   if (argc != 3) {
     return [self dieMsg:@(usage_format)];

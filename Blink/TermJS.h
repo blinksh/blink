@@ -161,5 +161,10 @@ NSString *term_modifySideSelection()
   return @"term_modifySideSelection();";
 }
 
+NSString *term_setAutoCarriageReturn(BOOL state)
+{
+  return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@)", state ? @"true" : @"false"];
+}
+
 
 #endif /* TermJS_h */

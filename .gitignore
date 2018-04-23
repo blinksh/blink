@@ -36,5 +36,16 @@ Frameworks/openssl.framework
 *.dSYM.zip
 *.dSYM
 
+# make and build files
+*.lst
+*.eep
+*.o
+*.lo
+*.la
+*.dylib
+*.lss
+*.map
+*.sym
+
 ## Fonts
 Resources/Fonts/PragmataPro*
