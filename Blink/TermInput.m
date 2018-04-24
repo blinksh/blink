@@ -472,16 +472,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   [self reset];
 }
-  
-//- (void)textViewDidChange:(UITextView *)textView
-//{
-//  if (textView.text.length == 0) {
-////    _markedText = nil;
-//    _skipTextStorageDelete = YES;
-//    [self reset];
-//    _skipTextStorageDelete = NO;
-//  }
-//}
 
 - (void)insertText:(NSString *)text
 {
