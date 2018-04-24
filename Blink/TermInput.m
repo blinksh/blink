@@ -533,7 +533,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)_escSeqWithInput:(NSString *)input
 {
   if (_device.view.hasSelection) {
-    [self _changeSelectionWithInput:input andFlags:UIKeyModifierAlternate];
+    if ([input isEqualToString:@""]) {
+      [self _changeSelectionWithInput:UIKeyInputEscape andFlags:kNilOptions];
+    } else {
+      [self _changeSelectionWithInput:input andFlags:UIKeyModifierAlternate];
+    }
   } else {
     [_device write:[CC ESC:input]];
   }
