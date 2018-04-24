@@ -272,12 +272,14 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)viewWinSizeChanged:(struct winsize)newWinSize
 {
-  if (win.ws_col != newWinSize.ws_col && win.ws_row != newWinSize.ws_row) {
-    win.ws_col = newWinSize.ws_col;
-    win.ws_row = newWinSize.ws_row;
-
-    [_delegate deviceSizeChanged];
+  if (win.ws_col == newWinSize.ws_col && win.ws_row == newWinSize.ws_row) {
+    return;
   }
+
+  win.ws_col = newWinSize.ws_col;
+  win.ws_row = newWinSize.ws_row;
+
+  [_delegate deviceSizeChanged];
 }
 
 - (void)viewSendString:(NSString *)data
