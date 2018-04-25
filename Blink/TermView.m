@@ -116,7 +116,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _snapshotImageView = [[UIImageView alloc] initWithFrame:self.bounds];
   _snapshotImageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
-  _snapshotImageView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _snapshotImageView.autoresizingMask =  UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 
   return self;
 }
@@ -131,20 +131,23 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   if (@available(iOS 11.0, *)) {
     [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
       _snapshotImageView.image = snapshotImage;
-      [_webView removeFromSuperview];
-      [self addSubview:_snapshotImageView];
       _snapshotImageView.frame = self.bounds;
+      [self addSubview:_snapshotImageView];
+      [_webView removeFromSuperview];
     }];
   } else {
-    // Fallback on earlier versions
+    // Blank screen for ios 10?
+    _snapshotImageView.frame = self.bounds;
+    [self addSubview:_snapshotImageView];
+    [_webView removeFromSuperview];
   }
 }
 
 - (void)_didBecomeActive
 {
-  [_snapshotImageView removeFromSuperview];
-  [self addSubview:_webView];
   _webView.frame = self.bounds;
+  [self insertSubview:_webView belowSubview:_snapshotImageView];
+  [_snapshotImageView removeFromSuperview];
 }
 
 - (BOOL)canBecomeFirstResponder {
