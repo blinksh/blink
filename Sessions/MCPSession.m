@@ -54,7 +54,6 @@
 // from ios_system:
 
 #include "ios_system/ios_system.h"
-bool sideLoading = false;
 
 
 #define MCP_MAX_LINE 4096
@@ -347,15 +346,15 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
   char *line;
   argc = 0;
   argv = nil;
-
-  NSString *docsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  
+  sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
   NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
   setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   ios_setMiniRoot([self _documentsPath]);
   initializeCommandListForCompletion();
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:docsPath];
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[self _documentsPath]];
 
   [_device setRawMode:NO];
 
