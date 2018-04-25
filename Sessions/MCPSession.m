@@ -50,8 +50,12 @@
 #import "MusicManager.h"
 #import "BKUserConfigurationManager.h"
 
+
 // from ios_system:
+
 #include "ios_system/ios_system.h"
+bool sideLoading = false;
+
 
 #define MCP_MAX_LINE 4096
 #define MCP_MAX_HISTORY 1000
