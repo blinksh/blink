@@ -612,7 +612,17 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     [NSString stringWithFormat:@"  %@+,: Open config.", flagsStr],
     [NSString stringWithFormat:@"  %@+m: Toggle music controls. (Control with %@+npsrb).", flagsStr, flagsStr],
     @"  pinch: Change font size.",
-    @"  selection mode: VIM users: hjklwboyp, EMACS: ⌃-fbnpx, OTHER: arrows and fingers",
+    @"  selection mode:",
+    @"    VIM users:",
+    @"      h j k l (left, down, up, right)",
+    @"      w b (forward/backward by word)",
+    @"      o (change selection point)",
+    @"      y p (yank, paste)",
+    @"    EMACS users:",
+    @"      C-f,b,n,p (right, left, down, up)",
+    @"      C-M-f,b (forward/backward by word)",
+    @"      C-x (change selection point)",
+    @"    OTHER: arrows and fingers",
     @""
   ] componentsJoinedByString:@"\r\n"];
 
