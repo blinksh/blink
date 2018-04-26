@@ -69,6 +69,7 @@ typedef struct SessionParams {
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv args:(char *)args;
+- (void)setAutoCarriageReturn:(BOOL)state;
 - (void)sigwinch;
 - (void)kill;
 - (void)suspend;

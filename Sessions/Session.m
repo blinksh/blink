@@ -114,6 +114,13 @@ void *run_session(void *params)
   pthread_join(_tid, NULL);
 }
 
+- (void)setAutoCarriageReturn:(BOOL)state
+{
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [_device.view setAutoCarriageReturn:state];
+  });
+}
+
 - (SessionParams *)createSessionParams:(NSString *)args
 {
   SessionParams *params = malloc(sizeof(SessionParams));

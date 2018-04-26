@@ -11,18 +11,11 @@
 
 @implementation SystemSession
 
-- (void)_setAutoCarriageReturn:(BOOL)state
-{
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    [_device.view setAutoCarriageReturn:state];
-  });
-}
-
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
   // Is it one of the shell commands?
   // Re-evalute column number before each command
-  [self _setAutoCarriageReturn:YES];
+  [self setAutoCarriageReturn:YES];
   
   char columnCountString[10];
   sprintf(columnCountString, "%i", _device->win.ws_col);

@@ -44,6 +44,7 @@ static const char *usage_format =
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
+  [self setAutoCarriageReturn:NO];
   if (argc != 3) {
     return [self dieMsg:@(usage_format)];
   }

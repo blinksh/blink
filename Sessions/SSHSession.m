@@ -162,6 +162,7 @@ static void kbd_callback(const char *name, int name_len,
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
+  [self setAutoCarriageReturn:NO];
   // Options
   // port -p
   // verbose --verbose
