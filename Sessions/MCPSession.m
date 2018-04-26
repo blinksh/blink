@@ -332,7 +332,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 
 - (NSString *)_historyFilePath
 {
-  return [[self _documentsPath] stringByAppendingPathComponent:@"history.txt"];
+  return [[self _documentsPath] stringByAppendingPathComponent:@".blink_history"];
 }
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
