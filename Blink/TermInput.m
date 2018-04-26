@@ -715,11 +715,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)pasteSelection:(id)sender
 {
-  NSString *str = _device.view.selectedText;
-  if (str) {
-    [_device write:str];
-  }
-  [_device.view cleanSelection];
+  [_device.view pasteSelection: sender];
 }
 
 - (void)copyLink:(id)sender
@@ -1002,12 +998,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)yank:(id)sender
 {
-  NSString *str = [UIPasteboard generalPasteboard].string;
-  
-  if (str) {
-    [_device write:str];
-  }
-  [_device.view cleanSelection];
+  [_device.view paste:sender];
 }
 
 - (void)_changeSelection:(UIKeyCommand *) cmd

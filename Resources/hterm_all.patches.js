@@ -23,22 +23,6 @@ hterm.Terminal.prototype.overlaySize = function() {};
 
 hterm.Terminal.prototype.onMouse_ = function() {};
 
-hterm.Terminal.prototype.copyStringToClipboard = function(str) {
-  if (this.prefs_.get('enable-clipboard-notice')) {
-    setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
-  }
-
-  hterm.copySelectionToClipboard(this.document_, str);
-};
-
-hterm.Terminal.prototype.copySelectionToClipboard = function() {
-  const selection = document.getSelection();
-  if (!selection || selection.rangeCount === 0) {
-    return;
-  }
-  
-  this.copyStringToClipboard(selection.toString());
-}
 
 hterm.Terminal.prototype.setCursorVisible = function(state) {
   this.options_.cursorVisible = state;

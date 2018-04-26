@@ -51,6 +51,10 @@ NSString *term_writeB64(NSData *data) {
   return [NSString stringWithFormat:@"term_write_b64(\"%@\");", [data base64EncodedStringWithOptions:kNilOptions]];
 }
 
+NSString *term_paste(NSString *str) {
+  return [NSString stringWithFormat:@"term_paste(%@[0]);", _encodeString(str)];
+}
+
 NSString *term_clear()
 {
   return @"term_clear();";

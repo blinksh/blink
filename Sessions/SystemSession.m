@@ -30,8 +30,6 @@
   // Redirect all output to console:
   ios_setStreams(_stream.in, _stream.out, _stream.out);
   int res = ios_system(args);
-  // get all output back:
-  //        [self _setAutoCarriageReturn:NO];
   return res;
 }
 

@@ -513,12 +513,26 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
 - (void)pasteSelection:(id)sender
 {
-  
+  NSString *str = _selectedText;
+  if (str) {
+    [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+  }
+  [self cleanSelection];
 }
 
 - (void)copy:(id)sender
 {
   [_webView copy:sender];
+}
+
+- (void)paste:(id)sender
+{
+  NSString *str = [UIPasteboard generalPasteboard].string;
+  if (str) {
+    [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+  }
+  
+  [self cleanSelection];
 }
 
 - (NSString *)_detectFontFamilyFromContent:(NSString *)content

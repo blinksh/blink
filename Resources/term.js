@@ -6,11 +6,14 @@ function _postMessage(op, data) {
   window.webkit.messageHandlers.interOp.postMessage({ op, data });
 }
 
-hterm.copySelectionToClipboard = function(document, content) {
+hterm.Terminal.prototype.copyStringToClipboard = function(content) {
+  if (this.prefs_.get('enable-clipboard-notice')) {
+    setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);
+  }
+
   document.getSelection().removeAllRanges();
   _postMessage('copy', { content });
 };
-
 
 // Speedup a little bit.
 hterm.Screen.prototype.syncSelectionCaret = function() {};
@@ -85,6 +88,9 @@ function term_write(data) {
   t.interpret(data);
 }
 
+function term_paste(str) {
+  t.onPaste_({text: str || ""});
+}
 
 var term_write_b64 = null;
 
