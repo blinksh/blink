@@ -73,7 +73,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                 @"\\" : @"\x1C",
                 @"^" : @"\x1E",
                 @"_" : @"\x1F",
-                @"/" : @"\x1F"
+                @"/" : @"\x1F",
+                @"2" : @"\x00",
+                @"3" : @"\x1B",
+                @"4" : @"\x1C",
+                @"5" : @"\x1D",
+                @"6" : @"\x1E",
+                @"7" : @"\x1F",
+                @"8" : @"\x7F"
                 };
   FModifiers = @{
                  @0 : @0,
@@ -851,7 +858,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *charset;
   NSString *shiftCharset = nil;
   if (seq == TermViewCtrlSeq || seq == TermViewEscCtrlSeq) {
-    charset = @"qwertyuiopasdfghjklzxcvbnm[\\]^/_ \t";
+    charset = @"2345678qwertyuiopasdfghjklzxcvbnm[\\]^/_ \t";
   } else if (seq == TermViewEscSeq) {
     shiftCharset = @"qwertyuiopasdfghjklzxcvbnm";
     charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?\t"];
