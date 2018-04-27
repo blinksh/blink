@@ -21,7 +21,7 @@
   sprintf(columnCountString, "%i", _device->win.ws_col);
   setenv("COLUMNS", columnCountString, 1); // force rewrite of value
   // Redirect all output to console:
-  ios_setStreams(_stream.in, _stream.out, _stream.out);
+  ios_setStreams(_stream.in, _stream.out, _stream.err);
   int res = ios_system(args);
   return res;
 }
