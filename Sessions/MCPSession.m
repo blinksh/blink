@@ -271,8 +271,12 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
     NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
-    if ([__commandList containsObject:commandArray[0]]) return;
-    if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) return;
+    if ([__commandList containsObject:commandArray[0]]) {
+      return;
+    }
+    if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) {
+      return;
+    }
     // If we made it this far, command operates on file or directory:
     // Last position of space in the command.
     // Would be better if I could get position of cursor.
@@ -286,7 +290,9 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
       file = @"";
     } else {
       directory = [argument stringByDeletingLastPathComponent]; // can be empty.
-      if (directory.length == 0) directory = @".";
+      if (directory.length == 0) {
+        directory = @".";
+      }
       file = [argument lastPathComponent];
     }
     directory = [directory stringByExpandingTildeInPath];
@@ -306,7 +312,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"clear"]
+    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"open", @"clear"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -321,6 +327,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     @"music": @"music - Control music player 🎧",
     @"history": @"history - Use -c option to clear history. 🙈 ",
     @"clear": @"clear - Clear screen. 🙊",
+    @"open": @"open - open url of file (Experimental). 📤",
     @"exit": @"exit - Exits current session. 👋"
   };
 }
@@ -388,6 +395,8 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 
       if ([cmd isEqualToString:@"help"]) {
         [self _showHelp];
+      } else if ([cmd isEqualToString:@"open"]) {
+          [self _runOpen: args];
       } else if ([cmd isEqualToString:@"mosh"]) {
         // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
         // Probably passing a Server struct of some type.
@@ -434,6 +443,36 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 - (void)_execClear
 {
   [_device write:@"\xC"];
+}
+
+- (void)_runOpen:(NSString *)args
+{
+  if (args.length == 0) {
+    return;
+  }
+  
+  bool isDir = NO;
+  if ([[NSFileManager defaultManager] fileExistsAtPath:args isDirectory:&isDir]) {
+    if (!isDir) {
+      NSURL * currentDir = [NSURL fileURLWithPath: [[NSFileManager defaultManager] currentDirectoryPath]];
+      NSURL * url = [currentDir URLByAppendingPathComponent:args isDirectory:NO];
+      
+      dispatch_async(dispatch_get_main_queue(), ^{
+        if (url) {
+          NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:self userInfo:@{@"url": url}];
+          [[NSNotificationCenter defaultCenter] postNotification:n];
+        }
+      });
+    }
+  } else {
+    NSURL *url = [NSURL URLWithString:args];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      if (url) {
+        NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:self userInfo:@{@"url": url}];
+        [[NSNotificationCenter defaultCenter] postNotification:n];
+      }
+    });
+  }
 }
 
 - (void)_execHistoryWithArgs:(NSString *)args
