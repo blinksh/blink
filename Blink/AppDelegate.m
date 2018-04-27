@@ -201,4 +201,12 @@ void _on_pipebroken_signal(int signum){
 }
 
 
+#pragma mark - LSSupportsOpeningDocumentsInPlace
+
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
+{
+  // What we can do useful?
+  return YES;
+}
+
 @end
