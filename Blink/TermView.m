@@ -116,7 +116,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _snapshotImageView = [[UIImageView alloc] initWithFrame:self.bounds];
   _snapshotImageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
-  _snapshotImageView.autoresizingMask =  UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _snapshotImageView.autoresizingMask =  UIViewAutoresizingNone;
 
   return self;
 }
@@ -132,6 +132,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
       _snapshotImageView.image = snapshotImage;
       _snapshotImageView.frame = self.bounds;
+      _snapshotImageView.alpha = 1;
       [self addSubview:_snapshotImageView];
       [_webView removeFromSuperview];
     }];
@@ -147,7 +148,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   _webView.frame = self.bounds;
   [self insertSubview:_webView belowSubview:_snapshotImageView];
-  [_snapshotImageView removeFromSuperview];
+  [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
+    _snapshotImageView.alpha = 0;
+  } completion:^(BOOL finished) {
+    [_snapshotImageView removeFromSuperview];
+  }];
 }
 
 - (BOOL)canBecomeFirstResponder {
