@@ -356,13 +356,6 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
   
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
-  NSString *SSL_CERT_FILE = [[[NSBundle mainBundle] bundlePath] stringByAppendingPathComponent:@"cacert.pem"];
-  setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, 1); // force rewrite of value
-  
-  NSString *locales_path = [[NSBundle mainBundle] pathForResource:@"locales" ofType:@"bundle"];
-  setenv("PATH_LOCALE", locales_path.UTF8String, 1);
-  setlocale(LC_CTYPE, "UTF-8");
-  
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   ios_setMiniRoot([self _documentsPath]);
   initializeCommandListForCompletion();

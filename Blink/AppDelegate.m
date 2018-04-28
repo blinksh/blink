@@ -45,13 +45,26 @@
   BOOL _suspendedMode;
 }
   
-void _on_pipebroken_signal(int signum){
+void __on_pipebroken_signal(int signum){
   NSLog(@"PIPE is broken");
+}
+
+void __setupProcessEnv() {
+  NSBundle *mainBundle = [NSBundle mainBundle];
+  int forceOverwrite = 1;
+  NSString *SSL_CERT_FILE = [mainBundle pathForResource:@"cacert" ofType:@"pem"];
+  setenv("SSL_CERT_FILE", SSL_CERT_FILE.UTF8String, forceOverwrite);
+  
+  NSString *locales_path = [mainBundle pathForResource:@"locales" ofType:@"bundle"];
+  setenv("PATH_LOCALE", locales_path.UTF8String, forceOverwrite);
+  setlocale(LC_CTYPE, "UTF-8");
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  signal(SIGPIPE, _on_pipebroken_signal);
+  signal(SIGPIPE, __on_pipebroken_signal);
+  
+  __setupProcessEnv();
   
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
 
