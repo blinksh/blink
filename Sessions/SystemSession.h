@@ -9,7 +9,4 @@
 #import "Session.h"
 
 @interface SystemSession : Session
-
-
-
 @end

@@ -13,17 +13,14 @@
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
-  // Is it one of the shell commands?
-  // Re-evalute column number before each command
+  // ios_system operates in auto carriage return mode
   [self setAutoCarriageReturn:YES];
   
-  char columnCountString[10];
-  sprintf(columnCountString, "%i", _device->win.ws_col);
-  setenv("COLUMNS", columnCountString, 1); // force rewrite of value
+  // Re-evalute column number before each command
+  setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
   // Redirect all output to console:
   ios_setStreams(_stream.in, _stream.out, _stream.err);
-  int res = ios_system(args);
-  return res;
+  return ios_system(args);
 }
 
 - (BOOL)handleControl:(NSString *)control
@@ -35,6 +32,5 @@
   
   return NO;
 }
-
 
 @end
