@@ -378,7 +378,6 @@
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
-		076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Blink Hockey.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blink.entitlements; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
@@ -1079,7 +1078,6 @@
 			children = (
 				EA0BA18B1C0CC57B00719C1A /* Blink.app */,
 				EA0BA1A41C0CC57B00719C1A /* Blink.xctest */,
-				076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1087,26 +1085,6 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		076FBE0B1DB80AC900F6D997 /* Blink Hockey */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 076FBE571DB80AC900F6D997 /* Build configuration list for PBXNativeTarget "Blink Hockey" */;
-			buildPhases = (
-				076FBE101DB80AC900F6D997 /* Sources */,
-				076FBE381DB80AC900F6D997 /* Frameworks */,
-				076FBE431DB80AC900F6D997 /* Resources */,
-				076FBE541DB80AC900F6D997 /* Embed Frameworks */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				076FBE0C1DB80AC900F6D997 /* PBXTargetDependency */,
-				076FBE0E1DB80AC900F6D997 /* PBXTargetDependency */,
-			);
-			name = "Blink Hockey";
-			productName = Blink;
-			productReference = 076FBE5A1DB80AC900F6D997 /* Blink Hockey.app */;
-			productType = "com.apple.product-type.application";
-		};
 		EA0BA18A1C0CC57B00719C1A /* Blink */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EA0BA1AD1C0CC57C00719C1A /* Build configuration list for PBXNativeTarget "Blink" */;
@@ -1226,7 +1204,6 @@
 			targets = (
 				EA0BA18A1C0CC57B00719C1A /* Blink */,
 				EA0BA1A31C0CC57B00719C1A /* BlinkUITests */,
-				076FBE0B1DB80AC900F6D997 /* Blink Hockey */,
 			);
 		};
 /* End PBXProject section */
@@ -1835,15 +1812,6 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		076FBE571DB80AC900F6D997 /* Build configuration list for PBXNativeTarget "Blink Hockey" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				076FBE581DB80AC900F6D997 /* Debug */,
-				076FBE591DB80AC900F6D997 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		EA0BA1861C0CC57B00719C1A /* Build configuration list for PBXProject "Blink" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
