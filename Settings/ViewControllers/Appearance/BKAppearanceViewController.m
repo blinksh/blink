@@ -448,6 +448,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
 }
 
+- (BOOL)handleControl:(NSString *)control
+{
+  return NO;
+}
+
 - (void)_writeColorShowcase
 {
   // Write content

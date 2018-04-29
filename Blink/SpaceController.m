@@ -42,8 +42,14 @@
 #import "TouchOverlay.h"
 #import "BKTouchIDAuthManager.h"
 
-@interface SpaceController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate,
-  UIGestureRecognizerDelegate, TermControlDelegate, TouchOverlayDelegate, UIDropInteractionDelegate>
+@interface SpaceController () <
+  UIPageViewControllerDataSource,
+  UIPageViewControllerDelegate,
+  UIDropInteractionDelegate,
+  TermControlDelegate,
+  TouchOverlayDelegate,
+  ControlPanelDelegate
+>
 
 @property (readonly) TermController *currentTerm;
 @property (readonly) TermDevice *currentDevice;

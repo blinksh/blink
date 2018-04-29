@@ -292,5 +292,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [[UIPasteboard generalPasteboard] setString:text];
 }
 
+- (BOOL)handleControl:(NSString *)control
+{
+  return NO;
+}
+
 
 @end
