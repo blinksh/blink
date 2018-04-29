@@ -128,6 +128,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_willResignActive
 {
+  if (self.window == nil) {
+    return;
+  }
+
   if (@available(iOS 11.0, *)) {
     [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
       _snapshotImageView.image = snapshotImage;
@@ -146,6 +150,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_didBecomeActive
 {
+  if (_webView.superview) {
+    return;
+  }
+
   _webView.frame = self.bounds;
   [self insertSubview:_webView belowSubview:_snapshotImageView];
   [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
