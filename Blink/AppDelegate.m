@@ -57,7 +57,9 @@ void __setupProcessEnv() {
   
   NSString *locales_path = [mainBundle pathForResource:@"locales" ofType:@"bundle"];
   setenv("PATH_LOCALE", locales_path.UTF8String, forceOverwrite);
+  setenv("LC_CTYPE", "UTF-8", forceOverwrite);
   setlocale(LC_CTYPE, "UTF-8");
+  setlocale(LC_ALL, "UTF-8");
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
