@@ -45,7 +45,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   if (self = [super init]) {
     _channel = dispatch_io_create(DISPATCH_IO_STREAM, fd, queue,
                                    ^(int error) {
-                                     printf("Error creating channel");
+                                     if (error) {
+                                       printf("Error creating channel");
+                                     }
                                    });
     dispatch_io_set_low_water(_channel, 1);
     dispatch_io_read(_channel, 0, SIZE_MAX, queue,
