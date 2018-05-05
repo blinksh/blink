@@ -87,6 +87,11 @@ NSString *const BKUserConfigShowSmartKeysWithXKeyBoard = @"ShowSmartKeysWithXKey
   return UIKeyModifierCommand;
 }
 
++ (UIKeyModifierFlags)shortCutModifierFlagsForNextPrevShell
+{
+  return [self shortCutModifierFlags] | UIKeyModifierShift;
+}
+
 + (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags
 {
   NSMutableArray *components = [[NSMutableArray alloc] init];

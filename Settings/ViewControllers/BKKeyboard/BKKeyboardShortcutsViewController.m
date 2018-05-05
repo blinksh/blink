@@ -56,8 +56,8 @@
 {
   _currentlyAvailableShortCuts = @{ @"New Shell" : @"Key + T",
                                     @"Close Shell" : @"Key + W",
-                                    @"Next Shell" : @"Key + ]",
-                                    @"Previous Shell" : @"Key + [",
+                                    @"Next Shell" : @"Key + Shift + ]",
+                                    @"Previous Shell" : @"Key + Shift + [",
                                     @"Other Screen" : @"Key + O",
                                     @"Show Config" : @"Key + ," };
 }

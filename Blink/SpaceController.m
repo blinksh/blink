@@ -622,10 +622,10 @@
                   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
                                              action: @selector(closeShell:)
                                discoverabilityTitle: @"Close shell"],
-                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: modifierFlags
+                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
                                              action: @selector(nextShell:)
                                discoverabilityTitle: @"Next shell"],
-                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: modifierFlags
+                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
                                              action: @selector(prevShell:)
                                discoverabilityTitle: @"Previous shell"],
                   

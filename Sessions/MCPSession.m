@@ -621,6 +621,9 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 {
   UIKeyModifierFlags flags = [BKUserConfigurationManager shortCutModifierFlags];
   NSString *flagsStr = [BKUserConfigurationManager UIKeyModifiersToString:flags];
+  UIKeyModifierFlags shellPrevNextFlags = [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell];
+  NSString *shellPrevNextFlagsStr = [BKUserConfigurationManager UIKeyModifiersToString:shellPrevNextFlags];
+  
   NSString *help = [@[
     @"",
     [self _shortVersionString],
@@ -641,7 +644,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     [NSString stringWithFormat:@"  two fingers tap or %@+t: New shell.", flagsStr],
     @"  two fingers swipe up: Show control panel.",
     @"  two fingers drag down dismiss keyboard.",
-    [NSString stringWithFormat:@"  one finger swipe left/right or %@+[]: Switch between shells.", flagsStr],
+    [NSString stringWithFormat:@"  one finger swipe left/right or %@+[]: Switch between shells.", shellPrevNextFlagsStr],
     [NSString stringWithFormat:@"  %@+N: Switch to shell number N.", flagsStr],
     [NSString stringWithFormat:@"  %@+w: Close shell.", flagsStr],
     [NSString stringWithFormat:@"  %@+o: Switch to other screen (Airplay mode).", flagsStr],
