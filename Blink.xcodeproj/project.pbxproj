@@ -32,63 +32,6 @@
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
-		076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
-		076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
-		076FBE131DB80AC900F6D997 /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
-		076FBE141DB80AC900F6D997 /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
-		076FBE151DB80AC900F6D997 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
-		076FBE161DB80AC900F6D997 /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
-		076FBE171DB80AC900F6D997 /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		076FBE181DB80AC900F6D997 /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
-		076FBE191DB80AC900F6D997 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
-		076FBE1A1DB80AC900F6D997 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
-		076FBE1B1DB80AC900F6D997 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
-		076FBE1C1DB80AC900F6D997 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
-		076FBE1D1DB80AC900F6D997 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
-		076FBE201DB80AC900F6D997 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
-		076FBE211DB80AC900F6D997 /* BKAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */; };
-		076FBE221DB80AC900F6D997 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
-		076FBE231DB80AC900F6D997 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
-		076FBE241DB80AC900F6D997 /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
-		076FBE251DB80AC900F6D997 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
-		076FBE261DB80AC900F6D997 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
-		076FBE271DB80AC900F6D997 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
-		076FBE281DB80AC900F6D997 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
-		076FBE291DB80AC900F6D997 /* BKPubKeyCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5601D6CC95A003E0079 /* BKPubKeyCreateViewController.m */; };
-		076FBE2A1DB80AC900F6D997 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
-		076FBE2B1DB80AC900F6D997 /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
-		076FBE2C1DB80AC900F6D997 /* BKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5411D6CC488003E0079 /* BKPredictionViewController.m */; };
-		076FBE2D1DB80AC900F6D997 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
-		076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5621CFFAB9300268B5B /* TermController.m */; };
-		076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B5591CFFAB9300268B5B /* SpaceController.m */; };
-		076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */; };
-		076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
-		076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C9472D551D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m */; };
-		076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */; };
-		076FBE351DB80AC900F6D997 /* BKKeyboardModifierViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5441D6CC488003E0079 /* BKKeyboardModifierViewController.m */; };
-		076FBE361DB80AC900F6D997 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
-		076FBE371DB80AC900F6D997 /* BKKeyboardViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5461D6CC488003E0079 /* BKKeyboardViewController.m */; };
-		076FBE391DB80AC900F6D997 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F12A1D06324B00AB5438 /* libstdc++.tbd */; };
-		076FBE3A1DB80AC900F6D997 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
-		076FBE3B1DB80AC900F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
-		076FBE3C1DB80AC900F6D997 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
-		076FBE3D1DB80AC900F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
-		076FBE3E1DB80AC900F6D997 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; };
-		076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
-		076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
-		076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
-		076FBE441DB80AC900F6D997 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
-		076FBE451DB80AC900F6D997 /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
-		076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
-		076FBE471DB80AC900F6D997 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
-		076FBE481DB80AC900F6D997 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AEC71D9191B4007BC086 /* about.html */; };
-		076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
-		076FBE4B1DB80AC900F6D997 /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
-		076FBE4F1DB80AC900F6D997 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
-		076FBE501DB80AC900F6D997 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
-		076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06331E08B12E008310B7 /* PasscodeLock.strings */; };
 		07AA064A1E08B12E008310B7 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06351E08B12E008310B7 /* Functions.swift */; };
@@ -109,11 +52,6 @@
 		07AA06591E08B12E008310B7 /* PasscodeSignPlaceholderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06481E08B12E008310B7 /* PasscodeSignPlaceholderView.swift */; };
 		07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA065A1E08B61F008310B7 /* PasscodeLockConfiguration.swift */; };
 		07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA065C1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift */; };
-		07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
-		07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
-		07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
-		07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26BB1DC4137000965AB2 /* SmartKeysView.m */; };
-		07C92B7C1DD3BD55002AA282 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D26B91DC4137000965AB2 /* SmartKeys.xib */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
 		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
@@ -176,7 +114,6 @@
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D2094665204D4DB8003C4F72 /* SystemSession.m in Sources */ = {isa = PBXBuildFile; fileRef = D2094664204D4DB8003C4F72 /* SystemSession.m */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
-		D20A28C21E185BFF00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
@@ -269,20 +206,6 @@
 			remoteGlobalIDString = 148993CF1D8F2515000132F7;
 			remoteInfo = TestHost;
 		};
-		076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 14796A461C1CD9A500169D09;
-			remoteInfo = UICKeyChainStore;
-		};
-		076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D104D791ACA36CC00973364;
-			remoteInfo = "MBProgressHUD Framework";
-		};
 		2236A8E620389643001CD2AD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 2236A8E220389643001CD2AD /* curl_ios_static.xcodeproj */;
@@ -307,18 +230,6 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		076FBE541DB80AC900F6D997 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				076FBE551DB80AC900F6D997 /* MBProgressHUD.framework in Embed Frameworks */,
-				076FBE561DB80AC900F6D997 /* UICKeyChainStore.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		07A06D8C1D0618FC00ABEAFA /* Embed Frameworks */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -553,22 +464,6 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		076FBE381DB80AC900F6D997 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				076FBE391DB80AC900F6D997 /* libstdc++.tbd in Frameworks */,
-				076FBE3A1DB80AC900F6D997 /* libcurses.tbd in Frameworks */,
-				076FBE3B1DB80AC900F6D997 /* libmoshios.framework in Frameworks */,
-				076FBE3C1DB80AC900F6D997 /* libz.tbd in Frameworks */,
-				076FBE3D1DB80AC900F6D997 /* libprotobuf.a in Frameworks */,
-				076FBE3E1DB80AC900F6D997 /* UICKeyChainStore.framework in Frameworks */,
-				076FBE3F1DB80AC900F6D997 /* MBProgressHUD.framework in Frameworks */,
-				076FBE401DB80AC900F6D997 /* openssl.framework in Frameworks */,
-				076FBE411DB80AC900F6D997 /* libssh2.framework in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EA0BA1881C0CC57B00719C1A /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -1133,9 +1028,6 @@
 				LastUpgradeCheck = 0920;
 				ORGANIZATIONNAME = "Carlos Cabañero Projects SL";
 				TargetAttributes = {
-					076FBE0B1DB80AC900F6D997 = {
-						DevelopmentTeam = HV2S48975V;
-					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = HV2S48975V;
@@ -1268,24 +1160,6 @@
 /* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
-		076FBE431DB80AC900F6D997 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				07C92B7C1DD3BD55002AA282 /* SmartKeys.xib in Resources */,
-				076FBE441DB80AC900F6D997 /* css in Resources */,
-				076FBE451DB80AC900F6D997 /* Themes in Resources */,
-				076FBE461DB80AC900F6D997 /* Media.xcassets in Resources */,
-				076FBE471DB80AC900F6D997 /* locales.bundle in Resources */,
-				076FBE481DB80AC900F6D997 /* about.html in Resources */,
-				076FBE4A1DB80AC900F6D997 /* LaunchScreen.storyboard in Resources */,
-				076FBE4B1DB80AC900F6D997 /* Fonts in Resources */,
-				076FBE4F1DB80AC900F6D997 /* term.html in Resources */,
-				076FBE501DB80AC900F6D997 /* blink.png in Resources */,
-				076FBE521DB80AC900F6D997 /* Settings.storyboard in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EA0BA1891C0CC57B00719C1A /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1326,54 +1200,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
-		076FBE101DB80AC900F6D997 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				07C92B771DD3BCE6002AA282 /* SKButton.m in Sources */,
-				07C92B781DD3BCE6002AA282 /* SKModifierButton.m in Sources */,
-				07C92B791DD3BCE6002AA282 /* SKNonModifierButton.m in Sources */,
-				07C92B7B1DD3BCE6002AA282 /* SmartKeysView.m in Sources */,
-				076FBE111DB80AC900F6D997 /* DismissSegue.m in Sources */,
-				076FBE121DB80AC900F6D997 /* AppDelegate.m in Sources */,
-				076FBE131DB80AC900F6D997 /* MoshSession.m in Sources */,
-				076FBE141DB80AC900F6D997 /* MCPSession.m in Sources */,
-				076FBE151DB80AC900F6D997 /* BKPubKey.m in Sources */,
-				076FBE161DB80AC900F6D997 /* BKResource.m in Sources */,
-				076FBE171DB80AC900F6D997 /* SSHSession.m in Sources */,
-				076FBE181DB80AC900F6D997 /* SSHCopyIDSession.m in Sources */,
-				076FBE191DB80AC900F6D997 /* BKSettingsFileDownloader.m in Sources */,
-				076FBE1A1DB80AC900F6D997 /* BKAppearanceViewController.m in Sources */,
-				076FBE1B1DB80AC900F6D997 /* BKHostsViewController.m in Sources */,
-				076FBE1C1DB80AC900F6D997 /* BKFont.m in Sources */,
-				076FBE1D1DB80AC900F6D997 /* main.m in Sources */,
-				076FBE201DB80AC900F6D997 /* BKSupportViewController.m in Sources */,
-				076FBE211DB80AC900F6D997 /* BKAboutViewController.m in Sources */,
-				076FBE221DB80AC900F6D997 /* utf8.c in Sources */,
-				076FBE231DB80AC900F6D997 /* BKDefaults.m in Sources */,
-				076FBE241DB80AC900F6D997 /* Session.m in Sources */,
-				076FBE251DB80AC900F6D997 /* BKThemeCreateViewController.m in Sources */,
-				076FBE261DB80AC900F6D997 /* BKLinkActions.m in Sources */,
-				076FBE271DB80AC900F6D997 /* BKHosts.m in Sources */,
-				076FBE281DB80AC900F6D997 /* BKHostsDetailViewController.m in Sources */,
-				076FBE291DB80AC900F6D997 /* BKPubKeyCreateViewController.m in Sources */,
-				076FBE2A1DB80AC900F6D997 /* BKFeedbackViewController.m in Sources */,
-				076FBE2B1DB80AC900F6D997 /* linenoise.c in Sources */,
-				076FBE2C1DB80AC900F6D997 /* BKPredictionViewController.m in Sources */,
-				076FBE2D1DB80AC900F6D997 /* BKTheme.m in Sources */,
-				076FBE2E1DB80AC900F6D997 /* TermController.m in Sources */,
-				076FBE301DB80AC900F6D997 /* SpaceController.m in Sources */,
-				076FBE311DB80AC900F6D997 /* BKPubKeyViewController.m in Sources */,
-				D20A28C21E185BFF00055791 /* ScreenController.m in Sources */,
-				076FBE321DB80AC900F6D997 /* BKFontCreateViewController.m in Sources */,
-				076FBE331DB80AC900F6D997 /* BKKeyboardFuncTriggersViewController.m in Sources */,
-				076FBE341DB80AC900F6D997 /* BKPubKeyDetailsViewController.m in Sources */,
-				076FBE351DB80AC900F6D997 /* BKKeyboardModifierViewController.m in Sources */,
-				076FBE361DB80AC900F6D997 /* TermView.m in Sources */,
-				076FBE371DB80AC900F6D997 /* BKKeyboardViewController.m in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 		EA0BA1871C0CC57B00719C1A /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -1485,16 +1311,6 @@
 			name = "MBProgressHUD Framework";
 			targetProxy = 0732F1241D062DDC00AB5438 /* PBXContainerItemProxy */;
 		};
-		076FBE0C1DB80AC900F6D997 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = UICKeyChainStore;
-			targetProxy = 076FBE0D1DB80AC900F6D997 /* PBXContainerItemProxy */;
-		};
-		076FBE0E1DB80AC900F6D997 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = "MBProgressHUD Framework";
-			targetProxy = 076FBE0F1DB80AC900F6D997 /* PBXContainerItemProxy */;
-		};
 		EA0BA1A61C0CC57B00719C1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = EA0BA18A1C0CC57B00719C1A /* Blink */;
@@ -1530,74 +1346,6 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
-		076FBE581DB80AC900F6D997 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
-				DEVELOPMENT_TEAM = HV2S48975V;
-				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/**",
-					"$(PROJECT_DIR)/Frameworks",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-					"HOCKEYSDK=1",
-				);
-				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
-				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/lib",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
-			};
-			name = Debug;
-		};
-		076FBE591DB80AC900F6D997 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				DEVELOPMENT_TEAM = HV2S48975V;
-				ENABLE_BITCODE = NO;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/**",
-					"$(PROJECT_DIR)/Frameworks",
-				);
-				GCC_PREPROCESSOR_DEFINITIONS = "HOCKEYSDK=1";
-				"GCC_PREPROCESSOR_DEFINITIONS[arch=*]" = "";
-				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
-				INFOPLIST_FILE = "$(SRCROOT)/Blink/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
-				LIBRARY_SEARCH_PATHS = (
-					"$(inherited)",
-					"$(PROJECT_DIR)/Frameworks/lib",
-				);
-				OTHER_LDFLAGS = "-ObjC";
-				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "";
-				TARGETED_DEVICE_FAMILY = "1,2";
-				VALID_ARCHS = arm64;
-			};
-			name = Release;
-		};
 		EA0BA1AB1C0CC57C00719C1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1736,6 +1484,7 @@
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_STYLE = "non-global";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = arm64;
@@ -1775,6 +1524,7 @@
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE = "";
 				PROVISIONING_PROFILE_SPECIFIER = "";
+				STRIP_STYLE = "non-global";
 				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VALID_ARCHS = arm64;
