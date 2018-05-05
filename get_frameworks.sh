@@ -36,7 +36,8 @@ curl -OL $GHROOT/build-protobuf/releases/download/$PROTOBF_VER/protobuf-$PROTOBF
 # We need ios_system for the sources of curl_static too:
 (# ios_system
 cd "${BASH_SOURCE%/*}/.."
-git clone --branch v${IOS_SYSTEM_VER} https://github.com/holzschu/ios_system
+# git clone --branch v${IOS_SYSTEM_VER} https://github.com/holzschu/ios_system
+git clone --branch master https://github.com/holzschu/ios_system
 cd "ios_system"
 sh ./get_sources.sh
 )
