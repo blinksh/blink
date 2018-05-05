@@ -680,8 +680,15 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
   if (_stream.in == NULL) {
     return nil;
   }
+  FILE * savedStdOut = stdout;
+  FILE * savedStdErr = stderr;
+  stdout = _stream.out;
+  stderr = _stream.err;
 
   int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, &_device->win);
+  stdout = savedStdOut;
+  stderr = savedStdErr;
+  
   if (count == -1) {
     return nil;
   }
