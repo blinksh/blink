@@ -51,13 +51,6 @@
       <string>cHLPRXafinprv</string>
       <string>file</string>
     </array>
-    <key>ctags</key>
-    <array>
-      <string>libctags.dylib</string>
-      <string>ctags_main</string>
-      <string>aBeFGnNoRvVx:b:d:D:f:h:I:L:</string>
-      <string>file</string>
-    </array>
     <key>curl</key>
     <array>
       <string>curl_ios.framework/curl_ios</string>
@@ -71,6 +64,13 @@
       <string>date_main</string>
       <string>d:f:jnRr:t:uv:</string>
       <string>no</string>
+    </array>
+    <key>diff</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>diff_main</string>
+      <string>0123456789aBbC:cdD:efHhI:iL:lnNPpqrS:sTtU:uwX:x:</string>
+      <string>file</string>
     </array>
     <key>dig</key>
     <array>
@@ -114,6 +114,13 @@
       <string>0123456789A:B:C:D:EFGHIJMLOPSRUVZabcd:e:f:hilm:nopqrsuvwxXy</string>
       <string>file</string>
     </array>
+    <key>find</key>
+    <array>
+      <string>shell.framework/shell</string>
+      <string>find_main</string>
+      <string>EHLPXdf:sx</string>
+      <string>directory</string>
+    </array>
     <key>grep</key>
     <array>
       <string>text.framework/text</string>
@@ -133,6 +140,13 @@
       <string>files.framework/files</string>
       <string>gzip_main</string>
       <string>123456789acdfhklLNnqrS:tVv</string>
+      <string>file</string>
+    </array>
+    <key>head</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>head_main</string>
+      <string>n:c:</string>
       <string>file</string>
     </array>
     <key>host</key>
@@ -163,6 +177,13 @@
       <string>1@ABCFGHLOPRSTUWabcdefghiklmnopqrstuvwx</string>
       <string>file</string>
     </array>
+    <key>md5</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>md5_main</string>
+      <string>pqrs:tx</string>
+      <string>file</string>
+    </array>
     <key>mkdir</key>
     <array>
       <string>files.framework/files</string>
@@ -188,6 +209,20 @@
     <array>
       <string>network_ios.framework/network_ios</string>
       <string>nslookup_main</string>
+      <string></string>
+      <string>no</string>
+    </array>
+    <key>pbcopy</key>
+    <array>
+      <string>SELF</string>
+      <string>pbcopy</string>
+      <string></string>
+      <string>no</string>
+    </array>
+    <key>pbpaste</key>
+    <array>
+      <string>SELF</string>
+      <string>pbpaste</string>
       <string></string>
       <string>no</string>
     </array>
@@ -217,13 +252,6 @@
       <string>files.framework/files</string>
       <string>stat_main</string>
       <string>n</string>
-      <string>file</string>
-    </array>
-    <key>readtags</key>
-    <array>
-      <string>libctags.dylib</string>
-      <string>readtags_main</string>
-      <string>aBeFGnNoRvVx:b:d:D:f:h:I:L:</string>
       <string>file</string>
     </array>
     <key>rlogin</key>
@@ -289,6 +317,13 @@
       <string>ABHLQXceghiklopquvxyC:D:E:F:G:I:J:K:M:N:O:P:R:S:T:V:W:Z:a:b:f:g:j:m:n:r:s:t:z:</string>
       <string>file</string>
     </array>
+    <key>sort</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>sort_main</string>
+      <string>bcCdfghik:Mmno:RrsS:t:T:uVz</string>
+      <string>file</string>
+    </array>
     <key>stat</key>
     <array>
       <string>files.framework/files</string>
@@ -301,6 +336,13 @@
       <string>files.framework/files</string>
       <string>chksum_main</string>
       <string></string>
+      <string>file</string>
+    </array>
+    <key>tail</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>tail_main</string>
+      <string>Fb:c:fn:qr</string>
       <string>file</string>
     </array>
     <key>tar</key>
@@ -352,6 +394,13 @@
       <string>b:cdfv</string>
       <string>file</string>
     </array>
+    <key>uniq</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>uniq_main</string>
+      <string>cdif:s:u</string>
+      <string>file</string>
+    </array>
     <key>unlink</key>
     <array>
       <string>files.framework/files</string>
@@ -385,6 +434,13 @@
       <string>shell.framework/shell</string>
       <string>id_main</string>
       <string></string>
+      <string>no</string>
+    </array>
+    <key>whois</key>
+    <array>
+      <string>network_ios.framework/network_ios</string>
+      <string>whois_main</string>
+      <string>aAbc:fgh:iIklmp:PQrRS</string>
       <string>no</string>
     </array>
   </dict>
