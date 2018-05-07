@@ -60,6 +60,8 @@ function term_setup() {
   t = new hterm.Terminal('blink');
 
   t.onTerminalReady = function() {
+    t.setCursorVisible(true);
+
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', { cols, rows });
     };
