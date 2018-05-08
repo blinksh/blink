@@ -132,7 +132,23 @@ using namespace std;
 using namespace std::placeholders;
 using namespace replxx;
 
+__thread FILE* thread_stdin;
+__thread FILE* thread_stdout;
+__thread FILE* thread_stderr;
+
+
 namespace replxx {
+  
+  int printf (const char *format, ...) {
+    va_list arg;
+    int done;
+    
+    va_start (arg, format);
+    done = vfprintf (thread_stdout, format, arg);
+    va_end (arg);
+    
+    return done;
+  }
 
 #ifndef _WIN32
 
@@ -297,6 +313,16 @@ void Replxx::ReplxxImpl::set_preload_buffer( std::string const& preloadText ) {
 			.append( "]\n" );
 	}
 }
+  
+void Replxx::ReplxxImpl::blink_replace_streams(FILE * in, FILE * out, FILE *err, struct winsize *win) {
+  setWinsize(win, in, out, err);
+  
+  thread_stdin = in;
+  thread_stdout = out;
+  thread_stderr = err;
+}
+  
+
 
 char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 #ifndef _WIN32
@@ -306,15 +332,15 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 	if ( tty::in ) {	// input is from a terminal
 		if (!_errorMessage.empty()) {
 			printf("%s", _errorMessage.c_str());
-			fflush(stdout);
+			fflush(thread_stdout);
 			_errorMessage.clear();
 		}
 		PromptInfo pi(prompt, getScreenColumns());
 		if (isUnsupportedTerm()) {
 			if (!pi.write()) return 0;
-			fflush(stdout);
+			fflush(thread_stdout);
 			if (_preloadedBuffer.empty()) {
-				if (fgets(_inputBuffer.get(), _maxLineLength, stdin) == NULL) {
+				if (fgets(_inputBuffer.get(), _maxLineLength, thread_stdin) == NULL) {
 					return NULL;
 				}
 				size_t len = strlen(_inputBuffer.get());
@@ -338,18 +364,18 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 				_preloadedBuffer.clear();
 			}
 			int count = ib.getInputLine(pi);
-			disableRawMode();
+      disableRawMode();
 			if (count == -1) {
 				return NULL;
 			}
 			assert( ib.length() < _maxLineLength );
 			printf("\n");
-			size_t bufferSize = sizeof(char32_t) * ib.length() + 1;
-			copyString32to8(_inputBuffer.get(), bufferSize, ib.buf());
+      size_t bufferSize = sizeof(char32_t) * ib.length() + 1;
+      copyString32to8(_inputBuffer.get(), bufferSize, ib.buf());
 			return ( _inputBuffer.get() );
 		}
 	} else { // input not from a terminal, we should work with piped input, i.e. redirected stdin
-		if (fgets(_inputBuffer.get(), _maxLineLength, stdin) == NULL) {
+		if (fgets(_inputBuffer.get(), _maxLineLength, thread_stdout) == NULL) {
 			return NULL;
 		}
 
@@ -362,72 +388,6 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 		return ( _inputBuffer.get() );
 	}
 }
-  
-char const* Replxx::ReplxxImpl::blink_input( std::string const& prompt, struct winsize *size ) {
-  ::blink_ws = size;
-#ifndef _WIN32
-    gotResize = false;
-#endif
-    errno = 0;
-    if ( tty::in ) {  // input is from a terminal
-      if (!_errorMessage.empty()) {
-        printf("%s", _errorMessage.c_str());
-        fflush(stdout);
-        _errorMessage.clear();
-      }
-      PromptInfo pi(prompt, getScreenColumns());
-      if (isUnsupportedTerm()) {
-        if (!pi.write()) return 0;
-        fflush(stdout);
-        if (_preloadedBuffer.empty()) {
-          if (fgets(_inputBuffer.get(), _maxLineLength, stdin) == NULL) {
-            return NULL;
-          }
-          size_t len = strlen(_inputBuffer.get());
-          while (len && (_inputBuffer[len - 1] == '\n' || _inputBuffer[len - 1] == '\r')) {
-            --len;
-            _inputBuffer[len] = '\0';
-          }
-          return ( _inputBuffer.get() );
-        } else {
-          strncpy( _inputBuffer.get(), _preloadedBuffer.c_str(), _maxLineLength );
-          _preloadedBuffer.clear();
-          return ( _inputBuffer.get() );
-        }
-      } else {
-        if (enableRawMode() == -1) {
-          return NULL;
-        }
-        InputBuffer ib(*this, _maxLineLength);
-        if (!_preloadedBuffer.empty()) {
-          ib.preloadBuffer(_preloadedBuffer.c_str());
-          _preloadedBuffer.clear();
-        }
-        int count = ib.getInputLine(pi);
-        disableRawMode();
-        if (count == -1) {
-          return NULL;
-        }
-        assert( ib.length() < _maxLineLength );
-        fprintf(stdout, "\n");
-        size_t bufferSize = sizeof(char32_t) * ib.length() + 1;
-        copyString32to8(_inputBuffer.get(), bufferSize, ib.buf());
-        return ( _inputBuffer.get() );
-      }
-    } else { // input not from a terminal, we should work with piped input, i.e. redirected stdin
-      if (fgets(_inputBuffer.get(), _maxLineLength, stdin) == NULL) {
-        return NULL;
-      }
-      
-      // if fgets() gave us the newline, remove it
-      int count = static_cast<int>( strlen( _inputBuffer.get() ) );
-      if (count > 0 && _inputBuffer[count - 1] == '\n') {
-        --count;
-        _inputBuffer[count] = '\0';
-      }
-      return ( _inputBuffer.get() );
-    }
-  }
 
 void Replxx::ReplxxImpl::clear_screen( void ) {
 	replxx::clear_screen( CLEAR_SCREEN::WHOLE );
@@ -509,7 +469,7 @@ int Replxx::ReplxxImpl::print( char const* str_, int size_ ) {
 #ifdef _WIN32
 	int count( win_write( str_, size_ ) );
 #else
-	int count( write( 1, str_, size_ ) );
+	int count( fwrite(str_, 1, size_, thread_stdout ) );
 #endif
 	return ( count );
 }
@@ -662,15 +622,14 @@ void replxx_set_preload_buffer(::Replxx* replxx_, const char* preloadText) {
  * @return the returned string belongs to the caller on return and must be
  * freed to prevent memory leaks
  */
+void blink_replxx_replace_streams( ::Replxx* replxx_, FILE *in, FILE *out, FILE *err, struct winsize *win) {
+  replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
+  replxx->blink_replace_streams(in, out, err, win);
+}
+
 char const* replxx_input( ::Replxx* replxx_, const char* prompt ) {
 	replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
 	return ( replxx->input( prompt ) );
-}
-
-char const* blink_replxx_input( ::Replxx* replxx_, const char* prompt,  struct winsize *ws ) {
-//  blink_ws = ws;
-  replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
-  return ( replxx->blink_input( prompt, ws ) );
 }
 
 int replxx_print( ::Replxx* replxx_, char const* format_, ... ) {
@@ -836,33 +795,33 @@ int replxx_history_size( ::Replxx* replxx_ ) {
  * on screen for debugging / development purposes. It is implemented
  * by the replxx-c-api-example program using the --keycodes option. */
 void replxx_debug_dump_print_codes(void) {
-	char quit[4];
-
-	printf(
-			"replxx key codes debugging mode.\n"
-			"Press keys to see scan codes. Type 'quit' at any time to exit.\n");
-	if (enableRawMode() == -1) return;
-	memset(quit, ' ', 4);
-	while (1) {
-		char c;
-		int nread;
-
-#if _WIN32
-		nread = _read(STDIN_FILENO, &c, 1);
-#else
-		nread = read(STDIN_FILENO, &c, 1);
-#endif
-		if (nread <= 0) continue;
-		memmove(quit, quit + 1, sizeof(quit) - 1); /* shift string to left. */
-		quit[sizeof(quit) - 1] = c; /* Insert current char on the right. */
-		if (memcmp(quit, "quit", sizeof(quit)) == 0) break;
-
-		printf("'%c' %02x (%d) (type quit to exit)\n", isprint(c) ? c : '?', (int)c,
-					 (int)c);
-		printf("\r"); /* Go left edge manually, we are in raw mode. */
-		fflush(stdout);
-	}
-	disableRawMode();
+//  char quit[4];
+//
+//  printf(
+//      "replxx key codes debugging mode.\n"
+//      "Press keys to see scan codes. Type 'quit' at any time to exit.\n");
+//  if (enableRawMode() == -1) return;
+//  memset(quit, ' ', 4);
+//  while (1) {
+//    char c;
+//    int nread;
+//
+//#if _WIN32
+//    nread = _read(STDIN_FILENO, &c, 1);
+//#else
+//    nread = read(STDIN_FILENO, &c, 1);
+//#endif
+//    if (nread <= 0) continue;
+//    memmove(quit, quit + 1, sizeof(quit) - 1); /* shift string to left. */
+//    quit[sizeof(quit) - 1] = c; /* Insert current char on the right. */
+//    if (memcmp(quit, "quit", sizeof(quit)) == 0) break;
+//
+//    printf("'%c' %02x (%d) (type quit to exit)\n", isprint(c) ? c : '?', (int)c,
+//           (int)c);
+//    printf("\r"); /* Go left edge manually, we are in raw mode. */
+//    fflush(stdout);
+//  }
+//  disableRawMode();
 }
 
 int replxx_install_window_change_handler( ::Replxx* replxx_ ) {

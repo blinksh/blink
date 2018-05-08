@@ -36,6 +36,11 @@
 #include <string>
 #include <functional>
 
+extern __thread FILE* thread_stdin;
+extern __thread FILE* thread_stdout;
+extern __thread FILE* thread_stderr;
+
+
 namespace replxx {
 
 class Replxx {
@@ -152,7 +157,9 @@ public:
 	 * \param prompt - prompt to be displayed before getting user input.
 	 * \return An UTF-8 encoded input given by the user (or nullptr on EOF).
 	 */
+  void blink_replace_streams(FILE * in, FILE * out, FILE *err, struct winsize *win);
 	char const* input( std::string const& prompt );
+  
 
 	/*! \brief Print formatted string to standard output.
 	 *

@@ -73,8 +73,8 @@ public:
 	void set_completion_callback( Replxx::completion_callback_t const& fn, void* userData );
 	void set_highlighter_callback( Replxx::highlighter_callback_t const& fn, void* userData );
 	void set_hint_callback( Replxx::hint_callback_t const& fn, void* userData );
+  void blink_replace_streams(FILE * in, FILE * out, FILE *err, struct winsize *win);
 	char const* input( std::string const& prompt );
-  char const* blink_input( std::string const& prompt, struct winsize *size);
 	void history_add( std::string const& line );
 	int history_save( std::string const& filename );
 	int history_load( std::string const& filename );

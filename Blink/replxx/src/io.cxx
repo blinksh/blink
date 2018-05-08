@@ -1,6 +1,7 @@
 #include <memory>
 #include <cerrno>
 #include <cstdlib>
+#include <stdio.h>
 
 #ifdef _WIN32
 
@@ -28,9 +29,13 @@
 #include "escape.hxx"
 #include "keycodes.hxx"
 
+
 using namespace std;
 
-__thread static struct winsize *blink_ws = NULL;
+__thread static winsize *__win = NULL;
+__thread static FILE* __thread_stdin;
+__thread static FILE* __thread_stdout;
+__thread static FILE* __thread_stderr;
 
 namespace replxx {
 
@@ -45,12 +50,10 @@ static UINT const outputCodePage( GetConsoleOutputCP() );
 static struct termios orig_termios; /* in order to restore at exit */
 #endif
 
-__thread static int rawmode = 0; /* for atexit() function to check if restore is needed*/
-__thread static int atexit_registered = 0; /* register atexit just 1 time */
+static int rawmode = 0; /* for atexit() function to check if restore is needed*/
+static int atexit_registered = 0; /* register atexit just 1 time */
 // At exit we'll try to fix the terminal to the initial conditions
 static void repl_at_exit(void) { disableRawMode(); }
-  
-//__thread static struct winsize *blink_ws;
 
 namespace tty {
 
@@ -89,8 +92,18 @@ int write32( int fd, char32_t* text32, int len32 ) {
 #ifdef _WIN32
 	return win_write(text8.get(), count8);
 #else
-	return write(fd, text8.get(), count8);
+//  return fwritef(fd, text8.get(), count8);
+//  fwrite(const void * __restrict __ptr, size_t __size, size_t __nitems, FILE * __restrict __stream)
+  return ::fwrite(text8.get(), 1, count8, __thread_stdout);
 #endif
+}
+  
+void setWinsize(struct winsize *win, FILE *in, FILE *out, FILE *err)
+{
+  __win = win;
+  __thread_stdin = in;
+  __thread_stdout = out;
+  __thread_stderr = err;
 }
 
 int getScreenColumns(void) {
@@ -100,10 +113,9 @@ int getScreenColumns(void) {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &inf);
 	cols = inf.dwSize.X;
 #else
-  return 80;
-//  return ::blink_ws->ws_col;
-	struct winsize ws;
-	cols = (ioctl(1, TIOCGWINSZ, &ws) == -1) ? 80 : ws.ws_col;
+  cols = __win->ws_col;
+//  struct winsize ws;
+//  cols = (ioctl(1, TIOCGWINSZ, &ws) == -1) ? 80 : ws.ws_col;
 #endif
 	// cols is 0 in certain circumstances like inside debugger, which creates
 	// further issues
@@ -117,9 +129,9 @@ int getScreenRows(void) {
 	GetConsoleScreenBufferInfo(GetStdHandle(STD_OUTPUT_HANDLE), &inf);
 	rows = 1 + inf.srWindow.Bottom - inf.srWindow.Top;
 #else
-  return blink_ws->ws_row;
-	struct winsize ws;
-	rows = (ioctl(1, TIOCGWINSZ, &ws) == -1) ? 24 : ws.ws_row;
+  rows = __win->ws_row;
+//  struct winsize ws;
+//  rows = (ioctl(1, TIOCGWINSZ, &ws) == -1) ? 24 : ws.ws_row;
 #endif
 	return (rows > 0) ? rows : 24;
 }
@@ -154,11 +166,11 @@ void setDisplayAttribute(bool enhancedDisplay, bool error) {
 #else
 	if (enhancedDisplay) {
 		char const* p = (error ? "\x1b[1;31m" : "\x1b[1;34m");
-		if (write(1, p, 7) == -1) {
+		if (fwrite(p, 1, 7, __thread_stdout) == -1) {
 			return; /* bright blue (visible with both B&W bg) */
 		}
 	} else {
-		if (write(1, "\x1b[0m", 4) == -1) return; /* reset */
+		if (fwrite("\x1b[0m", 1, 4, __thread_stdout) == -1) return; /* reset */
 	}
 #endif
 }
@@ -178,6 +190,9 @@ int enableRawMode(void) {
 	}
 	return 0;
 #else
+  rawmode = 1;
+  return 0;
+  
 	struct termios raw;
 
 	if ( ! tty::in ) {
@@ -208,7 +223,7 @@ int enableRawMode(void) {
 	raw.c_cc[VTIME] = 0; /* 1 byte, no timer */
 
 	/* put terminal in raw mode after flushing */
-//  if (tcsetattr(0, TCSADRAIN, &raw) < 0) goto fatal;
+	if (tcsetattr(0, TCSADRAIN, &raw) < 0) goto fatal;
 	rawmode = 1;
 	return 0;
 
@@ -226,7 +241,7 @@ void disableRawMode(void) {
 	console_in = 0;
 	console_out = 0;
 #else
-	if ( rawmode && tcsetattr(0, TCSADRAIN, &orig_termios ) != -1 ) {
+	if ( rawmode /*&& tcsetattr(0, TCSADRAIN, &orig_termios ) != -1 */) {
 		rawmode = 0;
 	}
 #endif
@@ -250,7 +265,7 @@ char32_t readUnicodeCharacter(void) {
 		/* Continue reading if interrupted by signal. */
 		ssize_t nread;
 		do {
-			nread = read(0, &c, 1);
+			nread = read(fileno(__thread_stdin), &c, 1);
 		} while ((nread == -1) && (errno == EINTR));
 
 		if (nread <= 0) return 0;
@@ -414,7 +429,7 @@ char32_t read_char(void) {
 #if defined(_DEBUG_LINUX_KEYBOARD)
 	if (c == ctrlChar('^')) {	// ctrl-^, special debug mode, prints all keys hit,
 														 // ctrl-C to get out
-		fprintf(stdout,
+		printf(
 				"\nEntering keyboard debugging mode (on ctrl-^), press ctrl-C to exit "
 				"this mode\n");
 		while (true) {
@@ -422,7 +437,7 @@ char32_t read_char(void) {
 			int ret = read(0, keys, 10);
 
 			if (ret <= 0) {
-				fprintf(stdout, "\nret: %d\n", ret);
+				printf("\nret: %d\n", ret);
 			}
 			for (int i = 0; i < ret; ++i) {
 				char32_t key = static_cast<char32_t>(keys[i]);
@@ -450,13 +465,13 @@ char32_t read_char(void) {
 					friendlyTextBuf[2] = 0;
 					friendlyTextPtr = friendlyTextBuf;
 				}
-				fprintf(stdout, "%d x%02X (%s%s)	", key, key, prefixText, friendlyTextPtr);
+				printf("%d x%02X (%s%s)	", key, key, prefixText, friendlyTextPtr);
 			}
-			fprintf(stdout, "\x1b[1G\n");	// go to first column of new line
+			printf("\x1b[1G\n");	// go to first column of new line
 
 			// drop out of this loop on ctrl-C
 			if (keys[0] == ctrlChar('C')) {
-				fprintf(stdout, "Leaving keyboard debugging mode (on ctrl-C)\n");
+				printf("Leaving keyboard debugging mode (on ctrl-C)\n");
 				fflush(stdout);
 				return -2;
 			}

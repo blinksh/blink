@@ -2,6 +2,7 @@
 #include <memory>
 #include <cerrno>
 
+#import <stdio.h>
 #ifdef _WIN32
 
 #include <conio.h>
@@ -32,7 +33,20 @@
 
 using namespace std;
 
+int printf (const char *format, ...) {
+  va_list arg;
+  int done;
+  
+  va_start (arg, format);
+  done = vfprintf (thread_stdout, format, arg);
+  va_end (arg);
+  
+  return done;
+}
+
+
 namespace replxx {
+  
 
 struct PromptBase;
 
@@ -308,7 +322,7 @@ void InputBuffer::refreshLine(PromptBase& pi, HINT_ACTION hintAction_) {
 	int cursorRowMovement = pi.promptCursorRowOffset - pi.promptExtraLines;
 	if (cursorRowMovement > 0) {	// move the cursor up as required
 		snprintf(seq, sizeof seq, "\x1b[%dA", cursorRowMovement);
-		if (write(1, seq, strlen(seq)) == -1) return;
+		if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 	}
 	// position at the end of the prompt, clear to end of screen
 	snprintf(
@@ -316,7 +330,7 @@ void InputBuffer::refreshLine(PromptBase& pi, HINT_ACTION hintAction_) {
 		pi.promptIndentation + 1, /* 1-based on VT100 */
 		'J'
 	);
-	if (write(1, seq, strlen(seq)) == -1) return;
+	if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 
 	if ( !_replxx.no_color() ) {
 		if (write32(1, _display.data(), _display.size()) == -1) return;
@@ -326,17 +340,17 @@ void InputBuffer::refreshLine(PromptBase& pi, HINT_ACTION hintAction_) {
 
 	// we have to generate our own newline on line wrap
 	if (xEndOfInput == 0 && yEndOfInput > 0)
-		if (write(1, "\n", 1) == -1) return;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return;
 
 	// position the cursor
 	cursorRowMovement = yEndOfInput - yCursorPos;
 	if (cursorRowMovement > 0) {	// move the cursor up as required
 		snprintf(seq, sizeof seq, "\x1b[%dA", cursorRowMovement);
-		if (write(1, seq, strlen(seq)) == -1) return;
+		if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 	}
 	// position the cursor within the line
 	snprintf(seq, sizeof seq, "\x1b[%dG", xCursorPos + 1);	// 1-based on VT100
-	if (write(1, seq, strlen(seq)) == -1) return;
+	if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 #endif
 
 	pi.promptCursorRowOffset =
@@ -552,7 +566,7 @@ int InputBuffer::completeLine(PromptBase& pi) {
 						stopList = true;
 						break;
 					case ctrlChar('C'):
-						if (write(1, "^C", 2) == -1) return -1;	// Display the ^C we got
+						if (fwrite("^C", 1, 2, thread_stdout) == -1) return -1;	// Display the ^C we got
 						stopList = true;
 						break;
 				}
@@ -588,18 +602,18 @@ int InputBuffer::completeLine(PromptBase& pi) {
 				}
 			}
 		}
-		fflush(stdout);
+		fflush(thread_stdout);
 	}
 
 	// display the prompt on a new line, then redisplay the input buffer
 	if (!stopList || c == ctrlChar('C')) {
-		if (write(1, "\n", 1) == -1) return 0;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return 0;
 	}
 	if (!pi.write()) return 0;
 #ifndef _WIN32
 	// we have to generate our own newline on line wrap on Linux
 	if (pi.promptIndentation == 0 && pi.promptExtraLines > 0)
-		if (write(1, "\n", 1) == -1) return 0;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return 0;
 #endif
 	pi.promptCursorRowOffset = pi.promptExtraLines;
 	refreshLine(pi);
@@ -624,7 +638,7 @@ int InputBuffer::getInputLine(PromptBase& pi) {
 #ifndef _WIN32
 	// we have to generate our own newline on line wrap on Linux
 	if (pi.promptIndentation == 0 && pi.promptExtraLines > 0)
-		if (write(1, "\n", 1) == -1) return -1;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return -1;
 #endif
 
 	// the cursor starts out at the end of the prompt
@@ -749,7 +763,7 @@ int InputBuffer::getInputLine(PromptBase& pi) {
 				// so we don't display the next prompt over the previous input line
 				_pos = _len;	// pass _len as _pos for EOL
 				refreshLine(pi, HINT_ACTION::SKIP);
-				if (write(1, "^C\r\n", 4) == -1) return -1;	// Display the ^C we got
+				if (fwrite("^C\r\n", 1, 4, thread_stdout) == -1) return -1;	// Display the ^C we got
 				return -1;
 
 			case META + 'c':	// meta-C, give word initial Cap
@@ -1499,7 +1513,7 @@ void InputBuffer::clearScreen(PromptBase& pi) {
 #ifndef _WIN32
 	// we have to generate our own newline on line wrap on Linux
 	if (pi.promptIndentation == 0 && pi.promptExtraLines > 0)
-		if (write(1, "\n", 1) == -1) return;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return;
 #endif
 	pi.promptCursorRowOffset = pi.promptExtraLines;
 	refreshLine(pi);
@@ -1563,11 +1577,11 @@ void dynamicRefresh(PromptBase& pi, char32_t* buf32, int len, int pos) {
 	int cursorRowMovement = pi.promptCursorRowOffset - pi.promptExtraLines;
 	if (cursorRowMovement > 0) {	// move the cursor up as required
 		snprintf(seq, sizeof seq, "\x1b[%dA", cursorRowMovement);
-		if (write(1, seq, strlen(seq)) == -1) return;
+		if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 	}
 	// position at the start of the prompt, clear to end of screen
 	snprintf(seq, sizeof seq, "\x1b[1G\x1b[J");	// 1-based on VT100
-	if (write(1, seq, strlen(seq)) == -1) return;
+	if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 
 	// display the prompt
 	if (!pi.write()) return;
@@ -1577,17 +1591,17 @@ void dynamicRefresh(PromptBase& pi, char32_t* buf32, int len, int pos) {
 
 	// we have to generate our own newline on line wrap
 	if (xEndOfInput == 0 && yEndOfInput > 0)
-		if (write(1, "\n", 1) == -1) return;
+		if (fwrite("\n", 1, 1, thread_stdout) == -1) return;
 
 	// position the cursor
 	cursorRowMovement = yEndOfInput - yCursorPos;
 	if (cursorRowMovement > 0) {	// move the cursor up as required
 		snprintf(seq, sizeof seq, "\x1b[%dA", cursorRowMovement);
-		if (write(1, seq, strlen(seq)) == -1) return;
+		if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 	}
 	// position the cursor within the line
 	snprintf(seq, sizeof seq, "\x1b[%dG", xCursorPos + 1);	// 1-based on VT100
-	if (write(1, seq, strlen(seq)) == -1) return;
+	if (fwrite(seq, 1, strlen(seq), thread_stdout) == -1) return;
 #endif
 
 	pi.promptCursorRowOffset =

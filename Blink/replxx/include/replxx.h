@@ -184,9 +184,9 @@ void replxx_add_hint( replxx_hints* hints, const char* str );
  * \param prompt - prompt to be displayed before getting user input.
  * \return An UTF-8 encoded input given by the user (or nullptr on EOF).
  */
-__thread static struct winsize *blink_ws;
+void blink_replxx_replace_streams( Replxx*, FILE *, FILE *, FILE *, struct winsize *);
 char const* replxx_input( Replxx*, const char* prompt );
-char const* blink_replxx_input( Replxx*, const char* prompt, struct winsize *size);
+
 
 /*! \brief Print formatted string to standard output.
  *

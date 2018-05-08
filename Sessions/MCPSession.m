@@ -63,6 +63,9 @@
 
 NSArray *__commandList;
 NSDictionary *__commandHints;
+// List of all commands available, sorted alphabetically:
+// Extracted at runtime from ios_system() plus blinkshell commands:
+NSArray* commandList;
 
 // for file completion
 // do recompute directoriesInPath only if $PATH has changed
@@ -85,7 +88,7 @@ NSArray<NSString *> *splitCommandAndArgs(NSString *cmdline)
 NSArray<NSString *> *commandsByPrefix(NSString *prefix)
 {
   if (prefix.length == 0) {
-    return @[@"help"];
+    return commandList;
   }
   NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
   return [__commandList filteredArrayUsingPredicate:prefixPred];
@@ -136,20 +139,24 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
-char* hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
+void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
 {
   NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
   if (prefix.length == 0) {
-    return NULL;
+    return;
   }
   
-  NSString *cmd = [commandsByPrefix(prefix) firstObject];
-  if (cmd) {
-    hint = __commandHints[cmd];
+  NSArray<NSString *> *cmds = commandsByPrefix(prefix);
+  if (cmds) {
+    for (NSString *cmd in cmds) {
+      NSString *hint = __commandHints[cmd];
+      replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
+    }
+//    hint = __commandHints[cmd];
   } else {
     NSArray *cmdAndArgs = splitCommandAndArgs(prefix);
-    cmd = cmdAndArgs[0];
+    NSString *cmd = cmdAndArgs[0];
     prefix = cmdAndArgs[1];
     
     if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
@@ -163,10 +170,8 @@ char* hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud
   
   if ([hint length] > 0) {
 //    *color = 33;
-    return (char *)[hint substringFromIndex: prefix.length].UTF8String;
+    replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
   }
-  
-  return NULL;
 }
 
 
@@ -182,9 +187,7 @@ char* hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud
   fprintf(_stream.out, "\033]0;blink\007");
 }
 
-// List of all commands available, sorted alphabetically:
-// Extracted at runtime from ios_system() plus blinkshell commands:
-NSArray* commandList;
+
 
 void initializeCommandListForCompletion() {
   // set up the list of commands for auto-complete:
@@ -373,6 +376,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[self _documentsPath]];
 
   [_device setRawMode:NO];
+  [self setAutoCarriageReturn:YES];
 
 
   const char *history = [[self _historyFilePath] UTF8String];
@@ -380,14 +384,15 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replxx_history_load(_replxx, history);
   replxx_set_completion_callback(_replxx, completion, 0);
   replxx_set_hint_callback(_replxx, hints, 0);
+  replxx_set_complete_on_empty(_replxx, 1);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
-      replxx_history_add(_replxx, line);
+//      replxx_history_add(_replxx, line);
       replxx_history_save(_replxx, history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
-      free(line);
+//      free(line);
 
       cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
       NSArray *arr = splitCommandAndArgs(cmdline);
@@ -693,7 +698,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   stderr = _stream.err;
 
   char const* result = NULL;
-  result = blink_replxx_input(_replxx, prompt, &_device->win);
+  blink_replxx_replace_streams(_replxx, _stream.in, _stream.out, _stream.err, &_device->win);
+  result = replxx_input(_replxx, prompt);
   stdout = savedStdOut;
   stderr = savedStdErr;
   

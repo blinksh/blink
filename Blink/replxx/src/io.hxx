@@ -5,12 +5,12 @@
 #include <windows.h>
 #endif
 
+#include <stdio.h>
 
 namespace replxx {
-  
-
 
 int write32( int fd, char32_t* text32, int len32 );
+void setWinsize(struct winsize *win, FILE *in, FILE *out, FILE *err);
 int getScreenColumns(void);
 int getScreenRows(void);
 void setDisplayAttribute(bool enhancedDisplay, bool);

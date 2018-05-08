@@ -21,20 +21,21 @@ void to_lower( std::string& s_ ) {
 }
 
 bool is_8bit_encoding( void ) {
-	bool is8BitEncoding( false );
-	string origLC( setlocale( LC_CTYPE, nullptr ) );
-	string lc( origLC );
-	to_lower( lc );
-	if ( lc == "c" ) {
-		setlocale( LC_CTYPE, "" );
-	}
-	lc = setlocale( LC_CTYPE, nullptr );
-	setlocale( LC_CTYPE, origLC.c_str() );
-	to_lower( lc );
-	if ( lc.find( "8859" ) != std::string::npos ) {
-		is8BitEncoding = true;
-	}
-	return ( is8BitEncoding );
+  return true;
+//  bool is8BitEncoding( false );
+//  string origLC( setlocale( LC_CTYPE, nullptr ) );
+//  string lc( origLC );
+//  to_lower( lc );
+//  if ( lc == "c" ) {
+//    setlocale( LC_CTYPE, "" );
+//  }
+//  lc = setlocale( LC_CTYPE, nullptr );
+//  setlocale( LC_CTYPE, origLC.c_str() );
+//  to_lower( lc );
+//  if ( lc.find( "8859" ) != std::string::npos ) {
+//    is8BitEncoding = true;
+//  }
+//  return ( is8BitEncoding );
 }
 
 bool is8BitEncoding( is_8bit_encoding() );
