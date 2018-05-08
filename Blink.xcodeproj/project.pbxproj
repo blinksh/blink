@@ -115,6 +115,17 @@
 		D2094665204D4DB8003C4F72 /* SystemSession.m in Sources */ = {isa = PBXBuildFile; fileRef = D2094664204D4DB8003C4F72 /* SystemSession.m */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
+		D23970FF20A07B9100881637 /* prompt.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970E820A07B9100881637 /* prompt.cxx */; };
+		D239710020A07B9100881637 /* conversion.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970EC20A07B9100881637 /* conversion.cxx */; };
+		D239710120A07B9100881637 /* replxx.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970ED20A07B9100881637 /* replxx.cxx */; };
+		D239710220A07B9100881637 /* ConvertUTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970EF20A07B9100881637 /* ConvertUTF.cpp */; };
+		D239710320A07B9100881637 /* io.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F120A07B9100881637 /* io.cxx */; };
+		D239710420A07B9100881637 /* inputbuffer.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F220A07B9100881637 /* inputbuffer.cxx */; };
+		D239710520A07B9100881637 /* history.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F320A07B9100881637 /* history.cxx */; };
+		D239710620A07B9100881637 /* escape.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F820A07B9100881637 /* escape.cxx */; };
+		D239710720A07B9100881637 /* util.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FA20A07B9100881637 /* util.cxx */; };
+		D239710820A07B9100881637 /* windows.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FB20A07B9100881637 /* windows.cxx */; };
+		D239710920A07B9100881637 /* wcwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970FE20A07B9100881637 /* wcwidth.cpp */; };
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
@@ -423,6 +434,32 @@
 		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
 		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
+		D23970E420A07B8300881637 /* replxx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = replxx.h; sourceTree = "<group>"; };
+		D23970E520A07B8300881637 /* replxx.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx.hxx; sourceTree = "<group>"; };
+		D23970E720A07B9100881637 /* escape.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = escape.hxx; sourceTree = "<group>"; };
+		D23970E820A07B9100881637 /* prompt.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prompt.cxx; sourceTree = "<group>"; };
+		D23970E920A07B9100881637 /* replxx_impl.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx_impl.hxx; sourceTree = "<group>"; };
+		D23970EA20A07B9100881637 /* util.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = util.hxx; sourceTree = "<group>"; };
+		D23970EB20A07B9100881637 /* windows.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = windows.hxx; sourceTree = "<group>"; };
+		D23970EC20A07B9100881637 /* conversion.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = conversion.cxx; sourceTree = "<group>"; };
+		D23970ED20A07B9100881637 /* replxx.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = replxx.cxx; sourceTree = "<group>"; };
+		D23970EE20A07B9100881637 /* keycodes.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = keycodes.hxx; sourceTree = "<group>"; };
+		D23970EF20A07B9100881637 /* ConvertUTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertUTF.cpp; sourceTree = "<group>"; };
+		D23970F020A07B9100881637 /* history.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = history.hxx; sourceTree = "<group>"; };
+		D23970F120A07B9100881637 /* io.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io.cxx; sourceTree = "<group>"; };
+		D23970F220A07B9100881637 /* inputbuffer.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inputbuffer.cxx; sourceTree = "<group>"; };
+		D23970F320A07B9100881637 /* history.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = history.cxx; sourceTree = "<group>"; };
+		D23970F420A07B9100881637 /* io.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = io.hxx; sourceTree = "<group>"; };
+		D23970F520A07B9100881637 /* inputbuffer.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = inputbuffer.hxx; sourceTree = "<group>"; };
+		D23970F620A07B9100881637 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
+		D23970F720A07B9100881637 /* killring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = killring.hxx; sourceTree = "<group>"; };
+		D23970F820A07B9100881637 /* escape.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = escape.cxx; sourceTree = "<group>"; };
+		D23970F920A07B9100881637 /* prompt.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prompt.hxx; sourceTree = "<group>"; };
+		D23970FA20A07B9100881637 /* util.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cxx; sourceTree = "<group>"; };
+		D23970FB20A07B9100881637 /* windows.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = windows.cxx; sourceTree = "<group>"; };
+		D23970FC20A07B9100881637 /* utfstring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utfstring.hxx; sourceTree = "<group>"; };
+		D23970FD20A07B9100881637 /* conversion.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = conversion.hxx; sourceTree = "<group>"; };
+		D23970FE20A07B9100881637 /* wcwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wcwidth.cpp; sourceTree = "<group>"; };
 		D23B18831FF7CEBA00A6C903 /* StateManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateManager.h; sourceTree = "<group>"; };
 		D23B18841FF7CEBA00A6C903 /* StateManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StateManager.m; sourceTree = "<group>"; };
 		D23B18891FFB76B300A6C903 /* SessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionParameters.h; sourceTree = "<group>"; };
@@ -504,6 +541,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D23970DC20A07B5800881637 /* replxx */,
 				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
@@ -950,6 +988,55 @@
 			path = ViewControllers;
 			sourceTree = "<group>";
 		};
+		D23970DC20A07B5800881637 /* replxx */ = {
+			isa = PBXGroup;
+			children = (
+				D23970E620A07B9100881637 /* src */,
+				D23970E320A07B8300881637 /* include */,
+			);
+			path = replxx;
+			sourceTree = "<group>";
+		};
+		D23970E320A07B8300881637 /* include */ = {
+			isa = PBXGroup;
+			children = (
+				D23970E420A07B8300881637 /* replxx.h */,
+				D23970E520A07B8300881637 /* replxx.hxx */,
+			);
+			path = include;
+			sourceTree = "<group>";
+		};
+		D23970E620A07B9100881637 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				D23970E720A07B9100881637 /* escape.hxx */,
+				D23970E820A07B9100881637 /* prompt.cxx */,
+				D23970E920A07B9100881637 /* replxx_impl.hxx */,
+				D23970EA20A07B9100881637 /* util.hxx */,
+				D23970EB20A07B9100881637 /* windows.hxx */,
+				D23970EC20A07B9100881637 /* conversion.cxx */,
+				D23970ED20A07B9100881637 /* replxx.cxx */,
+				D23970EE20A07B9100881637 /* keycodes.hxx */,
+				D23970EF20A07B9100881637 /* ConvertUTF.cpp */,
+				D23970F020A07B9100881637 /* history.hxx */,
+				D23970F120A07B9100881637 /* io.cxx */,
+				D23970F220A07B9100881637 /* inputbuffer.cxx */,
+				D23970F320A07B9100881637 /* history.cxx */,
+				D23970F420A07B9100881637 /* io.hxx */,
+				D23970F520A07B9100881637 /* inputbuffer.hxx */,
+				D23970F620A07B9100881637 /* ConvertUTF.h */,
+				D23970F720A07B9100881637 /* killring.hxx */,
+				D23970F820A07B9100881637 /* escape.cxx */,
+				D23970F920A07B9100881637 /* prompt.hxx */,
+				D23970FA20A07B9100881637 /* util.cxx */,
+				D23970FB20A07B9100881637 /* windows.cxx */,
+				D23970FC20A07B9100881637 /* utfstring.hxx */,
+				D23970FD20A07B9100881637 /* conversion.hxx */,
+				D23970FE20A07B9100881637 /* wcwidth.cpp */,
+			);
+			path = src;
+			sourceTree = "<group>";
+		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
@@ -1207,11 +1294,15 @@
 				07AA064F1E08B12E008310B7 /* PasscodeLock.swift in Sources */,
 				073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */,
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
+				D239710620A07B9100881637 /* escape.cxx in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
+				D239710920A07B9100881637 /* wcwidth.cpp in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
+				D239710820A07B9100881637 /* windows.cxx in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
+				D239710420A07B9100881637 /* inputbuffer.cxx in Sources */,
 				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
 				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
@@ -1229,9 +1320,11 @@
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				D239710720A07B9100881637 /* util.cxx in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
+				D239710120A07B9100881637 /* replxx.cxx in Sources */,
 				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
@@ -1245,6 +1338,7 @@
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
+				D23970FF20A07B9100881637 /* prompt.cxx in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */,
@@ -1252,17 +1346,20 @@
 				D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
+				D239710020A07B9100881637 /* conversion.cxx in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				D2A92352201732B600043596 /* MusicManager.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
+				D239710220A07B9100881637 /* ConvertUTF.cpp in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
+				D239710320A07B9100881637 /* io.cxx in Sources */,
 				07AA06521E08B12E008310B7 /* PasscodeLockViewController.swift in Sources */,
 				D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
@@ -1270,6 +1367,7 @@
 				2236A8ED2038972D001CD2AD /* tool_main.c in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
+				D239710520A07B9100881637 /* history.cxx in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,

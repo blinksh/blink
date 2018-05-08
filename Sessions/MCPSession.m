@@ -34,8 +34,10 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-#include "linenoise.h"
-#include "utf8.h"
+//#include "linenoise.h"
+//#include "utf8.h"
+#include "replxx.h"
+
 
 #import "MCPSession.h"
 #import "MoshSession.h"
@@ -134,7 +136,7 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
-char* hints(const char * line, int *color, int *bold)
+char* hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
 {
   NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
@@ -160,7 +162,7 @@ char* hints(const char * line, int *color, int *bold)
   }
   
   if ([hint length] > 0) {
-    *color = 33;
+//    *color = 33;
     return (char *)[hint substringFromIndex: prefix.length].UTF8String;
   }
   
@@ -170,6 +172,7 @@ char* hints(const char * line, int *color, int *bold)
 
 @implementation MCPSession {
   Session *_childSession;
+  Replxx* _replxx;
 }
 
 @dynamic sessionParameters;
@@ -193,7 +196,7 @@ void initializeCommandListForCompletion() {
   commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
 }
 
-void completion(const char *line, linenoiseCompletions *lc) {
+void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   NSString* prefix = [NSString stringWithUTF8String:line];
   NSArray *commands = commandsByPrefix(prefix);
   
@@ -201,12 +204,12 @@ void completion(const char *line, linenoiseCompletions *lc) {
     NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
     for (NSString * cmd in commands) {
       if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-        linenoiseAddCompletion(lc, [cmd stringByAppendingString:@" "].UTF8String);
+        replxx_add_completion(lc, [cmd stringByAppendingString:@" "].UTF8String);
       } else {
-        linenoiseAddCompletion(lc, cmd.UTF8String);
+        replxx_add_completion(lc, cmd.UTF8String);
       }
     }
-    system_completion(line, lc);
+    system_completion(line, bp, lc, ud);
     return;
   }
   
@@ -216,7 +219,7 @@ void completion(const char *line, linenoiseCompletions *lc) {
   NSArray *completions = @[];
   
   if ([args isEqualToString:@""]) {
-    system_completion(line, lc);
+    system_completion(line, bp, lc, ud);
     return;
   }
   
@@ -232,13 +235,13 @@ void completion(const char *line, linenoiseCompletions *lc) {
   
   
   for (NSString *c in completions) {
-    linenoiseAddCompletion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
+    replxx_add_completion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
   }
   
-  system_completion(line, lc);
+  system_completion(line, bp, lc, ud);
 }
 
-void system_completion(const char *command, linenoiseCompletions *lc) {
+void system_completion(char const* command, int bp, replxx_completions* lc, void* ud) {
   // autocomplete command for lineNoise
   // TODO: get current working directory from ios_system
   BOOL isDir;
@@ -247,7 +250,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     // No spaces. The user is typing a command
     // check for pre-defined commands:
     for (NSString* existingCommand in commandList) {
-      if ([existingCommand hasPrefix:commandString]) linenoiseAddCompletion(lc, existingCommand.UTF8String);
+      if ([existingCommand hasPrefix:commandString]) replxx_add_completion(lc, existingCommand.UTF8String);
     }
     // Commands in the PATH
     // Do we have an interpreter? (otherwise, there's no point)
@@ -263,7 +266,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
         if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
         NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:Nil];
         for (NSString *fileName in filenames) {
-          if ([fileName hasPrefix:commandString]) linenoiseAddCompletion(lc,[fileName UTF8String]);
+          if ([fileName hasPrefix:commandString]) replxx_add_completion(lc,[fileName UTF8String]);
         }
       }
     }
@@ -302,7 +305,7 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
         if ((file.length == 0) || [fileName hasPrefix:file]) {
           NSString* addition = [fileName substringFromIndex:[file length]];
           NSString * newCommand = [commandString stringByAppendingString:addition];
-          linenoiseAddCompletion(lc,[newCommand UTF8String]);
+          replxx_add_completion(lc,[newCommand UTF8String]);
         }
       }
     }
@@ -330,6 +333,14 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
     @"open": @"open - open url of file (Experimental). 📤",
     @"exit": @"exit - Exits current session. 👋"
   };
+}
+
+- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
+{
+  if (self = [super initWithDevice:device andParametes:parameters]) {
+    _replxx = replxx_init();
+  }
+  return self;
 }
   
 - (NSString *)_documentsPath
@@ -363,20 +374,17 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 
   [_device setRawMode:NO];
 
-  linenoiseSetEncodingFunctions(linenoiseUtf8PrevCharLen,
-                                linenoiseUtf8NextCharLen,
-                                linenoiseUtf8ReadCode);
 
   const char *history = [[self _historyFilePath] UTF8String];
-  linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
-  linenoiseHistoryLoad(history);
-  linenoiseSetCompletionCallback(completion);
-  linenoiseSetHintsCallback(hints);
+  replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
+  replxx_history_load(_replxx, history);
+  replxx_set_completion_callback(_replxx, completion, 0);
+  replxx_set_hint_callback(_replxx, hints, 0);
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
-      linenoiseHistoryAdd(line);
-      linenoiseHistorySave(history);
+      replxx_history_add(_replxx, line);
+      replxx_history_save(_replxx, history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
       free(line);
@@ -492,10 +500,10 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
       [self out:[NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String];
     }
   } else if ([args isEqualToString:@"-c"]) {
-    linenoiseHistorySetMaxLen(1);
-    linenoiseHistoryAdd(@"".UTF8String);
-    linenoiseHistorySave([self _historyFilePath].UTF8String);
-    linenoiseHistorySetMaxLen(MCP_MAX_HISTORY);
+    replxx_set_max_history_size(_replxx, 1);
+    replxx_history_add(_replxx, @"".UTF8String);
+    replxx_history_save(_replxx, [self _historyFilePath].UTF8String);
+    replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
   } else {
     NSString *usage = [@[
                          @"history usage:",
@@ -676,7 +684,6 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
 
 - (char *)linenoise:(char *)prompt
 {
-  char buf[MCP_MAX_LINE];
   if (_stream.in == NULL) {
     return nil;
   }
@@ -685,15 +692,16 @@ void system_completion(const char *command, linenoiseCompletions *lc) {
   stdout = _stream.out;
   stderr = _stream.err;
 
-  int count = linenoiseEdit(fileno(_stream.in), _stream.out, buf, MCP_MAX_LINE, prompt, &_device->win);
+  char const* result = NULL;
+  result = blink_replxx_input(_replxx, prompt, &_device->win);
   stdout = savedStdOut;
   stderr = savedStdErr;
   
-  if (count == -1) {
+  if (( result == NULL ) && ( errno == EAGAIN ) ) {
     return nil;
   }
 
-  return strdup(buf);
+  return result;
 }
 
 - (void)sigwinch
