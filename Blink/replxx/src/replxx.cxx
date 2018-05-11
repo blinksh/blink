@@ -331,7 +331,7 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 	errno = 0;
 	if ( tty::in ) {	// input is from a terminal
 		if (!_errorMessage.empty()) {
-			printf("%s", _errorMessage.c_str());
+			fprintf(thread_stdout, "%s", _errorMessage.c_str());
 			fflush(thread_stdout);
 			_errorMessage.clear();
 		}
