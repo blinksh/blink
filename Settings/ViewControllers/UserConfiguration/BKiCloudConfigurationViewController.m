@@ -34,7 +34,7 @@
 
 #import "BKiCloudConfigurationViewController.h"
 #import "BKUserConfigurationManager.h"
-#import "Blink-swift.h"
+#import "Blink-Swift.h"
 
 @interface BKiCloudConfigurationViewController ()
 
