@@ -150,10 +150,10 @@ static void kbd_callback(const char *name, int name_len,
   ssize_t sz = 0;
 
   FILE *termin = _stream.in;
-  if ((sz = getdelim(resp, &size, '\r', termin)) == -1) {
+  if ((sz = getdelim(resp, &size, '\n', termin)) == -1) {
     return -1;
   } else {
-    if ((*resp)[sz - 1] == '\r') {
+    if ((*resp)[sz - 1] == '\n') {
       (*resp)[--sz] = '\0';
     }
     return sz;
@@ -162,7 +162,6 @@ static void kbd_callback(const char *name, int name_len,
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
-  [self setAutoCarriageReturn:NO];
   // Options
   // port -p
   // verbose --verbose

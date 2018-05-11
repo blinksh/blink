@@ -206,7 +206,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
-  [self setAutoCarriageReturn:NO];
   BOOL mode = [_device rawMode];
   [_device setRawMode:YES];
 

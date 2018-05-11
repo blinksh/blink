@@ -376,8 +376,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[self _documentsPath]];
 
   [_device setRawMode:NO];
-  [self setAutoCarriageReturn:YES];
-
 
   const char *history = [[self _historyFilePath] UTF8String];
   replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
@@ -388,11 +386,10 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
   while ((line = [self linenoise:"blink> "]) != nil) {
     if (line[0] != '\0' && line[0] != '/') {
-//      replxx_history_add(_replxx, line);
+      replxx_history_add(_replxx, line);
       replxx_history_save(_replxx, history);
 
       NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
-//      free(line);
 
       cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
       NSArray *arr = splitCommandAndArgs(cmdline);
@@ -431,6 +428,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
         [self _showConfig];
       } else if ([cmd isEqualToString:@"history"]) {
         [self _execHistoryWithArgs: args];
+      } else if ([cmd isEqualToString:@"showkey"]) {
+        [self _execShowKey: args];
       } else if ([cmd isEqualToString:@"clear"]) {
         [self _execClear];
       } else {
@@ -448,7 +447,14 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (void)_execClear
 {
-  [_device write:@"\xC"];
+  replxx_clear_screen(_replxx);
+}
+
+- (void)_execShowKey:(NSString *)args
+{
+  [_device setRawMode:YES];
+  
+  replxx_debug_dump_print_codes();
 }
 
 - (void)_runOpen:(NSString *)args
@@ -735,6 +741,10 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (BOOL)handleControl:(NSString *)control
 {
+  if (_device.rawMode) {
+    return NO;
+  }
+
   if (_childSession) {
     return [_childSession handleControl:control];
   }

@@ -45,7 +45,7 @@
 @end
 
 @interface TermInput : UITextView
-@property BOOL raw;
+
 @property BOOL softwareKB;
 
 @property TermDevice *device;

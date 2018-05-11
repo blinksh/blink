@@ -54,7 +54,6 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
-  [self setAutoCarriageReturn:NO];
   if ([self opts:argc argv:argv] < 0) {
     return [self usage];
   }

@@ -21,7 +21,7 @@ void to_lower( std::string& s_ ) {
 }
 
 bool is_8bit_encoding( void ) {
-  return true;
+  return false;
 //  bool is8BitEncoding( false );
 //  string origLC( setlocale( LC_CTYPE, nullptr ) );
 //  string lc( origLC );

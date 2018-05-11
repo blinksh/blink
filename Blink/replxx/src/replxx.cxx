@@ -795,33 +795,34 @@ int replxx_history_size( ::Replxx* replxx_ ) {
  * on screen for debugging / development purposes. It is implemented
  * by the replxx-c-api-example program using the --keycodes option. */
 void replxx_debug_dump_print_codes(void) {
-//  char quit[4];
-//
-//  printf(
-//      "replxx key codes debugging mode.\n"
-//      "Press keys to see scan codes. Type 'quit' at any time to exit.\n");
-//  if (enableRawMode() == -1) return;
-//  memset(quit, ' ', 4);
-//  while (1) {
-//    char c;
-//    int nread;
-//
-//#if _WIN32
-//    nread = _read(STDIN_FILENO, &c, 1);
-//#else
-//    nread = read(STDIN_FILENO, &c, 1);
-//#endif
-//    if (nread <= 0) continue;
-//    memmove(quit, quit + 1, sizeof(quit) - 1); /* shift string to left. */
-//    quit[sizeof(quit) - 1] = c; /* Insert current char on the right. */
-//    if (memcmp(quit, "quit", sizeof(quit)) == 0) break;
-//
-//    printf("'%c' %02x (%d) (type quit to exit)\n", isprint(c) ? c : '?', (int)c,
-//           (int)c);
-//    printf("\r"); /* Go left edge manually, we are in raw mode. */
-//    fflush(stdout);
-//  }
-//  disableRawMode();
+  char quit[4];
+
+  fprintf(thread_stdout,
+      "Press keys to see scan codes. Type 'quit' at any time to exit.\r\n");
+  if (enableRawMode() == -1) return;
+  memset(quit, ' ', 4);
+  while (1) {
+    char c;
+    int nread;
+
+#if _WIN32
+    nread = _read(STDIN_FILENO, &c, 1);
+#else
+    nread = read(fileno(thread_stdin), &c, 1);
+#endif
+    if (nread <= 0) continue;
+    memmove(quit, quit + 1, sizeof(quit) - 1); /* shift string to left. */
+    quit[sizeof(quit) - 1] = c; /* Insert current char on the right. */
+    if (memcmp(quit, "quit", sizeof(quit)) == 0) break;
+    
+    
+
+    fprintf(thread_stdout, "'%c'\t%3d 0%03o 0x%02x (type quit to exit)\n", isprint(c) ? c : '?', (int)c,
+           (int)c, (int)c);
+    fprintf(thread_stdout, "\r"); /* Go left edge manually, we are in raw mode. */
+    fflush(thread_stdout);
+  }
+  disableRawMode();
 }
 
 int replxx_install_window_change_handler( ::Replxx* replxx_ ) {

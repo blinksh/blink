@@ -155,7 +155,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if (c == UIKeyInputEscape) {
     return @"\x1B";
   } else if ([c isEqual:@"\n"]) {
-    return @"\r";
+    // See raw mode: http://man7.org/linux/man-pages/man3/termios.3.html
+    if (raw) {
+      // INLCR  Translate NL to CR on input
+      return @"\r";
+    }
+    return c;
   }
   
   if (m) {
@@ -430,7 +435,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
       NSString *value = [text substringFromIndex:(range.length)];
       [_device write:[CC FKEY:[value integerValue]]];
     } else {
-      [_device write:[CC KEY:text MOD:0 RAW:_raw]];
+      [_device write:[CC KEY:text MOD:0 RAW:_device.rawMode]];
     }
   } else {
     NSUInteger modifiers = [[_smartKeys view] modifiers];
@@ -441,7 +446,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
       [self _escCtrlSeqWithInput: text];
     } else {
-      [_device write:[CC KEY:text MOD:0 RAW:_raw]];
+      [_device write:[CC KEY:text MOD:0 RAW:_device.rawMode]];
     }
   }
 }
@@ -549,7 +554,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (_device.view.hasSelection) {
     [self _changeSelection:cmd];
   } else {
-    [_device write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_raw]];
+    [_device write:[CC KEY:cmd.input MOD:cmd.modifierFlags RAW:_device.rawMode]];
   }
 }
 
@@ -603,13 +608,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
   
   if (cmd.input == UIKeyInputUpArrow) {
-    [_device write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyPgUp MOD:0 RAW:_device.rawMode]];
   } else if (cmd.input == UIKeyInputDownArrow) {
-    [_device write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyPgDown MOD:0 RAW:_device.rawMode]];
   } else if (cmd.input == UIKeyInputLeftArrow) {
-    [_device write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyHome MOD:0 RAW:_device.rawMode]];
   } else if (cmd.input == UIKeyInputRightArrow) {
-    [_device write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_raw]];
+    [_device write:[CC KEY:SpecialCursorKeyEnd MOD:0 RAW:_device.rawMode]];
   }
 }
 

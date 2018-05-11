@@ -1012,11 +1012,11 @@
 				D23970E720A07B9100881637 /* escape.hxx */,
 				D23970E820A07B9100881637 /* prompt.cxx */,
 				D23970E920A07B9100881637 /* replxx_impl.hxx */,
-				D23970EA20A07B9100881637 /* util.hxx */,
 				D23970EB20A07B9100881637 /* windows.hxx */,
 				D23970EC20A07B9100881637 /* conversion.cxx */,
 				D23970ED20A07B9100881637 /* replxx.cxx */,
 				D23970EE20A07B9100881637 /* keycodes.hxx */,
+				D23970F620A07B9100881637 /* ConvertUTF.h */,
 				D23970EF20A07B9100881637 /* ConvertUTF.cpp */,
 				D23970F020A07B9100881637 /* history.hxx */,
 				D23970F120A07B9100881637 /* io.cxx */,
@@ -1024,7 +1024,6 @@
 				D23970F320A07B9100881637 /* history.cxx */,
 				D23970F420A07B9100881637 /* io.hxx */,
 				D23970F520A07B9100881637 /* inputbuffer.hxx */,
-				D23970F620A07B9100881637 /* ConvertUTF.h */,
 				D23970F720A07B9100881637 /* killring.hxx */,
 				D23970F820A07B9100881637 /* escape.cxx */,
 				D23970F920A07B9100881637 /* prompt.hxx */,
@@ -1032,6 +1031,7 @@
 				D23970FB20A07B9100881637 /* windows.cxx */,
 				D23970FC20A07B9100881637 /* utfstring.hxx */,
 				D23970FD20A07B9100881637 /* conversion.hxx */,
+				D23970EA20A07B9100881637 /* util.hxx */,
 				D23970FE20A07B9100881637 /* wcwidth.cpp */,
 			);
 			path = src;

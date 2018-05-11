@@ -472,7 +472,7 @@ char32_t read_char(void) {
 			// drop out of this loop on ctrl-C
 			if (keys[0] == ctrlChar('C')) {
 				printf("Leaving keyboard debugging mode (on ctrl-C)\n");
-				fflush(stdout);
+				fflush(__thread_stdout);
 				return -2;
 			}
 		}
@@ -506,10 +506,10 @@ void clear_screen( CLEAR_SCREEN clearScreen_ ) {
 #else
 	if ( clearScreen_ == CLEAR_SCREEN::WHOLE ) {
 		char const clearCode[] = "\033c\033[H\033[2J\033[0m";
-		static_cast<void>( write(1, clearCode, sizeof ( clearCode ) - 1) >= 0 );
+		static_cast<void>( fwrite(clearCode, 1, sizeof ( clearCode ) - 1, __thread_stdout) >= 0);
 	} else {
 		char const clearCode[] = "\033[J";
-		static_cast<void>( write(1, clearCode, sizeof ( clearCode ) - 1) >= 0 );
+		static_cast<void>( fwrite(clearCode, 1, sizeof ( clearCode ) - 1, __thread_stdout) >= 0 );
 	}
 #endif
 }

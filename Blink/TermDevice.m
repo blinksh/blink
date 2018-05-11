@@ -192,8 +192,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)setRawMode:(BOOL)rawMode
 {
-  _rawMode = rawMode;
-  _input.raw = rawMode;
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    _rawMode = rawMode;
+    [_view setAutoCarriageReturn:!rawMode];
+  });
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
@@ -228,7 +230,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [_input reset];
   }
   
-  _input.raw = _rawMode;
   _input.device = self;
   if (_secureTextEntry != _input.secureTextEntry) {
     _input.secureTextEntry = _secureTextEntry;
