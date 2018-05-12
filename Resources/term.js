@@ -139,7 +139,7 @@ function term_setIme(str) {
   ime.style.color = scrollPort.getBackgroundColor()
   
   var screenCols = t.screenSize.width;
-  var cursorCol = t.screen_.cursorPosition.column + t.screen_.cursorOffset_;
+  var cursorCol = t.screen_.cursorPosition.column;
   
   ime.style.bottom = 'auto';
   ime.style.top = 'auto';
@@ -153,7 +153,7 @@ function term_setIme(str) {
     } else {
       ime.style.top = 'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - ' + (Math.floor(length / (screenCols + 1))) + ' - 1))'
     }
-  } else if ((cursorCol + length - 2) <= screenCols ) {
+  } else if (cursorCol + length <= screenCols ) {
     // we are inlined
     ime.style.left = 'calc(var(--hterm-charsize-width) * var(--hterm-cursor-offset-col))';
     ime.style.top = 'calc(var(--hterm-charsize-height) * var(--hterm-cursor-offset-row))';
