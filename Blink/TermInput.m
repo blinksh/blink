@@ -551,6 +551,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (_termDelegate.termView.hasSelection) {
     [self _changeSelectionWithInput:input andFlags:UIKeyModifierControl];
   } else {
+    if ([_termDelegate handleControl:input]) {
+      return;
+    }
     [_termDelegate write:[CC CTRL:input]];
   }
 }

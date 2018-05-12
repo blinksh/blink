@@ -41,6 +41,7 @@
 @property (readonly, nonatomic) TermView *termView;
 
 - (void)write:(NSString *)input;
+- (BOOL)handleControl:(NSString *)control;
 
 @optional
 - (void)terminalIsReady: (NSDictionary *)data;

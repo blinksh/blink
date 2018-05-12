@@ -1115,7 +1115,7 @@ void linenoisePrintKeyCodes(void) {
 /* This function calls the line editing function linenoiseEdit() using
  * the STDIN file descriptor set in raw mode. */
 static int linenoiseRaw(char *buf, size_t buflen, const char *prompt) {
-    int count;
+    int count = 0;
 
     if (buflen == 0) {
         errno = EINVAL;

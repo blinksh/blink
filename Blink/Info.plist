@@ -6,6 +6,26 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Blink</string>
+	<key>CFBundleDocumentTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeIconFiles</key>
+			<array>
+				<string>/Users/holzschu/src/Xcode_iPad/blink/Media.xcassets/Settings/appearance.imageset/appearance.png</string>
+			</array>
+			<key>CFBundleTypeName</key>
+			<string>all files</string>
+			<key>CFBundleTypeRole</key>
+			<string>Shell</string>
+			<key>LSHandlerRank</key>
+			<string>Owner</string>
+			<key>LSItemContentTypes</key>
+			<array>
+				<string>public.content</string>
+				<string>public.archive</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
@@ -20,12 +40,31 @@
 	<string>10.126</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLName</key>
+			<string>Blink</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>blinkshell</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
 	<key>NSAppleMusicUsageDescription</key>
 	<string>Blink will show current track</string>
+	<key>NSBluetoothPeripheralUsageDescription</key>
+	<string>keyboard</string>
+	<key>NSSiriUsageDescription</key>
+	<string>storing commands</string>
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.blink.cmdline</string>
@@ -35,6 +74,8 @@
 		<string>fetch</string>
 		<string>remote-notification</string>
 	</array>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -43,10 +84,46 @@
 	</array>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportsDocumentBrowser</key>
+	<true/>
+	<key>UTExportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeIdentifier</key>
+			<string>public.item</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
+	</array>
+	<key>UTImportedTypeDeclarations</key>
+	<array>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>all files</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.item</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
+		<dict>
+			<key>UTTypeDescription</key>
+			<string>all files</string>
+			<key>UTTypeIdentifier</key>
+			<string>public.content</string>
+			<key>UTTypeSize320IconFile</key>
+			<string>blink</string>
+			<key>UTTypeSize64IconFile</key>
+			<string>blink</string>
+		</dict>
 	</array>
 </dict>
 </plist>

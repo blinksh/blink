@@ -1,14 +1,3 @@
-# Version 10.104
-	- PragmataPro
-	- Updated build server scripts and mosh version.
-	- IME mode support - multistage input for chinese, japanese, etc.
-	- New keyboard sequences for Alt-Backspace, Shitf-Tab and C-M-key.
-	- Updated app icon.
-	- Updated Fira Code.
-	- Updated Solarized theme.
-	- Faster rendering thanks to less DOM manipulations.
-	- Fixed emoji width rendering.
-
 # Version 10.0
 	- Secured Mosh Persistent Connections and Restore.
 	- Image rendering!

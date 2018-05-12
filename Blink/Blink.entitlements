@@ -18,7 +18,7 @@
 	<string>$(TeamIdentifierPrefix)$(CFBundleIdentifier)</string>
 	<key>keychain-access-groups</key>
 	<array>
-		<string>$(AppIdentifierPrefix)Com.CarlosCabanero.Blink</string>
+		<string>$(AppIdentifierPrefix)Com.CarlosCabanero.BlinkShell</string>
 	</array>
 </dict>
 </plist>

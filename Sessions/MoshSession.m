@@ -45,23 +45,23 @@ static NSDictionary *predictionModeStrings = nil;
 
 static const char *usage_format =
   "Usage: mosh [options] [user@]host [--] [command]"
-  "\r\n"
-  "        --server=PATH        mosh server on remote machine\r\n"
-  "                             (default: mosh-server)\r\n"
-  "        --predict=adaptive   local echo for slower links [default]\r\n"
-  "-a      --predict=always     use local echo even on fast links\r\n"
-  "-n      --predict=never      never use local echo\r\n"
-  "\r\n"
-  "-p NUM  --port=NUM           server-side UDP port\r\n"
-  "-P NUM                       ssh connection port\r\n"
-  "-I id                        ssh authentication identity name\r\n"
-  //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
-  //  "                                (example: \"ssh -p 2222\")\r\n"
-  //  "                                (default: \"ssh\")\r\n"
-  "\r\n"
-  "        --verbose            verbose mode\r\n"
-  "        --help               this message\r\n"
-  "\r\n";
+  "\n"
+  "        --server=PATH        mosh server on remote machine\n"
+  "                             (default: mosh-server)\n"
+  "        --predict=adaptive   local echo for slower links [default]\n"
+  "-a      --predict=always     use local echo even on fast links\n"
+  "-n      --predict=never      never use local echo\n"
+  "\n"
+  "-p NUM  --port=NUM           server-side UDP port\n"
+  "-P NUM                       ssh connection port\n"
+  "-I id                        ssh authentication identity name\n"
+  //  "        --ssh=COMMAND        ssh command to run when setting up session\n"
+  //  "                                (example: \"ssh -p 2222\")\n"
+  //  "                                (default: \"ssh\")\n"
+  "\n"
+  "        --verbose            verbose mode\n"
+  "        --help               this message\n"
+  "\n";
 
 
 @interface MoshSession ()
@@ -232,8 +232,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   [_stream.control setRawMode:mode];
 
-  fprintf(_stream.out, "\r\nMosh session finished!\r\n");
-  fprintf(_stream.out, "\r\n");
+  fprintf(_stream.out, "\nMosh session finished!\n");
+  fprintf(_stream.out, "\n");
 
   return 0;
 }
@@ -352,13 +352,13 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 - (void)debugMsg:(NSString *)msg
 {
   if (_debug) {
-    fprintf(_stream.out, "MoshClient:DEBUG:%s\r\n", [msg UTF8String]);
+    fprintf(_stream.out, "MoshClient:DEBUG:%s\n", [msg UTF8String]);
   }
 }
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 

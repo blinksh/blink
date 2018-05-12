@@ -36,12 +36,12 @@
 
 @import CloudKit;
 
+#undef HOCKEYSDK
 #if HOCKEYSDK
 @import HockeySDK;
 #endif
 
 @interface AppDelegate ()
-
 @end
 
 @implementation AppDelegate {
@@ -59,6 +59,7 @@ void _on_pipebroken_signal(int signum){
   signal(SIGPIPE, _on_pipebroken_signal);
   
   [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
+    
   // Override point for customization after application launch.
 #if HOCKEYSDK
   NSString *hockeyID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"HockeyID"];
@@ -148,7 +149,6 @@ void _on_pipebroken_signal(int signum){
                                                  userInfo:nil
                                                   repeats:NO];
 }
-
 
 - (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
 {

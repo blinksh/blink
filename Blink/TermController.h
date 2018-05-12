@@ -62,6 +62,7 @@
 @property (strong) MCPSessionParameters *sessionParameters;
 
 - (void)write:(NSString *)input;
+- (BOOL)handleControl:(NSString *)control;
 - (void)terminate;
 - (void)suspend;
 - (void)resume;
