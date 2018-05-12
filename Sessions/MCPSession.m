@@ -150,7 +150,7 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void*
   if (cmds) {
     for (NSString *cmd in cmds) {
       NSString *hint = __commandHints[cmd];
-      replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
+      replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
     }
 //    hint = __commandHints[cmd];
   } else {
@@ -168,8 +168,7 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void*
   }
   
   if ([hint length] > 0) {
-    
-    replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
+    replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
   }
 }
 
@@ -201,6 +200,7 @@ void initializeCommandListForCompletion() {
 }
 
 void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
+  
   NSString* prefix = [NSString stringWithUTF8String:line];
   NSArray *commands = commandsByPrefix(prefix);
   
@@ -597,7 +597,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   stdout = savedStdOut;
   stderr = savedStdErr;
   
-  if (( result == NULL ) && ( errno == EAGAIN ) ) {
+  if ( result == NULL ) {
     return nil;
   }
   
