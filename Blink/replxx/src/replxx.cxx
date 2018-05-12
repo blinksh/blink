@@ -132,10 +132,6 @@ using namespace std;
 using namespace std::placeholders;
 using namespace replxx;
 
-__thread FILE* thread_stdin;
-__thread FILE* thread_stdout;
-__thread FILE* thread_stderr;
-
 
 namespace replxx {
   
@@ -406,6 +402,11 @@ int Replxx::ReplxxImpl::install_window_change_handler( void ) {
 #endif
 	return 0;
 }
+  
+int Replxx::ReplxxImpl::window_changed( void ) {
+  WindowSizeChanged(0);
+  return 0;
+}
 
 std::string const& Replxx::ReplxxImpl::history_line( int index ) {
 	return ( _history[index] );
@@ -571,6 +572,11 @@ void Replxx::clear_screen( void ) {
 int Replxx::install_window_change_handler( void ) {
 	return ( _impl->install_window_change_handler() );
 }
+  
+int Replxx::window_changed( void ) {
+  return ( _impl->window_changed() );
+}
+
 
 int Replxx::print( char const* format_, ... ) {
 	::std::va_list ap;
@@ -805,7 +811,7 @@ void replxx_debug_dump_print_codes(void) {
   while (1) {
     ssize_t n = read(fileno(thread_stdin), &ch, 1);
     if (n <= 0) {
-      continue;
+      return;
     }
     
     if (ch == '\n')
@@ -831,4 +837,10 @@ int replxx_install_window_change_handler( ::Replxx* replxx_ ) {
 	replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
 	return ( replxx->install_window_change_handler() );
 }
+
+int replxx_window_changed( ::Replxx* replxx_ ) {
+  replxx::Replxx::ReplxxImpl* replxx( reinterpret_cast<replxx::Replxx::ReplxxImpl*>( replxx_ ) );
+  return ( replxx->window_changed() );
+}
+
 

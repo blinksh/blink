@@ -234,6 +234,7 @@ public:
 	void set_max_history_size( int len );
 	void clear_screen( void );
 	int install_window_change_handler( void );
+  int window_changed( void );
 
 private:
 	Replxx( Replxx const& ) = delete;

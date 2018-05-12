@@ -34,8 +34,6 @@
 #include <libgen.h>
 #include <sys/stat.h>
 
-//#include "linenoise.h"
-//#include "utf8.h"
 #include "replxx.h"
 
 
@@ -48,8 +46,8 @@
 #import "SSHSession2.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
-#import "BKDefaults.h"
 #import "MusicManager.h"
+#import "BKDefaults.h"
 #import "BKUserConfigurationManager.h"
 
 
@@ -139,8 +137,9 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
-void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
+void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud)
 {
+  * color = 2;
   NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
   if (prefix.length == 0) {
@@ -169,7 +168,7 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
   }
   
   if ([hint length] > 0) {
-//    *color = 33;
+    
     replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
   }
 }
@@ -188,15 +187,17 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* c, void* ud)
 }
 
 
-
 void initializeCommandListForCompletion() {
   // set up the list of commands for auto-complete:
   // list of commands from ios_system:
   NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
   // add commands from Blinkshell:
+  
   [combinedCommands addObjectsFromArray: __commandList];
+
+  //  combinedCommands
   // sort alphabetically:
-  commandList = [combinedCommands sortedArrayUsingSelector:@selector(compare:)];
+  commandList = [[[NSSet setWithArray:combinedCommands] allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
 void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
@@ -207,9 +208,9 @@ void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
     for (NSString * cmd in commands) {
       if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-        replxx_add_completion(lc, [cmd stringByAppendingString:@" "].UTF8String);
+        replxx_add_completion(lc, [[cmd stringByAppendingString:@" "] substringFromIndex:bp].UTF8String);
       } else {
-        replxx_add_completion(lc, cmd.UTF8String);
+        replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
       }
     }
     system_completion(line, bp, lc, ud);
@@ -238,7 +239,7 @@ void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   
   
   for (NSString *c in completions) {
-    replxx_add_completion(lc, [@[cmd, c] componentsJoinedByString:@" "].UTF8String);
+    replxx_add_completion(lc, [[@[cmd, c] componentsJoinedByString:@" "] substringFromIndex:bp].UTF8String);
   }
   
   system_completion(line, bp, lc, ud);
@@ -308,7 +309,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
         if ((file.length == 0) || [fileName hasPrefix:file]) {
           NSString* addition = [fileName substringFromIndex:[file length]];
           NSString * newCommand = [commandString stringByAppendingString:addition];
-          replxx_add_completion(lc,[newCommand UTF8String]);
+          newCommand = [newCommand substringFromIndex:bp];
+          replxx_add_completion(lc, [newCommand UTF8String]);
         }
       }
     }
@@ -318,7 +320,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 + (void)initialize
 {
   __commandList = [
-    @[@"help", @"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"open", @"clear"]
+    @[@"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"open", @"clear", @"help"]
         sortedArrayUsingSelector:@selector(compare:)
   ];
   
@@ -337,14 +339,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     @"exit": @"exit - Exits current session. 👋"
   };
 }
-
-- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
-{
-  if (self = [super initWithDevice:device andParametes:parameters]) {
-    _replxx = replxx_init();
-  }
-  return self;
-}
   
 - (NSString *)_documentsPath
 {
@@ -358,20 +352,27 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
+  _replxx = replxx_init();
+  
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
   }
   
-  char *line;
-  argc = 0;
-  argv = nil;
   
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
+  replaceCommand(@"help", @"help_main", true);
+  replaceCommand(@"config", @"config_main", true);
+  replaceCommand(@"music", @"music_main", true);
+  replaceCommand(@"clear", @"clear_main", true);
+  replaceCommand(@"showkey", @"showkey_main", true);
+  replaceCommand(@"history", @"history_main", true);
+  replaceCommand(@"open", @"open_main", true);
   ios_setMiniRoot([self _documentsPath]);
+  ios_setContext((__bridge void*)self);
   initializeCommandListForCompletion();
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[self _documentsPath]];
 
@@ -383,58 +384,45 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replxx_set_completion_callback(_replxx, completion, 0);
   replxx_set_hint_callback(_replxx, hints, 0);
   replxx_set_complete_on_empty(_replxx, 1);
+  
+  NSString *cmdline = nil;
 
-  while ((line = [self linenoise:"blink> "]) != nil) {
-    if (line[0] != '\0' && line[0] != '/') {
-      replxx_history_add(_replxx, line);
-      replxx_history_save(_replxx, history);
+  while ((cmdline = [self repl_input:"\x1b[1;32mblink\x1b[0m> "]) != nil) {
+    if ([cmdline length] == 0) {
+      continue;
+    }
 
-      NSString *cmdline = [[NSString alloc] initWithFormat:@"%s", line];
+    replxx_history_add(_replxx, cmdline.UTF8String);
+    replxx_history_save(_replxx, history);
 
-      cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
-      NSArray *arr = splitCommandAndArgs(cmdline);
-      NSString *cmd = arr[0];
-      NSString *args = arr[1];
+    cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    NSArray *arr = splitCommandAndArgs(cmdline);
+    NSString *cmd = arr[0];
+    NSString *args = arr[1];
 
-      if ([cmd isEqualToString:@"help"]) {
-        [self _showHelp];
-      } else if ([cmd isEqualToString:@"open"]) {
-          [self _runOpen: args];
-      } else if ([cmd isEqualToString:@"mosh"]) {
-        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-        // Probably passing a Server struct of some type.
-
-        [self _runMoshWithArgs:cmdline];
-      } else if ([cmd isEqualToString:@"ssh"]) {
-        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-        // Probably passing a Server struct of some type.
-        [self _runSSHWithArgs:cmdline];
-      } else if ([cmd isEqualToString:@"ssh2"]) {
-        // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-        // Probably passing a Server struct of some type.
-        [self _runSSH2WithArgs:cmdline];
-      } else if ([cmd isEqualToString:@"exit"]) {
-        break;
-      } else if ([cmd isEqualToString:@"theme"]) {
-        BOOL reload = [self _switchTheme: args];
-        if (reload) {
-          return 0;
-        }
-      } else if ([cmd isEqualToString:@"music"]) {
-        [self _controlMusic: args];
-      } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-        [self _runSSHCopyIDWithArgs:cmdline];
-      } else if ([cmd isEqualToString:@"config"]) {
-        [self _showConfig];
-      } else if ([cmd isEqualToString:@"history"]) {
-        [self _execHistoryWithArgs: args];
-      } else if ([cmd isEqualToString:@"showkey"]) {
-        [self _execShowKey: args];
-      } else if ([cmd isEqualToString:@"clear"]) {
-        [self _execClear];
-      } else {
-        [self _runSystemCommandWithArgs:cmdline];
+    if ([cmd isEqualToString:@"mosh"]) {
+      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+      // Probably passing a Server struct of some type.
+      [self _runMoshWithArgs:cmdline];
+    } else if ([cmd isEqualToString:@"ssh"]) {
+      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+      // Probably passing a Server struct of some type.
+      [self _runSSHWithArgs:cmdline];
+    } else if ([cmd isEqualToString:@"ssh2"]) {
+      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
+      // Probably passing a Server struct of some type.
+      [self _runSSH2WithArgs:cmdline];
+    } else if ([cmd isEqualToString:@"exit"]) {
+      break;
+    } else if ([cmd isEqualToString:@"theme"]) {
+      BOOL reload = [self _switchTheme: args];
+      if (reload) {
+        return 0;
       }
+    } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
+      [self _runSSHCopyIDWithArgs:cmdline];
+    } else {
+      [self _runSystemCommandWithArgs:cmdline];
     }
 
     [self setTitle]; // Temporary, until the apps restore the right state.
@@ -442,60 +430,38 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   [self out:"Bye!"];
 
+  replxx_end(_replxx);
+  _replxx = nil;
   return 0;
 }
 
-- (void)_execClear
+- (int)clear_main:(int)argc argv:(char **)argv
 {
+  blink_replxx_replace_streams(_replxx, _stream.in, _stream.out, _stream.err, &_device->win);
   replxx_clear_screen(_replxx);
+  return 0;
 }
 
-- (void)_execShowKey:(NSString *)args
+- (int)showkey_main:(int)argc argv:(char **)argv
 {
   [_device setRawMode:YES];
-  
   replxx_debug_dump_print_codes();
+  return 0;
 }
 
-- (void)_runOpen:(NSString *)args
+- (int)history_main:(int)argc argv:(char **)argv
 {
-  if (args.length == 0) {
-    return;
+  NSString *args = @"";
+  if (argc == 2) {
+    args = [NSString stringWithUTF8String:argv[1]];
   }
-  
-  bool isDir = NO;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:args isDirectory:&isDir]) {
-    if (!isDir) {
-      NSURL * currentDir = [NSURL fileURLWithPath: [[NSFileManager defaultManager] currentDirectoryPath]];
-      NSURL * url = [currentDir URLByAppendingPathComponent:args isDirectory:NO];
-      
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (url) {
-          NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:self userInfo:@{@"url": url}];
-          [[NSNotificationCenter defaultCenter] postNotification:n];
-        }
-      });
-    }
-  } else {
-    NSURL *url = [NSURL URLWithString:args];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (url) {
-        NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:self userInfo:@{@"url": url}];
-        [[NSNotificationCenter defaultCenter] postNotification:n];
-      }
-    });
-  }
-}
-
-- (void)_execHistoryWithArgs:(NSString *)args
-{
   NSInteger number = [args integerValue];
   if (number != 0) {
     NSString *history = [NSString stringWithContentsOfFile:[self _historyFilePath]
                                                   encoding:NSUTF8StringEncoding error:nil];
     NSArray *lines = [history componentsSeparatedByString:@"\n"];
     if (!lines) {
-      return;
+      return 1;
     }
     lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
     
@@ -506,7 +472,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     } else {
       start = MAX(len + number , 0);
     }
-
+    
     for (NSInteger i = start; i < len; i++) {
       [self out:[NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String];
     }
@@ -520,18 +486,13 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
                          @"history usage:",
                          @"history <number> - Show history",
                          @"history -c       - Clear history",
-                        ] componentsJoinedByString:@"\r\n"];
+                         ] componentsJoinedByString:@"\n"];
     [self out:usage.UTF8String];
+    return 1;
   }
+  return 0;
 }
 
-- (void)_showConfig
-{
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[UIApplication sharedApplication]
-     sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
-  });
-}
 
 - (BOOL)_switchTheme:(NSString *)args
 {
@@ -556,18 +517,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
       [self.delegate reloadSession];
     });
     return YES;
-  }
-}
-
-- (void)_controlMusic:(NSString *)input
-{
-  __block NSString *output = nil;
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    output = [[MusicManager shared] runWithInput:input];
-  });
-
-  if (output) {
-    [self out:output.UTF8String];
   }
 }
 
@@ -623,77 +572,12 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 }
 
 
-- (NSString *)_shortVersionString
-{
-  NSString *compileDate = [NSString stringWithUTF8String:__DATE__];
-
-  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
-  NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleName"];
-  NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
-  NSString *minorVersion = [infoDictionary objectForKey:@"CFBundleVersion"];
-
-  return [NSString stringWithFormat:@"%@: v%@.%@. %@",
-                                    appDisplayName, majorVersion, minorVersion, compileDate];
-}
-
-- (void)_showHelp
-{
-  UIKeyModifierFlags flags = [BKUserConfigurationManager shortCutModifierFlags];
-  NSString *flagsStr = [BKUserConfigurationManager UIKeyModifiersToString:flags];
-  UIKeyModifierFlags shellPrevNextFlags = [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell];
-  NSString *shellPrevNextFlagsStr = [BKUserConfigurationManager UIKeyModifiersToString:shellPrevNextFlags];
-  
-  NSString *help = [@[
-    @"",
-    [self _shortVersionString],
-    @"",
-    @"Available commands:",
-    @"  mosh: mosh client.",
-    @"  ssh: ssh client.",
-    @"  ssh-copy-id: Copy an identity to the server.",
-    @"  config: Configure Blink. Add keys, hosts, themes, etc...",
-    @"  theme: Switch theme.",
-    @"  music: Control music player.",
-    @"  history: Manage history.",
-    @"  clear: Clear screen.",
-    @"  help: Prints this.",
-    @"  exit: Close this shell.",
-    @"",
-    @"Available gestures and keyboard shortcuts:",
-    [NSString stringWithFormat:@"  two fingers tap or %@+t: New shell.", flagsStr],
-    @"  two fingers swipe up: Show control panel.",
-    @"  two fingers drag down dismiss keyboard.",
-    [NSString stringWithFormat:@"  one finger swipe left/right or %@+[]: Switch between shells.", shellPrevNextFlagsStr],
-    [NSString stringWithFormat:@"  %@+N: Switch to shell number N.", flagsStr],
-    [NSString stringWithFormat:@"  %@+w: Close shell.", flagsStr],
-    [NSString stringWithFormat:@"  %@+o: Switch to other screen (Airplay mode).", flagsStr],
-    [NSString stringWithFormat:@"  %@+O: Move current shell to other screen (Airplay mode).", flagsStr],
-    [NSString stringWithFormat:@"  %@+,: Open config.", flagsStr],
-    [NSString stringWithFormat:@"  %@+m: Toggle music controls. (Control with %@+npsrb).", flagsStr, flagsStr],
-    @"  pinch: Change font size.",
-    @"  selection mode:",
-    @"    VIM users:",
-    @"      h j k l (left, down, up, right)",
-    @"      w b (forward/backward by word)",
-    @"      o (change selection point)",
-    @"      y p (yank, paste)",
-    @"    EMACS users:",
-    @"      C-f,b,n,p (right, left, down, up)",
-    @"      C-M-f,b (forward/backward by word)",
-    @"      C-x (change selection point)",
-    @"    OTHER: arrows and fingers",
-    @""
-  ] componentsJoinedByString:@"\r\n"];
-
-  [self out:help.UTF8String];
-}
-
 - (void)out:(const char *)str
 {
-  fprintf(_stream.out, "%s\r\n", str);
+  fprintf(_stream.out, "%s\n", str);
 }
 
-- (char *)linenoise:(char *)prompt
+- (NSString *)repl_input:(char *)prompt
 {
   if (_stream.in == NULL) {
     return nil;
@@ -702,6 +586,10 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   FILE * savedStdErr = stderr;
   stdout = _stream.out;
   stderr = _stream.err;
+  
+  thread_stdout = _stream.out;
+  thread_stdin = _stream.in;
+  thread_stderr = _stream.err;
 
   char const* result = NULL;
   blink_replxx_replace_streams(_replxx, _stream.in, _stream.out, _stream.err, &_device->win);
@@ -712,12 +600,15 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   if (( result == NULL ) && ( errno == EAGAIN ) ) {
     return nil;
   }
-
-  return result;
+  
+  return [NSString stringWithUTF8String:result];;
 }
 
 - (void)sigwinch
 {
+  if (_replxx) {
+    replxx_window_changed(_replxx);
+  }
   [_childSession sigwinch];
 }
 
@@ -730,6 +621,10 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     fclose(_stream.in);
     _stream.in = NULL;
   }
+  if (_replxx) {
+    replxx_end(_replxx);
+    _replxx = nil;
+  }
   // Instruct ios_system to release the data for this shell:
   ios_closeSession((__bridge void*)self);
 }
@@ -741,16 +636,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (BOOL)handleControl:(NSString *)control
 {
-  if (_device.rawMode) {
-    return NO;
-  }
-
   if (_childSession) {
     return [_childSession handleControl:control];
-  }
-
-  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
-    return YES;
   }
 
   return NO;

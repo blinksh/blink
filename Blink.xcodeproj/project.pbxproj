@@ -158,6 +158,13 @@
 		D2D6D78E20529081003CBEC4 /* SSHSession2.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78D20529081003CBEC4 /* SSHSession2.m */; };
 		D2D6D790205290E5003CBEC4 /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2D6D78F205290E5003CBEC4 /* libsshd.a */; };
 		D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2F30EAC205009CD008C5F35 /* base64js.min.js */; };
+		D2F330CA20A6CB840074ADD7 /* help.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330C920A6CB840074ADD7 /* help.m */; };
+		D2F330CC20A6D98C0074ADD7 /* config.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330CB20A6D98C0074ADD7 /* config.m */; };
+		D2F330CE20A6DA8A0074ADD7 /* music.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330CD20A6DA8A0074ADD7 /* music.m */; };
+		D2F330D220A6EF030074ADD7 /* showkey.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330D120A6EF020074ADD7 /* showkey.m */; };
+		D2F330D420A6F1DF0074ADD7 /* clear.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330D320A6F1DF0074ADD7 /* clear.m */; };
+		D2F330D620A6F4F50074ADD7 /* history.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330D520A6F4F50074ADD7 /* history.m */; };
+		D2F330DA20A7127B0074ADD7 /* open.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330D920A7127B0074ADD7 /* open.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -496,6 +503,13 @@
 		D2D6D78D20529081003CBEC4 /* SSHSession2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHSession2.m; sourceTree = "<group>"; };
 		D2D6D78F205290E5003CBEC4 /* libsshd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libsshd.a; path = lib/libsshd.a; sourceTree = "<group>"; };
 		D2F30EAC205009CD008C5F35 /* base64js.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = base64js.min.js; sourceTree = "<group>"; };
+		D2F330C920A6CB840074ADD7 /* help.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = help.m; sourceTree = "<group>"; };
+		D2F330CB20A6D98C0074ADD7 /* config.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = config.m; sourceTree = "<group>"; };
+		D2F330CD20A6DA8A0074ADD7 /* music.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = music.m; sourceTree = "<group>"; };
+		D2F330D120A6EF020074ADD7 /* showkey.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = showkey.m; sourceTree = "<group>"; };
+		D2F330D320A6F1DF0074ADD7 /* clear.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = clear.m; sourceTree = "<group>"; };
+		D2F330D520A6F4F50074ADD7 /* history.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = history.m; sourceTree = "<group>"; };
+		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EA0BA1A41C0CC57B00719C1A /* Blink.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = Blink.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -541,6 +555,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D2F330C520A6C8E20074ADD7 /* Commands */,
 				D23970DC20A07B5800881637 /* replxx */,
 				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
@@ -1011,6 +1026,7 @@
 			children = (
 				D23970E720A07B9100881637 /* escape.hxx */,
 				D23970E820A07B9100881637 /* prompt.cxx */,
+				D23970F520A07B9100881637 /* inputbuffer.hxx */,
 				D23970E920A07B9100881637 /* replxx_impl.hxx */,
 				D23970EB20A07B9100881637 /* windows.hxx */,
 				D23970EC20A07B9100881637 /* conversion.cxx */,
@@ -1023,7 +1039,6 @@
 				D23970F220A07B9100881637 /* inputbuffer.cxx */,
 				D23970F320A07B9100881637 /* history.cxx */,
 				D23970F420A07B9100881637 /* io.hxx */,
-				D23970F520A07B9100881637 /* inputbuffer.hxx */,
 				D23970F720A07B9100881637 /* killring.hxx */,
 				D23970F820A07B9100881637 /* escape.cxx */,
 				D23970F920A07B9100881637 /* prompt.hxx */,
@@ -1035,6 +1050,20 @@
 				D23970FE20A07B9100881637 /* wcwidth.cpp */,
 			);
 			path = src;
+			sourceTree = "<group>";
+		};
+		D2F330C520A6C8E20074ADD7 /* Commands */ = {
+			isa = PBXGroup;
+			children = (
+				D2F330C920A6CB840074ADD7 /* help.m */,
+				D2F330CD20A6DA8A0074ADD7 /* music.m */,
+				D2F330D920A7127B0074ADD7 /* open.m */,
+				D2F330CB20A6D98C0074ADD7 /* config.m */,
+				D2F330D320A6F1DF0074ADD7 /* clear.m */,
+				D2F330D520A6F4F50074ADD7 /* history.m */,
+				D2F330D120A6EF020074ADD7 /* showkey.m */,
+			);
+			path = Commands;
 			sourceTree = "<group>";
 		};
 		EA0BA1821C0CC57B00719C1A = {
@@ -1313,6 +1342,7 @@
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
+				D2F330D420A6F1DF0074ADD7 /* clear.m in Sources */,
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
@@ -1327,6 +1357,7 @@
 				D239710120A07B9100881637 /* replxx.cxx in Sources */,
 				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
+				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
@@ -1335,7 +1366,10 @@
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
+				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
+				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
+				D2F330CE20A6DA8A0074ADD7 /* music.m in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				D23970FF20A07B9100881637 /* prompt.cxx in Sources */,
@@ -1349,6 +1383,7 @@
 				D239710020A07B9100881637 /* conversion.cxx in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
+				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				D2A92352201732B600043596 /* MusicManager.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
@@ -1369,6 +1404,7 @@
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				D239710520A07B9100881637 /* history.cxx in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
+				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,

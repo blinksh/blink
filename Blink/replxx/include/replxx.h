@@ -263,6 +263,7 @@ void replxx_clear_screen( Replxx* );
 void replxx_debug_dump_print_codes(void);
 /* the following is extension to the original linenoise API */
 int replxx_install_window_change_handler( Replxx* );
+int replxx_window_changed( Replxx* );
 
 #ifdef __cplusplus
 }

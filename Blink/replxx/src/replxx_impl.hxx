@@ -92,6 +92,7 @@ public:
 	void set_max_history_size( int len );
 	void clear_screen( void );
 	int install_window_change_handler( void );
+  int window_changed( void );
 	completions_t call_completer( std::string const& input, int breakPos ) const;
 	hints_t call_hinter( std::string const& input, int breakPos, Replxx::Color& color ) const;
 	void call_highlighter( std::string const& input, Replxx::colors_t& colors ) const;
