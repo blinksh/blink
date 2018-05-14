@@ -60,7 +60,6 @@
 		07E3AED11D9191B4007BC086 /* blink.png in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AECC1D9191B4007BC086 /* blink.png */; };
 		07E3AED31D919272007BC086 /* css in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AED21D919272007BC086 /* css */; };
 		07E4C5211C935E28000C571A /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 07E4C5201C935E28000C571A /* Media.xcassets */; };
-		07F670711D05EEE200C0A53C /* linenoise.c in Sources */ = {isa = PBXBuildFile; fileRef = 07F670631D05EEE200C0A53C /* linenoise.c */; };
 		07F670721D05EEE200C0A53C /* MCPSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670661D05EEE200C0A53C /* MCPSession.m */; };
 		07F670731D05EEE200C0A53C /* MoshSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670681D05EEE200C0A53C /* MoshSession.m */; };
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
@@ -114,7 +113,6 @@
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D2094665204D4DB8003C4F72 /* SystemSession.m in Sources */ = {isa = PBXBuildFile; fileRef = D2094664204D4DB8003C4F72 /* SystemSession.m */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
-		D210E99E1D5B89910012E1C5 /* utf8.c in Sources */ = {isa = PBXBuildFile; fileRef = D210E99C1D5B89910012E1C5 /* utf8.c */; };
 		D23970FF20A07B9100881637 /* prompt.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970E820A07B9100881637 /* prompt.cxx */; };
 		D239710020A07B9100881637 /* conversion.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970EC20A07B9100881637 /* conversion.cxx */; };
 		D239710120A07B9100881637 /* replxx.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970ED20A07B9100881637 /* replxx.cxx */; };
@@ -343,8 +341,6 @@
 		07E3AECC1D9191B4007BC086 /* blink.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = blink.png; sourceTree = "<group>"; };
 		07E3AED21D919272007BC086 /* css */ = {isa = PBXFileReference; lastKnownFileType = folder; path = css; sourceTree = "<group>"; };
 		07E4C5201C935E28000C571A /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		07F670631D05EEE200C0A53C /* linenoise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = linenoise.c; sourceTree = "<group>"; };
-		07F670641D05EEE200C0A53C /* linenoise.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linenoise.h; sourceTree = "<group>"; };
 		07F670651D05EEE200C0A53C /* MCPSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MCPSession.h; sourceTree = "<group>"; };
 		07F670661D05EEE200C0A53C /* MCPSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MCPSession.m; sourceTree = "<group>"; };
 		07F670671D05EEE200C0A53C /* MoshSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MoshSession.h; sourceTree = "<group>"; };
@@ -439,8 +435,6 @@
 		D2094664204D4DB8003C4F72 /* SystemSession.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SystemSession.m; sourceTree = "<group>"; };
 		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
-		D210E99C1D5B89910012E1C5 /* utf8.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = utf8.c; sourceTree = "<group>"; };
-		D210E99D1D5B89910012E1C5 /* utf8.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = utf8.h; sourceTree = "<group>"; };
 		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
 		D23970E420A07B8300881637 /* replxx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = replxx.h; sourceTree = "<group>"; };
 		D23970E520A07B8300881637 /* replxx.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx.hxx; sourceTree = "<group>"; };
@@ -811,10 +805,6 @@
 			isa = PBXGroup;
 			children = (
 				2236A8EC2038972C001CD2AD /* tool_main.c */,
-				D210E99C1D5B89910012E1C5 /* utf8.c */,
-				D210E99D1D5B89910012E1C5 /* utf8.h */,
-				07F670631D05EEE200C0A53C /* linenoise.c */,
-				07F670641D05EEE200C0A53C /* linenoise.h */,
 				D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */,
 				D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */,
 				07F670651D05EEE200C0A53C /* MCPSession.h */,
@@ -1374,7 +1364,6 @@
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
-				D210E99E1D5B89910012E1C5 /* utf8.c in Sources */,
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D2F330CE20A6DA8A0074ADD7 /* music.m in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
@@ -1398,7 +1387,6 @@
 				D239710220A07B9100881637 /* ConvertUTF.cpp in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
-				07F670711D05EEE200C0A53C /* linenoise.c in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
