@@ -1,3 +1,4 @@
+/*
 #include <getopt.h>
 #include <libssh/libssh.h>
 #include <libssh/callbacks.h>
@@ -530,19 +531,19 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   
   ssh_set_blocking(_session, 0);
   ssh_channel_set_blocking(_channel, 0);
-  /* stdin */
+  // stdin
   connector_in = ssh_connector_new(_session);
   ssh_connector_set_out_channel(connector_in, _channel, SSH_CONNECTOR_STDOUT);
   ssh_connector_set_in_fd(connector_in, fileno(_stream.in));
   ssh_event_add_connector(event, connector_in);
   
-  /* stdout */
+  // stdout
   connector_out = ssh_connector_new(_session);
   ssh_connector_set_out_fd(connector_out, fileno(_stream.out));
   ssh_connector_set_in_channel(connector_out, _channel, SSH_CONNECTOR_STDOUT);
   ssh_event_add_connector(event, connector_out);
   
-  /* stderr */
+  // stderr
   //  connector_err = ssh_connector_new(_session);
   //  ssh_connector_set_out_fd(connector_err, fileno(_stream.err));
   //  ssh_connector_set_in_channel(connector_err, _channel, SSH_CONNECTOR_STDERR);
@@ -590,3 +591,4 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 }
 
 @end
+*/
