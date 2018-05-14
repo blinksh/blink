@@ -130,6 +130,7 @@
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
 		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
+		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
@@ -475,6 +476,8 @@
 		D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MoshSessionParameters.m; sourceTree = "<group>"; };
 		D23D0FAB2008DAEB00B33A9F /* TermInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermInput.h; sourceTree = "<group>"; };
 		D23D0FAC2008DAEB00B33A9F /* TermInput.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermInput.m; sourceTree = "<group>"; };
+		D23E142920A970C3000FCF5C /* BlinkPaths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkPaths.h; sourceTree = "<group>"; };
+		D23E142A20A970C3000FCF5C /* BlinkPaths.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlinkPaths.m; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
@@ -588,6 +591,8 @@
 				D2D6D78520527651003CBEC4 /* TermDevice.m */,
 				D27BBA1A20529FFF00AEA303 /* TermStream.h */,
 				D27BBA1B20529FFF00AEA303 /* TermStream.m */,
+				D23E142920A970C3000FCF5C /* BlinkPaths.h */,
+				D23E142A20A970C3000FCF5C /* BlinkPaths.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1379,6 +1384,7 @@
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
+				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
 				D239710020A07B9100881637 /* conversion.cxx in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,

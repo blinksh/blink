@@ -49,11 +49,12 @@
 #import "MusicManager.h"
 #import "BKDefaults.h"
 #import "BKUserConfigurationManager.h"
+#import "BlinkPaths.h"
 
 
 // from ios_system:
 
-#include "ios_system/ios_system.h"
+#include <ios_system/ios_system.h>
 
 
 #define MCP_MAX_LINE 4096
@@ -168,7 +169,6 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void*
   }
   
   if ([hint length] > 0) {
-    
     replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
   }
 }
@@ -340,15 +340,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   };
 }
   
-- (NSString *)_documentsPath
-{
-  return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
-}
-
-- (NSString *)_historyFilePath
-{
-  return [[self _documentsPath] stringByAppendingPathComponent:@".blink_history"];
-}
 
 - (int)main:(int)argc argv:(char **)argv args:(char *)args
 {
@@ -371,14 +362,14 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replaceCommand(@"showkey", @"showkey_main", true);
   replaceCommand(@"history", @"history_main", true);
   replaceCommand(@"open", @"open_main", true);
-  ios_setMiniRoot([self _documentsPath]);
+  ios_setMiniRoot([BlinkPaths documents]);
   ios_setContext((__bridge void*)self);
   initializeCommandListForCompletion();
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[self _documentsPath]];
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 
   [_device setRawMode:NO];
 
-  const char *history = [[self _historyFilePath] UTF8String];
+  const char *history = [[BlinkPaths historyFile] UTF8String];
   replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
   replxx_history_load(_replxx, history);
   replxx_set_completion_callback(_replxx, completion, 0);
@@ -444,8 +435,10 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (int)showkey_main:(int)argc argv:(char **)argv
 {
+  BOOL rawMode = _device.rawMode;
   [_device setRawMode:YES];
   replxx_debug_dump_print_codes();
+  [_device setRawMode:rawMode];
   return 0;
 }
 
@@ -457,7 +450,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   NSInteger number = [args integerValue];
   if (number != 0) {
-    NSString *history = [NSString stringWithContentsOfFile:[self _historyFilePath]
+    NSString *history = [NSString stringWithContentsOfFile:[BlinkPaths historyFile]
                                                   encoding:NSUTF8StringEncoding error:nil];
     NSArray *lines = [history componentsSeparatedByString:@"\n"];
     if (!lines) {
@@ -479,7 +472,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   } else if ([args isEqualToString:@"-c"]) {
     replxx_set_max_history_size(_replxx, 1);
     replxx_history_add(_replxx, @"".UTF8String);
-    replxx_history_save(_replxx, [self _historyFilePath].UTF8String);
+    replxx_history_save(_replxx, [BlinkPaths historyFile].UTF8String);
     replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
   } else {
     NSString *usage = [@[
