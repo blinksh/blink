@@ -11,5 +11,5 @@
 #include "MCPSession.h"
 
 int clear_main(int argc, char *argv[]) {
-  return [(__bridge MCPSession *)thread_context clear_main:argc argv:argv];
+  return [[(__bridge MCPSession *)thread_context repl] clear_main:argc argv:argv];
 }

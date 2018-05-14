@@ -54,10 +54,10 @@
 #define TERM "xterm-256color"
 
 static const char *usage_format =
-"usage: ssh [options] [user@]hostname [command]\r\n"
-"[-l login_name] [-i identity_file] [-p port]\r\n"
-"[-t request_tty] [-v verbose]\r\n"
-"\r\n";
+"usage: ssh [options] [user@]hostname [command]\n"
+"[-l login_name] [-i identity_file] [-p port]\n"
+"[-t request_tty] [-v verbose]\n"
+"\n";
 
 typedef struct {
   int address_family;

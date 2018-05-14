@@ -232,8 +232,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   [_device setRawMode:mode];
 
-  fprintf(_stream.out, "\r\nMosh session finished!\r\n");
-  fprintf(_stream.out, "\r\n");
+  fprintf(_stream.out, "\nMosh session finished!\n");
+  fprintf(_stream.out, "\n");
   
   return 0;
 }
@@ -358,7 +358,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 

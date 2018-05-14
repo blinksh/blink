@@ -11,5 +11,5 @@
 #include "MCPSession.h"
 
 int showkey_main(int argc, char *argv[]) {
-  return [(__bridge MCPSession *)thread_context showkey_main:argc argv:argv];
+  return [[(__bridge MCPSession *)thread_context repl] showkey_main:argc argv:argv];
 }

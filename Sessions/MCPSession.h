@@ -31,15 +31,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "Repl.h"
 #import "Session.h"
 #import "MCPSessionParameters.h"
 
 @interface MCPSession : Session
 
 @property (strong) MCPSessionParameters *sessionParameters;
-
-- (int)showkey_main:(int)argc argv:(char **)argv;
-- (int)clear_main:(int)argc argv:(char **)argv;
-- (int)history_main:(int)argc argv:(char **)argv;
+@property (strong, readonly) Repl *repl;
 
 @end

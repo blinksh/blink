@@ -11,5 +11,5 @@
 #include "MCPSession.h"
 
 int history_main(int argc, char *argv[]) {
-  return [(__bridge MCPSession *)thread_context history_main:argc argv:argv];
+  return [[(__bridge MCPSession *)thread_context repl] history_main:argc argv:argv];
 }
