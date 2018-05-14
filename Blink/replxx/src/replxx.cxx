@@ -811,7 +811,7 @@ void replxx_debug_dump_print_codes(void) {
   while (1) {
     ssize_t n = read(fileno(thread_stdin), &ch, 1);
     if (n <= 0) {
-      return;
+      break;
     }
     
     if (ch == '\n')
@@ -827,10 +827,10 @@ void replxx_debug_dump_print_codes(void) {
            ch, ch);
     fflush(thread_stdout);
     if (ch == 4) { // Ctrl-D
-      disableRawMode();
-      return;
+      break;
     }
   }
+  disableRawMode();
 }
 
 int replxx_install_window_change_handler( ::Replxx* replxx_ ) {
