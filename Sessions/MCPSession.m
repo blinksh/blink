@@ -42,8 +42,6 @@
 
 //#import "SSHSession2.h"
 
-
-
 #import "BKUserConfigurationManager.h"
 #import "BlinkPaths.h"
 
@@ -69,6 +67,7 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 
 @implementation MCPSession {
   Session *_childSession;
+  NSString *_currentCmd;
 }
 
 @dynamic sessionParameters;
@@ -84,6 +83,7 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 
 - (int)main:(int)argc argv:(char **)argv
 {
+  ios_setContext((__bridge void*)self);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
@@ -105,7 +105,7 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
   replaceCommand(@"theme", @"theme_main", true);
   
   ios_setMiniRoot([BlinkPaths documents]);
-  ios_setContext((__bridge void*)self);
+  
 
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 
@@ -124,12 +124,11 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
+      _currentCmd = cmdline;
       // Re-evalute column number before each command
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
-      // Redirect all output to console:
-      ios_setStreams(_stream.in, _stream.out, _stream.err);
       int result = ios_system(cmdline.UTF8String);
-
+      _currentCmd = nil;
       // TODO: find meanful exit code for reload
       if (result == 10 && [cmd isEqualToString:@"theme"]) {
         return NO;
@@ -219,11 +218,11 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
     return [_childSession handleControl:control];
   }
   
-  if ([_device rawMode]) {
-    return NO;
-  }
-  
-  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+  if (_currentCmd && ([control isEqualToString:@"c"] || [control isEqualToString:@"d"])) {
+    if ([_device rawMode]) {
+      return NO;
+    }
+
     ios_kill();
     return YES;
   }
@@ -234,6 +233,5 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 - (void)setActiveSession {
   ios_switchSession((__bridge void*)self);
 }
-
 
 @end
