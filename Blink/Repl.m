@@ -50,7 +50,7 @@ NSArray<NSString *> *commandsByPrefix(NSString *prefix)
     return commandList;
   }
   NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
-  return [__commandList filteredArrayUsingPredicate:prefixPred];
+  return [commandList filteredArrayUsingPredicate:prefixPred];
 }
 
 NSArray<NSString *> *hostsByPrefix(NSString *prefix)
@@ -98,45 +98,19 @@ NSArray<NSString *> *themesByPrefix(NSString *prefix) {
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
-void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud)
-{
-  * color = 2;
-  NSString *hint = nil;
-  NSString *prefix = [NSString stringWithUTF8String:line];
-  if (prefix.length == 0) {
-    return;
-  }
-  
-  NSArray<NSString *> *cmds = commandsByPrefix(prefix);
-  if (cmds) {
-    for (NSString *cmd in cmds) {
-      NSString *hint = __commandHints[cmd];
-      replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
-    }
-    //    hint = __commandHints[cmd];
-  } else {
-    NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
-    NSString *cmd = cmdAndArgs[0];
-    prefix = cmdAndArgs[1];
-    
-    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-      hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
-    } else if ([cmd isEqualToString:@"theme"]) {
-      hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
-    } else if ([cmd isEqualToString:@"music"]) {
-      hint = [musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
-    }
-  }
-  
-  if ([hint length] > 0) {
-    replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
-  }
-}
-
-
 @implementation Repl {
   Replxx* _replxx;
   TermDevice *_device;
+}
+
+void __hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud) {
+  Repl *repl = (__bridge Repl *)ud;
+  [repl _hints:line bp: bp lc: lc color: color ud: ud];
+}
+
+void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
+  Repl *repl = (__bridge Repl *)ud;
+  [repl _completion: line bp:bp lc: lc ud: ud];
 }
 
 - (instancetype)initWithDevice:(TermDevice *)device
@@ -152,23 +126,87 @@ void hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void*
 + (void)initialize
 {
   __commandList = [
-                   @[@"mosh", @"ssh", @"exit", @"ssh-copy-id", @"config", @"theme", @"music", @"history", @"open", @"clear", @"help"]
+                   @[@"mosh", @"ssh", @"exit", @"ssh-copy-id"]
                    sortedArrayUsingSelector:@selector(compare:)
                    ];
   
   __commandHints =
   @{
-    @"help": @"help - Prints all commands. 🧐 ",
-    @"mosh": @"mosh - Runs mosh client. 🦄",
-    @"ssh": @"ssh - Runs ssh client. 🐌",
-    @"ssh-copy-id": @"ssh-copy-id - Copy an identity to the server. 💌",
-    @"config": @"config - Add keys, hosts, themes, etc... 🔧 ",
-    @"theme": @"theme - Choose a theme 💅",
-    @"music": @"music - Control music player 🎧",
-    @"history": @"history - Use -c option to clear history. 🙈 ",
-    @"clear": @"clear - Clear screen. 🙊",
-    @"open": @"open - open url of file (Experimental). 📤",
-    @"exit": @"exit - Exits current session. 👋"
+    @"awk": @"Select particular records in a file and perform operations upon them.",
+    @"cat": @"Concatenate and print files.",
+    @"cd": @"Change directory.",
+//    @"chflags": @"chflags", // TODO
+//    @"chksum": @"chksum", // TODO
+    @"clear": @"Clear the terminal screen. 🙈",
+    @"compress": @"Compress data.",
+    @"config": @"Add keys, hosts, themes, etc... 🔧 ",
+    @"cp": @"Copy files and directories",
+    @"curl": @"Transfer data from or to a server.",
+    @"date": @"Display or set date and time.",
+    @"diff": @"Compare files line by line.",
+    @"dig": @"DNS lookup utility.",
+    @"du": @"Disk usage",
+    @"echo": @"Write arguments to the standard output.",
+    @"egrep": @"Search for a pattern using extended regex.", // https://www.computerhope.com/unix/uegrep.htm
+    @"env": @"Set environment and execute command, or print environment.", // fish
+    @"exit": @"Exit current session. 👋",
+    @"fgrep": @"File pattern searcher.", // fish
+    @"find": @"Walk a file hierarchy.", // fish
+    @"grep": @"File pattern searcher.", // fish
+    @"gunzip": @"Compress or expand files",  // https://linux.die.net/man/1/gunzip
+    @"gzip": @"Compression/decompression tool using Lempel-Ziv coding (LZ77)",  // fish
+    @"head": @"Display first lines of a file", // fish
+    @"help": @"Prints all commands. 🧐 ",
+    @"history": @"Use -c option to clear history. 🙈 ",
+    @"host": @"DNS lookup utility.", // fish
+    @"link": @"Make links.", // fish
+    @"ln": @"", // TODO
+    @"ls": @"List files and directories",
+    @"md5": @"Calculate a message-digest fingerprint (checksum) for a file.", // fish
+    @"mkdir": @"Make directories.", // fish
+    @"mosh": @"Runs mosh client. 🦄",
+    @"music": @"Control music player 🎧",
+    @"mv": @"Move files and directories.",
+//    @"nc": @"", // TODO
+    @"nslookup": @"Query Internet name servers interactively", // fish
+    @"pbcopy": @"Copy to the pasteboard.",
+    @"pbpaste": @"Paste from the pasteboard.",
+    @"ping": @"Send ICMP ECHO_REQUEST packets to network hosts.", // fish
+    @"printenv": @"Print out the environment.", // fish
+    @"pwd": @"Return working directory name.", // fish
+    @"readlink": @"Display file status.", // fish
+//    @"rlogin": @"", // TODO: REMOVE
+    @"rm": @"Remove files and directories.",
+    @"rmdir": @"Remove directories.", // fish
+    @"scp": @"Secure copy (remote file copy program).", // fish
+    @"sed": @"Stream editor.", // fish
+//    @"setenv": @"", // TODO
+    @"sftp": @"Secure file transfer program.", // fish
+    @"showkey": @"Display typed chars.",
+    @"sort": @"Sort or merge records (lines) of text and binary files.", // fish
+    @"ssh": @"Runs ssh client. 🐌",
+    @"ssh-copy-id": @"Copy an identity to the server. 💌",
+//    @"ssh-keygen": @"", // TODO
+    @"stat": @"Display file status.", // fish
+    @"sum": @"Display file checksums and block counts.", // fish
+    @"tail": @"Display the last part of a file.", // fish
+    @"tar": @"Manipulate tape archives.", // fish
+    @"tee": @"Pipe fitting.", // fish
+    @"telnet": @"User interface to the TELNET protocol.", // fish
+    @"theme": @"Choose a theme 💅",
+    @"touch": @"Change file access and modification times.", // fish
+//    @"tr": @"", // TODO
+    @"uname": @"Print operating system name.", // fish
+    @"uncompress": @"Expand data.",
+    @"uniq": @"Report or filter out repeated lines in a file.", // fish
+    @"unlink": @"Remove directory entries.", // fish
+//    @"unsetenv": @"", // TODO
+    @"uptime": @"Show how long system has been running.", // fish
+    @"wc": @"Words and lines counter.",
+    @"whoami": @"Display effective user id.", // fish
+    @"whois": @"Internet domain name and network number directory service.", // fish
+    
+    @"open": @"open url of file (Experimental). 📤"
     };
 }
 
@@ -185,54 +223,8 @@ void initializeCommandListForCompletion() {
   commandList = [[[NSSet setWithArray:combinedCommands] allObjects] sortedArrayUsingSelector:@selector(compare:)];
 }
 
-void completion(char const* line, int bp, replxx_completions* lc, void* ud) {
-  
-  NSString* prefix = [NSString stringWithUTF8String:line];
-  NSArray *commands = commandsByPrefix(prefix);
-  
-  if (commands.count > 0) {
-    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
-    for (NSString * cmd in commands) {
-      if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-        replxx_add_completion(lc, [[cmd stringByAppendingString:@" "] substringFromIndex:bp].UTF8String);
-      } else {
-        replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
-      }
-    }
-    system_completion(line, bp, lc, ud);
-    return;
-  }
-  
-  NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
-  NSString *cmd = cmdAndArgs[0];
-  NSString *args = cmdAndArgs[1];
-  NSArray *completions = @[];
-  
-  if ([args isEqualToString:@""]) {
-    system_completion(line, bp, lc, ud);
-    return;
-  }
-  
-  if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-    completions = hostsByPrefix(args);
-  } else if ([cmd isEqualToString:@"music"]) {
-    completions = musicActionsByPrefix(args);
-  } else if ([cmd isEqualToString:@"theme"]) {
-    completions = themesByPrefix(args);
-  } else if ([cmd isEqualToString:@"history"]) {
-    completions = historyActionsByPrefix(args);
-  }
-  
-  
-  for (NSString *c in completions) {
-    replxx_add_completion(lc, [[@[cmd, c] componentsJoinedByString:@" "] substringFromIndex:bp].UTF8String);
-  }
-  
-  system_completion(line, bp, lc, ud);
-}
-
 void system_completion(char const* command, int bp, replxx_completions* lc, void* ud) {
-  // autocomplete command for lineNoise
+
   // TODO: get current working directory from ios_system
   BOOL isDir;
   NSString* commandString = [NSString stringWithUTF8String:command];
@@ -303,13 +295,91 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
 }
 
+- (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
+  NSString* prefix = [NSString stringWithUTF8String:line];
+  NSArray *commands = commandsByPrefix(prefix);
+  
+  if (commands.count > 0) {
+    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
+    for (NSString * cmd in commands) {
+      if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
+        replxx_add_completion(lc, [[cmd stringByAppendingString:@" "] substringFromIndex:bp].UTF8String);
+      } else {
+        replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
+      }
+    }
+    system_completion(line, bp, lc, ud);
+    return;
+  }
+  
+  NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
+  NSString *cmd = cmdAndArgs[0];
+  NSString *args = cmdAndArgs[1];
+  NSArray *completions = @[];
+  
+  if ([args isEqualToString:@""]) {
+    system_completion(line, bp, lc, ud);
+    return;
+  }
+  
+  if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+    completions = hostsByPrefix(args);
+  } else if ([cmd isEqualToString:@"music"]) {
+    completions = musicActionsByPrefix(args);
+  } else if ([cmd isEqualToString:@"theme"]) {
+    completions = themesByPrefix(args);
+  } else if ([cmd isEqualToString:@"history"]) {
+    completions = historyActionsByPrefix(args);
+  }
+  
+  
+  for (NSString *c in completions) {
+    replxx_add_completion(lc, [[@[cmd, c] componentsJoinedByString:@" "] substringFromIndex:bp].UTF8String);
+  }
+  
+  system_completion(line, bp, lc, ud);
+}
+
+- (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
+  NSString *hint = nil;
+  NSString *prefix = [NSString stringWithUTF8String:line];
+  if (prefix.length == 0) {
+    return;
+  }
+  
+  NSArray<NSString *> *cmds = commandsByPrefix(prefix);
+  if (cmds) {
+    for (NSString *cmd in cmds) {
+      NSString *description = __commandHints[cmd];
+      NSString *hint = [cmd stringByAppendingFormat:@"\t%@", description ? description : @""];
+      replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+    }
+  } else {
+    NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
+    NSString *cmd = cmdAndArgs[0];
+    prefix = cmdAndArgs[1];
+    
+    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
+      hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"theme"]) {
+      hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
+    } else if ([cmd isEqualToString:@"music"]) {
+      hint = [musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
+    }
+  }
+  
+  if ([hint length] > 0) {
+    replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+  }
+}
+
 - (void)loopWithCallback:(BOOL(^)(NSString *cmd)) callback
 {
   const char *history = [[BlinkPaths historyFile] UTF8String];
   replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
   replxx_history_load(_replxx, history);
-  replxx_set_completion_callback(_replxx, completion, 0);
-  replxx_set_hint_callback(_replxx, hints, 0);
+  replxx_set_completion_callback(_replxx, __completion, (__bridge void*)self);
+  replxx_set_hint_callback(_replxx, __hints, (__bridge void*)self);
   replxx_set_complete_on_empty(_replxx, 1);
   
   initializeCommandListForCompletion();
@@ -385,15 +455,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 {
   blink_replxx_replace_streams(_replxx, thread_stdin, thread_stdout, thread_stderr, &_device->win);
   replxx_clear_screen(_replxx);
-  return 0;
-}
-
-- (int)showkey_main:(int)argc argv:(char **)argv
-{
-  BOOL rawMode = _device.rawMode;
-  [_device setRawMode:YES];
-  replxx_debug_dump_print_codes();
-  [_device setRawMode:rawMode];
   return 0;
 }
 
