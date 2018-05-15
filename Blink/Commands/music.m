@@ -1,5 +1,5 @@
 //
-//  config.c
+//  music.m
 //  Blink
 //
 //  Created by Yury Korolev on 5/12/18.
@@ -9,6 +9,7 @@
 #include <stdio.h>
 #import "MusicManager.h"
 #include "ios_system/ios_system.h"
+#include "ios_error.h"
 
 int music_main(int argc, char *argv[]) {
   
@@ -16,8 +17,7 @@ int music_main(int argc, char *argv[]) {
     NSString *usage = [@[
        @"usage: music info | back | prev | pause | play | resume | next"
     ] componentsJoinedByString:@"\n"];
-    fputs(usage.UTF8String, thread_stdout);
-    fputs("\n", thread_stderr);
+    puts(usage.UTF8String);
     return 1;
   }
   
@@ -28,8 +28,7 @@ int music_main(int argc, char *argv[]) {
   });
   
   if (output) {
-    fputs(output.UTF8String, thread_stdout);
-    fputs("\n", thread_stdout);
+    puts(output.UTF8String);
   }
   
   return 0;

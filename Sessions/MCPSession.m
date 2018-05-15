@@ -39,13 +39,11 @@
 #import "BKPubKey.h"
 #import "SSHCopyIDSession.h"
 #import "SSHSession.h"
-#import "SystemSession.h"
-#import "BKTheme.h"
 
 //#import "SSHSession2.h"
 
 
-#import "BKDefaults.h"
+
 #import "BKUserConfigurationManager.h"
 #import "BlinkPaths.h"
 
@@ -53,6 +51,7 @@
 // from ios_system:
 
 #include <ios_system/ios_system.h>
+#include "ios_error.h"
 
 NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 {
@@ -66,7 +65,6 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
     ];
   }
 }
-
 
 
 @implementation MCPSession {
@@ -84,8 +82,10 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
   return self;
 }
 
-- (int)main:(int)argc argv:(char **)argv args:(char *)args
+- (int)main:(int)argc argv:(char **)argv
 {
+  ios_setStreams(_stream.in, _stream.out, _stream.err);
+  
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
@@ -102,77 +102,46 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
   replaceCommand(@"showkey", @"showkey_main", true);
   replaceCommand(@"history", @"history_main", true);
   replaceCommand(@"open", @"open_main", true);
+  replaceCommand(@"theme", @"theme_main", true);
+  
   ios_setMiniRoot([BlinkPaths documents]);
   ios_setContext((__bridge void*)self);
-//  initializeCommandListForCompletion();
+
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
     NSArray *arr = _splitCommandAndArgs(cmdline);
     NSString *cmd = arr[0];
-    NSString *args = arr[1];
     
-    if ([cmd isEqualToString:@"mosh"]) {
-      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-      // Probably passing a Server struct of some type.
+    if ([cmd isEqualToString:@"exit"]) {
+      return NO;
+    } else if ([cmd isEqualToString:@"mosh"]) {
       [self _runMoshWithArgs:cmdline];
     } else if ([cmd isEqualToString:@"ssh"]) {
-      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-      // Probably passing a Server struct of some type.
       [self _runSSHWithArgs:cmdline];
       //    } else if ([cmd isEqualToString:@"ssh2"]) {
-      // At some point the parser will be in the JS, and the call will, through JSON, will include what is needed.
-      // Probably passing a Server struct of some type.
       //      [self _runSSH2WithArgs:cmdline];
-    } else if ([cmd isEqualToString:@"exit"]) {
-      return false;
-    } else if ([cmd isEqualToString:@"theme"]) {
-      BOOL reload = [self _switchTheme: args];
-      if (reload) {
-        return false;
-      }
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
-      [self _runSystemCommandWithArgs:cmdline];
+      // Re-evalute column number before each command
+      setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
+      // Redirect all output to console:
+      ios_setStreams(_stream.in, _stream.out, _stream.err);
+      int result = ios_system(cmdline.UTF8String);
+
+      // TODO: find meanful exit code for reload
+      if (result == 10 && [cmd isEqualToString:@"theme"]) {
+        return NO;
+      }
     }
     
     return YES;
   }];
 
-  [self out:"Bye!"];
-
+  puts("Bye!");
   
   return 0;
-}
-
-
-
-
-- (BOOL)_switchTheme:(NSString *)args
-{
-  if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
-    NSString *themeName = [BKDefaults selectedThemeName];
-    [self out:[NSString stringWithFormat:@"Current theme: %@", themeName].UTF8String];
-    BKTheme *theme = [BKTheme withName:[BKDefaults selectedThemeName]];
-    if (!theme) {
-      [self out:@"Not found".UTF8String];
-    }
-    return NO;
-  } else {
-    BKTheme *theme = [BKTheme withName:args];
-    if (!theme) {
-      [self out:@"Theme not found".UTF8String];
-      return NO;
-    }
-
-    dispatch_sync(dispatch_get_main_queue(), ^{
-      [BKDefaults setThemeName:theme.name];
-      [BKDefaults saveDefaults];
-      [self.delegate reloadSession];
-    });
-    return YES;
-  }
 }
 
 - (void)_runSSHCopyIDWithArgs:(NSString *)args
@@ -195,17 +164,6 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
   _childSession = nil;
 }
 
-- (void)_runSystemCommandWithArgs:(NSString *)args
-{
-  self.sessionParameters.childSessionParameters = nil;
-  [self.delegate indexCommand:args];
-  _childSession = [[SystemSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
-  self.sessionParameters.childSessionType = @"system";
-  [_childSession executeAttachedWithArgs:args];
-  _childSession = nil;
-}
-
-
 - (void)_runSSHWithArgs:(NSString *)args
 {
   self.sessionParameters.childSessionParameters = nil;
@@ -227,11 +185,6 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 //}
 
 
-- (void)out:(const char *)str
-{
-  fprintf(_stream.out, "%s\n", str);
-}
-
 - (void)sigwinch
 {
   [_repl sigwinch];
@@ -248,6 +201,8 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
     _stream.in = NULL;
   }
   [_repl kill];
+  ios_kill();
+  
   
   // Instruct ios_system to release the data for this shell:
   ios_closeSession((__bridge void*)self);
@@ -262,6 +217,15 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
 {
   if (_childSession) {
     return [_childSession handleControl:control];
+  }
+  
+  if ([_device rawMode]) {
+    return NO;
+  }
+  
+  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+    ios_kill();
+    return YES;
   }
 
   return NO;

@@ -204,11 +204,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   return 0;
 }
 
-- (int)main:(int)argc argv:(char **)argv args:(char *)args
+- (int)main:(int)argc argv:(char **)argv
 {
-  BOOL mode = [_device rawMode];
-  [_device setRawMode:YES];
-
   if (self.sessionParameters.encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
     if ( code < 0) {
@@ -218,6 +215,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   NSString *locales_path = [[NSBundle mainBundle] pathForResource:@"locales" ofType:@"bundle"];
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
+  
+  [_device setRawMode:YES];
   
   mosh_main(
             _stream.in, _stream.out, &_device->win,
@@ -230,10 +229,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             self.sessionParameters.encodedState.length
             );
   
-  [_device setRawMode:mode];
+  [_device setRawMode:NO];
 
   fprintf(_stream.out, "\nMosh session finished!\n");
-  fprintf(_stream.out, "\n");
   
   return 0;
 }

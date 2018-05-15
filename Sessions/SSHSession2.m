@@ -53,7 +53,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   return [self dieMsg:[NSString stringWithFormat:@"%s", usage_format]];
 }
 
-- (int)main:(int)argc argv:(char **)argv args:(char *)args
+- (int)main:(int)argc argv:(char **)argv
 {
   if ([self opts:argc argv:argv] < 0) {
     return [self usage];

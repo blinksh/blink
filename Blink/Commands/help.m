@@ -1,5 +1,5 @@
 //
-//  help.c
+//  help.m
 //  Blink
 //
 //  Created by Yury Korolev on 5/12/18.
@@ -10,6 +10,7 @@
 #import "BKUserConfigurationManager.h"
 
 #include "ios_system/ios_system.h"
+#include "ios_error.h"
 
 NSString *__shortVersionString()
 {
@@ -71,11 +72,10 @@ int help_main(int argc, char *argv[]) {
     @"      C-M-f,b (forward/backward by word)",
     @"      C-x (change selection point)",
     @"    OTHER: arrows and fingers",
-    @"",
     @""
  ] componentsJoinedByString:@"\n"];
  
-  fputs(help.UTF8String, thread_stdout);
+  puts(help.UTF8String);
   
   return 0;
 }

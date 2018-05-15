@@ -1,5 +1,5 @@
 //
-//  config.c
+//  config.m
 //  Blink
 //
 //  Created by Yury Korolev on 5/12/18.

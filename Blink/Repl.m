@@ -14,6 +14,7 @@
 #import "BlinkPaths.h"
 
 #import <ios_system/ios_system.h>
+#import "ios_error.h"
 
 #define MCP_MAX_LINE 4096
 #define MCP_MAX_HISTORY 1000
@@ -30,7 +31,6 @@ NSArray<NSString *> *__splitCommandAndArgs(NSString *cmdline)
              ];
   }
 }
-
 
 NSArray *__commandList;
 NSDictionary *__commandHints;
@@ -312,6 +312,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replxx_set_hint_callback(_replxx, hints, 0);
   replxx_set_complete_on_empty(_replxx, 1);
   
+  initializeCommandListForCompletion();
+  
   NSString *cmdline = nil;
   [_device setRawMode:NO];
   
@@ -329,7 +331,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
       break;
     }
 
-    fprintf(_device.stream.out, "\033]0;blink\007");
+    printf("\033]0;blink\007");
     [_device setRawMode:NO];
   }
   
@@ -420,7 +422,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     }
     
     for (NSInteger i = start; i < len; i++) {
-      fprintf(thread_stdout, "%s", [NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String);
+      printf("%s\n", [NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String);
     }
   } else if ([args isEqualToString:@"-c"]) {
     replxx_set_max_history_size(_replxx, 1);
@@ -434,7 +436,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
                          @"history -c       - Clear history",
                          @""
                          ] componentsJoinedByString:@"\n"];
-    fprintf(thread_stdout, "%s", usage.UTF8String);
+    printf("%s", usage.UTF8String);
     return 1;
   }
   return 0;

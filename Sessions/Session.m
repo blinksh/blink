@@ -68,7 +68,7 @@ void *run_session(void *params)
   Session *session = (__bridge Session *)p->session;
   char **argv;
   int argc = makeargs(p->args, &argv);
-  [session main:argc argv:argv args: p->args];
+  [session main:argc argv:argv];
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
   session.stream = nil;
@@ -125,7 +125,7 @@ void *run_session(void *params)
   return params;
 }
 
-- (int)main:(int)argc argv:(char **)argv args:(char *)args {
+- (int)main:(int)argc argv:(char **)argv {
   return 0;
 }
 
