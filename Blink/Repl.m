@@ -300,15 +300,9 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   NSArray *commands = commandsByPrefix(prefix);
   
   if (commands.count > 0) {
-    NSArray * advancedCompletion = @[@"ssh", @"mosh", @"theme", @"music", @"history"];
     for (NSString * cmd in commands) {
-      if ([advancedCompletion indexOfObject:cmd] != NSNotFound) {
-        replxx_add_completion(lc, [[cmd stringByAppendingString:@" "] substringFromIndex:bp].UTF8String);
-      } else {
-        replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
-      }
+      replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
     }
-    system_completion(line, bp, lc, ud);
     return;
   }
   
@@ -316,11 +310,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   NSString *cmd = cmdAndArgs[0];
   NSString *args = cmdAndArgs[1];
   NSArray *completions = @[];
-  
-  if ([args isEqualToString:@""]) {
-    system_completion(line, bp, lc, ud);
-    return;
-  }
   
   if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
     completions = hostsByPrefix(args);
@@ -330,14 +319,14 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     completions = themesByPrefix(args);
   } else if ([cmd isEqualToString:@"history"]) {
     completions = historyActionsByPrefix(args);
+  } else {
+    system_completion(line, bp, lc, ud);
+    return;
   }
-  
   
   for (NSString *c in completions) {
     replxx_add_completion(lc, [[@[cmd, c] componentsJoinedByString:@" "] substringFromIndex:bp].UTF8String);
   }
-  
-  system_completion(line, bp, lc, ud);
 }
 
 - (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
@@ -348,7 +337,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   
   NSArray<NSString *> *cmds = commandsByPrefix(prefix);
-  if (cmds) {
+  if (cmds.count > 0) {
     for (NSString *cmd in cmds) {
       NSString *description = __commandHints[cmd];
       NSString *hint = [cmd stringByAppendingFormat:@"\t%@", description ? description : @""];
@@ -369,7 +358,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   
   if ([hint length] > 0) {
-    replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+    replxx_add_hint(lc, [hint substringFromIndex: MAX(prefix.length, 0)].UTF8String);
   }
 }
 

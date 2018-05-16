@@ -161,6 +161,9 @@ int InputBuffer::handle_hints( PromptBase& pi, HINT_ACTION hintAction_ ) {
 			}
 			setColor( Replxx::Color::DEFAULT );
 		} else if ( _replxx.max_hint_rows() > 0 ) {
+//      if (_hintSelection == -1) {
+//        _hintSelection = 0;
+//      }
 			int startCol( pi.promptIndentation + startIndex );
 			int maxCol( pi.promptScreenColumns );
 #ifdef _WIN32
