@@ -14,8 +14,10 @@
 int showkey_main(int argc, char *argv[]) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   
+  printf("Press any keys - Ctrl-D will terminate this program.\n");
+  
   [session.device setRawMode:YES];
-  printf("Press any keys - Ctrl-D will terminate this program.\r\n");
+  
 
   char ch;
   while (1) {

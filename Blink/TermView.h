@@ -40,6 +40,8 @@
 
 @protocol TermViewDeviceProtocol
 
+@property BOOL rawMode;
+
 - (BOOL)handleControl:(NSString *)control;
 - (void)viewIsReady;
 - (void)viewFontSizeChanged:(NSInteger)size;
@@ -75,7 +77,7 @@
 - (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler;
 - (void)copy:(id _Nullable )sender;
 - (void)pasteSelection:(id _Nullable)sender;
-- (void)setAutoCarriageReturn:(BOOL)state;
+//- (void)setAutoCarriageReturn:(BOOL)state;
 - (void)terminate;
 - (void)reset;
 

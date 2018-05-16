@@ -167,7 +167,7 @@ NSString *term_modifySideSelection()
 
 NSString *term_setAutoCarriageReturn(BOOL state)
 {
-  return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@)", state ? @"true" : @"false"];
+  return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@);", state ? @"true" : @"false"];
 }
 
 

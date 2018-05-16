@@ -190,6 +190,7 @@ int enableRawMode(void) {
 	}
 	return 0;
 #else
+//  fprintf(__thread_stdout, "\x1b]1337;BlinkAutoCR=0\x07");
   rawmode = 1;
   return 0;
   
@@ -243,6 +244,7 @@ void disableRawMode(void) {
 #else
 	if ( rawmode /*&& tcsetattr(0, TCSADRAIN, &orig_termios ) != -1 */) {
 		rawmode = 0;
+//    fprintf(__thread_stdout, "\x1b]1337;BlinkAutoCR=1\x07");
 	}
 #endif
 }
@@ -293,8 +295,8 @@ char32_t readUnicodeCharacter(void) {
 #endif	// #ifndef _WIN32
 
 void beep() {
-	fprintf(stderr, "\x7");	// ctrl-G == bell/beep
-	fflush(stderr);
+	fprintf(__thread_stderr, "\x7");	// ctrl-G == bell/beep
+	fflush(__thread_stderr);
 }
 
 // replxx_read_char -- read a keystroke or keychord from the keyboard, and

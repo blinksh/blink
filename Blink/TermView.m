@@ -89,7 +89,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   UIImageView *_snapshotImageView;
   
   BOOL _focused;
-  
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
@@ -265,10 +264,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_reset() completionHandler:nil];
 }
 
-- (void)setAutoCarriageReturn:(BOOL)state
-{
-  [_webView evaluateJavaScript:term_setAutoCarriageReturn(state) completionHandler:nil];
-}
+//- (void)setAutoCarriageReturn:(BOOL)state
+//{
+//  _autoCR = state;
+////  dispatch_sync(dispatch_get_main_queue(), ^{
+//    [_webView evaluateJavaScript:term_setAutoCarriageReturn(state) completionHandler:nil];
+////  });
+//}
 
 - (void)increaseFontSize
 {

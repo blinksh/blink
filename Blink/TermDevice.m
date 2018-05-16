@@ -192,10 +192,14 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)setRawMode:(BOOL)rawMode
 {
-  dispatch_sync(dispatch_get_main_queue(), ^{
-    _rawMode = rawMode;
-    [_view setAutoCarriageReturn:!rawMode];
-  });
+  if (_stream.out) {
+    if (rawMode) {
+      fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=0\x07");
+    } else {
+      fprintf(_stream.out, "\x1b]1337;BlinkAutoCR=1\x07");
+    }
+  }
+  _rawMode = rawMode;
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry

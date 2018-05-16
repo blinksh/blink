@@ -1028,9 +1028,9 @@ static void kbd_callback(const char *name, int name_len,
   libssh2_session_free(_session);
   _channel = NULL;
   
-  if (_tty_flag) {
-    [_device setRawMode:mode];
-  }
+//  if (_tty_flag) {
+//    [_device setRawMode:mode];
+//  }
   
   if (rc < 0) {
     return -1;

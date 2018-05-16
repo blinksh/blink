@@ -1119,7 +1119,7 @@ int InputBuffer::getInputLine(PromptBase& pi) {
 			case ctrlChar('Z'):	// ctrl-Z, job control
 				disableRawMode();	// Returning to Linux (whatever) shell, leave raw
 													 // mode
-				raise(SIGSTOP);		// Break out in mid-line
+//        raise(SIGSTOP);    // Break out in mid-line
 				enableRawMode();	 // Back from Linux shell, re-enter raw mode
 				if (!pi.write()) break;	// Redraw prompt
 				refreshLine(pi);				 // Refresh the line
