@@ -47,7 +47,7 @@ NSArray<NSString *> *__commandsByPrefix(NSString *prefix)
   if (prefix.length == 0) {
     return __commandList;
   }
-  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [__commandList filteredArrayUsingPredicate:prefixPred];
 }
 
@@ -61,7 +61,7 @@ NSArray<NSString *> *__hostsByPrefix(NSString *prefix)
   if (prefix.length == 0) {
     return hostsNames;
   }
-  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [hostsNames filteredArrayUsingPredicate:prefixPred];
 }
 
@@ -72,13 +72,13 @@ NSArray<NSString *> *__musicActionsByPrefix(NSString *prefix)
   if (prefix.length == 0) {
     return actions;
   }
-  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [actions filteredArrayUsingPredicate:prefixPred];
 }
 
 NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 {
-  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [@[@"-c", @"10", @"-10"] filteredArrayUsingPredicate:prefixPred];
 }
 
@@ -92,7 +92,7 @@ NSArray<NSString *> *__themesByPrefix(NSString *prefix) {
   if (prefix.length == 0) {
     return themeNames;
   }
-  NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
+  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
@@ -121,91 +121,100 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   return self;
 }
 
-+ (void)initialize
+- (void)initCompletions
 {
-  __commandList = [
-                   [@[@"mosh", @"ssh", @"exit", @"ssh-copy-id"] arrayByAddingObjectsFromArray:commandsAsArray()]
+  if (__prefixPredicate == nil) {
+    __prefixPredicate = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] $PREFIX"];
+  }
+  
+  if (__commandList == nil) {
+    __commandList = [
+                   [@[@"mosh", @"exit", @"ssh-copy-id"]
+                      arrayByAddingObjectsFromArray:commandsAsArray()]
                    sortedArrayUsingSelector:@selector(compare:)
                    ];
+  }
   
-  __commandHints =
-  @{
-    @"awk": @"Select particular records in a file and perform operations upon them.",
-    @"cat": @"Concatenate and print files.",
-    @"cd": @"Change directory.",
-//    @"chflags": @"chflags", // TODO
-//    @"chksum": @"chksum", // TODO
-    @"clear": @"Clear the terminal screen. 🙈",
-    @"compress": @"Compress data.",
-    @"config": @"Add keys, hosts, themes, etc... 🔧 ",
-    @"cp": @"Copy files and directories",
-    @"curl": @"Transfer data from or to a server.",
-    @"date": @"Display or set date and time.",
-    @"diff": @"Compare files line by line.",
-    @"dig": @"DNS lookup utility.",
-    @"du": @"Disk usage",
-    @"echo": @"Write arguments to the standard output.",
-    @"egrep": @"Search for a pattern using extended regex.", // https://www.computerhope.com/unix/uegrep.htm
-    @"env": @"Set environment and execute command, or print environment.", // fish
-    @"exit": @"Exit current session. 👋",
-    @"fgrep": @"File pattern searcher.", // fish
-    @"find": @"Walk a file hierarchy.", // fish
-    @"grep": @"File pattern searcher.", // fish
-    @"gunzip": @"Compress or expand files",  // https://linux.die.net/man/1/gunzip
-    @"gzip": @"Compression/decompression tool using Lempel-Ziv coding (LZ77)",  // fish
-    @"head": @"Display first lines of a file", // fish
-    @"help": @"Prints all commands. 🧐 ",
-    @"history": @"Use -c option to clear history. 🙈 ",
-    @"host": @"DNS lookup utility.", // fish
-    @"link": @"Make links.", // fish
-    @"ln": @"", // TODO
-    @"ls": @"List files and directories",
-    @"md5": @"Calculate a message-digest fingerprint (checksum) for a file.", // fish
-    @"mkdir": @"Make directories.", // fish
-    @"mosh": @"Runs mosh client. 🦄",
-    @"music": @"Control music player 🎧",
-    @"mv": @"Move files and directories.",
-//    @"nc": @"", // TODO
-    @"nslookup": @"Query Internet name servers interactively", // fish
-    @"pbcopy": @"Copy to the pasteboard.",
-    @"pbpaste": @"Paste from the pasteboard.",
-    @"ping": @"Send ICMP ECHO_REQUEST packets to network hosts.", // fish
-    @"printenv": @"Print out the environment.", // fish
-    @"pwd": @"Return working directory name.", // fish
-    @"readlink": @"Display file status.", // fish
-//    @"rlogin": @"", // TODO: REMOVE
-    @"rm": @"Remove files and directories.",
-    @"rmdir": @"Remove directories.", // fish
-    @"scp": @"Secure copy (remote file copy program).", // fish
-    @"sed": @"Stream editor.", // fish
-//    @"setenv": @"", // TODO
-    @"sftp": @"Secure file transfer program.", // fish
-    @"showkey": @"Display typed chars.",
-    @"sort": @"Sort or merge records (lines) of text and binary files.", // fish
-    @"ssh": @"Runs ssh client. 🐌",
-    @"ssh-copy-id": @"Copy an identity to the server. 💌",
-//    @"ssh-keygen": @"", // TODO
-    @"stat": @"Display file status.", // fish
-    @"sum": @"Display file checksums and block counts.", // fish
-    @"tail": @"Display the last part of a file.", // fish
-    @"tar": @"Manipulate tape archives.", // fish
-    @"tee": @"Pipe fitting.", // fish
-    @"telnet": @"User interface to the TELNET protocol.", // fish
-    @"theme": @"Choose a theme 💅",
-    @"touch": @"Change file access and modification times.", // fish
-//    @"tr": @"", // TODO
-    @"uname": @"Print operating system name.", // fish
-    @"uncompress": @"Expand data.",
-    @"uniq": @"Report or filter out repeated lines in a file.", // fish
-    @"unlink": @"Remove directory entries.", // fish
-//    @"unsetenv": @"", // TODO
-    @"uptime": @"Show how long system has been running.", // fish
-    @"wc": @"Words and lines counter.",
-    @"whoami": @"Display effective user id.", // fish
-    @"whois": @"Internet domain name and network number directory service.", // fish
-    
-    @"open": @"open url of file (Experimental). 📤"
-    };
+  if (__commandHints == nil) {
+    __commandHints =
+    @{
+      @"awk": @"Select particular records in a file and perform operations upon them.",
+      @"cat": @"Concatenate and print files.",
+      @"cd": @"Change directory.",
+  //    @"chflags": @"chflags", // TODO
+  //    @"chksum": @"chksum", // TODO
+      @"clear": @"Clear the terminal screen. 🙈",
+      @"compress": @"Compress data.",
+      @"config": @"Add keys, hosts, themes, etc... 🔧 ",
+      @"cp": @"Copy files and directories",
+      @"curl": @"Transfer data from or to a server.",
+      @"date": @"Display or set date and time.",
+      @"diff": @"Compare files line by line.",
+      @"dig": @"DNS lookup utility.",
+      @"du": @"Disk usage",
+      @"echo": @"Write arguments to the standard output.",
+      @"egrep": @"Search for a pattern using extended regex.", // https://www.computerhope.com/unix/uegrep.htm
+      @"env": @"Set environment and execute command, or print environment.", // fish
+      @"exit": @"Exit current session. 👋",
+      @"fgrep": @"File pattern searcher.", // fish
+      @"find": @"Walk a file hierarchy.", // fish
+      @"grep": @"File pattern searcher.", // fish
+      @"gunzip": @"Compress or expand files",  // https://linux.die.net/man/1/gunzip
+      @"gzip": @"Compression/decompression tool using Lempel-Ziv coding (LZ77)",  // fish
+      @"head": @"Display first lines of a file", // fish
+      @"help": @"Prints all commands. 🧐 ",
+      @"history": @"Use -c option to clear history. 🙈 ",
+      @"host": @"DNS lookup utility.", // fish
+      @"link": @"Make links.", // fish
+      @"ln": @"", // TODO
+      @"ls": @"List files and directories",
+      @"md5": @"Calculate a message-digest fingerprint (checksum) for a file.", // fish
+      @"mkdir": @"Make directories.", // fish
+      @"mosh": @"Runs mosh client. 🦄",
+      @"music": @"Control music player 🎧",
+      @"mv": @"Move files and directories.",
+  //    @"nc": @"", // TODO
+      @"nslookup": @"Query Internet name servers interactively", // fish
+      @"pbcopy": @"Copy to the pasteboard.",
+      @"pbpaste": @"Paste from the pasteboard.",
+      @"ping": @"Send ICMP ECHO_REQUEST packets to network hosts.", // fish
+      @"printenv": @"Print out the environment.", // fish
+      @"pwd": @"Return working directory name.", // fish
+      @"readlink": @"Display file status.", // fish
+  //    @"rlogin": @"", // TODO: REMOVE
+      @"rm": @"Remove files and directories.",
+      @"rmdir": @"Remove directories.", // fish
+      @"scp": @"Secure copy (remote file copy program).", // fish
+      @"sed": @"Stream editor.", // fish
+  //    @"setenv": @"", // TODO
+      @"sftp": @"Secure file transfer program.", // fish
+      @"showkey": @"Display typed chars.",
+      @"sort": @"Sort or merge records (lines) of text and binary files.", // fish
+      @"ssh": @"Runs ssh client. 🐌",
+      @"ssh-copy-id": @"Copy an identity to the server. 💌",
+  //    @"ssh-keygen": @"", // TODO
+      @"stat": @"Display file status.", // fish
+      @"sum": @"Display file checksums and block counts.", // fish
+      @"tail": @"Display the last part of a file.", // fish
+      @"tar": @"Manipulate tape archives.", // fish
+      @"tee": @"Pipe fitting.", // fish
+      @"telnet": @"User interface to the TELNET protocol.", // fish
+      @"theme": @"Choose a theme 💅",
+      @"touch": @"Change file access and modification times.", // fish
+  //    @"tr": @"", // TODO
+      @"uname": @"Print operating system name.", // fish
+      @"uncompress": @"Expand data.",
+      @"uniq": @"Report or filter out repeated lines in a file.", // fish
+      @"unlink": @"Remove directory entries.", // fish
+  //    @"unsetenv": @"", // TODO
+      @"uptime": @"Show how long system has been running.", // fish
+      @"wc": @"Words and lines counter.",
+      @"whoami": @"Display effective user id.", // fish
+      @"whois": @"Internet domain name and network number directory service.", // fish
+      
+      @"open": @"open url of file (Experimental). 📤"
+      };
+  }
 }
 
 void system_completion(char const* command, int bp, replxx_completions* lc, void* ud) {
@@ -281,6 +290,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 }
 
 - (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
+  NSLog(@"comp bp: %@", @(bp));
   NSString* prefix = [NSString stringWithUTF8String:line];
   NSArray *commands = __commandsByPrefix(prefix);
   
@@ -310,11 +320,12 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   
   for (NSString *c in completions) {
-    replxx_add_completion(lc, [[@[cmd, c] componentsJoinedByString:@" "] substringFromIndex:bp].UTF8String);
+    replxx_add_completion(lc, c.UTF8String);
   }
 }
 
 - (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
+  NSLog(@"hint bp: %@", @(bp));
   NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
   if (prefix.length == 0) {
@@ -325,8 +336,14 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   if (cmds.count > 0) {
     for (NSString *cmd in cmds) {
       NSString *description = __commandHints[cmd];
-      NSString *hint = [cmd stringByAppendingFormat:@"\t%@", description ? description : @""];
-      replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+      if (description.length > 0) {
+        NSString *hint = [cmd stringByAppendingFormat:@" - %@", description];
+        replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+      } else {
+        replxx_add_hint(lc, [cmd substringFromIndex: prefix.length - bp].UTF8String);
+      }
+      
+      return;
     }
   } else {
     NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
@@ -343,7 +360,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
   
   if ([hint length] > 0) {
-    replxx_add_hint(lc, [hint substringFromIndex: MAX(prefix.length, 0)].UTF8String);
+    replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
   }
 }
 
@@ -356,6 +373,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replxx_set_hint_callback(_replxx, __hints, (__bridge void*)self);
   replxx_set_complete_on_empty(_replxx, 1);
   
+  [self initCompletions];
   NSString *cmdline = nil;
   [_device setRawMode:NO];
   
