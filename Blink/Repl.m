@@ -34,26 +34,24 @@ NSArray<NSString *> *__splitCommandAndArgs(NSString *cmdline)
 
 NSArray *__commandList;
 NSDictionary *__commandHints;
-// List of all commands available, sorted alphabetically:
-// Extracted at runtime from ios_system() plus blinkshell commands:
-NSArray* commandList;
 
 // for file completion
 // do recompute directoriesInPath only if $PATH has changed
 static NSString* fullCommandPath = @"";
 static NSArray *directoriesInPath;
 
+static NSPredicate *__prefixPredicate;
 
-NSArray<NSString *> *commandsByPrefix(NSString *prefix)
+NSArray<NSString *> *__commandsByPrefix(NSString *prefix)
 {
   if (prefix.length == 0) {
-    return commandList;
+    return __commandList;
   }
   NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
-  return [commandList filteredArrayUsingPredicate:prefixPred];
+  return [__commandList filteredArrayUsingPredicate:prefixPred];
 }
 
-NSArray<NSString *> *hostsByPrefix(NSString *prefix)
+NSArray<NSString *> *__hostsByPrefix(NSString *prefix)
 {
   NSMutableArray *hostsNames = [[NSMutableArray alloc] init];
   for (BKHosts *h in [BKHosts all]) {
@@ -67,7 +65,7 @@ NSArray<NSString *> *hostsByPrefix(NSString *prefix)
   return [hostsNames filteredArrayUsingPredicate:prefixPred];
 }
 
-NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
+NSArray<NSString *> *__musicActionsByPrefix(NSString *prefix)
 {
   NSArray<NSString *> * actions = [[MusicManager shared] commands];
   
@@ -78,14 +76,14 @@ NSArray<NSString *> *musicActionsByPrefix(NSString *prefix)
   return [actions filteredArrayUsingPredicate:prefixPred];
 }
 
-NSArray<NSString *> *historyActionsByPrefix(NSString *prefix)
+NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 {
   NSPredicate * prefixPred = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[c] %@", prefix];
   return [@[@"-c", @"10", @"-10"] filteredArrayUsingPredicate:prefixPred];
 }
 
 
-NSArray<NSString *> *themesByPrefix(NSString *prefix) {
+NSArray<NSString *> *__themesByPrefix(NSString *prefix) {
   NSMutableArray *themeNames = [[NSMutableArray alloc] init];
   for (BKTheme *theme in [BKTheme all]) {
     [themeNames addObject:theme.name];
@@ -126,7 +124,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 + (void)initialize
 {
   __commandList = [
-                   @[@"mosh", @"ssh", @"exit", @"ssh-copy-id"]
+                   [@[@"mosh", @"ssh", @"exit", @"ssh-copy-id"] arrayByAddingObjectsFromArray:commandsAsArray()]
                    sortedArrayUsingSelector:@selector(compare:)
                    ];
   
@@ -210,19 +208,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     };
 }
 
-void initializeCommandListForCompletion() {
-  // set up the list of commands for auto-complete:
-  // list of commands from ios_system:
-  NSMutableArray* combinedCommands = [commandsAsArray() mutableCopy];
-  // add commands from Blinkshell:
-  
-  [combinedCommands addObjectsFromArray: __commandList];
-  
-  //  combinedCommands
-  // sort alphabetically:
-  commandList = [[[NSSet setWithArray:combinedCommands] allObjects] sortedArrayUsingSelector:@selector(compare:)];
-}
-
 void system_completion(char const* command, int bp, replxx_completions* lc, void* ud) {
 
   // TODO: get current working directory from ios_system
@@ -231,7 +216,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   if ([commandString rangeOfString:@" "].location == NSNotFound) {
     // No spaces. The user is typing a command
     // check for pre-defined commands:
-    for (NSString* existingCommand in commandList) {
+    for (NSString* existingCommand in __commandList) {
       if ([existingCommand hasPrefix:commandString]) replxx_add_completion(lc, existingCommand.UTF8String);
     }
     // Commands in the PATH
@@ -297,7 +282,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 - (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
   NSString* prefix = [NSString stringWithUTF8String:line];
-  NSArray *commands = commandsByPrefix(prefix);
+  NSArray *commands = __commandsByPrefix(prefix);
   
   if (commands.count > 0) {
     for (NSString * cmd in commands) {
@@ -312,13 +297,13 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   NSArray *completions = @[];
   
   if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-    completions = hostsByPrefix(args);
+    completions = __hostsByPrefix(args);
   } else if ([cmd isEqualToString:@"music"]) {
-    completions = musicActionsByPrefix(args);
+    completions = __musicActionsByPrefix(args);
   } else if ([cmd isEqualToString:@"theme"]) {
-    completions = themesByPrefix(args);
+    completions = __themesByPrefix(args);
   } else if ([cmd isEqualToString:@"history"]) {
-    completions = historyActionsByPrefix(args);
+    completions = __historyActionsByPrefix(args);
   } else {
     system_completion(line, bp, lc, ud);
     return;
@@ -336,7 +321,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     return;
   }
   
-  NSArray<NSString *> *cmds = commandsByPrefix(prefix);
+  NSArray<NSString *> *cmds = __commandsByPrefix(prefix);
   if (cmds.count > 0) {
     for (NSString *cmd in cmds) {
       NSString *description = __commandHints[cmd];
@@ -349,11 +334,11 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     prefix = cmdAndArgs[1];
     
     if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-      hint = [hostsByPrefix(prefix) componentsJoinedByString:@", "];
+      hint = [__hostsByPrefix(prefix) componentsJoinedByString:@", "];
     } else if ([cmd isEqualToString:@"theme"]) {
-      hint = [themesByPrefix(prefix) componentsJoinedByString:@", "];
+      hint = [__themesByPrefix(prefix) componentsJoinedByString:@", "];
     } else if ([cmd isEqualToString:@"music"]) {
-      hint = [musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
+      hint = [__musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
     }
   }
   
@@ -370,8 +355,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   replxx_set_completion_callback(_replxx, __completion, (__bridge void*)self);
   replxx_set_hint_callback(_replxx, __hints, (__bridge void*)self);
   replxx_set_complete_on_empty(_replxx, 1);
-  
-  initializeCommandListForCompletion();
   
   NSString *cmdline = nil;
   [_device setRawMode:NO];

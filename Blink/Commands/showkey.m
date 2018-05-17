@@ -43,7 +43,7 @@ int showkey_main(int argc, char *argv[]) {
       break;
     }
   }
-  [session.device setRawMode:false];
+  [session.device setRawMode:NO];
 
   return 0;
 }
