@@ -74,6 +74,7 @@ char const* ansi_color( Replxx::Color color_ ) {
 	static char const magenta[] = "\033[0;22;35m";
 	static char const cyan[] = "\033[0;22;36m";
 	static char const lightgray[] = "\033[0;22;37m";
+  static char const hint[] = "\033[2;33m";
 
 	static char const* TERM( getenv( "TERM" ) );
 	static bool const has256color( TERM ? ( strstr( TERM, "256" ) != nullptr ) : false );
@@ -105,6 +106,7 @@ char const* ansi_color( Replxx::Color color_ ) {
 		case Replxx::Color::BRIGHTMAGENTA: code = brightmagenta; break;
 		case Replxx::Color::BRIGHTCYAN:    code = brightcyan;    break;
 		case Replxx::Color::WHITE:         code = white;         break;
+    case Replxx::Color::HINT:          code = hint;          break;
 		case Replxx::Color::ERROR:         code = error;         break;
 		case Replxx::Color::DEFAULT:       code = reset;         break;
 	}
@@ -146,7 +148,7 @@ int InputBuffer::handle_hints( PromptBase& pi, HINT_ACTION hintAction_ ) {
 		if ( hintAction_ == HINT_ACTION::REGENERATE ) {
 			_hintSelection = -1;
 		}
-		Replxx::Color c( Replxx::Color::GRAY );
+    Replxx::Color c( Replxx::Color::HINT );
 		Utf32String unicodeCopy( _buf32.get(), _pos );
 		Utf8String parseItem(unicodeCopy);
 		int startIndex( start_index() );

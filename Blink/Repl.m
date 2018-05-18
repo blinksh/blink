@@ -250,9 +250,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     // the user is typing an argument.
     // Is this one the commands that want a file as an argument?
     NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
-    if ([__commandList containsObject:commandArray[0]]) {
-      return;
-    }
+    
     if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) {
       return;
     }
@@ -279,29 +277,69 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
       NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:Nil];
       for (NSString *fileName in filenames) {
         if ((file.length == 0) || [fileName hasPrefix:file]) {
-          NSString* addition = [fileName substringFromIndex:[file length]];
-          NSString * newCommand = [commandString stringByAppendingString:addition];
-          newCommand = [newCommand substringFromIndex:bp];
-          replxx_add_completion(lc, [newCommand UTF8String]);
+//          NSString* addition = [fileName substringFromIndex:[file length]];
+//          NSString * newCommand = [commandString stringByAppendingString:addition];
+//          newCommand = [newCommand substringFromIndex:bp];
+          replxx_add_completion(lc, [fileName UTF8String]);
         }
       }
     }
   }
 }
 
+- (NSString *)_cleanCommandString:(NSString *) line {
+  
+  NSUInteger len = [line lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+  const char *buf = line.UTF8String;
+  int bp = 0;
+  
+  for(int i = 0; i < len; ++i) {
+    char ch = buf[i];
+    if (ch == '"') {
+      i++;
+      while (i < len && buf[i] != '"') {
+        i++;
+      }
+    }
+
+    if (ch == '\'') {
+      i++;
+      while (i < len && buf[i] != '\'') {
+        i++;
+      }
+    }
+    
+    if (ch == '|') {
+      bp = i;
+    }
+  }
+  
+  while (bp < len) {
+    if (buf[bp] == ' ' || buf[bp] == '|') {
+      bp++;
+    } else {
+      break;
+    }
+  }
+  
+  return [NSString stringWithUTF8String:&buf[bp]];
+}
+
 - (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
-  NSLog(@"comp bp: %@", @(bp));
+  
   NSString* prefix = [NSString stringWithUTF8String:line];
-  NSArray *commands = __commandsByPrefix(prefix);
+  NSString *cleanPrefix = [self _cleanCommandString:prefix];
+  
+  NSArray *commands = __commandsByPrefix(cleanPrefix);
   
   if (commands.count > 0) {
     for (NSString * cmd in commands) {
-      replxx_add_completion(lc, [cmd substringFromIndex:bp].UTF8String);
+      replxx_add_completion(lc, cmd.UTF8String);
     }
     return;
   }
   
-  NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
+  NSArray *cmdAndArgs = __splitCommandAndArgs(cleanPrefix);
   NSString *cmd = cmdAndArgs[0];
   NSString *args = cmdAndArgs[1];
   NSArray *completions = @[];
@@ -315,7 +353,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   } else if ([cmd isEqualToString:@"history"]) {
     completions = __historyActionsByPrefix(args);
   } else {
-    system_completion(line, bp, lc, ud);
+    system_completion(cleanPrefix.UTF8String, 0, lc, ud);
     return;
   }
   
@@ -325,7 +363,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 }
 
 - (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
-  NSLog(@"hint bp: %@", @(bp));
+  
   NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
   if (prefix.length == 0) {

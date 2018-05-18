@@ -62,6 +62,7 @@ public:
 		BRIGHTMAGENTA = 13,
 		BRIGHTCYAN    = 14,
 		WHITE         = 15,
+    HINT          = 33,
 		NORMAL        = LIGHTGRAY,
 		DEFAULT       = -1,
 #undef ERROR
