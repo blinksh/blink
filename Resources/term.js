@@ -74,6 +74,7 @@ function term_setup() {
     var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
     _postMessage('terminalReady', { size, bgColor });
 
+    t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507
     t.uninstallKeyboard();
   };
 
