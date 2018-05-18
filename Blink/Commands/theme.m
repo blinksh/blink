@@ -17,10 +17,13 @@
 
 int theme_main(int argc, char *argv[]) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
-  NSString *args = @"";
-  if (argc == 2) {
-    args = [NSString stringWithUTF8String:argv[1]];
+  NSMutableArray *argsArr = [[NSMutableArray alloc] init];
+  
+  for (int i = 1; i < argc; i++) {
+    [argsArr addObject:[NSString stringWithUTF8String:argv[i]]];
   }
+  
+  NSString *args = [argsArr componentsJoinedByString:@" "] ?: @"";
   
   if ([args isEqualToString:@""] || [args isEqualToString:@"info"]) {
     NSString *themeName = [BKDefaults selectedThemeName];
