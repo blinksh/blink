@@ -42,14 +42,6 @@ static NSArray *directoriesInPath;
 
 static NSPredicate *__prefixPredicate;
 
-NSArray<NSString *> *__commandsByPrefix(NSString *prefix)
-{
-  if (prefix.length == 0) {
-    return __commandList;
-  }
-  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
-  return [__commandList filteredArrayUsingPredicate:prefixPred];
-}
 
 NSArray<NSString *> *__hostsByPrefix(NSString *prefix)
 {
@@ -65,35 +57,10 @@ NSArray<NSString *> *__hostsByPrefix(NSString *prefix)
   return [hostsNames filteredArrayUsingPredicate:prefixPred];
 }
 
-NSArray<NSString *> *__musicActionsByPrefix(NSString *prefix)
-{
-  NSArray<NSString *> * actions = [[MusicManager shared] commands];
-  
-  if (prefix.length == 0) {
-    return actions;
-  }
-  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
-  return [actions filteredArrayUsingPredicate:prefixPred];
-}
-
 NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 {
   NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   return [@[@"-c", @"10", @"-10"] filteredArrayUsingPredicate:prefixPred];
-}
-
-
-NSArray<NSString *> *__themesByPrefix(NSString *prefix) {
-  NSMutableArray *themeNames = [[NSMutableArray alloc] init];
-  for (BKTheme *theme in [BKTheme all]) {
-    [themeNames addObject:theme.name];
-  }
-  
-  if (prefix.length == 0) {
-    return themeNames;
-  }
-  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
-  return [themeNames filteredArrayUsingPredicate:prefixPred];
 }
 
 @implementation Repl {
@@ -277,9 +244,6 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
       NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:Nil];
       for (NSString *fileName in filenames) {
         if ((file.length == 0) || [fileName hasPrefix:file]) {
-//          NSString* addition = [fileName substringFromIndex:[file length]];
-//          NSString * newCommand = [commandString stringByAppendingString:addition];
-//          newCommand = [newCommand substringFromIndex:bp];
           replxx_add_completion(lc, [fileName UTF8String]);
         }
       }
@@ -287,7 +251,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   }
 }
 
-- (NSString *)_cleanCommandString:(NSString *) line {
+// If we got `cat nice.txt | grep n ` it will return `grep n `
+- (NSString *)_extractCmdWithArgs:(NSString *) line {
   
   NSUInteger len = [line lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
   const char *buf = line.UTF8String;
@@ -295,6 +260,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   
   for(int i = 0; i < len; ++i) {
     char ch = buf[i];
+    
     if (ch == '"') {
       i++;
       while (i < len && buf[i] != '"') {
@@ -325,42 +291,74 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   return [NSString stringWithUTF8String:&buf[bp]];
 }
 
+-(NSArray<NSString *> *)_allBlinkHosts
+{
+  return @[];
+}
+
+-(NSArray<NSString *> *)_allBlinkThemes
+{
+  NSMutableArray *themeNames = [[NSMutableArray alloc] init];
+  for (BKTheme *theme in [BKTheme all]) {
+    [themeNames addObject:theme.name];
+  }
+  return themeNames;
+}
+
+-(NSArray<NSString *> *)_completionsByType:(NSString *)completionType {
+  // comletion types: 'command', 'file', 'blink-host', 'host', 'file', 'directory', 'blink-theme'
+  
+  if ([@"command" isEqualToString:completionType]) {
+    return __commandList;
+  } else if ([@"blink-host" isEqualToString:completionType]) {
+    return [self _allBlinkHosts];
+  } else if ([@"blink-theme" isEqualToString:completionType]) {
+    return [self _allBlinkThemes];
+  } else if ([@"blink-music" isEqualToString:completionType]) {
+    return [[MusicManager shared] commands];;
+  }
+  return @[];
+}
+
+-(NSString *)_commandCompletionType:(NSString *)command {
+  if ([@"theme" isEqualToString:command]) {
+    return @"blink-theme";
+  } else if ([@"music" isEqualToString:command]) {
+    return @"blink-music";
+  }
+  return operatesOn(command);
+}
+
 - (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
+  NSString *prefix = [self _extractCmdWithArgs:[NSString stringWithUTF8String:line]];
   
-  NSString* prefix = [NSString stringWithUTF8String:line];
-  NSString *cleanPrefix = [self _cleanCommandString:prefix];
+  NSPredicate *prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
   
-  NSArray *commands = __commandsByPrefix(cleanPrefix);
+  NSArray *completions = [self _completionsByType:@"command"];
+  completions = prefix.length == 0 ? completions : [completions filteredArrayUsingPredicate:prefixPred];
   
-  if (commands.count > 0) {
-    for (NSString * cmd in commands) {
-      replxx_add_completion(lc, cmd.UTF8String);
+  if (completions.count > 0) {
+    for (NSString * c in completions) {
+      replxx_add_completion(lc, c.UTF8String);
     }
     return;
   }
   
-  NSArray *cmdAndArgs = __splitCommandAndArgs(cleanPrefix);
+  NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
   NSString *cmd = cmdAndArgs[0];
-  NSString *args = cmdAndArgs[1];
-  NSArray *completions = @[];
+  NSString *args = [self _extractCmdWithArgs:cmdAndArgs[1]];
   
-  if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-    completions = __hostsByPrefix(args);
-  } else if ([cmd isEqualToString:@"music"]) {
-    completions = __musicActionsByPrefix(args);
-  } else if ([cmd isEqualToString:@"theme"]) {
-    completions = __themesByPrefix(args);
-  } else if ([cmd isEqualToString:@"history"]) {
-    completions = __historyActionsByPrefix(args);
-  } else {
-    system_completion(cleanPrefix.UTF8String, 0, lc, ud);
-    return;
-  }
+  prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": args}];
+  NSString *completionType = [self _commandCompletionType:cmd];
+  completions = [self _completionsByType:completionType];
+  
+  completions = args.length == 0 ? completions : [completions filteredArrayUsingPredicate:prefixPred];
   
   for (NSString *c in completions) {
     replxx_add_completion(lc, c.UTF8String);
   }
 }
+
 
 - (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
   
@@ -370,7 +368,7 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     return;
   }
   
-  NSArray<NSString *> *cmds = __commandsByPrefix(prefix);
+  NSArray<NSString *> *cmds = [self _completionsByType:@"command"];
   if (cmds.count > 0) {
     for (NSString *cmd in cmds) {
       NSString *description = __commandHints[cmd];
@@ -391,9 +389,9 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
     if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
       hint = [__hostsByPrefix(prefix) componentsJoinedByString:@", "];
     } else if ([cmd isEqualToString:@"theme"]) {
-      hint = [__themesByPrefix(prefix) componentsJoinedByString:@", "];
+      hint = [[self _completionsByType:@"blink-theme"] componentsJoinedByString:@", "];
     } else if ([cmd isEqualToString:@"music"]) {
-      hint = [__musicActionsByPrefix(prefix) componentsJoinedByString:@", "];
+      hint = [[self _completionsByType:@"blink-music"] componentsJoinedByString:@", "];
     }
   }
   
