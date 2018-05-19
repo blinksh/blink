@@ -51,19 +51,6 @@
 #include <ios_system/ios_system.h>
 #include "ios_error.h"
 
-NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
-{
-  NSRange rng = [cmdline rangeOfString:@" "];
-  if (rng.location == NSNotFound) {
-    return @[ cmdline, @"" ];
-  } else {
-    return @[
-       [cmdline substringToIndex:rng.location],
-       [cmdline substringFromIndex:rng.location + 1]
-    ];
-  }
-}
-
 
 @implementation MCPSession {
   Session *_childSession;
@@ -110,7 +97,8 @@ NSArray<NSString *> *_splitCommandAndArgs(NSString *cmdline)
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
-    NSArray *arr = _splitCommandAndArgs(cmdline);
+    
+    NSArray *arr = [cmdline componentsSeparatedByString:@" "];
     NSString *cmd = arr[0];
     
     if ([cmd isEqualToString:@"exit"]) {
