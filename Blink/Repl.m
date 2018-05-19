@@ -329,9 +329,11 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"host";
   } else if ([@"theme" isEqualToString:command]) {
     return @"blink-theme";
+  } else if ([@"ls" isEqualToString:command]) {
+    return @"directory";
   } else if ([@"music" isEqualToString:command]) {
     return @"blink-music";
-  } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear"] indexOfObject:command] != NSNotFound) {
+  } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history"] indexOfObject:command] != NSNotFound) {
     return @"";
   }
   
@@ -353,9 +355,15 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
   NSString *cmd = cmdAndArgs[0];
   NSString *args = [self _extractCmdWithArgs:cmdAndArgs[1]];
+  NSString *arg = args;
+  
+  NSArray<NSString *> *arguments = [args componentsSeparatedByString:@" "];
+  if (arguments > 0) {
+    arg = [arguments lastObject];
+  }
   
   NSString *completionType = [self _commandCompletionType:cmd];
-  completions = [self _completionsByType:completionType andPrefix:args];
+  completions = [self _completionsByType:completionType andPrefix:arg];
   
   for (NSString *c in completions) {
     replxx_add_completion(lc, c.UTF8String);
@@ -390,8 +398,15 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
   NSString *cmd = cmdAndArgs[0];
   prefix = cmdAndArgs[1];
+  NSString *arg = prefix;
+  
+  NSArray<NSString *> *arguments = [prefix componentsSeparatedByString:@" "];
+  if (arguments > 0) {
+    arg = [arguments lastObject];
+  }
+  
   NSString *completionType = [self _commandCompletionType:cmd];
-  NSArray<NSString *> *completions = [self _completionsByType:completionType andPrefix:prefix];
+  NSArray<NSString *> *completions = [self _completionsByType:completionType andPrefix:arg];
 
   if (completions.count == 0) {
     return;
@@ -401,11 +416,11 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
      hint = [completions componentsJoinedByString:@", "];
   } else {
     completions = [completions subarrayWithRange:NSMakeRange(0, 6)];
-    hint = [[completions componentsJoinedByString:@", "] stringByAppendingString:@", ..."];
+    hint = [[completions componentsJoinedByString:@", "] stringByAppendingString:@", …"];
   }
   
   if ([hint length] > 0) {
-    replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
+    replxx_add_hint(lc, [hint substringFromIndex: arg.length].UTF8String);
   }
 }
 
