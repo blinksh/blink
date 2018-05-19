@@ -39,6 +39,8 @@
 #import "BKPubKey.h"
 #import "UICKeyChainStore/UICKeyChainStore.h"
 
+#import "BlinkPaths.h"
+
 
 // typedef enum IDCardType : NSUInteger {
 //   RSA2048,
@@ -47,8 +49,6 @@
 static unsigned char pSshHeader[11] = {0x00, 0x00, 0x00, 0x07, 0x73, 0x73, 0x68, 0x2D, 0x72, 0x73, 0x61};
 NSMutableArray *Identities;
 
-static NSURL *DocumentsDirectory = nil;
-static NSURL *KeysURL = nil;
 static UICKeyChainStore *Keychain = nil;
 
 static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned char *pBuffer)
@@ -276,19 +276,13 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 + (BOOL)saveIDS
 {
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Identities toFile:KeysURL.path];
+  return [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
 }
 
 + (void)loadIDS
 {
-  if (DocumentsDirectory == nil) {
-    //Identities = [[NSMutableArray alloc] init];
-    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    KeysURL = [DocumentsDirectory URLByAppendingPathComponent:@"keys"];
-  }
-
   // Load IDs from file
-  if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:KeysURL.path]) == nil) {
+  if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
     // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
     SshRsa *defaultKey = [[SshRsa alloc] initWithLength:4096];

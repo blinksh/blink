@@ -13,8 +13,12 @@
 
 + (NSString *) documents;
 + (NSURL *) documentsURL;
+
 + (NSString *) blink;
+
 + (NSURL *) blinkURL;
++ (NSString *)blinkKeysFile;
+
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 + (NSString *) defaultsFile;

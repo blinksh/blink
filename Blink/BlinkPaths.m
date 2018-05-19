@@ -25,9 +25,14 @@
   return [self documents];
 }
 
-+ (NSString *)blinkURL
++ (NSURL *)blinkURL
 {
   return [self documentsURL];
+}
+
++ (NSString *)blinkKeysFile
+{
+  return [[self blink] stringByAppendingPathComponent:@"keys"];
 }
 
 + (NSString *)historyFile
