@@ -412,7 +412,7 @@ int InputBuffer::completeLine(PromptBase& pi) {
 	// at least one completion
 	int longestCommonPrefix = 0;
 	int displayLength = 0;
-	int completionsCount( completions.size() );
+	int completionsCount = static_cast<int>(completions.size());
 	int selectedCompletion( 0 );
 	if ( _hintSelection != -1 ) {
 		selectedCompletion = _hintSelection;
@@ -436,9 +436,63 @@ int InputBuffer::completeLine(PromptBase& pi) {
 			}
 		}
 	}
-	if ( _replxx.beep_on_ambiguous_completion() && ( completionsCount != 1 ) ) {	// beep if ambiguous
-		beep();
-	}
+//  if ( _replxx.beep_on_ambiguous_completion() && ( completionsCount != 1 ) ) {  // beep if ambiguous
+//    beep();
+//  }
+  
+  if ( (longestCommonPrefix <= itemLength) && _pos > 0) {
+    if (completionsCount == 1) {
+      Utf32String unicodeCopy2(_buf32.get(), _pos - itemLength);
+      Utf8String parseItem2(unicodeCopy2);
+      // get new list of completions
+      completions = _replxx.call_completer( parseItem2.get(), startIndex );
+      completionsCount = static_cast<int>(completions.size());
+      
+      int bp = static_cast<int>(unicodeCopy.length()) - itemLength;
+      
+      selectedCompletion = -1;
+      for (int i = 0; i != completionsCount; i++) {
+        if (completions[i].length() == itemLength && memcmp(&completions[i][0], &unicodeCopy[bp], sizeof(char32_t) * itemLength) == 0) {
+          selectedCompletion = i;
+        }
+      }
+      if (selectedCompletion != -1) {
+        selectedCompletion ++;
+      } else {
+        selectedCompletion = 0;
+      }
+      if (selectedCompletion >= completionsCount) {
+        selectedCompletion = 0;
+      }
+    } else {
+      if (completions[selectedCompletion].length() == itemLength && memcmp(&completions[selectedCompletion][0], &unicodeCopy[0], sizeof(char32_t) * itemLength) == 0) {
+        selectedCompletion++;
+      }
+      if (selectedCompletion >= completionsCount) {
+        selectedCompletion = 0;
+      }
+    }
+  
+    longestCommonPrefix = static_cast<int>(completions[selectedCompletion].length());
+    displayLength = _len + longestCommonPrefix - itemLength;
+    if (displayLength > _buflen) {
+      longestCommonPrefix -= displayLength - _buflen; // don't overflow buffer
+      displayLength = _buflen;                        // truncate the insertion
+      beep();                                         // and make a noise
+    }
+    Utf32String displayText(displayLength + 1);
+    memcpy(displayText.get(), _buf32.get(), sizeof(char32_t) * startIndex);
+    memcpy(&displayText[startIndex], &completions[selectedCompletion][0],
+           sizeof(char32_t) * longestCommonPrefix);
+    int tailIndex = startIndex + longestCommonPrefix;
+    memcpy(&displayText[tailIndex], &_buf32[_pos],
+           sizeof(char32_t) * (displayLength - tailIndex + 1));
+    copyString32(_buf32.get(), displayText.get(), displayLength);
+    _prefix = _pos = startIndex + longestCommonPrefix;
+    _len = displayLength;
+    refreshLine(pi);
+    return 0;
+  }
 
 	// if we can extend the item, extend it and return to main loop
 	if ( ( longestCommonPrefix > itemLength ) || ( completionsCount == 1 ) ) {
