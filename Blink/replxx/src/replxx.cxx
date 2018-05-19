@@ -156,7 +156,8 @@ namespace {
 
 static int const REPLXX_MAX_LINE( 4096 );
 static int const REPLXX_MAX_HINT_ROWS( 4 );
-char const defaultBreakChars[] = " =+-/\\*?\"'`&<>;|@{([])}";
+//char const defaultBreakChars[] = " =+-/\\*?\"'`&<>;|@{([])}";
+char const defaultBreakChars[] = " =+\\*?\"'`&<>;|@{([])}";
 
 #ifndef _WIN32
 

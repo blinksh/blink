@@ -43,20 +43,6 @@ static NSArray *directoriesInPath;
 static NSPredicate *__prefixPredicate;
 
 
-NSArray<NSString *> *__hostsByPrefix(NSString *prefix)
-{
-  NSMutableArray *hostsNames = [[NSMutableArray alloc] init];
-  for (BKHosts *h in [BKHosts all]) {
-    [hostsNames addObject:h.host];
-  }
-  
-  if (prefix.length == 0) {
-    return hostsNames;
-  }
-  NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
-  return [hostsNames filteredArrayUsingPredicate:prefixPred];
-}
-
 NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 {
   NSPredicate * prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
@@ -184,73 +170,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   }
 }
 
-void system_completion(char const* command, int bp, replxx_completions* lc, void* ud) {
-
-  // TODO: get current working directory from ios_system
-  BOOL isDir;
-  NSString* commandString = [NSString stringWithUTF8String:command];
-  if ([commandString rangeOfString:@" "].location == NSNotFound) {
-    // No spaces. The user is typing a command
-    // check for pre-defined commands:
-    for (NSString* existingCommand in __commandList) {
-      if ([existingCommand hasPrefix:commandString]) replxx_add_completion(lc, existingCommand.UTF8String);
-    }
-    // Commands in the PATH
-    // Do we have an interpreter? (otherwise, there's no point)
-    if (ios_executable("python") || ios_executable("lua")) {
-      NSString* checkingPath = [NSString stringWithCString:getenv("PATH") encoding:NSASCIIStringEncoding];
-      if (! [fullCommandPath isEqualToString:checkingPath]) {
-        fullCommandPath = checkingPath;
-        directoriesInPath = [fullCommandPath componentsSeparatedByString:@":"];
-      }
-      for (NSString* path in directoriesInPath) {
-        // If the path component doesn't exist, no point in continuing:
-        if (![[NSFileManager defaultManager] fileExistsAtPath:path isDirectory:&isDir]) continue;
-        if (!isDir) continue; // same in the (unlikely) event the path component is not a directory
-        NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:path error:Nil];
-        for (NSString *fileName in filenames) {
-          if ([fileName hasPrefix:commandString]) replxx_add_completion(lc,[fileName UTF8String]);
-        }
-      }
-    }
-  } else {
-    // the user is typing an argument.
-    // Is this one the commands that want a file as an argument?
-    NSArray* commandArray = [commandString componentsSeparatedByString:@" "];
-    
-    if ([operatesOn(commandArray[0]) isEqualToString:@"no"]) {
-      return;
-    }
-    // If we made it this far, command operates on file or directory:
-    // Last position of space in the command.
-    // Would be better if I could get position of cursor.
-    NSString* argument = commandArray.lastObject;
-    // which directory?
-    BOOL isDir;
-    NSString* directory;
-    NSString *file;
-    if ([[NSFileManager defaultManager] fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
-      directory = argument;
-      file = @"";
-    } else {
-      directory = [argument stringByDeletingLastPathComponent]; // can be empty.
-      if (directory.length == 0) {
-        directory = @".";
-      }
-      file = [argument lastPathComponent];
-    }
-    directory = [directory stringByExpandingTildeInPath];
-    if ([[NSFileManager defaultManager] fileExistsAtPath:directory isDirectory:&isDir] && isDir) {
-      NSArray* filenames = [[NSFileManager defaultManager] contentsOfDirectoryAtPath:directory error:Nil];
-      for (NSString *fileName in filenames) {
-        if ((file.length == 0) || [fileName hasPrefix:file]) {
-          replxx_add_completion(lc, [fileName UTF8String]);
-        }
-      }
-    }
-  }
-}
-
 // If we got `cat nice.txt | grep n ` it will return `grep n `
 - (NSString *)_extractCmdWithArgs:(NSString *) line {
   
@@ -293,6 +212,77 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 -(NSArray<NSString *> *)_allBlinkHosts
 {
+  NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
+  for (BKHosts *h in [BKHosts all]) {
+    [hostsSet addObject:h.host];
+  }
+  
+  return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+}
+
+-(NSArray<NSString *> *)_allHosts
+{
+  NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
+  for (BKHosts *h in [BKHosts all]) {
+    [hostsSet addObject:h.hostName];
+  }
+  
+  return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+}
+
+-(NSArray<NSString *> *)_allDirectories:(NSString *)argument
+{
+  BOOL isDir;
+  NSString* directory;
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
+    directory = argument;
+  } else {
+    directory = [argument stringByDeletingLastPathComponent]; // can be empty.
+    if (directory.length == 0) {
+      directory = @".";
+    }
+  }
+  directory = [directory stringByExpandingTildeInPath];
+  if ([fileManager fileExistsAtPath:directory isDirectory:&isDir] && isDir) {
+    NSArray *filesAndFolders = [fileManager contentsOfDirectoryAtPath:directory error:nil];
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    BOOL deeper = ![directory isEqualToString:@"."];
+    for (NSString *fileOrFolder in filesAndFolders) {
+      NSString *folder = deeper ?  [directory stringByAppendingPathComponent:fileOrFolder] : fileOrFolder;
+      if ([fileManager fileExistsAtPath:folder isDirectory:&isDir] && isDir) {
+        [result addObject:folder];
+      }
+    }
+    return result;
+  }
+  return @[];
+}
+
+-(NSArray<NSString *> *)_allFiles:(NSString *)argument
+{
+  BOOL isDir;
+  NSString* directory;
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  if ([fileManager fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
+    directory = argument;
+  } else {
+    directory = [argument stringByDeletingLastPathComponent]; // can be empty.
+    if (directory.length == 0) {
+      directory = @".";
+    }
+  }
+  directory = [directory stringByExpandingTildeInPath];
+  if ([fileManager fileExistsAtPath:directory isDirectory:&isDir] && isDir) {
+    NSArray *filesAndFolders = [fileManager contentsOfDirectoryAtPath:directory error:nil];
+    NSMutableArray *result = [[NSMutableArray alloc] init];
+    BOOL deeper = ![directory isEqualToString:@"."];
+    for (NSString *fileOrFolder in filesAndFolders) {
+      NSString *file = deeper ? [directory stringByAppendingPathComponent:fileOrFolder] : fileOrFolder;
+      [result addObject:file];
+    }
+    return result;
+  }
   return @[];
 }
 
@@ -305,37 +295,53 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   return themeNames;
 }
 
--(NSArray<NSString *> *)_completionsByType:(NSString *)completionType {
-  // comletion types: 'command', 'file', 'blink-host', 'host', 'file', 'directory', 'blink-theme'
+-(NSArray<NSString *> *)_completionsByType:(NSString *)completionType andPrefix:(NSString *)prefix {
+  NSArray<NSString *> *completions = @[];
   
   if ([@"command" isEqualToString:completionType]) {
-    return __commandList;
+    completions = __commandList;
   } else if ([@"blink-host" isEqualToString:completionType]) {
-    return [self _allBlinkHosts];
+    completions = [self _allBlinkHosts];
+  } else if ([@"host" isEqualToString:completionType]) {
+    completions = [self _allHosts];
   } else if ([@"blink-theme" isEqualToString:completionType]) {
-    return [self _allBlinkThemes];
+    completions = [self _allBlinkThemes];
   } else if ([@"blink-music" isEqualToString:completionType]) {
-    return [[MusicManager shared] commands];;
+    completions = [[MusicManager shared] commands];
+  } else if ([@"file" isEqualToString:completionType]) {
+    completions = [self _allFiles:prefix];
+  } else if ([@"directory" isEqualToString:completionType]) {
+    completions = [self _allDirectories:prefix];
   }
-  return @[];
+  
+  if (prefix.length == 0 || completions.count == 0) {
+    return completions;
+  }
+  
+  NSPredicate *prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
+  return [completions filteredArrayUsingPredicate:prefixPred];
 }
 
 -(NSString *)_commandCompletionType:(NSString *)command {
-  if ([@"theme" isEqualToString:command]) {
+  if ([@[@"ssh", @"mosh"] indexOfObject:command] != NSNotFound) {
+    return @"blink-host";
+  } else if ([@"ping" isEqualToString:command]) {
+    return @"host";
+  } else if ([@"theme" isEqualToString:command]) {
     return @"blink-theme";
   } else if ([@"music" isEqualToString:command]) {
     return @"blink-music";
+  } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear"] indexOfObject:command] != NSNotFound) {
+    return @"";
   }
+  
   return operatesOn(command);
 }
 
 - (void)_completion:(char const*) line bp:(int)bp lc:(replxx_completions*)lc ud:(void*)ud {
   NSString *prefix = [self _extractCmdWithArgs:[NSString stringWithUTF8String:line]];
   
-  NSPredicate *prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": prefix}];
-  
-  NSArray *completions = [self _completionsByType:@"command"];
-  completions = prefix.length == 0 ? completions : [completions filteredArrayUsingPredicate:prefixPred];
+  NSArray *completions = [self _completionsByType:@"command" andPrefix:prefix];
   
   if (completions.count > 0) {
     for (NSString * c in completions) {
@@ -348,11 +354,8 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
   NSString *cmd = cmdAndArgs[0];
   NSString *args = [self _extractCmdWithArgs:cmdAndArgs[1]];
   
-  prefixPred = [__prefixPredicate predicateWithSubstitutionVariables:@{@"PREFIX": args}];
   NSString *completionType = [self _commandCompletionType:cmd];
-  completions = [self _completionsByType:completionType];
-  
-  completions = args.length == 0 ? completions : [completions filteredArrayUsingPredicate:prefixPred];
+  completions = [self _completionsByType:completionType andPrefix:args];
   
   for (NSString *c in completions) {
     replxx_add_completion(lc, c.UTF8String);
@@ -361,38 +364,44 @@ void system_completion(char const* command, int bp, replxx_completions* lc, void
 
 
 - (void)_hints:(char const*)line bp:(int)bp lc:(replxx_hints *) lc color:(ReplxxColor*)color ud:(void*) ud {
-  
-  NSString *hint = nil;
   NSString *prefix = [NSString stringWithUTF8String:line];
+  prefix = [self _extractCmdWithArgs:prefix];
   if (prefix.length == 0) {
     return;
   }
   
-  NSArray<NSString *> *cmds = [self _completionsByType:@"command"];
+  NSArray<NSString *> *cmds = [self _completionsByType:@"command" andPrefix:prefix];
   if (cmds.count > 0) {
     for (NSString *cmd in cmds) {
       NSString *description = __commandHints[cmd];
       if (description.length > 0) {
         NSString *hint = [cmd stringByAppendingFormat:@" - %@", description];
-        replxx_add_hint(lc, [hint substringFromIndex: prefix.length - bp].UTF8String);
+        replxx_add_hint(lc, [hint substringFromIndex: prefix.length].UTF8String);
       } else {
-        replxx_add_hint(lc, [cmd substringFromIndex: prefix.length - bp].UTF8String);
+        replxx_add_hint(lc, [cmd substringFromIndex: prefix.length].UTF8String);
       }
       
       return;
     }
-  } else {
-    NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
-    NSString *cmd = cmdAndArgs[0];
-    prefix = cmdAndArgs[1];
     
-    if ([cmd isEqualToString:@"ssh"] || [cmd isEqualToString:@"mosh"]) {
-      hint = [__hostsByPrefix(prefix) componentsJoinedByString:@", "];
-    } else if ([cmd isEqualToString:@"theme"]) {
-      hint = [[self _completionsByType:@"blink-theme"] componentsJoinedByString:@", "];
-    } else if ([cmd isEqualToString:@"music"]) {
-      hint = [[self _completionsByType:@"blink-music"] componentsJoinedByString:@", "];
-    }
+    return;
+  }
+  
+  NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
+  NSString *cmd = cmdAndArgs[0];
+  prefix = cmdAndArgs[1];
+  NSString *completionType = [self _commandCompletionType:cmd];
+  NSArray<NSString *> *completions = [self _completionsByType:completionType andPrefix:prefix];
+
+  if (completions.count == 0) {
+    return;
+  }
+  NSString *hint = nil;
+  if (completions.count < 6) {
+     hint = [completions componentsJoinedByString:@", "];
+  } else {
+    completions = [completions subarrayWithRange:NSMakeRange(0, 6)];
+    hint = [[completions componentsJoinedByString:@", "] stringByAppendingString:@", ..."];
   }
   
   if ([hint length] > 0) {
