@@ -44,6 +44,7 @@
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #import "SSHSession.h"
+#import "BlinkPaths.h"
 
 #define REQUEST_TTY_AUTO 0
 #define REQUEST_TTY_NO 1
@@ -788,9 +789,9 @@ static void kbd_callback(const char *name, int name_len,
     return -1;
   }
   
-  NSURL *dd = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-  NSURL *khURL = [dd URLByAppendingPathComponent:@"known_hosts"];
-  const char *khFilePath = [khURL.path UTF8String];
+//  NSURL *dd = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+//  NSURL *khURL = [dd URLByAppendingPathComponent:@"known_hosts"];
+  const char *khFilePath = [BlinkPaths knownHosts].UTF8String;// [khURL.path UTF8String];
   
   libssh2_knownhost_readfile(kh, khFilePath, LIBSSH2_KNOWNHOST_FILE_OPENSSH);
   
