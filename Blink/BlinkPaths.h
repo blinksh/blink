@@ -18,6 +18,8 @@
 
 + (NSURL *) blinkURL;
 + (NSString *)blinkKeysFile;
++ (NSString *)blinkHostsFile;
++ (NSString *)blinkSyncItemsFile;
 
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;

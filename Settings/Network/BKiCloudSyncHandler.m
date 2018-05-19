@@ -34,6 +34,7 @@
 #import "BKPubKey.h"
 #import "BKUserConfigurationManager.h"
 #import "Reachability.h"
+#import "BlinkPaths.h"
 
 @import CloudKit;
 @import UIKit;
@@ -44,8 +45,6 @@ NSString const *BKiCloudSyncDeletedKeys = @"deletedKeys";
 NSString *BKiCloudContainerIdentifier = @"iCloud.com.carloscabanero.blinkshell";
 NSString *BKiCloudZoneName = @"DefaultZone";
 
-static NSURL *DocumentsDirectory = nil;
-static NSURL *syncItemsURL = nil;
 static NSMutableDictionary *syncItems = nil;
 static BKiCloudSyncHandler *sharedHandler = nil;
 
@@ -120,12 +119,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 - (void)loadSyncItems
 {
-  if (DocumentsDirectory == nil) {
-    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    syncItemsURL = [DocumentsDirectory URLByAppendingPathComponent:@"syncItems"];
-  }
   // Load IDs from file
-  if ((syncItems = [NSKeyedUnarchiver unarchiveObjectWithFile:syncItemsURL.path]) == nil) {
+  if ((syncItems = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkSyncItemsFile]]) == nil) {
     // Initialize the structure if it doesn't exist
     syncItems = [[NSMutableDictionary alloc] init];
   }
@@ -133,7 +128,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 + (BOOL)saveSyncItems
 {
-  return [NSKeyedArchiver archiveRootObject:syncItems toFile:syncItemsURL.path];
+  return [NSKeyedArchiver archiveRootObject:syncItems toFile:[BlinkPaths blinkSyncItemsFile]];
 }
 
 - (void)checkForReachabilityAndSync:(NSNotification *)notification

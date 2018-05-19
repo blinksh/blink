@@ -32,10 +32,10 @@
 #import "BKHosts.h"
 #import "BKiCloudSyncHandler.h"
 #import "UICKeyChainStore/UICKeyChainStore.h"
+#import "BlinkPaths.h"
+
 NSMutableArray *Hosts;
 
-static NSURL *DocumentsDirectory = nil;
-static NSURL *HostsURL = nil;
 static UICKeyChainStore *Keychain = nil;
 
 @implementation BKHosts
@@ -147,7 +147,7 @@ static UICKeyChainStore *Keychain = nil;
 + (BOOL)saveHosts
 {
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Hosts toFile:HostsURL.path];
+  return [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
 }
 
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
@@ -219,13 +219,8 @@ static UICKeyChainStore *Keychain = nil;
 
 + (void)loadHosts
 {
-  if (DocumentsDirectory == nil) {
-    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    HostsURL = [DocumentsDirectory URLByAppendingPathComponent:@"hosts"];
-  }
-
   // Load IDs from file
-  if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:HostsURL.path]) == nil) {
+  if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkHostsFile]]) == nil) {
     // Initialize the structure if it doesn't exist
     Hosts = [[NSMutableArray alloc] init];
   }

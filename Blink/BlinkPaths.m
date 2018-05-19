@@ -35,6 +35,16 @@
   return [[self blink] stringByAppendingPathComponent:@"keys"];
 }
 
++ (NSString *)blinkHostsFile
+{
+  return [[self blink] stringByAppendingPathComponent:@"hosts"];
+}
+
++ (NSString *)blinkSyncItemsFile
+{
+  return [[self blink] stringByAppendingPathComponent:@"syncItems"];
+}
+
 + (NSString *)historyFile
 {
   return [[self documents] stringByAppendingPathComponent:@".blink_history"];
