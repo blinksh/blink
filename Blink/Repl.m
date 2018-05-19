@@ -12,12 +12,53 @@
 #import "BKTheme.h"
 #import "MusicManager.h"
 #import "BlinkPaths.h"
+#include <arpa/inet.h>
 
 #import <ios_system/ios_system.h>
+
 #import "ios_error.h"
 
 #define MCP_MAX_LINE 4096
 #define MCP_MAX_HISTORY 1000
+
+@implementation NSString (IPValidation)
+
+- (BOOL)isValidIPAddress
+{
+  const char *utf8 = [self UTF8String];
+  int success;
+  
+  struct in_addr dst;
+  success = inet_pton(AF_INET, utf8, &dst);
+  if (success != 1) {
+    struct in6_addr dst6;
+    success = inet_pton(AF_INET6, utf8, &dst6);
+  }
+  
+  return success == 1;
+}
+
+@end
+
+@implementation NSString (CompareWithHost)
+
+- (NSComparisonResult)compareWithHost:(NSString *)other
+{
+  BOOL a = [self isValidIPAddress];
+  BOOL b = [other isValidIPAddress];
+  
+  if (a == b) {
+    return [self compare:other];
+  }
+  if (a) {
+    return NSOrderedDescending;
+  }
+  
+  return NSOrderedAscending;
+}
+
+@end
+
 
 NSArray<NSString *> *__splitCommandAndArgs(NSString *cmdline)
 {
@@ -227,6 +268,22 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     [hostsSet addObject:h.hostName];
   }
   
+  [hostsSet addObjectsFromArray:[self _allKnownHosts]];
+  
+  return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compareWithHost:)];
+}
+
+-(NSArray<NSString *> *)_allKnownHosts
+{
+  NSString * str = [NSString stringWithContentsOfFile:[BlinkPaths knownHosts] encoding:NSUTF8StringEncoding error:nil];
+  NSArray<NSString *> * lines = [str componentsSeparatedByString:@"\n"];
+  NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
+  for (NSString *line in lines) {
+    NSArray<NSString *> * comps = [line componentsSeparatedByString:@" "];
+    if ([comps firstObject].length > 0 ) {
+      [hostsSet addObject:comps.firstObject];
+    }
+  }
   return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
 }
 
@@ -285,6 +342,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   }
   return @[];
 }
+
 
 -(NSArray<NSString *> *)_allBlinkThemes
 {
@@ -543,7 +601,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   } else {
     NSString *usage = [@[
                          @"history usage:",
-                         @"history <number> - Show history",
+                         @"history <number> - Show history (can be negative)",
                          @"history -c       - Clear history",
                          @""
                          ] componentsJoinedByString:@"\n"];

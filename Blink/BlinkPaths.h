@@ -13,6 +13,7 @@
 
 + (NSString *) documents;
 + (NSString *) historyFile;
++ (NSString *) knownHosts;
 
 
 @end

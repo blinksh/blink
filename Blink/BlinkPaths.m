@@ -20,4 +20,9 @@
   return [[self documents] stringByAppendingPathComponent:@".blink_history"];
 }
 
++ (NSString *)knownHosts
+{
+  return [[self documents] stringByAppendingPathComponent:@"known_hosts"];
+}
+
 @end
