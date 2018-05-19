@@ -32,9 +32,7 @@
 #import "BKDefaults.h"
 #import "BKFont.h"
 #import "UIDevice+DeviceName.h"
-
-static NSURL *DocumentsDirectory = nil;
-static NSURL *DefaultsURL = nil;
+#import "BlinkPaths.h"
 
 BKDefaults *defaults;
 
@@ -100,13 +98,8 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 + (void)loadDefaults
 {
-  if (DocumentsDirectory == nil) {    
-    DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-    DefaultsURL = [DocumentsDirectory URLByAppendingPathComponent:@"defaults"];
-  }
-
   // Load IDs from file
-  if ((defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:DefaultsURL.path]) == nil) {
+  if ((defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths defaultsFile]]) == nil) {
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
   }
@@ -158,7 +151,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)saveDefaults
 {
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:defaults toFile:DefaultsURL.path];
+  return [NSKeyedArchiver archiveRootObject:defaults toFile:[BlinkPaths defaultsFile]];
 }
 
 + (void)setModifer:(NSString *)modifier forKey:(NSString *)key

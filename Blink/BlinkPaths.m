@@ -15,14 +15,34 @@
   return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
 }
 
++ (NSURL *)documentsURL
+{
+  return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
+}
+
++ (NSString *)blink
+{
+  return [self documents];
+}
+
++ (NSString *)blinkURL
+{
+  return [self documentsURL];
+}
+
 + (NSString *)historyFile
 {
   return [[self documents] stringByAppendingPathComponent:@".blink_history"];
 }
 
-+ (NSString *)knownHosts
++ (NSString *)knownHostsFile
 {
   return [[self documents] stringByAppendingPathComponent:@"known_hosts"];
+}
+
++ (NSString *)defaultsFile
+{
+  return [[self documents] stringByAppendingPathComponent:@"defaults"];
 }
 
 @end

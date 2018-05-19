@@ -37,7 +37,6 @@
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) NSString *filename;
 
-+ (void)initialize;
 + (NSURL *)resourcesURL;
 + (instancetype)withName:(NSString *)name;
 + (BOOL)saveAll;

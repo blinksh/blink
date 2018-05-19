@@ -12,8 +12,12 @@
 
 
 + (NSString *) documents;
++ (NSURL *) documentsURL;
++ (NSString *) blink;
++ (NSURL *) blinkURL;
 + (NSString *) historyFile;
-+ (NSString *) knownHosts;
++ (NSString *) knownHostsFile;
++ (NSString *) defaultsFile;
 
 
 @end

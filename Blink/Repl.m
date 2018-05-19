@@ -275,7 +275,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 
 -(NSArray<NSString *> *)_allKnownHosts
 {
-  NSString * str = [NSString stringWithContentsOfFile:[BlinkPaths knownHosts] encoding:NSUTF8StringEncoding error:nil];
+  NSString * str = [NSString stringWithContentsOfFile:[BlinkPaths knownHostsFile] encoding:NSUTF8StringEncoding error:nil];
   NSArray<NSString *> * lines = [str componentsSeparatedByString:@"\n"];
   NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
   for (NSString *line in lines) {

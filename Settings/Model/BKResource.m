@@ -32,11 +32,10 @@
 #import <objc/runtime.h>
 
 #import "BKResource.h"
+#import "BlinkPaths.h"
 
 static char defaultKey;
 static char customKey;
-
-static NSURL *DocumentsDirectory = nil;
 
 
 @implementation BKResource {
@@ -88,11 +87,6 @@ static NSURL *DocumentsDirectory = nil;
   return [[_fileURL URLByAppendingPathComponent:self.filename] path];
 }
 
-+ (void)initialize
-{
-  DocumentsDirectory = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-}
-
 + (instancetype)withName:(NSString *)name
 {
   for (BKResource *res in [self all]) {
@@ -105,7 +99,7 @@ static NSURL *DocumentsDirectory = nil;
 
 + (NSURL *)resourcesURL
 {
-  return DocumentsDirectory;
+  return [BlinkPaths blinkURL];
 }
 
 + (NSMutableArray *)defaultResources
@@ -173,13 +167,13 @@ static NSURL *DocumentsDirectory = nil;
 
 + (NSURL *)customResourcesLocation
 {
-  return [DocumentsDirectory URLByAppendingPathComponent:[self resourcesPathName]];
+  return [[BlinkPaths blinkURL] URLByAppendingPathComponent:[self resourcesPathName]];
 }
 
 + (NSURL *)customResourcesListLocation
 {
   NSString *listFileName = [[self resourcesPathName] stringByAppendingString:@"List"];
-  return [DocumentsDirectory URLByAppendingPathComponent:listFileName];
+  return [[BlinkPaths blinkURL] URLByAppendingPathComponent:listFileName];
 }
 
 + (NSString *)resourcesPathName

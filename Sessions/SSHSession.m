@@ -791,7 +791,7 @@ static void kbd_callback(const char *name, int name_len,
   
 //  NSURL *dd = [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 //  NSURL *khURL = [dd URLByAppendingPathComponent:@"known_hosts"];
-  const char *khFilePath = [BlinkPaths knownHosts].UTF8String;// [khURL.path UTF8String];
+  const char *khFilePath = [BlinkPaths knownHostsFile].UTF8String;// [khURL.path UTF8String];
   
   libssh2_knownhost_readfile(kh, khFilePath, LIBSSH2_KNOWNHOST_FILE_OPENSSH);
   
