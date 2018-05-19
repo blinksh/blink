@@ -22,12 +22,40 @@
 
 + (NSString *)blink
 {
-  return [self documents];
+  NSString *dotBlink = [[self documents] stringByAppendingPathComponent:@".blink"];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL isDir = NO;
+  if ([fileManager fileExistsAtPath:dotBlink isDirectory:&isDir]) {
+    if (isDir) {
+      return dotBlink;
+    }
+    
+    [fileManager removeItemAtPath:dotBlink error:nil];
+  }
+  [fileManager createDirectoryAtPath:dotBlink withIntermediateDirectories:YES attributes:@{} error:nil];
+  return dotBlink;
 }
+
++ (NSString *)ssh
+{
+  NSString *dotSSH = [[self documents] stringByAppendingPathComponent:@".ssh"];
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  BOOL isDir = NO;
+  if ([fileManager fileExistsAtPath:dotSSH isDirectory:&isDir]) {
+    if (isDir) {
+      return dotSSH;
+    }
+    
+    [fileManager removeItemAtPath:dotSSH error:nil];
+  }
+  [fileManager createDirectoryAtPath:dotSSH withIntermediateDirectories:YES attributes:@{} error:nil];
+  return dotSSH;
+}
+
 
 + (NSURL *)blinkURL
 {
-  return [self documentsURL];
+  return [NSURL fileURLWithPath:[self blink]];
 }
 
 + (NSString *)blinkKeysFile
@@ -47,17 +75,17 @@
 
 + (NSString *)historyFile
 {
-  return [[self documents] stringByAppendingPathComponent:@".blink_history"];
+  return [[self blink] stringByAppendingPathComponent:@"history.txt"];
 }
 
 + (NSString *)knownHostsFile
 {
-  return [[self documents] stringByAppendingPathComponent:@"known_hosts"];
+  return [[self ssh] stringByAppendingPathComponent:@"known_hosts"];
 }
 
 + (NSString *)defaultsFile
 {
-  return [[self documents] stringByAppendingPathComponent:@"defaults"];
+  return [[self blink] stringByAppendingPathComponent:@"defaults"];
 }
 
 @end

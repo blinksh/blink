@@ -30,9 +30,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
+#import "Migrator.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
+
 
 @import CloudKit;
 
@@ -64,6 +66,8 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+  [Migrator migrateIfNeeded];
+  
   signal(SIGPIPE, __on_pipebroken_signal);
   
   __setupProcessEnv();

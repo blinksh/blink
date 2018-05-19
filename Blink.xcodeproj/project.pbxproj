@@ -156,6 +156,7 @@
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D6D78E20529081003CBEC4 /* SSHSession2.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78D20529081003CBEC4 /* SSHSession2.m */; };
+		D2E4F91B20B0537D00B30F7B /* Migrator.m in Sources */ = {isa = PBXBuildFile; fileRef = D2E4F91A20B0537D00B30F7B /* Migrator.m */; };
 		D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2F30EAC205009CD008C5F35 /* base64js.min.js */; };
 		D2F330CA20A6CB840074ADD7 /* help.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330C920A6CB840074ADD7 /* help.m */; };
 		D2F330CC20A6D98C0074ADD7 /* config.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330CB20A6D98C0074ADD7 /* config.m */; };
@@ -500,6 +501,8 @@
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
 		D2D6D78C20529081003CBEC4 /* SSHSession2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHSession2.h; sourceTree = "<group>"; };
 		D2D6D78D20529081003CBEC4 /* SSHSession2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHSession2.m; sourceTree = "<group>"; };
+		D2E4F91920B0537D00B30F7B /* Migrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Migrator.h; sourceTree = "<group>"; };
+		D2E4F91A20B0537D00B30F7B /* Migrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Migrator.m; sourceTree = "<group>"; };
 		D2F30EAC205009CD008C5F35 /* base64js.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = base64js.min.js; sourceTree = "<group>"; };
 		D2F330C920A6CB840074ADD7 /* help.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = help.m; sourceTree = "<group>"; };
 		D2F330CB20A6D98C0074ADD7 /* config.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = config.m; sourceTree = "<group>"; };
@@ -590,6 +593,8 @@
 				D27BBA1B20529FFF00AEA303 /* TermStream.m */,
 				D23E142920A970C3000FCF5C /* BlinkPaths.h */,
 				D23E142A20A970C3000FCF5C /* BlinkPaths.m */,
+				D2E4F91920B0537D00B30F7B /* Migrator.h */,
+				D2E4F91A20B0537D00B30F7B /* Migrator.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1346,6 +1351,7 @@
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				D2E4F91B20B0537D00B30F7B /* Migrator.m in Sources */,
 				D239710720A07B9100881637 /* util.cxx in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,

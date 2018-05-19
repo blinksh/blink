@@ -15,6 +15,7 @@
 + (NSURL *) documentsURL;
 
 + (NSString *) blink;
++ (NSString *) ssh;
 
 + (NSURL *) blinkURL;
 + (NSString *)blinkKeysFile;
