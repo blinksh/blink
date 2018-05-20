@@ -1055,11 +1055,11 @@
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				D2F330D320A6F1DF0074ADD7 /* clear.m */,
+				D2F330CB20A6D98C0074ADD7 /* config.m */,
 				D2F330C920A6CB840074ADD7 /* help.m */,
 				D2F330CD20A6DA8A0074ADD7 /* music.m */,
 				D2F330D920A7127B0074ADD7 /* open.m */,
-				D2F330CB20A6D98C0074ADD7 /* config.m */,
-				D2F330D320A6F1DF0074ADD7 /* clear.m */,
 				D2A0C63C20AAD1EC001CF38F /* theme.m */,
 				D2F330D520A6F4F50074ADD7 /* history.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
