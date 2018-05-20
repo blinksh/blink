@@ -326,7 +326,11 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   NSString* directory;
   NSFileManager *fileManager = [NSFileManager defaultManager];
   if ([fileManager fileExistsAtPath:argument isDirectory:&isDir] && isDir) {
-    directory = argument;
+    if ([[argument lastPathComponent] isEqualToString:@"."] && ![argument isEqualToString:@"."]) {
+      directory = [argument stringByDeletingLastPathComponent];
+    } else {
+      directory = argument;
+    }
   } else {
     directory = [argument stringByDeletingLastPathComponent]; // can be empty.
     if (directory.length == 0) {
