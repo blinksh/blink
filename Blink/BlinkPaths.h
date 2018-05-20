@@ -14,7 +14,9 @@
 + (NSString *) documents;
 + (NSURL *) documentsURL;
 
+// ~/.blink
 + (NSString *) blink;
+// ~/.ssh
 + (NSString *) ssh;
 
 + (NSURL *) blinkURL;

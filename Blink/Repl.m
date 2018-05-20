@@ -457,8 +457,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       
       return;
     }
-    
-    return;
   }
   
   NSArray *cmdAndArgs = __splitCommandAndArgs(prefix);
