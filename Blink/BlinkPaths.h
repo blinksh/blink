@@ -14,6 +14,8 @@
 + (NSString *) documents;
 + (NSURL *) documentsURL;
 
++ (NSString *) iCloudDriveDocuments;
+
 // ~/.blink
 + (NSString *) blink;
 // ~/.ssh
@@ -27,6 +29,8 @@
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 + (NSString *) defaultsFile;
+
++ (void)linkICloudDriveIfNeeded;
 
 
 @end

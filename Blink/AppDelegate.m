@@ -34,6 +34,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
+#import "BlinkPaths.h"
 
 
 @import CloudKit;
@@ -72,7 +73,9 @@ void __setupProcessEnv() {
   
   __setupProcessEnv();
   
-  [[BKTouchIDAuthManager sharedManager]registerforDeviceLockNotif];
+  [BlinkPaths linkICloudDriveIfNeeded];
+  
+  [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
   [[ScreenController shared] setup];
   return YES;

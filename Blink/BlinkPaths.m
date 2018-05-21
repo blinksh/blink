@@ -20,6 +20,33 @@
   return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
++ (NSString *)iCloudDriveDocuments
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *path = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent:@"Documents"].path;
+  BOOL isDir = NO;
+  if (![fileManager fileExistsAtPath:path isDirectory:&isDir]) {
+    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:@{} error:nil];
+  }
+  
+  return path;
+}
+
++ (void)linkICloudDriveIfNeeded
+{
+  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSString *icloudPath = [[self documents] stringByAppendingPathComponent:@"iCloud"];
+  if ([fileManager fileExistsAtPath:icloudPath]) {
+    return;
+  }
+  
+  NSError *error = nil;
+
+  if (![fileManager linkItemAtPath:[self iCloudDriveDocuments] toPath:icloudPath error:&error]) {
+    NSLog(@"Error: %@", error);
+  };
+}
+
 + (NSString *)blink
 {
   NSString *dotBlink = [[self documents] stringByAppendingPathComponent:@".blink"];
