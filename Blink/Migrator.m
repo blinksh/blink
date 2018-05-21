@@ -68,7 +68,9 @@ NSInteger __setCurrentMigrationVersion(NSInteger version) {
 {
   NSLog(@"Migrating folder structure");
   
-  NSArray *filesToMoveToDotBlink = @[@"history.txt", @".blink_history", @"keys", @"hosts", @"syncItems", @"defaults", @"FontsList", @"ThemesList"];
+  NSArray *filesToMoveToDotBlink = @[@"history.txt", @".blink_history", @"keys",
+                                     @"hosts", @"syncItems", @"defaults",
+                                     @"FontsList", @"ThemesList"];
   
   for (NSString *file in filesToMoveToDotBlink) {
     NSString *srcPath = [[BlinkPaths documents] stringByAppendingPathComponent:file];

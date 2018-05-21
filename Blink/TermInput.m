@@ -84,13 +84,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
                 };
   FModifiers = @{
                  @0 : @0,
-                 [NSNumber numberWithInt:UIKeyModifierShift] : @2,
-                 [NSNumber numberWithInt:UIKeyModifierAlternate] : @3,
-                 [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate] : @4,
-                 [NSNumber numberWithInt:UIKeyModifierControl] : @5,
-                 [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierControl] : @6,
-                 [NSNumber numberWithInt:UIKeyModifierAlternate | UIKeyModifierControl] : @7,
-                 [NSNumber numberWithInt:UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierControl] : @8
+                 @(UIKeyModifierShift) : @2,
+                 @(UIKeyModifierAlternate) : @3,
+                 @(UIKeyModifierShift | UIKeyModifierAlternate) : @4,
+                 @(UIKeyModifierControl) : @5,
+                 @(UIKeyModifierShift | UIKeyModifierControl) : @6,
+                 @(UIKeyModifierAlternate | UIKeyModifierControl) : @7,
+                 @(UIKeyModifierShift | UIKeyModifierAlternate | UIKeyModifierControl) : @8
                  };
   FKeys = @{
             UIKeyInputUpArrow : @"A",

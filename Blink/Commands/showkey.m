@@ -33,7 +33,7 @@ int showkey_main(int argc, char *argv[]) {
     else if (ch < ' ')
       printf("^%c", ch+64);
     else
-      printf("%c",ch);
+      printf("%c", ch);
     
     printf("\t%3d 0%03o 0x%02x\r\n", ch, ch, ch);
     
