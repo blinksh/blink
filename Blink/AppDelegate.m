@@ -73,7 +73,7 @@ void __setupProcessEnv() {
   
   __setupProcessEnv();
   
-  [BlinkPaths linkICloudDriveIfNeeded];
+//  [BlinkPaths linkICloudDriveIfNeeded];
   
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 

@@ -23,10 +23,13 @@
 + (NSString *)iCloudDriveDocuments
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *path = [[fileManager URLForUbiquityContainerIdentifier:nil] URLByAppendingPathComponent:@"Documents"].path;
+  NSString *path = [[fileManager URLForUbiquityContainerIdentifier:@"iCloud.com.carloscabanero.blinkshell"] URLByAppendingPathComponent:@"Documents"].path;
   BOOL isDir = NO;
   if (![fileManager fileExistsAtPath:path isDirectory:&isDir]) {
-    [fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:@{} error:nil];
+    NSError *error = nil;
+    if (![fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error]) {
+      NSLog(@"Error: %@", error);
+    }
   }
   
   return path;
@@ -36,13 +39,16 @@
 {
   NSFileManager *fileManager = [NSFileManager defaultManager];
   NSString *icloudPath = [[self documents] stringByAppendingPathComponent:@"iCloud"];
-  if ([fileManager fileExistsAtPath:icloudPath]) {
+  if ([fileManager fileExistsAtPath:icloudPath isDirectory:nil]) {
     return;
   }
   
   NSError *error = nil;
 
-  if (![fileManager linkItemAtPath:[self iCloudDriveDocuments] toPath:icloudPath error:&error]) {
+  if (
+//      ![fileManager linkItemAtPath:[self iCloudDriveDocuments]  toPath: icloudPath error:&error]
+      ![fileManager createSymbolicLinkAtPath:icloudPath withDestinationPath:[self iCloudDriveDocuments] error:&error]
+      ) {
     NSLog(@"Error: %@", error);
   };
 }
@@ -59,6 +65,7 @@
     
     [fileManager removeItemAtPath:dotBlink error:nil];
   }
+  
   [fileManager createDirectoryAtPath:dotBlink withIntermediateDirectories:YES attributes:@{} error:nil];
   return dotBlink;
 }

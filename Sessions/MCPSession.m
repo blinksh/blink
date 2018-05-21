@@ -108,7 +108,7 @@
     } else if ([cmd isEqualToString:@"ssh"]) {
       [self _runSSHWithArgs:cmdline];
       //    } else if ([cmd isEqualToString:@"ssh2"]) {
-      //      [self _runSSH2WithArgs:cmdline];
+      //      [self :cmdline];
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
