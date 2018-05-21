@@ -35,7 +35,7 @@ int showkey_main(int argc, char *argv[]) {
     else
       printf("%c",ch);
     
-    printf("\t%3d 0%03o 0x%02x\r\n", ch, ch, ch);
+    printf("\t%3d 0%03o 0x%02x\r\n", ch, ch, ch);
     
     fflush(thread_stdout);
     
