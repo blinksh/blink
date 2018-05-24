@@ -63,7 +63,7 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 @property (nonatomic) BOOL boldAsBright;
 @property (nonatomic) BOOL lightKeyboard;
 
-+ (void)initialize;
++ (void)loadDefaults;
 + (BOOL)saveDefaults;
 + (void)setModifer:(NSString *)modifier forKey:(NSString *)key;
 + (void)setCapsAsEsc:(BOOL)state;

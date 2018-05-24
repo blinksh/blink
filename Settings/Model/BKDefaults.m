@@ -91,15 +91,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
 }
 
-+ (void)initialize
-{
-  [BKDefaults loadDefaults];
-}
-
 + (void)loadDefaults
 {
   // Load IDs from file
-  if ((defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths defaultsFile]]) == nil) {
+  defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths defaultsFile]];
+  if (!defaults) {
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
   }

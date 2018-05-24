@@ -92,6 +92,7 @@
   replaceCommand(@"theme", @"theme_main", true);
   
   ios_setMiniRoot([BlinkPaths documents]);
+//  ios_setAllowedPaths(@[[BlinkPaths iCloudDriveDocuments]]);
   
 
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];

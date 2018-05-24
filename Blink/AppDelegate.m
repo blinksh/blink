@@ -35,6 +35,7 @@
 #import "BKTouchIDAuthManager.h"
 #import "ScreenController.h"
 #import "BlinkPaths.h"
+#import "BKDefaults.h"
 
 
 @import CloudKit;
@@ -68,6 +69,8 @@ void __setupProcessEnv() {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [Migrator migrateIfNeeded];
+  
+  [BKDefaults loadDefaults];
   
   signal(SIGPIPE, __on_pipebroken_signal);
   
