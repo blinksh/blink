@@ -206,7 +206,8 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       @"whoami": @"Display effective user id.", // fish
       @"whois": @"Internet domain name and network number directory service.", // fish
       
-      @"open": @"open url of file (Experimental). 📤"
+      @"open": @"open url of file (Experimental). 📤",
+      @"link-files": @"link folders from Files.app (Experimental)."
       };
   }
 }
@@ -399,7 +400,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"directory";
   } else if ([@"music" isEqualToString:command]) {
     return @"blink-music";
-  } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history"] indexOfObject:command] != NSNotFound) {
+  } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history", @"link-files"] indexOfObject:command] != NSNotFound) {
     return @"";
   }
   

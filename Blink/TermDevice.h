@@ -12,6 +12,7 @@
 - (void)viewFontSizeChanged:(NSInteger)size;
 - (BOOL)handleControl:(NSString *)control;
 - (void)deviceFocused;
+- (UIViewController *)viewController;
 
 @end
 

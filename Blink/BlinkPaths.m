@@ -10,9 +10,14 @@
 
 @implementation BlinkPaths
 
+NSString *__documentsPath = nil;
+
 + (NSString *)documents
 {
-  return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+  if (__documentsPath == nil) {
+    __documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+  }
+  return __documentsPath;
 }
 
 + (NSURL *)documentsURL
@@ -20,34 +25,38 @@
   return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
+NSString *__iCloudsDriveDocumentsPath = nil;
+
 + (NSString *)iCloudDriveDocuments
 {
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  NSString *path = [[fileManager URLForUbiquityContainerIdentifier:@"iCloud.com.carloscabanero.blinkshell"] URLByAppendingPathComponent:@"Documents"].path;
-  BOOL isDir = NO;
-  if (![fileManager fileExistsAtPath:path isDirectory:&isDir]) {
-    NSError *error = nil;
-    if (![fileManager createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error]) {
-      NSLog(@"Error: %@", error);
+  if (__iCloudsDriveDocumentsPath == nil) {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *path = [[fm URLForUbiquityContainerIdentifier:@"iCloud.com.carloscabanero.blinkshell"] URLByAppendingPathComponent:@"Documents"].path;
+    BOOL isDir = NO;
+    if (![fm fileExistsAtPath:path isDirectory:&isDir]) {
+      NSError *error = nil;
+      if (![fm createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error]) {
+        NSLog(@"Error: %@", error);
+      }
     }
+    __iCloudsDriveDocumentsPath = path;
   }
   
-  return path;
+  return __iCloudsDriveDocumentsPath;
 }
 
 + (void)linkICloudDriveIfNeeded
 {
-  NSFileManager *fileManager = [NSFileManager defaultManager];
+  NSFileManager *fm = [NSFileManager defaultManager];
   NSString *icloudPath = [[self documents] stringByAppendingPathComponent:@"iCloud"];
-  if ([fileManager fileExistsAtPath:icloudPath isDirectory:nil]) {
+  if ([fm fileExistsAtPath:icloudPath isDirectory:nil]) {
     return;
   }
   
   NSError *error = nil;
 
   if (
-//      ![fileManager linkItemAtPath:[self iCloudDriveDocuments]  toPath: icloudPath error:&error]
-      ![fileManager createSymbolicLinkAtPath:icloudPath withDestinationPath:[self iCloudDriveDocuments] error:&error]
+      ![fm createSymbolicLinkAtPath:icloudPath withDestinationPath:[self iCloudDriveDocuments] error:&error]
       ) {
     NSLog(@"Error: %@", error);
   };

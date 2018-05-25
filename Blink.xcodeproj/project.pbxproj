@@ -156,6 +156,7 @@
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D6D78E20529081003CBEC4 /* SSHSession2.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78D20529081003CBEC4 /* SSHSession2.m */; };
 		D2E4F91B20B0537D00B30F7B /* Migrator.m in Sources */ = {isa = PBXBuildFile; fileRef = D2E4F91A20B0537D00B30F7B /* Migrator.m */; };
+		D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EFE1EE20B7FAFC0087888B /* link_files.m */; };
 		D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2F30EAC205009CD008C5F35 /* base64js.min.js */; };
 		D2F330CA20A6CB840074ADD7 /* help.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330C920A6CB840074ADD7 /* help.m */; };
 		D2F330CC20A6D98C0074ADD7 /* config.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F330CB20A6D98C0074ADD7 /* config.m */; };
@@ -502,6 +503,7 @@
 		D2E4F91920B0537D00B30F7B /* Migrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Migrator.h; sourceTree = "<group>"; };
 		D2E4F91A20B0537D00B30F7B /* Migrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Migrator.m; sourceTree = "<group>"; };
 		D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
+		D2EFE1EE20B7FAFC0087888B /* link_files.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = link_files.m; sourceTree = "<group>"; };
 		D2F30EAC205009CD008C5F35 /* base64js.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = base64js.min.js; sourceTree = "<group>"; };
 		D2F330C920A6CB840074ADD7 /* help.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = help.m; sourceTree = "<group>"; };
 		D2F330CB20A6D98C0074ADD7 /* config.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = config.m; sourceTree = "<group>"; };
@@ -1059,6 +1061,7 @@
 				D2F330C920A6CB840074ADD7 /* help.m */,
 				D2F330CD20A6DA8A0074ADD7 /* music.m */,
 				D2F330D920A7127B0074ADD7 /* open.m */,
+				D2EFE1EE20B7FAFC0087888B /* link_files.m */,
 				D2A0C63C20AAD1EC001CF38F /* theme.m */,
 				D2F330D520A6F4F50074ADD7 /* history.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
@@ -1368,6 +1371,7 @@
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
+				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D2F330CE20A6DA8A0074ADD7 /* music.m in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,

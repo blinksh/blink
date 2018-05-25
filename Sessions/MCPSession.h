@@ -40,4 +40,6 @@
 @property (strong) MCPSessionParameters *sessionParameters;
 @property (strong, readonly) Repl *repl;
 
+- (void)updateAllowedPaths;
+
 @end

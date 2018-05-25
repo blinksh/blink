@@ -25,6 +25,7 @@ int open_main(int argc, char *argv[]) {
     return 1;
   }
   
+  
   MCPSession *session = (__bridge MCPSession *)thread_context;
   
   bool isDir = NO;

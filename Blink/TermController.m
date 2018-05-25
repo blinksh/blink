@@ -225,6 +225,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   return [_session setActiveSession];
 }
 
+- (UIViewController *)viewController
+{
+  return self;
+}
+
 #pragma mark Notifications
 
 

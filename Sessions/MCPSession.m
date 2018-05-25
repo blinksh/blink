@@ -51,7 +51,6 @@
 #include <ios_system/ios_system.h>
 #include "ios_error.h"
 
-
 @implementation MCPSession {
   Session *_childSession;
   NSString *_currentCmd;
@@ -90,11 +89,11 @@
   replaceCommand(@"history", @"history_main", true);
   replaceCommand(@"open", @"open_main", true);
   replaceCommand(@"theme", @"theme_main", true);
+  replaceCommand(@"link-files", @"link_files_main", true);
   
   ios_setMiniRoot([BlinkPaths documents]);
-  ios_setAllowedPaths(@[[BlinkPaths iCloudDriveDocuments]]);
+  [self updateAllowedPaths];
   
-
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
@@ -130,6 +129,36 @@
   puts("Bye!");
   
   return 0;
+}
+
+- (NSArray<NSString *> *)_symlinksInHomeDirectory
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSMutableArray<NSString *> *allowedPaths = [[NSMutableArray alloc] init];
+  
+  NSString *documentsPath = [BlinkPaths documents];
+  NSArray<NSString *> * files = [fm contentsOfDirectoryAtPath:documentsPath error:nil];
+  
+  for (NSString *path in files) {
+    NSString *filePath = [documentsPath stringByAppendingPathComponent:path];
+    NSDictionary * attrs = [fm attributesOfItemAtPath:filePath error:nil];
+    if (attrs[NSFileType] != NSFileTypeSymbolicLink) {
+      continue;
+    }
+      
+    NSString *destPath = [fm destinationOfSymbolicLinkAtPath:filePath error:nil];
+    if (!destPath || ![fm isReadableFileAtPath:destPath]) {
+      continue;
+    }
+    
+    [allowedPaths addObject:destPath];
+  }
+  return allowedPaths;
+}
+
+- (void)updateAllowedPaths
+{
+  ios_setAllowedPaths([self _symlinksInHomeDirectory]);
 }
 
 - (void)_runSSHCopyIDWithArgs:(NSString *)args
