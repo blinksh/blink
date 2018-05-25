@@ -10,6 +10,3 @@
 [submodule "Frameworks/ios_system"]
 	path = Frameworks/ios_system
 	url = git@github.com:holzschu/ios_system.git
-[submodule "Frameworks/network_ios"]
-	path = Frameworks/network_ios
-	url = git@github.com:holzschu/network_ios.git
