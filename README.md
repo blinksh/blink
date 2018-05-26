@@ -48,7 +48,7 @@ sftp localFilename user@host.name.edu:~/
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
 
-The language packages ([Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)) only provide the equivalent of the binaries. It is up to you to transfer the directories with the packges  (`/usr/local/texlive` or `/usr/lib/python2.7`), and place them in the Library folder of the Blink application. This is where commands such as ls, rm, tar, mv... will be useful. 
+The language packages ([Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)) only provide the equivalent of the binaries. It is up to you to transfer the directories with the packages (`/usr/local/texlive` or `/usr/lib/python2.7`), and place them in the Library folder of the Blink application. This is where commands such as ls, rm, tar, mv... will be useful.
 
 Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. 
 
