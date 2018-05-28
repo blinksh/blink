@@ -36,6 +36,8 @@
 #import "ScreenController.h"
 #import "BlinkPaths.h"
 #import "BKDefaults.h"
+#import "BKPubKey.h"
+#import "BKHosts.h"
 
 
 @import CloudKit;
@@ -68,10 +70,6 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-  [Migrator migrateIfNeeded];
-  
-  [BKDefaults loadDefaults];
-  
   signal(SIGPIPE, __on_pipebroken_signal);
   
   __setupProcessEnv();
@@ -81,6 +79,15 @@ void __setupProcessEnv() {
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
   [[ScreenController shared] setup];
+  return YES;
+}
+
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+  [Migrator migrateIfNeeded];
+  [BKDefaults loadDefaults];
+  [BKPubKey loadIDS];
+  [BKHosts loadHosts];
   return YES;
 }
 

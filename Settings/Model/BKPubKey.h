@@ -51,6 +51,7 @@
 
 + (void)initialize;
 + (instancetype)withID:(NSString *)ID;
++ (void)loadIDS;
 + (BOOL)saveIDS;
 + (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
 + (NSMutableArray *)all;

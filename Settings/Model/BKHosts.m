@@ -111,7 +111,6 @@ static UICKeyChainStore *Keychain = nil;
 + (void)initialize
 {
   Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
-  [BKHosts loadHosts];
 }
 
 + (instancetype)withHost:(NSString *)aHost
