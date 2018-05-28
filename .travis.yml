@@ -4,4 +4,4 @@ language: objective-c
 before_script:
 - "./get_frameworks.sh"
 script:
-- "fastlane gym -p Blink.xcodeproj -s Blink -q Debug -j development --skip_package_ipa --skip_archive"
+- "xcodebuild -project Blink.xcodeproj -scheme Blink -sdk iphoneos -configuration Debug clean build CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO "
