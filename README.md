@@ -79,6 +79,8 @@ Bugs should be reported here on GitHub. Crash reports will be automatically repo
 We can't wait to receive your valuable feedback. Enjoy!
 
 ## Build
+[![Build Status](https://travis-ci.org/blinksh/blink.svg?branch=raw)](https://travis-ci.org/blinksh/blink)
+
 We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
 
 ```bash
