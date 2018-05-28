@@ -264,14 +264,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_reset() completionHandler:nil];
 }
 
-//- (void)setAutoCarriageReturn:(BOOL)state
-//{
-//  _autoCR = state;
-////  dispatch_sync(dispatch_get_main_queue(), ^{
-//    [_webView evaluateJavaScript:term_setAutoCarriageReturn(state) completionHandler:nil];
-////  });
-//}
-
 - (void)increaseFontSize
 {
   [_webView evaluateJavaScript:term_increaseFontSize() completionHandler:nil];
@@ -289,6 +281,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)focus {
   _focused = YES;
+  [self _didBecomeActive]; // Double check and attach if we are detached
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
