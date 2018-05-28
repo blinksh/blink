@@ -2,6 +2,6 @@ osx_image: xcode9.3
 language: objective-c
 
 before_script:
-  - "./get_frameworks.sh"
+- "./get_frameworks.sh"
 script:
-  - "fastlane gym -p Blink.xcodeproj -s Blink -q Debug --skip_package_ipa"
+- "fastlane gym -p Blink.xcodeproj -s Blink -q Debug -j development --skip_package_ipa"
