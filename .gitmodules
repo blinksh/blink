@@ -9,4 +9,4 @@
 	url = https://github.com/blinksh/SwiftPasscodeLock.git
 [submodule "Frameworks/ios_system"]
 	path = Frameworks/ios_system
-	url = git@github.com:holzschu/ios_system.git
+	url = https://github.com/holzschu/ios_system.git
