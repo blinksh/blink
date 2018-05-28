@@ -65,7 +65,6 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		2236A8ED2038972D001CD2AD /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = 2236A8EC2038972C001CD2AD /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I ../ios_system/curl/curl/include/ -I ../ios_system/curl/curl/lib/ -I ../ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I ../ios_system/"; }; };
 		22A9494B2067FD5E003A0666 /* files.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A949492067FD5E003A0666 /* files.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -352,7 +351,6 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
-		2236A8EC2038972C001CD2AD /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = ../../ios_system/curl/curl/src/tool_main.c; sourceTree = "<group>"; };
 		22A949492067FD5E003A0666 /* files.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = files.framework; sourceTree = "<group>"; };
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
@@ -811,7 +809,6 @@
 		07F670621D05EEE200C0A53C /* Sessions */ = {
 			isa = PBXGroup;
 			children = (
-				2236A8EC2038972C001CD2AD /* tool_main.c */,
 				D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */,
 				D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */,
 				07F670651D05EEE200C0A53C /* MCPSession.h */,
@@ -1403,7 +1400,6 @@
 				D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
-				2236A8ED2038972D001CD2AD /* tool_main.c in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				D239710520A07B9100881637 /* history.cxx in Sources */,
