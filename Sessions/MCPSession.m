@@ -69,8 +69,10 @@
 
 - (int)main:(int)argc argv:(char **)argv
 {
-  ios_setContext((__bridge void*)self);
+  [self setActiveSession];
+  ios_setMiniRoot([BlinkPaths documents]);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
+  ios_setContext((__bridge void*)self);
   
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
@@ -78,8 +80,6 @@
     _childSession = nil;
   }
   
-  sideLoading = false; // Turn off extra commands from iOS system
-  initializeEnvironment(); // initialize environment variables for iOS system
   replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   replaceCommand(@"help", @"help_main", true);
   replaceCommand(@"config", @"config_main", true);
@@ -91,7 +91,7 @@
   replaceCommand(@"theme", @"theme_main", true);
   replaceCommand(@"link-files", @"link_files_main", true);
   
-  ios_setMiniRoot([BlinkPaths documents]);
+  
   [self updateAllowedPaths];
   
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
@@ -113,6 +113,9 @@
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
       _currentCmd = cmdline;
+      thread_stdout = nil;
+      thread_stdin = nil;
+      thread_stderr = nil;
       // Re-evalute column number before each command
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       int result = ios_system(cmdline.UTF8String);
@@ -249,7 +252,16 @@
 }
 
 - (void)setActiveSession {
+  FILE * savedStdOut = stdout;
+  FILE * savedStdErr = stderr;
+  FILE * savedStdIn = stdin;
+  stdout = _stream.out;
+  stderr = _stream.err;
+  stdin = _stream.in;
   ios_switchSession((__bridge void*)self);
+  stdout = savedStdOut;
+  stderr = savedStdErr;
+  stdin = savedStdIn;
 }
 
 @end

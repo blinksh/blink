@@ -529,18 +529,24 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   if (_device.stream.in == NULL) {
     return nil;
   }
+  
+  FILE * savedStdIn = stdin;
   FILE * savedStdOut = stdout;
   FILE * savedStdErr = stderr;
+  
+  stdin = _device.stream.in;
   stdout = _device.stream.out;
   stderr = _device.stream.err;
   
-  thread_stdout = _device.stream.out;
   thread_stdin = _device.stream.in;
+  thread_stdout = _device.stream.out;
   thread_stderr = _device.stream.err;
   
   char const* result = NULL;
   blink_replxx_replace_streams(_replxx, thread_stdin, thread_stdout, thread_stderr, &_device->win);
   result = replxx_input(_replxx, prompt);
+  
+  stdin = savedStdIn;
   stdout = savedStdOut;
   stderr = savedStdErr;
   

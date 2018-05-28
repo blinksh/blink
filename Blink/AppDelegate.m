@@ -38,6 +38,7 @@
 #import "BKDefaults.h"
 #import "BKPubKey.h"
 #import "BKHosts.h"
+#import <ios_system/ios_system.h>
 
 
 @import CloudKit;
@@ -78,6 +79,9 @@ void __setupProcessEnv() {
   
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
+  sideLoading = false; // Turn off extra commands from iOS system
+  initializeEnvironment(); // initialize environment variables for iOS system
+  
   [[ScreenController shared] setup];
   return YES;
 }

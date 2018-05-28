@@ -154,7 +154,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
   _session = [[MCPSession alloc] initWithDevice:_termDevice andParametes:_sessionParameters];
   _session.delegate = self;
-  [_session setActiveSession];
   [_session executeWithArgs:@""];
 }
 
