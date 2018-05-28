@@ -70,6 +70,7 @@
   if (@available(iOS 11, *)) {
     self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
   }
+
 }
 
 - (void)_closeConfig:(UIKeyCommand *)cmd
@@ -87,12 +88,18 @@
   return YES;
 }
 
+
+
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
-  self.userNameLabel.text = [BKDefaults defaultUserName];
-  self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] == true ? @"On" : @"Off";
-  self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] == true ? @"On" : @"Off";
+  
+  self.userNameLabel.text = [BKDefaults defaultUserName];;
+  self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] ? @"On" : @"Off";
+  self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] ? @"On" : @"Off";
+  
+  // Layout tableview so it will place labels correctly
+  [self.tableView layoutIfNeeded];
 }
 
 - (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
