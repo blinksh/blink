@@ -1,10 +1,13 @@
 #!/bin/bash
 
+set -e
+
 DEPS_VERSION="0.0.6"
 
 GHROOT="https://github.com/blinksh"
 
 (
+
 cd "${BASH_SOURCE%/*}/Frameworks"
 echo "Downloading frameworks"
 curl -OL $GHROOT/external-deps/releases/download/v$DEPS_VERSION/frameworks.tar.gz
