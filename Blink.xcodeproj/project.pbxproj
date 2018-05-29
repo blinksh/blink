@@ -127,11 +127,10 @@
 		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D23E143D20A977AB000FCF5C /* Repl.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E143C20A977AB000FCF5C /* Repl.m */; };
-		D240805720BC71B100F30099 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
-		D240805820BC71B100F30099 /* curl_ios_static.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D240806120BC8DF800F30099 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = D240806020BC8DF800F30099 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I Frameworks/ios_system/curl/curl/include/ -I Frameworks/ios_system/curl/curl/lib/ -I Frameworks/ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I Frameworks/ios_system/"; }; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
+		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
@@ -226,13 +225,6 @@
 			remoteGlobalIDString = 148993CF1D8F2515000132F7;
 			remoteInfo = TestHost;
 		};
-		D240805920BC71B100F30099 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 2219DFCE1FD73AF500675252;
-			remoteInfo = curl_ios_static;
-		};
 		D2A3F4DC206909A8006BB305 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
@@ -267,7 +259,6 @@
 				D2A3F4FC20690D08006BB305 /* shell.framework in Embed Frameworks */,
 				22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */,
 				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
-				D240805820BC71B100F30099 /* curl_ios_static.framework in Embed Frameworks */,
 				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
 				0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */,
 				D2A3F4F820690CB0006BB305 /* awk.framework in Embed Frameworks */,
@@ -531,8 +522,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */,
 				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
-				D240805720BC71B100F30099 /* curl_ios_static.framework in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */,
@@ -1123,7 +1114,6 @@
 			dependencies = (
 				0732F1211D062DDB00AB5438 /* PBXTargetDependency */,
 				0732F1251D062DDC00AB5438 /* PBXTargetDependency */,
-				D240805A20BC71B100F30099 /* PBXTargetDependency */,
 			);
 			name = Blink;
 			productName = Blink;
@@ -1460,11 +1450,6 @@
 			isa = PBXTargetDependency;
 			name = "MBProgressHUD Framework";
 			targetProxy = 0732F1241D062DDC00AB5438 /* PBXContainerItemProxy */;
-		};
-		D240805A20BC71B100F30099 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = curl_ios_static;
-			targetProxy = D240805920BC71B100F30099 /* PBXContainerItemProxy */;
 		};
 		EA0BA1A61C0CC57B00719C1A /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
