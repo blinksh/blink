@@ -257,7 +257,7 @@
     <key>rlogin</key>
     <array>
       <string>network_ios.framework/network_ios</string>
-      <string>rlogin_main</string>
+      <string>telnet_main</string>
       <string>468EKLNS:X:acde:fFk:l:n:rs:uxy</string>
       <string>no</string>
     </array>
