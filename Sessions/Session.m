@@ -33,32 +33,101 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include <libgen.h> // for basename()
 
 #import "Session.h"
 
-
-int makeargs(const char *args, char ***aa)
-{
-  char *buf = strdup(args);
-  int c = 1;
-  char *delim;
-  char **argv = calloc(c, sizeof(char *));
-
-  argv[0] = buf;
-
-  while ((delim = strchr(argv[c - 1], ' '))) {
-    argv = realloc(argv, (c + 1) * sizeof(char *));
-    argv[c] = delim + 1;
-    *delim = 0x00;
-    c++;
+static void* nextUnescapedCharacter(const char* str, const char c) {
+  char* nextOccurence = strchr(str, c);
+  while (nextOccurence != NULL) {
+    if ((nextOccurence > str + 1) && (*(nextOccurence - 1) == '\\')) {
+      // There is a backlash before the character.
+      int numBackslash = 0;
+      char* countBack = nextOccurence - 1;
+      while ((countBack > str) && (*countBack == '\\')) { numBackslash++; countBack--; }
+      if (numBackslash % 2 == 0) return nextOccurence; // even number of backslash
+    } else return nextOccurence;
+    nextOccurence = strchr(nextOccurence + 1, c);
   }
+  return nextOccurence;
+}
 
-  argv = realloc(argv, (c + 1) * sizeof(char *));
-  argv[c] = NULL;
+static char* getLastCharacterOfArgument(const char* argument) {
+  if (strlen(argument) == 0) return NULL; // be safe
+  if (argument[0] == '"') {
+    char* endquote = nextUnescapedCharacter(argument + 1, '"');
+    if (endquote != NULL) return endquote + 1;
+    else return NULL;
+  } else if (argument[0] == '\'') {
+    char* endquote = nextUnescapedCharacter(argument + 1, '\'');
+    if (endquote != NULL) return endquote + 1;
+    else return NULL;
+  }
+  else return nextUnescapedCharacter(argument + 1, ' ');
+}
 
+static char* unquoteArgument(char* argument) {
+  if (argument[0] == '"') {
+    if (argument[strlen(argument) - 1] == '"') {
+      argument[strlen(argument) - 1] = 0x0;
+      return argument + 1;
+    }
+  }
+  if (argument[0] == '\'') {
+    if (argument[strlen(argument) - 1] == '\'') {
+      argument[strlen(argument) - 1] = 0x0;
+      return argument + 1;
+    }
+  }
+  // no quotes at the beginning: replace all escaped characters:
+  // '\x' -> x
+  char* nextOccurence = strchr(argument, '\\');
+  while ((nextOccurence != NULL) && (strlen(nextOccurence) > 0)) {
+    memmove(nextOccurence, nextOccurence + 1, strlen(nextOccurence + 1) + 1);
+    // strcpy(nextOccurence, nextOccurence + 1);
+    nextOccurence = strchr(nextOccurence + 1, '\\');
+  }
+  return argument;
+}
+
+int makeargs(const char *command, char ***aa)
+{
+  int argc = 0;
+  size_t numSpaces = 0;
+  // the number of arguments is *at most* the number of spaces plus one
+  const char* str = command;
+  while(*str) if (*str++ == ' ') ++numSpaces;
+  char** argv = (char **)malloc(sizeof(char*) * (numSpaces + 2));
+  bool* dontExpand = malloc(sizeof(bool) * (numSpaces + 2));
+  // n spaces = n+1 arguments, plus null at the end
+  str = command;
+  while (*str) {
+    argv[argc] = str;
+    dontExpand[argc] = false;
+    argc += 1;
+    char* end = getLastCharacterOfArgument(str);
+    bool mustBreak = (end == NULL) || (strlen(end) == 0);
+    if (!mustBreak) end[0] = 0x0;
+    if ((str[0] == '\'') || (str[0] == '"')) {
+      dontExpand[argc-1] = true; // don't expand arguments in quotes
+    }
+    argv[argc-1] = unquoteArgument(argv[argc-1]);
+    if (mustBreak) break;
+    str = end + 1;
+    if ((argc == 1) && (argv[0][0] == '/') && (access(argv[0], R_OK) == -1)) {
+      // argv[0] is a file that doesn't exist. Probably one of our commands.
+      // Replace with its name:
+      char* newName = basename(argv[0]);
+      argv[0] = realloc(argv[0], strlen(newName));
+      strcpy(argv[0], newName);
+    }
+    assert(argc < numSpaces + 2);
+    while (str && (str[0] == ' ')) str++; // skip multiple spaces
+  }
+  argv[argc] = NULL;
   *aa = argv;
 
-  return c;
+  return argc;
 }
 
 void *run_session(void *params)
