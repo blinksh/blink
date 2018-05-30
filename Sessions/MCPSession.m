@@ -150,7 +150,13 @@
     }
       
     NSString *destPath = [fm destinationOfSymbolicLinkAtPath:filePath error:nil];
-    if (!destPath || ![fm isReadableFileAtPath:destPath]) {
+    if (!destPath) {
+      continue;
+    }
+    
+    if (![fm isReadableFileAtPath:destPath]) {
+      // We lost access. Remove that symlink
+      [fm removeItemAtPath:filePath error:nil];
       continue;
     }
     
