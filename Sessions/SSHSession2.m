@@ -1,4 +1,3 @@
-/*
 #include <getopt.h>
 #include <libssh/libssh.h>
 #include <libssh/callbacks.h>
@@ -16,10 +15,10 @@
 #define REQUEST_TTY_FORCE 3
 
 static const char *usage_format =
-"usage: ssh [options] [user@]hostname [command]\r\n"
-"[-l login_name] [-i identity_file] [-p port]\r\n"
-"[-t request_tty] [-v verbose]\r\n"
-"\r\n";
+"usage: ssh [options] [user@]hostname [command]\n"
+"[-l login_name] [-i identity_file] [-p port]\n"
+"[-t request_tty] [-v verbose]\n"
+"\n";
 
 typedef struct {
   int verbosity;
@@ -39,7 +38,7 @@ typedef struct {
 void loggingEvent(ssh_session session, int priority, const char *message, void *userdata)
 {
   FILE *out = (FILE *)userdata;
-  fprintf(out, "%s\r\n", message);
+  fprintf(out, "%s\n", message);
 }
 
 @implementation SSHSession2 {
@@ -170,7 +169,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   ssh_userauth_none(_session, NULL);
   char *banner = ssh_get_issue_banner(_session);
   if (banner) {
-    fprintf(_stream.out, "%s\r\n", banner);
+    fprintf(_stream.out, "%s\n", banner);
     free(banner);
   }
   
@@ -179,7 +178,9 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   }
   
   if (_options.request_tty) {
+    [_device setRawMode:YES];
     [self shell];
+    [_device setRawMode:NO];
   } else {
     // exec
     
@@ -197,7 +198,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   }
   
   if (ssh_options_set(_session, SSH_OPTIONS_COMPRESSION, "yes") < 0) {
-    NSLog(@"hmmm");
+    NSLog(@"can't set compression");
   }
   if (ssh_options_set(_session, SSH_OPTIONS_HOST, _options.hostname) < 0) {
     return [self dieMsg:@"Error setting Host"];
@@ -299,7 +300,7 @@ void loggingEvent(ssh_session session, int priority, const char *message, void *
   
   banner = ssh_get_issue_banner(_session);
   if (banner) {
-    fprintf(_stream.out, "%s\r\n", banner);
+    fprintf(_stream.out, "%s\n", banner);
     ssh_string_free_char(banner);
   }
   
@@ -386,11 +387,11 @@ static int authCallback(const char *prompt, char *buf, size_t len,
     n = ssh_userauth_kbdint_getnprompts(_session);
     
     if (name && strlen(name) > 0) {
-      fprintf(out, "%s\r\n", name);
+      fprintf(out, "%s\n", name);
     }
     
     if (instruction && strlen(instruction) > 0) {
-      fprintf(out, "%s\r\n", instruction);
+      fprintf(out, "%s\n", instruction);
     }
     
     for (i = 0; i < n; i++) {
@@ -453,10 +454,10 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   ssize_t sz = 0;
   
   FILE *termin = _stream.in;
-  if ((sz = getdelim(resp, &size, '\r', termin)) == -1) {
+  if ((sz = getdelim(resp, &size, '\n', termin)) == -1) {
     return -1;
   } else {
-    if ((*resp)[sz - 1] == '\r') {
+    if ((*resp)[sz - 1] == '\n') {
       (*resp)[--sz] = '\0';
     }
     return sz;
@@ -544,10 +545,10 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   ssh_event_add_connector(event, connector_out);
   
   // stderr
-  //  connector_err = ssh_connector_new(_session);
-  //  ssh_connector_set_out_fd(connector_err, fileno(_stream.err));
-  //  ssh_connector_set_in_channel(connector_err, _channel, SSH_CONNECTOR_STDERR);
-  //  ssh_event_add_connector(event, connector_err);
+  connector_err = ssh_connector_new(_session);
+  ssh_connector_set_out_fd(connector_err, fileno(_stream.err));
+  ssh_connector_set_in_channel(connector_err, _channel, SSH_CONNECTOR_STDERR);
+  ssh_event_add_connector(event, connector_err);
   
   while(ssh_channel_is_open(_channel)){
     //    if(signal_delayed)
@@ -556,11 +557,11 @@ static int authCallback(const char *prompt, char *buf, size_t len,
   }
   ssh_event_remove_connector(event, connector_in);
   ssh_event_remove_connector(event, connector_out);
-  //ssh_event_remove_connector(event, connector_err);
+  ssh_event_remove_connector(event, connector_err);
   
   ssh_connector_free(connector_in);
   ssh_connector_free(connector_out);
-  //ssh_connector_free(connector_err);
+  ssh_connector_free(connector_err);
   
   ssh_event_free(event);
   ssh_channel_free(_channel);
@@ -568,19 +569,19 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 
 - (void)errMsg:(NSString *)msg
 {
-  fprintf(_stream.err, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.err, "%s\n", [msg UTF8String]);
 }
 
 - (void)debugMsg:(NSString *)msg
 {
   //if (_debug) {
-  fprintf(_stream.out, "SSHSession:DEBUG:%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "SSHSession:DEBUG:%s\n", [msg UTF8String]);
   //}
 }
 
@@ -591,4 +592,4 @@ static int authCallback(const char *prompt, char *buf, size_t len,
 }
 
 @end
-*/
+
