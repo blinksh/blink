@@ -528,7 +528,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 
 - (NSString *)_input:(char *)prompt
 {
-  if (_device.stream.in == NULL) {
+  if (_replxx == nil || _device.stream.in == NULL) {
     return nil;
   }
   
