@@ -250,28 +250,6 @@
 		    selector:@selector(keyboardFuncTriggerChanged:)
 			name:BKKeyboardFuncTriggerChanged
 		      object:nil];
-  
-  [defaultCenter addObserver: self selector:@selector(_blinkShare:) name:@"BlinkShare" object:nil];
-}
-
-- (void)_blinkShare: (NSNotification *)n {
-  NSURL *url = [n.userInfo objectForKey:@"url"];
-  
-  if (@available(iOS 11.0, *)) {
-    UIActivityViewController *ctrl = [[UIActivityViewController alloc] initWithActivityItems:@[url] applicationActivities:nil];
-    if (ctrl.popoverPresentationController) {
-      ctrl.popoverPresentationController.sourceView = self.currentTerm.view;
-      
-      CGRect rect = CGRectMake(0, self.view.bounds.size.height - 30, self.view.bounds.size.width, 30);
-      ctrl.popoverPresentationController.sourceRect = rect;
-    }
-    
-    [self presentViewController:ctrl animated:YES completion:nil];
-    
-  } else {
-    // Fallback on earlier versions
-  }
-  
 }
 
 - (void)_appDidBecomeActive

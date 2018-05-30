@@ -25,31 +25,54 @@ int open_main(int argc, char *argv[]) {
     return 1;
   }
   
-  
   MCPSession *session = (__bridge MCPSession *)thread_context;
   
+  NSFileManager *fm = [[NSFileManager alloc] init];
+  NSMutableArray *urls = [[NSMutableArray alloc] init];
   bool isDir = NO;
-  if ([[NSFileManager defaultManager] fileExistsAtPath:args isDirectory:&isDir]) {
-    if (!isDir) {
-      NSURL * currentDir = [NSURL fileURLWithPath: [[NSFileManager defaultManager] currentDirectoryPath]];
-      NSURL * url = [currentDir URLByAppendingPathComponent:args isDirectory:NO];
-      
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (url) {
-          NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:session userInfo:@{@"url": url}];
-          [[NSNotificationCenter defaultCenter] postNotification:n];
-        }
-      });
+  if ([fm fileExistsAtPath:args isDirectory:&isDir]) {
+    NSURL * currentDir = [NSURL fileURLWithPath: [fm currentDirectoryPath]];
+    NSURL * url = [currentDir URLByAppendingPathComponent:args isDirectory:NO];
+    if (url) {
+      [urls addObject:url];
+    } else {
+      fprintf(thread_stderr, "Can't open file or dir");
+      return 1;
     }
   } else {
     NSURL *url = [NSURL URLWithString:args];
-    dispatch_async(dispatch_get_main_queue(), ^{
-      if (url) {
-        NSNotification *n = [[NSNotification alloc] initWithName:@"BlinkShare" object:session userInfo:@{@"url": url}];
-        [[NSNotificationCenter defaultCenter] postNotification:n];
-      }
-    });
+ 
+    if (url) {
+      [urls addObject:url];
+    } else {
+      fprintf(thread_stderr, "%s", [NSString stringWithFormat:@"Can't open file or dir at path: %@", url].UTF8String);
+      return 1;
+    }
   }
+  
+  dispatch_semaphore_t dsema = dispatch_semaphore_create(0);
+  
+  UIActivityViewControllerCompletionWithItemsHandler hander = ^(UIActivityType __nullable activityType, BOOL completed, NSArray * __nullable returnedItems, NSError * __nullable activityError) {
+    dispatch_semaphore_signal(dsema);
+  };
+  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    UIActivityViewController *ctrl = [[UIActivityViewController alloc] initWithActivityItems:urls applicationActivities:nil];
+
+    ctrl.completionWithItemsHandler = hander;
+    
+    if (ctrl.popoverPresentationController) {
+      UIView *view = session.device.view;
+      ctrl.popoverPresentationController.sourceView = view;
+
+      CGRect rect = CGRectMake(0, view.bounds.size.height - 30, view.bounds.size.width, 30);
+      ctrl.popoverPresentationController.sourceRect = rect;
+    }
+
+    [session.device.delegate.viewController presentViewController:ctrl animated:YES completion:nil];
+  });
+  
+  dispatch_semaphore_wait(dsema, DISPATCH_TIME_FOREVER);
   
   return 0;
 }

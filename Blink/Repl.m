@@ -398,6 +398,8 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"blink-theme";
   } else if ([@"ls" isEqualToString:command]) {
     return @"directory";
+  } else if ([@"open" isEqualToString:command]) {
+    return @"file";
   } else if ([@"music" isEqualToString:command]) {
     return @"blink-music";
   } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history", @"link-files"] indexOfObject:command] != NSNotFound) {
