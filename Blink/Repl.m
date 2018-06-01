@@ -93,6 +93,7 @@ NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 @implementation Repl {
   Replxx* _replxx;
   TermDevice *_device;
+  TermStream *_stream;
 }
 
 void __hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud) {
@@ -105,11 +106,12 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   [repl _completion: line bp:bp lc: lc ud: ud];
 }
 
-- (instancetype)initWithDevice:(TermDevice *)device
+- (instancetype)initWithDevice:(TermDevice *)device andStream: (TermStream *)stream
 {
   if (self = [super init]) {
     _device = device;
-    _replxx = replxx_init();
+    _replxx = nil;
+    _stream = stream;
   }
   
   return self;
@@ -494,6 +496,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 - (void)loopWithCallback:(BOOL(^)(NSString *cmd)) callback
 {
   const char *history = [[BlinkPaths historyFile] UTF8String];
+  _replxx = replxx_init();
   replxx_set_max_history_size(_replxx, MCP_MAX_HISTORY);
   replxx_history_load(_replxx, history);
   replxx_set_completion_callback(_replxx, __completion, (__bridge void*)self);
@@ -522,18 +525,18 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     [_device setRawMode:NO];
   }
   
-  replxx_end(_replxx);
-  _replxx = nil;
+//  replxx_end(_replxx);
+//  _replxx = nil;
 }
 
 - (NSString *)_input:(char *)prompt
 {
-  if (_replxx == nil || _device.stream.in == NULL) {
+  if (_replxx == nil || _stream.in == NULL) {
     return nil;
   }
   
   char const* result = NULL;
-  blink_replxx_replace_streams(_replxx, _device.stream.in, _device.stream.out, _device.stream.err, &_device->win);
+  blink_replxx_replace_streams(_replxx, _stream.in, _stream.out, _stream.err, &_device->win);
   result = replxx_input(_replxx, prompt);
   
   if ( result == NULL ) {
@@ -543,14 +546,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   return [NSString stringWithUTF8String:result];
 }
 
-- (void)kill
-{
-  if (_replxx) {
-    replxx_end(_replxx);
-    _replxx = nil;
-  }
-}
-
 - (void)dealloc
 {
   if (_replxx) {
@@ -558,6 +553,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     _replxx = nil;
   }
   _device = nil;
+  _stream = nil;
 }
 
 - (void)sigwinch

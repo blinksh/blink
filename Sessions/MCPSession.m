@@ -61,7 +61,7 @@
 - (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
 {
   if (self = [super initWithDevice:device andParametes:parameters]) {
-    _repl = [[Repl alloc] initWithDevice:device];
+    _repl = [[Repl alloc] initWithDevice:device andStream: _stream];
   }
   
   return self;
@@ -120,8 +120,6 @@
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       int result = ios_system(cmdline.UTF8String);
       _currentCmd = nil;
-//      fflush(_stream.out);
-//      fflush(_stream.err);
       // TODO: find meanful exit code for reload
       if (result == 10 && [cmd isEqualToString:@"theme"]) {
         return NO;
@@ -223,13 +221,14 @@
 {
   [_childSession kill];
 
-  [self _ios_kill];
-  [_repl kill];
-  _repl = nil;
-  
+  ios_kill();
   
   // Instruct ios_system to release the data for this shell:
   ios_closeSession((__bridge void*)self);
+  
+  if (_device.stream.in) {
+    fclose(_device.stream.in);
+  }
 }
 
 - (void)suspend
@@ -247,7 +246,7 @@
     if ([_device rawMode]) {
       return NO;
     }
-    [self _ios_kill];
+    ios_kill();
     return YES;
   }
 
@@ -265,11 +264,6 @@
   stdout = savedStdOut;
   stderr = savedStdErr;
   stdin = savedStdIn;
-}
-
-- (void)_ios_kill
-{
-  ios_kill();
 }
 
 - (void)dealloc
