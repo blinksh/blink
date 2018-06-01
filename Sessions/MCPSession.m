@@ -120,6 +120,8 @@
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       int result = ios_system(cmdline.UTF8String);
       _currentCmd = nil;
+//      fflush(_stream.out);
+//      fflush(_stream.err);
       // TODO: find meanful exit code for reload
       if (result == 10 && [cmd isEqualToString:@"theme"]) {
         return NO;
@@ -221,13 +223,9 @@
 {
   [_childSession kill];
 
-  // Close stdin to end the linenoise loop.
-  if (_stream.in) {
-    fclose(_stream.in);
-    _stream.in = NULL;
-  }
+  [self _ios_kill];
   [_repl kill];
-  ios_kill();
+  _repl = nil;
   
   
   // Instruct ios_system to release the data for this shell:
@@ -249,8 +247,7 @@
     if ([_device rawMode]) {
       return NO;
     }
-
-    ios_kill();
+    [self _ios_kill];
     return YES;
   }
 
@@ -268,6 +265,16 @@
   stdout = savedStdOut;
   stderr = savedStdErr;
   stdin = savedStdIn;
+}
+
+- (void)_ios_kill
+{
+  ios_kill();
+}
+
+- (void)dealloc
+{
+  _repl = nil;
 }
 
 @end
