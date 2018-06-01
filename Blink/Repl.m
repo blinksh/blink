@@ -532,25 +532,9 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return nil;
   }
   
-  FILE * savedStdIn = stdin;
-  FILE * savedStdOut = stdout;
-  FILE * savedStdErr = stderr;
-  
-  stdin = _device.stream.in;
-  stdout = _device.stream.out;
-  stderr = _device.stream.err;
-  
-  thread_stdin = _device.stream.in;
-  thread_stdout = _device.stream.out;
-  thread_stderr = _device.stream.err;
-  
   char const* result = NULL;
-  blink_replxx_replace_streams(_replxx, thread_stdin, thread_stdout, thread_stderr, &_device->win);
+  blink_replxx_replace_streams(_replxx, _device.stream.in, _device.stream.out, _device.stream.err, &_device->win);
   result = replxx_input(_replxx, prompt);
-  
-  stdin = savedStdIn;
-  stdout = savedStdOut;
-  stderr = savedStdErr;
   
   if ( result == NULL ) {
     return nil;
@@ -567,6 +551,15 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   }
 }
 
+- (void)dealloc
+{
+  if (_replxx) {
+    replxx_end(_replxx);
+    _replxx = nil;
+  }
+  _device = nil;
+}
+
 - (void)sigwinch
 {
   if (_replxx) {
@@ -576,6 +569,9 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 
 - (int)clear_main:(int)argc argv:(char **)argv
 {
+  if (!_replxx) {
+    return -1;
+  }
   blink_replxx_replace_streams(_replxx, thread_stdin, thread_stdout, thread_stderr, &_device->win);
   replxx_clear_screen(_replxx);
   return 0;
