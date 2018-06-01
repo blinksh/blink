@@ -116,6 +116,7 @@
       thread_stdout = nil;
       thread_stdin = nil;
       thread_stderr = nil;
+      
       // Re-evalute column number before each command
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       int result = ios_system(cmdline.UTF8String);
@@ -228,6 +229,7 @@
   
   if (_device.stream.in) {
     fclose(_device.stream.in);
+    _device.stream.in = NULL;
   }
 }
 
