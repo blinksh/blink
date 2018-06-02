@@ -11,9 +11,8 @@
 
 @interface Repl : NSObject
 
-- (instancetype)initWithDevice:(TermDevice *)device;
+- (instancetype)initWithDevice:(TermDevice *)device andStream: (TermStream *)stream;
 
-- (void)kill;
 - (void)sigwinch;
 - (void)loopWithCallback:(BOOL(^)(NSString *cmd)) callback;
 

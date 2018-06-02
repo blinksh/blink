@@ -148,7 +148,7 @@ namespace replxx {
 
 #ifndef _WIN32
 
-bool gotResize = false;
+__thread bool gotResize = false;
 
 #endif
 
@@ -365,6 +365,7 @@ char const* Replxx::ReplxxImpl::input( std::string const& prompt ) {
 			if (count == -1) {
 				return NULL;
 			}
+      
 			assert( ib.length() < _maxLineLength );
 			printf("\n");
       size_t bufferSize = sizeof(char32_t) * ib.length() + 1;

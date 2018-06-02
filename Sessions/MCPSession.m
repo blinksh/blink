@@ -61,7 +61,7 @@
 - (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
 {
   if (self = [super initWithDevice:device andParametes:parameters]) {
-    _repl = [[Repl alloc] initWithDevice:device];
+    _repl = [[Repl alloc] initWithDevice:device andStream: _stream];
   }
   
   return self;
@@ -116,6 +116,7 @@
       thread_stdout = nil;
       thread_stdin = nil;
       thread_stderr = nil;
+      
       // Re-evalute column number before each command
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       int result = ios_system(cmdline.UTF8String);
@@ -150,7 +151,13 @@
     }
       
     NSString *destPath = [fm destinationOfSymbolicLinkAtPath:filePath error:nil];
-    if (!destPath || ![fm isReadableFileAtPath:destPath]) {
+    if (!destPath) {
+      continue;
+    }
+    
+    if (![fm isReadableFileAtPath:destPath]) {
+      // We lost access. Remove that symlink
+      [fm removeItemAtPath:filePath error:nil];
       continue;
     }
     
@@ -215,17 +222,15 @@
 {
   [_childSession kill];
 
-  // Close stdin to end the linenoise loop.
-  if (_stream.in) {
-    fclose(_stream.in);
-    _stream.in = NULL;
-  }
-  [_repl kill];
   ios_kill();
-  
   
   // Instruct ios_system to release the data for this shell:
   ios_closeSession((__bridge void*)self);
+  
+  if (_device.stream.in) {
+    fclose(_device.stream.in);
+    _device.stream.in = NULL;
+  }
 }
 
 - (void)suspend
@@ -243,7 +248,6 @@
     if ([_device rawMode]) {
       return NO;
     }
-
     ios_kill();
     return YES;
   }
@@ -262,6 +266,11 @@
   stdout = savedStdOut;
   stderr = savedStdErr;
   stdin = savedStdIn;
+}
+
+- (void)dealloc
+{
+  _repl = nil;
 }
 
 @end
