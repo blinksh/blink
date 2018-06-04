@@ -818,6 +818,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@""
                                               modifierFlags:UIKeyModifierCommand
                                                      action:@selector(_kbCmd:)]];
+
+  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"\r"
+                                              modifierFlags:UIKeyModifierAlternate
+                                                     action:@selector(_altEnter:)]];
   
   [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"\t"
                                               modifierFlags:UIKeyModifierShift
@@ -844,6 +848,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
+- (void)_altEnter:(UIKeyCommand *)cmd
+{
+  [self escSeq:cmd];
+}
+
+
 - (void)_shiftTab:(UIKeyCommand *)cmd
 {
   [_device write:@"\x1b\x5b\x5a"];
@@ -867,7 +877,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else if (seq == TermViewEscSeq) {
     shiftCharset = @"qwertyuiopasdfghjklzxcvbnm";
     charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?\t"];
-    
   } else if (seq == TermViewAutoRepeateSeq) {
     charset = @"qwertyuiopasdfghjklzxcvbnm1234567890";
   } else {
