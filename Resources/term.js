@@ -248,7 +248,7 @@ function term_setFontSize(size) {
 }
 
 function term_setFontFamily(name) {
-  term_set('font-family', name + ', Menlo');
+  term_set('font-family', name + ', "DejaVu Sans Mono"');
 }
 
 function term_appendUserCss(css) {
