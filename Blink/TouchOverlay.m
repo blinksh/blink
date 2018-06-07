@@ -134,6 +134,11 @@ const CGFloat kToolBarHeight = 82;
   UIView *res = [super hitTest:point withEvent:event];
   
   if (res == self) {
+    CGRect rect = self.bounds;
+    // Top right corner (Control panel on ipads ios 12)
+    if (point.y <= 20 && point.x >= rect.size.width - 80) {
+      return self;
+    }
     return nil;
   }
   
