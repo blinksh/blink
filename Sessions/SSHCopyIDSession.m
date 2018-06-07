@@ -34,9 +34,8 @@
 #import "SSHSession.h"
 
 static const char *copy_command =
-"umask 077; test -d ~/.ssh || mkdir ~/.ssh ; cat >> .ssh/authorized_keys; test -x /sbin/restorecon && /sbin/restorecon .ssh .ssh/authorized_keys";
+"sh -c 'umask 077; test -d ~/.ssh || mkdir ~/.ssh ; cat >> .ssh/authorized_keys; test -x /sbin/restorecon && /sbin/restorecon .ssh .ssh/authorized_keys'";
 
-  //  "umask 077; test -d ~/.ssh || mkdir ~/.ssh; grep -f ~/.ssh/authorized_keys > /dev/null 2>&1; ! [ -a ~/.ssh/authorized_keys ] || [ $? -ne 0 ] && cat >> ~/.ssh/authorized_keys && (test -x /sbin/restorecon && /sbin/restorecon ~/.ssh ~/.ssh/authorized_keys >/dev/null 2>&1 || true)";
 static const char *usage_format =
   "Usage: ssh-copy-id identity_file [user@]host";
 
@@ -79,7 +78,7 @@ static const char *usage_format =
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 

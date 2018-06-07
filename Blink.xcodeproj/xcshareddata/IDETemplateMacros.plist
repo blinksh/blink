@@ -1,4 +1,9 @@
-////////////////////////////////////////////////////////////////////////////////
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>FILEHEADER</key>
+	<string>////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
@@ -17,7 +22,7 @@
 // GNU General Public License for more details.
 //
 // You should have received a copy of the GNU General Public License
-// along with Blink. If not, see <http://www.gnu.org/licenses/>.
+// along with Blink. If not, see &lt;http://www.gnu.org/licenses/&gt;.
 //
 // In addition, Blink is also subject to certain additional terms under
 // GNU GPL version 3 section 7.
@@ -25,48 +30,9 @@
 // You should have received a copy of these additional terms immediately
 // following the terms and conditions of the GNU General Public License
 // which accompanied the Blink Source Code. If not, see
-// <http://www.github.com/blinksh/blink>.
+// &lt;http://www.github.com/blinksh/blink&gt;.
 //
 ////////////////////////////////////////////////////////////////////////////////
-
-#include <stdio.h>
-#include "MCPSession.h"
-#include "ios_system/ios_system.h"
-#include "ios_error.h"
-
-int showkey_main(int argc, char *argv[]) {
-  MCPSession *session = (__bridge MCPSession *)thread_context;
-  
-  printf("Press any keys - Ctrl-D will terminate this program.\n");
-  
-  [session.device setRawMode:YES];
-  
-
-  char ch;
-  while (1) {
-    ssize_t n = read(fileno(thread_stdin), &ch, 1);
-    if (n <= 0) {
-      break;
-    }
-    
-    if (ch == '\n')
-      printf("\\n");
-    else if (ch == '\t')
-      printf("\\t");
-    else if (ch < ' ')
-      printf("^%c", ch+64);
-    else
-      printf("%c", ch);
-    
-    printf("\t%3d 0%03o 0x%02x\r\n", ch, ch, ch);
-    
-    fflush(thread_stdout);
-    
-    if (ch == 4) { // Ctrl-D
-      break;
-    }
-  }
-  [session.device setRawMode:NO];
-
-  return 0;
-}
+</string>
+</dict>
+</plist>
