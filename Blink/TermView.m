@@ -113,9 +113,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
   
-  _snapshotImageView = [[UIImageView alloc] initWithFrame:self.bounds];
-  _snapshotImageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
-  _snapshotImageView.autoresizingMask =  UIViewAutoresizingNone;
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+  imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
+  imageView.autoresizingMask =  UIViewAutoresizingNone;
+  
+  _snapshotImageView = imageView;
 
   return self;
 }
@@ -356,7 +358,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   NSDictionary *sentData = (NSDictionary *)message.body;
   NSString *operation = sentData[@"op"];
-  NSDictionary *data = sentData[@"data"];
+  NSDictionary *data = sentData[@"data"] ?: @{};
 
   if ([operation isEqualToString:@"selectionchange"]) {
     [self _handleSelectionChange:data];
