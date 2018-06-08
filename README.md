@@ -98,6 +98,9 @@ The precompiled version of `ios_system` already containes the `python` and `lua`
 
 If you want to use python, you will have to transfer the python modules. On your computer:
 ```bash
+curl -OL https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz
+tar -xvzf Python-2.7.13.tgz
+rm Python-2.7.13.tgz
 cd Python-2.7.13/
 tar -cvzf packages.tar.gz Lib/
 ```
