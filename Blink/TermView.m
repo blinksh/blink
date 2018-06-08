@@ -113,9 +113,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
   
-  _snapshotImageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-  _snapshotImageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
-  _snapshotImageView.autoresizingMask =  UIViewAutoresizingNone;
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+  imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
+  imageView.autoresizingMask =  UIViewAutoresizingNone;
+  
+  _snapshotImageView = imageView;
 
   return self;
 }

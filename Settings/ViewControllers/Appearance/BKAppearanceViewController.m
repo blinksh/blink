@@ -93,6 +93,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (self.isMovingFromParentViewController) {
     [self saveDefaultValues];
   }
+  [super viewWillDisappear:animated];
 }
 
 - (void)loadDefaultValues
