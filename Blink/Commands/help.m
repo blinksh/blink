@@ -52,9 +52,7 @@ NSString *__shortVersionString()
 int help_main(int argc, char *argv[]) {
   
   UIKeyModifierFlags flags = [BKUserConfigurationManager shortCutModifierFlags];
-  NSString *flagsStr = [BKUserConfigurationManager UIKeyModifiersToString:flags];
   UIKeyModifierFlags shellPrevNextFlags = [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell];
-  NSString *shellPrevNextFlagsStr = [BKUserConfigurationManager UIKeyModifiersToString:shellPrevNextFlags];
   
   NSString *help = [@[
     @"",
