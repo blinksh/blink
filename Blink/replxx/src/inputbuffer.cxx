@@ -33,16 +33,8 @@
 
 using namespace std;
 
-int printf (const char *format, ...) {
-  va_list arg;
-  int done;
-  
-  va_start (arg, format);
-  done = vfprintf (thread_stdout, format, arg);
-  va_end (arg);
-  
-  return done;
-}
+#undef printf
+#define printf(...) fprintf (thread_stdout, ##__VA_ARGS__)
 
 
 namespace replxx {
