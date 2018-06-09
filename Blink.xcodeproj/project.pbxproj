@@ -35,7 +35,6 @@
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06331E08B12E008310B7 /* PasscodeLock.strings */; };
 		07AA064A1E08B12E008310B7 /* Functions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06351E08B12E008310B7 /* Functions.swift */; };
-		07AA064B1E08B12E008310B7 /* Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 07AA06361E08B12E008310B7 /* Info.plist */; };
 		07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06381E08B12E008310B7 /* ChangePasscodeState.swift */; };
 		07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA06391E08B12E008310B7 /* ConfirmPasscodeState.swift */; };
 		07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07AA063A1E08B12E008310B7 /* EnterPasscodeState.swift */; };
@@ -1326,7 +1325,6 @@
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
-				07AA064B1E08B12E008310B7 /* Info.plist in Resources */,
 				D2094662204D3FC5003C4F72 /* cacert.pem in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,

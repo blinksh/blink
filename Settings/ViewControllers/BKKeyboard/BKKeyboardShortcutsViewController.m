@@ -107,6 +107,8 @@
 
     cell.textLabel.text = [_currentlyAvailableShortCuts allKeys][indexPath.row];
     cell.detailTextLabel.text = [_currentlyAvailableShortCuts allValues][indexPath.row];
+  } else {
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"unknown"];
   }
   return cell;
 }

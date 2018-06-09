@@ -397,6 +397,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)reset
 {
+  _skipTextStorageDelete = YES;
   self.text = @"";
   self.alpha = 1;
   [_device.view setIme: @"" completionHandler:nil];

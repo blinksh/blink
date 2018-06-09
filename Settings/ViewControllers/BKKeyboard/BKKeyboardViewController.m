@@ -163,6 +163,9 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
           cell.textLabel.text = (NSString*)BKKeyboardFuncCursorTriggers;
           cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncCursorTriggers];
           break;
+        default:
+          cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"unknown"];
+          break;
       }
       break;
     }
@@ -171,6 +174,8 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
       cell.textLabel.text = (NSString*)BKKeyboardFuncShortcutTriggers;
       cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncShortcutTriggers];
       break;
+    default:
+      cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@"unknown"];
     }
   }
   

@@ -530,7 +530,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   NSString *cmdline = nil;
   [_device setRawMode:NO];
   
-  while ((cmdline = [self _input:"\x1b[1;32mblink\x1b[0m> "]) != nil) {
+  while ((cmdline = [self _input:"blink> "]) != nil) {
     cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
     if ([cmdline length] == 0) {

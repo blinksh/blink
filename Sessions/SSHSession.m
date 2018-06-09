@@ -130,17 +130,17 @@ static void kbd_callback(const char *name, int name_len,
   FILE *termout = s.device.stream.out;
   if (name_len > 0) {
     fwrite(name, 1, name_len, termout);
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
   if (instruction_len > 0) {
     fwrite(instruction, 1, instruction_len, termout);
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
   
   for (int i = 0; i < num_prompts; i++) {
     fwrite(prompts[i].text, 1, prompts[i].length, termout);
     responses[i].length = (int)[s promptUser:&responses[i].text];
-    fprintf(termout, "\r\n");
+    fprintf(termout, "\n");
   }
 } /* kbd_callback */
 
@@ -150,7 +150,7 @@ static void kbd_callback(const char *name, int name_len,
   size_t size = 0;
   ssize_t sz = 0;
 
-  FILE *termin = _stream.in;
+  FILE *termin = _device.stream.in;
   if ((sz = getdelim(resp, &size, '\n', termin)) == -1) {
     return -1;
   } else {
@@ -282,19 +282,19 @@ static void kbd_callback(const char *name, int name_len,
 
 - (int)dieMsg:(NSString *)msg
 {
-  fprintf(_stream.out, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.out, "%s\n", [msg UTF8String]);
   return -1;
 }
 
 - (void)errMsg:(NSString *)msg
 {
-  fprintf(_stream.err, "%s\r\n", [msg UTF8String]);
+  fprintf(_stream.err, "%s\n", [msg UTF8String]);
 }
 
 - (void)debugMsg:(NSString *)msg
 {
   if (_debug) {
-    fprintf(_stream.out, "SSHSession:DEBUG:%s\r\n", [msg UTF8String]);
+    fprintf(_stream.out, "SSHSession:DEBUG:%s\n", [msg UTF8String]);
   }
 }
 
@@ -391,7 +391,7 @@ static void kbd_callback(const char *name, int name_len,
                       timeout:&_options.connection_timeout] >= 0) {
       // Successful connection. Save host address
       memcpy(hostaddr, ai->ai_addr, ai->ai_addrlen);
-      fprintf(_stream.out, "Connected to %s\r\n", ntop);
+      fprintf(_stream.out, "Connected to %s\n", ntop);
       break;
     } else {
       [self debugMsg:[NSString stringWithFormat:@"connect to host %s port %s: %s", ntop, strport, strerror(errno)]];
@@ -524,7 +524,7 @@ static void kbd_callback(const char *name, int name_len,
       fprintf(_device.stream.out, "%s@%s's password: ", user, _options.hostname);
       [_device setSecureTextEntry:YES];
       [self promptUser:&password];
-      fprintf(_device.stream.out, "\r\n");
+      fprintf(_device.stream.out, "\n");
       [_device setSecureTextEntry:NO];
     }
     
@@ -551,8 +551,10 @@ static void kbd_callback(const char *name, int name_len,
   int rc;
   
   [self debugMsg:@"Attempting interactive authentication."];
+  [_device setSecureTextEntry:YES];
   while ((rc = libssh2_userauth_keyboard_interactive(_session, user, &kbd_callback)) == LIBSSH2_ERROR_EAGAIN)
   ;
+  [_device setSecureTextEntry:NO];
   
   if (rc == 0) {
     [self debugMsg:@"Authentication succeeded."];
@@ -884,12 +886,12 @@ static void kbd_callback(const char *name, int name_len,
       char c;
       ssize_t n;
 
-      if ((n = read(fileno(_stream.in), &c, 1)) <= 0) {
+      if ((n = read(fileno(_device.stream.in), &c, 1)) <= 0) {
 	break;
       }
       
       if (c == '\n' || c == '\r') {
-        fprintf(_stream.err, "\r\n");
+        fprintf(_stream.err, "\n");
         break;
       }
       fprintf(_stream.err, "%c", c);

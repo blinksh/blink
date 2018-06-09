@@ -25,6 +25,9 @@ extern "C" {
    #define printf(...) fprintf (thread_stdout, ##__VA_ARGS__)
    #endif */
   
+#undef printf
+#define printf(...) fprintf (thread_stdout, ##__VA_ARGS__)
+  
 #define putchar(a) fputc(a, thread_stdout)
 #define getchar() fgetc(thread_stdin)
 #define getwchar() fgetwc(thread_stdin)
