@@ -49,7 +49,7 @@
   }
 }
 
-- (instancetype) dublicate {
+- (instancetype) duplicate {
   TermStream *dupe = [[TermStream alloc] init];
   dupe.in = fdopen(dup(fileno(_in)), "r");
 
