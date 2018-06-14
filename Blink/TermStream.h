@@ -39,6 +39,6 @@
 
 - (void)close;
 
-- (instancetype)dublicate;
+- (instancetype)duplicate;
 
 @end
