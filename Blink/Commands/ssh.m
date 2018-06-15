@@ -31,6 +31,7 @@
 
 #include <stdio.h>
 #include "MCPSession.h"
+#include "BlinkPaths.h"
 
 #include <getopt.h>
 #include <libssh/libssh.h>
@@ -64,6 +65,7 @@ typedef struct {
   int request_tty;
   const char *identity_file;
   const char *password;
+  const char *proxyCommand;
   BOOL disableHostKeyCheck;
   const char *command;
 } session_options;
@@ -101,7 +103,7 @@ int __opts(session_options *options, int argc, char **argv)
   optind = 1;
   
   while (1) {
-    int c = getopt_long(argc, argv, "p:i:htvl:", NULL, NULL);
+    int c = getopt_long(argc, argv, "o:p:i:htvl:", NULL, NULL);
     if (c == -1) {
       break;
     }
@@ -127,6 +129,9 @@ int __opts(session_options *options, int argc, char **argv)
         break;
       case 'l':
         options->user = optarg;
+        break;
+      case 'o':
+        options->proxyCommand = optarg;
         break;
       default:
         optind = 0;
@@ -169,10 +174,8 @@ int __opts(session_options *options, int argc, char **argv)
       command = [command stringByAppendingString:arg];
     }
     options->command = [command UTF8String];
-  }
-  
-  if (ios_isatty(fileno(thread_stdout))) {
-    options->request_tty = REQUEST_TTY_YES;
+  } else {
+    options->request_tty = ios_isatty(fileno(thread_stdout));
   }
   
   return 0;
@@ -201,7 +204,7 @@ int __set_session_options(ssh_session session, session_options options) {
     return __die_msg("Error setting port");
   }
   
-  ssh_options_set(session, SSH_OPTIONS_SSH_DIR, "./");
+  ssh_options_set(session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
   
   if (options.verbosity) {
     //    ssh_options_set(_session, SSH_OPTIONS_LOG_VERBOSITY, &_options.verbosity);
@@ -210,12 +213,94 @@ int __set_session_options(ssh_session session, session_options options) {
     ssh_set_log_level(options.verbosity);
   }
   
+  if (options.proxyCommand) {
+    ssh_options_set(session, SSH_OPTIONS_PROXYCOMMAND, options.proxyCommand);
+  }
+  
   return 0;
 }
 
-int __verify_known_host() {
-  // TODO: Creating the file where we want, modifying entries, etc...
-  return 1;
+
+int __verify_known_host(ssh_session session){
+  char *hexa;
+  enum ssh_server_known_e state;
+  char buf[10];
+  unsigned char *hash = NULL;
+  size_t hlen;
+  ssh_key srv_pubkey;
+  int rc;
+  
+  
+  rc = ssh_get_server_publickey(session, &srv_pubkey);
+  if (rc < 0) {
+    return -1;
+  }
+  
+  rc = ssh_get_publickey_hash(srv_pubkey,
+                              SSH_PUBLICKEY_HASH_SHA1,
+                              &hash,
+                              &hlen);
+  ssh_key_free(srv_pubkey);
+  if (rc < 0) {
+    return -1;
+  }
+  
+  state = ssh_is_server_known(session);
+  
+  switch(state){
+    case SSH_SERVER_KNOWN_OK:
+      break; /* ok */
+    case SSH_SERVER_KNOWN_CHANGED:
+      fprintf(thread_stderr,"Host key for server changed : server's one is now :\n");
+      ssh_print_hexa("Public key hash",hash, hlen);
+      ssh_clean_pubkey_hash(&hash);
+      fprintf(thread_stderr,"For security reason, connection will be stopped\n");
+      return -1;
+    case SSH_SERVER_FOUND_OTHER:
+      fprintf(thread_stderr,"The host key for this server was not found but an other type of key exists.\n");
+      fprintf(thread_stderr,"An attacker might change the default server key to confuse your client"
+              "into thinking the key does not exist\n"
+              "We advise you to rerun the client with -d or -r for more safety.\n");
+      return -1;
+    case SSH_SERVER_FILE_NOT_FOUND:
+      fprintf(thread_stderr,"Could not find known host file. If you accept the host key here,\n");
+      fprintf(thread_stderr,"the file will be automatically created.\n");
+      /* fallback to SSH_SERVER_NOT_KNOWN behavior */
+//      FALL_THROUGH;
+    case SSH_SERVER_NOT_KNOWN:
+      hexa = ssh_get_hexa(hash, hlen);
+      fprintf(thread_stderr,"The server is unknown. Do you trust the host key ?\n");
+      fprintf(thread_stderr, "Public key hash: %s\n", hexa);
+      ssh_string_free_char(hexa);
+      if (fgets(buf, sizeof(buf), thread_stdin) == NULL) {
+        ssh_clean_pubkey_hash(&hash);
+        return -1;
+      }
+      if(strncasecmp(buf,"yes",3)!=0){
+        ssh_clean_pubkey_hash(&hash);
+        return -1;
+      }
+      fprintf(thread_stderr,"This new key will be written on disk for further usage. do you agree ?\n");
+      if (fgets(buf, sizeof(buf), thread_stdin) == NULL) {
+        ssh_clean_pubkey_hash(&hash);
+        return -1;
+      }
+      if(strncasecmp(buf,"yes",3)==0){
+        if (ssh_write_knownhost(session) < 0) {
+          ssh_clean_pubkey_hash(&hash);
+          fprintf(thread_stderr, "error %s\n", strerror(errno));
+          return -1;
+        }
+      }
+      
+      break;
+    case SSH_SERVER_ERROR:
+      ssh_clean_pubkey_hash(&hash);
+      fprintf(thread_stderr,"%s",ssh_get_error(session));
+      return -1;
+  }
+  ssh_clean_pubkey_hash(&hash);
+  return 0;
 }
 
 NSArray * __get_identities(session_options options) {
@@ -503,7 +588,6 @@ int __shell(ssh_session session, session_options options) {
   ssh_channel_request_pty(channel);
   __refresh_size(channel);
   
-  
   if (options.command) {
     rc = ssh_channel_request_exec(channel, options.command);
   } else {
@@ -542,10 +626,8 @@ int __exec(ssh_session session, session_options options) {
     return rc;
   }
   nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-  while (nbytes > 0)
-  {
-    if (write(1, buffer, nbytes) != (unsigned int) nbytes)
-    {
+  while (nbytes > 0) {
+    if (write(1, buffer, nbytes) != (unsigned int) nbytes) {
       ssh_channel_close(channel);
       ssh_channel_free(channel);
       return SSH_ERROR;
@@ -571,13 +653,9 @@ int ssh_main(int argc, char *argv[]) {
   ssh_session session = ssh_new();
   
   
-  int rc = __opts(&options, argc, argv);
-  if (rc < 0) {
-    ssh_free(session);
-    return rc;
-  }
+  int rc = 0;
   
-  rc = ssh_options_getopt(session, &argc, argv);
+  rc = __opts(&options, argc, argv);
   if (rc < 0) {
     ssh_free(session);
     return rc;
@@ -591,16 +669,17 @@ int ssh_main(int argc, char *argv[]) {
     return rc;
   }
   
-  if (!__verify_known_host()) {
-    ssh_free(session);
-    return __die_msg("Host key verification failed");
-  }
-  
   rc = ssh_connect(session);
   if (rc != SSH_OK) {
     ssh_free(session);
     // TODO: free on die? how were we doing this before? How about on cleanup of the object?
     return __die_msg("Error connecting to HOST");
+  }
+  
+  if (__verify_known_host(session) < 0) {
+    ssh_disconnect(session);
+    ssh_free(session);
+    return __die_msg("Host key verification failed");
   }
   
   ssh_userauth_none(session, NULL);
