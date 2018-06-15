@@ -169,7 +169,9 @@ int __opts(session_options *options, int argc, char **argv)
       command = [command stringByAppendingString:arg];
     }
     options->command = [command UTF8String];
-  } else {
+  }
+  
+  if (ios_isatty(fileno(thread_stdout))) {
     options->request_tty = REQUEST_TTY_YES;
   }
   
@@ -473,7 +475,7 @@ void __loop(ssh_session session, ssh_channel channel) {
   ssh_connector_set_in_channel(connector_err, channel, SSH_CONNECTOR_STDERR);
   ssh_event_add_connector(event, connector_err);
   
-  while(ssh_channel_is_open(channel)){
+  while(ssh_channel_is_open(channel) && !ssh_channel_is_eof(channel)){
     //    if(signal_delayed)
     //      sizechanged();
     ssh_event_dopoll(event, 60000);
@@ -492,15 +494,25 @@ void __loop(ssh_session session, ssh_channel channel) {
 
 int __shell(ssh_session session, session_options options) {
   ssh_channel channel = ssh_channel_new(session);
-  
-  if (ssh_channel_open_session(channel)) {
+  int rc = ssh_channel_open_session(channel);
+  if (rc != SSH_OK) {
+    ssh_channel_free(channel);
     return __die_msg("Error opening channel");
   }
   // TODO: Interactive vs non-interactive, but still requesting a shell?
   ssh_channel_request_pty(channel);
   __refresh_size(channel);
   
-  if (ssh_channel_request_shell(channel)) {
+  
+  if (options.command) {
+    rc = ssh_channel_request_exec(channel, options.command);
+  } else {
+    rc = ssh_channel_request_shell(channel);
+  }
+  
+  if (rc != SSH_OK) {
+    ssh_channel_close(channel);
+    ssh_channel_free(channel);
     return __die_msg("Error requesting shell");
   }
   
@@ -554,27 +566,39 @@ int __exec(ssh_session session, session_options options) {
 }
 
 int ssh_main(int argc, char *argv[]) {
-  setvbuf(thread_stdout, NULL, _IONBF, 0);
-  setvbuf(thread_stderr, NULL, _IONBF, 0);
   
   session_options options = {};
+  ssh_session session = ssh_new();
+  
+  
   int rc = __opts(&options, argc, argv);
   if (rc < 0) {
+    ssh_free(session);
     return rc;
   }
   
-  // client
-  
-  ssh_session session = ssh_new();
+  rc = ssh_options_getopt(session, &argc, argv);
+  if (rc < 0) {
+    ssh_free(session);
+    return rc;
+  }
   
   __set_session_options(session, options);
   
+  rc = ssh_options_parse_config(session, NULL);
+  if (rc < 0) {
+    ssh_free(session);
+    return rc;
+  }
+  
   if (!__verify_known_host()) {
+    ssh_free(session);
     return __die_msg("Host key verification failed");
   }
   
   rc = ssh_connect(session);
   if (rc != SSH_OK) {
+    ssh_free(session);
     // TODO: free on die? how were we doing this before? How about on cleanup of the object?
     return __die_msg("Error connecting to HOST");
   }
@@ -598,6 +622,7 @@ int ssh_main(int argc, char *argv[]) {
   } else {
     rc = __exec(session, options);
   }
+  ssh_free(session);
   
   return rc;
 }

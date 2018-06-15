@@ -39,6 +39,7 @@
 #import "BKPubKey.h"
 #import "BKHosts.h"
 #import <ios_system/ios_system.h>
+#include <libssh/callbacks.h>
 
 
 @import CloudKit;
@@ -67,6 +68,11 @@ void __setupProcessEnv() {
   setenv("LC_CTYPE", "UTF-8", forceOverwrite);
   setlocale(LC_CTYPE, "UTF-8");
   setlocale(LC_ALL, "UTF-8");
+  
+
+//  ssh_threads_set_callbacks(ssh_threads_get_pthread());
+  ssh_threads_set_callbacks(ssh_threads_get_noop());
+  ssh_init();
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
