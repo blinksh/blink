@@ -103,7 +103,7 @@ int __opts(session_options *options, int argc, char **argv)
   optind = 1;
   
   while (1) {
-    int c = getopt_long(argc, argv, "o:p:i:htvl:", NULL, NULL);
+    int c = getopt(argc, argv, "T:p:i:htvl:");
     if (c == -1) {
       break;
     }
@@ -130,52 +130,54 @@ int __opts(session_options *options, int argc, char **argv)
       case 'l':
         options->user = optarg;
         break;
-      case 'o':
+      case 'T':
         options->proxyCommand = optarg;
         break;
       default:
-        optind = 0;
+//        optind = 0;
         return __usage();
     }
   }
   
-  if (argc - optind < 1) {
-    return __usage();
-  }
   
-  BKHosts *savedHost;
-  NSArray *userAtHost = [[NSString stringWithFormat:@"%s", argv[optind++]]
-                         componentsSeparatedByString:@"@"];
-  char **command_args = &argv[optind];
-  int num_command_args = argc - optind;
-  
-  if ([userAtHost count] < 2) {
-    options->hostname = [userAtHost[0] UTF8String];
-  } else {
-    options->user = [userAtHost[0] UTF8String];
-    options->hostname = [userAtHost[1] UTF8String];
-  }
-  
-  if ((savedHost = [BKHosts withHost:[NSString stringWithFormat:@"%s", options->hostname]])) {
-    options->hostname = savedHost.hostName ? [savedHost.hostName UTF8String] : options->hostname;
-    options->port = options->port ? options->port : [savedHost.port intValue];
-    if (!options->user && [savedHost.user length]) {
-      options->user = [savedHost.user UTF8String];
-    }
-    options->identity_file = options->identity_file ? options->identity_file : [savedHost.key UTF8String];
-    options->password = savedHost.password ? [savedHost.password UTF8String] : NULL;
-  }
-  
-  if (num_command_args) {
-    NSString *command = [NSString stringWithFormat:@"%s", command_args[0]];
+  if (optind < argc) {
+    BKHosts *savedHost;
+    NSArray *userAtHost = [[NSString stringWithFormat:@"%s", argv[optind++]]
+                           componentsSeparatedByString:@"@"];
+  //  char **command_args = &argv[optind];
+  //  int num_command_args = argc - optind;
     
-    for (int i = 1; i < num_command_args; i++) {
-      NSString *arg = [NSString stringWithFormat:@" %s", command_args[i]];
-      command = [command stringByAppendingString:arg];
+    if ([userAtHost count] < 2) {
+      options->hostname = [userAtHost[0] UTF8String];
+    } else {
+      options->user = [userAtHost[0] UTF8String];
+      options->hostname = [userAtHost[1] UTF8String];
     }
-    options->command = [command UTF8String];
+    
+    if ((savedHost = [BKHosts withHost:[NSString stringWithFormat:@"%s", options->hostname]])) {
+      options->hostname = savedHost.hostName ? [savedHost.hostName UTF8String] : options->hostname;
+      options->port = options->port ? options->port : [savedHost.port intValue];
+      if (!options->user && [savedHost.user length]) {
+        options->user = [savedHost.user UTF8String];
+      }
+      options->identity_file = options->identity_file ? options->identity_file : [savedHost.key UTF8String];
+      options->password = savedHost.password ? [savedHost.password UTF8String] : NULL;
+    }
+  }
+  
+  NSMutableArray *cmds = [[NSMutableArray alloc] init];
+  while (optind < argc) {
+    [cmds addObject:[NSString stringWithUTF8String:argv[optind++]]];
+  }
+  
+  if (cmds.count > 0) {
+    options->command = [cmds componentsJoinedByString:@" "].UTF8String;
   } else {
     options->request_tty = ios_isatty(fileno(thread_stdout));
+  }
+  
+  if (options->hostname == NULL) {
+    __usage();
   }
   
   return 0;
@@ -453,11 +455,10 @@ int __auth_public_key(ssh_session session, session_options options) {
 
 
 int __authenticate(ssh_session session, session_options options) {
-  int rc;
   int method;
   char *banner;
   
-  rc = ssh_userauth_none(session, NULL);
+  int rc = ssh_userauth_none(session, NULL);
   if (rc == SSH_AUTH_ERROR) {
     return rc;
   }
@@ -528,13 +529,27 @@ int __authenticate(ssh_session session, session_options options) {
   return rc;
 }
 
+__thread static int signal_delayed=0;
+
+//static void sigwindowchanged(int i){
+//  (void) i;
+//  signal_delayed=1;
+//}
+
+//static void setsignal(void){
+//  signal(SIGWINCH, sigwindowchanged);
+//  signal_delayed=0;
+//}
+
 void __refresh_size(ssh_channel channel) {
   MCPSession *mcp = (__bridge MCPSession *)thread_context;
   TermDevice *device = mcp.device;
   ssh_channel_change_pty_size(channel,
                               device->win.ws_col,
                               device->win.ws_row);
+//  setsignal();
 }
+
 
 void __loop(ssh_session session, ssh_channel channel) {
   ssh_connector connector_in, connector_out, connector_err;
@@ -560,9 +575,10 @@ void __loop(ssh_session session, ssh_channel channel) {
   ssh_connector_set_in_channel(connector_err, channel, SSH_CONNECTOR_STDERR);
   ssh_event_add_connector(event, connector_err);
   
-  while(ssh_channel_is_open(channel) && !ssh_channel_is_eof(channel)){
-    //    if(signal_delayed)
-    //      sizechanged();
+  while(ssh_channel_is_open(channel) && !ssh_channel_is_eof(channel)) {
+    if (signal_delayed) {
+      __refresh_size(channel);
+    }
     ssh_event_dopoll(event, 60000);
   }
   ssh_event_remove_connector(event, connector_in);
@@ -584,9 +600,16 @@ int __shell(ssh_session session, session_options options) {
     ssh_channel_free(channel);
     return __die_msg("Error opening channel");
   }
-  // TODO: Interactive vs non-interactive, but still requesting a shell?
-  ssh_channel_request_pty(channel);
-  __refresh_size(channel);
+  
+  if (options.request_tty) {
+    rc = ssh_channel_request_pty(channel);
+    if (rc != SSH_OK) {
+      ssh_channel_close(channel);
+      ssh_channel_free(channel);
+      return __die_msg("Can't request pty");
+    }
+    __refresh_size(channel);
+  }
   
   if (options.command) {
     rc = ssh_channel_request_exec(channel, options.command);
@@ -601,49 +624,6 @@ int __shell(ssh_session session, session_options options) {
   }
   
   __loop(session, channel);
-  return 1;
-}
-
-int __exec(ssh_session session, session_options options) {
-  ssh_channel channel;
-  int rc;
-  char buffer[256];
-  int nbytes;
-  channel = ssh_channel_new(session);
-  if (channel == NULL)
-    return SSH_ERROR;
-  rc = ssh_channel_open_session(channel);
-  if (rc != SSH_OK)
-  {
-    ssh_channel_free(channel);
-    return rc;
-  }
-  rc = ssh_channel_request_exec(channel, options.command);
-  if (rc != SSH_OK)
-  {
-    ssh_channel_close(channel);
-    ssh_channel_free(channel);
-    return rc;
-  }
-  nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-  while (nbytes > 0) {
-    if (write(1, buffer, nbytes) != (unsigned int) nbytes) {
-      ssh_channel_close(channel);
-      ssh_channel_free(channel);
-      return SSH_ERROR;
-    }
-    nbytes = ssh_channel_read(channel, buffer, sizeof(buffer), 0);
-  }
-  
-  if (nbytes < 0)
-  {
-    ssh_channel_close(channel);
-    ssh_channel_free(channel);
-    return SSH_ERROR;
-  }
-  ssh_channel_send_eof(channel);
-  ssh_channel_close(channel);
-  ssh_channel_free(channel);
   return SSH_OK;
 }
 
@@ -651,12 +631,9 @@ int ssh_main(int argc, char *argv[]) {
   
   session_options options = {};
   ssh_session session = ssh_new();
-  
-  
-  int rc = 0;
-  
-  rc = __opts(&options, argc, argv);
-  if (rc < 0) {
+
+  int rc = __opts(&options, argc, argv);
+  if (rc != SSH_OK) {
     ssh_free(session);
     return rc;
   }
@@ -664,7 +641,7 @@ int ssh_main(int argc, char *argv[]) {
   __set_session_options(session, options);
   
   rc = ssh_options_parse_config(session, NULL);
-  if (rc < 0) {
+  if (rc != SSH_OK) {
     ssh_free(session);
     return rc;
   }
@@ -676,7 +653,8 @@ int ssh_main(int argc, char *argv[]) {
     return __die_msg("Error connecting to HOST");
   }
   
-  if (__verify_known_host(session) < 0) {
+  rc = __verify_known_host(session);
+  if (rc != SSH_OK) {
     ssh_disconnect(session);
     ssh_free(session);
     return __die_msg("Host key verification failed");
@@ -689,28 +667,22 @@ int ssh_main(int argc, char *argv[]) {
     free(banner);
   }
   
-  if (__authenticate(session, options) < 0) {
+  rc = __authenticate(session, options);
+  if (rc != SSH_OK) {
     return __die_msg("Authentication error");
   }
+  
   MCPSession *mcp = (__bridge MCPSession *)thread_context;
   
   if (options.request_tty) {
     [mcp.device setRawMode:YES];
     rc = __shell(session, options);
-    [mcp.device setRawMode:NO];
+//    [mcp.device setRawMode:NO];
   } else {
-    rc = __exec(session, options);
+    rc = __shell(session, options);
   }
+  
   ssh_free(session);
   
   return rc;
 }
-
-//TODO:
-
-//- (void)sigwinch
-//{
-//  // TODO: Fails when changing apps, etc... if there is no app yet.
-//  [self refreshSize];
-//}
-

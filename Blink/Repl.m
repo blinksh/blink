@@ -415,7 +415,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 }
 
 -(NSString *)_commandCompletionType:(NSString *)command {
-  if ([@[@"ssh", @"mosh"] indexOfObject:command] != NSNotFound) {
+  if ([@[@"ssh", @"mosh", @"ssh2"] indexOfObject:command] != NSNotFound) {
     return @"blink-host";
   } else if ([@"ping" isEqualToString:command]) {
     return @"host";

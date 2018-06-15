@@ -202,6 +202,10 @@
 {
   [_repl sigwinch];
   [_childSession sigwinch];
+  if (_currentCmd) {
+//    pthread_t tid = ios_getLastThreadId();
+//    pthread_kill(tid, SIGWINCH);
+  }
 }
 
 - (void)kill
