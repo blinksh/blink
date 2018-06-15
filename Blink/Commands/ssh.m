@@ -144,8 +144,6 @@ int __opts(session_options *options, int argc, char **argv)
     BKHosts *savedHost;
     NSArray *userAtHost = [[NSString stringWithFormat:@"%s", argv[optind++]]
                            componentsSeparatedByString:@"@"];
-  //  char **command_args = &argv[optind];
-  //  int num_command_args = argc - optind;
     
     if ([userAtHost count] < 2) {
       options->hostname = [userAtHost[0] UTF8String];
@@ -177,7 +175,7 @@ int __opts(session_options *options, int argc, char **argv)
   }
   
   if (options->hostname == NULL) {
-    __usage();
+    return __usage();
   }
   
   return 0;
@@ -551,7 +549,7 @@ void __refresh_size(ssh_channel channel) {
 }
 
 
-void __loop(ssh_session session, ssh_channel channel) {
+int __loop(ssh_session session, ssh_channel channel) {
   ssh_connector connector_in, connector_out, connector_err;
   ssh_event event = ssh_event_new();
   
@@ -581,6 +579,7 @@ void __loop(ssh_session session, ssh_channel channel) {
     }
     ssh_event_dopoll(event, 60000);
   }
+  int rc = ssh_channel_get_exit_status(channel);
   ssh_event_remove_connector(event, connector_in);
   ssh_event_remove_connector(event, connector_out);
   ssh_event_remove_connector(event, connector_err);
@@ -591,6 +590,7 @@ void __loop(ssh_session session, ssh_channel channel) {
   
   ssh_event_free(event);
   ssh_channel_free(channel);
+  return rc;
 }
 
 int __shell(ssh_session session, session_options options) {
@@ -623,8 +623,7 @@ int __shell(ssh_session session, session_options options) {
     return __die_msg("Error requesting shell");
   }
   
-  __loop(session, channel);
-  return SSH_OK;
+  return __loop(session, channel);
 }
 
 int ssh_main(int argc, char *argv[]) {
@@ -669,19 +668,21 @@ int ssh_main(int argc, char *argv[]) {
   
   rc = __authenticate(session, options);
   if (rc != SSH_OK) {
+    ssh_disconnect(session);
+    ssh_free(session);
     return __die_msg("Authentication error");
   }
   
   MCPSession *mcp = (__bridge MCPSession *)thread_context;
   
+  BOOL rawMode = mcp.device.rawMode;
   if (options.request_tty) {
     [mcp.device setRawMode:YES];
-    rc = __shell(session, options);
-//    [mcp.device setRawMode:NO];
-  } else {
-    rc = __shell(session, options);
   }
+  rc = __shell(session, options);
+  [mcp.device setRawMode:rawMode];
   
+  ssh_disconnect(session);
   ssh_free(session);
   
   return rc;
