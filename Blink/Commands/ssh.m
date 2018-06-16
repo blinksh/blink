@@ -134,7 +134,6 @@ int __opts(session_options *options, int argc, char **argv)
         options->proxyCommand = optarg;
         break;
       default:
-//        optind = 0;
         return __usage();
     }
   }
@@ -276,7 +275,7 @@ int __verify_known_host(ssh_session session){
         ssh_clean_pubkey_hash(&hash);
         return -1;
       }
-      if(strncasecmp(buf,"yes",3)!=0){
+      if(strncasecmp(buf,"yes",3) != 0){
         ssh_clean_pubkey_hash(&hash);
         return -1;
       }
@@ -285,7 +284,7 @@ int __verify_known_host(ssh_session session){
         ssh_clean_pubkey_hash(&hash);
         return -1;
       }
-      if(strncasecmp(buf,"yes",3)==0){
+      if(strncasecmp(buf,"yes",3) == 0){
         if (ssh_write_knownhost(session) < 0) {
           ssh_clean_pubkey_hash(&hash);
           fprintf(thread_stderr, "error %s\n", strerror(errno));
