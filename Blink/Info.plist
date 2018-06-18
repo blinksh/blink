@@ -20,7 +20,7 @@
 			<key>CFBundleTypeRole</key>
 			<string>Shell</string>
 			<key>LSHandlerRank</key>
-			<string>Owner</string>
+			<string>Alternate</string>
 			<key>LSItemContentTypes</key>
 			<array>
 				<string>public.content</string>
