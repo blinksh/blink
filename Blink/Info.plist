@@ -6,26 +6,6 @@
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
 	<string>Blink</string>
-	<key>CFBundleDocumentTypes</key>
-	<array>
-		<dict>
-			<key>CFBundleTypeIconFiles</key>
-			<array>
-				<string>/Users/holzschu/src/Xcode_iPad/blink/Media.xcassets/Settings/appearance.imageset/appearance.png</string>
-			</array>
-			<key>CFBundleTypeName</key>
-			<string>all files</string>
-			<key>CFBundleTypeRole</key>
-			<string>Shell</string>
-			<key>LSHandlerRank</key>
-			<string>Alternate</string>
-			<key>LSItemContentTypes</key>
-			<array>
-				<string>public.content</string>
-				<string>public.archive</string>
-			</array>
-		</dict>
-	</array>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
