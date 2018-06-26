@@ -671,7 +671,7 @@ int ssh_main(int argc, char *argv[]) {
     ssh_free(session);
     return __die_msg("Authentication error");
   }
-  
+//  dispatch_queue_create("com.codinn.libssh.session_queue", DISPATCH_QUEUE_SERIAL);
   MCPSession *mcp = (__bridge MCPSession *)thread_context;
   
   BOOL rawMode = mcp.device.rawMode;

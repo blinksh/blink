@@ -70,8 +70,8 @@ void __setupProcessEnv() {
   setlocale(LC_ALL, "UTF-8");
   
 
-//  ssh_threads_set_callbacks(ssh_threads_get_pthread());
-  ssh_threads_set_callbacks(ssh_threads_get_noop());
+  ssh_threads_set_callbacks(ssh_threads_get_pthread());
+//  ssh_threads_set_callbacks(ssh_threads_get_noop());
   ssh_init();
 }
 
