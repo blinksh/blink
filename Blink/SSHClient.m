@@ -39,12 +39,16 @@
 #include <libssh/libssh.h>
 #include <libssh/callbacks.h>
 
-void dispatch_write_string(dispatch_fd_t fd,
+void dispatch_write_utf8string(dispatch_fd_t fd,
                NSString * _Nonnull string,
                dispatch_queue_t queue,
-               void (^handler)(dispatch_data_t _Nullable data, int error))
-{
-  dispatch_data_t data = (dispatch_data_t)[string dataUsingEncoding:NSUTF8StringEncoding];
+               void (^handler)(dispatch_data_t _Nullable data, int error)) {
+  __block NSData *nsData = [string dataUsingEncoding:NSUTF8StringEncoding];
+  
+  dispatch_data_t data = dispatch_data_create(nsData.bytes, nsData.length, queue, ^{
+    nsData = nil;
+  });
+  
   if (!data && handler) {
     dispatch_async(queue, ^{
       handler(nil, 1);
@@ -131,13 +135,16 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 - (int)_exitWithCode:(int)code {
-  _exitCode = code;
-  dispatch_semaphore_signal(_mainDsema);
-  return _exitCode;
+  dispatch_barrier_async(_mainQueue, ^{
+    _exitCode = code;
+    dispatch_semaphore_signal(_mainDsema);
+  });
+  
+  return code;
 }
 
 - (int)_exitWithCode:(int)code andMessage: (NSString * __nonnull)message {
-  dispatch_write_string(_fdErr, message, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+  dispatch_write_utf8string(_fdErr, message, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
     [self _exitWithCode:code];
   });
   return _exitCode;
@@ -277,13 +284,15 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   for (NSString *key in sortedKeys) {
     [lines addObject:[NSString stringWithFormat:@"%@ %@", key, _options[key]]];
   }
+  [lines addObject:@""];
   
-  dispatch_write_string(_fdOut, [lines componentsJoinedByString:@"\n"], _mainQueue, ^(dispatch_data_t _Nullable data, int error) {
+  dispatch_write_utf8string(_fdOut, [lines componentsJoinedByString:@"\n"], _mainQueue, ^(dispatch_data_t _Nullable data, int error) {
     [self _exitWithCode:SSH_OK];
   });
 }
 
 - (int)main:(int) argc argv:(char **) argv {
+  
   int rc = [self _parseArgs:argc argv: argv];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
