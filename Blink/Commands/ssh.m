@@ -29,6 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#include "SSHClient.h"
 #include <stdio.h>
 #include "MCPSession.h"
 #include "BlinkPaths.h"
@@ -626,63 +627,69 @@ int __shell(ssh_session session, session_options options) {
 }
 
 int ssh_main(int argc, char *argv[]) {
-  
-  session_options options = {};
-  ssh_session session = ssh_new();
-
-  int rc = __opts(&options, argc, argv);
-  if (rc != SSH_OK) {
-    ssh_free(session);
-    return rc;
-  }
-  
-  __set_session_options(session, options);
-  
-  rc = ssh_options_parse_config(session, NULL);
-  if (rc != SSH_OK) {
-    ssh_free(session);
-    return rc;
-  }
-  
-  rc = ssh_connect(session);
-  if (rc != SSH_OK) {
-    ssh_free(session);
-    // TODO: free on die? how were we doing this before? How about on cleanup of the object?
-    return __die_msg("Error connecting to HOST");
-  }
-  
-  rc = __verify_known_host(session);
-  if (rc != SSH_OK) {
-    ssh_disconnect(session);
-    ssh_free(session);
-    return __die_msg("Host key verification failed");
-  }
-  
-  ssh_userauth_none(session, NULL);
-  char *banner = ssh_get_issue_banner(session);
-  if (banner) {
-    printf("%s\n", banner);
-    free(banner);
-  }
-  
-  rc = __authenticate(session, options);
-  if (rc != SSH_OK) {
-    ssh_disconnect(session);
-    ssh_free(session);
-    return __die_msg("Authentication error");
-  }
-//  dispatch_queue_create("com.codinn.libssh.session_queue", DISPATCH_QUEUE_SERIAL);
-  MCPSession *mcp = (__bridge MCPSession *)thread_context;
-  
-  BOOL rawMode = mcp.device.rawMode;
-  if (options.request_tty) {
-    [mcp.device setRawMode:YES];
-  }
-  rc = __shell(session, options);
-  [mcp.device setRawMode:rawMode];
-  
-  ssh_disconnect(session);
-  ssh_free(session);
-  
-  return rc;
+  SSHClient *client = [[SSHClient alloc]
+                       initWithStdIn: fileno(thread_stdin)
+                              stdOut: fileno(thread_stdout)
+                              stdErr: fileno(thread_stderr)];
+  return [client main:argc argv:argv];
 }
+  
+//  session_options options = {};
+//  ssh_session session = ssh_new();
+//
+//  int rc = __opts(&options, argc, argv);
+//  if (rc != SSH_OK) {
+//    ssh_free(session);
+//    return rc;
+//  }
+//
+//  __set_session_options(session, options);
+//
+//  rc = ssh_options_parse_config(session, NULL);
+//  if (rc != SSH_OK) {
+//    ssh_free(session);
+//    return rc;
+//  }
+//
+//  rc = ssh_connect(session);
+//  if (rc != SSH_OK) {
+//    ssh_free(session);
+//    // TODO: free on die? how were we doing this before? How about on cleanup of the object?
+//    return __die_msg("Error connecting to HOST");
+//  }
+//
+//  rc = __verify_known_host(session);
+//  if (rc != SSH_OK) {
+//    ssh_disconnect(session);
+//    ssh_free(session);
+//    return __die_msg("Host key verification failed");
+//  }
+//
+//  ssh_userauth_none(session, NULL);
+//  char *banner = ssh_get_issue_banner(session);
+//  if (banner) {
+//    printf("%s\n", banner);
+//    free(banner);
+//  }
+//
+//  rc = __authenticate(session, options);
+//  if (rc != SSH_OK) {
+//    ssh_disconnect(session);
+//    ssh_free(session);
+//    return __die_msg("Authentication error");
+//  }
+////  dispatch_queue_create("com.codinn.libssh.session_queue", DISPATCH_QUEUE_SERIAL);
+//  MCPSession *mcp = (__bridge MCPSession *)thread_context;
+//
+//  BOOL rawMode = mcp.device.rawMode;
+//  if (options.request_tty) {
+//    [mcp.device setRawMode:YES];
+//  }
+//  rc = __shell(session, options);
+//  [mcp.device setRawMode:rawMode];
+//
+//  ssh_disconnect(session);
+//  ssh_free(session);
+//
+//  return rc;
+//}

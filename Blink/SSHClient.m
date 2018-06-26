@@ -45,12 +45,13 @@ void dispatch_write_string(dispatch_fd_t fd,
                void (^handler)(dispatch_data_t _Nullable data, int error))
 {
   dispatch_data_t data = (dispatch_data_t)[string dataUsingEncoding:NSUTF8StringEncoding];
-  if (!data) {
+  if (!data && handler) {
     dispatch_async(queue, ^{
       handler(nil, 1);
     });
     return;
   }
+  
   dispatch_write(fd, data, queue, handler);
 }
 
@@ -64,6 +65,11 @@ const NSString * SSHOptionRequestTTY = @"requesttty"; // -tT
 const NSString * SSHOptionUser = @"user"; // -l
 const NSString * SSHOptionProxyCommand = @"proxycommand"; // ?
 const NSString * SSHOptionConfigFile = @"configfile"; // -F
+const NSString * SSHOptionRemoteCommand = @"remotecommand";
+
+// Non standart
+const NSString * SSHOptionPassword = @"_password"; //
+const NSString * SSHOptionPrintConfiguration = @"_printconfiguration"; // -G
 
 const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
@@ -159,26 +165,17 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 - (int)_parseArgs:(int) argc argv:(char **) argv {
   int rc = SSH_ERROR;
   
-  // Options
-  // port -p
-  // verbose --verbose
-  // command (Obtain data at the end)
-  // tty -t
-  // key -i identity file
-  // forced password
   optind = 1;
-  int port = 0;
   
   // Defaults
 //  [_options setObject:@(YES) forKey:SSHOptionStrictHostKeyChecking];
-//  [_options setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
-//  NSMutableDictionary *options = [[NSMutableDictionary alloc] init];
+
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
   [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
   
   while (1) {
-    int c = getopt(argc, argv, "p:i:hTtvl:F:");
+    int c = getopt(argc, argv, "Gp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -209,17 +206,19 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:@(optarg) forKey:SSHOptionConfigFile];
         break;
       case 'o':
-        [_options setObject:@(optarg) forKey:SSHOptionProxyCommand];
+        // Will apply later
+        [options addObject:@(optarg)];
+        break;
+      case 'G':
+        [args setObject:SSHOptionValueYES forKey:SSHOptionPrintConfiguration];
         break;
       default:
-        return __usage();
+        return [self _printUsage];
     }
   }
   
   if (optind < argc) {
-    BKHosts *savedHost;
-    NSArray *userAtHost = [[NSString stringWithFormat:@"%s", argv[optind++]]
-                           componentsSeparatedByString:@"@"];
+    NSArray *userAtHost = [@(argv[optind++]) componentsSeparatedByString:@"@"];
     
     if ([userAtHost count] < 2) {
       [args setObject:userAtHost[0] forKey:SSHOptionHostName];
@@ -227,15 +226,24 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       [args setObject:userAtHost[0] forKey:SSHOptionUser];
       [args setObject:userAtHost[1] forKey:SSHOptionHostName];
     }
-    
-    if ((savedHost = [BKHosts withHost:[NSString stringWithFormat:@"%s", options->hostname]])) {
-      options->hostname = savedHost.hostName ? [savedHost.hostName UTF8String] : options->hostname;
-      options->port = options->port ? options->port : [savedHost.port intValue];
-      if (!options->user && [savedHost.user length]) {
-        options->user = [savedHost.user UTF8String];
+
+    BKHosts *savedHost = [BKHosts withHost:args[SSHOptionHostName]];
+    if (savedHost) {
+      if (savedHost.hostName) {
+        args[SSHOptionHostName] = savedHost.hostName;
       }
-      options->identity_file = options->identity_file ? options->identity_file : [savedHost.key UTF8String];
-      options->password = savedHost.password ? [savedHost.password UTF8String] : NULL;
+      if (!args[SSHOptionPort] && savedHost.port) {
+        args[SSHOptionPort] = savedHost.port;
+      }
+      if (!args[SSHOptionUser] && savedHost.user) {
+        args[SSHOptionUser] = savedHost.user;
+      }
+      if (!args[SSHOptionIdentityFile] && savedHost.key) {
+        args[SSHOptionIdentityFile] = savedHost.key;
+      }
+      if (savedHost.password) {
+        args[SSHOptionPassword] = savedHost.password;
+      }
     }
   }
   
@@ -245,33 +253,52 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   if (cmds.count > 0) {
-    options->command = [cmds componentsJoinedByString:@" "].UTF8String;
-  } else {
-    options->request_tty = ios_isatty(fileno(thread_stdout));
+    args[SSHOptionRemoteCommand] = [cmds componentsJoinedByString:@" "];
   }
   
-  if (options->hostname == NULL) {
-    return __usage();
+  if (args[SSHOptionHostName] == NULL) {
+    return [self _printUsage];
   }
-  
-  return 0;
+  _options = args;
   
   rc = SSH_OK;
   return rc;
 }
 
+- (int)_printUsage {
+  
+  return [self _exitWithCode:SSH_ERROR];
+}
+
+- (void)_printConfiguration {
+  NSMutableArray<NSString *> *lines = [[NSMutableArray alloc] initWithCapacity:_options.count];
+  
+  NSArray<NSString *> *sortedKeys = [_options.allKeys sortedArrayUsingSelector:@selector(compare:)];
+  for (NSString *key in sortedKeys) {
+    [lines addObject:[NSString stringWithFormat:@"%@ %@", key, _options[key]]];
+  }
+  
+  dispatch_write_string(_fdOut, [lines componentsJoinedByString:@"\n"], _mainQueue, ^(dispatch_data_t _Nullable data, int error) {
+    [self _exitWithCode:SSH_OK];
+  });
+}
 
 - (int)main:(int) argc argv:(char **) argv {
-  int rc = [self _parseArgs:argc, argv: argv];
+  int rc = [self _parseArgs:argc argv: argv];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
   }
   
   dispatch_async(_mainQueue, ^{
     [self _initSSH];
+    
+    if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
+      [self _printConfiguration];
+      return;
+    }
   });
   
-  dispatch_semaphore_wait(_mainDsema, 0);
+  dispatch_semaphore_wait(_mainDsema, DISPATCH_TIME_FOREVER);
   return _exitCode;
 }
 
