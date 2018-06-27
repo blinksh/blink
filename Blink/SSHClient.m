@@ -59,8 +59,7 @@ void dispatch_write_utf8string(dispatch_fd_t fd,
   dispatch_write(fd, data, queue, handler);
 }
 
-
-const NSString * SSHOptionStrictHostKeyChecking = @"stricthostheychecking";
+const NSString * SSHOptionStrictHostKeyChecking = @"stricthostkeychecking";
 const NSString * SSHOptionHostName =  @"hostname";
 const NSString * SSHOptionPort =  @"port"; // -p
 const NSString * SSHOptionLogLevel =  @"loglevel"; // -v
@@ -70,6 +69,13 @@ const NSString * SSHOptionUser = @"user"; // -l
 const NSString * SSHOptionProxyCommand = @"proxycommand"; // ?
 const NSString * SSHOptionConfigFile = @"configfile"; // -F
 const NSString * SSHOptionRemoteCommand = @"remotecommand";
+const NSString * SSHOptionConnectTimeout = @"connectiontimeout"; // -o
+const NSString * SSHOptionConnectionAttempts = @"connectionattempts"; // -o
+const NSString * SSHOptionCompression = @"compression"; //-C -o
+const NSString * SSHOptionTCPKeepAlive = @"tcpkeepalive";
+const NSString * SSHOptionNumberOfPasswordPrompts = @"numberofpasswordprompts"; // -o
+const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
+const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -79,6 +85,7 @@ const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
 const NSString * SSHOptionValueAUTO = @"auto";
 const NSString * SSHOptionValueANY = @"any";
+const NSString * SSHOptionValueNONE = @"none";
 
 const NSString * SSHOptionValueINFO = @"info";
 const NSString * SSHOptionValueERROR = @"error";
@@ -169,20 +176,111 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   return val;
 }
 
+- (NSMutableDictionary *)_applyOptions:(NSArray *)options toArgs:(NSDictionary *)args {
+  NSObject *stringType = [[NSObject alloc] init];
+  NSObject *yesNoType = [[NSObject alloc] init];
+  NSObject *yesNoAutoType = [[NSObject alloc] init];
+  NSObject *yesNoAskType = [[NSObject alloc] init];
+  NSObject *portType = [[NSObject alloc] init];
+  NSObject *intType = [[NSObject alloc] init];
+  
+  NSDictionary *opts = @{
+                         SSHOptionUser: @[stringType],
+                         SSHOptionHostName: @[stringType],
+                         SSHOptionPort: @[portType, @(22)],
+                         SSHOptionRequestTTY: @[yesNoAutoType, @"auto"],
+                         SSHOptionTCPKeepAlive: @[yesNoType, @"yes"],
+                         SSHOptionConnectionAttempts: @[intType, @(1)],
+                         SSHOptionNumberOfPasswordPrompts: @[intType, @(3)],
+                         SSHOptionServerLiveCountMax: @[intType, @(3)],
+                         SSHOptionServerLiveInterval: @[intType, @(0)],
+                         SSHOptionRemoteCommand: @[stringType],
+                         
+                         SSHOptionStrictHostKeyChecking: @[yesNoAskType, @"ask"],
+                         SSHOptionCompression: @[yesNoType, @"yes"]
+                         };
+  
+  NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
+  
+  // Set defaults:
+  for (NSString *key in opts.allKeys) {
+    NSArray *vals = opts[key];
+    if (vals.count >= 2) {
+      result[key] = vals[1];
+    }
+  }
+  
+  // Set options:
+  for (NSString *optionStr in options) {
+    NSArray *parts = [optionStr componentsSeparatedByString:@"="];
+    
+    
+    if (parts.count == 1) {
+      [self _exitWithCode:SSH_ERROR andMessage:@"Missing argument."];
+      return result;
+    }
+    
+    NSString *key = [parts.firstObject lowercaseString];
+    NSArray *vals = opts[key];
+    if (vals == nil) {
+      [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"Bad configuration option: %@", key]];
+      return result;
+    }
+    
+    NSObject *type = vals[0];
+    NSString *value = parts[1];
+    NSString *lv = [value lowercaseString];
+    
+    if (type == stringType) {
+      result[key] = value; // TODO: strip qoutes
+    } else if (type == yesNoType) {
+      if ([@[@"yes", @"no"] indexOfObject:lv] == NSNotFound) {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
+        return result;
+      }
+      result[key] = lv;
+    } else if (type == yesNoAutoType) {
+      if ([@[@"yes", @"no", @"auto"] indexOfObject:lv] == NSNotFound) {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
+        return result;
+      }
+      result[key] = lv;
+    } else if (type == yesNoAskType) {
+      if ([@[@"yes", @"no", @"ask"] indexOfObject:lv] == NSNotFound) {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
+        return result;
+      }
+      result[key] = lv;
+    } else if (type == portType) {
+      int port = [lv intValue];
+      if (port <= 0 || port > 65536) {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"bad port number \"%@\".", key]];
+        return result;
+      }
+      result[key] = @(port);
+    } else if (type == intType) {
+      int v = [lv intValue];
+      result[key] = @(v);
+    }
+  }
+  
+  // Apply args:
+  for (NSString *key in args.allKeys) {
+    result[key] = args[key];
+  }
+  
+  return result;
+}
+
 - (int)_parseArgs:(int) argc argv:(char **) argv {
-  int rc = SSH_ERROR;
-  
   optind = 1;
-  
-  // Defaults
-//  [_options setObject:@(YES) forKey:SSHOptionStrictHostKeyChecking];
 
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
   [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
   
   while (1) {
-    int c = getopt(argc, argv, "Gp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "o:CGp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -191,9 +289,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       case 'p':
         [args setObject:[self _tryParsePort:optarg] forKey:SSHOptionPort];
         break;
-//      case 'h':
-//        [_options setObject:@(NO) forKey:SSHOptionStrictHostKeyChecking];
-//        break;
+      case 'C':
+        [args setObject:SSHOptionValueYES forKey:SSHOptionCompression];
+        break;
       case 'v':
         [args setObject:@(MIN([_options[SSHOptionLogLevel] intValue] + 1, SSH_LOG_TRACE)) forKey:SSHOptionLogLevel];
         break;
@@ -220,7 +318,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:SSHOptionValueYES forKey:SSHOptionPrintConfiguration];
         break;
       default:
-        return [self _printUsage];
+        return [self _printUsageWithCode:SSH_ERROR];
     }
   }
   
@@ -264,17 +362,26 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   if (args[SSHOptionHostName] == NULL) {
-    return [self _printUsage];
+    return [self _printUsageWithCode:SSH_ERROR];
   }
-  _options = args;
+  _options = [self _applyOptions:options toArgs:args];
   
-  rc = SSH_OK;
-  return rc;
+  return SSH_OK;
 }
 
-- (int)_printUsage {
-  
-  return [self _exitWithCode:SSH_ERROR];
+- (int)_printUsageWithCode:(int) code {
+  NSString *usage = [@[
+                       @"usage: ssh2 [-CGTtv]",
+                       @"            [-F configFile] [-i identity_file]",
+                       @"            [-l login_name] [-o option]",
+                       @"            [-p port] [-L address] [-R address]",
+                       @"            [user@]hostname [command]",
+                       @""
+                      ] componentsJoinedByString:@"\n"];
+  dispatch_write_utf8string(_fdOut, usage, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+    [self _exitWithCode:code];
+  });
+  return code;
 }
 
 - (void)_printConfiguration {
