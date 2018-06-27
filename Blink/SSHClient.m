@@ -31,6 +31,7 @@
 
 
 #import "SSHClient.h"
+#import "BlinkPaths.h"
 #import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
@@ -69,7 +70,7 @@ const NSString * SSHOptionUser = @"user"; // -l
 const NSString * SSHOptionProxyCommand = @"proxycommand"; // ?
 const NSString * SSHOptionConfigFile = @"configfile"; // -F
 const NSString * SSHOptionRemoteCommand = @"remotecommand";
-const NSString * SSHOptionConnectTimeout = @"connectiontimeout"; // -o
+const NSString * SSHOptionConnectTimeout = @"connecttimeout"; // -o
 const NSString * SSHOptionConnectionAttempts = @"connectionattempts"; // -o
 const NSString * SSHOptionCompression = @"compression"; //-C -o
 const NSString * SSHOptionTCPKeepAlive = @"tcpkeepalive";
@@ -137,10 +138,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   return self;
 }
 
-- (void)_initSSH {
-  _ssh_session = ssh_new();
-}
-
 - (int)_exitWithCode:(int)code {
   dispatch_barrier_async(_mainQueue, ^{
     _exitCode = code;
@@ -151,7 +148,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 - (int)_exitWithCode:(int)code andMessage: (NSString * __nonnull)message {
-  dispatch_write_utf8string(_fdErr, message, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+  dispatch_write_utf8string(_fdErr, [message stringByAppendingString:@"\n"], _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
     [self _exitWithCode:code];
   });
   return _exitCode;
@@ -183,6 +180,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *yesNoAskType = [[NSObject alloc] init];
   NSObject *portType = [[NSObject alloc] init];
   NSObject *intType = [[NSObject alloc] init];
+  NSObject *intNoneType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -195,6 +193,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionServerLiveCountMax: @[intType, @(3)],
                          SSHOptionServerLiveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
+                         SSHOptionConnectTimeout: @[intType, @"none"],
                          
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, @"ask"],
                          SSHOptionCompression: @[yesNoType, @"yes"]
@@ -251,16 +250,38 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         return result;
       }
       result[key] = lv;
+    } else if (type == intNoneType) {
+      if ([lv isEqualToString:@"none"]) {
+        result[key] = lv;
+      } else {
+        int v = 0;
+        NSScanner *scanner = [NSScanner scannerWithString:lv];
+        if ([scanner scanInt:&v] && scanner.atEnd) {
+          result[key] = @(v);
+        } else {
+          [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"invalid number \"%@\".", value]];
+          return result;
+        }
+      }
     } else if (type == portType) {
       int port = [lv intValue];
-      if (port <= 0 || port > 65536) {
+      if (port <= 0) {
+        port = 22;
+      }
+      if (port > 65536) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"bad port number \"%@\".", key]];
         return result;
       }
       result[key] = @(port);
     } else if (type == intType) {
-      int v = [lv intValue];
-      result[key] = @(v);
+      int v = 0;
+      NSScanner *scanner = [NSScanner scannerWithString:lv];
+      if ([scanner scanInt:&v] && scanner.atEnd) {
+        result[key] = @(v);
+      } else {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"invalid number \"%@\".", value]];
+        return result;
+      }
     }
   }
   
@@ -384,6 +405,39 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   return code;
 }
 
+- (int)_applySSHOptionKey:(const NSString *)optionKey withOption:(enum ssh_options_e) option {
+  id value = _options[optionKey];
+  if (!value) {
+    return SSH_OK;
+  }
+  
+  if ([value isKindOfClass:[NSNumber class]]) {
+    int v = [value intValue];
+    return ssh_options_set(_ssh_session, option, &v);
+  } else if ([value isKindOfClass:[NSString class]]) {
+    const char *v = [value UTF8String];
+    return ssh_options_set(_ssh_session, option, v);
+  }
+  
+  return SSH_ERROR;
+}
+
+- (void)_ssh_createAndConfigureSession {
+  _ssh_session = ssh_new();
+  
+//  ssh_set_blocking(_ssh_session, 0);
+  [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
+  [self _applySSHOptionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
+  [self _applySSHOptionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
+  [self _applySSHOptionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
+  [self _applySSHOptionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
+  [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
+  ssh_options_set(_ssh_session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
+  
+  NSString *configFile = _options[SSHOptionConfigFile];
+  ssh_options_parse_config(_ssh_session, configFile.UTF8String);
+}
+
 - (void)_printConfiguration {
   NSMutableArray<NSString *> *lines = [[NSMutableArray alloc] initWithCapacity:_options.count];
   
@@ -398,6 +452,16 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   });
 }
 
+- (void)_ssh_connect {
+  int rc = ssh_connect(_ssh_session);
+  dispatch_fd_t socketFd = ssh_get_fd(_ssh_session);
+  dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, socketFd, 0, _mainQueue);
+  dispatch_source_set_event_handler(source, ^{
+    NSLog(@"here");
+  });
+  dispatch_resume(source);
+}
+
 - (int)main:(int) argc argv:(char **) argv {
   
   int rc = [self _parseArgs:argc argv: argv];
@@ -406,12 +470,14 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   dispatch_async(_mainQueue, ^{
-    [self _initSSH];
+    [self _ssh_createAndConfigureSession];
     
     if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
       [self _printConfiguration];
       return;
     }
+    
+    [self _ssh_connect];
   });
   
   dispatch_semaphore_wait(_mainDsema, DISPATCH_TIME_FOREVER);
