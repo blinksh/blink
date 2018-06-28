@@ -50,7 +50,7 @@ void dispatch_write_utf8string(dispatch_fd_t fd,
     nsData = nil;
   });
   
-  if (!data && handler) {
+  if (!data) {
     dispatch_async(queue, ^{
       handler(nil, 1);
     });
@@ -59,6 +59,22 @@ void dispatch_write_utf8string(dispatch_fd_t fd,
   
   dispatch_write(fd, data, queue, handler);
 }
+
+void dispatch_write_ssh_chars(dispatch_fd_t fd,
+                               char *buffer,
+                               dispatch_queue_t queue) {
+  if (buffer == NULL) {
+    return;
+  }
+  dispatch_data_t data = dispatch_data_create(buffer, strlen(buffer), queue, ^{ ssh_string_free_char(buffer); });
+  
+  if (!data) {
+    return;
+  }
+  
+  dispatch_write(fd, data, queue, ^(dispatch_data_t _Nullable data, int error) {});
+}
+
 
 const NSString * SSHOptionStrictHostKeyChecking = @"stricthostkeychecking";
 const NSString * SSHOptionHostName =  @"hostname";
@@ -107,28 +123,34 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 //#define SSH_LOG_TRACE 4
 
 
-
 @implementation SSHClient {
   dispatch_queue_t _mainQueue;
 
   dispatch_fd_t _fdIn;
   dispatch_fd_t _fdOut;
   dispatch_fd_t _fdErr;
+  dispatch_fd_t _fdSessionSock;
   
+  dispatch_source_t _sessionSockSource;
+
   ssh_session _ssh_session;
   dispatch_semaphore_t _mainDsema;
   
   NSMutableDictionary *_options;
+  
+  NSMutableArray<NSNumber *> *_userauthQueue;
   
   int _exitCode;
 }
 
 - (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr {
   if (self = [super init]) {
+    
     _mainQueue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
+    _fdSessionSock = SSH_INVALID_SOCKET;
     _mainDsema = dispatch_semaphore_create(0);
     _options = [[NSMutableDictionary alloc] init];
     
@@ -174,6 +196,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 - (NSMutableDictionary *)_applyOptions:(NSArray *)options toArgs:(NSDictionary *)args {
+  
   NSObject *stringType = [[NSObject alloc] init];
   NSObject *yesNoType = [[NSObject alloc] init];
   NSObject *yesNoAutoType = [[NSObject alloc] init];
@@ -181,6 +204,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *portType = [[NSObject alloc] init];
   NSObject *intType = [[NSObject alloc] init];
   NSObject *intNoneType = [[NSObject alloc] init];
+  NSObject *identityfileType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -194,9 +218,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionServerLiveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
                          SSHOptionConnectTimeout: @[intType, @"none"],
-                         
+                         SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", /* id_dsa, id_ecdsa, id_ed25519 */]],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, @"ask"],
-                         SSHOptionCompression: @[yesNoType, @"yes"]
+                         SSHOptionCompression: @[yesNoType, @"yes"] // We mobile terminal, so we set compression to yes by default.
                          };
   
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
@@ -209,10 +233,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     }
   }
   
+  NSMutableArray<NSString *> *identityfileOption = [[NSMutableArray alloc] init];
+  
   // Set options:
   for (NSString *optionStr in options) {
     NSArray *parts = [optionStr componentsSeparatedByString:@"="];
-    
     
     if (parts.count == 1) {
       [self _exitWithCode:SSH_ERROR andMessage:@"Missing argument."];
@@ -232,6 +257,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     
     if (type == stringType) {
       result[key] = value; // TODO: strip qoutes
+    } else if (type == identityfileType) {
+      [identityfileOption addObject:value];
     } else if (type == yesNoType) {
       if ([@[@"yes", @"no"] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
@@ -286,7 +313,20 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   // Apply args:
-  for (NSString *key in args.allKeys) {
+  NSMutableArray *argsKeys = [args.allKeys mutableCopy];
+  NSMutableArray *identityfileInArgs = args[SSHOptionIdentityFile];
+  
+  if (identityfileInArgs) {
+    [identityfileInArgs addObjectsFromArray:identityfileOption];
+  } else if (identityfileOption.count > 0) {
+    identityfileInArgs = identityfileInArgs;
+  }
+  if (identityfileInArgs.count > 0) {
+    result[SSHOptionIdentityFile] = [NSOrderedSet orderedSetWithArray:identityfileInArgs].array;
+    [argsKeys removeObject:SSHOptionIdentityFile];
+  }
+  
+  for (NSString *key in argsKeys) {
     result[key] = args[key];
   }
   
@@ -299,6 +339,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
   [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
   
   while (1) {
     int c = getopt(argc, argv, "o:CGp:i:hTtvl:F:");
@@ -317,7 +358,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:@(MIN([_options[SSHOptionLogLevel] intValue] + 1, SSH_LOG_TRACE)) forKey:SSHOptionLogLevel];
         break;
       case 'i':
-        [args setObject:@(optarg) forKey:SSHOptionIdentityFile];
+        [identityfiles addObject:@(optarg)];
         break;
       case 't':
         [args setObject:SSHOptionValueYES forKey:SSHOptionRequestTTY];
@@ -343,34 +384,12 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     }
   }
   
+  if (identityfiles.count > 0) {
+    args[SSHOptionIdentityFile] = identityfiles;
+  }
+  
   if (optind < argc) {
-    NSArray *userAtHost = [@(argv[optind++]) componentsSeparatedByString:@"@"];
-    
-    if ([userAtHost count] < 2) {
-      [args setObject:userAtHost[0] forKey:SSHOptionHostName];
-    } else {
-      [args setObject:userAtHost[0] forKey:SSHOptionUser];
-      [args setObject:userAtHost[1] forKey:SSHOptionHostName];
-    }
-
-    BKHosts *savedHost = [BKHosts withHost:args[SSHOptionHostName]];
-    if (savedHost) {
-      if (savedHost.hostName) {
-        args[SSHOptionHostName] = savedHost.hostName;
-      }
-      if (!args[SSHOptionPort] && savedHost.port) {
-        args[SSHOptionPort] = savedHost.port;
-      }
-      if (!args[SSHOptionUser] && savedHost.user) {
-        args[SSHOptionUser] = savedHost.user;
-      }
-      if (!args[SSHOptionIdentityFile] && savedHost.key) {
-        args[SSHOptionIdentityFile] = savedHost.key;
-      }
-      if (savedHost.password) {
-        args[SSHOptionPassword] = savedHost.password;
-      }
-    }
+    [self _parseUserAtHostStr:@(argv[optind++]) toArgs:args];
   }
   
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
@@ -385,6 +404,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   if (args[SSHOptionHostName] == NULL) {
     return [self _printUsageWithCode:SSH_ERROR];
   }
+  
   _options = [self _applyOptions:options toArgs:args];
   
   return SSH_OK;
@@ -403,6 +423,35 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     [self _exitWithCode:code];
   });
   return code;
+}
+
+- (void)_parseUserAtHostStr:(NSString *)str toArgs:(NSMutableDictionary *)args {
+  NSArray *userAtHost = [str componentsSeparatedByString:@"@"];
+  if ([userAtHost count] < 2) {
+    [args setObject:userAtHost[0] forKey:SSHOptionHostName];
+  } else {
+    [args setObject:userAtHost[0] forKey:SSHOptionUser];
+    [args setObject:userAtHost[1] forKey:SSHOptionHostName];
+  }
+  
+  BKHosts *savedHost = [BKHosts withHost:args[SSHOptionHostName]];
+  if (savedHost) {
+    if (savedHost.hostName) {
+      args[SSHOptionHostName] = savedHost.hostName;
+    }
+    if (!args[SSHOptionPort] && savedHost.port) {
+      args[SSHOptionPort] = savedHost.port;
+    }
+    if (!args[SSHOptionUser] && savedHost.user) {
+      args[SSHOptionUser] = savedHost.user;
+    }
+    if (!args[SSHOptionIdentityFile] && savedHost.key) {
+      args[SSHOptionIdentityFile] = savedHost.key;
+    }
+    if (savedHost.password) {
+      args[SSHOptionPassword] = savedHost.password;
+    }
+  }
 }
 
 - (int)_applySSHOptionKey:(const NSString *)optionKey withOption:(enum ssh_options_e) option {
@@ -424,8 +473,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 
 - (void)_ssh_createAndConfigureSession {
   _ssh_session = ssh_new();
-  
-//  ssh_set_blocking(_ssh_session, 0);
+
+  ssh_set_blocking(_ssh_session, 0);
   [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSHOptionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
   [self _applySSHOptionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
@@ -443,7 +492,15 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   
   NSArray<NSString *> *sortedKeys = [_options.allKeys sortedArrayUsingSelector:@selector(compare:)];
   for (NSString *key in sortedKeys) {
-    [lines addObject:[NSString stringWithFormat:@"%@ %@", key, _options[key]]];
+    id val = _options[key];
+    if ([val isKindOfClass:[NSArray class]]) {
+      NSArray *valArry = (NSArray *)val;
+      for (NSObject * v in valArry) {
+        [lines addObject:[NSString stringWithFormat:@"%@ %@", key, v]];
+      }
+    } else {
+      [lines addObject:[NSString stringWithFormat:@"%@ %@", key, val]];
+    }
   }
   [lines addObject:@""];
   
@@ -452,18 +509,117 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   });
 }
 
-- (void)_ssh_connect {
+- (int)_ssh_connect {
   int rc = ssh_connect(_ssh_session);
-  dispatch_fd_t socketFd = ssh_get_fd(_ssh_session);
-  dispatch_source_t source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, socketFd, 0, _mainQueue);
-  dispatch_source_set_event_handler(source, ^{
-    NSLog(@"here");
-  });
-  dispatch_resume(source);
+  if (rc == SSH_ERROR) {
+    return rc;
+  }
+  
+  _fdSessionSock = ssh_get_fd(_ssh_session);
+  if (_fdSessionSock == SSH_INVALID_SOCKET) {
+    ssh_disconnect(_ssh_session);
+    return SSH_ERROR;
+  }
+  
+  _sessionSockSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
+  if (!_sessionSockSource) {
+    return SSH_ERROR;
+  }
+  
+  dispatch_source_set_event_handler(_sessionSockSource, [self _ssh_connectEventHandler]);
+  dispatch_resume(_sessionSockSource);
+  return SSH_OK;
+}
+
+- (dispatch_block_t)_ssh_connectEventHandler {
+  return ^{
+    int rc = ssh_connect(_ssh_session);
+    switch (rc) {
+      case SSH_AGAIN:
+        return;
+      case SSH_OK: {
+        // TODO: host verification
+        
+        
+        // preAuthenticate
+        dispatch_block_t preAuthEventHandler = [self _ssh_preAuthEventHandler];
+        dispatch_source_set_event_handler(_sessionSockSource, preAuthEventHandler);
+        preAuthEventHandler();
+      }
+    }
+  };
+}
+
+- (dispatch_block_t)_ssh_preAuthEventHandler {
+  return ^{
+    int rc = ssh_userauth_none(_ssh_session, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        return;
+      case SSH_AUTH_ERROR:
+        // SSH_AUTH_ERROR: A serious error happened.
+        break;
+      case SSH_AUTH_PARTIAL:
+        // SSH_AUTH_ERROR: A serious error happened.
+        break;
+      case SSH_AUTH_DENIED:
+        dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
+        _userauthQueue = [self _ssh_userauthlist];
+        [self _ssh_process_userauth_queue];
+        break;
+      default:
+
+        break;
+    }
+  };
+}
+
+// TODO: can be pure
+- (NSMutableArray<NSNumber *> *)_ssh_userauthlist {
+  NSMutableArray *methodsList = [[NSMutableArray alloc] init];
+  
+  int methods = ssh_userauth_list(_ssh_session, NULL);
+  
+  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
+    [methodsList addObject:@(SSH_AUTH_METHOD_PUBLICKEY)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+    [methodsList addObject:@(SSH_AUTH_METHOD_INTERACTIVE)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    [methodsList addObject:@(SSH_AUTH_METHOD_PASSWORD)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_HOSTBASED) {
+    [methodsList addObject:@(SSH_AUTH_METHOD_HOSTBASED)];
+  }
+  
+  return methodsList;
+}
+
+- (void)_ssh_process_userauth_queue {
+  if (_userauthQueue.count == 0 ) {
+    // TODO: No methods: close connection and return
+    return;
+  }
+  
+  int authMethod = [[_userauthQueue firstObject] intValue];
+  [_userauthQueue removeObjectAtIndex:0];
+  
+//  _userAuthList = [_userAuthList remo]
+  switch (authMethod) {
+    case SSH_AUTH_METHOD_PUBLICKEY:
+      
+      break;
+      
+    default:
+      break;
+  }
 }
 
 - (int)main:(int) argc argv:(char **) argv {
-  
   int rc = [self _parseArgs:argc argv: argv];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
@@ -476,7 +632,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       [self _printConfiguration];
       return;
     }
-    
     [self _ssh_connect];
   });
   

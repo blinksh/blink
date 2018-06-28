@@ -453,7 +453,7 @@ int __auth_public_key(ssh_session session, session_options options) {
 
 
 int __authenticate(ssh_session session, session_options options) {
-  int method;
+  
   char *banner;
   
   int rc = ssh_userauth_none(session, NULL);
@@ -461,7 +461,7 @@ int __authenticate(ssh_session session, session_options options) {
     return rc;
   }
   
-  method = ssh_userauth_list(session, NULL);
+  int method = ssh_userauth_list(session, NULL);
   while (rc != SSH_AUTH_SUCCESS) {
     // Disabled for now, as we are compiling libssh without gssapi support.
     // if (method & SSH_AUTH_METHOD_GSSAPI_MIC){
