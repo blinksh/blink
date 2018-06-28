@@ -122,6 +122,40 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 ///** Get trace output, packet information, ... */
 //#define SSH_LOG_TRACE 4
 
+NSMutableArray<NSNumber *> *__ssh_userauth_list(ssh_session session) {
+  NSMutableArray *result = [[NSMutableArray alloc] init];
+  
+  int methods = ssh_userauth_list(session, NULL);
+  
+  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
+    [result addObject:@(SSH_AUTH_METHOD_PUBLICKEY)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_HOSTBASED) {
+    [result addObject:@(SSH_AUTH_METHOD_HOSTBASED)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+    [result addObject:@(SSH_AUTH_METHOD_INTERACTIVE)];
+  }
+  
+  if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    [result addObject:@(SSH_AUTH_METHOD_PASSWORD)];
+  }
+  
+  return result;
+}
+
+@interface SSHClient (internal)
+- (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
+@end
+
+
+int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
+                    int echo, int verify, void *userdata) {
+  SSHClient *client = (__bridge SSHClient *)userdata;
+  return [client _ssh_auth_fn_prompt:prompt buf:buf len:len echo:echo verify:verify];
+}
 
 @implementation SSHClient {
   dispatch_queue_t _mainQueue;
@@ -139,6 +173,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableDictionary *_options;
   
   NSMutableArray<NSNumber *> *_userauthQueue;
+  NSMutableArray<NSString *> *_identitiesQueue;
   
   int _exitCode;
 }
@@ -193,6 +228,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     return [NSNull null];
   }
   return val;
+}
+
+- (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
+  return 0;
 }
 
 - (NSMutableDictionary *)_applyOptions:(NSArray *)options toArgs:(NSDictionary *)args {
@@ -564,7 +603,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         break;
       case SSH_AUTH_DENIED:
         dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
-        _userauthQueue = [self _ssh_userauthlist];
+        _userauthQueue = __ssh_userauth_list(_ssh_session);
         [self _ssh_process_userauth_queue];
         break;
       default:
@@ -574,30 +613,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   };
 }
 
-// TODO: can be pure
-- (NSMutableArray<NSNumber *> *)_ssh_userauthlist {
-  NSMutableArray *methodsList = [[NSMutableArray alloc] init];
-  
-  int methods = ssh_userauth_list(_ssh_session, NULL);
-  
-  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
-    [methodsList addObject:@(SSH_AUTH_METHOD_PUBLICKEY)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
-    [methodsList addObject:@(SSH_AUTH_METHOD_INTERACTIVE)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_PASSWORD) {
-    [methodsList addObject:@(SSH_AUTH_METHOD_PASSWORD)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_HOSTBASED) {
-    [methodsList addObject:@(SSH_AUTH_METHOD_HOSTBASED)];
-  }
-  
-  return methodsList;
-}
 
 - (void)_ssh_process_userauth_queue {
   if (_userauthQueue.count == 0 ) {
@@ -606,18 +621,83 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   int authMethod = [[_userauthQueue firstObject] intValue];
-  [_userauthQueue removeObjectAtIndex:0];
   
 //  _userAuthList = [_userAuthList remo]
   switch (authMethod) {
     case SSH_AUTH_METHOD_PUBLICKEY:
-      
+      _identitiesQueue = [_options[SSHOptionIdentityFile] mutableCopy];
+      [self _ssh_process_userauth_identites_queue];
       break;
-      
+    case SSH_AUTH_METHOD_INTERACTIVE:
+      NSLog(@"interactive");
+      break;
     default:
       break;
   }
 }
+
+- (void)_ssh_process_userauth_identites_queue {
+  NSString *identityfile = [_identitiesQueue firstObject];
+  
+  if (!identityfile) {
+    [_userauthQueue removeObjectAtIndex:0];
+    [self _ssh_process_userauth_queue];
+  }
+  dispatch_block_t nextBlock = [self _ssh_identityfileEventHandler];
+  dispatch_source_set_event_handler(_sessionSockSource, nextBlock);
+  nextBlock();
+}
+
+- (dispatch_block_t)_ssh_identityfileEventHandler {
+  return ^{
+    NSString *identityfile = [_identitiesQueue firstObject];
+    int rc;
+    ssh_key pkey;
+    
+    BKPubKey *secureKey = [BKPubKey withID:identityfile];
+    // we have this identity in
+    if (secureKey) {
+      rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
+                                    NULL, /* TODO: get stored */
+                                    __ssh_auth_fn,
+                                    (__bridge void *) self,
+                                    &pkey);
+    } else {
+      rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
+                                  NULL,
+                                  __ssh_auth_fn,
+                                  (__bridge void *) self,
+                                  &pkey);
+    }
+    
+    rc = ssh_userauth_publickey(_ssh_session, [_options[SSHOptionUser] UTF8String], pkey);
+    switch (rc) {
+      case SSH_AUTH_ERROR:
+        // SSH_AUTH_ERROR: A serious error happened.
+        break;
+      case SSH_AUTH_DENIED:
+        // SSH_AUTH_DENIED: The server doesn't accept that public key as an authentication token. Try another key or another method.
+        _identitiesQueue = nil; // clean this identites queue
+        [_userauthQueue removeObjectAtIndex:0]; // remove current auth method.
+        [self _ssh_process_userauth_queue]; //  try another method
+        return;
+      case SSH_AUTH_PARTIAL:
+        // SSH_AUTH_PARTIAL: You've been partially authenticated, you still have to use another method.
+        
+        break;
+      case SSH_AUTH_SUCCESS:
+        // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
+        break;
+      case SSH_AUTH_AGAIN:
+        // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
+        break;
+      default:
+        
+        break;
+    }
+  };
+}
+  
 
 - (int)main:(int) argc argv:(char **) argv {
   int rc = [self _parseArgs:argc argv: argv];
@@ -632,6 +712,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       [self _printConfiguration];
       return;
     }
+    
     [self _ssh_connect];
   });
   
