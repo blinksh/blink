@@ -626,11 +626,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   switch (authMethod) {
     case SSH_AUTH_METHOD_PUBLICKEY:
       _identitiesQueue = [_options[SSHOptionIdentityFile] mutableCopy];
-      [self _ssh_process_userauth_identites_queue];
-      break;
+      return [self _ssh_process_userauth_identites_queue];
     case SSH_AUTH_METHOD_INTERACTIVE:
-      NSLog(@"interactive");
-      break;
+      return [self _ssh_userauth_interactive];
     default:
       break;
   }
@@ -676,18 +674,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         // SSH_AUTH_ERROR: A serious error happened.
         break;
       case SSH_AUTH_DENIED:
+      case SSH_AUTH_PARTIAL:
         // SSH_AUTH_DENIED: The server doesn't accept that public key as an authentication token. Try another key or another method.
+        // SSH_AUTH_PARTIAL: You've been partially authenticated, you still have to use another method.
         _identitiesQueue = nil; // clean this identites queue
         [_userauthQueue removeObjectAtIndex:0]; // remove current auth method.
-        [self _ssh_process_userauth_queue]; //  try another method
-        return;
-      case SSH_AUTH_PARTIAL:
-        // SSH_AUTH_PARTIAL: You've been partially authenticated, you still have to use another method.
-        
-        break;
+        return [self _ssh_process_userauth_queue]; //  try another method
       case SSH_AUTH_SUCCESS:
         // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
-        break;
+        return [self _ssh_authenticated];
       case SSH_AUTH_AGAIN:
         // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
         break;
@@ -696,6 +691,86 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         break;
     }
   };
+}
+
+- (void)_ssh_userauth_interactive {
+  dispatch_block_t nextBlock = [self _ssh_interactiveEventhandler];
+  dispatch_source_set_event_handler(_sessionSockSource, nextBlock);
+  nextBlock();
+}
+
+- (dispatch_block_t)_ssh_interactiveEventhandler {
+  return ^{
+    int rc = ssh_userauth_kbdint(_ssh_session, NULL, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        return;
+      case SSH_AUTH_INFO: {
+        const char *nameChars = ssh_userauth_kbdint_getname(_ssh_session);
+        const char *instructionChars = ssh_userauth_kbdint_getinstruction(_ssh_session);
+        
+        NSString *name = nameChars ? @(nameChars) : nil;
+        NSString *instruction = instructionChars ? @(instructionChars) : nil;
+        
+        int nprompts = ssh_userauth_kbdint_getnprompts(_ssh_session);
+        if (nprompts >= 0) {
+          NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
+          for (int i = 0; i < nprompts; i++) {
+            char echo = NO;
+            const char *prompt = ssh_userauth_kbdint_getprompt(_ssh_session, i, &echo);
+            
+            [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
+          }
+          
+          NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
+          
+          for (int i = 0; i < answers.count; i++) {
+            int rc = ssh_userauth_kbdint_setanswer(_ssh_session, i, [answers[i] UTF8String]);
+            if (rc < 0) {
+              break;
+            }
+          }
+        }
+        
+        rc = ssh_userauth_kbdint(_ssh_session, NULL, NULL);
+      }
+        break;
+      case SSH_AUTH_SUCCESS:
+        return [self _ssh_authenticated];
+      default:
+        break;
+    }
+  };
+}
+
+- (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
+  NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
+  for (int i = 0; i < prompts.count; i++) {
+    dispatch_write_utf8string(_fdOut, prompts[i][0], dispatch_get_global_queue(0, 0), ^(dispatch_data_t  _Nullable data, int error) {
+    });
+    FILE *fp = fdopen(_fdIn, "r");
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read = getline(&line, &len, fp);
+    
+    if (read != -1) {
+      
+    } else {
+      
+    }
+    
+    if (line) {
+      NSString * lineStr = [@(line) stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+      [answers addObject:lineStr];
+      free(line);
+    }
+    fclose(fp);
+  }
+  return answers;
+}
+
+- (void)_ssh_authenticated {
+  NSLog(@"Authenticated");
 }
   
 
