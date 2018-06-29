@@ -31,11 +31,14 @@
 
 
 #import <Foundation/Foundation.h>
+#include <libssh/libssh.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SSHClientChannel : NSObject
 
+- (instancetype)initWithDispatchSource:(dispatch_source_t) channel_source andChannel:(ssh_channel) ssh_channel;
+- (void)open;
 @end
 
 NS_ASSUME_NONNULL_END

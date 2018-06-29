@@ -31,12 +31,13 @@
 
 
 #import "SSHClientChannel.h"
-#include <libssh/libssh.h>
+
 #include <libssh/callbacks.h>
 
 
 @implementation SSHClientChannel {
   ssh_channel _ssh_channel;
+  dispatch_source_t _channel_source;
   struct ssh_channel_callbacks_struct _callbacks;
   NSData *_pendingWriteData;
 }
@@ -77,6 +78,83 @@ static void __channel_exit_status(ssh_session session,
 
 }
 
+- (instancetype)initWithDispatchSource:(dispatch_source_t) channel_source andChannel:(ssh_channel) ssh_channel {
+  if (self = [super init]) {
+    _channel_source = channel_source;
+    _ssh_channel = ssh_channel;
+//    [self _registerCallbacks];
+  }
+  
+  return self;
+}
+
+- (void)open {
+  dispatch_block_t openHandler = [self _channel_openHandler];
+  dispatch_source_set_event_handler(_channel_source, openHandler);
+  dispatch_resume(_channel_source);
+  openHandler();
+}
+
+- (dispatch_block_t)_channel_openHandler {
+  return ^{
+    int rc = ssh_channel_open_session(_ssh_channel);
+    switch (rc) {
+      case SSH_OK: {
+        dispatch_block_t ptyHandler = [self _channel_request_ptyHandler];
+        dispatch_source_set_event_handler(_channel_source, ptyHandler);
+        ptyHandler();
+      }
+        break;
+      case SSH_ERROR:
+        break;
+      case SSH_AGAIN:
+        break;
+      default:
+        break;
+    }
+  };
+}
+
+- (dispatch_block_t)_channel_request_ptyHandler {
+  return ^{
+    int rc = ssh_channel_request_pty(_ssh_channel);
+    switch (rc) {
+      case SSH_OK: {
+        dispatch_block_t shellHandler = [self _channel_request_shellHandler];
+        dispatch_source_set_event_handler(_channel_source, shellHandler);
+        shellHandler();
+      }
+        break;
+      case SSH_ERROR:
+        break;
+      case SSH_AGAIN:
+        break;
+      default:
+        break;
+    }
+  };
+}
+
+- (dispatch_block_t)_channel_request_shellHandler {
+  return ^{
+    int rc = ssh_channel_request_shell(_ssh_channel);
+    switch (rc) {
+      case SSH_OK: {
+        [self _registerCallbacks];
+        dispatch_source_set_event_handler(_channel_source, ^{});
+        dispatch_suspend(_channel_source);
+      }
+        break;
+      case SSH_ERROR:
+        break;
+      case SSH_AGAIN:
+        break;
+      default:
+        break;
+    }
+  };
+}
+
 
 - (void)_registerCallbacks {
   
@@ -88,7 +166,6 @@ static void __channel_exit_status(ssh_session session,
     .channel_exit_status_function = __channel_exit_status,
   };
   
-  ssh_channel_select
   ssh_callbacks_init(&_callbacks);
   ssh_set_channel_callbacks(_ssh_channel, &_callbacks);
 }

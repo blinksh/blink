@@ -35,6 +35,7 @@
 #import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
+#import "SSHClientChannel.h"
 
 #include <getopt.h>
 #include <libssh/libssh.h>
@@ -165,6 +166,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_fd_t _fdErr;
   dispatch_fd_t _fdSessionSock;
   
+  SSHClientChannel *_mainChannel;
   dispatch_source_t _sessionSockSource;
 
   ssh_session _ssh_session;
@@ -771,6 +773,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (void)_ssh_authenticated {
   NSLog(@"Authenticated");
+  dispatch_source_set_event_handler(_sessionSockSource, ^{});
+  dispatch_suspend(_sessionSockSource);
+  
+  dispatch_source_t channel_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
+  ssh_channel channel = ssh_channel_new(_ssh_session);
+  _mainChannel = [[SSHClientChannel alloc] initWithDispatchSource:channel_source andChannel:channel];
+  [_mainChannel open];
+  
 }
   
 
