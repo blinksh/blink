@@ -49,10 +49,7 @@ static int __channel_data_available(ssh_session session,
                                     int is_stderr,
                                     void *userdata) {
   SSHClientChannel *clientChannel = (__bridge SSHClientChannel *)userdata;
-  NSData *readData = [NSData dataWithBytes:data length:len];
-  
-  //  return [clientChannel _didReceiveData:readData isSTDError:is_stderr];
-  return 0;
+  return [clientChannel _channel_data_available_session:session channel:channel data:data len:len is_stderr:is_stderr];
 }
 
 static void __channel_close_received(ssh_session session,
@@ -82,7 +79,7 @@ static void __channel_exit_status(ssh_session session,
   if (self = [super init]) {
     _channel_source = channel_source;
     _ssh_channel = ssh_channel;
-//    [self _registerCallbacks];
+    [self _registerCallbacks];
   }
   
   return self;
@@ -94,6 +91,21 @@ static void __channel_exit_status(ssh_session session,
   dispatch_resume(_channel_source);
   openHandler();
 }
+
+- (int)_channel_data_available_session:(ssh_session ) session
+                               channel:(ssh_channel) channel
+                                  data: (void *) data
+                                   len: (uint32_t) len
+                             is_stderr:(int)is_stderr {
+  
+  if (is_stderr) {
+    return [self.delegate writeToStdErr:data len:len];
+  } else {
+    return [self.delegate writeToStdOut:data len:len];
+  }
+  return 0;
+}
+
 
 - (dispatch_block_t)_channel_openHandler {
   return ^{
@@ -140,8 +152,49 @@ static void __channel_exit_status(ssh_session session,
     int rc = ssh_channel_request_shell(_ssh_channel);
     switch (rc) {
       case SSH_OK: {
-        [self _registerCallbacks];
-        dispatch_source_set_event_handler(_channel_source, ^{});
+        dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//          connector_in = ssh_connector_new(session);
+//          ssh_connector_set_out_channel(connector_in, channel, SSH_CONNECTOR_STDOUT);
+//          ssh_connector_set_in_fd(connector_in, fileno(thread_stdin));
+//          ssh_event_add_connector(event, connector_in);
+          
+          // stdout
+//          connector_out = ssh_connector_new(session);
+//          ssh_connector_set_out_fd(connector_out, fileno(thread_stdout));
+//          ssh_connector_set_in_channel(connector_out, channel, SSH_CONNECTOR_STDOUT);
+//          ssh_event_add_connector(event, connector_out);
+          
+          // stderr
+//          connector_err = ssh_connector_new(session);
+//          ssh_connector_set_out_fd(connector_err, fileno(thread_stdout));
+//          ssh_connector_set_in_channel(connector_err, channel, SSH_CONNECTOR_STDERR);
+//          ssh_event_add_connector(event, connector_err);
+          
+//          while(ssh_channel_is_open(channel) && !ssh_channel_is_eof(channel)) {
+//            if (signal_delayed) {
+//              __refresh_size(channel);
+//            }
+//
+  ssh_event_add_session(<#ssh_event event#>, <#ssh_session session#>)
+//            ssh_event_dopoll(event, 60000);
+//          }
+//          int rc = ssh_channel_get_exit_status(channel);
+//          ssh_event_remove_connector(event, connector_in);
+//          ssh_event_remove_connector(event, connector_out);
+//          ssh_event_remove_connector(event, connector_err);
+          
+//          ssh_connector_free(connector_in);
+//          ssh_connector_free(connector_out);
+//          ssh_connector_free(connector_err);
+          
+//          ssh_event_free(event);
+//          ssh_channel_free(channel);
+        });
+        dispatch_source_set_event_handler(_channel_source, ^{
+          // HOW we can avoid this.
+//          ssh_channel_poll(_ssh_channel, 0);
+//          ssh_channel_poll(_ssh_channel, 1);
+        });
         dispatch_suspend(_channel_source);
       }
         break;
@@ -157,14 +210,11 @@ static void __channel_exit_status(ssh_session session,
 
 
 - (void)_registerCallbacks {
-  
-  struct ssh_channel_callbacks_struct _callbacks = {
-    .userdata               = (__bridge void *)(self),
-    .channel_data_function  = __channel_data_available,
-    .channel_close_function = __channel_close_received,
-    .channel_eof_function   = __channel_eof_received,
-    .channel_exit_status_function = __channel_exit_status,
-  };
+  _callbacks.userdata = (__bridge void *)(self);
+  _callbacks.channel_data_function  = __channel_data_available;
+  _callbacks.channel_close_function = __channel_close_received;
+  _callbacks.channel_eof_function   = __channel_eof_received;
+  _callbacks.channel_exit_status_function = __channel_exit_status;
   
   ssh_callbacks_init(&_callbacks);
   ssh_set_channel_callbacks(_ssh_channel, &_callbacks);

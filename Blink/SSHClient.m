@@ -147,7 +147,7 @@ NSMutableArray<NSNumber *> *__ssh_userauth_list(ssh_session session) {
   return result;
 }
 
-@interface SSHClient (internal)
+@interface SSHClient (internal) <SSHClientChannelDelegate>
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
 @end
 
@@ -779,6 +779,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_source_t channel_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
   ssh_channel channel = ssh_channel_new(_ssh_session);
   _mainChannel = [[SSHClientChannel alloc] initWithDispatchSource:channel_source andChannel:channel];
+  _mainChannel.delegate = self;
   [_mainChannel open];
   
 }
@@ -803,6 +804,22 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   dispatch_semaphore_wait(_mainDsema, DISPATCH_TIME_FOREVER);
   return _exitCode;
+}
+
+-(int)writeToStdOut:(void *)buffer len:(uint32_t)len {
+  dispatch_data_t data = dispatch_data_create(buffer, len, _mainQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+  dispatch_write(_fdOut, data, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+    NSLog(@"done");
+  });
+  return 0;
+}
+
+-(int)writeToStdErr:(void *)buffer len:(uint32_t)len {
+  dispatch_data_t data = dispatch_data_create(buffer, len, _mainQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+  dispatch_write(_fdErr, data, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+    NSLog(@"done");
+  });
+  return 0;
 }
 
 @end
