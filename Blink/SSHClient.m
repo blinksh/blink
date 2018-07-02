@@ -164,10 +164,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_fd_t _fdIn;
   dispatch_fd_t _fdOut;
   dispatch_fd_t _fdErr;
-  dispatch_fd_t _fdSessionSock;
+  
+  ssh_event _main_event;
   
   SSHClientChannel *_mainChannel;
-  dispatch_source_t _sessionSockSource;
 
   ssh_session _ssh_session;
   dispatch_semaphore_t _mainDsema;
@@ -187,7 +187,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
-    _fdSessionSock = SSH_INVALID_SOCKET;
     _mainDsema = dispatch_semaphore_create(0);
     _options = [[NSMutableDictionary alloc] init];
     
@@ -514,8 +513,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (void)_ssh_createAndConfigureSession {
   _ssh_session = ssh_new();
-
-  ssh_set_blocking(_ssh_session, 0);
+  _main_event = ssh_event_new();
+  
   [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSHOptionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
   [self _applySSHOptionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
@@ -526,6 +525,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   NSString *configFile = _options[SSHOptionConfigFile];
   ssh_options_parse_config(_ssh_session, configFile.UTF8String);
+  ssh_set_blocking(_ssh_session, 0);
+  
 }
 
 - (void)_printConfiguration {
@@ -550,46 +551,65 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   });
 }
 
+- (int)_pollEvent
+{
+  return ssh_event_dopoll(_main_event, -1);
+}
+
 - (int)_ssh_connect {
   int rc = ssh_connect(_ssh_session);
-  if (rc == SSH_ERROR) {
-    return rc;
-  }
-  
-  _fdSessionSock = ssh_get_fd(_ssh_session);
-  if (_fdSessionSock == SSH_INVALID_SOCKET) {
-    ssh_disconnect(_ssh_session);
+  if (ssh_event_add_session(_main_event, _ssh_session) == SSH_ERROR) {
     return SSH_ERROR;
   }
   
-  _sessionSockSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
-  if (!_sessionSockSource) {
-    return SSH_ERROR;
+  // connect
+  for(;;) {
+    switch(rc) {
+      case SSH_AGAIN:
+        rc = [self _pollEvent];
+        if (rc == SSH_ERROR) {
+          return rc;
+        }
+        rc = ssh_connect(_ssh_session);
+        continue;
+      case SSH_OK:
+        break;
+      case SSH_ERROR:
+      default:
+        return rc;
+    }
+    break;
   }
   
-  dispatch_source_set_event_handler(_sessionSockSource, [self _ssh_connectEventHandler]);
-  dispatch_resume(_sessionSockSource);
+  // pre auth
+  for (;;) {
+    rc = ssh_userauth_none(_ssh_session, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        rc = [self _pollEvent];
+        if (rc == SSH_ERROR) {
+          return rc;
+        }
+        continue;
+      case SSH_AUTH_PARTIAL:
+      case SSH_AUTH_DENIED:
+//        dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
+//        __ssh_userauth_list(_ssh_session);
+//        [self _ssh_process_userauth_queue];
+        break;
+      case SSH_AUTH_ERROR:
+      default:
+        return rc;
+    }
+    break;
+  }
+  
+  dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
+  NSMutableArray *userauth_list = __ssh_userauth_list(_ssh_session);
+  
   return SSH_OK;
 }
 
-- (dispatch_block_t)_ssh_connectEventHandler {
-  return ^{
-    int rc = ssh_connect(_ssh_session);
-    switch (rc) {
-      case SSH_AGAIN:
-        return;
-      case SSH_OK: {
-        // TODO: host verification
-        
-        
-        // preAuthenticate
-        dispatch_block_t preAuthEventHandler = [self _ssh_preAuthEventHandler];
-        dispatch_source_set_event_handler(_sessionSockSource, preAuthEventHandler);
-        preAuthEventHandler();
-      }
-    }
-  };
-}
 
 - (dispatch_block_t)_ssh_preAuthEventHandler {
   return ^{
@@ -630,7 +650,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       _identitiesQueue = [_options[SSHOptionIdentityFile] mutableCopy];
       return [self _ssh_process_userauth_identites_queue];
     case SSH_AUTH_METHOD_INTERACTIVE:
-      return [self _ssh_userauth_interactive];
+//      return [self _ssh_userauth_interactive];
     default:
       break;
   }
@@ -643,9 +663,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     [_userauthQueue removeObjectAtIndex:0];
     [self _ssh_process_userauth_queue];
   }
-  dispatch_block_t nextBlock = [self _ssh_identityfileEventHandler];
-  dispatch_source_set_event_handler(_sessionSockSource, nextBlock);
-  nextBlock();
 }
 
 - (dispatch_block_t)_ssh_identityfileEventHandler {
@@ -695,11 +712,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   };
 }
 
-- (void)_ssh_userauth_interactive {
-  dispatch_block_t nextBlock = [self _ssh_interactiveEventhandler];
-  dispatch_source_set_event_handler(_sessionSockSource, nextBlock);
-  nextBlock();
-}
 
 - (dispatch_block_t)_ssh_interactiveEventhandler {
   return ^{
@@ -773,23 +785,32 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (void)_ssh_authenticated {
   NSLog(@"Authenticated");
-  dispatch_source_set_event_handler(_sessionSockSource, ^{});
-  dispatch_suspend(_sessionSockSource);
   
-  dispatch_source_t channel_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
-  ssh_channel channel = ssh_channel_new(_ssh_session);
-  _mainChannel = [[SSHClientChannel alloc] initWithDispatchSource:channel_source andChannel:channel];
-  _mainChannel.delegate = self;
-  [_mainChannel open];
+//  dispatch_source_t channel_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
+//  ssh_channel channel = ssh_channel_new(_ssh_session);
+//  _mainChannel = [[SSHClientChannel alloc] initWithDispatchSource:channel_source andChannel:channel];
+//  _mainChannel.delegate = self;
+//  [_mainChannel open];
   
 }
   
 
 - (int)main:(int) argc argv:(char **) argv {
+  
+  
   int rc = [self _parseArgs:argc argv: argv];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
   }
+  
+  [self _ssh_createAndConfigureSession];
+  if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
+    [self _printConfiguration];
+    return 0;
+  }
+  
+  [self _ssh_connect];
+  
   
   dispatch_async(_mainQueue, ^{
     [self _ssh_createAndConfigureSession];

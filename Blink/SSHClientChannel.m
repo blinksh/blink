@@ -175,7 +175,7 @@ static void __channel_exit_status(ssh_session session,
 //              __refresh_size(channel);
 //            }
 //
-  ssh_event_add_session(<#ssh_event event#>, <#ssh_session session#>)
+//  ssh_event_add_session(<#ssh_event event#>, <#ssh_session session#>)
 //            ssh_event_dopoll(event, 60000);
 //          }
 //          int rc = ssh_channel_get_exit_status(channel);
