@@ -160,37 +160,33 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 @implementation SSHClient {
-  dispatch_queue_t _mainQueue;
+  dispatch_queue_t _queue;
+  ssh_event _event;
+  ssh_session _session;
+  NSMutableDictionary *_options;
 
   dispatch_fd_t _fdIn;
   dispatch_fd_t _fdOut;
   dispatch_fd_t _fdErr;
   
-  ssh_event _main_event;
+  
   
   SSHClientChannel *_mainChannel;
-
-  ssh_session _ssh_session;
-  dispatch_semaphore_t _mainDsema;
   
-  NSMutableDictionary *_options;
-  
-  NSMutableArray<NSNumber *> *_userauthQueue;
-  NSMutableArray<NSString *> *_identitiesQueue;
-  
+  bool _doExit;
   int _exitCode;
 }
 
 - (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr {
   if (self = [super init]) {
     
-    _mainQueue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
+    _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
-    _mainDsema = dispatch_semaphore_create(0);
     _options = [[NSMutableDictionary alloc] init];
     
+    _doExit = NO;
     _exitCode = 0;
   }
   
@@ -198,17 +194,16 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_exitWithCode:(int)code {
-  dispatch_barrier_async(_mainQueue, ^{
-    _exitCode = code;
-    dispatch_semaphore_signal(_mainDsema);
-  });
-  
+  _doExit = YES;
+  _exitCode = code;
   return code;
 }
 
 - (int)_exitWithCode:(int)code andMessage: (NSString * __nonnull)message {
-  dispatch_write_utf8string(_fdErr, [message stringByAppendingString:@"\n"], _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
-    [self _exitWithCode:code];
+  dispatch_write_utf8string(_fdErr, [message stringByAppendingString:@"\n"], _queue, ^(dispatch_data_t  _Nullable data, int error) {
+    dispatch_sync(_queue, ^{
+      [self _exitWithCode:code];
+    });
   });
   return _exitCode;
 }
@@ -460,7 +455,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
                        @"            [user@]hostname [command]",
                        @""
                       ] componentsJoinedByString:@"\n"];
-  dispatch_write_utf8string(_fdOut, usage, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
+  dispatch_write_utf8string(_fdOut, usage, _queue, ^(dispatch_data_t  _Nullable data, int error) {
     [self _exitWithCode:code];
   });
   return code;
@@ -503,18 +498,18 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   if ([value isKindOfClass:[NSNumber class]]) {
     int v = [value intValue];
-    return ssh_options_set(_ssh_session, option, &v);
+    return ssh_options_set(_session, option, &v);
   } else if ([value isKindOfClass:[NSString class]]) {
     const char *v = [value UTF8String];
-    return ssh_options_set(_ssh_session, option, v);
+    return ssh_options_set(_session, option, v);
   }
   
   return SSH_ERROR;
 }
 
 - (void)_ssh_createAndConfigureSession {
-  _ssh_session = ssh_new();
-  _main_event = ssh_event_new();
+  _session = ssh_new();
+  _event = ssh_event_new();
   
   [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSHOptionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
@@ -522,12 +517,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [self _applySSHOptionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
   [self _applySSHOptionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
   [self _applySSHOptionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
-  ssh_options_set(_ssh_session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
+  ssh_options_set(_session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
   
   NSString *configFile = _options[SSHOptionConfigFile];
-  ssh_options_parse_config(_ssh_session, configFile.UTF8String);
-  ssh_set_blocking(_ssh_session, 0);
-  
+  ssh_options_parse_config(_session, configFile.UTF8String);
 }
 
 - (void)_printConfiguration {
@@ -547,7 +540,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   [lines addObject:@""];
   
-  dispatch_write_utf8string(_fdOut, [lines componentsJoinedByString:@"\n"], _mainQueue, ^(dispatch_data_t _Nullable data, int error) {
+  dispatch_write_utf8string(_fdOut, [lines componentsJoinedByString:@"\n"], _queue, ^(dispatch_data_t _Nullable data, int error) {
     [self _exitWithCode:SSH_OK];
   });
 }
@@ -555,187 +548,159 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)_do_poll {
   int rc = SSH_AGAIN;
   do {
-    rc = ssh_event_dopoll(_main_event, -1);
+    rc = ssh_event_dopoll(_event, -1);
   } while (rc == SSH_AGAIN);
   return rc;
 }
 
-- (int)_ssh_connect {
-  int rc = ssh_connect(_ssh_session);
-  if (ssh_event_add_session(_main_event, _ssh_session) == SSH_ERROR) {
-    return SSH_ERROR;
-  }
-  
-  // connect
-  for(;;) {
-    switch(rc) {
-      case SSH_AGAIN:
-        rc = [self _do_poll];
-        if (rc == SSH_ERROR) {
-          return rc;
-        }
-        rc = ssh_connect(_ssh_session);
-        continue;
-      case SSH_OK:
-        break;
-      case SSH_ERROR:
-      default:
-        return rc;
-    }
-    break;
-  }
-  
-  // pre auth
-  for (;;) {
-    rc = ssh_userauth_none(_ssh_session, NULL);
-    switch (rc) {
-      case SSH_AUTH_AGAIN:
-        rc = [self _do_poll];
-        if (rc == SSH_ERROR) {
-          return rc;
-        }
-        continue;
-      case SSH_AUTH_PARTIAL:
-      case SSH_AUTH_DENIED:
-//        dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
-//        __ssh_userauth_list(_ssh_session);
-//        [self _ssh_process_userauth_queue];
-        break;
-      case SSH_AUTH_ERROR:
-      default:
-        return rc;
-    }
-    break;
-  }
-  
-  dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
-  NSMutableArray *userauth_list = __ssh_userauth_list(_ssh_session);
-  
-  return SSH_OK;
-}
-
-
-- (dispatch_block_t)_ssh_preAuthEventHandler {
-  return ^{
-    int rc = ssh_userauth_none(_ssh_session, NULL);
-    switch (rc) {
-      case SSH_AUTH_AGAIN:
-        return;
-      case SSH_AUTH_ERROR:
-        // SSH_AUTH_ERROR: A serious error happened.
-        break;
-      case SSH_AUTH_PARTIAL:
-        // SSH_AUTH_ERROR: A serious error happened.
-        break;
-      case SSH_AUTH_DENIED:
-        dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_ssh_session), _mainQueue);
-        _userauthQueue = __ssh_userauth_list(_ssh_session);
-        [self _ssh_process_userauth_queue];
-        break;
-      default:
-
-        break;
-    }
+- (int)_start_connect_flow {
+  __block int rc = SSH_ERROR;
+  dispatch_block_t connect_block = ^{
+    rc = ssh_connect(_session);
   };
-}
-
-
-- (void)_ssh_process_userauth_queue {
-  if (_userauthQueue.count == 0 ) {
-    // TODO: No methods: close connection and return
-    return;
+  
+  dispatch_sync(_queue, ^{
+    ssh_set_blocking(_session, 0);
+    _event = ssh_event_new();
+    connect_block();
+    ssh_event_add_session(_event, _session);
+    if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
+      rc = SSH_ERROR;
+    }
+  });
+  
+  if (rc == SSH_ERROR) {
+    return rc;
   }
   
-  int authMethod = [[_userauthQueue firstObject] intValue];
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    // connect
+    for(;;) {
+      switch(rc) {
+        case SSH_AGAIN: {
+          dispatch_sync(_queue, connect_block);
+          continue;
+        }
+        case SSH_OK:
+          [self _auth];
+        case SSH_ERROR:
+        default:
+          return;
+      }
+    }
+  });
   
-//  _userAuthList = [_userAuthList remo]
-  switch (authMethod) {
-    case SSH_AUTH_METHOD_PUBLICKEY:
-      _identitiesQueue = [_options[SSHOptionIdentityFile] mutableCopy];
-      return [self _ssh_process_userauth_identites_queue];
-    case SSH_AUTH_METHOD_INTERACTIVE:
-//      return [self _ssh_userauth_interactive];
-    default:
+  return rc;
+}
+
+- (void)_auth {
+  __block int rc = SSH_ERROR;
+  dispatch_block_t auth_block = ^{
+    rc = ssh_userauth_none(_session, NULL);
+  };
+  
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    // 1. pre auth
+    for (;;) {
+      dispatch_sync(_queue, auth_block);
+      switch (rc) {
+        case SSH_AUTH_PARTIAL:
+        case SSH_AUTH_DENIED: break;
+        case SSH_AUTH_AGAIN: continue;
+        default:
+        case SSH_AUTH_ERROR:
+          [self _exitWithCode:rc];
+          return;
+      }
       break;
-  }
-}
-
-- (void)_ssh_process_userauth_identites_queue {
-  NSString *identityfile = [_identitiesQueue firstObject];
-  
-  if (!identityfile) {
-    [_userauthQueue removeObjectAtIndex:0];
-    [self _ssh_process_userauth_queue];
-  }
-}
-
-- (dispatch_block_t)_ssh_identityfileEventHandler {
-  return ^{
-    NSString *identityfile = [_identitiesQueue firstObject];
-    int rc;
-    ssh_key pkey;
-    
-    BKPubKey *secureKey = [BKPubKey withID:identityfile];
-    // we have this identity in
-    if (secureKey) {
-      rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
-                                    NULL, /* TODO: get stored */
-                                    __ssh_auth_fn,
-                                    (__bridge void *) self,
-                                    &pkey);
-    } else {
-      rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
-                                  NULL,
-                                  __ssh_auth_fn,
-                                  (__bridge void *) self,
-                                  &pkey);
     }
     
-    rc = ssh_userauth_publickey(_ssh_session, [_options[SSHOptionUser] UTF8String], pkey);
-    switch (rc) {
-      case SSH_AUTH_ERROR:
-        // SSH_AUTH_ERROR: A serious error happened.
+    // 2. print issue banner if any
+    dispatch_sync(_queue, ^{
+      dispatch_write_ssh_chars(_fdOut, ssh_get_issue_banner(_session), _queue);
+    });
+    
+    // 3. get auth methods from server
+    __block int methods;
+    dispatch_sync(_queue, ^{
+      methods = ssh_userauth_list(_session, NULL);
+    });
+    
+    // 4. public key first
+    if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
+      NSArray<NSString *> *identityfiles = _options[SSHOptionIdentityFile];
+      for (NSString *identityfile in identityfiles) {
+        __block ssh_key pkey;
+        dispatch_sync(_queue, ^{
+          BKPubKey *secureKey = [BKPubKey withID:identityfile];
+          // we have this identity in
+          if (secureKey) {
+            rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
+                                               NULL, /* TODO: get stored */
+                                               __ssh_auth_fn,
+                                               (__bridge void *) self,
+                                               &pkey);
+          } else {
+            rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
+                                             NULL,
+                                             __ssh_auth_fn,
+                                             (__bridge void *) self,
+                                             &pkey);
+          }
+        });
+        if (rc == SSH_ERROR) {
+          continue;
+        }
+        NSString *user = _options[SSHOptionUser];
+        dispatch_block_t auth_block = ^{
+          rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
+        };
+        bool tryNextIdentityFile = NO;
+        for (;;) {
+          dispatch_sync(_queue, auth_block);
+          switch (rc) {
+            case SSH_AUTH_AGAIN: continue;
+            case SSH_AUTH_SUCCESS:
+              return;
+            case SSH_AUTH_DENIED:
+            case SSH_AUTH_PARTIAL:
+              tryNextIdentityFile = YES;
+              break;
+            default:
+              break;
+          }
+          break;
+        }
+        if (tryNextIdentityFile) {
+          continue;
+        }
         break;
-      case SSH_AUTH_DENIED:
-      case SSH_AUTH_PARTIAL:
-        // SSH_AUTH_DENIED: The server doesn't accept that public key as an authentication token. Try another key or another method.
-        // SSH_AUTH_PARTIAL: You've been partially authenticated, you still have to use another method.
-        _identitiesQueue = nil; // clean this identites queue
-        [_userauthQueue removeObjectAtIndex:0]; // remove current auth method.
-        return [self _ssh_process_userauth_queue]; //  try another method
-      case SSH_AUTH_SUCCESS:
-        // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
-        return [self _ssh_authenticated];
-      case SSH_AUTH_AGAIN:
-        // The public key is accepted, you want now to use ssh_userauth_pubkey(). SSH_AUTH_AGAIN: In nonblocking mode, you've got to call this again later.
-        break;
-      default:
-        
-        break;
+      }
     }
-  };
+    
+  });
 }
 
 
 - (dispatch_block_t)_ssh_interactiveEventhandler {
   return ^{
-    int rc = ssh_userauth_kbdint(_ssh_session, NULL, NULL);
+    int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     switch (rc) {
       case SSH_AUTH_AGAIN:
         return;
       case SSH_AUTH_INFO: {
-        const char *nameChars = ssh_userauth_kbdint_getname(_ssh_session);
-        const char *instructionChars = ssh_userauth_kbdint_getinstruction(_ssh_session);
+        const char *nameChars = ssh_userauth_kbdint_getname(_session);
+        const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
         
         NSString *name = nameChars ? @(nameChars) : nil;
         NSString *instruction = instructionChars ? @(instructionChars) : nil;
         
-        int nprompts = ssh_userauth_kbdint_getnprompts(_ssh_session);
+        int nprompts = ssh_userauth_kbdint_getnprompts(_session);
         if (nprompts >= 0) {
           NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
           for (int i = 0; i < nprompts; i++) {
             char echo = NO;
-            const char *prompt = ssh_userauth_kbdint_getprompt(_ssh_session, i, &echo);
+            const char *prompt = ssh_userauth_kbdint_getprompt(_session, i, &echo);
             
             [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
           }
@@ -743,14 +708,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
           
           for (int i = 0; i < answers.count; i++) {
-            int rc = ssh_userauth_kbdint_setanswer(_ssh_session, i, [answers[i] UTF8String]);
+            int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
             if (rc < 0) {
               break;
             }
           }
         }
         
-        rc = ssh_userauth_kbdint(_ssh_session, NULL, NULL);
+        rc = ssh_userauth_kbdint(_session, NULL, NULL);
       }
         break;
       case SSH_AUTH_SUCCESS:
@@ -800,58 +765,35 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
 
 - (int)main:(int) argc argv:(char **) argv {
-  
-  
-  int rc = [self _parseArgs:argc argv: argv];
+  __block int rc = [self _parseArgs:argc argv: argv];
+
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
   }
   
   [self _ssh_createAndConfigureSession];
+  
   if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
     [self _printConfiguration];
-    return 0;
+    return [self _exitWithCode:SSH_OK];
   }
   
-  [self _ssh_connect];
+  if ([self _start_connect_flow] == SSH_ERROR) {
+    return [self _exitWithCode:SSH_ERROR];
+  }
   
-  for (;;) {
-    rc = ssh_event_dopoll(_main_event, -1);
+  dispatch_block_t poll_block = ^{
+    rc = ssh_event_dopoll(_event, 2000);
+  };
+
+  while (!_doExit) {
+    dispatch_sync(_queue, poll_block);
     if (rc == SSH_ERROR) {
       break;
     }
-    dispatch_semaphore_signal(_mainDsema);
-  }
+  };
   
-  dispatch_async(_mainQueue, ^{
-    [self _ssh_createAndConfigureSession];
-    
-    if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
-      [self _printConfiguration];
-      return;
-    }
-    
-    [self _ssh_connect];
-  });
-  
-  dispatch_semaphore_wait(_mainDsema, DISPATCH_TIME_FOREVER);
   return _exitCode;
-}
-
--(int)writeToStdOut:(void *)buffer len:(uint32_t)len {
-  dispatch_data_t data = dispatch_data_create(buffer, len, _mainQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-  dispatch_write(_fdOut, data, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
-    NSLog(@"done");
-  });
-  return 0;
-}
-
--(int)writeToStdErr:(void *)buffer len:(uint32_t)len {
-  dispatch_data_t data = dispatch_data_create(buffer, len, _mainQueue, DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-  dispatch_write(_fdErr, data, _mainQueue, ^(dispatch_data_t  _Nullable data, int error) {
-    NSLog(@"done");
-  });
-  return 0;
 }
 
 @end
