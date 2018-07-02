@@ -41,6 +41,7 @@
 #include <libssh/libssh.h>
 #include <libssh/callbacks.h>
 
+
 void dispatch_write_utf8string(dispatch_fd_t fd,
                NSString * _Nonnull string,
                dispatch_queue_t queue,
@@ -551,9 +552,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   });
 }
 
-- (int)_pollEvent
-{
-  return ssh_event_dopoll(_main_event, -1);
+- (int)_do_poll {
+  int rc = SSH_AGAIN;
+  do {
+    rc = ssh_event_dopoll(_main_event, -1);
+  } while (rc == SSH_AGAIN);
+  return rc;
 }
 
 - (int)_ssh_connect {
@@ -566,7 +570,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   for(;;) {
     switch(rc) {
       case SSH_AGAIN:
-        rc = [self _pollEvent];
+        rc = [self _do_poll];
         if (rc == SSH_ERROR) {
           return rc;
         }
@@ -586,7 +590,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     rc = ssh_userauth_none(_ssh_session, NULL);
     switch (rc) {
       case SSH_AUTH_AGAIN:
-        rc = [self _pollEvent];
+        rc = [self _do_poll];
         if (rc == SSH_ERROR) {
           return rc;
         }
@@ -811,6 +815,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   [self _ssh_connect];
   
+  for (;;) {
+    rc = ssh_event_dopoll(_main_event, -1);
+    if (rc == SSH_ERROR) {
+      break;
+    }
+    dispatch_semaphore_signal(_mainDsema);
+  }
   
   dispatch_async(_mainQueue, ^{
     [self _ssh_createAndConfigureSession];
