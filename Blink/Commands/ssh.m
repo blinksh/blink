@@ -610,7 +610,7 @@ int __shell(ssh_session session, session_options options) {
       return __die_msg("Can't request pty");
     }
     __refresh_size(channel);
-  }
+  };
   
   if (options.command) {
     rc = ssh_channel_request_exec(channel, options.command);
@@ -631,7 +631,8 @@ int ssh_main(int argc, char *argv[]) {
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)
                               stdOut: fileno(thread_stdout)
-                              stdErr: fileno(thread_stderr)];
+                              stdErr: fileno(thread_stderr)
+                       isTTY: ios_isatty(fileno(thread_stdout))];
   return [client main:argc argv:argv];
 }
   

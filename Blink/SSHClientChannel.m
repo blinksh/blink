@@ -32,194 +32,225 @@
 
 #import "SSHClientChannel.h"
 
+#import "SSHClient.h"
 #include <libssh/callbacks.h>
 
 
-@implementation SSHClientChannel {
-  ssh_channel _ssh_channel;
-  dispatch_source_t _channel_source;
-  struct ssh_channel_callbacks_struct _callbacks;
-  NSData *_pendingWriteData;
+@implementation SSHClientChannel
+- (void)openWithClient:(SSHClient *)client {
 }
 
-static int __channel_data_available(ssh_session session,
-                                    ssh_channel channel,
-                                    void *data,
-                                    uint32_t len,
-                                    int is_stderr,
-                                    void *userdata) {
-  SSHClientChannel *clientChannel = (__bridge SSHClientChannel *)userdata;
-  return [clientChannel _channel_data_available_session:session channel:channel data:data len:len is_stderr:is_stderr];
-}
-
-static void __channel_close_received(ssh_session session,
-                                     ssh_channel channel,
-                                     void *userdata) {
-  SSHClientChannel *clientChannel = (__bridge SSHClientChannel *)userdata;
-  //  [clientChannel doCloseWithError:nil];
-}
-
-static void __channel_eof_received(ssh_session session,
-                                 ssh_channel channel,
-                                 void *userdata) {
-  // SSHKitChannel *selfChannel = (__bridge SSHKitChannel *)userdata;
-  // TODO: call a new delegate here? i.e. channelDidReceiveEOF
-}
-
-static void __channel_exit_status(ssh_session session,
-                                ssh_channel channel,
-                                int exit_status,
-                                void *userdata) {
-//  SSHKitChannel *selfChannel = (__bridge SSHKitChannel *)userdata;
-//  selfChannel->_exitStatus = exit_status;
-
-}
-
-- (instancetype)initWithDispatchSource:(dispatch_source_t) channel_source andChannel:(ssh_channel) ssh_channel {
-  if (self = [super init]) {
-    _channel_source = channel_source;
-    _ssh_channel = ssh_channel;
-    [self _registerCallbacks];
-  }
-  
-  return self;
-}
-
-- (void)open {
-  dispatch_block_t openHandler = [self _channel_openHandler];
-  dispatch_source_set_event_handler(_channel_source, openHandler);
-  dispatch_resume(_channel_source);
-  openHandler();
-}
-
-- (int)_channel_data_available_session:(ssh_session ) session
-                               channel:(ssh_channel) channel
-                                  data: (void *) data
-                                   len: (uint32_t) len
-                             is_stderr:(int)is_stderr {
-  
-  if (is_stderr) {
-    return [self.delegate writeToStdErr:data len:len];
-  } else {
-    return [self.delegate writeToStdOut:data len:len];
-  }
-  return 0;
-}
-
-
-- (dispatch_block_t)_channel_openHandler {
-  return ^{
-    int rc = ssh_channel_open_session(_ssh_channel);
-    switch (rc) {
-      case SSH_OK: {
-        dispatch_block_t ptyHandler = [self _channel_request_ptyHandler];
-        dispatch_source_set_event_handler(_channel_source, ptyHandler);
-        ptyHandler();
-      }
-        break;
-      case SSH_ERROR:
-        break;
-      case SSH_AGAIN:
-        break;
-      default:
-        break;
-    }
-  };
-}
-
-- (dispatch_block_t)_channel_request_ptyHandler {
-  return ^{
-    int rc = ssh_channel_request_pty(_ssh_channel);
-    switch (rc) {
-      case SSH_OK: {
-        dispatch_block_t shellHandler = [self _channel_request_shellHandler];
-        dispatch_source_set_event_handler(_channel_source, shellHandler);
-        shellHandler();
-      }
-        break;
-      case SSH_ERROR:
-        break;
-      case SSH_AGAIN:
-        break;
-      default:
-        break;
-    }
-  };
-}
-
-- (dispatch_block_t)_channel_request_shellHandler {
-  return ^{
-    int rc = ssh_channel_request_shell(_ssh_channel);
-    switch (rc) {
-      case SSH_OK: {
-        dispatch_async(dispatch_get_global_queue(0, 0), ^{
-//          connector_in = ssh_connector_new(session);
-//          ssh_connector_set_out_channel(connector_in, channel, SSH_CONNECTOR_STDOUT);
-//          ssh_connector_set_in_fd(connector_in, fileno(thread_stdin));
-//          ssh_event_add_connector(event, connector_in);
-          
-          // stdout
-//          connector_out = ssh_connector_new(session);
-//          ssh_connector_set_out_fd(connector_out, fileno(thread_stdout));
-//          ssh_connector_set_in_channel(connector_out, channel, SSH_CONNECTOR_STDOUT);
-//          ssh_event_add_connector(event, connector_out);
-          
-          // stderr
-//          connector_err = ssh_connector_new(session);
-//          ssh_connector_set_out_fd(connector_err, fileno(thread_stdout));
-//          ssh_connector_set_in_channel(connector_err, channel, SSH_CONNECTOR_STDERR);
-//          ssh_event_add_connector(event, connector_err);
-          
-//          while(ssh_channel_is_open(channel) && !ssh_channel_is_eof(channel)) {
-//            if (signal_delayed) {
-//              __refresh_size(channel);
-//            }
-//
-//  ssh_event_add_session(<#ssh_event event#>, <#ssh_session session#>)
-//            ssh_event_dopoll(event, 60000);
-//          }
-//          int rc = ssh_channel_get_exit_status(channel);
-//          ssh_event_remove_connector(event, connector_in);
-//          ssh_event_remove_connector(event, connector_out);
-//          ssh_event_remove_connector(event, connector_err);
-          
-//          ssh_connector_free(connector_in);
-//          ssh_connector_free(connector_out);
-//          ssh_connector_free(connector_err);
-          
-//          ssh_event_free(event);
-//          ssh_channel_free(channel);
-        });
-        dispatch_source_set_event_handler(_channel_source, ^{
-          // HOW we can avoid this.
-//          ssh_channel_poll(_ssh_channel, 0);
-//          ssh_channel_poll(_ssh_channel, 1);
-        });
-        dispatch_suspend(_channel_source);
-      }
-        break;
-      case SSH_ERROR:
-        break;
-      case SSH_AGAIN:
-        break;
-      default:
-        break;
-    }
-  };
-}
-
-
-- (void)_registerCallbacks {
-  _callbacks.userdata = (__bridge void *)(self);
-  _callbacks.channel_data_function  = __channel_data_available;
-  _callbacks.channel_close_function = __channel_close_received;
-  _callbacks.channel_eof_function   = __channel_eof_received;
-  _callbacks.channel_exit_status_function = __channel_exit_status;
-  
-  ssh_callbacks_init(&_callbacks);
-  ssh_set_channel_callbacks(_ssh_channel, &_callbacks);
+- (void)closeWithClient:(SSHClient *)client {
 }
 
 @end
 
+@implementation SSHClientMainChannel {
+  
+  ssh_channel _channel;
+  ssh_connector _connector_in;
+  ssh_connector _connector_out;
+  ssh_connector _connector_err;
+}
 
+- (void)openWithClient:(SSHClient *)client {
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    __block int rc;
+    [client sync: ^{
+      _channel = ssh_channel_new(client.session);
+      ssh_channel_set_blocking(_channel, 0);
+    }];
+
+
+    for (;;) {
+      [client sync: ^{
+        rc = ssh_channel_open_session(_channel);
+      }];
+      switch (rc) {
+        case SSH_AGAIN: continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          [client sync:^{
+            ssh_channel_free(_channel);
+            [client exitWithCode:rc];
+          }];
+          return;
+      }
+      break;
+    }
+
+    BOOL doRequestPTY = client.options[SSHOptionRequestTTY] == SSHOptionValueYES
+          || (client.options[SSHOptionRequestTTY] == SSHOptionValueAUTO && client.isTTY);
+    
+    if (doRequestPTY) {
+      for (;;) {
+        [client sync: ^{
+          rc = ssh_channel_request_pty(_channel);
+        }];
+        switch (rc) {
+          case SSH_AGAIN: continue;
+          case SSH_OK: break;
+          default:
+          case SSH_ERROR:
+            [client sync:^{
+              ssh_channel_close(_channel);
+              ssh_channel_free(_channel);
+              [client exitWithCode:rc];
+            }];
+            return;
+        }
+        break;
+      }
+    }
+
+    NSString *remoteCommand = client.options[SSHOptionRemoteCommand];
+    for (;;) {
+      [client sync: ^{
+        if (remoteCommand) {
+          rc = ssh_channel_request_exec(_channel, remoteCommand.UTF8String);
+        } else {
+          rc = ssh_channel_request_shell(_channel);
+        }
+      }];
+      switch (rc) {
+        case SSH_AGAIN: continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          [client sync:^{
+            ssh_channel_close(_channel);
+            ssh_channel_free(_channel);
+            [client exitWithCode:rc];
+          }];
+          return;
+      }
+      break;
+    }
+
+    
+    
+    [client sync: ^{
+      // stdin
+      _connector_in = ssh_connector_new(client.session);
+      ssh_connector_set_in_fd(_connector_in, client.fdIn);
+      ssh_connector_set_out_channel(_connector_in, _channel, SSH_CONNECTOR_STDOUT);
+      ssh_event_add_connector(client.event, _connector_in);
+
+      // stdout
+      _connector_out = ssh_connector_new(client.session);
+      ssh_connector_set_in_channel(_connector_out, _channel, SSH_CONNECTOR_STDOUT);
+      ssh_connector_set_out_fd(_connector_out, client.fdOut);
+      ssh_event_add_connector(client.event, _connector_out);
+
+      // stderr
+      _connector_err = ssh_connector_new(client.session);
+      ssh_connector_set_in_channel(_connector_err, _channel, SSH_CONNECTOR_STDERR);
+      ssh_connector_set_out_fd(_connector_err, client.fdErr);
+      ssh_event_add_connector(client.event, _connector_err);
+    }];
+  });
+}
+
+@end
+
+@implementation SSHClientDirectForwardChannel {
+  ssh_channel _channel;
+  
+  NSString *_remotehost;
+  int _remoteport;
+  NSString *_sourcehost;
+  int _localport;
+  
+  dispatch_fd_t _listenSock;
+  dispatch_queue_t _listenQueue;
+  
+  dispatch_source_t _listenSource;
+  
+}
+
+- (instancetype)initWithAddress:(NSString *)address {
+  self = [super init];
+  if (self) {
+    _listenQueue = dispatch_queue_create("sh.blink.sshclient.listen", DISPATCH_QUEUE_SERIAL);
+    
+    NSMutableArray<NSString *> *parts = [[address componentsSeparatedByString:@":"] mutableCopy];
+    _remoteport = [[parts lastObject] intValue];
+    [parts removeLastObject];
+    _remotehost = [parts lastObject];
+    [parts removeLastObject];
+    _localport = [[parts lastObject] intValue];
+    [parts removeLastObject];
+    _sourcehost = [parts lastObject] ?: @"localhost";
+  }
+  return self;
+}
+
+- (void)openWithClient:(SSHClient *)client {
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    __block int rc;
+    _listenSock = socket(AF_INET, SOCK_STREAM, 0);
+    if (_listenSock < 0) {
+      [client sync:^{
+        ssh_channel_free(_channel);
+        [client exitWithCode:rc];
+      }];
+      return;
+    }
+    
+    struct sockaddr_in address;
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    
+    address.sin_port=htons(_localport);
+    bind(_listenSock, (struct sockaddr *)&address,sizeof(address));
+    listen(_listenSock, 15);
+    
+    _listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _listenSock, 0, _listenQueue);
+
+    
+    dispatch_source_set_event_handler(_listenSource, ^{
+      dispatch_fd_t sock = accept(_listenSock, NULL, NULL);
+      [client sync: ^{
+        _channel = ssh_channel_new(client.session);
+        ssh_channel_set_blocking(_channel, 0);
+      }];
+      
+      for (;;) {
+        [client sync: ^{
+          rc = ssh_channel_open_forward(_channel, _remotehost.UTF8String, _remoteport, _sourcehost.UTF8String, _localport);
+        }];
+        switch (rc) {
+          case SSH_AGAIN: continue;
+          case SSH_OK: break;
+          default:
+          case SSH_ERROR:
+            [client sync:^{
+              ssh_channel_free(_channel);
+              [client exitWithCode:rc];
+            }];
+            return;
+        }
+        break;
+      }
+      
+      [client sync: ^{
+        // stdin
+        
+        ssh_connector _connector_in = ssh_connector_new(client.session);
+        ssh_connector_set_in_fd(_connector_in, sock);
+        ssh_connector_set_out_channel(_connector_in, _channel, SSH_CONNECTOR_BOTH);
+        ssh_event_add_connector(client.event, _connector_in);
+        
+        // stdout
+        ssh_connector _connector_out = ssh_connector_new(client.session);
+        ssh_connector_set_in_channel(_connector_out, _channel, SSH_CONNECTOR_BOTH);
+        ssh_connector_set_out_fd(_connector_out, sock);
+        ssh_event_add_connector(client.event, _connector_out);
+      }];
+    });
+    dispatch_resume(_listenSource);
+  });
+}
+
+@end

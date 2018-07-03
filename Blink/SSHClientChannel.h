@@ -35,19 +35,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@protocol SSHClientChannelDelegate <NSObject>
-
-- (int)writeToStdOut:(void *)data len: (uint32_t)len;
-- (int)writeToStdErr:(void *)data len: (uint32_t)len;
-
-@end
+@class SSHClient;
 
 @interface SSHClientChannel : NSObject
 
-@property (nonatomic, weak) id<SSHClientChannelDelegate> delegate;
+- (void)openWithClient:(SSHClient *)client;
+- (void)closeWithClient:(SSHClient *)client;
 
-- (instancetype)initWithDispatchSource:(dispatch_source_t) channel_source andChannel:(ssh_channel) ssh_channel;
-- (void)open;
 @end
+
+@interface SSHClientMainChannel : SSHClientChannel
+@end
+
+@interface SSHClientDirectForwardChannel : SSHClientChannel
+- (instancetype)initWithAddress:(NSString *)address;
+@end
+
 
 NS_ASSUME_NONNULL_END

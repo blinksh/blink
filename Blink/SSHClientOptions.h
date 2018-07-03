@@ -53,6 +53,7 @@ extern const NSString * SSHOptionTCPKeepAlive;
 extern const NSString * SSHOptionNumberOfPasswordPrompts; // -o
 extern const NSString * SSHOptionServerLiveCountMax; // -o
 extern const NSString * SSHOptionServerLiveInterval; // -o
+extern const NSString * SSHOptionLocalForward; // -L
 
 // Non standart
 extern const NSString * SSHOptionPassword; //

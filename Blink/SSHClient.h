@@ -31,13 +31,29 @@
 
 
 #import <Foundation/Foundation.h>
+#include <libssh/libssh.h>
+#import "SSHClientOptions.h"
+
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface SSHClient : NSObject
 
-- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr;
+@property (readonly) SSHClientOptions *options;
+@property (readonly) ssh_event event;
+@property (readonly) ssh_session session;
+@property (readonly) dispatch_queue_t queue;
+
+@property (readonly) dispatch_fd_t fdIn;
+@property (readonly) dispatch_fd_t fdOut;
+@property (readonly) dispatch_fd_t fdErr;
+
+@property BOOL isTTY;
+
+- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr isTTY:(BOOL)isTTY;
 - (int)main:(int) argc argv:(char **) argv;
+- (void)sync:(dispatch_block_t)block;
+- (int)exitWithCode:(int)code;
 
 @end
 

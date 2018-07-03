@@ -54,6 +54,7 @@ const NSString * SSHOptionTCPKeepAlive = @"tcpkeepalive";
 const NSString * SSHOptionNumberOfPasswordPrompts = @"numberofpasswordprompts"; // -o
 const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
 const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
+const NSString * SSHOptionLocalForward = @"localforward"; // -L
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -105,6 +106,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *intType = [[NSObject alloc] init];
   NSObject *intNoneType = [[NSObject alloc] init];
   NSObject *identityfileType = [[NSObject alloc] init];
+  NSObject *localforwardType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -119,6 +121,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionRemoteCommand: @[stringType],
                          SSHOptionConnectTimeout: @[intType, @"none"],
                          SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", /* id_dsa, id_ecdsa, id_ed25519 */]],
+                         SSHOptionLocalForward: @[localforwardType],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, @"ask"],
                          SSHOptionCompression: @[yesNoType, @"yes"] // We mobile terminal, so we set compression to yes by default.
                          };
@@ -134,6 +137,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   NSMutableArray<NSString *> *identityfileOption = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *localforwardOption = [[NSMutableArray alloc] init];
   
   // Set options:
   for (NSString *optionStr in options) {
@@ -159,6 +163,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       result[key] = value; // TODO: strip qoutes
     } else if (type == identityfileType) {
       [identityfileOption addObject:value];
+    } else if (type == localforwardType) {
+      [localforwardOption addObject:value];
     } else if (type == yesNoType) {
       if ([@[@"yes", @"no"] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
@@ -260,10 +266,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
   [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *localforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
   
   while (1) {
-    int c = getopt(argc, argv, "Vo:CGp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "L:Vo:CGp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -289,6 +296,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         break;
       case 'l':
         [args setObject:@(optarg) forKey:SSHOptionUser];
+        break;
+      case 'L':
+        [localforward addObject:@(optarg)];
         break;
       case 'F':
         [args setObject:@(optarg) forKey:SSHOptionConfigFile];
@@ -327,6 +337,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   
   if (args[SSHOptionHostName] == NULL && args[SSHOptionPrintVersion] == NULL) {
     return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];;
+  }
+  
+  if (localforward.count > 0) {
+    args[SSHOptionLocalForward] = localforward;
   }
   
   _options = [self _applyOptions:options toArgs:args];
