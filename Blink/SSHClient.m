@@ -99,6 +99,7 @@ const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
 const NSString * SSHOptionPrintConfiguration = @"_printconfiguration"; // -G
+const NSString * SSHOptionPrintVersion = @"_printversion"; // -V
 
 const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
@@ -124,29 +125,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 ///** Get trace output, packet information, ... */
 //#define SSH_LOG_TRACE 4
 
-NSMutableArray<NSNumber *> *__ssh_userauth_list(ssh_session session) {
-  NSMutableArray *result = [[NSMutableArray alloc] init];
-  
-  int methods = ssh_userauth_list(session, NULL);
-  
-  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
-    [result addObject:@(SSH_AUTH_METHOD_PUBLICKEY)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_HOSTBASED) {
-    [result addObject:@(SSH_AUTH_METHOD_HOSTBASED)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
-    [result addObject:@(SSH_AUTH_METHOD_INTERACTIVE)];
-  }
-  
-  if (methods & SSH_AUTH_METHOD_PASSWORD) {
-    [result addObject:@(SSH_AUTH_METHOD_PASSWORD)];
-  }
-  
-  return result;
-}
 
 @interface SSHClient (internal) <SSHClientChannelDelegate>
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
@@ -163,6 +141,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_queue_t _queue;
   ssh_event _event;
   ssh_session _session;
+  ssh_channel _channel;
   NSMutableDictionary *_options;
 
   dispatch_fd_t _fdIn;
@@ -378,7 +357,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
   
   while (1) {
-    int c = getopt(argc, argv, "o:CGp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "Vo:CGp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -415,6 +394,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case 'G':
         [args setObject:SSHOptionValueYES forKey:SSHOptionPrintConfiguration];
         break;
+      case 'V':
+        [args setObject:SSHOptionValueYES forKey:SSHOptionPrintVersion];
+        break;
       default:
         return [self _printUsageWithCode:SSH_ERROR];
     }
@@ -437,7 +419,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     args[SSHOptionRemoteCommand] = [cmds componentsJoinedByString:@" "];
   }
   
-  if (args[SSHOptionHostName] == NULL) {
+  if (args[SSHOptionHostName] == NULL && args[SSHOptionPrintVersion] == NULL) {
     return [self _printUsageWithCode:SSH_ERROR];
   }
   
@@ -448,7 +430,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_printUsageWithCode:(int) code {
   NSString *usage = [@[
-                       @"usage: ssh2 [-CGTtv]",
+                       @"usage: ssh2 [-CGTtVv]",
                        @"            [-F configFile] [-i identity_file]",
                        @"            [-l login_name] [-o option]",
                        @"            [-p port] [-L address] [-R address]",
@@ -507,7 +489,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return SSH_ERROR;
 }
 
-- (void)_ssh_createAndConfigureSession {
+- (int)_ssh_createAndConfigureSession {
   _session = ssh_new();
   _event = ssh_event_new();
   
@@ -520,7 +502,21 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_options_set(_session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
   
   NSString *configFile = _options[SSHOptionConfigFile];
-  ssh_options_parse_config(_session, configFile.UTF8String);
+  return ssh_options_parse_config(_session, configFile.UTF8String);
+}
+
+- (void)_printVersion {
+  ssh_session s = ssh_new();
+  int v = ssh_get_openssh_version(s);
+  NSArray<NSString *> *lines = @[
+                                 [NSString stringWithFormat:@"%@", @(v)],
+                                 @"",
+                                 ];
+  
+  
+  dispatch_write_utf8string(_fdOut, [lines componentsJoinedByString:@"\n"], _queue, ^(dispatch_data_t _Nullable data, int error) {
+    [self _exitWithCode:SSH_OK];
+  });
 }
 
 - (void)_printConfiguration {
@@ -543,14 +539,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_write_utf8string(_fdOut, [lines componentsJoinedByString:@"\n"], _queue, ^(dispatch_data_t _Nullable data, int error) {
     [self _exitWithCode:SSH_OK];
   });
-}
-
-- (int)_do_poll {
-  int rc = SSH_AGAIN;
-  do {
-    rc = ssh_event_dopoll(_event, -1);
-  } while (rc == SSH_AGAIN);
-  return rc;
 }
 
 - (int)_start_connect_flow {
@@ -607,6 +595,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         case SSH_AUTH_PARTIAL:
         case SSH_AUTH_DENIED: break;
         case SSH_AUTH_AGAIN: continue;
+          
         default:
         case SSH_AUTH_ERROR:
           [self _exitWithCode:rc];
@@ -661,6 +650,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           switch (rc) {
             case SSH_AUTH_AGAIN: continue;
             case SSH_AUTH_SUCCESS:
+              [self _open_channels];
               return;
             case SSH_AUTH_DENIED:
             case SSH_AUTH_PARTIAL:
@@ -678,53 +668,141 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
     }
     
+    // 5. interactive
+    if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+      for (;;) {
+        dispatch_sync(_queue, ^{
+          rc = ssh_userauth_kbdint(_session, NULL, NULL);
+        });
+        
+        switch (rc) {
+          case SSH_AUTH_AGAIN: continue;
+          case SSH_AUTH_INFO: {
+            dispatch_sync(_queue, ^{
+              const char *nameChars = ssh_userauth_kbdint_getname(_session);
+              const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
+              
+              NSString *name = nameChars ? @(nameChars) : nil;
+              NSString *instruction = instructionChars ? @(instructionChars) : nil;
+              
+              int nprompts = ssh_userauth_kbdint_getnprompts(_session);
+              if (nprompts >= 0) {
+                NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
+                for (int i = 0; i < nprompts; i++) {
+                  char echo = NO;
+                  const char *prompt = ssh_userauth_kbdint_getprompt(_session, i, &echo);
+                  
+                  [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
+                }
+                
+                NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
+                
+                for (int i = 0; i < answers.count; i++) {
+                  int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
+                  if (rc < 0) {
+                    break;
+                  }
+                }
+              }
+              
+              rc = ssh_userauth_kbdint(_session, NULL, NULL);
+            });
+          }
+          break;
+          case SSH_AUTH_SUCCESS:
+            [self _open_channels];
+          default:
+            return;
+        }
+      }
+    }
+    
   });
 }
 
-
-- (dispatch_block_t)_ssh_interactiveEventhandler {
-  return ^{
-    int rc = ssh_userauth_kbdint(_session, NULL, NULL);
-    switch (rc) {
-      case SSH_AUTH_AGAIN:
-        return;
-      case SSH_AUTH_INFO: {
-        const char *nameChars = ssh_userauth_kbdint_getname(_session);
-        const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
-        
-        NSString *name = nameChars ? @(nameChars) : nil;
-        NSString *instruction = instructionChars ? @(instructionChars) : nil;
-        
-        int nprompts = ssh_userauth_kbdint_getnprompts(_session);
-        if (nprompts >= 0) {
-          NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
-          for (int i = 0; i < nprompts; i++) {
-            char echo = NO;
-            const char *prompt = ssh_userauth_kbdint_getprompt(_session, i, &echo);
-            
-            [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
-          }
-          
-          NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
-          
-          for (int i = 0; i < answers.count; i++) {
-            int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
-            if (rc < 0) {
-              break;
-            }
-          }
-        }
-        
-        rc = ssh_userauth_kbdint(_session, NULL, NULL);
+- (void)_open_channels {
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    __block int rc;
+    dispatch_sync(_queue, ^{
+      _channel = ssh_channel_new(_session);
+      ssh_channel_set_blocking(_channel, 0);
+    });
+    
+    
+    for (;;) {
+      dispatch_sync(_queue, ^{
+        rc = ssh_channel_open_session(_channel);
+      });
+      switch (rc) {
+        case SSH_AGAIN: continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          // this is main channel. So we exit if we fail here
+          [self _exitWithCode:rc];
+          return;
       }
-        break;
-      case SSH_AUTH_SUCCESS:
-        return [self _ssh_authenticated];
-      default:
-        break;
+      break;
     }
-  };
+    
+    for (;;) {
+      dispatch_sync(_queue, ^{
+        rc = ssh_channel_request_pty(_channel);
+      });
+      switch (rc) {
+        case SSH_AGAIN: continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          // this is main channel. So we exit if we fail here
+          [self _exitWithCode:rc];
+          return;
+      }
+      break;
+    }
+    
+    for (;;) {
+      dispatch_sync(_queue, ^{
+        rc = ssh_channel_request_shell(_channel);
+      });
+      switch (rc) {
+        case SSH_AGAIN: continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          // this is main channel. So we exit if we fail here
+          [self _exitWithCode:rc];
+          return;
+      }
+      break;
+    }
+    
+    __block ssh_connector connector_in, connector_out, connector_err;
+    
+    dispatch_sync(_queue, ^{
+      // stdin
+      connector_in = ssh_connector_new(_session);
+      ssh_connector_set_in_fd(connector_in, _fdIn);
+      ssh_connector_set_out_channel(connector_in, _channel, SSH_CONNECTOR_STDOUT);
+      ssh_event_add_connector(_event, connector_in);
+      
+      // stdout
+      connector_out = ssh_connector_new(_session);
+      ssh_connector_set_in_channel(connector_out, _channel, SSH_CONNECTOR_STDOUT);
+      ssh_connector_set_out_fd(connector_out, _fdOut);
+      ssh_event_add_connector(_event, connector_out);
+      
+      // stderr
+      connector_err = ssh_connector_new(_session);
+      ssh_connector_set_in_channel(connector_err, _channel, SSH_CONNECTOR_STDERR);
+      ssh_connector_set_out_fd(connector_err, _fdErr);
+      ssh_event_add_connector(_event, connector_err);
+    });
+    
+//    sleep(10000);
+  });
 }
+
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
@@ -747,20 +825,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [answers addObject:lineStr];
       free(line);
     }
-    fclose(fp);
+//    fclose(fp);
   }
   return answers;
 }
 
 - (void)_ssh_authenticated {
   NSLog(@"Authenticated");
-  
-//  dispatch_source_t channel_source = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _fdSessionSock, 0, _mainQueue);
-//  ssh_channel channel = ssh_channel_new(_ssh_session);
-//  _mainChannel = [[SSHClientChannel alloc] initWithDispatchSource:channel_source andChannel:channel];
-//  _mainChannel.delegate = self;
-//  [_mainChannel open];
-  
 }
   
 
@@ -769,6 +840,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
+  }
+  
+  if ([_options[SSHOptionPrintVersion] isEqual:SSHOptionValueYES]) {
+    [self _printVersion];
+    return [self _exitWithCode:SSH_OK];
   }
   
   [self _ssh_createAndConfigureSession];
@@ -783,7 +859,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, 2000);
+    rc = ssh_event_dopoll(_event, 500);
   };
 
   while (!_doExit) {
