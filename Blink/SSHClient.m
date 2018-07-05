@@ -391,11 +391,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, 200); // TODO: tune timeout or event make it dynamic
+    rc = ssh_event_dopoll(_event, 10); // TODO: tune timeout or event make it dynamic
   };
 
   while (!_doExit) {
+    dispatch_notify(<#object#>, <#queue#>, <#notification_block#>)
     dispatch_sync(_queue, poll_block);
+//    rc = ssh_event_dopoll(_event, -1);
     if (rc == SSH_ERROR) {
       break;
     }
