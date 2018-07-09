@@ -35,6 +35,7 @@
 #import "BKPubKey.h"
 #import "SSHClientChannel.h"
 
+#import <pthread.h>
 #include <libssh/callbacks.h>
 
 void __write(dispatch_fd_t fd, NSString *message) {
@@ -69,6 +70,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   bool _doExit;
   int _exitCode;
+  pthread_t _thread;
 }
 
 - (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr isTTY:(BOOL)isTTY {
@@ -81,6 +83,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _options = [[SSHClientOptions alloc] init];
     _channels = [[NSMutableArray alloc] init];
     _isTTY = isTTY;
+    _thread = pthread_self();
     
     _doExit = NO;
     _exitCode = 0;
@@ -104,8 +107,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return [self exitWithCode:code];
 }
 
-- (void)sync:(dispatch_block_t)block {
-  dispatch_sync(_queue, block);
+- (void)schedule:(dispatch_block_t)block {
+  dispatch_async(_queue, block);
+  pthread_kill(_thread, SIGUSR1);
 }
 
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
@@ -126,30 +130,25 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_start_connect_flow {
   __block int rc = SSH_ERROR;
-  dispatch_block_t connect_block = ^{
-    rc = ssh_connect(_session);
-  };
-  
-  [self sync: ^{
-    ssh_set_blocking(_session, 0);
+  dispatch_sync(_queue, ^{
     _event = ssh_event_new();
-    connect_block();
+    rc = ssh_connect(_session);
+    if (rc == SSH_ERROR) {
+      return;
+    }
+    ssh_set_blocking(_session, 0);
     ssh_event_add_session(_event, _session);
     if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
       rc = SSH_ERROR;
+      return;
     }
-  }];
-  
-  if (rc == SSH_ERROR) {
-    return rc;
-  }
-  
-  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    
     // connect
     for(;;) {
       switch(rc) {
         case SSH_AGAIN:
-          [self sync: connect_block];
+          rc = ssh_connect(_session);
+          [self poll];
           continue;
         case SSH_OK:
           [self _auth];
@@ -165,58 +164,47 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (void)_auth {
   __block int rc = SSH_ERROR;
-  dispatch_block_t auth_block = ^{
-    rc = ssh_userauth_none(_session, NULL);
-  };
   
-  dispatch_async(dispatch_get_global_queue(0, 0), ^{
-    // 1. pre auth
-    for (;;) {
-      [self sync: auth_block];
-      switch (rc) {
-        case SSH_AUTH_AGAIN: continue;
-        case SSH_AUTH_PARTIAL:
-        case SSH_AUTH_DENIED: break;
-        default:
-        case SSH_AUTH_ERROR:
-          [self exitWithCode:rc];
-          return;
-      }
-      break;
-    }
-    
-    // 2. print issue banner if any
-    [self sync:^{
-      __write_ssh_chars_and_free(_fdOut, ssh_get_issue_banner(_session));
-    }];
-    
-    // 3. get auth methods from server
-    __block int methods;
-    [self sync: ^{
-      methods = ssh_userauth_list(_session, NULL);
-    }];
-    
-    // 4. public key first
-    if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
-      rc = [self _auth_with_publickey];
-      if (rc == SSH_AUTH_SUCCESS) {
+  // 1. pre auth
+  for (;;) {
+    rc = ssh_userauth_none(_session, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_AUTH_PARTIAL:
+      case SSH_AUTH_DENIED: break;
+      default:
+      case SSH_AUTH_ERROR:
+        [self exitWithCode:rc];
         return;
-      }
     }
-    
-    // 5. interactive
-    if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
-      rc = [self _auth_with_interactive];
-      if (rc == SSH_AUTH_SUCCESS) {
-        return;
-      }
+    break;
+  }
+  
+  // 2. print issue banner if any
+  __write_ssh_chars_and_free(_fdOut, ssh_get_issue_banner(_session));
+  
+  // 3. get auth methods from server
+  int methods = ssh_userauth_list(_session, NULL);
+  
+  // 4. public key first
+  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
+    rc = [self _auth_with_publickey];
+    if (rc == SSH_AUTH_SUCCESS) {
+      return;
     }
-    
-    // We are failed
-    [self sync:^{
-      [self exitWithCode:SSH_ERROR];
-    }];
-  });
+  }
+  
+  // 5. interactive
+  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+    rc = [self _auth_with_interactive];
+    if (rc == SSH_AUTH_SUCCESS) {
+      return;
+    }
+  }
+
+  [self exitWithCode:SSH_ERROR];
 }
 
 - (int)_auth_with_publickey {
@@ -224,35 +212,34 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   NSArray<NSString *> *identityfiles = _options[SSHOptionIdentityFile];
   for (NSString *identityfile in identityfiles) {
     __block ssh_key pkey;
-    [self sync: ^{
-      BKPubKey *secureKey = [BKPubKey withID:identityfile];
-      // we have this identity in
-      if (secureKey) {
-        rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
-                                           NULL, /* TODO: get stored */
-                                           __ssh_auth_fn,
-                                           (__bridge void *) self,
-                                           &pkey);
-      } else {
-        rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
-                                         NULL,
+    
+    BKPubKey *secureKey = [BKPubKey withID:identityfile];
+    // we have this identity in
+    if (secureKey) {
+      rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
+                                         NULL, /* TODO: get stored */
                                          __ssh_auth_fn,
                                          (__bridge void *) self,
                                          &pkey);
-      }
-    }];
+    } else {
+      rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
+                                       NULL,
+                                       __ssh_auth_fn,
+                                       (__bridge void *) self,
+                                       &pkey);
+    }
     if (rc == SSH_ERROR) {
       continue;
     }
+    
     NSString *user = _options[SSHOptionUser];
-    dispatch_block_t auth_block = ^{
-      rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
-    };
     bool tryNextIdentityFile = NO;
     for (;;) {
-      [self sync: auth_block];
+      rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
       switch (rc) {
-        case SSH_AUTH_AGAIN: continue;
+        case SSH_AUTH_AGAIN:
+          [self poll];
+          continue;
         case SSH_AUTH_SUCCESS:
           [self _open_channels];
           return rc;
@@ -275,16 +262,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_auth_with_interactive {
-  __block int rc = SSH_OK;
+  int rc = SSH_OK;
   for (;;) {
-    [self sync: ^{
-      rc = ssh_userauth_kbdint(_session, NULL, NULL);
-    }];
+    rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
     switch (rc) {
-      case SSH_AUTH_AGAIN: continue;
+      case SSH_AUTH_AGAIN:
+        [self poll];
+        continue;
       case SSH_AUTH_INFO: {
-        [self sync: ^{
           const char *nameChars = ssh_userauth_kbdint_getname(_session);
           const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
           
@@ -312,7 +298,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           }
           
           rc = ssh_userauth_kbdint(_session, NULL, NULL);
-        }];
       }
         break;
       case SSH_AUTH_SUCCESS:
@@ -361,6 +346,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return answers;
 }
 
+- (void)poll {
+  ssh_event_dopoll(_event, -1); // TODO: tune timeout or event make it dynamic
+}
+
+void __on_usr1(int signum) {
+  NSLog(@"asf");
+}
+
 - (int)main:(int) argc argv:(char **) argv {
   __block int rc = [_options parseArgs:argc argv: argv];
 
@@ -375,7 +368,19 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   _session = ssh_new();
   _event = ssh_event_new();
+  sigset_t set;
+  sigemptyset(&set);
   
+  sigaddset(&set, SIGUSR1);
+  // Block signal SIGUSR1 in this thread
+  pthread_sigmask(SIG_SETMASK, &set, NULL);
+  
+  struct sigaction psa;
+  psa.sa_handler = __on_usr1;
+  sigaction(SIGUSR1, &psa, NULL);
+  
+//  pthread_sigmask(<#int#>, <#const sigset_t * _Nullable#>, <#sigset_t * _Nullable#>)
+//  ssh_poll_init()
   rc = [_options configureSSHSession:_session];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc andMessage:_options.exitMessage];
@@ -391,13 +396,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, 10); // TODO: tune timeout or event make it dynamic
+    rc = ssh_event_dopoll(_event, 1000); // TODO: tune timeout or event make it dynamic
   };
+  
+//  POLL_IN
+//  ssh_event_add_fd(<#ssh_event event#>, <#socket_t fd#>, <#short events#>, <#ssh_event_callback cb#>, <#void *userdata#>)
 
   while (!_doExit) {
-    dispatch_notify(<#object#>, <#queue#>, <#notification_block#>)
     dispatch_sync(_queue, poll_block);
-//    rc = ssh_event_dopoll(_event, -1);
     if (rc == SSH_ERROR) {
       break;
     }

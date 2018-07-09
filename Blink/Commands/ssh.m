@@ -628,6 +628,7 @@ int __shell(ssh_session session, session_options options) {
 }
 
 int ssh_main(int argc, char *argv[]) {
+  
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)
                               stdOut: fileno(thread_stdout)

@@ -52,8 +52,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr isTTY:(BOOL)isTTY;
 - (int)main:(int) argc argv:(char **) argv;
-- (void)sync:(dispatch_block_t)block;
+- (void)schedule:(dispatch_block_t)block;
 - (int)exitWithCode:(int)code;
+- (void)poll;
 
 @end
 

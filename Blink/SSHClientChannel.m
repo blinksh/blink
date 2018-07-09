@@ -253,88 +253,73 @@ void __channel_exit_status_cb(ssh_session session,
 }
 
 - (void)openWithClient:(SSHClient *)client {
-  
-  dispatch_async(dispatch_get_global_queue(0, 0), ^{
-    __block int rc;
-    __block ssh_channel channel;
-    [client sync: ^{
-      channel = ssh_channel_new(client.session);
-      ssh_channel_set_blocking(channel, 0);
-    }];
+  __block int rc;
+  ssh_channel channel = ssh_channel_new(client.session);
+  ssh_channel_set_blocking(channel, 0);
 
-
-    for (;;) {
-      [client sync: ^{
-        rc = ssh_channel_open_session(channel);
-      }];
-      switch (rc) {
-        case SSH_AGAIN: continue;
-        case SSH_OK: break;
-        default:
-        case SSH_ERROR:
-          [client sync:^{
-            ssh_channel_free(channel);
-            [client exitWithCode:rc];
-          }];
-          return;
-      }
-      break;
+  for (;;) {
+    rc = ssh_channel_open_session(channel);
+    switch (rc) {
+      case SSH_AGAIN:
+        [client poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_free(channel);
+        [client exitWithCode:rc];
+        return;
     }
+    break;
+  }
 
-    BOOL doRequestPTY = client.options[SSHOptionRequestTTY] == SSHOptionValueYES
-          || (client.options[SSHOptionRequestTTY] == SSHOptionValueAUTO && client.isTTY);
+  BOOL doRequestPTY = client.options[SSHOptionRequestTTY] == SSHOptionValueYES
+        || (client.options[SSHOptionRequestTTY] == SSHOptionValueAUTO && client.isTTY);
     
-    if (doRequestPTY) {
-      for (;;) {
-        [client sync: ^{
-          rc = ssh_channel_request_pty(channel);
-        }];
-        switch (rc) {
-          case SSH_AGAIN: continue;
-          case SSH_OK: break;
-          default:
-          case SSH_ERROR:
-            [client sync:^{
-              ssh_channel_close(channel);
-              ssh_channel_free(channel);
-              [client exitWithCode:rc];
-            }];
-            return;
-        }
-        break;
-      }
-    }
-
-    NSString *remoteCommand = client.options[SSHOptionRemoteCommand];
+  if (doRequestPTY) {
     for (;;) {
-      [client sync: ^{
-        if (remoteCommand) {
-          rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
-        } else {
-          rc = ssh_channel_request_shell(channel);
-        }
-      }];
+      rc = ssh_channel_request_pty(channel);
       switch (rc) {
-        case SSH_AGAIN: continue;
+        case SSH_AGAIN:
+          [client poll];
+          continue;
         case SSH_OK: break;
         default:
         case SSH_ERROR:
-          [client sync:^{
-            ssh_channel_close(channel);
-            ssh_channel_free(channel);
-            [client exitWithCode:rc];
-          }];
+          ssh_channel_close(channel);
+          ssh_channel_free(channel);
+          [client exitWithCode:rc];
           return;
       }
       break;
     }
+  }
 
-    [client sync: ^{
-      _connectedChannel = [[ConnectedChannel alloc] init];
-      [_connectedChannel connect:channel withFdIn:client.fdIn fdOut:client.fdOut fdErr:client.fdErr];
-      [_connectedChannel addToEvent:client.event];
-    }];
-  });
+  NSString *remoteCommand = client.options[SSHOptionRemoteCommand];
+  for (;;) {
+    if (remoteCommand) {
+      rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
+    } else {
+      rc = ssh_channel_request_shell(channel);
+    }
+    switch (rc) {
+      case SSH_AGAIN:
+        [client poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_close(channel);
+        ssh_channel_free(channel);
+        [client exitWithCode:rc];
+        return;
+    }
+    break;
+  }
+
+  _connectedChannel = [[ConnectedChannel alloc] init];
+  [_connectedChannel connect:channel withFdIn:client.fdIn fdOut:client.fdOut fdErr:client.fdErr];
+  [_connectedChannel addToEvent:client.event];
 }
 
 @end
@@ -375,7 +360,6 @@ void __channel_exit_status_cb(ssh_session session,
 
 
 - (void)openWithClient:(SSHClient *)client {
-  dispatch_async(dispatch_get_global_queue(0, 0), ^{
     __block int rc;
     _listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
     if (_listenSock < 0) {
@@ -412,30 +396,29 @@ void __channel_exit_status_cb(ssh_session session,
       
       int noSigPipe = 1;
       setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
-      [client sync: ^{
+      
+      [client schedule:^{
         channel = ssh_channel_new(client.session);
         ssh_channel_set_blocking(channel, 0);
-      }];
+        
       
-      for (;;) {
-        [client sync: ^{
+        for (;;) {
           rc = ssh_channel_open_forward(channel, _remotehost.UTF8String, _remoteport, _sourcehost.UTF8String, _localport);
-        }];
-        switch (rc) {
-          case SSH_AGAIN: continue;
-          case SSH_OK: break;
-          default:
-          case SSH_ERROR:
-            [client sync:^{
+          switch (rc) {
+            case SSH_AGAIN:
+              [client poll];
+              continue;
+            case SSH_OK: break;
+            default:
+            case SSH_ERROR:
               ssh_channel_free(channel);
               [client exitWithCode:rc];
-            }];
-            return;
+              return;
+          }
+          break;
         }
-        break;
-      }
       
-      [client sync: ^{
+      
         ConnectedChannel * connectedChannel = [[ConnectedChannel alloc] init];
         [connectedChannel connect:channel withSockFd:sock];
         [_connectedChannels addObject:connectedChannel];
@@ -443,7 +426,6 @@ void __channel_exit_status_cb(ssh_session session,
       }];
     });
     dispatch_resume(_listenSource);
-  });
 }
 
 - (void)dealloc {
