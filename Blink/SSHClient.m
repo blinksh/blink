@@ -35,7 +35,9 @@
 #import "BKPubKey.h"
 #import "SSHClientChannel.h"
 
+#import <signal.h>
 #import <pthread.h>
+#import <poll.h>
 #include <libssh/callbacks.h>
 
 void __write(dispatch_fd_t fd, NSString *message) {
@@ -350,11 +352,31 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_event_dopoll(_event, -1); // TODO: tune timeout or event make it dynamic
 }
 
-void __on_usr1(int signum) {
+static void __on_usr1(int signum) {
   NSLog(@"asf");
 }
 
+void sigHandler2(int signo, siginfo_t* info, void* unused) {
+  NSLog(@"sdf!");
+}
+
 - (int)main:(int) argc argv:(char **) argv {
+  
+//  sigset_t to_block;
+//  sigemptyset( &to_block );
+//  sigaddset( &to_block, SIGUSR1 );
+//  pthread_sigmask( SIG_BLOCK, &to_block, NULL );
+  
+  struct sigaction sa;
+  sa.sa_handler = &__on_usr1;
+  sa.sa_sigaction = sigHandler2;
+  sigfillset( &sa.sa_mask );
+//  sigaddset( &sa.sa_mask, SIGUSR1 );
+  sa.sa_flags = SA_NODEFER;
+  sigaction( SIGUSR1, &sa, NULL );
+  
+  
+  
   __block int rc = [_options parseArgs:argc argv: argv];
 
   if (rc != SSH_OK) {
@@ -368,19 +390,7 @@ void __on_usr1(int signum) {
   
   _session = ssh_new();
   _event = ssh_event_new();
-  sigset_t set;
-  sigemptyset(&set);
   
-  sigaddset(&set, SIGUSR1);
-  // Block signal SIGUSR1 in this thread
-  pthread_sigmask(SIG_SETMASK, &set, NULL);
-  
-  struct sigaction psa;
-  psa.sa_handler = __on_usr1;
-  sigaction(SIGUSR1, &psa, NULL);
-  
-//  pthread_sigmask(<#int#>, <#const sigset_t * _Nullable#>, <#sigset_t * _Nullable#>)
-//  ssh_poll_init()
   rc = [_options configureSSHSession:_session];
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc andMessage:_options.exitMessage];
@@ -396,11 +406,8 @@ void __on_usr1(int signum) {
   }
   
   dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, 1000); // TODO: tune timeout or event make it dynamic
+    rc = ssh_event_dopoll(_event, -1); // TODO: tune timeout or event make it dynamic
   };
-  
-//  POLL_IN
-//  ssh_event_add_fd(<#ssh_event event#>, <#socket_t fd#>, <#short events#>, <#ssh_event_callback cb#>, <#void *userdata#>)
 
   while (!_doExit) {
     dispatch_sync(_queue, poll_block);

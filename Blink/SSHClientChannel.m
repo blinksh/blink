@@ -388,7 +388,7 @@ void __channel_exit_status_cb(ssh_session session,
 
     dispatch_source_set_event_handler(_listenSource, ^{
       __block ssh_channel channel;
-      NSLog(@"Creating channel");
+      NSLog(@"Creating channel 1");
       dispatch_fd_t sock = accept(_listenSock, NULL, NULL);
       if (sock == SSH_INVALID_SOCKET) {
         return;
@@ -398,9 +398,10 @@ void __channel_exit_status_cb(ssh_session session,
       setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
       
       [client schedule:^{
+        NSLog(@"Creating channel 2");
         channel = ssh_channel_new(client.session);
         ssh_channel_set_blocking(channel, 0);
-        
+      
       
         for (;;) {
           rc = ssh_channel_open_forward(channel, _remotehost.UTF8String, _remoteport, _sourcehost.UTF8String, _localport);
@@ -419,13 +420,13 @@ void __channel_exit_status_cb(ssh_session session,
         }
       
       
-        ConnectedChannel * connectedChannel = [[ConnectedChannel alloc] init];
+        ConnectedChannel *connectedChannel = [[ConnectedChannel alloc] init];
         [connectedChannel connect:channel withSockFd:sock];
         [_connectedChannels addObject:connectedChannel];
         [connectedChannel addToEvent:client.event];
       }];
     });
-    dispatch_resume(_listenSource);
+    dispatch_activate(_listenSource);
 }
 
 - (void)dealloc {
