@@ -55,6 +55,7 @@ const NSString * SSHOptionNumberOfPasswordPrompts = @"numberofpasswordprompts"; 
 const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
 const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
 const NSString * SSHOptionLocalForward = @"localforward"; // -L
+const NSString * SSHOptionRemoteForward = @"remoteforward"; // -R
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -63,6 +64,7 @@ const NSString * SSHOptionPrintVersion = @"_printversion"; // -V
 
 const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
+const NSString * SSHOptionValueASK = @"ask";
 const NSString * SSHOptionValueAUTO = @"auto";
 const NSString * SSHOptionValueANY = @"any";
 const NSString * SSHOptionValueNONE = @"none";
@@ -107,23 +109,25 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *intNoneType = [[NSObject alloc] init];
   NSObject *identityfileType = [[NSObject alloc] init];
   NSObject *localforwardType = [[NSObject alloc] init];
+  NSObject *remoteforwardType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
                          SSHOptionHostName: @[stringType],
                          SSHOptionPort: @[portType, @(22)],
-                         SSHOptionRequestTTY: @[yesNoAutoType, @"auto"],
-                         SSHOptionTCPKeepAlive: @[yesNoType, @"yes"],
+                         SSHOptionRequestTTY: @[yesNoAutoType, SSHOptionValueAUTO],
+                         SSHOptionTCPKeepAlive: @[yesNoType, SSHOptionValueYES],
                          SSHOptionConnectionAttempts: @[intType, @(1)],
                          SSHOptionNumberOfPasswordPrompts: @[intType, @(3)],
                          SSHOptionServerLiveCountMax: @[intType, @(3)],
                          SSHOptionServerLiveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
-                         SSHOptionConnectTimeout: @[intType, @"none"],
+                         SSHOptionConnectTimeout: @[intType, SSHOptionValueNONE],
                          SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", /* id_dsa, id_ecdsa, id_ed25519 */]],
                          SSHOptionLocalForward: @[localforwardType],
-                         SSHOptionStrictHostKeyChecking: @[yesNoAskType, @"ask"],
-                         SSHOptionCompression: @[yesNoType, @"yes"] // We mobile terminal, so we set compression to yes by default.
+                         SSHOptionRemoteForward: @[remoteforwardType],
+                         SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
+                         SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
                          };
   
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
@@ -138,6 +142,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   
   NSMutableArray<NSString *> *identityfileOption = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *localforwardOption = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *remoteforwardOption = [[NSMutableArray alloc] init];
   
   // Set options:
   for (NSString *optionStr in options) {
@@ -165,26 +170,28 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       [identityfileOption addObject:value];
     } else if (type == localforwardType) {
       [localforwardOption addObject:value];
+    } else if (type == remoteforwardType) {
+      [remoteforwardOption addObject:value];
     } else if (type == yesNoType) {
-      if ([@[@"yes", @"no"] indexOfObject:lv] == NSNotFound) {
+      if ([@[SSHOptionValueYES, SSHOptionValueNO] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
         return result;
       }
       result[key] = lv;
     } else if (type == yesNoAutoType) {
-      if ([@[@"yes", @"no", @"auto"] indexOfObject:lv] == NSNotFound) {
+      if ([@[SSHOptionValueYES, SSHOptionValueNO, SSHOptionValueAUTO] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
         return result;
       }
       result[key] = lv;
     } else if (type == yesNoAskType) {
-      if ([@[@"yes", @"no", @"ask"] indexOfObject:lv] == NSNotFound) {
+      if ([@[SSHOptionValueYES, SSHOptionValueNO, SSHOptionValueASK] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
         return result;
       }
       result[key] = lv;
     } else if (type == intNoneType) {
-      if ([lv isEqualToString:@"none"]) {
+      if ([lv isEqualToString:SSHOptionValueNONE]) {
         result[key] = lv;
       } else {
         int v = 0;
@@ -267,10 +274,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *localforward = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *remoteforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
   
   while (1) {
-    int c = getopt(argc, argv, "L:Vo:CGp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "R:L:Vo:CGp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -299,6 +307,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         break;
       case 'L':
         [localforward addObject:@(optarg)];
+        break;
+      case 'R':
+        [remoteforward addObject:@(optarg)];
         break;
       case 'F':
         [args setObject:@(optarg) forKey:SSHOptionConfigFile];
@@ -341,6 +352,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   
   if (localforward.count > 0) {
     args[SSHOptionLocalForward] = localforward;
+  }
+  
+  if (remoteforward.count > 0) {
+    args[SSHOptionRemoteForward] = remoteforward;
   }
   
   _options = [self _applyOptions:options toArgs:args];

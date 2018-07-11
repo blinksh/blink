@@ -71,7 +71,6 @@ void __setupProcessEnv() {
   
 
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
-//  ssh_threads_set_callbacks(ssh_threads_get_noop());
   ssh_init();
 }
 

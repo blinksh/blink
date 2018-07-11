@@ -69,7 +69,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 @implementation SSHClient {
   NSMutableArray<SSHClientChannel *> *_channels;
-  
+  NSMutableArray<SSHClientReverseForwardChannel *> *_reversForwardChannels;
+  ssh_callbacks _ssh_callbacks;
   bool _doExit;
   int _exitCode;
   pthread_t _thread;
@@ -84,6 +85,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _fdErr = fdErr;
     _options = [[SSHClientOptions alloc] init];
     _channels = [[NSMutableArray alloc] init];
+    _reversForwardChannels = [[NSMutableArray alloc] init];
     _isTTY = isTTY;
     _thread = pthread_self();
     
@@ -315,11 +317,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [_channels addObject:mainChannel];
   [mainChannel openWithClient:self];
   
-  NSArray<NSString *> *addresses = _options[SSHOptionLocalForward];
-  for (NSString *address in addresses) {
+  for (NSString *address in _options[SSHOptionLocalForward]) {
     SSHClientDirectForwardChannel *channel = [[SSHClientDirectForwardChannel alloc] initWithAddress:address];
     [_channels addObject:channel];
     [channel openWithClient:self];
+  }
+  
+  for (NSString *address in _options[SSHOptionRemoteForward]) {
+    SSHClientReverseForwardChannel *channel = [[SSHClientReverseForwardChannel alloc] initWithAddress:address];
+    [_channels addObject:channel];
+    [channel registerListenWithClient:self];
+    [_reversForwardChannels addObject:channel];
   }
 }
 
@@ -353,30 +361,28 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 static void __on_usr1(int signum) {
-  NSLog(@"asf");
+  NSLog(@"SIGUSR1");
 }
 
-void sigHandler2(int signo, siginfo_t* info, void* unused) {
-  NSLog(@"sdf!");
+void __on_ssh_global_request(ssh_session session,
+                              ssh_message message, void *userdata)
+{
+//  int msg_type = ssh_message_type(message);
+//  int msg_subtype = ssh_message_subtype(message);
+//  if (msg_type == SSH_REQUEST_CHANNEL_OPEN
+//      && msg_subtype == SSH_CHANNEL_FORWARDED_TCPIP) {
+//    NSLog(@"Nice!!!!!");
+//  }
 }
 
 - (int)main:(int) argc argv:(char **) argv {
   
-//  sigset_t to_block;
-//  sigemptyset( &to_block );
-//  sigaddset( &to_block, SIGUSR1 );
-//  pthread_sigmask( SIG_BLOCK, &to_block, NULL );
-  
-  struct sigaction sa;
-  sa.sa_handler = &__on_usr1;
-  sa.sa_sigaction = sigHandler2;
-  sigfillset( &sa.sa_mask );
-//  sigaddset( &sa.sa_mask, SIGUSR1 );
-  sa.sa_flags = SA_NODEFER;
+  struct sigaction sa = (struct sigaction) {
+    .sa_handler = &__on_usr1,
+    .sa_flags = 0
+  };
   sigaction( SIGUSR1, &sa, NULL );
-  
-  
-  
+
   __block int rc = [_options parseArgs:argc argv: argv];
 
   if (rc != SSH_OK) {
@@ -389,6 +395,13 @@ void sigHandler2(int signo, siginfo_t* info, void* unused) {
   }
   
   _session = ssh_new();
+  _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
+  _ssh_callbacks->userdata = (__bridge void *)self;
+  _ssh_callbacks->global_request_function = __on_ssh_global_request;
+  
+  ssh_callbacks_init(_ssh_callbacks);
+  ssh_set_callbacks(_session, _ssh_callbacks);
+  
   _event = ssh_event_new();
   
   rc = [_options configureSSHSession:_session];
@@ -406,7 +419,19 @@ void sigHandler2(int signo, siginfo_t* info, void* unused) {
   }
   
   dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, -1); // TODO: tune timeout or event make it dynamic
+    rc = ssh_event_dopoll(_event, -1);
+    int port = 0;
+    ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
+    if (channel) {
+      NSLog(@"Got it %@", @(port));
+      for (SSHClientReverseForwardChannel *ch in _reversForwardChannels) {
+        if (ch.remoteport == port) {
+          [ch connectClient:self withCahnnel:channel];
+          break;
+        }
+      }
+      
+    }
   };
 
   while (!_doExit) {

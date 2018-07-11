@@ -54,14 +54,17 @@ extern const NSString * SSHOptionNumberOfPasswordPrompts; // -o
 extern const NSString * SSHOptionServerLiveCountMax; // -o
 extern const NSString * SSHOptionServerLiveInterval; // -o
 extern const NSString * SSHOptionLocalForward; // -L
+extern const NSString * SSHOptionRemoteForward; // -R
 
 // Non standart
 extern const NSString * SSHOptionPassword; //
 extern const NSString * SSHOptionPrintConfiguration; // -G
 extern const NSString * SSHOptionPrintVersion; // -V
 
+// Possibale values
 extern const NSString * SSHOptionValueYES;
 extern const NSString * SSHOptionValueNO;
+extern const NSString * SSHOptionValueASK;
 extern const NSString * SSHOptionValueAUTO;
 extern const NSString * SSHOptionValueANY;
 extern const NSString * SSHOptionValueNONE;

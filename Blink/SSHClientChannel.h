@@ -51,5 +51,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithAddress:(NSString *)address;
 @end
 
+@interface SSHClientReverseForwardChannel : SSHClientChannel
+
+@property int remoteport;
+
+- (instancetype)initWithAddress:(NSString *)address;
+- (void)registerListenWithClient:(SSHClient *)client;
+- (void)connectClient:(SSHClient *)client withCahnnel:(ssh_channel) channel;
+@end
+
 
 NS_ASSUME_NONNULL_END

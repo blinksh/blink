@@ -52,7 +52,6 @@
 - (void)connect:(ssh_channel)channel withSockFd:(dispatch_fd_t)sockFd;
 - (void)addToEvent:(ssh_event)event;
 - (void)closeAndFree;
-- (void)removeFromEvent;
 - (void)closeSock;
 - (void)on_eof;
 - (void)on_close;
@@ -162,24 +161,6 @@ void __channel_exit_status_cb(ssh_session session,
   }
 }
 
-- (void)removeFromEvent {
-//  if (!_event) {
-//    return;
-//  }
-//  if (_connector_in) {
-//    ssh_event_remove_connector(_event, _connector_in);
-//  }
-//  
-//  if (_connector_out) {
-//    ssh_event_remove_connector(_event, _connector_out);
-//  }
-//  
-//  if (_connector_err) {
-//    ssh_event_remove_connector(_event, _connector_err);
-//  }
-//  _event = NULL;
-}
-
 - (void)closeSock {
   if (_sockFd != SSH_INVALID_SOCKET) {
     close(_sockFd);
@@ -215,20 +196,13 @@ void __channel_exit_status_cb(ssh_session session,
   ssh_channel_free(_channel);
   _channel = nil;
 
+  // We need to re add session
   ssh_event_add_session(_event, s);
-//  if (_channel) {
-//    ssh_remove_channel_callbacks(_channel, _cb);
-//    if (ssh_channel_is_open(_channel)) {
-//      ssh_channel_close(_channel);
-//      ssh_channel_free(_channel);
-//      _channel = nil;
-//    }
-//  }
   
-//  if (_cb) {
-//    free(_cb);
-//    _cb = NULL;
-//  }
+  if (_cb) {
+    free(_cb);
+    _cb = NULL;
+  }
 }
 
 - (void)dealloc {
@@ -360,79 +334,164 @@ void __channel_exit_status_cb(ssh_session session,
 
 
 - (void)openWithClient:(SSHClient *)client {
-    __block int rc;
-    _listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-    if (_listenSock < 0) {
+  __block int rc;
+  _listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (_listenSock < 0) {
+    // TODO check client options
 //      [client sync:^{
 //        [client exitWithCode:rc];
 //      }];
+    return;
+  }
+  int value = 1;
+  setsockopt(_listenSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
+  
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  
+  address.sin_port=htons(_localport);
+  bind(_listenSock, (struct sockaddr *)&address,sizeof(address));
+  int queueSize = 3;
+  listen(_listenSock, queueSize);
+  
+  _listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _listenSock, 0, _listenQueue);
+  
+  dispatch_source_set_cancel_handler(_listenSource, ^{
+    close(_listenSock);
+  });
+
+  dispatch_source_set_event_handler(_listenSource, ^{
+    __block ssh_channel channel;
+    dispatch_fd_t sock = accept(_listenSock, NULL, NULL);
+    if (sock == SSH_INVALID_SOCKET) {
       return;
     }
-    int value = 1;
-    setsockopt(_listenSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
     
-    struct sockaddr_in address;
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
+    int noSigPipe = 1;
+    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
     
-    address.sin_port=htons(_localport);
-    bind(_listenSock, (struct sockaddr *)&address,sizeof(address));
-    int queueSize = 3;
-    listen(_listenSock, queueSize);
+    [client schedule:^{
+      channel = ssh_channel_new(client.session);
+      ssh_channel_set_blocking(channel, 0);
     
-    _listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, _listenSock, 0, _listenQueue);
     
-    dispatch_source_set_cancel_handler(_listenSource, ^{
-      close(_listenSock);
-    });
-
-    dispatch_source_set_event_handler(_listenSource, ^{
-      __block ssh_channel channel;
-      NSLog(@"Creating channel 1");
-      dispatch_fd_t sock = accept(_listenSock, NULL, NULL);
-      if (sock == SSH_INVALID_SOCKET) {
-        return;
-      }
-      
-      int noSigPipe = 1;
-      setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
-      
-      [client schedule:^{
-        NSLog(@"Creating channel 2");
-        channel = ssh_channel_new(client.session);
-        ssh_channel_set_blocking(channel, 0);
-      
-      
-        for (;;) {
-          rc = ssh_channel_open_forward(channel, _remotehost.UTF8String, _remoteport, _sourcehost.UTF8String, _localport);
-          switch (rc) {
-            case SSH_AGAIN:
-              [client poll];
-              continue;
-            case SSH_OK: break;
-            default:
-            case SSH_ERROR:
-              ssh_channel_free(channel);
-              [client exitWithCode:rc];
-              return;
-          }
-          break;
+      for (;;) {
+        rc = ssh_channel_open_forward(channel, _remotehost.UTF8String, _remoteport, _sourcehost.UTF8String, _localport);
+        switch (rc) {
+          case SSH_AGAIN:
+            [client poll];
+            continue;
+          case SSH_OK: break;
+          default:
+          case SSH_ERROR:
+            ssh_channel_free(channel);
+            [client exitWithCode:rc];
+            return;
         }
-      
-      
-        ConnectedChannel *connectedChannel = [[ConnectedChannel alloc] init];
-        [connectedChannel connect:channel withSockFd:sock];
-        [_connectedChannels addObject:connectedChannel];
-        [connectedChannel addToEvent:client.event];
-      }];
-    });
-    dispatch_activate(_listenSource);
+        break;
+      }
+    
+    
+      ConnectedChannel *connectedChannel = [[ConnectedChannel alloc] init];
+      [connectedChannel connect:channel withSockFd:sock];
+      [_connectedChannels addObject:connectedChannel];
+      [connectedChannel addToEvent:client.event];
+    }];
+  });
+  dispatch_activate(_listenSource);
 }
 
 - (void)dealloc {
   if (_listenSource) {
     dispatch_cancel(_listenSource);
   }
+}
+
+@end
+
+@implementation SSHClientReverseForwardChannel {
+  NSString *_remotehost;
+  NSString *_sourcehost;
+  int _localport;
+  
+  dispatch_fd_t _listenSock;
+  dispatch_queue_t _listenQueue;
+  
+  dispatch_source_t _listenSource;
+  
+  
+  NSMutableArray<ConnectedChannel *> *_connectedChannels;
+}
+
+- (instancetype)initWithAddress:(NSString *)address {
+  self = [super init];
+  if (self) {
+    _connectedChannels = [[NSMutableArray alloc] init];
+    
+    _listenQueue = dispatch_queue_create("sh.blink.sshclient.remote", DISPATCH_QUEUE_SERIAL);
+    
+    NSMutableArray<NSString *> *parts = [[address componentsSeparatedByString:@":"] mutableCopy];
+    
+    //  -R port
+    if (parts.count == 1) {
+      int port = [[parts lastObject] intValue];
+      _remoteport = port;
+      _localport = port;
+      _remotehost = NULL;
+      _sourcehost = NULL;
+    }
+    
+    _remoteport = [[parts lastObject] intValue];
+    [parts removeLastObject];
+    _remotehost = [parts lastObject];
+    [parts removeLastObject];
+    _localport = [[parts lastObject] intValue];
+    [parts removeLastObject];
+    _sourcehost = [parts lastObject] ?: @"localhost";
+  }
+  return self;
+}
+
+- (void)registerListenWithClient:(SSHClient *)client {
+  for (;;) {
+    int rc = ssh_channel_listen_forward(client.session, _remotehost.UTF8String, _remoteport, &_remoteport);
+    switch (rc) {
+      case SSH_AGAIN:
+        [client poll];
+        continue;
+        break;
+      case SSH_OK:
+        NSLog(@"Ok %@", @(_remoteport));
+        return;
+      default:
+      case SSH_ERROR:
+        NSLog(@"Error");
+        return;
+    }
+  }
+}
+
+- (void)connectClient:(SSHClient *)client withCahnnel:(ssh_channel) channel {
+  __block int rc;
+  
+  int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  
+  address.sin_port=htons(_localport);
+  
+  rc = connect(sock, (struct sockaddr *)&address, sizeof(address));
+  if (rc == -1) {
+    return;
+  }
+  
+  ConnectedChannel *connectedChannel = [[ConnectedChannel alloc] init];
+  [connectedChannel connect:channel withSockFd:sock];
+  [_connectedChannels addObject:connectedChannel];
+  [connectedChannel addToEvent:client.event];
 }
 
 @end
