@@ -47,6 +47,7 @@
 #include "ios_error.h"
 
 
+
 #define REQUEST_TTY_AUTO 0
 #define REQUEST_TTY_NO 1
 #define REQUEST_TTY_YES 2
@@ -627,7 +628,24 @@ int __shell(ssh_session session, session_options options) {
   return __loop(session, channel);
 }
 
+void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out) {
+  
+//  const char *args[]={command,NULL};
+  /* redirect in and out to stdin, stdout and stderr */
+  ios_dup2(in,  0);
+  ios_dup2(out, 1);
+  ios_dup2(out, 2);
+  close(in);
+  close(out);
+  ios_system(command);
+//  ios_exit(1);
+//  ios_execv(args[0],(char * const *)args);
+//  exit(1);
+}
+
+
 int ssh_main(int argc, char *argv[]) {
+  thread_ssh_execute_command = &__thread_ssh_execute_command;
   
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)

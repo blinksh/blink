@@ -136,12 +136,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   __block int rc = SSH_ERROR;
   dispatch_sync(_queue, ^{
     _event = ssh_event_new();
+    ssh_set_blocking(_session, 0);
     rc = ssh_connect(_session);
     if (rc == SSH_ERROR) {
       return;
     }
-    ssh_set_blocking(_session, 0);
     ssh_event_add_session(_event, _session);
+    
     if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
       rc = SSH_ERROR;
       return;
@@ -374,6 +375,7 @@ void __on_ssh_global_request(ssh_session session,
 //    NSLog(@"Nice!!!!!");
 //  }
 }
+
 
 - (int)main:(int) argc argv:(char **) argv {
   

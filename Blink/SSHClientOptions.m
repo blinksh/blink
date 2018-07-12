@@ -126,6 +126,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", /* id_dsa, id_ecdsa, id_ed25519 */]],
                          SSHOptionLocalForward: @[localforwardType],
                          SSHOptionRemoteForward: @[remoteforwardType],
+                         SSHOptionProxyCommand: @[stringType],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
                          };
@@ -191,7 +192,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       }
       result[key] = lv;
     } else if (type == intNoneType) {
-      if ([lv isEqualToString:SSHOptionValueNONE]) {
+      if ([SSHOptionValueNONE isEqualToString:lv]) {
         result[key] = lv;
       } else {
         int v = 0;
@@ -370,6 +371,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   [self _applySSH:session optionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
   [self _applySSH:session optionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
+  [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
   ssh_options_set(session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
   
   NSString *configFile = _options[SSHOptionConfigFile];
