@@ -213,10 +213,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_auth_with_publickey {
-  __block int rc = SSH_OK;
+  int rc = SSH_OK;
   NSArray<NSString *> *identityfiles = _options[SSHOptionIdentityFile];
   for (NSString *identityfile in identityfiles) {
-    __block ssh_key pkey;
+    ssh_key pkey;
     
     BKPubKey *secureKey = [BKPubKey withID:identityfile];
     // we have this identity in
