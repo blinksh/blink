@@ -168,7 +168,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_auth {
-  __block int rc = SSH_ERROR;
+  int rc = SSH_ERROR;
   
   // 1. pre auth
   for (;;) {
@@ -425,7 +425,6 @@ void __on_ssh_global_request(ssh_session session,
     int port = 0;
     ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
     if (channel) {
-      NSLog(@"Got it %@", @(port));
       for (SSHClientReverseForwardChannel *ch in _reversForwardChannels) {
         if (ch.remoteport == port) {
           [ch connectClient:self withCahnnel:channel];
