@@ -56,6 +56,9 @@ const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
 const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
 const NSString * SSHOptionLocalForward = @"localforward"; // -L
 const NSString * SSHOptionRemoteForward = @"remoteforward"; // -R
+const NSString * SSHOptionForwardAgent = @"forwardagent"; // -a -A
+const NSString * SSHOptionForwardX11 = @"forwardx11"; // -x -X
+
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -127,6 +130,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionLocalForward: @[localforwardType],
                          SSHOptionRemoteForward: @[remoteforwardType],
                          SSHOptionProxyCommand: @[stringType],
+                         SSHOptionForwardAgent: @[yesNoType, SSHOptionValueNO],
+                         SSHOptionForwardX11: @[yesNoType, SSHOptionValueNO],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
                          };
@@ -277,14 +282,21 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableArray<NSString *> *localforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *remoteforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
+  BOOL quite = NO;
   
   while (1) {
-    int c = getopt(argc, argv, "R:L:Vo:CGp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hTtvl:F:");
     if (c == -1) {
       break;
     }
     
     switch (c) {
+      case 'a':
+        [args setObject:SSHOptionValueNO forKey:SSHOptionForwardAgent];
+        break;
+      case 'x':
+        [args setObject:SSHOptionValueNO forKey:SSHOptionForwardX11];
+        break;
       case 'p':
         [args setObject:[self _tryParsePort:optarg] forKey:SSHOptionPort];
         break;
@@ -293,6 +305,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         break;
       case 'v':
         [args setObject:@(MIN([_options[SSHOptionLogLevel] intValue] + 1, SSH_LOG_TRACE)) forKey:SSHOptionLogLevel];
+        break;
+      case 'q':
+        quite = YES;
         break;
       case 'i':
         [identityfiles addObject:@(optarg)];
@@ -328,6 +343,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       default:
         return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];
     }
+  }
+  
+  if (quite) {
+    [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   }
   
   if (identityfiles.count > 0) {
@@ -380,7 +399,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 
 - (NSString *)_usage {
   return [@[
-     @"usage: ssh2 [-CGTtVv]",
+     @"usage: ssh2 [-aCGVqTtvx]",
      @"            [-F configFile] [-i identity_file]",
      @"            [-l login_name] [-o option]",
      @"            [-p port] [-L address] [-R address]",
