@@ -44,9 +44,11 @@
 #import "BlinkPaths.h"
 
 
+
 // from ios_system:
 
 #include <ios_system/ios_system.h>
+
 #include "ios_error.h"
 
 @implementation MCPSession {
@@ -206,6 +208,7 @@
 //    pthread_t tid = ios_getLastThreadId();
 //    pthread_kill(tid, SIGWINCH);
   }
+  [_sshClient sigwinch];
 }
 
 - (void)kill

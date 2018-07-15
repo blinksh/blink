@@ -32,33 +32,23 @@
 
 #import <Foundation/Foundation.h>
 #include <libssh/libssh.h>
+#include <libssh/callbacks.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class SSHClient;
+@interface SSHClientConnectedChannel : NSObject
 
-@interface SSHClientChannel : NSObject
+@property int exitCode;
+@property (readonly) ssh_channel channel;
 
-- (void)openWithClient:(SSHClient *)client;
-- (void)closeWithClient:(SSHClient *)client;
+- (void)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
+- (void)connect:(ssh_channel)channel withSockFd:(dispatch_fd_t)sockFd;
+- (void)addToEvent:(ssh_event)event;
+- (void)closeAndFree;
+- (void)closeSock;
+- (void)on_eof;
+- (void)on_close;
 
 @end
-
-@interface SSHClientMainChannel : SSHClientChannel
-@end
-
-@interface SSHClientDirectForwardChannel : SSHClientChannel
-- (instancetype)initWithAddress:(NSString *)address;
-@end
-
-@interface SSHClientReverseForwardChannel : SSHClientChannel
-
-@property int remoteport;
-
-- (instancetype)initWithAddress:(NSString *)address;
-- (void)registerListenWithClient:(SSHClient *)client;
-- (void)connectClient:(SSHClient *)client withCahnnel:(ssh_channel) channel;
-@end
-
 
 NS_ASSUME_NONNULL_END

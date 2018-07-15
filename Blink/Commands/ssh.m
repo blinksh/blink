@@ -35,6 +35,7 @@
 
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
+#include "MCPSession.h"
 
 
 void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out) {
@@ -54,12 +55,15 @@ void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out
 
 
 int ssh_main(int argc, char *argv[]) {
+  MCPSession *session = (__bridge MCPSession *)thread_context;
   thread_ssh_execute_command = &__thread_ssh_execute_command;
   
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)
                               stdOut: fileno(thread_stdout)
                               stdErr: fileno(thread_stderr)
+                       win: &session.device->win
                        isTTY: ios_isatty(fileno(thread_stdout))];
+  session.sshClient = client;
   return [client main:argc argv:argv];
 }

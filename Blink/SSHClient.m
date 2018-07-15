@@ -33,11 +33,12 @@
 #import "SSHClient.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
-#import "SSHClientChannel.h"
+#import "SSHClientConnectedChannel.h"
 
 #import <signal.h>
 #import <pthread.h>
 #import <poll.h>
+#include <sys/ioctl.h>
 #include <libssh/callbacks.h>
 
 void __write(dispatch_fd_t fd, NSString *message) {
@@ -68,24 +69,40 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 @implementation SSHClient {
-  NSMutableArray<SSHClientChannel *> *_channels;
-  NSMutableArray<SSHClientReverseForwardChannel *> *_reversForwardChannels;
+  SSHClientOptions *_options;
+  ssh_event _event;
+  ssh_session _session;
+  dispatch_queue_t _queue;
+  dispatch_queue_t _listenQueue;
+  
+  dispatch_fd_t _fdIn;
+  dispatch_fd_t _fdOut;
+  dispatch_fd_t _fdErr;
+  
+  BOOL _isTTY;
+  NSMutableArray<dispatch_source_t> *_listenSources;
+  SSHClientConnectedChannel *_mainChannel;
+  NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
+  
   ssh_callbacks _ssh_callbacks;
   bool _doExit;
   int _exitCode;
   pthread_t _thread;
+  struct winsize *_win;
 }
 
-- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr isTTY:(BOOL)isTTY {
+- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr win:(struct winsize *)win isTTY:(BOOL)isTTY {
   if (self = [super init]) {
     
+    _win = win;
     _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
+    _listenQueue = dispatch_queue_create("sh.blink.sshclient.listen", DISPATCH_QUEUE_SERIAL); // can be concurrent
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
     _options = [[SSHClientOptions alloc] init];
-    _channels = [[NSMutableArray alloc] init];
-    _reversForwardChannels = [[NSMutableArray alloc] init];
+    _listenSources = [[NSMutableArray alloc] init];
+    
     _isTTY = isTTY;
     _thread = pthread_self();
     
@@ -99,6 +116,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)exitWithCode:(int)code {
   _doExit = YES;
   _exitCode = code;
+  [self close];
   return code;
 }
 
@@ -133,36 +151,33 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_start_connect_flow {
-  __block int rc = SSH_ERROR;
-  dispatch_sync(_queue, ^{
-    _event = ssh_event_new();
-    ssh_set_blocking(_session, 0);
-    rc = ssh_connect(_session);
-    if (rc == SSH_ERROR) {
-      return;
+  _event = ssh_event_new();
+  ssh_set_blocking(_session, 0);
+  int rc = ssh_connect(_session);
+  if (rc == SSH_ERROR) {
+    return rc;
+  }
+  ssh_event_add_session(_event, _session);
+  
+  if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
+    rc = SSH_ERROR;
+    return rc;
+  }
+  
+  // connect
+  for(;;) {
+    switch(rc) {
+      case SSH_AGAIN:
+        rc = ssh_connect(_session);
+        [self poll];
+        continue;
+      case SSH_OK:
+        [self _auth];
+      default:
+      case SSH_ERROR:
+        return rc;
     }
-    ssh_event_add_session(_event, _session);
-    
-    if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
-      rc = SSH_ERROR;
-      return;
-    }
-    
-    // connect
-    for(;;) {
-      switch(rc) {
-        case SSH_AGAIN:
-          rc = ssh_connect(_session);
-          [self poll];
-          continue;
-        case SSH_OK:
-          [self _auth];
-        case SSH_ERROR:
-        default:
-          return;
-      }
-    }
-  });
+  }
   
   return rc;
 }
@@ -221,7 +236,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     BKPubKey *secureKey = [BKPubKey withID:identityfile];
     // we have this identity in
     if (secureKey) {
-      rc = ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
+//      NSString * OPENSSH_HEADER_BEGIN = @"-----BEGIN OPENSSH PRIVATE KEY-----";
+//      NSString * OPENSSH_HEADER_END   = @"-----END OPENSSH PRIVATE KEY-----";
+//      NSString * PRIVATE_HEADER_BEGIN = @"-----BEGIN PRIVATE KEY-----";
+//      NSString * PRIVATE_HEADER_END = @"-----END PRIVATE KEY-----";
+//      NSString * b64Key = [secureKey.privateKey stringByReplacingOccurrencesOfString:PRIVATE_HEADER_BEGIN withString:OPENSSH_HEADER_BEGIN];
+//      b64Key = [b64Key stringByReplacingOccurrencesOfString:PRIVATE_HEADER_END withString:OPENSSH_HEADER_END];
+      rc =  ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
                                          NULL, /* TODO: get stored */
                                          __ssh_auth_fn,
                                          (__bridge void *) self,
@@ -314,23 +335,211 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_open_channels {
-  SSHClientMainChannel *mainChannel = [[SSHClientMainChannel alloc] init];
-  [_channels addObject:mainChannel];
-  [mainChannel openWithClient:self];
+  [self _open_main_channel];
   
   for (NSString *address in _options[SSHOptionLocalForward]) {
-    SSHClientDirectForwardChannel *channel = [[SSHClientDirectForwardChannel alloc] initWithAddress:address];
-    [_channels addObject:channel];
-    [channel openWithClient:self];
+    [self _start_listen_direct_forward: address];
   }
   
   for (NSString *address in _options[SSHOptionRemoteForward]) {
-    SSHClientReverseForwardChannel *channel = [[SSHClientReverseForwardChannel alloc] initWithAddress:address];
-    [_channels addObject:channel];
-    [channel registerListenWithClient:self];
-    [_reversForwardChannels addObject:channel];
+    [self _start_listen_reverse_forward: address];
   }
 }
+
+- (int)_start_listen_direct_forward:(NSString *)strAddress {
+  __block int rc = SSH_ERROR;
+  NSMutableArray<NSString *> *parts = [[strAddress componentsSeparatedByString:@":"] mutableCopy];
+  int remoteport = [[parts lastObject] intValue];
+  [parts removeLastObject];
+  NSString *remotehost = [parts lastObject];
+  [parts removeLastObject];
+  int localport = [[parts lastObject] intValue];
+  [parts removeLastObject];
+  NSString *sourcehost = [parts lastObject] ?: @"localhost";
+  
+  dispatch_fd_t listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  if (listenSock < 0) {
+    // TODO check client options
+    //      [client sync:^{
+    //        [client exitWithCode:rc];
+    //      }];
+    return SSH_ERROR;
+  }
+  int value = 1;
+  setsockopt(listenSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
+  
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  
+  address.sin_port=htons(localport);
+  bind(listenSock, (struct sockaddr *)&address,sizeof(address));
+  int queueSize = 3;
+  listen(listenSock, queueSize);
+  
+  dispatch_source_t listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listenSock, 0, _listenQueue);
+  
+  dispatch_source_set_cancel_handler(listenSource, ^{
+    close(listenSock);
+  });
+  
+  dispatch_source_set_event_handler(listenSource, ^{
+    dispatch_fd_t sock = accept(listenSock, NULL, NULL);
+    if (sock == SSH_INVALID_SOCKET) {
+      return;
+    }
+    
+    int noSigPipe = 1;
+    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
+    
+    [self schedule:^{
+      ssh_channel channel = ssh_channel_new(_session);
+      ssh_channel_set_blocking(channel, 0);
+      
+      
+      for (;;) {
+        rc = ssh_channel_open_forward(channel, remotehost.UTF8String, remoteport, sourcehost.UTF8String, localport);
+        switch (rc) {
+          case SSH_AGAIN:
+            [self poll];
+            continue;
+          case SSH_OK: break;
+          default:
+          case SSH_ERROR:
+            ssh_channel_free(channel);
+            [self exitWithCode:rc];
+            return;
+        }
+        break;
+      }
+      
+      SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+      [connectedChannel connect:channel withSockFd:sock];
+      [_connectedChannels addObject:connectedChannel];
+      [connectedChannel addToEvent:_event];
+    }];
+  });
+  
+  dispatch_activate(listenSource);
+  [_listenSources addObject:listenSource];
+  return SSH_OK;
+}
+
+- (int)_start_listen_reverse_forward:(NSString *)strAddress {
+  NSString *remotehost;
+  NSString *sourcehost;
+  int remoteport = 0;
+  int localport = 0;
+  NSMutableArray<NSString *> *parts = [[strAddress componentsSeparatedByString:@":"] mutableCopy];
+  
+  //  -R port
+  if (parts.count == 1) {
+    int port = [[parts lastObject] intValue];
+    remoteport = port;
+    localport = port;
+    remotehost = NULL;
+    sourcehost = NULL;
+  }
+  
+  remoteport = [[parts lastObject] intValue];
+  [parts removeLastObject];
+  remotehost = [parts lastObject];
+  [parts removeLastObject];
+  localport = [[parts lastObject] intValue];
+  [parts removeLastObject];
+  sourcehost = [parts lastObject] ?: @"localhost";
+  
+  for (;;) {
+    int rc = ssh_channel_listen_forward(_session, remotehost.UTF8String, remoteport, &remoteport);
+    switch (rc) {
+      case SSH_AGAIN:
+        [self poll];
+        continue;
+        break;
+      case SSH_OK:
+        NSLog(@"Ok %@", @(remoteport));
+        return rc;
+      default:
+      case SSH_ERROR:
+        NSLog(@"Error");
+        return rc;
+    }
+  }
+  return SSH_ERROR;
+}
+
+- (void)_open_main_channel {
+  __block int rc;
+  ssh_channel channel = ssh_channel_new(_session);
+  ssh_channel_set_blocking(channel, 0);
+  
+  for (;;) {
+    rc = ssh_channel_open_session(channel);
+    switch (rc) {
+      case SSH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_free(channel);
+        [self exitWithCode:rc];
+        return;
+    }
+    break;
+  }
+  
+  BOOL doRequestPTY = _options[SSHOptionRequestTTY] == SSHOptionValueYES
+  || (_options[SSHOptionRequestTTY] == SSHOptionValueAUTO && _isTTY);
+  
+  if (doRequestPTY) {
+    for (;;) {
+      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _win->ws_col, _win->ws_row);
+      switch (rc) {
+        case SSH_AGAIN:
+          [self poll];
+          continue;
+        case SSH_OK:
+          
+          break;
+        default:
+        case SSH_ERROR:
+          ssh_channel_close(channel);
+          ssh_channel_free(channel);
+          [self exitWithCode:rc];
+          return;
+      }
+      break;
+    }
+  }
+  
+  NSString *remoteCommand = _options[SSHOptionRemoteCommand];
+  for (;;) {
+    if (remoteCommand) {
+      rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
+    } else {
+      rc = ssh_channel_request_shell(channel);
+    }
+    switch (rc) {
+      case SSH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_close(channel);
+        ssh_channel_free(channel);
+        [self exitWithCode:rc];
+        return;
+    }
+    break;
+  }
+  
+  _mainChannel = [[SSHClientConnectedChannel alloc] init];
+  [_mainChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
+  [_mainChannel addToEvent:_event];
+}
+
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
@@ -365,6 +574,13 @@ static void __on_usr1(int signum) {
   NSLog(@"SIGUSR1");
 }
 
+- (void)sigwinch {
+  [self schedule:^{
+    ssh_channel channel = _mainChannel.channel;
+    ssh_channel_change_pty_size(channel, _win->ws_col, _win->ws_row);
+  }];
+}
+
 void __on_ssh_global_request(ssh_session session,
                               ssh_message message, void *userdata)
 {
@@ -376,6 +592,26 @@ void __on_ssh_global_request(ssh_session session,
 //  }
 }
 
+- (int)_connect_channel:(ssh_channel)channel to_port:(int)port {
+  int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  
+  struct sockaddr_in address;
+  address.sin_family = AF_INET;
+  address.sin_addr.s_addr = INADDR_ANY;
+  
+  address.sin_port=htons(port);
+  
+  int rc = connect(sock, (struct sockaddr *)&address, sizeof(address));
+  if (rc == -1) {
+    return rc;
+  }
+  
+  SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+  [connectedChannel connect:channel withSockFd:sock];
+  [_connectedChannels addObject:connectedChannel];
+  [connectedChannel addToEvent:_event];
+  return SSH_OK;
+}
 
 - (int)main:(int) argc argv:(char **) argv {
   
@@ -425,13 +661,7 @@ void __on_ssh_global_request(ssh_session session,
     int port = 0;
     ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
     if (channel) {
-      for (SSHClientReverseForwardChannel *ch in _reversForwardChannels) {
-        if (ch.remoteport == port) {
-          [ch connectClient:self withCahnnel:channel];
-          break;
-        }
-      }
-      
+      [self _connect_channel:channel to_port: port];
     }
   };
 
@@ -443,6 +673,22 @@ void __on_ssh_global_request(ssh_session session,
   };
   
   return _exitCode;
+}
+
+- (void)close {
+  ssh_set_blocking(_session, 1);
+  if (_event) {
+    ssh_event_free(_event);
+    _event = NULL;
+  }
+  if (_session) {
+    ssh_free(_session);
+    _session = NULL;
+  }
+  if (_ssh_callbacks) {
+    free(_ssh_callbacks);
+    _ssh_callbacks = NULL;
+  }
 }
 
 @end
