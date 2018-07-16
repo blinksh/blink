@@ -423,6 +423,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 - (int)configureSSHSession:(ssh_session)session {
+  
+//  [self _applySSH:session optionKey:@(SSH_LOG_PACKET) withOption:SSH_OPTIONS_LOG_VERBOSITY];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
   [self _applySSH:session optionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];

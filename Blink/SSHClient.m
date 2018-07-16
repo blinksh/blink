@@ -351,7 +351,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   for (NSString *address in _options[SSHOptionLocalForward]) {
     rc = [self _start_listen_direct_forward: address];
-    if (rc != SSH_OK && _options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
+    if (rc != SSH_OK && [SSHOptionValueYES isEqual:_options[SSHOptionExitOnForwardFailure]]) {
       [self exitWithCode:rc];
       return rc;
     }
@@ -457,11 +457,21 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   address.sin_addr.s_addr = INADDR_ANY;
   
   address.sin_port=htons(localport);
-  bind(listenSock, (struct sockaddr *)&address,sizeof(address));
-  int queueSize = 3;
-  listen(listenSock, queueSize);
+  rc = bind(listenSock, (struct sockaddr *)&address,sizeof(address));
+  if (rc == -1) {
+    return SSH_ERROR;
+  }
+  int listenBacklog = 5;
+  rc = listen(listenSock, listenBacklog);
+  if (rc == -1) {
+    return SSH_ERROR;
+  }
   
   dispatch_source_t listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listenSock, 0, _listenQueue);
+  
+  if (listenSource == nil) {
+    return SSH_ERROR;
+  }
   
   dispatch_source_set_cancel_handler(listenSource, ^{
     close(listenSock);
@@ -608,8 +618,18 @@ void __on_ssh_global_request(ssh_session session,
 //  }
 }
 
+void __on_ssh_log(ssh_session session, int priority,
+                  const char *message, void *userdata) {
+  NSLog(@"%@: %@", @(priority), @(message));
+}
+
+
 - (int)_connect_channel:(ssh_channel)channel to_port:(int)port {
   int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
+  
+  if (sock == SSH_INVALID_SOCKET) {
+    return SSH_ERROR;
+  }
   
   struct sockaddr_in address;
   address.sin_family = AF_INET;
@@ -653,6 +673,7 @@ void __on_ssh_global_request(ssh_session session,
   _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
   _ssh_callbacks->userdata = (__bridge void *)self;
   _ssh_callbacks->global_request_function = __on_ssh_global_request;
+  _ssh_callbacks->log_function = &__on_ssh_log;
   
   ssh_callbacks_init(_ssh_callbacks);
   ssh_set_callbacks(_session, _ssh_callbacks);
