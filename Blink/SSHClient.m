@@ -57,7 +57,7 @@ void __write_ssh_chars_and_free(dispatch_fd_t fd, char *buffer) {
 }
 
 
-@interface SSHClient (internal)
+@interface SSHClient (internal) <SSHClientConnectedChannelDelegate>
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
 @end
 
@@ -288,10 +288,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_auth_with_interactive {
-  int rc = SSH_OK;
   int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
   for (;;) {
-    rc = ssh_userauth_kbdint(_session, NULL, NULL);
+    int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
     switch (rc) {
       case SSH_AUTH_AGAIN:
@@ -315,6 +314,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
             }
             
             NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
+            __write(_fdOut, @"\n");
             
             for (int i = 0; i < answers.count; i++) {
               int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
@@ -328,10 +328,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
         break;
       case SSH_AUTH_SUCCESS:
-        [self _open_channels];
+        return [self _open_channels];
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
-          __write(_fdOut, @"\n");
           rc = ssh_userauth_kbdint(_session, NULL, NULL);
           continue;
         }
@@ -343,17 +342,97 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
 }
 
-- (void)_open_channels {
-  [self _open_main_channel];
+- (int)_open_channels {
+  int rc = [self _start_main_channel];
+  if (rc != SSH_OK) {
+    [self exitWithCode:rc];
+    return rc;
+  }
   
   for (NSString *address in _options[SSHOptionLocalForward]) {
-    [self _start_listen_direct_forward: address];
+    rc = [self _start_listen_direct_forward: address];
+    if (rc != SSH_OK && _options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
+      [self exitWithCode:rc];
+      return rc;
+    }
   }
   
   for (NSString *address in _options[SSHOptionRemoteForward]) {
     [self _start_listen_reverse_forward: address];
   }
+  return SSH_OK;
 }
+
+- (int)_start_main_channel {
+  int rc = SSH_ERROR;
+  ssh_channel channel = ssh_channel_new(_session);
+  ssh_channel_set_blocking(channel, 0);
+  
+  for (;;) {
+    rc = ssh_channel_open_session(channel);
+    switch (rc) {
+      case SSH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_free(channel);
+        return rc;
+    }
+    break;
+  }
+  
+  BOOL doRequestPTY = _options[SSHOptionRequestTTY] == SSHOptionValueYES
+  || (_options[SSHOptionRequestTTY] == SSHOptionValueAUTO && _isTTY);
+  
+  if (doRequestPTY) {
+    for (;;) {
+      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _win->ws_col, _win->ws_row);
+      switch (rc) {
+        case SSH_AGAIN:
+          [self poll];
+          continue;
+        case SSH_OK: break;
+        default:
+        case SSH_ERROR:
+          ssh_channel_close(channel);
+          ssh_channel_free(channel);
+          return rc;
+      }
+      break;
+    }
+    // TODO: Put in raw mode.
+  }
+  
+  NSString *remoteCommand = _options[SSHOptionRemoteCommand];
+  for (;;) {
+    if (remoteCommand) {
+      rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
+    } else {
+      rc = ssh_channel_request_shell(channel);
+    }
+    switch (rc) {
+      case SSH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_OK: break;
+      default:
+      case SSH_ERROR:
+        ssh_channel_close(channel);
+        ssh_channel_free(channel);
+        return rc;
+    }
+    break;
+  }
+  
+  _mainChannel = [[SSHClientConnectedChannel alloc] init];
+  _mainChannel.delegate = self;
+  [_mainChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
+  [_mainChannel addToEvent:_event];
+  return rc;
+}
+
 
 - (int)_start_listen_direct_forward:(NSString *)strAddress {
   __block int rc = SSH_ERROR;
@@ -368,10 +447,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   dispatch_fd_t listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
   if (listenSock < 0) {
-    // TODO check client options
-    //      [client sync:^{
-    //        [client exitWithCode:rc];
-    //      }];
     return SSH_ERROR;
   }
   int value = 1;
@@ -416,13 +491,16 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           default:
           case SSH_ERROR:
             ssh_channel_free(channel);
-            [self exitWithCode:rc];
+            if (_options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
+              [self exitWithCode:rc];
+            }
             return;
         }
         break;
       }
       
       SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+      connectedChannel.delegate = self;
       [connectedChannel connect:channel withSockFd:sock];
       [_connectedChannels addObject:connectedChannel];
       [connectedChannel addToEvent:_event];
@@ -477,77 +555,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return SSH_ERROR;
 }
 
-- (void)_open_main_channel {
-  __block int rc;
-  ssh_channel channel = ssh_channel_new(_session);
-  ssh_channel_set_blocking(channel, 0);
-  
-  for (;;) {
-    rc = ssh_channel_open_session(channel);
-    switch (rc) {
-      case SSH_AGAIN:
-        [self poll];
-        continue;
-      case SSH_OK: break;
-      default:
-      case SSH_ERROR:
-        ssh_channel_free(channel);
-        [self exitWithCode:rc];
-        return;
-    }
-    break;
-  }
-  
-  BOOL doRequestPTY = _options[SSHOptionRequestTTY] == SSHOptionValueYES
-  || (_options[SSHOptionRequestTTY] == SSHOptionValueAUTO && _isTTY);
-  
-  if (doRequestPTY) {
-    for (;;) {
-      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _win->ws_col, _win->ws_row);
-      switch (rc) {
-        case SSH_AGAIN:
-          [self poll];
-          continue;
-        case SSH_OK:
-          
-          break;
-        default:
-        case SSH_ERROR:
-          ssh_channel_close(channel);
-          ssh_channel_free(channel);
-          [self exitWithCode:rc];
-          return;
-      }
-      break;
-    }
-  }
-  
-  NSString *remoteCommand = _options[SSHOptionRemoteCommand];
-  for (;;) {
-    if (remoteCommand) {
-      rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
-    } else {
-      rc = ssh_channel_request_shell(channel);
-    }
-    switch (rc) {
-      case SSH_AGAIN:
-        [self poll];
-        continue;
-      case SSH_OK: break;
-      default:
-      case SSH_ERROR:
-        ssh_channel_close(channel);
-        ssh_channel_free(channel);
-        [self exitWithCode:rc];
-        return;
-    }
-    break;
-  }
-  
-  _mainChannel = [[SSHClientConnectedChannel alloc] init];
-  [_mainChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
-  [_mainChannel addToEvent:_event];
-}
 
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
@@ -616,6 +623,7 @@ void __on_ssh_global_request(ssh_session session,
   }
   
   SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+  connectedChannel.delegate = self;
   [connectedChannel connect:channel withSockFd:sock];
   [_connectedChannels addObject:connectedChannel];
   [connectedChannel addToEvent:_event];
@@ -667,6 +675,10 @@ void __on_ssh_global_request(ssh_session session,
   
   dispatch_block_t poll_block = ^{
     rc = ssh_event_dopoll(_event, -1);
+    if (_doExit) {
+      return;
+    }
+    
     int port = 0;
     ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
     if (channel) {
@@ -698,6 +710,20 @@ void __on_ssh_global_request(ssh_session session,
     free(_ssh_callbacks);
     _ssh_callbacks = NULL;
   }
+}
+
+- (void)connectedChannelDidClose:(SSHClientConnectedChannel *)connectedChannel {
+  if (_mainChannel == connectedChannel) {
+    [self schedule:^{
+      [self exitWithCode:connectedChannel.exitCode];
+    }];
+  }
+  
+  [_connectedChannels removeObject:connectedChannel];
+}
+
+- (void)dealloc {
+  NSLog(@"SSHClient dealloc");
 }
 
 @end

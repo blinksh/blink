@@ -58,6 +58,7 @@ const NSString * SSHOptionLocalForward = @"localforward"; // -L
 const NSString * SSHOptionRemoteForward = @"remoteforward"; // -R
 const NSString * SSHOptionForwardAgent = @"forwardagent"; // -a -A
 const NSString * SSHOptionForwardX11 = @"forwardx11"; // -x -X
+const NSString * SSHOptionExitOnForwardFailure = @"exitonforwardfailure"; // -o
 
 
 // Non standart
@@ -133,6 +134,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionForwardAgent: @[yesNoType, SSHOptionValueNO],
                          SSHOptionForwardX11: @[yesNoType, SSHOptionValueNO],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
+                         SSHOptionExitOnForwardFailure: @[yesNoType, SSHOptionValueNO],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
                          };
   

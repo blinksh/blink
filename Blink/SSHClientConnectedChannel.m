@@ -161,6 +161,8 @@ void __channel_exit_status_cb(ssh_session session,
 - (void)on_close {
   [self closeAndFree];
   [self closeSock];
+
+  [_delegate connectedChannelDidClose:self];
 }
 
 - (void)closeAndFree {

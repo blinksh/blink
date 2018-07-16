@@ -58,6 +58,7 @@ extern const NSString * SSHOptionRemoteForward; // -R
 
 extern const NSString * SSHOptionForwardAgent; // -a -A
 extern const NSString * SSHOptionForwardX11; // -x -X
+extern const NSString * SSHOptionExitOnForwardFailure; // -o
 
 // Non standart
 extern const NSString * SSHOptionPassword; //

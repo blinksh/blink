@@ -36,8 +36,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SSHClientConnectedChannel;
+
+@protocol SSHClientConnectedChannelDelegate <NSObject>
+
+- (void)connectedChannelDidClose:(SSHClientConnectedChannel *) connectedChannel;
+
+@end
+
 @interface SSHClientConnectedChannel : NSObject
 
+@property (weak) id<SSHClientConnectedChannelDelegate> delegate;
 @property int exitCode;
 @property (readonly) ssh_channel channel;
 
