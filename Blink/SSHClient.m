@@ -289,6 +289,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_with_interactive {
   int rc = SSH_OK;
+  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
   for (;;) {
     rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
@@ -328,6 +329,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         break;
       case SSH_AUTH_SUCCESS:
         [self _open_channels];
+      case SSH_AUTH_DENIED: {
+        if (--promptsCount > 0) {
+          __write(_fdOut, @"\n");
+          rc = ssh_userauth_kbdint(_session, NULL, NULL);
+          continue;
+        }
+        return rc;
+      }
       default:
         return rc;
     }
