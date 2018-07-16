@@ -73,8 +73,13 @@ const NSString * SSHOptionValueAUTO = @"auto";
 const NSString * SSHOptionValueANY = @"any";
 const NSString * SSHOptionValueNONE = @"none";
 
-const NSString * SSHOptionValueINFO = @"info";
+// QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3.
+const NSString * SSHOptionValueQUIET = @"quiet";
+const NSString * SSHOptionValueFATAL = @"fatal";
 const NSString * SSHOptionValueERROR = @"error";
+const NSString * SSHOptionValueINFO = @"info";
+const NSString * SSHOptionValueVERBOSE = @"verbose";
+
 const NSString * SSHOptionValueDEBUG = @"debug";
 const NSString * SSHOptionValueDEBUG1 = @"debug1";
 const NSString * SSHOptionValueDEBUG2 = @"debug2";
@@ -114,6 +119,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *identityfileType = [[NSObject alloc] init];
   NSObject *localforwardType = [[NSObject alloc] init];
   NSObject *remoteforwardType = [[NSObject alloc] init];
+  NSObject *logLevelType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -135,6 +141,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionForwardX11: @[yesNoType, SSHOptionValueNO],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
                          SSHOptionExitOnForwardFailure: @[yesNoType, SSHOptionValueNO],
+                         SSHOptionLogLevel: @[logLevelType, SSHOptionValueINFO],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
                          };
   
@@ -230,6 +237,22 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"invalid number \"%@\".", value]];
         return result;
       }
+    } else if (type == logLevelType) {
+      if ([@[
+             SSHOptionValueQUIET,
+             SSHOptionValueFATAL,
+             SSHOptionValueERROR,
+             SSHOptionValueINFO,
+             SSHOptionValueVERBOSE,
+             SSHOptionValueDEBUG,
+             SSHOptionValueDEBUG1,
+             SSHOptionValueDEBUG2,
+             SSHOptionValueDEBUG3,
+             ] indexOfObject:lv] == NSNotFound) {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
+        return result;
+      }
+      result[key] = lv;
     }
   }
   
@@ -255,7 +278,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 
-
 - (NSObject *)_tryParsePort:(char *)portStr {
   int port = [@(portStr) intValue];
   
@@ -279,15 +301,17 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   optind = 1;
   
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
-  [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *localforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *remoteforward = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *identityfiles = [[NSMutableArray alloc] init];
-  BOOL quite = NO;
+  
+  int sshLogLevel = 0;
+  int clientLogLevel = 0;
+  BOOL quiet = NO;
   
   while (1) {
-    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hTtvl:F:");
+    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hqTtvl:F:");
     if (c == -1) {
       break;
     }
@@ -306,10 +330,14 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:SSHOptionValueYES forKey:SSHOptionCompression];
         break;
       case 'v':
-        [args setObject:@(MIN([_options[SSHOptionLogLevel] intValue] + 1, SSH_LOG_TRACE)) forKey:SSHOptionLogLevel];
+        if (quiet) {
+          clientLogLevel++;
+        } else {
+          sshLogLevel++;
+        }
         break;
       case 'q':
-        quite = YES;
+        quiet = YES;
         break;
       case 'i':
         [identityfiles addObject:@(optarg)];
@@ -347,9 +375,18 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     }
   }
   
-  if (quite) {
-    [args setObject:@(SSH_LOG_NONE) forKey:SSHOptionLogLevel];
+  NSString *logLevelValue = [SSHOptionValueINFO copy];
+  if (quiet) {
+    if (clientLogLevel > 0) {
+      NSArray<const NSString *> *logVals = @[SSHOptionValueFATAL, SSHOptionValueERROR, SSHOptionValueINFO, SSHOptionValueVERBOSE, SSHOptionValueDEBUG, SSHOptionValueDEBUG2, SSHOptionValueDEBUG3];
+      logLevelValue = [[logVals objectAtIndex:MIN(clientLogLevel - 1, [logVals count])] copy];
+    } else {
+      logLevelValue = [SSHOptionValueQUIET copy];
+    }
+  } else if (sshLogLevel > 0) {
+    logLevelValue = [@[SSHOptionValueDEBUG, SSHOptionValueDEBUG2, SSHOptionValueDEBUG3] objectAtIndex:MIN(sshLogLevel - 1, 2)];
   }
+  [args setObject:logLevelValue forKey:SSHOptionLogLevel];
   
   if (identityfiles.count > 0) {
     args[SSHOptionIdentityFile] = identityfiles;

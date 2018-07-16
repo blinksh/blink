@@ -73,12 +73,19 @@ extern const NSString * SSHOptionValueAUTO;
 extern const NSString * SSHOptionValueANY;
 extern const NSString * SSHOptionValueNONE;
 
-extern const NSString * SSHOptionValueINFO;
-extern const NSString * SSHOptionValueERROR;
-extern const NSString * SSHOptionValueDEBUG;
-extern const NSString * SSHOptionValueDEBUG1;
-extern const NSString * SSHOptionValueDEBUG2;
-extern const NSString * SSHOptionValueDEBUG3;
+// QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG, DEBUG1, DEBUG2, and DEBUG3.
+// Client log level
+extern const NSString * SSHOptionValueQUIET; // -q                  ; SSH_LOG_NOLOG
+extern const NSString * SSHOptionValueFATAL; // -v -q -v            ; SSH_LOG_NOLOG
+extern const NSString * SSHOptionValueERROR; // -v -q -vv           ; SSH_LOG_NOLOG
+extern const NSString * SSHOptionValueINFO;  // no -v or -v -q -vvv ; SSH_LOG_NOLOG
+extern const NSString * SSHOptionValueVERBOSE; // -v -q -vvvv       ; SSH_LOG_NOLOG
+
+// libssh log level
+extern const NSString * SSHOptionValueDEBUG;  // -v   ; SSH_LOG_WARNING
+extern const NSString * SSHOptionValueDEBUG1; // same as DEBUG
+extern const NSString * SSHOptionValueDEBUG2; // -vv  ; SSH_LOG_PROTOCOL
+extern const NSString * SSHOptionValueDEBUG3; // -vvv ; SSH_LOG_PACKET
 
 @interface SSHClientOptions : NSObject
 
