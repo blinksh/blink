@@ -755,16 +755,20 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return [self exitWithCode:SSH_OK];
   }
   
-  if ([self _start_connect_flow] == SSH_ERROR) {
-    return [self exitWithCode:SSH_ERROR];
+  rc = [self _start_connect_flow];
+  if (rc != SSH_OK) {
+    return [self exitWithCode:rc];
   }
+  
+  BOOL hasRemoteForwards = _options[SSHOptionRemoteForward] != nil;
   
   dispatch_block_t poll_block = ^{
     rc = ssh_event_dopoll(_event, -1);
     if (_doExit) {
       return;
     }
-    if (_options[SSHOptionRemoteForward]) {
+
+    if (hasRemoteForwards) {
       int port = 0;
       ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
       if (channel) {
