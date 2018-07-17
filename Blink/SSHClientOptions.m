@@ -530,6 +530,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [lines addObject:[NSString stringWithFormat:@"%@ %@", key, v]];
       }
     } else {
+      if ([SSHOptionPassword isEqual:key]) {
+        val = @"********";
+      }
       [lines addObject:[NSString stringWithFormat:@"%@ %@", key, val]];
     }
   }

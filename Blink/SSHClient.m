@@ -214,6 +214,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       return;
     }
   }
+
+  // 5. password if we have it
+  if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    rc = [self _auth_password];
+    if (rc == SSH_AUTH_SUCCESS) {
+      return;
+    }
+  }
   
   // 5. interactive
   if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
@@ -284,6 +292,29 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   return rc;
+}
+
+- (int)_auth_password {
+  NSString *password = _options[SSHOptionPassword];
+  
+  if (!password) {
+    return SSH_ERROR;
+  }
+  
+  for (;;) {
+    int rc = ssh_userauth_password(_session, NULL, password.UTF8String);
+    
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        [self poll];
+        continue;
+      case SSH_AUTH_SUCCESS:
+        return [self _open_channels];
+      default:
+        return rc;
+    }
+  }
+  return SSH_ERROR;
 }
 
 - (int)_auth_with_interactive {
