@@ -167,7 +167,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   pthread_kill(_thread, SIGUSR1);
 }
 
-- (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
+- (int)_ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
   return 0;
 }
 
@@ -346,8 +346,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           [self _poll];
           continue;
         case SSH_AUTH_SUCCESS:
-          [self _open_channels];
-          return rc;
+          return [self _open_channels];
         case SSH_AUTH_DENIED:
         case SSH_AUTH_PARTIAL:
           tryNextIdentityFile = YES;
