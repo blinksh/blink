@@ -33,6 +33,7 @@
 #import <Foundation/Foundation.h>
 #include <libssh/libssh.h>
 #import "SSHClientOptions.h"
+#import "TermDevice.h"
 
 
 NS_ASSUME_NONNULL_BEGIN
@@ -40,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface SSHClient : NSObject
 
 
-- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr win:(struct winsize *)win isTTY:(BOOL)isTTY;
+- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr device:(TermDevice *)device isTTY:(BOOL)isTTY;
 - (int)main:(int) argc argv:(char **) argv;
 - (void)schedule:(dispatch_block_t)block;
 - (int)exitWithCode:(int)code;

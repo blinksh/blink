@@ -88,13 +88,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   bool _doExit;
   int _exitCode;
   pthread_t _thread;
-  struct winsize *_win;
+  __weak TermDevice *_device;
 }
 
-- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr win:(struct winsize *)win isTTY:(BOOL)isTTY {
+- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr device:(TermDevice *)device isTTY:(BOOL)isTTY {
   if (self = [super init]) {
     
-    _win = win;
+    _device = device;
     _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
     _listenQueue = dispatch_queue_create("sh.blink.sshclient.listen", DISPATCH_QUEUE_SERIAL); // can be concurrent
     _fdIn = fdIn;
@@ -157,8 +157,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (rc == SSH_ERROR) {
     return rc;
   }
-  ssh_event_add_session(_event, _session);
-  
+
   if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
     rc = SSH_ERROR;
     return rc;
@@ -388,7 +387,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   if (doRequestPTY) {
     for (;;) {
-      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _win->ws_col, _win->ws_row);
+      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
         case SSH_AGAIN:
           [self poll];
@@ -402,8 +401,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
       break;
     }
-    // TODO: Put in raw mode.
   }
+  
+  [_device setRawMode:YES];
   
   NSString *remoteCommand = _options[SSHOptionRemoteCommand];
   for (;;) {
@@ -416,7 +416,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case SSH_AGAIN:
         [self poll];
         continue;
-      case SSH_OK: break;
+      case SSH_OK:
+        break;
       default:
       case SSH_ERROR:
         ssh_channel_close(channel);
@@ -425,6 +426,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     break;
   }
+  
   
   _mainChannel = [[SSHClientConnectedChannel alloc] init];
   _mainChannel.delegate = self;
@@ -603,7 +605,7 @@ static void __on_usr1(int signum) {
 - (void)sigwinch {
   [self schedule:^{
     ssh_channel channel = _mainChannel.channel;
-    ssh_channel_change_pty_size(channel, _win->ws_col, _win->ws_row);
+    ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
   }];
 }
 
@@ -699,11 +701,12 @@ void __on_ssh_log(ssh_session session, int priority,
     if (_doExit) {
       return;
     }
-    
-    int port = 0;
-    ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
-    if (channel) {
-      [self _connect_channel:channel to_port: port];
+    if (_options[SSHOptionRemoteForward]) {
+      int port = 0;
+      ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
+      if (channel) {
+        [self _connect_channel:channel to_port: port];
+      }
     }
   };
 

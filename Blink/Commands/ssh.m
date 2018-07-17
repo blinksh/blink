@@ -45,24 +45,35 @@ void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out
   ios_dup2(in,  0);
   ios_dup2(out, 1);
   ios_dup2(out, 2);
-  close(in);
-  close(out);
+//  close(in);
+//  close(out);
   ios_system(command);
 //  ios_exit(1);
 //  ios_execv(args[0],(char * const *)args);
 //  exit(1);
 }
 
+void __ssh_logging(int priority,
+                 const char *function,
+                 const char *buffer,
+                 void *userdata) {
+  fwrite(buffer, strlen(buffer), 1, thread_stderr);
+  fwrite("\n", 1, 1, thread_stderr);
+}
+
+
 
 int ssh_main(int argc, char *argv[]) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   thread_ssh_execute_command = &__thread_ssh_execute_command;
   
+  ssh_set_log_callback(__ssh_logging);
+  
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)
                               stdOut: fileno(thread_stdout)
                               stdErr: fileno(thread_stderr)
-                       win: &session.device->win
+                       device: session.device
                        isTTY: ios_isatty(fileno(thread_stdout))];
   session.sshClient = client;
   return [client main:argc argv:argv];

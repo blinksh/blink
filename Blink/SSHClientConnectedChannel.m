@@ -88,7 +88,7 @@ void __channel_exit_status_cb(ssh_session session,
   // stdout
   _connector_out = ssh_connector_new(session);
   ssh_connector_set_in_channel(_connector_out, _channel, SSH_CONNECTOR_STDOUT);
-  ssh_connector_set_out_fd(_connector_out,dup(fdOut));
+  ssh_connector_set_out_fd(_connector_out, dup(fdOut));
   
   // stderr
   _connector_err = ssh_connector_new(session);

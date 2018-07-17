@@ -422,9 +422,32 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   return _exitCode;
 }
 
-- (int)configureSSHSession:(ssh_session)session {
+- (int)_logLevelToSSHLogLevel {
+  NSString *logLevel = _options[SSHOptionLogLevel];
+  if ([@[SSHOptionValueDEBUG, SSHOptionValueDEBUG1] indexOfObject:logLevel] != NSNotFound) {
+    return SSH_LOG_WARN;
+  }
+  if ([SSHOptionValueDEBUG2 isEqual:logLevel]) {
+    return SSH_LOG_INFO;
+  }
+  if ([SSHOptionValueDEBUG3 isEqual:logLevel]) {
+    return SSH_LOG_DEBUG;
+  }
   
-//  [self _applySSH:session optionKey:@(SSH_LOG_PACKET) withOption:SSH_OPTIONS_LOG_VERBOSITY];
+  if ([SSHOptionValueINFO isEqual:logLevel]) {
+    return SSH_LOG_NONE;
+  }
+  
+  if ([SSHOptionValueQUIET isEqual:logLevel]) {
+    return SSH_LOG_NONE;
+  }
+  
+  return SSH_LOG_NONE;
+}
+
+- (int)configureSSHSession:(ssh_session)session {
+  ssh_set_log_level([self _logLevelToSSHLogLevel]);
+//  [self _applySSH:session optionKey:@([self _logLevelToSSHLogLevel]) withOption:SSH_OPTIONS_LOG_VERBOSITY];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
   [self _applySSH:session optionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
