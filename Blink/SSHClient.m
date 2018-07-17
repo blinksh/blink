@@ -217,13 +217,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
   // 5. password if we have it
   if (methods & SSH_AUTH_METHOD_PASSWORD) {
-    rc = [self _auth_password];
+    rc = [self _auth_with_password];
     if (rc == SSH_AUTH_SUCCESS) {
       return;
     }
   }
   
-  // 5. interactive
+  // 6. interactive
   if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
     rc = [self _auth_with_interactive];
     if (rc == SSH_AUTH_SUCCESS) {
@@ -294,7 +294,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return rc;
 }
 
-- (int)_auth_password {
+- (int)_auth_with_password {
   NSString *password = _options[SSHOptionPassword];
   
   if (!password) {
