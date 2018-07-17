@@ -264,7 +264,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case SSH_AUTH_DENIED:
         break;
       case SSH_AUTH_SUCCESS:
-        // Who knows?
+        // Who knows? see https://github.com/blinksh/blink/issues/450
         return [self _open_channels];
       default:
       case SSH_AUTH_ERROR:
