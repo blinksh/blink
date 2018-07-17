@@ -41,6 +41,10 @@
 #include <sys/ioctl.h>
 #include <libssh/callbacks.h>
 
+static void __on_usr1(int signum) {
+//  NSLog(@"SIGUSR1");
+}
+
 void __write(dispatch_fd_t fd, NSString *message) {
   if (message == nil) {
     return;
@@ -61,7 +65,6 @@ void __write_ssh_chars_and_free(dispatch_fd_t fd, char *buffer) {
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
 @end
 
-
 int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
                     int echo, int verify, void *userdata) {
   SSHClient *client = (__bridge SSHClient *)userdata;
@@ -81,7 +84,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   BOOL _isTTY;
   NSMutableArray<dispatch_source_t> *_listenSources;
-  SSHClientConnectedChannel *_mainChannel;
+  SSHClientConnectedChannel *_sessionChannel;
   NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
   
   ssh_callbacks _ssh_callbacks;
@@ -113,6 +116,36 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return self;
 }
 
+- (void)close {
+  //  ssh_set_blocking(_session, 1);
+  if (_event) {
+    ssh_event_free(_event);
+    _event = NULL;
+  }
+  if (_session) {
+    ssh_free(_session);
+    _session = NULL;
+  }
+  if (_ssh_callbacks) {
+    free(_ssh_callbacks);
+    _ssh_callbacks = NULL;
+  }
+}
+
+- (void)dealloc {
+  NSLog(@"SSHClient dealloc");
+}
+
+
+#pragma mark - UTILS
+
+- (void)sigwinch {
+  [self _schedule:^{
+    ssh_channel channel = _sessionChannel.channel;
+    ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
+  }];
+}
+
 - (int)exitWithCode:(int)code {
   _doExit = YES;
   _exitCode = code;
@@ -129,7 +162,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return [self exitWithCode:code];
 }
 
-- (void)schedule:(dispatch_block_t)block {
+- (void)_schedule:(dispatch_block_t)block {
   dispatch_async(_queue, block);
   pthread_kill(_thread, SIGUSR1);
 }
@@ -150,6 +183,40 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [self _exitWithCode:SSH_OK andMessage:message];
 }
 
+- (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
+  NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
+  for (int i = 0; i < prompts.count; i++) {
+    __write(_fdOut, prompts[i][0]);
+    FILE *fp = fdopen(_fdIn, "r");
+    char * line = NULL;
+    size_t len = 0;
+    ssize_t read = getline(&line, &len, fp);
+    
+    if (read != -1) {
+      
+    } else {
+      
+    }
+    
+    if (line) {
+      NSString * lineStr = [@(line) stringByReplacingOccurrencesOfString:@"\n" withString:@""];
+      [answers addObject:lineStr];
+      free(line);
+    }
+    __write(_fdOut, @"\n");
+    //    fclose(fp);
+  }
+  
+  return answers;
+}
+
+- (void)_poll {
+  ssh_event_dopoll(_event, -1);
+}
+
+
+#pragma mark - CONNECT
+
 - (int)_start_connect_flow {
   _event = ssh_event_new();
   ssh_set_blocking(_session, 0);
@@ -168,10 +235,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     switch(rc) {
       case SSH_AGAIN:
         rc = ssh_connect(_session);
-        [self poll];
+        [self _poll];
         continue;
       case SSH_OK:
-        [self _auth];
+        return [self _auth];
       default:
       case SSH_ERROR:
         return rc;
@@ -181,7 +248,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return rc;
 }
 
-- (void)_auth {
+#pragma mark - AUTHENTICATION
+
+- (int)_auth {
   int rc = SSH_ERROR;
   
   // 1. pre auth
@@ -189,14 +258,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     rc = ssh_userauth_none(_session, NULL);
     switch (rc) {
       case SSH_AUTH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
       case SSH_AUTH_PARTIAL:
-      case SSH_AUTH_DENIED: break;
+      case SSH_AUTH_DENIED:
+        break;
+      case SSH_AUTH_SUCCESS:
+        // Who knows?
+        return [self _open_channels];
       default:
       case SSH_AUTH_ERROR:
-        [self exitWithCode:rc];
-        return;
+        return [self exitWithCode:rc];
     }
     break;
   }
@@ -211,7 +283,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
-      return;
+      return rc;
     }
   }
 
@@ -219,7 +291,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PASSWORD) {
     rc = [self _auth_with_password];
     if (rc == SSH_AUTH_SUCCESS) {
-      return;
+      return rc;
     }
   }
 
@@ -227,11 +299,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
     rc = [self _auth_with_interactive];
     if (rc == SSH_AUTH_SUCCESS) {
-      return;
+      return rc;
     }
   }
 
-  [self exitWithCode:SSH_ERROR];
+  return [self exitWithCode:SSH_ERROR];
 }
 
 - (int)_auth_with_publickey {
@@ -271,7 +343,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
       switch (rc) {
         case SSH_AUTH_AGAIN:
-          [self poll];
+          [self _poll];
           continue;
         case SSH_AUTH_SUCCESS:
           [self _open_channels];
@@ -306,7 +378,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     
     switch (rc) {
       case SSH_AUTH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
       case SSH_AUTH_SUCCESS:
         return [self _open_channels];
@@ -325,7 +397,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     
     switch (rc) {
       case SSH_AUTH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
       case SSH_AUTH_INFO: {
           const char *nameChars = ssh_userauth_kbdint_getname(_session);
@@ -379,8 +451,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
 }
 
+#pragma mark - CHANNELS
+
 - (int)_open_channels {
-  int rc = [self _start_main_channel];
+  int rc = [self _start_session_channel];
   if (rc != SSH_OK) {
     [self exitWithCode:rc];
     return rc;
@@ -400,7 +474,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return SSH_OK;
 }
 
-- (int)_start_main_channel {
+- (int)_start_session_channel {
   int rc = SSH_ERROR;
   ssh_channel channel = ssh_channel_new(_session);
   ssh_channel_set_blocking(channel, 0);
@@ -409,7 +483,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     rc = ssh_channel_open_session(channel);
     switch (rc) {
       case SSH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
       case SSH_OK: break;
       default:
@@ -428,7 +502,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
         case SSH_AGAIN:
-          [self poll];
+          [self _poll];
           continue;
         case SSH_OK: break;
         default:
@@ -452,7 +526,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     switch (rc) {
       case SSH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
       case SSH_OK:
         break;
@@ -466,10 +540,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   
-  _mainChannel = [[SSHClientConnectedChannel alloc] init];
-  _mainChannel.delegate = self;
-  [_mainChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
-  [_mainChannel addToEvent:_event];
+  _sessionChannel = [[SSHClientConnectedChannel alloc] init];
+  _sessionChannel.delegate = self;
+  [_sessionChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
+  [_sessionChannel addToEvent:_event];
   return rc;
 }
 
@@ -526,16 +600,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     int noSigPipe = 1;
     setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
     
-    [self schedule:^{
+    [self _schedule:^{
       ssh_channel channel = ssh_channel_new(_session);
       ssh_channel_set_blocking(channel, 0);
-      
       
       for (;;) {
         rc = ssh_channel_open_forward(channel, remotehost.UTF8String, remoteport, sourcehost.UTF8String, localport);
         switch (rc) {
           case SSH_AGAIN:
-            [self poll];
+            [self _poll];
             continue;
           case SSH_OK: break;
           default:
@@ -590,9 +663,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     int rc = ssh_channel_listen_forward(_session, remotehost.UTF8String, remoteport, &remoteport);
     switch (rc) {
       case SSH_AGAIN:
-        [self poll];
+        [self _poll];
         continue;
-        break;
       case SSH_OK:
         NSLog(@"Ok %@", @(remoteport));
         return rc;
@@ -604,67 +676,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   return SSH_ERROR;
 }
-
-
-
-- (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
-  NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
-  for (int i = 0; i < prompts.count; i++) {
-    __write(_fdOut, prompts[i][0]);
-    FILE *fp = fdopen(_fdIn, "r");
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read = getline(&line, &len, fp);
-    
-    if (read != -1) {
-      
-    } else {
-      
-    }
-    
-    if (line) {
-      NSString * lineStr = [@(line) stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-      [answers addObject:lineStr];
-      free(line);
-    }
-    __write(_fdOut, @"\n");
-//    fclose(fp);
-  }
-  
-  return answers;
-}
-
-- (void)poll {
-  ssh_event_dopoll(_event, -1); // TODO: tune timeout or event make it dynamic
-}
-
-static void __on_usr1(int signum) {
-  NSLog(@"SIGUSR1");
-}
-
-- (void)sigwinch {
-  [self schedule:^{
-    ssh_channel channel = _mainChannel.channel;
-    ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
-  }];
-}
-
-void __on_ssh_global_request(ssh_session session,
-                              ssh_message message, void *userdata)
-{
-//  int msg_type = ssh_message_type(message);
-//  int msg_subtype = ssh_message_subtype(message);
-//  if (msg_type == SSH_REQUEST_CHANNEL_OPEN
-//      && msg_subtype == SSH_CHANNEL_FORWARDED_TCPIP) {
-//    NSLog(@"Nice!!!!!");
-//  }
-}
-
-void __on_ssh_log(ssh_session session, int priority,
-                  const char *message, void *userdata) {
-  NSLog(@"%@: %@", @(priority), @(message));
-}
-
 
 - (int)_connect_channel:(ssh_channel)channel to_port:(int)port {
   int sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
@@ -692,13 +703,27 @@ void __on_ssh_log(ssh_session session, int priority,
   return SSH_OK;
 }
 
+#pragma mark - SSHClientConnectedChannelDelegate
+
+- (void)connectedChannelDidClose:(SSHClientConnectedChannel *)connectedChannel {
+  if (_sessionChannel == connectedChannel) {
+    [self _schedule:^{
+      [self exitWithCode:connectedChannel.exitCode];
+    }];
+  }
+  
+  [_connectedChannels removeObject:connectedChannel];
+}
+
+#pragma mark - MAIN LOOP
+
 - (int)main:(int) argc argv:(char **) argv {
   
   struct sigaction sa = (struct sigaction) {
     .sa_handler = &__on_usr1,
     .sa_flags = 0
   };
-  sigaction( SIGUSR1, &sa, NULL );
+  sigaction(SIGUSR1, &sa, NULL);
 
   __block int rc = [_options parseArgs:argc argv: argv];
 
@@ -714,8 +739,6 @@ void __on_ssh_log(ssh_session session, int priority,
   _session = ssh_new();
   _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
   _ssh_callbacks->userdata = (__bridge void *)self;
-  _ssh_callbacks->global_request_function = __on_ssh_global_request;
-  _ssh_callbacks->log_function = &__on_ssh_log;
   
   ssh_callbacks_init(_ssh_callbacks);
   ssh_set_callbacks(_session, _ssh_callbacks);
@@ -758,36 +781,6 @@ void __on_ssh_log(ssh_session session, int priority,
   };
   
   return _exitCode;
-}
-
-- (void)close {
-  ssh_set_blocking(_session, 1);
-  if (_event) {
-    ssh_event_free(_event);
-    _event = NULL;
-  }
-  if (_session) {
-    ssh_free(_session);
-    _session = NULL;
-  }
-  if (_ssh_callbacks) {
-    free(_ssh_callbacks);
-    _ssh_callbacks = NULL;
-  }
-}
-
-- (void)connectedChannelDidClose:(SSHClientConnectedChannel *)connectedChannel {
-  if (_mainChannel == connectedChannel) {
-    [self schedule:^{
-      [self exitWithCode:connectedChannel.exitCode];
-    }];
-  }
-  
-  [_connectedChannels removeObject:connectedChannel];
-}
-
-- (void)dealloc {
-  NSLog(@"SSHClient dealloc");
 }
 
 @end
