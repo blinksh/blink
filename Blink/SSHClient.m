@@ -222,7 +222,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       return;
     }
   }
-  
+
   // 6. interactive
   if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
     rc = [self _auth_with_interactive];
@@ -319,6 +319,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_with_interactive {
   int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
+  NSString *password = _options[SSHOptionPassword];
   for (;;) {
     int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
@@ -343,8 +344,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
               [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
             }
             
-            NSArray * answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
-            __write(_fdOut, @"\n");
+            NSArray * answers =nil;
+            
+            if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
+              answers = @[password];
+            } else {
+              answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
+            }
             
             for (int i = 0; i < answers.count; i++) {
               int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
@@ -361,6 +367,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return [self _open_channels];
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
+          password = nil;
           rc = ssh_userauth_kbdint(_session, NULL, NULL);
           continue;
         }
@@ -620,8 +627,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [answers addObject:lineStr];
       free(line);
     }
+    __write(_fdOut, @"\n");
 //    fclose(fp);
   }
+  
   return answers;
 }
 
