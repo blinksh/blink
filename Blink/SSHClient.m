@@ -146,7 +146,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }];
 }
 
-- (int)exitWithCode:(int)code {
+- (int)_exitWithCode:(int)code {
   _doExit = YES;
   _exitCode = code;
   [self close];
@@ -155,11 +155,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_exitWithCode:(int)code andMessage: (NSString *)message {
   if (message == nil) {
-    return [self exitWithCode:code];
+    return [self _exitWithCode:code];
   }
   message = [message stringByAppendingString:@"\n"];
   __write(_fdErr, message);
-  return [self exitWithCode:code];
+  return [self _exitWithCode:code];
 }
 
 - (void)_schedule:(dispatch_block_t)block {
@@ -233,44 +233,32 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // connect
   for(;;) {
     switch(rc) {
+      case SSH_OK:
+        return [self _auth];
       case SSH_AGAIN:
         rc = ssh_connect(_session);
         [self _poll];
         continue;
-      case SSH_OK:
-        return [self _auth];
       default:
       case SSH_ERROR:
         return rc;
     }
   }
-  
-  return rc;
 }
 
 #pragma mark - AUTHENTICATION
 
 - (int)_auth {
-  int rc = SSH_ERROR;
   
-  // 1. pre auth
-  for (;;) {
-    rc = ssh_userauth_none(_session, NULL);
-    switch (rc) {
-      case SSH_AUTH_AGAIN:
-        [self _poll];
-        continue;
-      case SSH_AUTH_PARTIAL:
-      case SSH_AUTH_DENIED:
-        break;
-      case SSH_AUTH_SUCCESS:
-        // Who knows? see https://github.com/blinksh/blink/issues/450
-        return [self _open_channels];
-      default:
-      case SSH_AUTH_ERROR:
-        return [self exitWithCode:rc];
-    }
-    break;
+  // 1. try auth none
+  int rc = [self _auth_none];
+  // Who knows? we can success here too. See https://github.com/blinksh/blink/issues/450
+  if (rc == SSH_AUTH_SUCCESS) {
+    return [self _open_channels];
+  }
+
+  if (rc == SSH_AUTH_ERROR) {
+    return [self _exitWithCode:rc];
   }
   
   // 2. print issue banner if any
@@ -283,7 +271,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return [self _open_channels];
     }
   }
 
@@ -291,7 +279,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PASSWORD) {
     rc = [self _auth_with_password];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return [self _open_channels];
     }
   }
 
@@ -299,11 +287,24 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
     rc = [self _auth_with_interactive];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return [self _open_channels];
     }
   }
 
-  return [self exitWithCode:SSH_ERROR];
+  return [self _exitWithCode:SSH_ERROR];
+}
+
+- (int)_auth_none {
+  for (;;) {
+    int rc = ssh_userauth_none(_session, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+        return rc;
+    }
+  }
 }
 
 - (int)_auth_with_publickey {
@@ -342,11 +343,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     for (;;) {
       rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
       switch (rc) {
+        case SSH_AUTH_SUCCESS:
+          return rc;
         case SSH_AUTH_AGAIN:
           [self _poll];
           continue;
-        case SSH_AUTH_SUCCESS:
-          return [self _open_channels];
         case SSH_AUTH_DENIED:
         case SSH_AUTH_PARTIAL:
           tryNextIdentityFile = YES;
@@ -379,18 +380,16 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case SSH_AUTH_AGAIN:
         [self _poll];
         continue;
-      case SSH_AUTH_SUCCESS:
-        return [self _open_channels];
       default:
         return rc;
     }
   }
-  return SSH_ERROR;
 }
 
 - (int)_auth_with_interactive {
-  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
   NSString *password = _options[SSHOptionPassword];
+  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
+  
   for (;;) {
     int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
@@ -434,8 +433,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           rc = ssh_userauth_kbdint(_session, NULL, NULL);
       }
         break;
-      case SSH_AUTH_SUCCESS:
-        return [self _open_channels];
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
           password = nil;
@@ -455,14 +452,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)_open_channels {
   int rc = [self _start_session_channel];
   if (rc != SSH_OK) {
-    [self exitWithCode:rc];
+    [self _exitWithCode:rc];
     return rc;
   }
   
   for (NSString *address in _options[SSHOptionLocalForward]) {
     rc = [self _start_listen_direct_forward: address];
     if (rc != SSH_OK && [SSHOptionValueYES isEqual:_options[SSHOptionExitOnForwardFailure]]) {
-      [self exitWithCode:rc];
+      [self _exitWithCode:rc];
       return rc;
     }
   }
@@ -500,10 +497,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     for (;;) {
       rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
+        case SSH_OK:
+          break;
         case SSH_AGAIN:
           [self _poll];
           continue;
-        case SSH_OK: break;
         default:
         case SSH_ERROR:
           ssh_channel_close(channel);
@@ -524,11 +522,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       rc = ssh_channel_request_shell(channel);
     }
     switch (rc) {
+      case SSH_OK:
+        break;
       case SSH_AGAIN:
         [self _poll];
         continue;
-      case SSH_OK:
-        break;
       default:
       case SSH_ERROR:
         ssh_channel_close(channel);
@@ -606,15 +604,16 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       for (;;) {
         rc = ssh_channel_open_forward(channel, remotehost.UTF8String, remoteport, sourcehost.UTF8String, localport);
         switch (rc) {
+          case SSH_OK:
+            break;
           case SSH_AGAIN:
             [self _poll];
             continue;
-          case SSH_OK: break;
           default:
           case SSH_ERROR:
             ssh_channel_free(channel);
             if (_options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
-              [self exitWithCode:rc];
+              [self _exitWithCode:rc];
             }
             return;
         }
@@ -661,12 +660,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   for (;;) {
     int rc = ssh_channel_listen_forward(_session, remotehost.UTF8String, remoteport, &remoteport);
     switch (rc) {
-      case SSH_AGAIN:
-        [self _poll];
-        continue;
       case SSH_OK:
         NSLog(@"Ok %@", @(remoteport));
         return rc;
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
       default:
       case SSH_ERROR:
         NSLog(@"Error");
@@ -707,7 +706,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (void)connectedChannelDidClose:(SSHClientConnectedChannel *)connectedChannel {
   if (_sessionChannel == connectedChannel) {
     [self _schedule:^{
-      [self exitWithCode:connectedChannel.exitCode];
+      [self _exitWithCode:connectedChannel.exitCode];
     }];
   }
   
@@ -732,7 +731,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   if ([_options[SSHOptionPrintVersion] isEqual:SSHOptionValueYES]) {
     [self _printVersion];
-    return [self exitWithCode:SSH_OK];
+    return [self _exitWithCode:SSH_OK];
   }
   
   _session = ssh_new();
@@ -751,12 +750,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
     __write(_fdOut, [_options configurationAsText]);
-    return [self exitWithCode:SSH_OK];
+    return [self _exitWithCode:SSH_OK];
   }
   
   rc = [self _start_connect_flow];
   if (rc != SSH_OK) {
-    return [self exitWithCode:rc];
+    return [self _exitWithCode:rc];
   }
   
   BOOL hasRemoteForwards = _options[SSHOptionRemoteForward] != nil;
