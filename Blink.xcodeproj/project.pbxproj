@@ -23,7 +23,6 @@
 		0732F1231D062DDB00AB5438 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
-		0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F12A1D06324B00AB5438 /* libstdc++.tbd */; };
 		073D26BC1DC4137000965AB2 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
 		073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
 		073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
@@ -130,6 +129,7 @@
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
 		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
+		D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D263489720BEBFE000A8E89F /* libsshd.a */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
@@ -151,10 +151,10 @@
 		D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
+		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
 		D2A92352201732B600043596 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A92351201732B600043596 /* MusicManager.m */; };
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
-		D2D6D78E20529081003CBEC4 /* SSHSession2.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78D20529081003CBEC4 /* SSHSession2.m */; };
 		D2E4F91B20B0537D00B30F7B /* Migrator.m in Sources */ = {isa = PBXBuildFile; fileRef = D2E4F91A20B0537D00B30F7B /* Migrator.m */; };
 		D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EFE1EE20B7FAFC0087888B /* link_files.m */; };
 		D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2F30EAC205009CD008C5F35 /* base64js.min.js */; };
@@ -294,7 +294,6 @@
 		0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UICKeyChainStore.xcodeproj; path = UICKeyChainStore/Lib/UICKeyChainStore.xcodeproj; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
-		0732F12A1D06324B00AB5438 /* libstdc++.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = "libstdc++.tbd"; path = "usr/lib/libstdc++.tbd"; sourceTree = SDKROOT; };
 		073D26B11DC4137000965AB2 /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
 		073D26B21DC4137000965AB2 /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
 		073D26B31DC4137000965AB2 /* SKModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKModifierButton.h; sourceTree = "<group>"; };
@@ -474,6 +473,14 @@
 		D240806020BC8DF800F30099 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = Frameworks/ios_system/curl/curl/src/tool_main.c; sourceTree = SOURCE_ROOT; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
+		D263488A20BEBF5800A8E89F /* libsshpp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libsshpp.hpp; sourceTree = "<group>"; };
+		D263488B20BEBF5800A8E89F /* legacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = legacy.h; sourceTree = "<group>"; };
+		D263488C20BEBF5800A8E89F /* callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callbacks.h; sourceTree = "<group>"; };
+		D263488D20BEBF5800A8E89F /* libssh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libssh.h; sourceTree = "<group>"; };
+		D263488E20BEBF5800A8E89F /* sftp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sftp.h; sourceTree = "<group>"; };
+		D263488F20BEBF5800A8E89F /* ssh2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssh2.h; sourceTree = "<group>"; };
+		D263489020BEBF5800A8E89F /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = server.h; sourceTree = "<group>"; };
+		D263489720BEBFE000A8E89F /* libsshd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsshd.a; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
@@ -492,14 +499,13 @@
 		D2A3F4F520690C24006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
 		D2A8C153201F377D002F415A /* TouchOverlay.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TouchOverlay.m; sourceTree = "<group>"; };
+		D2A90ADB20D277DF0073BF3D /* ssh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ssh.m; sourceTree = "<group>"; };
 		D2A92350201732B600043596 /* MusicManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MusicManager.h; sourceTree = "<group>"; };
 		D2A92351201732B600043596 /* MusicManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MusicManager.m; sourceTree = "<group>"; };
 		D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCPSessionParameters.h; sourceTree = "<group>"; };
 		D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCPSessionParameters.m; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
-		D2D6D78C20529081003CBEC4 /* SSHSession2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHSession2.h; sourceTree = "<group>"; };
-		D2D6D78D20529081003CBEC4 /* SSHSession2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHSession2.m; sourceTree = "<group>"; };
 		D2E4F91920B0537D00B30F7B /* Migrator.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Migrator.h; sourceTree = "<group>"; };
 		D2E4F91A20B0537D00B30F7B /* Migrator.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Migrator.m; sourceTree = "<group>"; };
 		D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
@@ -522,7 +528,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */,
-				0732F12B1D06324B00AB5438 /* libstdc++.tbd in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */,
@@ -534,6 +539,7 @@
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */,
 				D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */,
+				D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */,
 				0732F1221D062DDB00AB5438 /* MBProgressHUD.framework in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
@@ -649,7 +655,6 @@
 				07AA06321E08B12E008310B7 /* PasscodeLock */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
 				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
-				0732F12A1D06324B00AB5438 /* libstdc++.tbd */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
 				0732F1261D06323A00AB5438 /* libz.tbd */,
 				0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */,
@@ -665,6 +670,7 @@
 		0732F0541D062BB300AB5438 /* include */ = {
 			isa = PBXGroup;
 			children = (
+				D263488920BEBF5800A8E89F /* libssh */,
 			);
 			path = include;
 			sourceTree = "<group>";
@@ -672,6 +678,7 @@
 		0732F0561D062BB300AB5438 /* lib */ = {
 			isa = PBXGroup;
 			children = (
+				D263489720BEBFE000A8E89F /* libsshd.a */,
 				076FBD511DB6BE1D00F6D997 /* libprotobuf.a */,
 			);
 			path = lib;
@@ -828,8 +835,6 @@
 				07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */,
 				07F6706F1D05EEE200C0A53C /* SSHSession.h */,
 				07F670701D05EEE200C0A53C /* SSHSession.m */,
-				D2D6D78C20529081003CBEC4 /* SSHSession2.h */,
-				D2D6D78D20529081003CBEC4 /* SSHSession2.m */,
 			);
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
@@ -1045,6 +1050,20 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		D263488920BEBF5800A8E89F /* libssh */ = {
+			isa = PBXGroup;
+			children = (
+				D263488A20BEBF5800A8E89F /* libsshpp.hpp */,
+				D263488B20BEBF5800A8E89F /* legacy.h */,
+				D263488C20BEBF5800A8E89F /* callbacks.h */,
+				D263488D20BEBF5800A8E89F /* libssh.h */,
+				D263488E20BEBF5800A8E89F /* sftp.h */,
+				D263488F20BEBF5800A8E89F /* ssh2.h */,
+				D263489020BEBF5800A8E89F /* server.h */,
+			);
+			path = libssh;
+			sourceTree = "<group>";
+		};
 		D2E4F92A20B2BB4500B30F7B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1065,6 +1084,7 @@
 				D2EFE1EE20B7FAFC0087888B /* link_files.m */,
 				D2A0C63C20AAD1EC001CF38F /* theme.m */,
 				D2F330D520A6F4F50074ADD7 /* history.m */,
+				D2A90ADB20D277DF0073BF3D /* ssh.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
 			);
 			path = Commands;
@@ -1376,6 +1396,7 @@
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D2F330CE20A6DA8A0074ADD7 /* music.m in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
+				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				D23970FF20A07B9100881637 /* prompt.cxx in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
@@ -1421,7 +1442,6 @@
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */,
-				D2D6D78E20529081003CBEC4 /* SSHSession2.m in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */,
 				07AA06591E08B12E008310B7 /* PasscodeSignPlaceholderView.swift in Sources */,
