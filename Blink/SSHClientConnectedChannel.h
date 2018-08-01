@@ -50,13 +50,10 @@ NS_ASSUME_NONNULL_BEGIN
 @property int exitCode;
 @property (readonly) ssh_channel channel;
 
-- (void)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
-- (void)connect:(ssh_channel)channel withSockFd:(dispatch_fd_t)sockFd;
-- (void)connect:(ssh_channel)channel withSockcket:(dispatch_fd_t)sockFd;
-- (void)closeAndFree;
-- (void)closeSock;
-- (void)on_eof;
-- (void)on_close;
+- (void)close;
+
++ (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
++ (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd;
 
 @end
 

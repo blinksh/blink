@@ -533,9 +533,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   
-  _sessionChannel = [[SSHClientConnectedChannel alloc] init];
+  _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
   _sessionChannel.delegate = self;
-  [_sessionChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
   return rc;
 }
 
@@ -581,9 +580,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     break;
   }
   
-  SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+  SSHClientConnectedChannel *connectedChannel = [SSHClientConnectedChannel connect:channel withSocket:socket];
   connectedChannel.delegate = self;
-  [connectedChannel connect:channel withSockcket:socket];
   [_connectedChannels addObject:connectedChannel];
 }
 
@@ -658,9 +656,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return rc;
   }
   
-  SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+  SSHClientConnectedChannel *connectedChannel = [SSHClientConnectedChannel connect:channel withSocket:sock];
   connectedChannel.delegate = self;
-  [connectedChannel connect:channel withSockFd:sock];
   [_connectedChannels addObject:connectedChannel];
   return SSH_OK;
 }
