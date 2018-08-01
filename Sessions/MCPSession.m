@@ -90,6 +90,7 @@
   replaceCommand(@"open", @"open_main", true);
   replaceCommand(@"theme", @"theme_main", true);
   replaceCommand(@"link-files", @"link_files_main", true);
+  replaceCommand(@"bench", @"bench_main", true);
   // TODO: move all our commands to plist
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
   
@@ -97,9 +98,8 @@
   [self updateAllowedPaths];
   
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
-
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
-    
+  
     NSArray *arr = [cmdline componentsSeparatedByString:@" "];
     NSString *cmd = arr[0];
     

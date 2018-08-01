@@ -49,6 +49,7 @@ extern const NSString * SSHOptionRemoteCommand;
 extern const NSString * SSHOptionConnectTimeout; // -o
 extern const NSString * SSHOptionConnectionAttempts; // -o
 extern const NSString * SSHOptionCompression; //-C -o
+extern const NSString * SSHOptionCompressionLevel; // -o
 extern const NSString * SSHOptionTCPKeepAlive;
 extern const NSString * SSHOptionNumberOfPasswordPrompts; // -o
 extern const NSString * SSHOptionServerLiveCountMax; // -o

@@ -36,6 +36,7 @@
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #include <getopt.h>
+#include <zlib.h>
 
 const NSString * SSHOptionStrictHostKeyChecking = @"stricthostkeychecking";
 const NSString * SSHOptionHostName =  @"hostname";
@@ -50,6 +51,7 @@ const NSString * SSHOptionRemoteCommand = @"remotecommand";
 const NSString * SSHOptionConnectTimeout = @"connecttimeout"; // -o
 const NSString * SSHOptionConnectionAttempts = @"connectionattempts"; // -o
 const NSString * SSHOptionCompression = @"compression"; //-C -o
+const NSString * SSHOptionCompressionLevel = @"compressionlevel"; // -o
 const NSString * SSHOptionTCPKeepAlive = @"tcpkeepalive";
 const NSString * SSHOptionNumberOfPasswordPrompts = @"numberofpasswordprompts"; // -o
 const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
@@ -120,6 +122,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *localforwardType = [[NSObject alloc] init];
   NSObject *remoteforwardType = [[NSObject alloc] init];
   NSObject *logLevelType = [[NSObject alloc] init];
+  NSObject *compressionLevelType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -142,7 +145,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
                          SSHOptionExitOnForwardFailure: @[yesNoType, SSHOptionValueNO],
                          SSHOptionLogLevel: @[logLevelType, SSHOptionValueINFO],
-                         SSHOptionCompression: @[yesNoType, SSHOptionValueYES] // We mobile terminal, so we set compression to yes by default.
+                         SSHOptionCompression: @[yesNoType, SSHOptionValueYES], // We mobile terminal, so we set compression to yes by default.
+                         SSHOptionCompressionLevel: @[compressionLevelType, @(-1)] // Default compression for speed
                          };
   
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];
@@ -171,7 +175,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     NSString *key = [parts.firstObject lowercaseString];
     NSArray *vals = opts[key];
     if (vals == nil) {
-      [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"Bad configuration option: %@", key]];
+      [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"Bad configuration option: '%@'", key]];
       return result;
     }
     
@@ -235,6 +239,15 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         result[key] = @(v);
       } else {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"invalid number \"%@\".", value]];
+        return result;
+      }
+    } else if (type == compressionLevelType) {
+      int v = 0;
+      NSScanner *scanner = [NSScanner scannerWithString:lv];
+      if ([scanner scanInt:&v] && scanner.atEnd && v >= 1 && v <= 9) {
+        result[key] = @(v);
+      } else {
+        [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"invalid compression level \"%@\".", value]];
         return result;
       }
     } else if (type == logLevelType) {
@@ -434,6 +447,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     return SSH_LOG_DEBUG;
   }
   
+  if ([SSHOptionValueVERBOSE isEqual:logLevel]) {
+    return SSH_LOG_TRACE;
+  }
+  
   if ([SSHOptionValueINFO isEqual:logLevel]) {
     return SSH_LOG_NONE;
   }
@@ -450,11 +467,13 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 //  [self _applySSH:session optionKey:@([self _logLevelToSSHLogLevel]) withOption:SSH_OPTIONS_LOG_VERBOSITY];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
+  [self _applySSH:session optionKey:SSHOptionCompressionLevel withOption:SSH_OPTIONS_COMPRESSION_LEVEL];
   [self _applySSH:session optionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
   [self _applySSH:session optionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
   [self _applySSH:session optionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
+  
   ssh_options_set(session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
   
   NSString *configFile = _options[SSHOptionConfigFile];

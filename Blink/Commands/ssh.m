@@ -45,6 +45,7 @@ void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out
   ios_dup2(in,  0);
   ios_dup2(out, 1);
   ios_dup2(out, 2);
+  
 //  close(in);
 //  close(out);
   ios_system(command);
@@ -64,10 +65,16 @@ void __ssh_logging(int priority,
 
 
 int ssh_main(int argc, char *argv[]) {
+  
   MCPSession *session = (__bridge MCPSession *)thread_context;
   thread_ssh_execute_command = &__thread_ssh_execute_command;
   
   ssh_set_log_callback(__ssh_logging);
+  
+  setvbuf(thread_stdin, NULL, _IONBF, 0);
+  setvbuf(thread_stdout, NULL, _IONBF, 0);
+  setvbuf(thread_stderr, NULL, _IONBF, 0);
+
   
   SSHClient *client = [[SSHClient alloc]
                        initWithStdIn: fileno(thread_stdin)

@@ -34,6 +34,7 @@
 #import "BKHosts.h"
 #import "BKPubKey.h"
 #import "SSHClientConnectedChannel.h"
+#import "SSHClientPortListener.h"
 
 #import <signal.h>
 #import <pthread.h>
@@ -41,14 +42,12 @@
 #include <sys/ioctl.h>
 #include <libssh/callbacks.h>
 
-static void __on_usr1(int signum) {
-//  NSLog(@"SIGUSR1");
-}
 
 void __write(dispatch_fd_t fd, NSString *message) {
   if (message == nil) {
     return;
   }
+  
   write(fd, message.UTF8String, [message lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
 }
 
@@ -61,7 +60,7 @@ void __write_ssh_chars_and_free(dispatch_fd_t fd, char *buffer) {
 }
 
 
-@interface SSHClient (internal) <SSHClientConnectedChannelDelegate>
+@interface SSHClient (internal) <SSHClientConnectedChannelDelegate, SSHClientPortListenerDelegate>
 - (int) _ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify;
 @end
 
@@ -78,12 +77,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_queue_t _queue;
   dispatch_queue_t _listenQueue;
   
+  NSRunLoop *_runLoop;
+  
   dispatch_fd_t _fdIn;
   dispatch_fd_t _fdOut;
   dispatch_fd_t _fdErr;
   
   BOOL _isTTY;
   NSMutableArray<dispatch_source_t> *_listenSources;
+  NSMutableArray<SSHClientPortListener *> *_portListeners;
   SSHClientConnectedChannel *_sessionChannel;
   NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
   
@@ -97,6 +99,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (instancetype)initWithStdIn:(dispatch_fd_t)fdIn stdOut:(dispatch_fd_t)fdOut stdErr:(dispatch_fd_t)fdErr device:(TermDevice *)device isTTY:(BOOL)isTTY {
   if (self = [super init]) {
     
+    _portListeners = [[NSMutableArray alloc] init];
+    _connectedChannels = [[NSMutableArray alloc] init];
     _device = device;
     _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
     _listenQueue = dispatch_queue_create("sh.blink.sshclient.listen", DISPATCH_QUEUE_SERIAL); // can be concurrent
@@ -105,6 +109,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _fdErr = fdErr;
     _options = [[SSHClientOptions alloc] init];
     _listenSources = [[NSMutableArray alloc] init];
+    
+    _runLoop = [NSRunLoop currentRunLoop];
     
     _isTTY = isTTY;
     _thread = pthread_self();
@@ -162,9 +168,18 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return [self _exitWithCode:code];
 }
 
+//- (void) _wakeRunLoopHelper:(id)noObject {
+//  CFRunLoopRef runLoop = [[NSRunLoop currentRunLoop] getCFRunLoop];
+//  CFRunLoopWakeUp(runLoop);
+//}
+//
+//- (void) _wakeRunLoop {
+//
+////  [self performSelector:@selector(_wakeRunLoopHelper:) onThread:[NSThread currentThread] withObject:nil waitUntilDone:NO];
+//}
+
 - (void)_schedule:(dispatch_block_t)block {
-  dispatch_async(_queue, block);
-  pthread_kill(_thread, SIGUSR1);
+  [_runLoop performBlock:block];
 }
 
 - (int)_ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
@@ -211,32 +226,19 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_poll {
-  ssh_event_dopoll(_event, -1);
+  [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 }
 
 
 #pragma mark - CONNECT
 
 - (int)_start_connect_flow {
-  _event = ssh_event_new();
-  ssh_set_blocking(_session, 0);
-  int rc = ssh_connect(_session);
-  if (rc == SSH_ERROR) {
-    return rc;
-  }
-
-  if (ssh_event_add_session(_event, _session) == SSH_ERROR) {
-    rc = SSH_ERROR;
-    return rc;
-  }
-  
-  // connect
   for(;;) {
+    int rc = ssh_connect(_session);
     switch(rc) {
       case SSH_OK:
         return [self _auth];
       case SSH_AGAIN:
-        rc = ssh_connect(_session);
         [self _poll];
         continue;
       default:
@@ -316,12 +318,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     BKPubKey *secureKey = [BKPubKey withID:identityfile];
     // we have this identity in
     if (secureKey) {
-//      NSString * OPENSSH_HEADER_BEGIN = @"-----BEGIN OPENSSH PRIVATE KEY-----";
-//      NSString * OPENSSH_HEADER_END   = @"-----END OPENSSH PRIVATE KEY-----";
-//      NSString * PRIVATE_HEADER_BEGIN = @"-----BEGIN PRIVATE KEY-----";
-//      NSString * PRIVATE_HEADER_END = @"-----END PRIVATE KEY-----";
-//      NSString * b64Key = [secureKey.privateKey stringByReplacingOccurrencesOfString:PRIVATE_HEADER_BEGIN withString:OPENSSH_HEADER_BEGIN];
-//      b64Key = [b64Key stringByReplacingOccurrencesOfString:PRIVATE_HEADER_END withString:OPENSSH_HEADER_END];
       rc =  ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
                                          NULL, /* TODO: get stored */
                                          __ssh_auth_fn,
@@ -540,97 +536,66 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   _sessionChannel = [[SSHClientConnectedChannel alloc] init];
   _sessionChannel.delegate = self;
   [_sessionChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
-  [_sessionChannel addToEvent:_event];
   return rc;
 }
 
+#pragma mark - SSHClientPortListenerDelegate
+
+- (void)sshClientPortListener:(SSHClientPortListener *)listener acceptedSocket:(dispatch_fd_t)socket {
+  int noSigPipe = 1;
+  setsockopt(socket, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
+  
+  
+//  int flag = 1;
+//  int result = setsockopt(socket,            /* socket affected */
+//                          IPPROTO_TCP,     /* set option at TCP level */
+//                          SO_SNDLOWAT,     /* name of option */
+//                          (char *) &flag,  /* the cast is historical
+//                                            cruft */
+//                          sizeof(int));    /* length of option value */
+//
+
+  ssh_channel channel = ssh_channel_new(_session);
+//  ssh_channel_set_blocking(channel, 0);
+  
+  for (;;) {
+    int rc = ssh_channel_open_forward(channel,
+                                      listener.remotehost.UTF8String,
+                                      listener.remoteport,
+                                      listener.sourcehost.UTF8String,
+                                      listener.localport);
+    switch (rc) {
+      case SSH_OK:
+        break;
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+      case SSH_ERROR:
+        ssh_channel_free(channel);
+        if (_options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
+          [self _exitWithCode:rc];
+        }
+        return;
+    }
+    break;
+  }
+  
+  SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
+  connectedChannel.delegate = self;
+  [connectedChannel connect:channel withSockcket:socket];
+  [_connectedChannels addObject:connectedChannel];
+}
 
 - (int)_start_listen_direct_forward:(NSString *)strAddress {
-  __block int rc = SSH_ERROR;
-  NSMutableArray<NSString *> *parts = [[strAddress componentsSeparatedByString:@":"] mutableCopy];
-  int remoteport = [[parts lastObject] intValue];
-  [parts removeLastObject];
-  NSString *remotehost = [parts lastObject];
-  [parts removeLastObject];
-  int localport = [[parts lastObject] intValue];
-  [parts removeLastObject];
-  NSString *sourcehost = [parts lastObject] ?: @"localhost";
-  
-  dispatch_fd_t listenSock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-  if (listenSock < 0) {
-    return SSH_ERROR;
-  }
-  int value = 1;
-  setsockopt(listenSock, SOL_SOCKET, SO_REUSEADDR, &value, sizeof(value));
-  
-  struct sockaddr_in address;
-  address.sin_family = AF_INET;
-  address.sin_addr.s_addr = INADDR_ANY;
-  
-  address.sin_port=htons(localport);
-  rc = bind(listenSock, (struct sockaddr *)&address,sizeof(address));
-  if (rc == -1) {
-    return SSH_ERROR;
-  }
-  int listenBacklog = 5;
-  rc = listen(listenSock, listenBacklog);
-  if (rc == -1) {
-    return SSH_ERROR;
+  SSHClientPortListener *portListener = [[SSHClientPortListener alloc] initInitWithAddress:strAddress];
+  portListener.delegate = self;
+  int rc = [portListener listen];
+  if (rc == SSH_OK) {
+    [_portListeners addObject:portListener];
   }
   
-  dispatch_source_t listenSource = dispatch_source_create(DISPATCH_SOURCE_TYPE_READ, listenSock, 0, _listenQueue);
-  
-  if (listenSource == nil) {
-    return SSH_ERROR;
-  }
-  
-  dispatch_source_set_cancel_handler(listenSource, ^{
-    close(listenSock);
-  });
-  
-  dispatch_source_set_event_handler(listenSource, ^{
-    dispatch_fd_t sock = accept(listenSock, NULL, NULL);
-    if (sock == SSH_INVALID_SOCKET) {
-      return;
-    }
-    
-    int noSigPipe = 1;
-    setsockopt(sock, SOL_SOCKET, SO_NOSIGPIPE, &noSigPipe, sizeof(noSigPipe));
-    
-    [self _schedule:^{
-      ssh_channel channel = ssh_channel_new(_session);
-      ssh_channel_set_blocking(channel, 0);
-      
-      for (;;) {
-        rc = ssh_channel_open_forward(channel, remotehost.UTF8String, remoteport, sourcehost.UTF8String, localport);
-        switch (rc) {
-          case SSH_OK:
-            break;
-          case SSH_AGAIN:
-            [self _poll];
-            continue;
-          default:
-          case SSH_ERROR:
-            ssh_channel_free(channel);
-            if (_options[SSHOptionExitOnForwardFailure] == SSHOptionValueYES) {
-              [self _exitWithCode:rc];
-            }
-            return;
-        }
-        break;
-      }
-      
-      SSHClientConnectedChannel *connectedChannel = [[SSHClientConnectedChannel alloc] init];
-      connectedChannel.delegate = self;
-      [connectedChannel connect:channel withSockFd:sock];
-      [_connectedChannels addObject:connectedChannel];
-      [connectedChannel addToEvent:_event];
-    }];
-  });
-  
-  dispatch_activate(listenSource);
-  [_listenSources addObject:listenSource];
-  return SSH_OK;
+  return rc;
 }
 
 - (int)_start_listen_reverse_forward:(NSString *)strAddress {
@@ -697,7 +662,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   connectedChannel.delegate = self;
   [connectedChannel connect:channel withSockFd:sock];
   [_connectedChannels addObject:connectedChannel];
-  [connectedChannel addToEvent:_event];
   return SSH_OK;
 }
 
@@ -716,12 +680,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 #pragma mark - MAIN LOOP
 
 - (int)main:(int) argc argv:(char **) argv {
-  
-  struct sigaction sa = (struct sigaction) {
-    .sa_handler = &__on_usr1,
-    .sa_flags = 0
-  };
-  sigaction(SIGUSR1, &sa, NULL);
 
   __block int rc = [_options parseArgs:argc argv: argv];
 
@@ -735,13 +693,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   _session = ssh_new();
+  ssh_set_blocking(_session, 0);
+  
   _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
   _ssh_callbacks->userdata = (__bridge void *)self;
   
   ssh_callbacks_init(_ssh_callbacks);
   ssh_set_callbacks(_session, _ssh_callbacks);
-  
-  _event = ssh_event_new();
   
   rc = [_options configureSSHSession:_session];
   if (rc != SSH_OK) {
@@ -754,35 +712,46 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   rc = [self _start_connect_flow];
-  if (rc != SSH_OK) {
-    return [self _exitWithCode:rc];
-  }
   
-  BOOL hasRemoteForwards = _options[SSHOptionRemoteForward] != nil;
   
-  dispatch_block_t poll_block = ^{
-    rc = ssh_event_dopoll(_event, -1);
-    if (_doExit) {
-      return;
-    }
-
-    if (hasRemoteForwards) {
-      int port = 0;
-      ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
-      if (channel) {
-        [self _connect_channel:channel to_port: port];
-      }
-    }
-  };
-
   while (!_doExit) {
-    dispatch_sync(_queue, poll_block);
-    if (rc == SSH_ERROR) {
-      break;
-    }
-  };
-  
+    [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+  }
   return _exitCode;
+  
+//  if (rc != SSH_OK) {
+//    return [self _exitWithCode:rc];
+//  }
+//
+//  BOOL hasRemoteForwards = _options[SSHOptionRemoteForward] != nil;
+//
+//  dispatch_block_t poll_block = ^{
+//    rc = ssh_event_dopoll(_event, -1);
+//    if (_doExit) {
+//      return;
+//    }
+//
+//    if (hasRemoteForwards) {
+//      int port = 0;
+//      ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
+//      if (channel) {
+//        [self _connect_channel:channel to_port: port];
+//      }
+//    }
+//  };
+
+//  dispatch_semaphore_t dsema = dispatch_semaphore_create(0);
+//
+//  dispatch_semaphore_wait(dsema, DISPATCH_TIME_FOREVER);
+//  while (!_doExit) {
+//    dispatch_sync(_queue, poll_block);
+//    if (rc == SSH_ERROR) {
+//      break;
+//    }
+//  };
+  
+//  return _exitCode;
 }
+
 
 @end

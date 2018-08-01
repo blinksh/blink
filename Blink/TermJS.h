@@ -43,8 +43,14 @@ NSString *term_init()
   return @"term_init();";
 }
 
-NSString *term_write(NSString *data) {
-  return [NSString stringWithFormat:@"term_write(%@[0]);", _encodeString(data)];
+const NSString *term_write(NSString *data) {
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
+  
+  NSMutableData *result = [[NSMutableData alloc] initWithCapacity:jsonData.length + 11 + 5];
+  [result appendBytes:"term_write(" length:11];
+  [result appendData:jsonData];
+  [result appendBytes:"[0]);" length:5];
+  return [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
 }
 
 NSString *term_writeB64(NSData *data) {

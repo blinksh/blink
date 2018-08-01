@@ -52,12 +52,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
 - (void)connect:(ssh_channel)channel withSockFd:(dispatch_fd_t)sockFd;
-- (void)addToEvent:(ssh_event)event;
+- (void)connect:(ssh_channel)channel withSockcket:(dispatch_fd_t)sockFd;
 - (void)closeAndFree;
 - (void)closeSock;
 - (void)on_eof;
 - (void)on_close;
 
 @end
+
 
 NS_ASSUME_NONNULL_END

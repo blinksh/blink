@@ -71,6 +71,7 @@ void __setupProcessEnv() {
   
 
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
+//  ssh_threads_set_callbacks(ssh_threads_get_noop());
   ssh_init();
 }
 
@@ -86,7 +87,6 @@ void __setupProcessEnv() {
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
-  
   [[ScreenController shared] setup];
   return YES;
 }

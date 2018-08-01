@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
@@ -29,38 +29,33 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "TermStream.h"
 
-@implementation TermStream
+#import <Foundation/Foundation.h>
 
-- (void)close
-{
-  if (_in) {
-    fclose(_in);
-    _in = NULL;
-  }
-  if (_out) {
-    fclose(_out);
-    _out = NULL;
-  }
-  if (_err) {
-    fclose(_err);
-    _err = NULL;
-  }
-}
+NS_ASSUME_NONNULL_BEGIN
 
-- (instancetype) duplicate {
-  TermStream *dupe = [[TermStream alloc] init];
-  
-  dupe.in = fdopen(dup(fileno(_in)), "rb");
-  // If there is no underlying descriptor (writing to the WV), then duplicate the fterm.
-  dupe.out = fdopen(dup(fileno(_out)), "wb");
-  dupe.err = fdopen(dup(fileno(_err)), "wb");
-  setvbuf(dupe.out, NULL, _IONBF, 0);
-  setvbuf(dupe.err, NULL, _IONBF, 0);
-  setvbuf(dupe.in, NULL, _IONBF, 0);
+@class SSHClientPortListener;
 
-  return dupe;
-}
+@protocol SSHClientPortListenerDelegate <NSObject>
+
+- (void)sshClientPortListener:(SSHClientPortListener *)listener acceptedSocket:(dispatch_fd_t) socket;
 
 @end
+
+@interface SSHClientPortListener : NSObject
+
+@property int remoteport;
+@property NSString *remotehost;
+@property int localport;
+@property NSString *sourcehost;
+@property dispatch_fd_t listenSock;
+
+@property (nonatomic, weak) id<SSHClientPortListenerDelegate> delegate;
+
+- (instancetype)initInitWithAddress:(NSString *)address;
+- (int)listen;
+- (void)close;
+
+@end
+
+NS_ASSUME_NONNULL_END

@@ -36,6 +36,9 @@
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
+#import <zlib.h>
+
+#import <compression.h>
 
 struct winsize __winSizeFromJSON(NSDictionary *json) {
   struct winsize res;
@@ -316,7 +319,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     _jsIsBusy = YES;
     _jsBuffer = [[NSMutableString alloc] init];
     
-    NSString *jsScript = term_write(buffer);
+    const NSString *jsScript = term_write(buffer);
     [self _evalJSScript:jsScript];
   });
 }

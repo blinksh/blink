@@ -705,6 +705,10 @@ static void kbd_callback(const char *name, int name_len,
   return 0;
 }
 
+void trace(void* ptr, const char *mess, size_t size) {
+  NSLog(@"trace %@", @(mess));
+}
+
 - (int)ssh_session_start
 {
   // This function is responsible to start all the session requirements, like port forwarding, shell, commands...
