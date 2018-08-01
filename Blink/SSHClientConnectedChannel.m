@@ -122,8 +122,6 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
       break;
     }
     
-    
-    
     [data appendBytes:buffer length:len];
     
     if (len < BUFFER_SIZE) {
@@ -212,6 +210,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
     close(_socket);
     _socket = SSH_INVALID_SOCKET;
   }
+  [super close];
 }
 
 - (int)pairChannel:(ssh_channel)channel withSocket:(dispatch_fd_t)socket {
@@ -417,6 +416,8 @@ void __file_connector_channel_exit_status_cb(ssh_session session,
 
 - (void)close {
   _fhIn.readabilityHandler = nil;
+  _fhIn = nil;
+  [super close];
 }
 
 @end
@@ -424,6 +425,7 @@ void __file_connector_channel_exit_status_cb(ssh_session session,
 @implementation SSHClientConnectedChannel
 
 - (void)close {
+  [_delegate connectedChannelDidClose:self];
 }
 
 + (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd {

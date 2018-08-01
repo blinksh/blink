@@ -75,7 +75,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_event _event;
   ssh_session _session;
   dispatch_queue_t _queue;
-  dispatch_queue_t _listenQueue;
   
   NSRunLoop *_runLoop;
   
@@ -84,10 +83,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   dispatch_fd_t _fdErr;
   
   BOOL _isTTY;
-  NSMutableArray<dispatch_source_t> *_listenSources;
+  
   NSMutableArray<SSHClientPortListener *> *_portListeners;
   SSHClientConnectedChannel *_sessionChannel;
   NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
+  
+  NSMutableDictionary<NSNumber *, NSNumber *> *_reversePortsMap;
   
   ssh_callbacks _ssh_callbacks;
   bool _doExit;
@@ -103,12 +104,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _connectedChannels = [[NSMutableArray alloc] init];
     _device = device;
     _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
-    _listenQueue = dispatch_queue_create("sh.blink.sshclient.listen", DISPATCH_QUEUE_SERIAL); // can be concurrent
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
     _options = [[SSHClientOptions alloc] init];
-    _listenSources = [[NSMutableArray alloc] init];
     
     _runLoop = [NSRunLoop currentRunLoop];
     
@@ -123,11 +122,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)close {
-  //  ssh_set_blocking(_session, 1);
-  if (_event) {
-    ssh_event_free(_event);
-    _event = NULL;
+  for (SSHClientConnectedChannel *connectedChannel in _connectedChannels) {
+    [connectedChannel close];
   }
+  
+  _connectedChannels = nil;
+  
+  for (SSHClientPortListener *listener in _portListeners) {
+    [listener close];
+  }
+  _portListeners = nil;
+  
   if (_session) {
     ssh_free(_session);
     _session = NULL;
@@ -139,7 +144,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)dealloc {
-  NSLog(@"SSHClient dealloc");
+  [self close];
 }
 
 
@@ -148,6 +153,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (void)sigwinch {
   [self _schedule:^{
     ssh_channel channel = _sessionChannel.channel;
+    if (channel == NULL) {
+      return;
+    }
     ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
   }];
 }
@@ -167,16 +175,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   __write(_fdErr, message);
   return [self _exitWithCode:code];
 }
-
-//- (void) _wakeRunLoopHelper:(id)noObject {
-//  CFRunLoopRef runLoop = [[NSRunLoop currentRunLoop] getCFRunLoop];
-//  CFRunLoopWakeUp(runLoop);
-//}
-//
-//- (void) _wakeRunLoop {
-//
-////  [self performSelector:@selector(_wakeRunLoopHelper:) onThread:[NSThread currentThread] withObject:nil waitUntilDone:NO];
-//}
 
 - (void)_schedule:(dispatch_block_t)block {
   [_runLoop performBlock:block];
@@ -555,7 +553,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 //
 
   ssh_channel channel = ssh_channel_new(_session);
-//  ssh_channel_set_blocking(channel, 0);
   
   for (;;) {
     int rc = ssh_channel_open_forward(channel,
@@ -623,8 +620,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   for (;;) {
     int rc = ssh_channel_listen_forward(_session, remotehost.UTF8String, remoteport, &remoteport);
     switch (rc) {
-      case SSH_OK:
+      case SSH_OK: {
+        if (_reversePortsMap == nil) {
+          _reversePortsMap = [[NSMutableDictionary alloc] init];
+          _reversePortsMap[@(remoteport)] = @(localport);
+        }
         NSLog(@"Ok %@", @(remoteport));
+      }
         return rc;
       case SSH_AGAIN:
         [self _poll];
@@ -709,45 +711,24 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   rc = [self _start_connect_flow];
-  
-  
-  while (!_doExit) {
-    [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-  }
-  return _exitCode;
-  
-//  if (rc != SSH_OK) {
-//    return [self _exitWithCode:rc];
-//  }
-//
-//  BOOL hasRemoteForwards = _options[SSHOptionRemoteForward] != nil;
-//
-//  dispatch_block_t poll_block = ^{
-//    rc = ssh_event_dopoll(_event, -1);
-//    if (_doExit) {
-//      return;
-//    }
-//
-//    if (hasRemoteForwards) {
-//      int port = 0;
-//      ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
-//      if (channel) {
-//        [self _connect_channel:channel to_port: port];
-//      }
-//    }
-//  };
 
-//  dispatch_semaphore_t dsema = dispatch_semaphore_create(0);
-//
-//  dispatch_semaphore_wait(dsema, DISPATCH_TIME_FOREVER);
-//  while (!_doExit) {
-//    dispatch_sync(_queue, poll_block);
-//    if (rc == SSH_ERROR) {
-//      break;
-//    }
-//  };
+  NSDate *distantFuture = [NSDate distantFuture];
+  while (!_doExit) {
+    [_runLoop runMode:NSDefaultRunLoopMode beforeDate:distantFuture];
+    if (_reversePortsMap) {
+      int port = 0;
+      ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
+      
+      NSNumber *localPort = _reversePortsMap[@(port)];
+      if (channel && localPort) {
+        [self _connect_channel:channel to_port: localPort.intValue];
+      }
+    }
+  }
   
-//  return _exitCode;
+  [self close];
+  
+  return _exitCode;
 }
 
 

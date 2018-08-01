@@ -119,11 +119,13 @@ void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
     CFRelease(_sourceRef);
     _sourceRef = NULL;
   }
+  
   if (_socketRef) {
     CFSocketInvalidate(_socketRef);
     CFRelease(_socketRef);
     _socketRef = NULL;
   }
+  
 }
 
 - (void)dealloc {
