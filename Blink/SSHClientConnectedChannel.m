@@ -187,8 +187,6 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
   NSMutableData *_inputData;
   NSMutableData *_outputData;
   
-  int _exit_status;
-  
   struct ssh_channel_callbacks_struct _channel_cb;
   enum ssh_connector_flags_e _channel_flags;
 

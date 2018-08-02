@@ -301,10 +301,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
     }
-  }
-
-  // 6. even we don't have password. Ask it
-  if (methods & SSH_AUTH_METHOD_PASSWORD) {
+  } else if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    // 6. even we don't have password. Ask it
     rc = [self _auth_with_password: password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
@@ -397,6 +395,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         continue;
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
+          [self _log_info:@"Permission denied, please try again."];
           password = nil;
           continue;
         }
@@ -454,6 +453,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         break;
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
+          if (password == nil) {
+            [self _log_info:@"Permission denied, please try again."];
+          }
           password = nil;
           rc = ssh_userauth_kbdint(_session, NULL, NULL);
           continue;
@@ -699,6 +701,44 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [_connectedChannels removeObject:connectedChannel];
 }
 
+- (void)_log_error {
+  if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]]) {
+    return;
+  }
+  
+  if (_session == NULL) {
+    return;
+  }
+  int rc = ssh_get_error_code(_session);
+  if (rc == SSH_NO_ERROR) {
+    return;
+  }
+  
+  NSString *error = [[NSString alloc] initWithUTF8String:ssh_get_error(_session)];
+  if (error.length == 0) {
+    return;
+  }
+  __write(_fdErr, @"\r\n");
+  __write(_fdErr, error);
+  __write(_fdErr, @"\r\n");
+}
+
+- (void)_log_info:(NSString *)message {
+  if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]]) {
+    return;
+  }
+  __write(_fdOut, message);
+  __write(_fdErr, @"\r\n");
+}
+
+- (void)_log_verbose:(NSString *)message {
+  if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]] ||
+      [SSHOptionValueINFO isEqual:_options[SSHOptionLogLevel]]) {
+    return;
+  }
+  __write(_fdOut, message);
+}
+
 #pragma mark - MAIN LOOP
 
 - (int)main:(int) argc argv:(char **) argv {
@@ -719,7 +759,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
   _ssh_callbacks->userdata = (__bridge void *)self;
-  
+
   ssh_callbacks_init(_ssh_callbacks);
   ssh_set_callbacks(_session, _ssh_callbacks);
   
@@ -736,8 +776,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   rc = [self _start_connect_flow];
 
   NSDate *distantFuture = [NSDate distantFuture];
-  while (!_doExit) {
+  while (!_doExit && ssh_is_connected(_session)) {
     [_runLoop runMode:NSDefaultRunLoopMode beforeDate:distantFuture];
+    /// TODO: move to libssh level as callback?
     if (_reversePortsMap) {
       int port = 0;
       ssh_channel channel = ssh_channel_accept_forward(_session, 0, &port);
@@ -748,6 +789,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
     }
   }
+  
+  [self _log_error];
   
   [self close];
   
