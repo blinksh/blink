@@ -134,12 +134,51 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
   }
 }
 
-
 @interface StreamConnector : SSHClientConnectedChannel <NSStreamDelegate>
 
 - (int)pairChannel:(ssh_channel)channel withSocket:(dispatch_fd_t)socket;
 
 @end
+
+@interface FileConnector : SSHClientConnectedChannel
+
+- (int)pairChannel:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
+
+@end
+
+
+
+@implementation SSHClientConnectedChannel {
+@protected
+  int _exit_status;
+  ssh_channel _channel;
+}
+
+- (void)close {
+  [_delegate connectedChannelDidClose:self];
+}
+
++ (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd {
+  StreamConnector *connector = [[StreamConnector alloc] init];
+  int rc = [connector pairChannel:channel withSocket:sockFd];
+  if (rc == SSH_OK) {
+    return connector;
+  }
+  return NULL;
+}
+
++ (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
+  FileConnector *connector = [[FileConnector alloc] init];
+  int rc = [connector pairChannel:channel withFdIn:fdIn fdOut:fdOut fdErr:fdErr];
+  if (rc == SSH_OK) {
+    return connector;
+  }
+  return NULL;
+}
+
+@end
+
+
 
 @implementation StreamConnector {
   NSInputStream *_inputStream;
@@ -148,7 +187,6 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
   NSMutableData *_inputData;
   NSMutableData *_outputData;
   
-  ssh_channel _channel;
   int _exit_status;
   
   struct ssh_channel_callbacks_struct _channel_cb;
@@ -321,11 +359,6 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
 
 @end
 
-@interface FileConnector : SSHClientConnectedChannel
-
-- (int)pairChannel:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
-
-@end
 
 @implementation FileConnector {
   NSFileHandle *_fhIn;
@@ -334,9 +367,6 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
   dispatch_fd_t _errFd;
   
   NSMutableData *_inputData;
-  
-  ssh_channel _channel;
-  int _exit_status;
   
   struct ssh_channel_callbacks_struct _channel_cb;
   enum ssh_connector_flags_e _channel_flags;
@@ -418,32 +448,6 @@ void __file_connector_channel_exit_status_cb(ssh_session session,
   _fhIn.readabilityHandler = nil;
   _fhIn = nil;
   [super close];
-}
-
-@end
-
-@implementation SSHClientConnectedChannel
-
-- (void)close {
-  [_delegate connectedChannelDidClose:self];
-}
-
-+ (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd {
-  StreamConnector *connector = [[StreamConnector alloc] init];
-  int rc = [connector pairChannel:channel withSocket:sockFd];
-  if (rc == SSH_OK) {
-    return connector;
-  }
-  return NULL;
-}
-
-+ (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
-  FileConnector *connector = [[FileConnector alloc] init];
-  int rc = [connector pairChannel:channel withFdIn:fdIn fdOut:fdOut fdErr:fdErr];
-  if (rc == SSH_OK) {
-    return connector;
-  }
-  return NULL;
 }
 
 @end

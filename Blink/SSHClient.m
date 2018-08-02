@@ -694,7 +694,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (void)connectedChannelDidClose:(SSHClientConnectedChannel *)connectedChannel {
   if (_sessionChannel == connectedChannel) {
     [self _schedule:^{
-      [self _exitWithCode:connectedChannel.exitCode];
+      [self _exitWithCode:connectedChannel.exit_status];
     }];
   }
   
