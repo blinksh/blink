@@ -267,25 +267,45 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // 3. get auth methods from server
   int methods = ssh_userauth_list(_session, NULL);
   
-  // 4. public key first
+  
+  NSString *password = _options[SSHOptionPassword];
+  
+  // 4. user entered password in settings. So try to use it first to save AuthTries
+  if (password.length > 0) {
+    if (methods & SSH_AUTH_METHOD_PASSWORD) {
+      rc = [self _auth_with_password: password prompts: 1];
+      if (rc == SSH_AUTH_SUCCESS) {
+        return [self _open_channels];
+      }
+    } else if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+      rc = [self _auth_with_interactive_with_password:password prompts:1];
+      if (rc == SSH_AUTH_SUCCESS) {
+        return [self _open_channels];
+      }
+    }
+  }
+  
+  // 5. public keys
   if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
     }
   }
-
-  // 5. password if we have it
-  if (methods & SSH_AUTH_METHOD_PASSWORD) {
-    rc = [self _auth_with_password];
+  
+  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
+  
+  // 4. interactive
+  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+    rc = [self _auth_with_interactive_with_password:password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
     }
   }
 
-  // 6. interactive
-  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
-    rc = [self _auth_with_interactive];
+  // 6. even we don't have password. Ask it
+  if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    rc = [self _auth_with_password: password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
     }
@@ -360,30 +380,35 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return rc;
 }
 
-- (int)_auth_with_password {
-  NSString *password = _options[SSHOptionPassword];
-  
-  if (!password) {
-    return SSH_ERROR;
-  }
+- (int)_auth_with_password:(NSString *)password prompts:(int)promptsCount {
   
   for (;;) {
+    if (password.length == 0) {
+      const int NO_ECHO = NO;
+      NSArray *prompts = @[@[@"Password:", @(NO_ECHO)]];
+      password = [[self _getAnswersWithName:NULL instruction:NULL andPrompts:prompts] firstObject];
+    }
+    
     int rc = ssh_userauth_password(_session, NULL, password.UTF8String);
     
     switch (rc) {
       case SSH_AUTH_AGAIN:
         [self _poll];
         continue;
+      case SSH_AUTH_DENIED: {
+        if (--promptsCount > 0) {
+          password = nil;
+          continue;
+        }
+        return rc;
+      }
       default:
         return rc;
     }
   }
 }
 
-- (int)_auth_with_interactive {
-  NSString *password = _options[SSHOptionPassword];
-  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
-  
+- (int)_auth_with_interactive_with_password:(NSString *)password prompts:(int)promptsCount {
   for (;;) {
     int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
