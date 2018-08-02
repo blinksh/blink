@@ -107,7 +107,7 @@
       return NO;
     } else if ([cmd isEqualToString:@"mosh"]) {
       [self _runMoshWithArgs:cmdline];
-    } else if ([cmd isEqualToString:@"ssh"]) {
+    } else if ([cmd isEqualToString:@"ssh2"]) {
       [self _runSSHWithArgs:cmdline];
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
