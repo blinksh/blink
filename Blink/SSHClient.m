@@ -72,9 +72,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 @implementation SSHClient {
   SSHClientOptions *_options;
-  ssh_event _event;
   ssh_session _session;
-  dispatch_queue_t _queue;
   
   NSRunLoop *_runLoop;
   
@@ -103,7 +101,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _portListeners = [[NSMutableArray alloc] init];
     _connectedChannels = [[NSMutableArray alloc] init];
     _device = device;
-    _queue = dispatch_queue_create("sh.blink.sshclient", DISPATCH_QUEUE_SERIAL);
     _fdIn = fdIn;
     _fdOut = fdOut;
     _fdErr = fdErr;
@@ -272,12 +269,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   // 4. user entered password in settings. So try to use it first to save AuthTries
   if (password.length > 0) {
-    if (methods & SSH_AUTH_METHOD_PASSWORD) {
+    if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
       rc = [self _auth_with_password: password prompts: 1];
       if (rc == SSH_AUTH_SUCCESS) {
         return [self _open_channels];
       }
-    } else if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+    } else if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
       rc = [self _auth_with_interactive_with_password:password prompts:1];
       if (rc == SSH_AUTH_SUCCESS) {
         return [self _open_channels];
@@ -286,7 +283,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   // 5. public keys
-  if (methods & SSH_AUTH_METHOD_PUBLICKEY) {
+  if (methods & SSH_AUTH_METHOD_PUBLICKEY && [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]]) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
@@ -296,12 +293,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
   
   // 4. interactive
-  if (methods & SSH_AUTH_METHOD_INTERACTIVE) {
+  if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
     rc = [self _auth_with_interactive_with_password:password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
       return [self _open_channels];
     }
-  } else if (methods & SSH_AUTH_METHOD_PASSWORD) {
+  } else if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
     // 6. even we don't have password. Ask it
     rc = [self _auth_with_password: password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {

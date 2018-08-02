@@ -62,6 +62,11 @@ const NSString * SSHOptionForwardAgent = @"forwardagent"; // -a -A
 const NSString * SSHOptionForwardX11 = @"forwardx11"; // -x -X
 const NSString * SSHOptionExitOnForwardFailure = @"exitonforwardfailure"; // -o
 
+// Auth
+
+const NSString * SSHOptionKbdInteractiveAuthentication = @"kbdinteractiveauthentication"; // -o
+const NSString * SSHOptionPubkeyAuthentication = @"pubkeyauthentication"; // -o
+const NSString * SSHOptionPasswordAuthentication = @"passwordauthentication"; // -o
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -146,7 +151,12 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionExitOnForwardFailure: @[yesNoType, SSHOptionValueNO],
                          SSHOptionLogLevel: @[logLevelType, SSHOptionValueINFO],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES], // We mobile terminal, so we set compression to yes by default.
-                         SSHOptionCompressionLevel: @[compressionLevelType, @(-1)] // Default compression for speed
+                         SSHOptionCompressionLevel: @[compressionLevelType, @(6)], // Default compression for speed
+                         
+                         // Auth
+                         SSHOptionPubkeyAuthentication: @[yesNoType, SSHOptionValueYES],
+                         SSHOptionKbdInteractiveAuthentication: @[yesNoType, SSHOptionValueYES],
+                         SSHOptionPasswordAuthentication: @[yesNoType, SSHOptionValueYES],
                          };
   
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];

@@ -61,6 +61,13 @@ extern const NSString * SSHOptionForwardAgent; // -a -A
 extern const NSString * SSHOptionForwardX11; // -x -X
 extern const NSString * SSHOptionExitOnForwardFailure; // -o
 
+// Auth
+
+extern NSString * SSHOptionKbdInteractiveAuthentication; // -o
+extern NSString * SSHOptionPubkeyAuthentication; // -o
+extern NSString * SSHOptionPasswordAuthentication; // -o
+
+
 // Non standart
 extern const NSString * SSHOptionPassword; //
 extern const NSString * SSHOptionPrintConfiguration; // -G
