@@ -648,9 +648,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case SSH_OK: {
         if (_reversePortsMap == nil) {
           _reversePortsMap = [[NSMutableDictionary alloc] init];
-          _reversePortsMap[@(remoteport)] = @(localport);
         }
-        NSLog(@"Ok %@", @(remoteport));
+        _reversePortsMap[@(remoteport)] = @(localport);
       }
         return rc;
       case SSH_AGAIN:
@@ -658,7 +657,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         continue;
       default:
       case SSH_ERROR:
-        NSLog(@"Error");
         return rc;
     }
   }
