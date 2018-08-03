@@ -46,7 +46,6 @@
 
 - (instancetype)initInitWithAddress:(NSString *)strAddress {
   if (self = [super init]) {
-    _listenSock = SSH_INVALID_SOCKET;
     NSMutableArray<NSString *> *parts = [[strAddress componentsSeparatedByString:@":"] mutableCopy];
     _remoteport = [[parts lastObject] intValue];
     [parts removeLastObject];
@@ -60,17 +59,16 @@
 }
 
 void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
-  CFSocketNativeHandle *socket = (CFSocketNativeHandle *)data;
+  CFSocketNativeHandle socket = *(CFSocketNativeHandle *)data;
   SSHClientPortListener *client = (__bridge SSHClientPortListener *)info;
   
-  int val = 1;
-  setsockopt(*socket, IPPROTO_TCP, TCP_NODELAY, &val, sizeof(val));
-  NSLog(@"Blink: TCP_NODELAY=1");
-  
-  fcntl(*socket, F_SETFL, O_NONBLOCK);
+  int yes = 1;
+  setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
+  setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
+  fcntl(socket, F_SETFL, O_NONBLOCK);
 
   
-  [client.delegate sshClientPortListener:client acceptedSocket:*socket];
+  [client.delegate sshClientPortListener:client acceptedSocket:socket];
 }
 
 - (int)listen {
@@ -93,18 +91,21 @@ void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
   };
   
   _socketRef = CFSocketCreateWithSocketSignature(NULL, &signature, kCFSocketAcceptCallBack, _socketCallback, &ctx);
-  fcntl(CFSocketGetNative(_socketRef), F_SETFL, O_NONBLOCK);
-  
   if (_socketRef == nil) {
     return SSH_ERROR;
   }
   
+  fcntl(CFSocketGetNative(_socketRef), F_SETFL, O_NONBLOCK);
   int yes = 1;
   setsockopt(CFSocketGetNative(_socketRef), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
+//  setsockopt(CFSocketGetNative(_socketRef), SOL_SOCKET, SO_REUSEPORT, (void*)&yes, sizeof(yes));
   
   _sourceRef = CFSocketCreateRunLoopSource(NULL, _socketRef, 0);
   
-  if (_socketRef == nil) {
+  if (_sourceRef == nil) {
+    CFSocketInvalidate(_socketRef);
+    CFRelease(_socketRef);
+    _socketRef = nil;
     return SSH_ERROR;
   }
 
@@ -115,7 +116,7 @@ void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
 
 - (void)close {
   if (_sourceRef) {
-    CFRunLoopRemoveSource(CFRunLoopGetCurrent(), _sourceRef, kCFRunLoopCommonModes);
+    CFRunLoopSourceInvalidate(_sourceRef);
     CFRelease(_sourceRef);
     _sourceRef = NULL;
   }

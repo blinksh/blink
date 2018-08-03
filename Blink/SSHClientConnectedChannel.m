@@ -140,7 +140,7 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
 
 @end
 
-@interface FileConnector : SSHClientConnectedChannel
+@interface SockConnector : SSHClientConnectedChannel
 
 - (int)pairChannel:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
 
@@ -168,7 +168,7 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
 }
 
 + (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
-  FileConnector *connector = [[FileConnector alloc] init];
+  SockConnector *connector = [[SockConnector alloc] init];
   int rc = [connector pairChannel:channel withFdIn:fdIn fdOut:fdOut fdErr:fdErr];
   if (rc == SSH_OK) {
     return connector;
@@ -246,6 +246,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
     close(_socket);
     _socket = SSH_INVALID_SOCKET;
   }
+
   [super close];
 }
 
@@ -256,16 +257,13 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
   CFReadStreamRef readStream = NULL;
   CFWriteStreamRef writeStream = NULL;
   CFStreamCreatePairWithSocket(NULL, socket, &readStream, &writeStream);
+  
+  if (readStream == nil || writeStream == nil) {
+    return SSH_ERROR;
+  }
+  
   _inputStream = (__bridge_transfer NSInputStream *)readStream;
   _outputStream = (__bridge_transfer NSOutputStream *)writeStream;
-  
-  if (_inputStream == nil) {
-    return SSH_ERROR;
-  }
-  
-  if (_outputStream == nil) {
-    return SSH_ERROR;
-  }
   
   _channel_flags = SSH_CONNECTOR_BOTH;
   
@@ -314,6 +312,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         __write_channel(_channel, _inputData, _channel_flags);
         [_inputStream close];
         [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        _inputStream = nil;
         ssh_channel_send_eof(_channel);
         return;
       case NSStreamEventErrorOccurred:
@@ -357,9 +356,9 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
 
 @end
 
-
-@implementation FileConnector {
-  NSFileHandle *_fhIn;
+@implementation SockConnector {
+  CFSocketRef _socketRef;
+  CFRunLoopSourceRef _sourceRef;
   
   dispatch_fd_t _outFd;
   dispatch_fd_t _errFd;
@@ -370,19 +369,15 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
   enum ssh_connector_flags_e _channel_flags;
 }
 
-static int __file_connector_channel_data_cb(ssh_session session,
-                                              ssh_channel channel,
-                                              void *data,
-                                              uint32_t len,
-                                              int is_stderr,
-                                              FileConnector* connector) {
+static int __sock_connector_channel_data_cb(ssh_session session,
+                                            ssh_channel channel,
+                                            void *data,
+                                            uint32_t len,
+                                            int is_stderr,
+                                            SockConnector* connector) {
   ssize_t written = 0;
-  if (is_stderr) {
-    if (connector->_errFd != SSH_INVALID_SOCKET) {
-      written = write(connector->_errFd, data, len);
-    } else {
-      written = write(connector->_outFd, data, len);
-    }
+  if (is_stderr && connector->_errFd != SSH_INVALID_SOCKET) {
+    written = write(connector->_errFd, data, len);
   } else {
     written = write(connector->_outFd, data, len);
   }
@@ -392,33 +387,69 @@ static int __file_connector_channel_data_cb(ssh_session session,
   return (int)written;
 }
 
-void __file_connector_channel_eof_cb(ssh_session session, ssh_channel channel, StreamConnector* connector) {
+void __sock_connector_channel_eof_cb(ssh_session session, ssh_channel channel, SockConnector* connector) {
   ssh_channel_close(channel);
 }
 
-void __file_connector_channel_close_cb(ssh_session session, ssh_channel channel, StreamConnector* connector) {
+void __sock_connector_channel_close_cb(ssh_session session, ssh_channel channel, SockConnector* connector) {
   [connector close];
 }
 
-void __file_connector_channel_exit_status_cb(ssh_session session,
-                                               ssh_channel channel,
-                                               int exit_status,
-                                               FileConnector* connector) {
+void __sock_connector_channel_exit_status_cb(ssh_session session,
+                                             ssh_channel channel,
+                                             int exit_status,
+                                             SockConnector* connector) {
   connector->_exit_status = exit_status;
+}
+
+void __sock_callback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
+  SockConnector *connector = (__bridge SockConnector*)info;
+  switch (type) {
+    case kCFSocketReadCallBack: {
+      const int BUFFER_SIZE = 4096;
+      uint8_t buffer[4096] = {0};
+      
+      for (;;) {
+        ssize_t len = read(CFSocketGetNative(s), buffer, BUFFER_SIZE);
+        if (len == 0) { // EOF
+          if (connector->_inputData.length > 0) {
+            __write_channel(connector->_channel, connector->_inputData, SSH_CONNECTOR_STDOUT);
+          }
+          ssh_channel_send_eof(connector->_channel);
+//          CFRunLoopRemoveSource(CFRunLoopGetCurrent(), connector->_sourceRef, kCFRunLoopDefaultMode);
+          return;
+        } else if (len < 0) {
+          // try again
+          break;
+        }
+        
+        [connector->_inputData appendBytes:buffer length:len];
+        
+        if (len < BUFFER_SIZE) {
+          break;
+        }
+      }
+
+      __write_channel(connector->_channel, connector->_inputData, SSH_CONNECTOR_STDOUT);
+    }
+      break;
+      
+    default:
+      break;
+  }
 }
 
 - (int)pairChannel:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
   _channel = channel;
-  _fhIn = [[NSFileHandle alloc] initWithFileDescriptor:fdIn closeOnDealloc:NO];
+  _inputData = [[NSMutableData alloc] init];
   
-  NSMutableData *inData = [[NSMutableData alloc] init];
-  _inputData = inData;
+  CFSocketContext ctx = {.info = (__bridge void*)self};
+  _socketRef = CFSocketCreateWithNative(NULL, fdIn, kCFSocketReadCallBack, __sock_callback, &ctx);
   
-  _fhIn.readabilityHandler = ^(NSFileHandle * _Nonnull fh) {
-    NSData *data = fh.availableData;
-    [inData appendData:data];
-    __write_channel(channel, inData, SSH_CONNECTOR_STDOUT);
-  };
+  CFOptionFlags flags = CFSocketGetSocketFlags(_socketRef);
+  flags =~ kCFSocketCloseOnInvalidate;
+  CFSocketSetSocketFlags(_socketRef, flags);
+  _sourceRef = CFSocketCreateRunLoopSource(NULL, _socketRef, 0);
   
   _outFd = fdOut;
   _errFd = fdErr;
@@ -426,25 +457,39 @@ void __file_connector_channel_exit_status_cb(ssh_session session,
   _channel_flags = SSH_CONNECTOR_BOTH;
   
   _channel_cb.userdata = (__bridge void *)self;
-  _channel_cb.channel_data_function = __file_connector_channel_data_cb;
-  _channel_cb.channel_eof_function = __file_connector_channel_eof_cb;
-  _channel_cb.channel_close_function = __file_connector_channel_close_cb;
-  _channel_cb.channel_exit_status_function = __file_connector_channel_exit_status_cb;
+  _channel_cb.channel_data_function = __sock_connector_channel_data_cb;
+  _channel_cb.channel_eof_function = __sock_connector_channel_eof_cb;
+  _channel_cb.channel_close_function = __sock_connector_channel_close_cb;
+  _channel_cb.channel_exit_status_function = __sock_connector_channel_exit_status_cb;
   
   ssh_callbacks_init(&_channel_cb);
   int rc = ssh_add_channel_callbacks(_channel, &_channel_cb);
   if (rc != SSH_OK) {
-    _fhIn.readabilityHandler = nil;
-    _fhIn = nil;
+    CFRelease(_sourceRef);
+    _sourceRef = nil;
+    CFSocketInvalidate(_socketRef);
+    CFRelease(_socketRef);
+    _socketRef = nil;
     return rc;
   }
   
-  return 0;
+  CFRunLoopAddSource(CFRunLoopGetCurrent(), _sourceRef, kCFRunLoopDefaultMode);
+  
+  
+  return SSH_OK;
 }
 
 - (void)close {
-  _fhIn.readabilityHandler = nil;
-  _fhIn = nil;
+  if (_sourceRef) {
+    CFRunLoopSourceInvalidate(_sourceRef);
+    CFRelease(_sourceRef);
+    _sourceRef = NULL;
+  }
+  if (_socketRef) {
+    CFSocketInvalidate(_socketRef);
+    CFRelease(_socketRef);
+    _socketRef = NULL;
+  }
   [super close];
 }
 

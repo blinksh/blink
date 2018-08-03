@@ -48,7 +48,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSString *remotehost;
 @property int localport;
 @property NSString *sourcehost;
-@property dispatch_fd_t listenSock;
 
 @property (nonatomic, weak) id<SSHClientPortListenerDelegate> delegate;
 

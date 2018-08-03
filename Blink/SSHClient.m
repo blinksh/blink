@@ -195,12 +195,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
+  BOOL rawMode = _device.rawMode;
+  [_device setRawMode:NO];
   for (int i = 0; i < prompts.count; i++) {
     __write(_fdOut, prompts[i][0]);
     FILE *fp = fdopen(_fdIn, "r");
     char * line = NULL;
     size_t len = 0;
     ssize_t read = getline(&line, &len, fp);
+//    ssize_t read = getline(&line, &len, _device.stream.in);
     
     if (read != -1) {
       
@@ -216,6 +219,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     __write(_fdOut, @"\n");
     //    fclose(fp);
   }
+  [_device setRawMode:rawMode];
   
   return answers;
 }
