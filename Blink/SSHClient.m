@@ -194,11 +194,22 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
-  NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
   BOOL rawMode = _device.rawMode;
   [_device setRawMode:NO];
+  
+  if (instruction.length > 0) {
+    __write(_fdOut, @"\n");
+    __write(_fdOut, instruction);
+    __write(_fdOut, @"\n");
+  }
+  NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
+  
+  BOOL echoMode = _device.echoMode;
   for (int i = 0; i < prompts.count; i++) {
+    BOOL echo = [prompts[i][1] boolValue];
+    _device.echoMode = echo;
     __write(_fdOut, prompts[i][0]);
+    
     FILE *fp = fdopen(_fdIn, "r");
     char * line = NULL;
     size_t len = 0;
@@ -219,7 +230,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     __write(_fdOut, @"\n");
     //    fclose(fp);
   }
+  [_device setEchoMode:echoMode];
   [_device setRawMode:rawMode];
+  
   
   return answers;
 }
@@ -236,6 +249,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     int rc = ssh_connect(_session);
     switch(rc) {
       case SSH_OK:
+        rc = [self _verify_known_host];
+        if (rc != SSH_OK) {
+          return [self _exitWithCode:rc];
+        }
         return [self _auth];
       case SSH_AGAIN:
         [self _poll];
@@ -467,6 +484,100 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return rc;
     }
   }
+}
+
+#pragma mark - HOST VERIFICATION
+
+- (int)_verify_known_host {
+  char *hexa;
+  char buf[10];
+  unsigned char *hash = NULL;
+  size_t hlen;
+  ssh_key srv_pubkey;
+  int rc;
+  
+  
+  rc = ssh_get_server_publickey(_session, &srv_pubkey);
+  if (rc < 0) {
+    return rc;
+  }
+  
+  rc = ssh_get_publickey_hash(srv_pubkey,
+                              SSH_PUBLICKEY_HASH_SHA1,
+                              &hash,
+                              &hlen);
+  ssh_key_free(srv_pubkey);
+  if (rc < 0) {
+    return rc;
+  }
+  
+  enum ssh_server_known_e state = ssh_is_server_known(_session);
+  
+  switch(state) {
+    case SSH_SERVER_KNOWN_OK:
+      break; /* ok */
+    case SSH_SERVER_KNOWN_CHANGED:
+      [self _log_info:@"Host key for server changed : server's one is now :"];
+      ssh_print_hexa("Public key hash",hash, hlen);
+      ssh_clean_pubkey_hash(&hash);
+      [self _log_info:@"For security reason, connection will be stopped"];
+      return SSH_ERROR;
+    case SSH_SERVER_FOUND_OTHER:
+      [self _log_info: [
+        @[@"The host key for this server was not found but an other type of key exists.",
+          @"An attacker might change the default server key to confuse your client",
+          @"into thinking the key does not exist",
+          @"We advise you to rerun the client with -d or -r for more safety."]
+          componentsJoinedByString:@"\n"] ];
+      return SSH_ERROR;
+      
+    case SSH_SERVER_FILE_NOT_FOUND:
+      [self _log_info: [
+         @[@"Could not find known host file. If you accept the host key here,",
+          @"the file will be automatically created."]
+          componentsJoinedByString:@"\n"]];
+      /* fallback to SSH_SERVER_NOT_KNOWN behavior */
+      //      FALL_THROUGH;
+    case SSH_SERVER_NOT_KNOWN: {
+      hexa = ssh_get_hexa(hash, hlen);
+      [self _log_info: [NSString stringWithFormat:@"Public key hash: %s", hexa]];
+      ssh_string_free_char(hexa);
+      
+      NSString *answer = [[[self _getAnswersWithName:@""
+                                         instruction:@"The server is unknown. Do you trust the host key? (yes/no)"
+                                          andPrompts:@[@[@"", @(YES)]]] firstObject] lowercaseString];
+      
+      if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
+        
+      } else {
+        ssh_clean_pubkey_hash(&hash);
+        return SSH_ERROR;
+      }
+      
+      answer = [[[self _getAnswersWithName:@""
+                               instruction:@"This new key will be written on disk for further usage. do you agree? (yes/no)"
+                                andPrompts:@[@[@"", @(YES)]]] firstObject] lowercaseString];
+      
+      if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
+        if (ssh_write_knownhost(_session) < 0) {
+          ssh_clean_pubkey_hash(&hash);
+          [self _log_error];
+          return SSH_ERROR;
+        }
+      } else {
+        ssh_clean_pubkey_hash(&hash);
+        return SSH_ERROR;
+      }
+    }
+      break;
+    case SSH_SERVER_ERROR:
+      ssh_clean_pubkey_hash(&hash);
+      [self _log_error];
+      return SSH_ERROR;
+  }
+  ssh_clean_pubkey_hash(&hash);
+      
+  return SSH_OK;
 }
 
 #pragma mark - CHANNELS
