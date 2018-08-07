@@ -92,6 +92,7 @@ void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
   
   _socketRef = CFSocketCreateWithSocketSignature(NULL, &signature, kCFSocketAcceptCallBack, _socketCallback, &ctx);
   if (_socketRef == nil) {
+    NSLog(@"Bind error?");
     return SSH_ERROR;
   }
   

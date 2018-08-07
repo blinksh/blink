@@ -120,12 +120,14 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (void)close {
   for (SSHClientConnectedChannel *connectedChannel in _connectedChannels) {
+    connectedChannel.delegate = nil;
     [connectedChannel close];
   }
   
   _connectedChannels = nil;
   
   for (SSHClientPortListener *listener in _portListeners) {
+    listener.delegate = nil;
     [listener close];
   }
   _portListeners = nil;
