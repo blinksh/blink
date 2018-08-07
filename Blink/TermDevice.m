@@ -196,9 +196,13 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)write:(NSString *)input
 {
-  write(_pinput[1], [input UTF8String], [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+  NSUInteger len = [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+  write(_pinput[1], input.UTF8String, len);
   if (_echoMode) {
-    write(_poutput[1], [input UTF8String], [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+    if ([input isEqualToString:@"\n"] || [input isEqualToString:@"\r"]) {
+      return;
+    }
+    write(_poutput[1], input.UTF8String, len);
   }
 }
 

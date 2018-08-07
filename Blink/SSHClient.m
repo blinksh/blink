@@ -198,9 +198,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [_device setRawMode:NO];
   
   if (instruction.length > 0) {
-    __write(_fdOut, @"\n");
     __write(_fdOut, instruction);
-    __write(_fdOut, @"\n");
   }
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
   
@@ -526,8 +524,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [self _log_info: [
         @[@"The host key for this server was not found but an other type of key exists.",
           @"An attacker might change the default server key to confuse your client",
-          @"into thinking the key does not exist",
-          @"We advise you to rerun the client with -d or -r for more safety."]
+          @"into thinking the key does not exist."]
           componentsJoinedByString:@"\n"] ];
       return SSH_ERROR;
       
@@ -543,9 +540,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [self _log_info: [NSString stringWithFormat:@"Public key hash: %s", hexa]];
       ssh_string_free_char(hexa);
       
+      NSNumber * doEcho = @(YES);
       NSString *answer = [[[self _getAnswersWithName:@""
-                                         instruction:@"The server is unknown. Do you trust the host key? (yes/no)"
-                                          andPrompts:@[@[@"", @(YES)]]] firstObject] lowercaseString];
+                                         instruction:@"The server is unknown. Do you trust the host key?"
+                                          andPrompts:@[@[@" (yes/no):", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         
@@ -555,8 +553,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
       
       answer = [[[self _getAnswersWithName:@""
-                               instruction:@"This new key will be written on disk for further usage. do you agree? (yes/no)"
-                                andPrompts:@[@[@"", @(YES)]]] firstObject] lowercaseString];
+                               instruction:@"This new key will be written on disk for further usage. do you agree?"
+                                andPrompts:@[@[@" (yes/no):", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         if (ssh_write_knownhost(_session) < 0) {
@@ -840,7 +838,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return;
   }
   __write(_fdOut, message);
-  __write(_fdErr, @"\r\n");
+  __write(_fdOut, @"\r\n");
 }
 
 - (void)_log_verbose:(NSString *)message {
