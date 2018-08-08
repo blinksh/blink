@@ -90,9 +90,10 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   // Create a read-only memory BIO
   BIO *fpem = BIO_new_mem_buf((void *)ckey, -1);
   const char *pp = (passphrase) ? [passphrase UTF8String] : NULL;
+  
   _rsa = RSA_new();
   _pkey = EVP_PKEY_new();
-
+  
   _rsa = PEM_read_bio_RSAPrivateKey(fpem, NULL, NULL, (void *)pp);
   BIO_free(fpem);
 

@@ -35,6 +35,7 @@
 #import "BKPubKey.h"
 #import "SSHClientConnectedChannel.h"
 #import "SSHClientPortListener.h"
+#import "BlinkPaths.h"
 
 #import <signal.h>
 #import <pthread.h>
@@ -180,7 +181,20 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_ssh_auth_fn_prompt:(const char *)prompt buf:(char *)buf len:(size_t) len echo:(int) echo verify:(int)verify {
-  return 0;
+  NSString *nsPrompt = @(prompt);
+  if (![nsPrompt hasSuffix:@":"]) {
+    nsPrompt = [nsPrompt stringByAppendingString:@":"];
+  }
+  NSString *answer = [[self _getAnswersWithName:nil instruction:nil andPrompts:@[@[nsPrompt, @(echo)]]] firstObject];
+  if (!answer) {
+    return SSH_ERROR;
+  }
+  
+  if (![answer getCString:buf maxLength:len encoding:NSUTF8StringEncoding]) {
+    return SSH_ERROR;
+  }
+
+  return SSH_OK;
 }
 
 - (void)_printVersion {
@@ -350,6 +364,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     ssh_key pkey;
     
     BKPubKey *secureKey = [BKPubKey withID:identityfile];
+
     // we have this identity in
     if (secureKey) {
       rc =  ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
@@ -358,7 +373,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
                                          (__bridge void *) self,
                                          &pkey);
     } else {
-      rc = ssh_pki_import_privkey_file(identityfile.UTF8String,
+      NSString *identityFilePath = identityfile;
+      NSFileManager *fileManager = [NSFileManager defaultManager];
+      // if file doesn't exists. Fallback to ~/.ssh/<identifyfile>
+      if (![fileManager fileExistsAtPath:identityFilePath]) {
+        identityFilePath = [[BlinkPaths ssh] stringByAppendingPathComponent:identityFilePath];
+      }
+      rc = ssh_pki_import_privkey_file(identityFilePath.UTF8String,
                                        NULL,
                                        __ssh_auth_fn,
                                        (__bridge void *) self,

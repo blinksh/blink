@@ -177,6 +177,7 @@
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   NSString *pbkey = pb.string;
 
+  
   // Ask for passphrase if it is encrypted.
   if (([pbkey rangeOfString:@"ENCRYPTED"
                     options:NSRegularExpressionSearch]
