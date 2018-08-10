@@ -33,12 +33,11 @@
 #import <UIKit/UIKit.h>
 
 
-@interface SshRsa : NSObject
+@interface Pki : NSObject
 
-- (SshRsa *)initWithLength:(int)bits;
-- (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase;
+- (Pki *)initRSAWithLength:(int)bits;
+- (Pki *)initFromPrivateKey:(NSString *)privateKey;
 - (NSString *)privateKey;
-- (NSString *)privateKeyWithPassphrase:(NSString *)passphrase;
 - (NSString *)publicKeyWithComment:(NSString*)comment;
 
 @end
@@ -59,7 +58,6 @@
 
 - (NSString *)publicKey;
 - (NSString *)privateKey;
-- (BOOL)isEncrypted;
 
 @end
 

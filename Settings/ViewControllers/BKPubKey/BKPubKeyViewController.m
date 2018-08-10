@@ -176,6 +176,8 @@
   // Check if key is encrypted.
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   NSString *pbkey = pb.string;
+  
+  
 
   
   // Ask for passphrase if it is encrypted.
@@ -194,7 +196,7 @@
                                                handler:^(UIAlertAction *_Nonnull action) {
                                                  // Create a key
                                                  UITextField *passphrase = passphraseRequest.textFields.lastObject;
-                                                 SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey passphrase:passphrase.text];
+                                                 SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey];
                                                  if (key == nil) {
                                                    // Retry
                                                    [self importKey];
@@ -214,7 +216,7 @@
 
   } else {
     // If the key isn't encrypted, then try to generate it and go to the create key dialog to complete
-    SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey passphrase:nil];
+    SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey];
 
     if (key == nil) {
       UIAlertView *errorAlert = [[UIAlertView alloc]

@@ -104,7 +104,7 @@
       // Create and return
       SshRsa *key = _key ? _key : [[SshRsa alloc] initWithLength:length];
       // saves the key into iOS keychain
-      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:[key privateKeyWithPassphrase:_passphraseField.text] publicKey:[key publicKeyWithComment:_commentsField.text]];
+      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:key.privateKey publicKey:[key publicKeyWithComment:_commentsField.text]];
       if (!_pubkey) {
         errorMsg = @"OpenSSL error. Could not create Public Key.";
       }

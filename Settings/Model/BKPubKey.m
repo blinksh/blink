@@ -35,6 +35,11 @@
 #include <openssl/evp.h>
 #include <openssl/pem.h>
 #include <openssl/rsa.h>
+#include <openssl/dsa.h>
+#include <openssl/ec.h>
+#include <openssl/ecdsa.h>
+#include <libssh/callbacks.h>
+
 
 #import "BKPubKey.h"
 #import "UICKeyChainStore/UICKeyChainStore.h"
@@ -42,204 +47,84 @@
 #import "BlinkPaths.h"
 
 
-// typedef enum IDCardType : NSUInteger {
-//   RSA2048,
-//   RSA4096
-// }IDCardType;
-static unsigned char pSshHeader[11] = {0x00, 0x00, 0x00, 0x07, 0x73, 0x73, 0x68, 0x2D, 0x72, 0x73, 0x61};
+
 NSMutableArray *Identities;
 
 static UICKeyChainStore *Keychain = nil;
 
-static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned char *pBuffer)
-{
-  int adjustedLen = bufferLen, index;
-  if (*pBuffer & 0x80) {
-    adjustedLen++;
-    pEncoding[4] = 0;
-    index = 5;
-  } else {
-    index = 4;
-  }
-  pEncoding[0] = (unsigned char)(adjustedLen >> 24);
-  pEncoding[1] = (unsigned char)(adjustedLen >> 16);
-  pEncoding[2] = (unsigned char)(adjustedLen >> 8);
-  pEncoding[3] = (unsigned char)(adjustedLen);
-  memcpy(&pEncoding[index], pBuffer, bufferLen);
-  return index + bufferLen;
+@implementation Pki {
+  ssh_key _ssh_key;
 }
 
-// It is responsible to interface with OpenSSL library.
-// It offers secure tokens.
-@implementation SshRsa {
-  RSA *_rsa;
-  EVP_PKEY *_pkey;
+int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
+                                  int echo, int verify, void *userdata) {
+  return 0;
 }
 
-+ (void)initialize
-{
-  // NOT deprecated.
-  OpenSSL_add_all_algorithms();
-}
-
-- (SshRsa *)initFromPrivateKey:(NSString *)privateKey passphrase:(NSString *)passphrase
+- (Pki *)initFromPrivateKey:(NSString *)privateKey
 {
   self = [super init];
-  const char *ckey = [privateKey UTF8String];
 
-  // Create a read-only memory BIO
-  BIO *fpem = BIO_new_mem_buf((void *)ckey, -1);
-  const char *pp = (passphrase) ? [passphrase UTF8String] : NULL;
+  int rc = ssh_pki_import_privkey_base64(privateKey.UTF8String, NULL, __ssh_auth_callback, (__bridge void *)self, &_ssh_key);
   
-  _rsa = RSA_new();
-  _pkey = EVP_PKEY_new();
-  
-  _rsa = PEM_read_bio_RSAPrivateKey(fpem, NULL, NULL, (void *)pp);
-  BIO_free(fpem);
-
-  if (!_rsa || !RSA_check_key(_rsa)) {
+  if (rc != SSH_OK) {
     return nil;
   }
-
-  // Convert RSA to PKEY format
-  // Initialise with both tied, we only have to release the rsa on dealloc
-  if (!EVP_PKEY_assign_RSA(_pkey, _rsa)) {
-    return nil;
-  }
-
   return self;
 }
 
-- (SshRsa *)initWithLength:(int)bits
+- (Pki *)initRSAWithLength:(int)bits
 {
   self = [super init];
-  _rsa = RSA_new();
-  _pkey = EVP_PKEY_new();
-  BIGNUM *bn = BN_new();
-
-  // Exponent
-  BN_set_word(bn, RSA_F4);
-
-  // Generate key
-  if (!RSA_generate_key_ex(_rsa, bits, bn, NULL)) {
-    BN_free(bn);
+  
+  int rc = ssh_pki_generate(SSH_KEYTYPE_RSA, bits, &_ssh_key);
+  if (rc != SSH_OK) {
     return nil;
   }
-
-  BN_free(bn);
-  // Convert RSA to PKEY format
-  // Initialise with both tied, we only have to release the rsa on dealloc
-  if (!EVP_PKEY_assign_RSA(_pkey, _rsa)) {
-    return nil;
-  }
-
+  
   return self;
 }
 
-// Returns a PKCS#8 formatted key, with AEC encryption.
 - (NSString *)privateKey
 {
-  return [self privateKeyWithPassphrase:nil];
-}
-
-- (NSString *)privateKeyWithPassphrase:(NSString *)passphrase
-{
-  BIO *fpem = BIO_new(BIO_s_mem());
-  const char *pp = NULL;
-  long pp_sz = 0;
-  const EVP_CIPHER *cipher = NULL;
-
-  if (passphrase.length) {
-    pp = [passphrase UTF8String];
-    pp_sz = strlen(pp);
-    cipher = EVP_aes_256_cbc();
-  }
-
-  if (!PEM_write_bio_PKCS8PrivateKey(fpem, _pkey,
-                                     cipher,
-                                     (char *)pp, // NULL for no passphrase
-                                     (int)pp_sz, NULL, NULL)) {
-    BIO_free(fpem);
-    return nil;
-  }
-
-  char *pkey;
-  long sz = BIO_get_mem_data(fpem, &pkey);
-  NSString *key = [[NSString alloc] initWithBytes:pkey length:sz encoding:NSUTF8StringEncoding];
-  BIO_free(fpem);
-
+  ssh_string blob = NULL;
+  ssh_pki_export_privkey_blob(_ssh_key, NULL, NULL, NULL, &blob);
+  
+  NSString *key = [[NSString alloc] initWithBytes:ssh_string_data(blob) length:ssh_string_len(blob) encoding:NSUTF8StringEncoding];
+  
+  ssh_string_burn(blob);
+  ssh_string_free(blob);
+  
   return key;
 }
 
-// Generate OpenSSH public key
+// Generate OpenSSH or PEM public key
 - (NSString *)publicKeyWithComment:(NSString*)comment
 {
-  int nLen = 0, eLen = 0;
-  int index = 0;
-  unsigned char *pEncoding = NULL;
-  int encodingLength = 0;
-  unsigned char *nBytes = NULL, *eBytes = NULL;
-  BIO *b64, *fpub;
-
-  // reading the modulus
-  nLen = BN_num_bytes(_rsa->n);
-  nBytes = (unsigned char *)malloc(nLen);
-  BN_bn2bin(_rsa->n, nBytes);
-
-  // reading the public exponent
-  eLen = BN_num_bytes(_rsa->e);
-  eBytes = (unsigned char *)malloc(eLen);
-  BN_bn2bin(_rsa->e, eBytes);
-
-  encodingLength = sizeof(pSshHeader) + 4 + eLen + 4 + nLen;
-  // correct depending on the MSB of e and N
-  if (eBytes[0] & 0x80) {
-    encodingLength++;
+  ssh_key pubkey = NULL;
+  int rc = ssh_pki_export_privkey_to_pubkey(_ssh_key, &pubkey);
+  if (rc != SSH_OK) {
+    return nil;
   }
-  if (nBytes[0] & 0x80) {
-    encodingLength++;
+  char *buf = NULL;
+  rc = ssh_pki_export_pubkey_base64(pubkey, &buf);
+  if (rc != SSH_OK) {
+    ssh_key_free(pubkey);
+    return nil;
   }
-
-  pEncoding = (unsigned char *)malloc(encodingLength);
-  index = sizeof(pSshHeader);
-  memcpy(pEncoding, pSshHeader, index);
-
-  // Encoding exponent and modulus
-  index += SshEncodeBuffer(&pEncoding[index], eLen, eBytes);
-  index += SshEncodeBuffer(&pEncoding[index], nLen, nBytes);
-
-  free(nBytes);
-  free(eBytes);
-
-  b64 = BIO_new(BIO_f_base64());
-  fpub = BIO_new(BIO_s_mem());
-  BIO_set_flags(b64, BIO_FLAGS_BASE64_NO_NL);
-  BIO_write(fpub, "ssh-rsa ", 8);
-  BIO_flush(fpub);
-
-  // Filter
-  fpub = BIO_push(b64, fpub);
-  BIO_write(fpub, pEncoding, encodingLength);
-  BIO_flush(fpub);
-  fpub = BIO_pop(b64);
-
-  BIO_free(b64);
-  // Read and return public key
-  char *pkey;
-  long sz = BIO_get_mem_data(fpub, &pkey);
-  NSString *key = [[NSString alloc] initWithBytes:pkey length:sz encoding:NSUTF8StringEncoding];
-
-  // Free the BIO key memory
-  BIO_free(fpub);
-  free(pEncoding);
-
+  NSString *key = @(buf);
+  ssh_key_free(pubkey);
+  
   NSString *commentedKey = [NSString stringWithFormat:@"%@ %@",key, comment];
   return commentedKey;
 }
 
 - (void)dealloc
 {
-  RSA_free(_rsa);
+  if (_ssh_key) {
+    ssh_key_free(_ssh_key);
+    _ssh_key = NULL;
+  }
 }
 @end
 
@@ -284,7 +169,7 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
   if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
     // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
-    SshRsa *defaultKey = [[SshRsa alloc] initWithLength:4096];
+    Pki *defaultKey = [[Pki alloc] initRSAWithLength:4096];
     [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
   }
 }
@@ -361,21 +246,6 @@ static int SshEncodeBuffer(unsigned char *pEncoding, int bufferLen, unsigned cha
 - (NSString *)privateKey
 {
   return [Keychain stringForKey:_privateKeyRef];
-}
-
-- (BOOL)isEncrypted
-{
-  NSString *priv = [self privateKey];
-  if ([priv rangeOfString:@"^Proc-Type: 4,ENCRYPTED\n"
-                  options:NSRegularExpressionSearch]
-        .location != NSNotFound)
-    return YES;
-  else if ([priv rangeOfString:@"^-----BEGIN ENCRYPTED PRIVATE KEY-----\n"
-                       options:NSRegularExpressionSearch]
-             .location != NSNotFound)
-    return YES;
-  else
-    return NO;
 }
 
 // UIActivityItemSource methods
