@@ -37,13 +37,13 @@
 #import "BKPubKeyViewController.h"
 
 
-@interface BKPubKeyViewController ()
+@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate>
 
 @end
 
 @implementation BKPubKeyViewController {
   NSString *_clipboardPassphrase;
-  SshRsa *_clipboardKey;
+  Pki *_clipboardKey;
   BOOL _selectable;
 }
 
@@ -145,18 +145,13 @@
   UIAlertAction *generate = [UIAlertAction actionWithTitle:@"Create New"
                                                      style:UIAlertActionStyleDefault
                                                    handler:^(UIAlertAction *_Nonnull action) {
-                                                     _clipboardKey = nil;
-                                                     [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
+                                                     [self createKey];
                                                    }];
   UIAlertAction *import = [UIAlertAction actionWithTitle:@"Import from clipboard"
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                    // ImportKey flow
                                                    [self importKey];
-
-                                                   if (_clipboardKey) {
-                                                     [self performSegueWithIdentifier:@"createKeySegue" sender:sender];
-                                                   }
                                                  }];
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
@@ -171,66 +166,45 @@
   [self presentViewController:keySourceController animated:YES completion:nil];
 }
 
+- (void)createKey {
+  BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+  ctrl.createKeyDelegate = self;
+  [self.navigationController pushViewController:ctrl animated:YES];
+}
+
 - (void)importKey
 {
-  // Check if key is encrypted.
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  NSString *pbkey = pb.string;
   
-  
-
-  
-  // Ask for passphrase if it is encrypted.
-  if (([pbkey rangeOfString:@"ENCRYPTED"
-                    options:NSRegularExpressionSearch]
-         .location != NSNotFound)) {
-    UIAlertController *passphraseRequest = [UIAlertController alertControllerWithTitle:@"Encrypted key"
-                                                                               message:@"Please insert passphrase"
-                                                                        preferredStyle:UIAlertControllerStyleAlert];
-    [passphraseRequest addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-      textField.placeholder = NSLocalizedString(@"Enter passphrase", @"Passphrase");
-      textField.secureTextEntry = YES;
-    }];
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK"
-                                                 style:UIAlertActionStyleDefault
-                                               handler:^(UIAlertAction *_Nonnull action) {
-                                                 // Create a key
-                                                 UITextField *passphrase = passphraseRequest.textFields.lastObject;
-                                                 SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey];
-                                                 if (key == nil) {
-                                                   // Retry
-                                                   [self importKey];
-                                                 } else {
-                                                   _clipboardKey = key;
-                                                   _clipboardPassphrase = passphrase.text;
-                                                   [self performSegueWithIdentifier:@"createKeySegue" sender:passphraseRequest];
-                                                 }
-                                               }];
-    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
-                                                     style:UIAlertActionStyleCancel
-                                                   handler:^(UIAlertAction *_Nonnull action){
-                                                   }];
-    [passphraseRequest addAction:ok];
-    [passphraseRequest addAction:cancel];
-    [self presentViewController:passphraseRequest animated:YES completion:nil];
-
-  } else {
-    // If the key isn't encrypted, then try to generate it and go to the create key dialog to complete
-    SshRsa *key = [[SshRsa alloc] initFromPrivateKey:pbkey];
-
+  [Pki importPrivateKey:pb.string controller:self andCallback:^(Pki *key) {
     if (key == nil) {
-      UIAlertView *errorAlert = [[UIAlertView alloc]
-            initWithTitle:@"Invalid Key"
-                  message:@"Clipboard content couldn't be validated as a key"
-                 delegate:nil
-        cancelButtonTitle:@"OK"
-        otherButtonTitles:nil];
-      [errorAlert show];
-    } else {
-      _clipboardKey = key;
-      _clipboardPassphrase = nil;
+      UIAlertController *alertCtrl = [UIAlertController
+                                      alertControllerWithTitle:@"Invalid key"
+                                      message:@"Clipboard content couldn't be validated as a key"
+                                      preferredStyle:UIAlertControllerStyleAlert];
+      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+      
+      [self presentViewController:alertCtrl animated:YES completion:nil];
+      return;
     }
+
+    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    ctrl.importMode = YES;
+    ctrl.key = key;
+    ctrl.createKeyDelegate = self;
+    [self.navigationController pushViewController:ctrl animated:YES];
+  }];
+}
+
+- (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
+  [self.navigationController popViewControllerAnimated:YES];
+  NSIndexPath *newIdx;
+  if (_selectable) {
+    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
+  } else {
+    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
   }
+  [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 #pragma mark - Navigation
@@ -245,16 +219,6 @@
 
     BKPubKey *pubkey = [BKPubKey.all objectAtIndex:_currentSelectionIdx.row];
     details.pubkey = pubkey;
-    return;
-  }
-  if ([[segue identifier] isEqualToString:@"createKeySegue"]) {
-    BKPubKeyCreateViewController *create = segue.destinationViewController;
-
-    if (_clipboardKey) {
-      create.key = _clipboardKey;
-      create.passphrase = _clipboardPassphrase;
-    }
-
     return;
   }
 }

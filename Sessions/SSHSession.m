@@ -582,13 +582,13 @@ static void kbd_callback(const char *name, int name_len,
     char *passphrase = NULL;
 
     // Request passphrase from user
-//    if ([pk isEncrypted]) {
-//      [_device setSecureTextEntry:YES];
-//      fprintf(_device.stream.out, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
-//      [self promptUser:&passphrase];
-//      fprintf(_device.stream.out, "\r\n");
-//      [_device setSecureTextEntry:NO];
-//    }
+    if ([pk isEncrypted]) {
+      [_device setSecureTextEntry:YES];
+      fprintf(_device.stream.out, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
+      [self promptUser:&passphrase];
+      fprintf(_device.stream.out, "\r\n");
+      [_device setSecureTextEntry:NO];
+    }
     
     while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
                                                        pub, strlen(pub), // or sizeof_publickey methods

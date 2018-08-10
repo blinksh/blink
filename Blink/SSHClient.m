@@ -379,6 +379,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       if (![fileManager fileExistsAtPath:identityFilePath]) {
         identityFilePath = [[BlinkPaths ssh] stringByAppendingPathComponent:identityFilePath];
       }
+      if (![fileManager fileExistsAtPath:identityFilePath]) {
+        continue;
+      }
+      
       rc = ssh_pki_import_privkey_file(identityFilePath.UTF8String,
                                        NULL,
                                        __ssh_auth_fn,
@@ -511,7 +515,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_verify_known_host {
   char *hexa;
-  char buf[10];
   unsigned char *hash = NULL;
   size_t hlen;
   ssh_key srv_pubkey;

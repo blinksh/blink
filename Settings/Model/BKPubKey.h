@@ -36,9 +36,12 @@
 @interface Pki : NSObject
 
 - (Pki *)initRSAWithLength:(int)bits;
-- (Pki *)initFromPrivateKey:(NSString *)privateKey;
+- (Pki *)initWithType:(NSString *)type andBits:(int)bits;
 - (NSString *)privateKey;
 - (NSString *)publicKeyWithComment:(NSString*)comment;
+- (NSString *)keyTypeName;
+
++ (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki *))callback;
 
 @end
 
@@ -55,6 +58,7 @@
 + (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
 + (NSMutableArray *)all;
 + (NSInteger)count;
+- (BOOL)isEncrypted;
 
 - (NSString *)publicKey;
 - (NSString *)privateKey;

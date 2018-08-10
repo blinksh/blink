@@ -141,7 +141,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionServerLiveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
                          SSHOptionConnectTimeout: @[intType, SSHOptionValueNONE],
-                         SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", /* id_dsa, id_ecdsa, id_ed25519 */]],
+                         SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", @"id_dsa", @"id_ecdsa", @"id_ed25519"]],
                          SSHOptionLocalForward: @[localforwardType],
                          SSHOptionRemoteForward: @[remoteforwardType],
                          SSHOptionProxyCommand: @[stringType],

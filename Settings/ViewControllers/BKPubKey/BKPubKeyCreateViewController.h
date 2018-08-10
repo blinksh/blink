@@ -33,12 +33,20 @@
 
 #import "BKPubKey.h"
 
+@class BKPubKeyCreateViewController;
+
+@protocol BKPubKeyCreateViewControllerDelegate <NSObject>
+- (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller;
+@end
 
 @interface BKPubKeyCreateViewController : UITableViewController
 
-@property (weak, nonatomic) BKPubKey *pubkey;
-@property (weak, nonatomic) NSString *passphrase;
-@property (weak, nonatomic) NSString *name;
-@property (weak, nonatomic) SshRsa *key;
+@property (nonatomic, weak) id<BKPubKeyCreateViewControllerDelegate> createKeyDelegate;
+
+@property bool importMode;
+
+@property BKPubKey *pubkey;
+@property NSString *name;
+@property Pki *key;
 
 @end

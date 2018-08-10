@@ -29,15 +29,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <openssl/bio.h>
-#include <openssl/bn.h>
-#include <openssl/err.h>
-#include <openssl/evp.h>
-#include <openssl/pem.h>
-#include <openssl/rsa.h>
-#include <openssl/dsa.h>
-#include <openssl/ec.h>
-#include <openssl/ecdsa.h>
 #include <libssh/callbacks.h>
 
 
@@ -58,26 +49,114 @@ static UICKeyChainStore *Keychain = nil;
 
 int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
                                   int echo, int verify, void *userdata) {
-  return 0;
-}
-
-- (Pki *)initFromPrivateKey:(NSString *)privateKey
-{
-  self = [super init];
-
-  int rc = ssh_pki_import_privkey_base64(privateKey.UTF8String, NULL, __ssh_auth_callback, (__bridge void *)self, &_ssh_key);
+  UIViewController *controller = (__bridge UIViewController *)userdata;
+  __block NSString *result = NULL;
   
-  if (rc != SSH_OK) {
-    return nil;
+  dispatch_semaphore_t dsema = dispatch_semaphore_create(0);
+  
+  dispatch_async(dispatch_get_main_queue(),^{
+    UIAlertController *passphraseRequest = [UIAlertController alertControllerWithTitle:@"Encrypted key"
+                                                                               message:@"Please insert passphrase"
+                                                                        preferredStyle:UIAlertControllerStyleAlert];
+    [passphraseRequest addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+      textField.placeholder = NSLocalizedString(@"Enter passphrase", @"Passphrase");
+      textField.secureTextEntry = YES;
+    }];
+  
+    
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK"
+                                                 style:UIAlertActionStyleDefault
+                                               handler:^(UIAlertAction *_Nonnull action) {
+                                                 UITextField *passphrase = passphraseRequest.textFields.lastObject;
+                                                 result = passphrase.text;
+                                                 dispatch_semaphore_signal(dsema);
+                                               }];
+    [passphraseRequest addAction:ok];
+    [controller presentViewController:passphraseRequest animated:YES completion:nil];
+  });
+  
+  dispatch_semaphore_wait(dsema, DISPATCH_TIME_FOREVER);
+  
+  if (!result) {
+    return SSH_ERROR;
   }
-  return self;
+  
+  [result getBytes:buf
+         maxLength:len
+        usedLength:nil
+          encoding:NSUTF8StringEncoding
+           options:NSStringEncodingConversionAllowLossy
+             range:NSMakeRange(0, result.length)
+    remainingRange:nil];
+  
+  return SSH_OK;
 }
+
++ (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki *))callback
+{
+  dispatch_async(dispatch_get_global_queue(0, 0), ^{
+    ssh_key ssh_key = NULL;
+    int rc = ssh_pki_import_privkey_base64(privateKey.UTF8String, NULL, __ssh_auth_callback, (__bridge void *)controller, &ssh_key);
+    if (rc != SSH_OK) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+        callback(nil);
+      });
+      return;
+    }
+    
+    Pki *pki = [[Pki alloc] init];
+    pki->_ssh_key = ssh_key;
+    dispatch_async(dispatch_get_main_queue(), ^{
+      callback(pki);
+    });
+  });
+}
+
+- (NSString *)keyTypeName {
+  enum ssh_keytypes_e type = ssh_key_type(_ssh_key);
+  switch (type) {
+    case SSH_KEYTYPE_RSA:
+    case SSH_KEYTYPE_RSA1:
+      return @"RSA";
+    case SSH_KEYTYPE_ECDSA:
+      return @"ECDSA";
+    case SSH_KEYTYPE_ED25519:
+      return @"Ed25519";
+    default:
+      return @(ssh_key_type_to_char(type));
+  }
+}
+
+- (enum ssh_keytypes_e)_typeFormString:(NSString *)name {
+  if ([name isEqualToString:@"RSA"]) {
+    return SSH_KEYTYPE_RSA;
+  } else if ([name isEqualToString:@"ECDSA"]) {
+    return SSH_KEYTYPE_ECDSA;
+  } else if ([name isEqualToString:@"Ed25519"]) {
+    return SSH_KEYTYPE_ED25519;
+  }
+  
+  return ssh_key_type_from_name(name.UTF8String);
+}
+
 
 - (Pki *)initRSAWithLength:(int)bits
 {
   self = [super init];
   
   int rc = ssh_pki_generate(SSH_KEYTYPE_RSA, bits, &_ssh_key);
+  if (rc != SSH_OK) {
+    return nil;
+  }
+  
+  return self;
+}
+
+- (Pki *)initWithType:(NSString *)type andBits:(int)bits
+{
+  self = [super init];
+  
+  int rc = ssh_pki_generate([self _typeFormString:type], bits, &_ssh_key);
   if (rc != SSH_OK) {
     return nil;
   }
@@ -106,6 +185,7 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
   if (rc != SSH_OK) {
     return nil;
   }
+  
   char *buf = NULL;
   rc = ssh_pki_export_pubkey_base64(pubkey, &buf);
   if (rc != SSH_OK) {
@@ -246,6 +326,21 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
 - (NSString *)privateKey
 {
   return [Keychain stringForKey:_privateKeyRef];
+}
+
+- (BOOL)isEncrypted
+{
+  NSString *priv = [self privateKey];
+  if ([priv rangeOfString:@"^Proc-Type: 4,ENCRYPTED\n"
+                  options:NSRegularExpressionSearch]
+      .location != NSNotFound)
+    return YES;
+  else if ([priv rangeOfString:@"^-----BEGIN ENCRYPTED PRIVATE KEY-----\n"
+                       options:NSRegularExpressionSearch]
+           .location != NSNotFound)
+    return YES;
+  else
+    return NO;
 }
 
 // UIActivityItemSource methods
