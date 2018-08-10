@@ -42,8 +42,6 @@
 @end
 
 @implementation BKPubKeyViewController {
-  NSString *_clipboardPassphrase;
-  Pki *_clipboardKey;
   BOOL _selectable;
 }
 
@@ -58,12 +56,6 @@
     [self performSegueWithIdentifier:@"unwindFromKeys" sender:self];
   }
   [super viewWillDisappear:animated];
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
 }
 
 #pragma mark - Table view data source
@@ -221,17 +213,6 @@
     details.pubkey = pubkey;
     return;
   }
-}
-
-- (IBAction)unwindFromCreate:(UIStoryboardSegue *)sender
-{
-  NSIndexPath *newIdx;
-  if (_selectable) {
-    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
-  } else {
-    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
-  }
-  [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 - (IBAction)unwindFromDetails:(UIStoryboardSegue *)sender
