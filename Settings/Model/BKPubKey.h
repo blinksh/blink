@@ -32,6 +32,10 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+extern const NSString *BK_KEYTYPE_RSA;
+extern const NSString *BK_KEYTYPE_DSA;
+extern const NSString *BK_KEYTYPE_ECDSA;
+extern const NSString *BK_KEYTYPE_Ed25519;
 
 @interface Pki : NSObject
 
@@ -39,8 +43,9 @@
 - (Pki *)initWithType:(NSString *)type andBits:(int)bits;
 - (NSString *)privateKey;
 - (NSString *)publicKeyWithComment:(NSString*)comment;
-- (NSString *)keyTypeName;
+- (const NSString *)keyTypeName;
 
++ (NSArray<NSString *> *)supportedKeyTypes;
 + (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki *))callback;
 
 @end

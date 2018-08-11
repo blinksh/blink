@@ -37,6 +37,10 @@
 
 #import "BlinkPaths.h"
 
+const NSString *BK_KEYTYPE_RSA = @"RSA";
+const NSString *BK_KEYTYPE_DSA = @"DSA";
+const NSString *BK_KEYTYPE_ECDSA = @"ECDSA";
+const NSString *BK_KEYTYPE_Ed25519 = @"Ed25519";
 
 
 NSMutableArray *Identities;
@@ -112,28 +116,36 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
   });
 }
 
-- (NSString *)keyTypeName {
++ (NSArray<const NSString *> *)supportedKeyTypes {
+  return @[BK_KEYTYPE_DSA, BK_KEYTYPE_RSA, BK_KEYTYPE_ECDSA, BK_KEYTYPE_Ed25519];
+}
+
+- (const NSString *)keyTypeName {
   enum ssh_keytypes_e type = ssh_key_type(_ssh_key);
   switch (type) {
+    case SSH_KEYTYPE_DSS:
+      return BK_KEYTYPE_DSA;
     case SSH_KEYTYPE_RSA:
     case SSH_KEYTYPE_RSA1:
-      return @"RSA";
+      return BK_KEYTYPE_RSA;
     case SSH_KEYTYPE_ECDSA:
-      return @"ECDSA";
+      return BK_KEYTYPE_ECDSA;
     case SSH_KEYTYPE_ED25519:
-      return @"Ed25519";
+      return BK_KEYTYPE_Ed25519;
     default:
       return @(ssh_key_type_to_char(type));
   }
 }
 
-- (enum ssh_keytypes_e)_typeFormString:(NSString *)name {
-  if ([name isEqualToString:@"RSA"]) {
+- (enum ssh_keytypes_e)_typeFormString:(const NSString *)name {
+  if ([name isEqual:BK_KEYTYPE_RSA]) {
     return SSH_KEYTYPE_RSA;
-  } else if ([name isEqualToString:@"ECDSA"]) {
+  } else if ([name isEqual: BK_KEYTYPE_ECDSA]) {
     return SSH_KEYTYPE_ECDSA;
-  } else if ([name isEqualToString:@"Ed25519"]) {
+  } else if ([name isEqual: BK_KEYTYPE_Ed25519]) {
     return SSH_KEYTYPE_ED25519;
+  } else if ([name isEqual:BK_KEYTYPE_DSA]) {
+    return SSH_KEYTYPE_DSS;
   }
   
   return ssh_key_type_from_name(name.UTF8String);

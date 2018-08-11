@@ -42,11 +42,12 @@
   UIBarButtonItem *_saveBarButtonItem;
   UISegmentedControl *_bitsSegmentedControl;
   UISegmentedControl *_keyTypeSegmentedControl;
+  
   NSArray *_sections;
   NSDictionary *_nameSection;
   NSDictionary *_typeSection;
   NSDictionary *_commentsSection;
-  NSDictionary *_footerSection;
+  NSDictionary *_infoSection;
   
   NSMutableString *_nameFooterText;
   NSArray<NSNumber *> *_bitsValues;
@@ -55,36 +56,66 @@
   NSString *_currentType;
 }
 
+typedef NS_ENUM(NSInteger, ROW_ID) {
+  ROW_ID_NONE,
+  ROW_ID_NAME,
+  ROW_ID_KEYTYPE,
+  ROW_ID_BITS,
+  ROW_ID_COMMENTS
+};
+
+#define HEADER @"HEADER"
+#define FOOTER @"FOOTER"
+#define ROWS @"ROWS"
+
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   
-  _types = @[@"RSA", @"ECDSA", @"Ed25519"];
+  _types = [Pki supportedKeyTypes];
   
   _nameFooterText = [[NSMutableString alloc] init];
   _typeFooterText = [[NSMutableString alloc] init];
   
-  _nameSection = @{@"header": @"NAME", @"footer":_nameFooterText, @"rows": @[@"_nameTextField"]};
-  _typeSection = @{@"header": @"KEY", @"footer":_typeFooterText, @"rows": [@[@"_keyTypeSegmentedControl", @"_bitsSegmentedControl"] mutableCopy]};
-  _commentsSection = @{@"header": @"COMMENTS (OPTIONAL)", @"footer":@"", @"rows": @[@"_commentsTextField"]};
-  _footerSection = @{@"header": @"INFORMATION", @"footer":@"Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.", @"rows": @[]};
+  _nameSection = @{
+    HEADER: @"NAME",
+    ROWS: @[@(ROW_ID_NAME)],
+    FOOTER: _nameFooterText
+  };
+  _typeSection = @{
+    HEADER: @"KEY",
+    ROWS: [@[@(ROW_ID_KEYTYPE), @(ROW_ID_BITS)] mutableCopy],
+    FOOTER: _typeFooterText
+  };
+  _commentsSection = @{
+    HEADER: @"COMMENTS (OPTIONAL)",
+    ROWS: @[@(ROW_ID_COMMENTS)],
+    FOOTER: @""
+  };
+  _infoSection = @{
+    HEADER: @"INFORMATION",
+    ROWS: @[],
+    FOOTER: @"Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server."
+  };
   
   _keyTypeSegmentedControl = [[UISegmentedControl alloc] initWithItems:_types];
   [_keyTypeSegmentedControl addTarget:self action:@selector(_keyTypeChanged:) forControlEvents:UIControlEventValueChanged];
   _bitsSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[]];
 
   if (_importMode) {
-    _sections = @[_nameSection, _commentsSection, _footerSection];
+    _sections = @[_nameSection, _commentsSection, _infoSection];
     [self setKeyType:_key.keyTypeName];
   } else {
-    _sections = @[_nameSection, _typeSection, _commentsSection, _footerSection];
-    [self setKeyType:@"RSA"];
+    _sections = @[_nameSection, _typeSection, _commentsSection, _infoSection];
+    [self setKeyType:BK_KEYTYPE_RSA];
   }
   
   _nameTextField = [[UITextField alloc ] init];
   _nameTextField.placeholder = @"Enter a name for the key";
   _nameTextField.delegate = self;
   [_nameTextField addTarget:self action:@selector(_nameTextFieldChanged:) forControlEvents:UIControlEventEditingChanged];
+  _nameTextField.autocorrectionType = UITextAutocorrectionTypeNo;
+  _nameTextField.autocapitalizationType = UITextAutocapitalizationTypeNone;
   
   _commentsTextField = [[UITextField alloc] init];
   _commentsTextField.placeholder = @"Comments for you key";
@@ -132,31 +163,34 @@
   [_createKeyDelegate viewControllerDidCreateKey:self];
 }
 
-- (void)setKeyType:(NSString *)type {
-  _currentType = type;
+- (void)setKeyType:(const NSString *)type {
+  _currentType = [type copy];
   [_nameFooterText replaceCharactersInRange:NSMakeRange(0, _nameFooterText.length)
                                  withString:[NSString stringWithFormat:@"Default key must be named 'id_%@'", [type lowercaseString]]];
   
-  NSMutableArray *rows = _typeSection[@"rows"];
+  NSMutableArray *rows = _typeSection[ROWS];
   [rows removeAllObjects];
-  [rows addObject:@"_keyTypeSegmentedControl"];
+  [rows addObject:@(ROW_ID_KEYTYPE)];
   
-  if ([type isEqualToString:@"RSA"]) {
+  NSString *footerText = @"";
+  if ([BK_KEYTYPE_RSA isEqual:type]) {
     _bitsValues = @[@(2048), @(4096)];
-    [rows addObject:@"_bitsSegmentedControl"];
-    [_typeFooterText replaceCharactersInRange:NSMakeRange(0, _typeFooterText.length)
-                                   withString:@"Generally, 2048 bits is considered sufficient."];
-  } else if ([type isEqualToString:@"ECDSA"]) {
+    [rows addObject:@(ROW_ID_BITS)];
+    footerText = @"Generally, 2048 bits is considered sufficient.";
+  } else if ([BK_KEYTYPE_DSA isEqual:type]) {
+    _bitsValues = @[@(1024)];
+    footerText = @"DSA keys must be exactly 1024 bits as specified by FIPS 186-2.";
+  } else if ([BK_KEYTYPE_ECDSA isEqual:type]) {
     _bitsValues = @[@(256), @(384), @(521)];
-    [rows addObject:@"_bitsSegmentedControl"];
-    [_typeFooterText replaceCharactersInRange:NSMakeRange(0, _typeFooterText.length)
-                                   withString:@"For ECDSA keys size determines key length by selecting from one of three elliptic curve sizes: 256, 384 or 521 bits."];
-  } else if ([type isEqualToString:@"Ed25519"]) {
+    [rows addObject:@(ROW_ID_BITS)];
+    footerText = @"For ECDSA keys size determines key length by selecting from one of three elliptic curve sizes: 256, 384 or 521 bits.";
+  } else if ([BK_KEYTYPE_Ed25519 isEqual:type]) {
     _bitsValues = @[];
-    [_typeFooterText replaceCharactersInRange:NSMakeRange(0, _typeFooterText.length)
-                                   withString:@"Ed25519 keys have a fixed length."];
+    footerText = @"Ed25519 keys have a fixed length.";
   }
   
+  [_typeFooterText replaceCharactersInRange:NSMakeRange(0, _typeFooterText.length)
+                                 withString:footerText];
   _keyTypeSegmentedControl.selectedSegmentIndex = [_types indexOfObject:type];
   [self setupBitsControl];
   
@@ -189,32 +223,40 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
   NSDictionary *section = _sections[indexPath.section];
   
-  NSArray *rows = section[@"rows"];
+  NSArray *rows = section[ROWS];
   if (!rows) {
     return [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:@""];
   }
   
-  NSString *row = rows[indexPath.row];
+  NSNumber *nsRowId = rows[indexPath.row];
+  NSString *cellId = [nsRowId.stringValue stringByAppendingString:@"_cell_id"];
 
-  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:row];
+  UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellId];
   
   if (cell == nil) {
-    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:row];
+    cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellId];
   }
   
-  if ([row isEqualToString:@"_nameTextField"]) {
-    [cell.contentView addSubview:_nameTextField];
-  } else if ([row isEqualToString:@"_keyTypeSegmentedControl"]) {
-    cell.textLabel.text = @"Type";
-    cell.accessoryView = _keyTypeSegmentedControl;
-  } else if ([row isEqualToString:@"_bitsSegmentedControl"]) {
-    cell.textLabel.text = @"Bits";
-    cell.accessoryView = _bitsSegmentedControl;
-  } else if ([row isEqualToString:@"_commentsTextField"]) {
-    [cell.contentView addSubview:_commentsTextField];
+  ROW_ID rowID = nsRowId.integerValue;
+  
+  switch (rowID) {
+    case ROW_ID_NAME:
+      [cell.contentView addSubview:_nameTextField];
+      break;
+    case ROW_ID_KEYTYPE:
+      cell.textLabel.text = @"Type";
+      cell.accessoryView = _keyTypeSegmentedControl;
+      break;
+    case ROW_ID_BITS:
+      cell.textLabel.text = @"Bits";
+      cell.accessoryView = _bitsSegmentedControl;
+      break;
+    case ROW_ID_COMMENTS:
+      [cell.contentView addSubview:_commentsTextField];
+      break;
+    default:
+      break;
   }
-  
-  
   
   return cell;
 }
@@ -240,24 +282,18 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
   NSDictionary *sectionInfo = _sections[section];
-  return [sectionInfo[@"rows"] count];
+  return [sectionInfo[ROWS] count];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section {
-  return _sections[section][@"header"];
+  return _sections[section][HEADER];
 }
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
-  return _sections[section][@"footer"];
+  return _sections[section][FOOTER];
 }
 
 - (void)_nameTextFieldChanged:(id)sender
-{
-  _saveBarButtonItem.enabled = _nameTextField.text.length > 0;
-}
-
-
-- (void)editChanged:(id)sender
 {
   _saveBarButtonItem.enabled = _nameTextField.text.length > 0;
 }
@@ -273,49 +309,8 @@
   return YES;
 }
 
-
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
   return NO;
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-  return NO;
-}
-
-#pragma mark - Navigation
-
-- (BOOL)shouldPerformSegueWithIdentifier:(NSString *)identifier sender:(id)sender
-{
-  NSString *errorMsg;
-  if ([identifier isEqualToString:@"unwindFromCreate"]) {
-//    if ([BKPubKey withID:_nameField.text]) {
-//      errorMsg = @"Cannot have two keys with the same name.";
-//    } else if ([_nameField.text rangeOfCharacterFromSet:[NSCharacterSet whitespaceCharacterSet]].location != NSNotFound) {
-//      errorMsg = @"Spaces are not permitted in the name.";
-//    } else if (_passphraseField.text.length && ![_passphraseField.text isEqualToString:_repassphraseField.text]) {
-//      errorMsg = @"Passphrases do not match";
-//    } else {
-//      // Try to create the key
-//      NSInteger selectedIndex = [_sizeField selectedSegmentIndex];
-//      int length = [[_sizeField titleForSegmentAtIndex:selectedIndex] intValue];
-//      // Create and return
-//      Pki *key = _key ? _key : [[Pki alloc] initRSAWithLength:length];
-//      // saves the key into iOS keychain
-//      _pubkey = [BKPubKey saveCard:_nameField.text privateKey:key.privateKey publicKey:[key publicKeyWithComment:_commentsField.text]];
-//      if (!_pubkey) {
-//        errorMsg = @"OpenSSL error. Could not create Public Key.";
-//      }
-//    }
-//
-//    if (errorMsg) {
-//      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Key error" message:errorMsg preferredStyle:UIAlertControllerStyleAlert];
-//      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-//      [alertController addAction:ok];
-//      [self presentViewController:alertController animated:YES completion:nil];
-//      return NO;
-//    }
-  }
-  return YES;
 }
 
 @end
