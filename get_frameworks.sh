@@ -2,7 +2,7 @@
 
 set -e
 
-DEPS_VERSION="0.0.6"
+DEPS_VERSION="1.0.0"
 
 GHROOT="https://github.com/blinksh"
 
