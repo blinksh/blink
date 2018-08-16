@@ -192,22 +192,25 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
 // Generate OpenSSH or PEM public key
 - (NSString *)publicKeyWithComment:(NSString*)comment
 {
-  ssh_key pubkey = NULL;
-  int rc = ssh_pki_export_privkey_to_pubkey(_ssh_key, &pubkey);
-  if (rc != SSH_OK) {
-    return nil;
-  }
+//  ssh_key pubkey = NULL;
+//  int rc = ssh_pki_export_privkey_to_pubkey(_ssh_key, &pubkey);
+//  if (rc != SSH_OK) {
+//    return nil;
+//  }
   
   char *buf = NULL;
-  rc = ssh_pki_export_pubkey_base64(pubkey, &buf);
+  int rc = ssh_pki_export_pubkey_base64(_ssh_key, &buf);
   if (rc != SSH_OK) {
-    ssh_key_free(pubkey);
+//    ssh_key_free(pubkey);
     return nil;
   }
   NSString *key = @(buf);
-  ssh_key_free(pubkey);
+//  ssh_key_free(pubkey);
+  enum ssh_keytypes_e key_type = ssh_key_type(_ssh_key);
+  const char *key_type_chars = ssh_key_type_to_char(key_type);
+  NSString *keyType = @(key_type_chars);
   
-  NSString *commentedKey = [NSString stringWithFormat:@"%@ %@",key, comment];
+  NSString *commentedKey = [NSString stringWithFormat:@"%@ %@ %@", keyType, key, comment];
   return commentedKey;
 }
 
