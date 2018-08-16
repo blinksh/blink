@@ -509,6 +509,7 @@ void clear_screen( CLEAR_SCREEN clearScreen_ ) {
 	if ( clearScreen_ == CLEAR_SCREEN::WHOLE ) {
 		char const clearCode[] = "\033c\033[H\033[2J\033[0m";
 		static_cast<void>( fwrite(clearCode, 1, sizeof ( clearCode ) - 1, __thread_stdout) >= 0);
+    fprintf(__thread_stdout, "\x1b]1337;BlinkAutoCR=1\x07");
 	} else {
 		char const clearCode[] = "\033[J";
 		static_cast<void>( fwrite(clearCode, 1, sizeof ( clearCode ) - 1, __thread_stdout) >= 0 );
