@@ -59,14 +59,14 @@
 }
 
 void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address, const void *data, void *info) {
+  
   CFSocketNativeHandle socket = *(CFSocketNativeHandle *)data;
   SSHClientPortListener *client = (__bridge SSHClientPortListener *)info;
   
   int yes = 1;
   setsockopt(socket, IPPROTO_TCP, TCP_NODELAY, &yes, sizeof(yes));
-  setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
+  setsockopt(socket, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(yes));
   fcntl(socket, F_SETFL, O_NONBLOCK);
-
   
   [client.delegate sshClientPortListener:client acceptedSocket:socket];
 }
@@ -79,27 +79,30 @@ void _socketCallback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
 
   struct sockaddr_in address = {
     .sin_family = AF_INET,
-    .sin_addr.s_addr = INADDR_ANY,
+    .sin_addr.s_addr = INADDR_ANY, // TODO: inet_aton("<address>", &address.sin_addr.s_addr)
     .sin_port = htons(_localport)
   };
   
-  CFSocketSignature signature = {
-    .protocolFamily = AF_INET,
-    .socketType = SOCK_STREAM,
-    .protocol = IPPROTO_TCP,
-    .address = CFDataCreate(NULL, (UInt8 *)&address, sizeof(struct sockaddr_in))
-  };
+  int sock = socket(AF_INET, SOCK_STREAM, 0);
+  fcntl(sock, F_SETFL, O_NONBLOCK);
+  int yes = 1;
+  setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
+//  setsockopt(sock, SOL_SOCKET, SO_REUSEPORT, (void*)&yes, sizeof(yes));
   
-  _socketRef = CFSocketCreateWithSocketSignature(NULL, &signature, kCFSocketAcceptCallBack, _socketCallback, &ctx);
-  if (_socketRef == nil) {
-    NSLog(@"Bind error?");
+  if (bind(sock, (struct sockaddr*)&address, sizeof(address)) != 0) {
     return SSH_ERROR;
   }
   
-  fcntl(CFSocketGetNative(_socketRef), F_SETFL, O_NONBLOCK);
-  int yes = 1;
-  setsockopt(CFSocketGetNative(_socketRef), SOL_SOCKET, SO_REUSEADDR, (void*)&yes, sizeof(yes));
-//  setsockopt(CFSocketGetNative(_socketRef), SOL_SOCKET, SO_REUSEPORT, (void*)&yes, sizeof(yes));
+  if (listen(sock, 10) != 0) {
+    return SSH_ERROR;
+  }
+  
+  _socketRef = CFSocketCreateWithNative(NULL, sock, kCFSocketAcceptCallBack, _socketCallback, &ctx);
+  
+  if (_socketRef == nil) {
+    close(sock);
+    return SSH_ERROR;
+  }
   
   _sourceRef = CFSocketCreateRunLoopSource(NULL, _socketRef, 0);
   

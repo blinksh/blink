@@ -240,6 +240,9 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
   [_outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
 
   _inputStream = nil;
+  _outputStream = nil;
+  
+  _inputData = nil;
   _outputData = nil;
   
   if (_socket != SSH_INVALID_SOCKET) {
@@ -318,6 +321,8 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
       case NSStreamEventErrorOccurred:
         NSLog(@"Error: %@", _inputStream.streamError);
         return;
+      case NSStreamEventOpenCompleted:
+        return;
       default:
         NSLog(@"input: event %@", @(eventCode));
         break;
@@ -325,25 +330,17 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
     return;
   }
   
-  NSMutableData *outdata = nil;
-  NSOutputStream *output = nil;
-  if (_outputStream == stream) {
-    outdata = _outputData;
-    output = _outputStream;
-  } else {
-    NSLog(@"Error event handler");
-    return;
-  }
   
   switch (eventCode) {
     case NSStreamEventHasSpaceAvailable:
-      __write_data(outdata, output);
+      __write_data(_outputData, _outputStream);
       return;
     case NSStreamEventOpenCompleted:
       return;
     case NSStreamEventEndEncountered:
-      [stream close];
-      [stream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+      [_outputStream close];
+      [_outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+      _outputStream = nil;
       return;
     case NSStreamEventErrorOccurred:
       NSLog(@"Error: %@", stream.streamError);
