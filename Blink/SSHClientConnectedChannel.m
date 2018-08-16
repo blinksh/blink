@@ -493,5 +493,9 @@ void __sock_callback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
   [super close];
 }
 
+- (void)dealloc {
+  [self close];
+}
+
 @end
 
