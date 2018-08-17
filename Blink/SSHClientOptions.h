@@ -52,8 +52,8 @@ extern const NSString * SSHOptionCompression; //-C -o
 extern const NSString * SSHOptionCompressionLevel; // -o
 extern const NSString * SSHOptionTCPKeepAlive;
 extern const NSString * SSHOptionNumberOfPasswordPrompts; // -o
-extern const NSString * SSHOptionServerLiveCountMax; // -o
-extern const NSString * SSHOptionServerLiveInterval; // -o
+extern const NSString * SSHOptionServerAliveCountMax; // -o
+extern const NSString * SSHOptionServerAliveInterval; // -o
 extern const NSString * SSHOptionLocalForward; // -L
 extern const NSString * SSHOptionRemoteForward; // -R
 

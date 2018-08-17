@@ -54,8 +54,8 @@ const NSString * SSHOptionCompression = @"compression"; //-C -o
 const NSString * SSHOptionCompressionLevel = @"compressionlevel"; // -o
 const NSString * SSHOptionTCPKeepAlive = @"tcpkeepalive";
 const NSString * SSHOptionNumberOfPasswordPrompts = @"numberofpasswordprompts"; // -o
-const NSString * SSHOptionServerLiveCountMax = @"serveralivecountmax"; // -o
-const NSString * SSHOptionServerLiveInterval = @"serveraliveinterval"; // -o
+const NSString * SSHOptionServerAliveCountMax = @"serveralivecountmax"; // -o
+const NSString * SSHOptionServerAliveInterval = @"serveraliveinterval"; // -o
 const NSString * SSHOptionLocalForward = @"localforward"; // -L
 const NSString * SSHOptionRemoteForward = @"remoteforward"; // -R
 const NSString * SSHOptionForwardAgent = @"forwardagent"; // -a -A
@@ -137,8 +137,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionTCPKeepAlive: @[yesNoType, SSHOptionValueYES],
                          SSHOptionConnectionAttempts: @[intType, @(1)],
                          SSHOptionNumberOfPasswordPrompts: @[intType, @(3)],
-                         SSHOptionServerLiveCountMax: @[intType, @(3)],
-                         SSHOptionServerLiveInterval: @[intType, @(0)],
+                         SSHOptionServerAliveCountMax: @[intType, @(3)],
+                         SSHOptionServerAliveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
                          SSHOptionConnectTimeout: @[intType, SSHOptionValueNONE],
                          SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", @"id_dsa", @"id_ecdsa", @"id_ed25519"]],

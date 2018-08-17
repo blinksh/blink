@@ -74,6 +74,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 @implementation SSHClient {
   SSHClientOptions *_options;
   ssh_session _session;
+  NSTimer *_serverKeepAliveTimer;
   
   NSRunLoop *_runLoop;
   
@@ -120,6 +121,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)close {
+  if (_serverKeepAliveTimer) {
+    [_serverKeepAliveTimer invalidate];
+    _serverKeepAliveTimer = nil;
+  }
   for (SSHClientConnectedChannel *connectedChannel in _connectedChannels) {
     connectedChannel.delegate = nil;
     [connectedChannel close];
@@ -258,21 +263,47 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 #pragma mark - CONNECT
 
-- (int)_start_connect_flow {
+- (int)_connect {
+  int attempts = [_options[SSHOptionConnectionAttempts] intValue];
+  if (attempts <= 0) {
+    attempts = 1;
+  }
+  
+  bool tcpKeepAlive = [_options[SSHOptionTCPKeepAlive] isEqual:SSHOptionValueYES];
+
   for(;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
     int rc = ssh_connect(_session);
     switch(rc) {
-      case SSH_OK:
-        rc = [self _verify_known_host];
-        if (rc != SSH_OK) {
-          return [self _exitWithCode:rc];
-        }
-        return [self _auth];
       case SSH_AGAIN:
         [self _poll];
         continue;
-      default:
       case SSH_ERROR:
+        attempts--;
+        if (attempts > 0) {
+          continue;
+        }
+        return rc;
+      case SSH_OK: {
+        int sock = ssh_get_fd(_session);
+        int flags = 0;
+        socklen_t optlen = 0;
+        if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &flags, &optlen)) {
+          return SSH_ERROR;
+        }
+        if (flags != tcpKeepAlive) {
+          flags = tcpKeepAlive;
+          if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags))) {
+            return SSH_ERROR;
+          }
+        }
+        
+        return rc;
+      }
+      default:
         return rc;
     }
   }
@@ -285,12 +316,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // 1. try auth none
   int rc = [self _auth_none];
   // Who knows? we can success here too. See https://github.com/blinksh/blink/issues/450
-  if (rc == SSH_AUTH_SUCCESS) {
-    return [self _open_channels];
-  }
-
-  if (rc == SSH_AUTH_ERROR) {
-    return [self _exitWithCode:rc];
+  if (rc == SSH_AUTH_SUCCESS || rc == SSH_AUTH_ERROR) {
+    return rc;
   }
   
   // 2. print issue banner if any
@@ -299,7 +326,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // 3. get auth methods from server
   int methods = ssh_userauth_list(_session, NULL);
   
-  
   NSString *password = _options[SSHOptionPassword];
   
   // 4. user entered password in settings. So try to use it first to save AuthTries
@@ -307,12 +333,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
       rc = [self _auth_with_password: password prompts: 1];
       if (rc == SSH_AUTH_SUCCESS) {
-        return [self _open_channels];
+        return rc;
       }
     } else if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
       rc = [self _auth_with_interactive_with_password:password prompts:1];
       if (rc == SSH_AUTH_SUCCESS) {
-        return [self _open_channels];
+        return rc;
       }
     }
   }
@@ -321,7 +347,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PUBLICKEY && [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]]) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
-      return [self _open_channels];
+      return rc;
     }
   }
   
@@ -331,13 +357,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
     rc = [self _auth_with_interactive_with_password:password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
-      return [self _open_channels];
+      return rc;
     }
   } else if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
     // 6. even we don't have password. Ask it
     rc = [self _auth_with_password: password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
-      return [self _open_channels];
+      return rc;
     }
   }
 
@@ -346,6 +372,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_none {
   for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
     int rc = ssh_userauth_none(_session, NULL);
     switch (rc) {
       case SSH_AUTH_AGAIN:
@@ -424,6 +454,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)_auth_with_password:(NSString *)password prompts:(int)promptsCount {
   
   for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
     if (password.length == 0) {
       const int NO_ECHO = NO;
       NSArray *prompts = @[@[@"Password:", @(NO_ECHO)]];
@@ -452,6 +486,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_with_interactive_with_password:(NSString *)password prompts:(int)promptsCount {
   for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
     int rc = ssh_userauth_kbdint(_session, NULL, NULL);
     
     switch (rc) {
@@ -633,12 +671,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_channel_set_blocking(channel, 0);
   
   for (;;) {
+    if (_doExit) {
+      ssh_channel_free(channel);
+      return SSH_ERROR;
+    }
     rc = ssh_channel_open_session(channel);
     switch (rc) {
       case SSH_AGAIN:
         [self _poll];
         continue;
-      case SSH_OK: break;
+      case SSH_OK:
+        break;
       default:
       case SSH_ERROR:
         ssh_channel_free(channel);
@@ -652,6 +695,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   if (doRequestPTY) {
     for (;;) {
+      if (_doExit) {
+        ssh_channel_close(channel);
+        ssh_channel_free(channel);
+        return SSH_ERROR;
+      }
+      
       rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
         case SSH_OK:
@@ -673,6 +722,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   NSString *remoteCommand = _options[SSHOptionRemoteCommand];
   for (;;) {
+    if (_doExit) {
+      ssh_channel_close(channel);
+      ssh_channel_free(channel);
+      return SSH_ERROR;
+    }
     if (remoteCommand) {
       rc = ssh_channel_request_exec(channel, remoteCommand.UTF8String);
     } else {
@@ -718,6 +772,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_channel channel = ssh_channel_new(_session);
   
   for (;;) {
+    if (_doExit) {
+      ssh_channel_free(channel);
+      return;
+    }
     int rc = ssh_channel_open_forward(channel,
                                       listener.remotehost.UTF8String,
                                       listener.remoteport,
@@ -781,6 +839,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   sourcehost = [parts lastObject] ?: @"localhost";
   
   for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
     int rc = ssh_channel_listen_forward(_session, remotehost.UTF8String, remoteport, &remoteport);
     switch (rc) {
       case SSH_OK: {
@@ -798,6 +860,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return rc;
     }
   }
+  
   return SSH_ERROR;
 }
 
@@ -875,6 +938,30 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   __write(_fdOut, message);
 }
 
+#pragma mark - SERVER KeepAlive timer
+
+- (void)_start_server_keepalive_timer {
+  if (_serverKeepAliveTimer) {
+    [_serverKeepAliveTimer invalidate];
+  }
+  
+  int seconds = [_options[SSHOptionServerAliveInterval] intValue];
+  if (seconds <= 0) {
+    return;
+  }
+  
+  _serverKeepAliveTimer = [NSTimer timerWithTimeInterval:seconds target:self selector:@selector(_on_server_keep_alive) userInfo:nil repeats:YES];
+  
+  [_runLoop addTimer:_serverKeepAliveTimer forMode:NSDefaultRunLoopMode];
+}
+
+- (void)_on_server_keep_alive {
+  if (_doExit) {
+    return;
+  }
+  ssh_client_send_keepalive(_session);
+}
+
 #pragma mark - MAIN LOOP
 
 - (int)main:(int) argc argv:(char **) argv {
@@ -909,7 +996,28 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return [self _exitWithCode:SSH_OK];
   }
   
-  rc = [self _start_connect_flow];
+  rc = [self _connect];
+  if (rc != SSH_OK) {
+    [self _exitWithCode:rc];
+  }
+
+  rc = [self _verify_known_host];
+  if (rc != SSH_OK) {
+    [self _exitWithCode:rc];
+  }
+  rc = [self _auth];
+  
+  if (rc != SSH_AUTH_SUCCESS) {
+    return [self _exitWithCode:rc];
+  }
+  
+  rc = [self _open_channels];
+  
+  if (rc != SSH_OK) {
+    return [self _exitWithCode:rc];
+  }
+  
+  [self _start_server_keepalive_timer];
 
   NSDate *distantFuture = [NSDate distantFuture];
   while (!_doExit && ssh_is_connected(_session)) {
