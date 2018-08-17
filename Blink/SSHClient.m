@@ -296,6 +296,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         }
         if (flags != tcpKeepAlive) {
           flags = tcpKeepAlive;
+          [self _log_verbose:[NSString stringWithFormat:@"setting socket keepalive: %@\n", @(tcpKeepAlive)]];
           if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags))) {
             return SSH_ERROR;
           }
@@ -397,6 +398,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
     // we have this identity in
     if (secureKey) {
+      [self _log_verbose:[NSString stringWithFormat:@"import key %@\n", identityfile]];
       rc =  ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
                                          NULL, /* TODO: get stored */
                                          __ssh_auth_fn,
@@ -413,6 +415,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         continue;
       }
       
+      [self _log_verbose:[NSString stringWithFormat:@"import key from file %@\n", identityfile]];
       rc = ssh_pki_import_privkey_file(identityFilePath.UTF8String,
                                        NULL,
                                        __ssh_auth_fn,
@@ -645,6 +648,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 #pragma mark - CHANNELS
 
 - (int)_open_channels {
+  [self _log_verbose:@"open channels\n"];
   int rc = [self _start_session_channel];
   if (rc != SSH_OK) {
     [self _exitWithCode:rc];
@@ -666,6 +670,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_start_session_channel {
+  [self _log_verbose:@"open session\n"];
   int rc = SSH_ERROR;
   ssh_channel channel = ssh_channel_new(_session);
   ssh_channel_set_blocking(channel, 0);
@@ -935,7 +940,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [SSHOptionValueINFO isEqual:_options[SSHOptionLogLevel]]) {
     return;
   }
-  __write(_fdOut, message);
+  __write(_fdOut, [@"blink: " stringByAppendingString: message]);
 }
 
 #pragma mark - SERVER KeepAlive timer
@@ -949,7 +954,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (seconds <= 0) {
     return;
   }
-  
+  [self _log_verbose:[NSString stringWithFormat:@"starting server keepalive: %@s", @(seconds)]];
   _serverKeepAliveTimer = [NSTimer timerWithTimeInterval:seconds target:self selector:@selector(_on_server_keep_alive) userInfo:nil repeats:YES];
   
   [_runLoop addTimer:_serverKeepAliveTimer forMode:NSDefaultRunLoopMode];
@@ -1005,6 +1010,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (rc != SSH_OK) {
     [self _exitWithCode:rc];
   }
+  
   rc = [self _auth];
   
   if (rc != SSH_AUTH_SUCCESS) {
