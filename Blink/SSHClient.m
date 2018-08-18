@@ -954,7 +954,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (_serverKeepAliveTimer) {
     [_serverKeepAliveTimer invalidate];
   }
-  NSStreamEventErrorOccurred
+  
   int seconds = [_options[SSHOptionServerAliveInterval] intValue];
   if (seconds <= 0) {
     return;
