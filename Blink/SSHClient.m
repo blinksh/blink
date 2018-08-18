@@ -317,8 +317,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // 1. try auth none
   int rc = [self _auth_none];
   // Who knows? we can success here too. See https://github.com/blinksh/blink/issues/450
-  if (rc == SSH_AUTH_SUCCESS || rc == SSH_AUTH_ERROR) {
-    return rc;
+  if (rc == SSH_AUTH_SUCCESS) {
+    return SSH_OK;
+  }
+
+  if (rc == SSH_AUTH_ERROR) {
+    return SSH_ERROR;
   }
   
   // 2. print issue banner if any
@@ -334,12 +338,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
       rc = [self _auth_with_password: password prompts: 1];
       if (rc == SSH_AUTH_SUCCESS) {
-        return rc;
+        return SSH_OK;
       }
     } else if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
       rc = [self _auth_with_interactive_with_password:password prompts:1];
       if (rc == SSH_AUTH_SUCCESS) {
-        return rc;
+        return SSH_OK;
       }
     }
   }
@@ -348,7 +352,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_PUBLICKEY && [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]]) {
     rc = [self _auth_with_publickey];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return SSH_OK;
     }
   }
   
@@ -358,13 +362,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
     rc = [self _auth_with_interactive_with_password:password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return SSH_OK;
     }
   } else if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
     // 6. even we don't have password. Ask it
     rc = [self _auth_with_password: password prompts:promptsCount];
     if (rc == SSH_AUTH_SUCCESS) {
-      return rc;
+      return SSH_OK;
     }
   }
 
@@ -389,7 +393,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_auth_with_publickey {
-  int rc = SSH_OK;
+  int rc = SSH_ERROR;
+  
   NSArray<NSString *> *identityfiles = _options[SSHOptionIdentityFile];
   for (NSString *identityfile in identityfiles) {
     ssh_key pkey;
@@ -949,7 +954,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (_serverKeepAliveTimer) {
     [_serverKeepAliveTimer invalidate];
   }
-  
+  NSStreamEventErrorOccurred
   int seconds = [_options[SSHOptionServerAliveInterval] intValue];
   if (seconds <= 0) {
     return;
@@ -1012,13 +1017,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   rc = [self _auth];
-  
-  if (rc != SSH_AUTH_SUCCESS) {
+  if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
   }
   
   rc = [self _open_channels];
-  
   if (rc != SSH_OK) {
     return [self _exitWithCode:rc];
   }
