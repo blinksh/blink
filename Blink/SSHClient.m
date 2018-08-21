@@ -313,9 +313,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         char socketAddressPresentation[INET6_ADDRSTRLEN] = {0};
         const struct sockaddr *sa = (const struct sockaddr *)[data bytes];
         if (sa->sa_family == AF_INET) {
-          inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
+          inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET_ADDRSTRLEN);
         } else if (sa->sa_family == AF_INET6) {
-          inet_ntop(AF_INET6, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
+          inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
         }
         
         NSString *address = @(socketAddressPresentation);
