@@ -42,6 +42,8 @@
 #import <poll.h>
 #include <sys/ioctl.h>
 #include <libssh/callbacks.h>
+#import <sys/socket.h>
+#import <arpa/inet.h>
 
 
 void __write(dispatch_fd_t fd, NSString *message) {
@@ -300,6 +302,25 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags))) {
             return SSH_ERROR;
           }
+        }
+        // Print peer address pickup in mosh command
+        
+        CFSocketRef sockRef = CFSocketCreateWithNative(NULL, sock, 0, NULL, NULL);
+        NSData * data = (__bridge NSData *)CFSocketCopyPeerAddress(sockRef);
+        CFRelease(sockRef);
+        
+        
+        char socketAddressPresentation[INET6_ADDRSTRLEN] = {0};
+        const struct sockaddr *sa = (const struct sockaddr *)[data bytes];
+        if (sa->sa_family == AF_INET) {
+          inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
+        } else if (sa->sa_family == AF_INET6) {
+          inet_ntop(AF_INET6, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
+        }
+        
+        NSString *address = @(socketAddressPresentation);
+        if (address && address.length) {
+          [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];
         }
         
         return rc;
