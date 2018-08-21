@@ -39,6 +39,7 @@
 #import "BKHosts.h"
 #import "MoshSession.h"
 #import "SSHSession.h"
+#import <ios_system/ios_system.h>
 
 
 static NSDictionary *predictionModeStrings = nil;
@@ -278,7 +279,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   ssh = ssh ? ssh : @"ssh";
   
-  NSMutableArray*sshArgs = [NSMutableArray arrayWithObjects:ssh, @"-t", userHost, @"--", command, nil];
+  NSMutableArray*sshArgs = [@[ssh, @"-t", userHost, command] mutableCopy];
   if (port) {
     [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
   }
@@ -292,18 +293,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *sshCmd = [sshArgs componentsJoinedByString:@" "];
   [self debugMsg:sshCmd];
 
-  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParametes:nil];
-
-  int poutput[2];
-  pipe(poutput);
-  FILE *term_w = fdopen(poutput[1], "w");
-  setvbuf(term_w, NULL, _IONBF, 0);
-  FILE *term_r = fdopen(poutput[0], "r");
-  
-  fclose(sshSession.stream.out);
-  sshSession.stream.out = term_w;
-  
-  [sshSession executeWithArgs:sshCmd];
+  FILE *term_r = ios_popen(sshCmd.UTF8String, "r");
   
   // Capture ssh output and process parameters for Mosh connection
   char *buf = NULL;

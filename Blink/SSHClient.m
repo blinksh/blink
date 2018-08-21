@@ -229,7 +229,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   for (int i = 0; i < prompts.count; i++) {
     BOOL echo = [prompts[i][1] boolValue];
     _device.echoMode = echo;
-    __write(_fdOut, prompts[i][0]);
+    NSString *prompt = prompts[i][0];
+    // write prompt directly to device stream?...
+    fwrite(prompt.UTF8String, [prompt lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
+//    __write(_device.stream.out, prompts[i][0]);
     
     FILE *fp = fdopen(_fdIn, "r");
     char * line = NULL;
@@ -291,36 +294,41 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return rc;
       case SSH_OK: {
         int sock = ssh_get_fd(_session);
-        int flags = 0;
-        socklen_t optlen = 0;
-        if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &flags, &optlen)) {
-          return SSH_ERROR;
-        }
-        if (flags != tcpKeepAlive) {
-          flags = tcpKeepAlive;
-          [self _log_verbose:[NSString stringWithFormat:@"setting socket keepalive: %@\n", @(tcpKeepAlive)]];
-          if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags))) {
-            return SSH_ERROR;
-          }
-        }
-        // Print peer address pickup in mosh command
         
         CFSocketRef sockRef = CFSocketCreateWithNative(NULL, sock, 0, NULL, NULL);
         NSData * data = (__bridge NSData *)CFSocketCopyPeerAddress(sockRef);
         CFRelease(sockRef);
         
-        
-        char socketAddressPresentation[INET6_ADDRSTRLEN] = {0};
-        const struct sockaddr *sa = (const struct sockaddr *)[data bytes];
-        if (sa->sa_family == AF_INET) {
-          inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET_ADDRSTRLEN);
-        } else if (sa->sa_family == AF_INET6) {
-          inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
-        }
-        
-        NSString *address = @(socketAddressPresentation);
-        if (address && address.length) {
-          [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];
+        if (data) {
+          // We got connected to socket. Lets tune it
+          int flags = 0;
+          socklen_t optlen = 0;
+          if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, &flags, &optlen)) {
+            return SSH_ERROR;
+          }
+          if (flags != tcpKeepAlive) {
+            flags = tcpKeepAlive;
+            [self _log_verbose:[NSString stringWithFormat:@"setting socket keepalive: %@\n", @(tcpKeepAlive)]];
+            if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (void *)&flags, sizeof(flags))) {
+              return SSH_ERROR;
+            }
+          }
+          
+          // Print peer address pickup in mosh command
+          
+          char socketAddressPresentation[INET6_ADDRSTRLEN] = {0};
+          const struct sockaddr *sa = (const struct sockaddr *)[data bytes];
+          if (sa->sa_family == AF_INET) {
+            inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET_ADDRSTRLEN);
+          } else if (sa->sa_family == AF_INET6) {
+            inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
+          }
+          
+          NSString *address = @(socketAddressPresentation);
+          
+          if (address && address.length) {
+            [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];
+          }
         }
         
         return rc;
