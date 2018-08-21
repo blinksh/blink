@@ -326,6 +326,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     }
   }
   
+  fclose(term_r);
+  
   if (!self.sessionParameters.ip) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
     return;
