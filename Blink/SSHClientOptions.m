@@ -491,11 +491,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 
 - (NSString *)_usage {
   return [@[
-     @"usage: ssh2 [-aCGVqTtvx]",
-     @"            [-F configFile] [-i identity_file]",
-     @"            [-l login_name] [-o option]",
-     @"            [-p port] [-L address] [-R address]",
-     @"            [user@]hostname [command]",
+     @"usage: ssh [-aCGVqTtvx]",
+     @"           [-F configFile] [-i identity_file]",
+     @"           [-l login_name] [-o option]",
+     @"           [-p port] [-L address] [-R address]",
+     @"           [user@]hostname [command]",
      @""
   ] componentsJoinedByString:@"\n"];
 }
