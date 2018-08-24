@@ -140,7 +140,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionServerAliveCountMax: @[intType, @(3)],
                          SSHOptionServerAliveInterval: @[intType, @(0)],
                          SSHOptionRemoteCommand: @[stringType],
-                         SSHOptionConnectTimeout: @[intType, SSHOptionValueNONE],
+                         SSHOptionConnectTimeout: @[intType, @(20) /*SSHOptionValueNONE*/],
                          SSHOptionIdentityFile: @[identityfileType, @[@"id_rsa", @"id_dsa", @"id_ecdsa", @"id_ed25519"]],
                          SSHOptionLocalForward: @[localforwardType],
                          SSHOptionRemoteForward: @[remoteforwardType],
@@ -474,7 +474,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 
 - (int)configureSSHSession:(ssh_session)session {
   ssh_set_log_level([self _logLevelToSSHLogLevel]);
-//  [self _applySSH:session optionKey:@([self _logLevelToSSHLogLevel]) withOption:SSH_OPTIONS_LOG_VERBOSITY];
   [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionCompression withOption:SSH_OPTIONS_COMPRESSION];
   [self _applySSH:session optionKey:SSHOptionCompressionLevel withOption:SSH_OPTIONS_COMPRESSION_LEVEL];

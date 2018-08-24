@@ -317,7 +317,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           // Print peer host to pickup in mosh command
           char host[NI_MAXHOST];
           getnameinfo((const struct sockaddr *)[data bytes], (socklen_t)data.length, host, sizeof(host), NULL, 0, NI_NUMERICHOST);
-          NSString *address = @(host);
+          NSString *address = [NSString stringWithUTF8String:host];
           
           if (address && address.length) {
             [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];

@@ -536,6 +536,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)copy:(id)sender
 {
   [_webView copy:sender];
+  UIMenuController * menu = [UIMenuController sharedMenuController];
+  [menu setMenuVisible:NO animated:YES];
 }
 
 - (void)paste:(id)sender
