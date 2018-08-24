@@ -314,17 +314,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
             }
           }
           
-          // Print peer address pickup in mosh command
-          
-          char socketAddressPresentation[INET6_ADDRSTRLEN] = {0};
-          const struct sockaddr *sa = (const struct sockaddr *)[data bytes];
-          if (sa->sa_family == AF_INET) {
-            inet_ntop(AF_INET, &(((struct sockaddr_in *)sa)->sin_addr), socketAddressPresentation, INET_ADDRSTRLEN);
-          } else if (sa->sa_family == AF_INET6) {
-            inet_ntop(AF_INET6, &(((struct sockaddr_in6 *)sa)->sin6_addr), socketAddressPresentation, INET6_ADDRSTRLEN);
-          }
-          
-          NSString *address = @(socketAddressPresentation);
+          // Print peer host to pickup in mosh command
+          char host[NI_MAXHOST];
+          getnameinfo((const struct sockaddr *)[data bytes], (socklen_t)data.length, host, sizeof(host), NULL, 0, NI_NUMERICHOST);
+          NSString *address = @(host);
           
           if (address && address.length) {
             [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];
