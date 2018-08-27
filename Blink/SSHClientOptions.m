@@ -480,7 +480,6 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   [self _applySSH:session optionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
   [self _applySSH:session optionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
   [self _applySSH:session optionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
-  [self _applySSH:session optionKey:SSHOptionConnectTimeout withOption:SSH_OPTIONS_TIMEOUT];
   [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
   
   ssh_options_set(session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
@@ -535,15 +534,26 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     return SSH_OK;
   }
   
+  int rc = SSH_ERROR;
+  
   if ([value isKindOfClass:[NSNumber class]]) {
-    int v = [value intValue];
-    return ssh_options_set(session, option, &v);
+    if (option == SSH_OPTIONS_TIMEOUT) {
+      long v = [value intValue];
+      rc = ssh_options_set(session, option, &v);
+    } else {
+      int v = [value intValue];
+      rc = ssh_options_set(session, option, &v);
+    }
   } else if ([value isKindOfClass:[NSString class]]) {
     const char *v = [value UTF8String];
-    return ssh_options_set(session, option, v);
+    rc = ssh_options_set(session, option, v);
   }
   
-  return SSH_ERROR;
+  if (rc != SSH_OK) {
+    NSLog(@"ERROR in option: %@=%@", optionKey, value);
+  }
+  
+  return rc;
 }
 
 - (NSString *)configurationAsText {
@@ -572,5 +582,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 - (id)objectForKeyedSubscript:(const NSString *)key {
   return _options[key];
 }
+
+- (void)setObject:(NSString *)obj forKeyedSubscript:(NSString <NSCopying> *)key
+{
+  _options[key] = obj;
+}
+
 
 @end

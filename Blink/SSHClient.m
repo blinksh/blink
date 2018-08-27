@@ -92,7 +92,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   NSMutableDictionary<NSNumber *, NSNumber *> *_reversePortsMap;
   
-  ssh_callbacks _ssh_callbacks;
+  struct ssh_callbacks_struct _ssh_callbacks;
   bool _doExit;
   int _exitCode;
   pthread_t _thread;
@@ -143,10 +143,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (_session) {
     ssh_free(_session);
     _session = NULL;
-  }
-  if (_ssh_callbacks) {
-    free(_ssh_callbacks);
-    _ssh_callbacks = NULL;
   }
 }
 
@@ -286,11 +282,27 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       case SSH_AGAIN:
         [self _poll];
         continue;
-      case SSH_ERROR:
+      case SSH_ERROR: {
+        const char *err = ssh_get_error(_session);
+        NSString *error = [NSString stringWithUTF8String:err];
+        if (error) {
+          // Check compression error
+          NSString *noCompressionOnServer = @"no match for method compression algo client->server: server [none]";
+          if ([_options[SSHOptionCompression] isEqual:SSHOptionValueYES] && [error containsString:noCompressionOnServer]) {
+            ssh_free(_session);
+            [self _log_verbose:@"Server doesn't support compression. Connecting without compression\n"];
+            _options[[SSHOptionCompression copy]] = [SSHOptionValueNO copy];
+            _session = [self _configured_session];
+            continue;
+          }
+        }
         attempts--;
         if (attempts > 0) {
+          ssh_free(_session);
+          _session = [self _configured_session];
           continue;
         }
+      }
         return rc;
       case SSH_OK: {
         int sock = ssh_get_fd(_session);
@@ -994,6 +1006,22 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_client_send_keepalive(_session);
 }
 
+- (ssh_session)_configured_session {
+  ssh_session session = ssh_new();
+  ssh_set_blocking(_session, 0);
+  
+  _ssh_callbacks.userdata = (__bridge void *)self;
+  
+  ssh_callbacks_init(&_ssh_callbacks);
+  ssh_set_callbacks(_session, &_ssh_callbacks);
+  
+  if ([_options configureSSHSession:session] == SSH_OK) {
+    return session;
+  }
+  ssh_free(session);
+  return NULL;
+}
+
 #pragma mark - MAIN LOOP
 
 - (int)main:(int) argc argv:(char **) argv {
@@ -1009,18 +1037,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return [self _exitWithCode:SSH_OK];
   }
   
-  _session = ssh_new();
-  ssh_set_blocking(_session, 0);
-  
-  _ssh_callbacks = calloc(1, sizeof(struct ssh_callbacks_struct));
-  _ssh_callbacks->userdata = (__bridge void *)self;
-
-  ssh_callbacks_init(_ssh_callbacks);
-  ssh_set_callbacks(_session, _ssh_callbacks);
-  
-  rc = [_options configureSSHSession:_session];
-  if (rc != SSH_OK) {
-    return [self _exitWithCode:rc andMessage:_options.exitMessage];
+  _session = [self _configured_session];
+  if (!_session) {
+    return [self _exitWithCode:SSH_ERROR andMessage:_options.exitMessage];
   }
   
   if ([_options[SSHOptionPrintConfiguration] isEqual:SSHOptionValueYES]) {
