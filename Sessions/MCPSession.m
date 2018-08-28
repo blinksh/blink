@@ -112,6 +112,8 @@
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
+
+      [self.delegate indexCommand:cmdline];
       _currentCmd = cmdline;
       thread_stdout = nil;
       thread_stdin = nil;
