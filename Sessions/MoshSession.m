@@ -188,13 +188,28 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   [self processMoshSettings:hostCfg];
   
-  NSString *moshServerCmd = [self getMoshServerStringCmd:self.sessionParameters.serverPath port:self.sessionParameters.port withColors:colors run:self.sessionParameters.startupCmd];
-  [self debugMsg:moshServerCmd];
+  NSString *mosh_key = nil;
+  char *mosh_key_chars = getenv("MOSH_KEY");
+  if (mosh_key_chars) {
+    mosh_key = @(mosh_key_chars);
+  }
   
-  NSError *error;
-  [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity moshCommand:moshServerCmd error:&error];
-  if (error) {
-    return [self dieMsg:error.localizedDescription];
+  if (mosh_key.length) {
+    [self debugMsg:@"Connecting with env vars MOSH_KEY"];
+    self.sessionParameters.ip =  userhost;
+    self.sessionParameters.key = mosh_key;
+    if (self.sessionParameters.port == nil) {
+      return [self dieMsg:@"If MOSH_KEY is set port is required. (-p)"];
+    }
+  } else  {
+    NSString *moshServerCmd = [self getMoshServerStringCmd:self.sessionParameters.serverPath port:self.sessionParameters.port withColors:colors run:self.sessionParameters.startupCmd];
+    [self debugMsg:moshServerCmd];
+    
+    NSError *error;
+    [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity moshCommand:moshServerCmd error:&error];
+    if (error) {
+      return [self dieMsg:error.localizedDescription];
+    }
   }
   
   // Validate prediction mode
