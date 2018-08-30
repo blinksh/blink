@@ -2,8 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Allow geo command to track coordinates only while blink is running</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -36,7 +34,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>20</string>
+	<string>21</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>blinkshell</string>
@@ -51,6 +49,8 @@
 	<string>keyboard</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Use Face ID with Auto Lock</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Allow geo command to track coordinates only while blink is running</string>
 	<key>NSSiriUsageDescription</key>
 	<string>storing commands</string>
 	<key>NSUbiquitousContainers</key>
