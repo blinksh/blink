@@ -400,6 +400,8 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     completions = [self _allBlinkThemes];
   } else if ([@"blink-music" isEqualToString:completionType]) {
     completions = [[MusicManager shared] commands];
+  } else if ([@"blink-geo" isEqualToString:completionType]) {
+    completions = @[@"track", @"stop", @"current", @"authorize"];
   } else if ([@"file" isEqualToString:completionType]) {
     completions = [self _allFiles:prefix];
   } else if ([@"directory" isEqualToString:completionType]) {
@@ -427,6 +429,8 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"file";
   } else if ([@"music" isEqualToString:command]) {
     return @"blink-music";
+  } else if ([@"geo" isEqualToString:command]) {
+    return @"blink-geo";
   } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history", @"link-files"] indexOfObject:command] != NSNotFound) {
     return @"";
   }

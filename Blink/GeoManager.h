@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
@@ -29,45 +29,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
-#import "TermStream.h"
-#import "TermView.h"
-#import "TermInput.h"
-#include <sys/ioctl.h>
 
-@protocol TermDeviceDelegate
+NS_ASSUME_NONNULL_BEGIN
 
-- (void)deviceIsReady;
-- (void)deviceSizeChanged;
-- (void)viewFontSizeChanged:(NSInteger)size;
-- (BOOL)handleControl:(NSString *)control;
-- (void)deviceFocused;
-- (UIViewController *)viewController;
+@interface GeoManager : NSObject
 
-@end
+@property (readonly) BOOL traking;
 
-@interface TermDevice : NSObject
-{
-  @public struct winsize win;
-}
++ (GeoManager *)shared;
 
-@property (readonly) TermStream *stream;
-@property (readonly) TermView *view;
-@property (readonly) TermInput *input;
-@property (weak) id<TermDeviceDelegate> delegate;
-@property (nonatomic) BOOL rawMode;
-@property (nonatomic) BOOL echoMode;
-@property (nonatomic) BOOL secureTextEntry;
-
-- (void)attachInput:(TermInput *)termInput;
-- (void)attachView:(TermView *)termView;
-
-- (void)focus;
-- (void)blur;
-
-- (void)write:(NSString *)input;
-- (void)writeOut:(NSString *)output;
-- (void)writeOutLn:(NSString *)output;
-- (void)close;
+- (void)start;
+- (void)stop;
+- (void)authorize;
+- (NSString *)lastJSONN:(int)n;
+- (NSString *)currentJSON;
 
 @end
+
+NS_ASSUME_NONNULL_END

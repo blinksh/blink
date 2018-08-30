@@ -206,6 +206,14 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   }
 }
 
+- (void)writeOut:(NSString *)output {
+  fprintf(_stream.out, "%s", output.UTF8String);
+}
+
+- (void)writeOutLn:(NSString *)output {
+  fprintf(_stream.out, "%s\n", output.UTF8String);
+}
+
 - (void)close
 {
   // TODO: Closing the streams!! But they are duplicated!!!!
