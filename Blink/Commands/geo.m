@@ -109,7 +109,7 @@ int geo_main(int argc, char *argv[]) {
       [device writeOutLn:@"Location tracking is stopped."];
     } else if ([@"current" isEqual:action]) {
       [device writeOutLn:[GeoManager.shared currentJSON]];
-    } else if ([@"last" isEqual:action]) {
+    } else if ([@"last" isEqual:action] || [@"latest" isEqual:action]) {
       int n = 1;
       if (argc == 3) {
         NSString *nStr = [NSString stringWithUTF8String:argv[2]];
@@ -123,6 +123,9 @@ int geo_main(int argc, char *argv[]) {
         return;
       }
       [[GeoManager shared] authorize];
+    } else {
+      [session.device writeOutLn:usage];
+      return;
     }
   });
 
