@@ -45,7 +45,7 @@
 static NSDictionary *predictionModeStrings = nil;
 
 static const char *usage_format =
-"Usage: mosh [options] [user@]host [--] [command]"
+"Usage: mosh [options] [user@]host|IP [--] [command]"
 "\r\n"
 "        --server=PATH        mosh server on remote machine\r\n"
 "                             (default: mosh-server)\r\n"
@@ -53,6 +53,7 @@ static const char *usage_format =
 "-a      --predict=always     use local echo even on fast links\r\n"
 "-n      --predict=never      never use local echo\r\n"
 "\r\n"
+"-k      --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
 "-p NUM  --port=NUM           server-side UDP port\r\n"
 "-P NUM                       ssh connection port\r\n"
 "-I id                        ssh authentication identity name\r\n"
@@ -105,6 +106,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     {"server", required_argument, 0, 's'},
     {"predict", required_argument, 0, 'r'},
     {"port", required_argument, 0, 'p'},
+    {"ip", optional_argument, 0, 'i'},
+    {"key", optional_argument, 0, 'k'},
     //{"ssh", required_argument, 0, 'S'},
     {"verbose", no_argument, &_debug, 1},
     {"help", no_argument, &help, 1},
@@ -117,7 +120,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   while (1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "anp:I:P:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "anp:I:P:k:", long_options, &option_index);
     if (c == -1) {
       break;
     }
@@ -136,6 +139,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       break;
       case 'p':
       self.sessionParameters.port = [NSString stringWithFormat:@"%s", optarg];
+      break;
+      case 'k':
+      self.sessionParameters.key = [NSString stringWithFormat:@"%s", optarg];
       break;
       //      case 'S':
       //        param = optarg;
@@ -188,16 +194,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   [self processMoshSettings:hostCfg];
   
-  NSString *mosh_key = nil;
-  char *mosh_key_chars = getenv("MOSH_KEY");
-  if (mosh_key_chars) {
-    mosh_key = @(mosh_key_chars);
-  }
-  
-  if (mosh_key.length) {
-    [self debugMsg:@"Connecting with env vars MOSH_KEY"];
-    self.sessionParameters.ip =  userhost;
-    self.sessionParameters.key = mosh_key;
+  if (self.sessionParameters.key) {
+    self.sessionParameters.ip = userhost;
     if (self.sessionParameters.port == nil) {
       return [self dieMsg:@"If MOSH_KEY is set port is required. (-p)"];
     }
