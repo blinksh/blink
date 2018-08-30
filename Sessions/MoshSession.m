@@ -195,7 +195,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   [self processMoshSettings:hostCfg];
   
   if (self.sessionParameters.key) {
-    self.sessionParameters.ip = userhost;
+    self.sessionParameters.ip = hostCfg.hostName ?: userhost;
     if (self.sessionParameters.port == nil) {
       return [self dieMsg:@"If MOSH_KEY is set port is required. (-p)"];
     }
