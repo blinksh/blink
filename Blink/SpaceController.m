@@ -612,7 +612,7 @@
                                discoverabilityTitle: @"Other Screen"],
                   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
                                              action: @selector(moveToOtherScreen:)
-                               discoverabilityTitle: @"Move schell to other Screen"],
+                               discoverabilityTitle: @"Move shell to other Screen"],
                   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
                                              action: @selector(showConfig:)
                                discoverabilityTitle: @"Show config"],
