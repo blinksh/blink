@@ -688,7 +688,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_open_channels {
   [self _log_verbose:@"open channels\n"];
-  int rc = [self _start_session_channel];
+  int rc = SSH_ERROR;
+  
+  NSString * hostPort = _options[SSHOptionSTDIOForwarding];
+  if (hostPort) {
+    rc = [self _start_stdio_forwarding:hostPort];
+  } else {
+    rc = [self _start_session_channel];
+  }
+  
   if (rc != SSH_OK) {
     [self _exitWithCode:rc];
     return rc;
@@ -728,6 +736,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         break;
       default:
       case SSH_ERROR:
+        [self _log_error];
         ssh_channel_free(channel);
         return rc;
     }
@@ -791,10 +800,52 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     break;
   }
   
-  
   _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
   _sessionChannel.delegate = self;
   return rc;
+}
+
+- (int)_start_stdio_forwarding:(NSString *)hostPort {
+  NSArray *hostAndPort = [hostPort componentsSeparatedByString:@":"];
+  if (hostAndPort.count != 2) {
+    NSString *errorMessage = [NSString stringWithFormat:@"Bad stdio forwarding specification: %@", hostAndPort];
+    return [self _exitWithCode:SSH_ERROR andMessage:errorMessage];
+  }
+  
+  NSString *host = [hostAndPort firstObject];
+  int port = [[hostAndPort lastObject] intValue];
+  
+  ssh_channel channel = ssh_channel_new(_session);
+  
+  for (;;) {
+    if (_doExit) {
+      ssh_channel_free(channel);
+      return SSH_ERROR;
+    }
+    int rc = ssh_channel_open_forward(channel,
+                                      host.UTF8String,
+                                      port,
+                                      "stdio",
+                                      port);
+    switch (rc) {
+      case SSH_OK:
+        break;
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+      case SSH_ERROR: {
+        [self _log_error];
+        ssh_channel_free(channel);
+        return rc;
+      }
+    }
+    break;
+  }
+  
+  _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
+  _sessionChannel.delegate = self;
+  return SSH_OK;
 }
 
 #pragma mark - SSHClientPortListenerDelegate

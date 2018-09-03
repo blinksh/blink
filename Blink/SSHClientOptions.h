@@ -72,6 +72,7 @@ extern NSString * SSHOptionPasswordAuthentication; // -o
 extern const NSString * SSHOptionPassword; //
 extern const NSString * SSHOptionPrintConfiguration; // -G
 extern const NSString * SSHOptionPrintVersion; // -V
+extern const NSString * SSHOptionSTDIOForwarding; // -W
 
 // Possibale values
 extern const NSString * SSHOptionValueYES;

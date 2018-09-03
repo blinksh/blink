@@ -72,6 +72,7 @@ const NSString * SSHOptionPasswordAuthentication = @"passwordauthentication"; //
 const NSString * SSHOptionPassword = @"_password"; //
 const NSString * SSHOptionPrintConfiguration = @"_printconfiguration"; // -G
 const NSString * SSHOptionPrintVersion = @"_printversion"; // -V
+const NSString * SSHOptionSTDIOForwarding = @"_stdioforwarding"; // -W
 
 const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
@@ -128,6 +129,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *remoteforwardType = [[NSObject alloc] init];
   NSObject *logLevelType = [[NSObject alloc] init];
   NSObject *compressionLevelType = [[NSObject alloc] init];
+  NSObject *hostportType = [[NSObject alloc] init];
   
   NSDictionary *opts = @{
                          SSHOptionUser: @[stringType],
@@ -152,6 +154,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionLogLevel: @[logLevelType, SSHOptionValueINFO],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES], // We mobile terminal, so we set compression to yes by default.
                          SSHOptionCompressionLevel: @[compressionLevelType, @(6)], // Default compression for speed
+                         SSHOptionSTDIOForwarding: @[hostportType],
                          
                          // Auth
                          SSHOptionPubkeyAuthentication: @[yesNoType, SSHOptionValueYES],
@@ -276,6 +279,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         return result;
       }
       result[key] = lv;
+    } else if (type == hostportType) {
+      result[key] = value;
     }
   }
   
@@ -334,7 +339,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   BOOL quiet = NO;
   
   while (1) {
-    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hqTtvl:F:");
+    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hqTtvl:F:-W:");
     if (c == -1) {
       break;
     }
@@ -392,6 +397,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         break;
       case 'V':
         [args setObject:SSHOptionValueYES forKey:SSHOptionPrintVersion];
+        break;
+      case 'W':
+        [args setObject:@(optarg) forKey:SSHOptionSTDIOForwarding];
         break;
       default:
         return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];
@@ -480,9 +488,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   [self _applySSH:session optionKey:SSHOptionHostName withOption:SSH_OPTIONS_HOST];
   [self _applySSH:session optionKey:SSHOptionUser withOption:SSH_OPTIONS_USER];
   [self _applySSH:session optionKey:SSHOptionPort withOption:SSH_OPTIONS_PORT];
-  [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
   
   ssh_options_set(session, SSH_OPTIONS_SSH_DIR, BlinkPaths.ssh.UTF8String);
+  
+  [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
   
   NSString *configFile = _options[SSHOptionConfigFile];
   return ssh_options_parse_config(session, configFile.UTF8String);
@@ -494,6 +503,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
      @"           [-F configFile] [-i identity_file]",
      @"           [-l login_name] [-o option]",
      @"           [-p port] [-L address] [-R address]",
+     @"           [-W host:port]",
      @"           [user@]hostname [command]",
      @""
   ] componentsJoinedByString:@"\n"];
