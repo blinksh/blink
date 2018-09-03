@@ -51,6 +51,7 @@
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong) NSString* sessionStateKey;
 @property (strong) MCPSessionParameters *sessionParameters;
+@property (strong, nonatomic) UIColor *bgColor;
 
 - (void)terminate;
 - (void)suspend;

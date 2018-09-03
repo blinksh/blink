@@ -64,7 +64,7 @@
 @property (nonatomic, readonly) NSString *selectedText;
 @property (nonatomic) id<TermViewDeviceProtocol> device;
 
-- (id)initWithFrame:(CGRect)frame;
+- (id)initWithFrame:(CGRect)frame andBgColor: (UIColor *)bgColor;
 - (void)loadWith:(MCPSessionParameters *)params;
 - (void)reloadWith:(MCPSessionParameters *)params;
 - (void)clear;

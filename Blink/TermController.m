@@ -47,7 +47,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 @implementation TermController {
   NSDictionary *_activityUserInfo;
-  BOOL _isReloading;
   MCPSession *_session;
   NSInteger _fontSizeBeforeScaling;
   TermDevice *_termDevice;
@@ -65,7 +64,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termDevice = [[TermDevice alloc] init];
   _termDevice.delegate = self;
   
-  _termView = [[TermView alloc] initWithFrame:self.view.frame];
+  _termView = [[TermView alloc] initWithFrame:self.view.bounds andBgColor: self.bgColor];
   _termView.restorationIdentifier = @"TermView";
   [_termDevice attachView:_termView];
   
@@ -171,20 +170,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)sessionFinished
 {
-  if (_isReloading) {
-    _isReloading = NO;
-    [self _initSessionParameters];
-    [_termView reloadWith:_sessionParameters];
-  } else {
-    [_delegate terminalHangup:self];
-  }
-}
-
-- (void)reloadSession
-{
-  _sessionParameters.childSessionType = nil;
-  _sessionParameters.childSessionParameters =  nil;
-  _isReloading = YES;
+  [_delegate terminalHangup:self];
 }
 
 #pragma mark - TermDeviceDelegate
@@ -227,6 +213,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (UIViewController *)viewController
 {
   return self;
+}
+
+- (void)viewDidLayoutSubviews
+{
+  [super viewDidLayoutSubviews];
 }
 
 #pragma mark Notifications

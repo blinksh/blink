@@ -88,7 +88,6 @@
   replaceCommand(@"showkey", @"showkey_main", true);
   replaceCommand(@"history", @"history_main", true);
   replaceCommand(@"open", @"open_main", true);
-  replaceCommand(@"theme", @"theme_main", true);
   replaceCommand(@"link-files", @"link_files_main", true);
   replaceCommand(@"bench", @"bench_main", true);
   replaceCommand(@"geo", @"geo_main", true);
@@ -122,12 +121,8 @@
       
       // Re-evalute column number before each command
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
-      int result = ios_system(cmdline.UTF8String);
+      ios_system(cmdline.UTF8String);
       _currentCmd = nil;
-      // TODO: find meanful exit code for reload
-      if (result == 10 && [cmd isEqualToString:@"theme"]) {
-        return NO;
-      }
     }
     
     return YES;
@@ -265,8 +260,7 @@
   stdin = savedStdIn;
 }
 
-- (void)dealloc
-{
+- (void)dealloc {
   _repl = nil;
 }
 

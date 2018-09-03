@@ -98,29 +98,36 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 
-- (id)initWithFrame:(CGRect)frame
+- (id)initWithFrame:(CGRect)frame andBgColor:(UIColor *)bgColor
 {
   self = [super initWithFrame:frame];
 
-  if (self) {
-    
-    _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
-    _jsBuffer = [[NSMutableString alloc] init];
-
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    [self _addWebView];
+  if (!self) {
+    return self;
   }
-  
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-  
-  [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+    
+  _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
+  _jsBuffer = [[NSMutableString alloc] init];
+
+  self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  [self _addWebView];
+  self.opaque = YES;
+  _webView.opaque = YES;
   
   UIImageView *imageView = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
   imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
   imageView.autoresizingMask =  UIViewAutoresizingNone;
   
+  bgColor = bgColor ?: [UIColor blackColor];
+  imageView.backgroundColor = bgColor;
+  self.backgroundColor = bgColor;
+  
   _snapshotImageView = imageView;
+  [self addSubview:imageView];
+  
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+  [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
+  [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 
   return self;
 }
@@ -184,14 +191,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.scrollView.scrollEnabled = NO;
   _webView.scrollView.panGestureRecognizer.enabled = NO;
   
-  self.opaque = NO;
-  _webView.opaque = NO;
-
-  self.alpha = 0;
-  _webView.alpha = 0;
-  _webView.backgroundColor = [UIColor clearColor];
-  self.backgroundColor = [UIColor clearColor];
-  
   _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   
   [self addSubview:_webView];
@@ -206,9 +205,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
-  _webView.alpha = 1;
-  self.opaque = YES;
-  _webView.opaque = YES;
 }
 
 - (void)loadWith:(MCPSessionParameters *)params;
@@ -224,6 +220,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)reloadWith:(MCPSessionParameters *)params;
 {
+  _snapshotImageView.frame = self.bounds;
+  [self addSubview:_snapshotImageView];
+  _snapshotImageView.alpha = 1;
   [_webView.configuration.userContentController removeAllUserScripts];
   [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];
   [_webView reload];
@@ -399,6 +398,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else {
     [self blur];
   }
+  
+  [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
+    _snapshotImageView.alpha = 0;
+  } completion:^(BOOL finished) {
+    [_snapshotImageView removeFromSuperview];
+  }];
 }
   
 - (NSString *)_menuTitleFromNSURL:(NSURL *)url

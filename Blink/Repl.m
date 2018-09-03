@@ -378,15 +378,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 }
 
 
--(NSArray<NSString *> *)_allBlinkThemes
-{
-  NSMutableArray *themeNames = [[NSMutableArray alloc] init];
-  for (BKTheme *theme in [BKTheme all]) {
-    [themeNames addObject:theme.name];
-  }
-  return themeNames;
-}
-
 -(NSArray<NSString *> *)_completionsByType:(NSString *)completionType andPrefix:(NSString *)prefix {
   NSArray<NSString *> *completions = @[];
   
@@ -396,8 +387,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     completions = [self _allBlinkHosts];
   } else if ([@"host" isEqualToString:completionType]) {
     completions = [self _allHosts];
-  } else if ([@"blink-theme" isEqualToString:completionType]) {
-    completions = [self _allBlinkThemes];
   } else if ([@"blink-music" isEqualToString:completionType]) {
     completions = [[MusicManager shared] commands];
   } else if ([@"blink-geo" isEqualToString:completionType]) {
@@ -421,8 +410,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"blink-host";
   } else if ([@"ping" isEqualToString:command]) {
     return @"host";
-  } else if ([@"theme" isEqualToString:command]) {
-    return @"blink-theme";
   } else if ([@"ls" isEqualToString:command]) {
     return @"directory";
   } else if ([@"open" isEqualToString:command]) {

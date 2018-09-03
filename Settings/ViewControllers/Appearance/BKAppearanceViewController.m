@@ -82,9 +82,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [self loadDefaultValues];
   [super viewDidLoad];
   
-  _termView = [[TermView alloc] initWithFrame:self.view.bounds];
+  _termView = [[TermView alloc] initWithFrame:self.view.bounds andBgColor:UIColor.groupTableViewBackgroundColor];
   _termView.device = self;
-  _termView.backgroundColor = [UIColor blackColor];
   [_termView loadWith:nil];
 }
 

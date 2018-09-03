@@ -168,6 +168,8 @@
 
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
 {
+  UIColor * bgColor = [coder decodeObjectForKey:@"bgColor"] ?: [UIColor blackColor];
+  self.view.backgroundColor = bgColor;
   _unfocused = [coder decodeBoolForKey:@"_unfocused"];
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
@@ -179,6 +181,7 @@
     [stateManager restoreState:term];
     term.delegate = self;
     term.userActivity = nil;
+    term.bgColor = bgColor;
     
     [_viewports addObject:term];
   }
@@ -217,6 +220,7 @@
   [coder encodeInteger:idx forKey:@"idx"];
   [coder encodeObject:sessionStateKeys forKey:@"sessionStateKeys"];
   [coder encodeBool:_unfocused forKey:@"_unfocused"];
+  [coder encodeObject:self.view.backgroundColor forKey:@"bgColor"];
 }
 
 - (void)registerForNotifications
@@ -421,7 +425,7 @@
   
   TermController *currentTerm = self.currentTerm;
   
-  if (currentTerm.view.backgroundColor != [UIColor clearColor]) {
+  if (currentTerm.view.backgroundColor && currentTerm.view.backgroundColor != [UIColor clearColor]) {
     self.view.backgroundColor = currentTerm.view.backgroundColor;
     _viewportsController.view.backgroundColor = currentTerm.view.backgroundColor;
     self.view.window.backgroundColor = currentTerm.view.backgroundColor;
@@ -515,6 +519,8 @@
   term.sessionStateKey = sessionStateKey;
   term.delegate = self;
   term.userActivity = userActivity;
+  term.bgColor = self.view.backgroundColor ?: [UIColor blackColor];
+  
 
   if (_viewports == nil) {
     _viewports = [[NSMutableArray alloc] init];
