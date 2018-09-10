@@ -71,7 +71,6 @@ void __setupProcessEnv() {
   
 
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
-//  ssh_threads_set_callbacks(ssh_threads_get_noop());
   ssh_init();
 }
 
@@ -152,8 +151,6 @@ void __setupProcessEnv() {
     return;
   }
   
-  NSLog(@"_startMonitoringForSuspending");
-  
   UIApplication *application = [UIApplication sharedApplication];
   
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -201,25 +198,21 @@ void __setupProcessEnv() {
 // Simple wrappers to get the reason of failure from call stack
 - (void)_suspendApplicationWithSuspendTimer
 {
-  NSLog(@"_suspendApplicationWithSuspendTimer");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationWithExpirationHandler
 {
-  NSLog(@"_suspendApplicationWithExpirationHandler");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationOnWillTerminate
 {
-  NSLog(@"_suspendApplicationOnWillTerminate");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
 {
-  NSLog(@"_suspendApplicationOnProtectedDataWillBecomeUnavailable");
   [self _suspendApplication];
 }
 
