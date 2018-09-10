@@ -754,7 +754,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return SSH_ERROR;
       }
       
-      rc = ssh_channel_request_pty_size(channel, @"xterm".UTF8String, _device->win.ws_col, _device->win.ws_row);
+      rc = ssh_channel_request_pty_size(channel, @"xterm-256color".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
         case SSH_OK:
           break;
