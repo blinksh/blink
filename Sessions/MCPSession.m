@@ -43,10 +43,6 @@
 #import "BKUserConfigurationManager.h"
 #import "BlinkPaths.h"
 
-
-
-// from ios_system:
-
 #include <ios_system/ios_system.h>
 
 #include "ios_error.h"
@@ -112,7 +108,6 @@
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
       [self _runSSHCopyIDWithArgs:cmdline];
     } else {
-
       [self.delegate indexCommand:cmdline];
       _currentCmd = cmdline;
       thread_stdout = nil;
@@ -131,6 +126,10 @@
   puts("Bye!");
   
   return 0;
+}
+
+- (bool)isRunningCmd {
+  return _childSession != nil || _currentCmd != nil;
 }
 
 - (NSArray<NSString *> *)_symlinksInHomeDirectory
@@ -203,10 +202,6 @@
 {
   [_repl sigwinch];
   [_childSession sigwinch];
-  if (_currentCmd) {
-//    pthread_t tid = ios_getLastThreadId();
-//    pthread_kill(tid, SIGWINCH);
-  }
   [_sshClient sigwinch];
 }
 

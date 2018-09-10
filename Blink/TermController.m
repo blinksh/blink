@@ -103,17 +103,32 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [activity setRequiredUserInfoKeys:[NSSet setWithArray:_activityUserInfo.allKeys]];
 }
 
+- (bool)canRestoreUserActivityState:(NSUserActivity *)activity {
+  return ![_session isRunningCmd] || [activity.title isEqualToString:self.activityKey];
+}
+
+- (bool)isRunningCmd {
+  return [_session isRunningCmd];
+}
+
 - (void)restoreUserActivityState:(NSUserActivity *)activity
 {
+  [super restoreUserActivityState:activity];
+  
   if (![activity.activityType isEqualToString: BKUserActivityTypeCommandLine]) {
-    [super restoreUserActivityState:activity];
+    return;
   }
   
   NSString *cmdLine = [activity.userInfo objectForKey:BKUserActivityCommandLineKey];
-  if (cmdLine) {
-    // TODO: investigate lost first char on iPad
-    [_termDevice write:[NSString stringWithFormat:@" %@\n", cmdLine]];
+  
+  if ([_session isRunningCmd] || !cmdLine) {
+    return;
   }
+  char ctrlA = 'a' - 'a' + 1;
+  char ctrlK = 'k' - 'a' + 1;
+  // delete all input on current line - ctrl+a ctrl+k
+  // run command
+  [_termDevice write:[NSString stringWithFormat:@"%c%c%@\n", ctrlA, ctrlK, cmdLine]];
 }
 
 - (void)viewDidLoad

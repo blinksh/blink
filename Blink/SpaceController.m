@@ -844,32 +844,56 @@
     return;
   }
 
-  // 1. Try find term with same activity key
+
+  // 1. Find terminal with excact command that is running right now
   NSInteger targetIdx = [_viewports indexOfObjectPassingTest:^BOOL(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
-    return [activity.title isEqualToString:term.activityKey];
+    return [activity.title isEqualToString:term.activityKey] && [term isRunningCmd];
   }];
-
-  // 2. No term with same activity key, so we create one or use current
-  if (targetIdx == NSNotFound) {
-    if (self.currentTerm.activityKey == nil) {
-      [self.currentTerm restoreUserActivityState:activity];
+  
+  if (targetIdx != NSNotFound) {
+    // current terminal is running this command, so just stay here.
+    if (idx == targetIdx) {
       [self _attachInputToCurrentTerm];
-    } else {
-      [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
+      return;
     }
+    
+    // switch to terminal that is running command.
+    UIPageViewControllerNavigationDirection direction =
+    idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
+    
+    [self switchShellIdx: targetIdx
+               direction: direction
+                animated: NO];
     return;
   }
 
-  // 3. We are already showing required term. So do nothing.
-  if (idx == targetIdx) {
+  // 2. Check if current term can run command.
+  if ([self.currentTerm canRestoreUserActivityState:activity]) {
     [self _attachInputToCurrentTerm];
+    [self.currentTerm.termDevice focus];
+    [self.currentTerm restoreUserActivityState:activity];
     return;
   }
-
-  // 4. Switch to found term index.
+  
+  // 3. Find terminal that can run this command.
+  targetIdx = [_viewports indexOfObjectPassingTest:^BOOL(TermController *term, NSUInteger idx, BOOL * _Nonnull stop) {
+    return [term canRestoreUserActivityState:activity];
+  }];
+  
+  // No running terminals can run this command, so we creating new one.
+  if (targetIdx == NSNotFound) {
+    [self _createShellWithUserActivity:activity sessionStateKey:nil animated:YES completion:nil];
+    return;
+  }
+  
+  // Switch to terminal and run command.
   UIPageViewControllerNavigationDirection direction =
   idx < targetIdx ? UIPageViewControllerNavigationDirectionForward : UIPageViewControllerNavigationDirectionReverse;
-
+  
+  TermController *term = _viewports[targetIdx];
+  [term.termDevice attachInput:_termInput];
+  [term.termDevice focus];
+  [term restoreUserActivityState:activity];
   [self switchShellIdx: targetIdx
              direction: direction
               animated: NO];

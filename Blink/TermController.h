@@ -57,5 +57,7 @@
 - (void)suspend;
 - (void)resume;
 - (void)scaleWithPich:(UIPinchGestureRecognizer *)pinch;
+- (bool)canRestoreUserActivityState:(NSUserActivity *)activity;
+- (bool)isRunningCmd;
 
 @end

@@ -42,6 +42,8 @@
 @property (strong, readonly) Repl *repl;
 @property (weak) SSHClient *sshClient;
 
+- (bool)isRunningCmd;
+
 - (void)updateAllowedPaths;
 
 @end
