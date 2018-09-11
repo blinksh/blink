@@ -1123,6 +1123,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   NSDate *distantFuture = [NSDate distantFuture];
   while (!_doExit && ssh_is_connected(_session)) {
     [_runLoop runMode:NSDefaultRunLoopMode beforeDate:distantFuture];
+    if (_doExit) {
+      break;
+    }
     /// TODO: move to libssh level as callback?
     if (_reversePortsMap) {
       int port = 0;
