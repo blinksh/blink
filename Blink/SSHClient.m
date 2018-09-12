@@ -743,6 +743,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     break;
   }
   
+  
+  [self _ssh_send_env: channel];
+  
   BOOL doRequestPTY = _options[SSHOptionRequestTTY] == SSHOptionValueYES
   || (_options[SSHOptionRequestTTY] == SSHOptionValueAUTO && _isTTY);
   
@@ -803,6 +806,35 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
   _sessionChannel.delegate = self;
   return rc;
+}
+
+- (void)_ssh_send_env:(ssh_channel) channel {
+  NSArray *vars = _options[SSHOptionSendEnv];
+  if (!vars.count) {
+    return;
+  }
+  
+  for (NSString *varName in vars) {
+    [self _log_verbose:[NSString stringWithFormat:@"Sending env '%@'", varName]];
+    
+    char *varValue = getenv(varName.UTF8String);
+    if (!varValue) {
+      continue;
+    }
+    
+    for(;;) {
+      int rc = ssh_channel_request_env(channel, varName.UTF8String, varValue);
+      switch (rc) {
+        case SSH_AGAIN:
+          [self _poll];
+          continue;
+        case SSH_OK:
+        default:
+          break;
+      }
+      break;
+    }
+  }
 }
 
 - (int)_start_stdio_forwarding:(NSString *)hostPort {
