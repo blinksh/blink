@@ -87,6 +87,7 @@
   replaceCommand(@"link-files", @"link_files_main", true);
   replaceCommand(@"bench", @"bench_main", true);
   replaceCommand(@"geo", @"geo_main", true);
+  replaceCommand(@"udptunnel", @"udptunnel_main", true);
   // TODO: move all our commands to plist
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
   
