@@ -760,6 +760,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       rc = ssh_channel_request_pty_size(channel, @"xterm-256color".UTF8String, _device->win.ws_col, _device->win.ws_row);
       switch (rc) {
         case SSH_OK:
+          [_device setRawMode:YES];
           break;
         case SSH_AGAIN:
           [self _poll];
@@ -773,8 +774,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       break;
     }
   }
-  
-  [_device setRawMode:YES];
   
   NSString *remoteCommand = _options[SSHOptionRemoteCommand];
   for (;;) {
