@@ -61,6 +61,7 @@ const NSString * SSHOptionRemoteForward = @"remoteforward"; // -R
 const NSString * SSHOptionForwardAgent = @"forwardagent"; // -a -A
 const NSString * SSHOptionForwardX11 = @"forwardx11"; // -x -X
 const NSString * SSHOptionExitOnForwardFailure = @"exitonforwardfailure"; // -o
+const NSString * SSHOptionSendEnv = @"sendenv"; // -o
 
 // Auth
 
@@ -125,6 +126,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *intType = [[NSObject alloc] init];
   NSObject *intNoneType = [[NSObject alloc] init];
   NSObject *identityfileType = [[NSObject alloc] init];
+  NSObject *sendEnvType = [[NSObject alloc] init];
   NSObject *localforwardType = [[NSObject alloc] init];
   NSObject *remoteforwardType = [[NSObject alloc] init];
   NSObject *logLevelType = [[NSObject alloc] init];
@@ -151,6 +153,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionForwardX11: @[yesNoType, SSHOptionValueNO],
                          SSHOptionStrictHostKeyChecking: @[yesNoAskType, SSHOptionValueASK],
                          SSHOptionExitOnForwardFailure: @[yesNoType, SSHOptionValueNO],
+                         SSHOptionSendEnv: @[sendEnvType], // LANG LC_* in os x ssh client
                          SSHOptionLogLevel: @[logLevelType, SSHOptionValueINFO],
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES], // We mobile terminal, so we set compression to yes by default.
                          SSHOptionCompressionLevel: @[compressionLevelType, @(6)], // Default compression for speed
@@ -175,6 +178,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableArray<NSString *> *identityfileOption = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *localforwardOption = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *remoteforwardOption = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *sendEnvOption = [[NSMutableArray alloc] init];
   
   // Set options:
   for (NSString *optionStr in options) {
@@ -204,6 +208,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
       [localforwardOption addObject:value];
     } else if (type == remoteforwardType) {
       [remoteforwardOption addObject:value];
+    } else if (type == sendEnvType) {
+      [sendEnvOption addObject:value];
     } else if (type == yesNoType) {
       if ([@[SSHOptionValueYES, SSHOptionValueNO] indexOfObject:lv] == NSNotFound) {
         [self _exitWithCode:SSH_ERROR andMessage:[NSString stringWithFormat:@"unsupported option \"%@\".", key]];
@@ -296,6 +302,27 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   if (identityfileInArgs.count > 0) {
     result[SSHOptionIdentityFile] = [NSOrderedSet orderedSetWithArray:identityfileInArgs].array;
     [argsKeys removeObject:SSHOptionIdentityFile];
+  }
+
+  if (localforwardOption.count) {
+    NSMutableArray<NSString *> * values = args[SSHOptionLocalForward] ?: [[NSMutableArray alloc] init];
+    [values addObjectsFromArray:localforwardOption];
+    result[SSHOptionLocalForward] = [NSOrderedSet orderedSetWithArray:values].array;
+    [argsKeys removeObject:SSHOptionLocalForward];
+  }
+  
+  if (remoteforwardOption.count) {
+    NSMutableArray<NSString *> * values = args[SSHOptionRemoteForward] ?: [[NSMutableArray alloc] init];
+    [values addObjectsFromArray:remoteforwardOption];
+    result[SSHOptionRemoteForward] = [NSOrderedSet orderedSetWithArray:values].array;
+    [argsKeys removeObject:SSHOptionRemoteForward];
+  }
+  
+  if (sendEnvOption.count) {
+    NSMutableArray<NSString *> * values = args[SSHOptionSendEnv] ?: [[NSMutableArray alloc] init];
+    [values addObjectsFromArray:sendEnvOption];
+    result[SSHOptionSendEnv] = [NSOrderedSet orderedSetWithArray:values].array;
+    [argsKeys removeObject:SSHOptionSendEnv];
   }
   
   for (NSString *key in argsKeys) {
