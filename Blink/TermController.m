@@ -82,6 +82,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   activity.eligibleForSearch = YES;
   activity.eligibleForHandoff = YES;
   
+  if (@available(iOS 12.0, *)) {
+    activity.eligibleForPrediction = YES;
+  }
+  
   
   _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
   [activity setTitle:_activityKey];
