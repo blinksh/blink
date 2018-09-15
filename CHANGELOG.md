@@ -1,5 +1,20 @@
 # Version 12.0
 
+## Changes in Build 29
+
+* Fixed issue with ssh servers without compression.
+* Fixed broken colors in remote tmux. #552.
+* New `ssh -W` for standart io forwarded over secure channel.
+* New Allow send env variables with `ssh -o sendenv=ENV` option. #287
+* New `geo` command to get you coordinates in json format.
+* New `mosh --key` flag allows run mosh client without ssh. #190
+* Smother switching between terminals (no splashes).
+* Better support for Siri shortcut.
+
+Credits:
+
+Huge thanks to [@rob](at discord), @goerz, @treyharris.
+
 The road to 12. This is the version many have been waiting for. SSH is crucial for Blink, so not only we are supercharging and getting ahead of everyone else, we will also be ahead in the future. This release has a lot of under the covers work to set the basis of what Blink will become in the future, so stay tuned! Here is what is new and what we would like you to help us out testing:
 
 * Support for new keys, including ECDSA and Ed25519! (DSA too, but you shouldn't be using that).
@@ -24,20 +39,6 @@ And then some more:
 * iOS tuning and more general performance tweaks.
 * We will keep libssh2 based version as ssh2 command.
 
-## Changes in Build 29
-
-* Fixed issue with ssh servers without compression.
-* Fixed broken colors in remote tmux. #552.
-* New `ssh -W` for standart io forwarded over secure channel.
-* New Allow send env variables with `ssh -o sendenv=ENV` option. #287
-* New `geo` command to get you coordinates in json format.
-* New `mosh --key` flag allows run mosh client without ssh. #190
-* Smother switching between terminals (no splashes).
-* Better support for Siri shortcut.
-
-Credits:
-
-Huge thanks to [@rob](at discord), @goerz, @treyharris.
 
 # Version 11
 
