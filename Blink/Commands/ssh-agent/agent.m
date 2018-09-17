@@ -126,7 +126,9 @@ mktemp_proto(char *s, size_t len)
   int r;
   
   if ((tmpdir = getenv("TMPDIR")) != NULL) {
-    r = snprintf(s, len, "%s/ssh-XXXXXXXXXXXX", tmpdir);
+//    r = snprintf(s, len, "%s/ssh-XXXXXXXXXXXX", tmpdir);
+    NSLog(@"%@", [@(tmpdir) stringByStandardizingPath]);
+    r = snprintf(s, len, "%s/sXXXXXXXXX", [@(tmpdir) stringByStandardizingPath].UTF8String);
     if (r > 0 && (size_t)r < len)
       return;
   }
@@ -214,6 +216,7 @@ unix_listener(const char *path, int backlog, int unlink_first)
   sunaddr.sun_family = AF_UNIX;
   if (strlcpy(sunaddr.sun_path, path,
               sizeof(sunaddr.sun_path)) >= sizeof(sunaddr.sun_path)) {
+    NSLog(@"max size %@", @(sizeof(sunaddr.sun_path)));
     error("%s: path \"%s\" too long for Unix domain socket",
           __func__, path);
     errno = ENAMETOOLONG;
@@ -1410,7 +1413,7 @@ ssh_agent_main(int ac, char **av)
       perror("mkdtemp: private socket dir");
       exit(1);
     }
-    snprintf(socket_name, sizeof socket_name, "%s/agent.%ld", socket_dir,
+    snprintf(socket_name, sizeof socket_name, "%s/a.%ld", socket_dir,
              (long)parent_pid);
   } else {
     /* Try to use specified agent socket */
@@ -1439,6 +1442,7 @@ ssh_agent_main(int ac, char **av)
 //    log_init(__progname,
 //             d_flag ? SYSLOG_LEVEL_DEBUG3 : SYSLOG_LEVEL_INFO,
 //             SYSLOG_FACILITY_AUTH, 1);
+    setenv(SSH_AUTHSOCKET_ENV_NAME, socket_name, 1);
     format = c_flag ? "setenv %s %s;\n" : "%s=%s; export %s;\n";
     printf(format, SSH_AUTHSOCKET_ENV_NAME, socket_name,
            SSH_AUTHSOCKET_ENV_NAME);

@@ -366,7 +366,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   BOOL quiet = NO;
   
   while (1) {
-    int c = getopt(argc, argv, "axR:L:Vo:CGp:i:hqTtvl:F:-W:");
+    int c = getopt(argc, argv, "AaxR:L:Vo:CGp:i:hqTtvl:F:-W:");
     if (c == -1) {
       break;
     }
@@ -374,6 +374,9 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     switch (c) {
       case 'a':
         [args setObject:SSHOptionValueNO forKey:SSHOptionForwardAgent];
+        break;
+      case 'A':
+        [args setObject:SSHOptionValueYES forKey:SSHOptionForwardAgent];
         break;
       case 'x':
         [args setObject:SSHOptionValueNO forKey:SSHOptionForwardX11];

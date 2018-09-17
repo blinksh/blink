@@ -43,6 +43,7 @@
 #include <sys/ioctl.h>
 #include <libssh/callbacks.h>
 #import <sys/socket.h>
+#import <sys/un.h>
 #import <arpa/inet.h>
 
 
@@ -88,6 +89,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   NSMutableArray<SSHClientPortListener *> *_portListeners;
   SSHClientConnectedChannel *_sessionChannel;
+  SSHClientConnectedChannel *_authAgentChannel;
   NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
   
   NSMutableDictionary<NSNumber *, NSNumber *> *_reversePortsMap;
@@ -743,6 +745,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     break;
   }
   
+  if ([SSHOptionValueYES isEqual:_options[SSHOptionForwardAgent]]) {
+    rc = ssh_channel_request_auth_agent(channel);
+  }
   
   [self _ssh_send_env: channel];
   
@@ -801,6 +806,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     break;
   }
+  
+  
   
   _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
   _sessionChannel.delegate = self;
@@ -1088,14 +1095,66 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_client_send_keepalive(_session);
 }
 
+ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
+                                                           void *userdata) {
+  SSHClient *client = (__bridge SSHClient *)userdata;
+//  ssh_channel channel = ssh_channel_new(session);
+  return [client _authChannel];
+}
+
+- (ssh_channel)_authChannel {
+  if (_authAgentChannel) {
+    return _authAgentChannel.channel;
+  }
+  
+  
+  struct sockaddr_un sunaddr;
+  int saved_errno, sock;
+  
+  memset(&sunaddr, 0, sizeof(sunaddr));
+  sunaddr.sun_family = AF_UNIX;
+  char *path = getenv("SSH_AUTH_SOCK");
+  if (!path) {
+    return nil;
+  }
+  if (strlcpy(sunaddr.sun_path, path,
+              sizeof(sunaddr.sun_path)) >= sizeof(sunaddr.sun_path)) {
+//    NSLog(@"max size %@", @(sizeof(sunaddr.sun_path)));
+//    error("%s: path \"%s\" too long for Unix domain socket",
+//          __func__, path);
+//    errno = ENAMETOOLONG;
+    return nil;
+  }
+  
+  sock = socket(PF_UNIX, SOCK_STREAM, 0);
+  
+  if (sock == SSH_INVALID_SOCKET) {
+    return nil;
+  }
+  
+  int rc = connect(sock, (struct sockaddr *)&sunaddr, sizeof(sunaddr));
+  if (rc == -1) {
+    return nil;
+  }
+  
+  ssh_channel channel = ssh_channel_new(_session);
+  
+  SSHClientConnectedChannel *connectedChannel = [SSHClientConnectedChannel connect:channel withSocket:sock];
+  connectedChannel.delegate = self;
+  [_connectedChannels addObject:connectedChannel];
+  _authAgentChannel = connectedChannel;
+  return channel;
+}
+
 - (ssh_session)_configured_session {
   ssh_session session = ssh_new();
-  ssh_set_blocking(_session, 0);
+  ssh_set_blocking(session, 0);
   
   _ssh_callbacks.userdata = (__bridge void *)self;
+  _ssh_callbacks.channel_open_request_auth_agent_function = __ssh_channel_open_request_auth_agent_callback;
   
   ssh_callbacks_init(&_ssh_callbacks);
-  ssh_set_callbacks(_session, &_ssh_callbacks);
+  ssh_set_callbacks(session, &_ssh_callbacks);
   
   if ([_options configureSSHSession:session] == SSH_OK) {
     return session;
