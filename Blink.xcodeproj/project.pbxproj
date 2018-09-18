@@ -108,6 +108,12 @@
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2060A5120E2501E00CF5122 /* libssh_threadsd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2060A4A20E2501E00CF5122 /* libssh_threadsd.a */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
+		D2071B732150E4AA000156D7 /* ssh-add.m in Sources */ = {isa = PBXBuildFile; fileRef = D2071B722150E4AA000156D7 /* ssh-add.m */; };
+		D2071B7B2150EBC1000156D7 /* authfile.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7A2150EBC1000156D7 /* authfile.c */; };
+		D2071B7E2150EE77000156D7 /* authfd.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7C2150EE77000156D7 /* authfd.c */; };
+		D2071B812150FFD1000156D7 /* match.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7F2150FFD0000156D7 /* match.c */; };
+		D2071B83215101DC000156D7 /* blink-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B82215101DC000156D7 /* blink-compat.c */; };
+		D2071B86215135A9000156D7 /* openssl-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B84215135A9000156D7 /* openssl-compat.c */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20A28BE1E185BDB00055791 /* ScreenController.m in Sources */ = {isa = PBXBuildFile; fileRef = D20A28BD1E185BDB00055791 /* ScreenController.m */; };
 		D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2179F2C2136A5DC00B0850A /* GeoManager.m */; };
@@ -140,9 +146,8 @@
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
-		D2961970214F89360070935A /* agent.m in Sources */ = {isa = PBXBuildFile; fileRef = D296196F214F89210070935A /* agent.m */; };
+		D2961970214F89360070935A /* ssh-agent.m in Sources */ = {isa = PBXBuildFile; fileRef = D296196F214F89210070935A /* ssh-agent.m */; };
 		D2961975214F8A580070935A /* sshbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961972214F8A580070935A /* sshbuf.c */; };
-		D2961979214F8AA30070935A /* authfd.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961978214F8AA30070935A /* authfd.c */; };
 		D296197C214F8ABE0070935A /* atomicio.c in Sources */ = {isa = PBXBuildFile; fileRef = D296197A214F8ABD0070935A /* atomicio.c */; };
 		D296197F214F91550070935A /* sshkey.c in Sources */ = {isa = PBXBuildFile; fileRef = D296197D214F91550070935A /* sshkey.c */; };
 		D2961983214F968A0070935A /* cipher.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961981214F96890070935A /* cipher.c */; };
@@ -464,6 +469,18 @@
 		D2060A4A20E2501E00CF5122 /* libssh_threadsd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssh_threadsd.a; sourceTree = "<group>"; };
 		D2060A5220E2644400CF5122 /* SSHClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClient.h; sourceTree = "<group>"; };
 		D2060A5320E2644400CF5122 /* SSHClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClient.m; sourceTree = "<group>"; };
+		D2071B722150E4AA000156D7 /* ssh-add.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-add.m"; sourceTree = "<group>"; };
+		D2071B742150E51F000156D7 /* pathnames.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pathnames.h; sourceTree = "<group>"; };
+		D2071B752150E5A3000156D7 /* blink-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "blink-compat.h"; sourceTree = "<group>"; };
+		D2071B792150EBC1000156D7 /* authfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = authfile.h; sourceTree = "<group>"; };
+		D2071B7A2150EBC1000156D7 /* authfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = authfile.c; sourceTree = "<group>"; };
+		D2071B7C2150EE77000156D7 /* authfd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = authfd.c; sourceTree = "<group>"; };
+		D2071B7D2150EE77000156D7 /* authfd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = authfd.h; sourceTree = "<group>"; };
+		D2071B7F2150FFD0000156D7 /* match.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = match.c; sourceTree = "<group>"; };
+		D2071B802150FFD0000156D7 /* match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = match.h; sourceTree = "<group>"; };
+		D2071B82215101DC000156D7 /* blink-compat.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "blink-compat.c"; sourceTree = "<group>"; };
+		D2071B84215135A9000156D7 /* openssl-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "openssl-compat.c"; sourceTree = "<group>"; };
+		D2071B87215135EF000156D7 /* openssl-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "openssl-compat.h"; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20A28BC1E185BDB00055791 /* ScreenController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenController.h; sourceTree = "<group>"; };
 		D20A28BD1E185BDB00055791 /* ScreenController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ScreenController.m; sourceTree = "<group>"; };
@@ -528,12 +545,11 @@
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
 		D28DB3AB210B110B008A1139 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
-		D296196F214F89210070935A /* agent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = agent.m; sourceTree = "<group>"; };
+		D296196F214F89210070935A /* ssh-agent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-agent.m"; sourceTree = "<group>"; };
 		D2961971214F8A580070935A /* sshbuf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sshbuf.h; sourceTree = "<group>"; };
 		D2961972214F8A580070935A /* sshbuf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sshbuf.c; sourceTree = "<group>"; };
 		D2961974214F8A580070935A /* ssherr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssherr.h; sourceTree = "<group>"; };
-		D2961977214F8AA30070935A /* authfd.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = authfd.h; sourceTree = "<group>"; };
-		D2961978214F8AA30070935A /* authfd.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = authfd.c; sourceTree = "<group>"; };
+		D2961978214F8AA30070935A /* authfd-old.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "authfd-old.c"; sourceTree = "<group>"; };
 		D296197A214F8ABD0070935A /* atomicio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomicio.c; sourceTree = "<group>"; };
 		D296197B214F8ABE0070935A /* atomicio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomicio.h; sourceTree = "<group>"; };
 		D296197D214F91550070935A /* sshkey.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sshkey.c; sourceTree = "<group>"; };
@@ -1178,9 +1194,17 @@
 			path = libssh;
 			sourceTree = "<group>";
 		};
-		D2961968214F89060070935A /* ssh-agent */ = {
+		D2961968214F89060070935A /* openssh */ = {
 			isa = PBXGroup;
 			children = (
+				D2071B87215135EF000156D7 /* openssl-compat.h */,
+				D2071B84215135A9000156D7 /* openssl-compat.c */,
+				D2071B7F2150FFD0000156D7 /* match.c */,
+				D2071B802150FFD0000156D7 /* match.h */,
+				D2071B7C2150EE77000156D7 /* authfd.c */,
+				D2071B7D2150EE77000156D7 /* authfd.h */,
+				D2071B7A2150EBC1000156D7 /* authfile.c */,
+				D2071B792150EBC1000156D7 /* authfile.h */,
 				D29619AC214FB5EA0070935A /* ssh-ecdsa.c */,
 				D29619AA214FB5EA0070935A /* ssh-ed25519.c */,
 				D29619AB214FB5EA0070935A /* ssh-rsa.c */,
@@ -1201,14 +1225,17 @@
 				D296197E214F91550070935A /* sshkey.h */,
 				D296197A214F8ABD0070935A /* atomicio.c */,
 				D296197B214F8ABE0070935A /* atomicio.h */,
-				D2961978214F8AA30070935A /* authfd.c */,
-				D2961977214F8AA30070935A /* authfd.h */,
+				D2961978214F8AA30070935A /* authfd-old.c */,
 				D2961972214F8A580070935A /* sshbuf.c */,
 				D2961971214F8A580070935A /* sshbuf.h */,
 				D2961974214F8A580070935A /* ssherr.h */,
-				D296196F214F89210070935A /* agent.m */,
+				D2071B722150E4AA000156D7 /* ssh-add.m */,
+				D296196F214F89210070935A /* ssh-agent.m */,
+				D2071B742150E51F000156D7 /* pathnames.h */,
+				D2071B82215101DC000156D7 /* blink-compat.c */,
+				D2071B752150E5A3000156D7 /* blink-compat.h */,
 			);
-			path = "ssh-agent";
+			path = openssh;
 			sourceTree = "<group>";
 		};
 		D2961984214F96A10070935A /* chapoly */ = {
@@ -1251,7 +1278,7 @@
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
-				D2961968214F89060070935A /* ssh-agent */,
+				D2961968214F89060070935A /* openssh */,
 				D2334D1221495DAE00D26AC3 /* udptunnel */,
 				D240806020BC8DF800F30099 /* tool_main.c */,
 				D2F330D320A6F1DF0074ADD7 /* clear.m */,
@@ -1535,6 +1562,7 @@
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
+				D2071B83215101DC000156D7 /* blink-compat.c in Sources */,
 				D239710820A07B9100881637 /* windows.cxx in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
 				D29619AD214FB5EA0070935A /* ssh-ed25519.c in Sources */,
@@ -1543,13 +1571,12 @@
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,
-				D2961970214F89360070935A /* agent.m in Sources */,
+				D2961970214F89360070935A /* ssh-agent.m in Sources */,
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
 				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
 				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
-				D2961979214F8AA30070935A /* authfd.c in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D296198D214F96D50070935A /* digest-openssl.c in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
@@ -1569,12 +1596,15 @@
 				D296199D214F995D0070935A /* hash.c in Sources */,
 				D2E4F91B20B0537D00B30F7B /* Migrator.m in Sources */,
 				D239710720A07B9100881637 /* util.cxx in Sources */,
+				D2071B812150FFD1000156D7 /* match.c in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D239710120A07B9100881637 /* replxx.cxx in Sources */,
+				D2071B732150E4AA000156D7 /* ssh-add.m in Sources */,
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
+				D2071B86215135A9000156D7 /* openssl-compat.c in Sources */,
 				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				D23E143D20A977AB000FCF5C /* Repl.m in Sources */,
@@ -1616,6 +1646,7 @@
 				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
+				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
 				D2A92352201732B600043596 /* MusicManager.m in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				D239710220A07B9100881637 /* ConvertUTF.cpp in Sources */,
@@ -1647,6 +1678,7 @@
 				D296197C214F8ABE0070935A /* atomicio.c in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				D296199F214F995D0070935A /* ge25519.c in Sources */,
+				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
@@ -1874,6 +1906,7 @@
 					"$(PROJECT_DIR)/Frameworks/**",
 					"$(PROJECT_DIR)/Frameworks",
 				);
+				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";

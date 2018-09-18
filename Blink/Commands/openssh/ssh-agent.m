@@ -47,9 +47,10 @@
 //#include "openbsd-compat/sys-queue.h"
 #include <sys/queue.h>
 
+#define WITH_OPENSSL
 #ifdef WITH_OPENSSL
 #include <openssl/evp.h>
-#include "openbsd-compat/openssl-compat.h"
+#include "openssl-compat.h"
 #endif
 
 #include <errno.h>
@@ -85,8 +86,10 @@
 #include "digest.h"
 #include "ssherr.h"
 //#include "match.h"
+
 #include "ios_system/ios_system.h"
-#include "ios_error.h"
+
+#include "blink-compat.h"
 
 #ifdef ENABLE_PKCS11
 #include "ssh-pkcs11.h"
@@ -99,20 +102,6 @@
 /* Maximum accepted message length */
 #define AGENT_MAX_LEN  (256*1024)
 
-#define MINIMUM(a, b)  (((a) < (b)) ? (a) : (b))
-#define MAXIMUM(a, b)  (((a) > (b)) ? (a) : (b))
-
-#define fatal printf
-#define verbose printf
-#define error printf
-#define debug printf
-#define debug3 printf
-
-#define explicit_bzero(data, len) memset_s(data, len, 0x0, len)
-
-#define SSH_LISTEN_BACKLOG    128
-#define SSH_AUTHSOCKET_ENV_NAME "SSH_AUTH_SOCK"
-#define SSH_AGENTPID_ENV_NAME  "SSH_AGENT_PID"
 
 #ifndef _PATH_DEVNULL
 # define _PATH_DEVNULL "/dev/null"
@@ -135,73 +124,6 @@ mktemp_proto(char *s, size_t len)
   r = snprintf(s, len, "/tmp/ssh-XXXXXXXXXXXX");
   if (r < 0 || (size_t)r >= len)
     fatal("%s: template string too short", __func__);
-}
-
-#define SECONDS    1
-#define MINUTES    (SECONDS * 60)
-#define HOURS    (MINUTES * 60)
-#define DAYS    (HOURS * 24)
-#define WEEKS    (DAYS * 7)
-
-long
-convtime(const char *s)
-{
-  long total, secs, multiplier = 1;
-  const char *p;
-  char *endp;
-  
-  errno = 0;
-  total = 0;
-  p = s;
-  
-  if (p == NULL || *p == '\0')
-    return -1;
-  
-  while (*p) {
-    secs = strtol(p, &endp, 10);
-    if (p == endp ||
-        (errno == ERANGE && (secs == LONG_MIN || secs == LONG_MAX)) ||
-        secs < 0)
-      return -1;
-    
-    switch (*endp++) {
-      case '\0':
-        endp--;
-        break;
-      case 's':
-      case 'S':
-        break;
-      case 'm':
-      case 'M':
-        multiplier = MINUTES;
-        break;
-      case 'h':
-      case 'H':
-        multiplier = HOURS;
-        break;
-      case 'd':
-      case 'D':
-        multiplier = DAYS;
-        break;
-      case 'w':
-      case 'W':
-        multiplier = WEEKS;
-        break;
-      default:
-        return -1;
-    }
-    if (secs >= LONG_MAX / multiplier)
-      return -1;
-    secs *= multiplier;
-    if  (total >= LONG_MAX - secs)
-      return -1;
-    total += secs;
-    if (total < 0)
-      return -1;
-    p = endp;
-  }
-  
-  return total;
 }
 
 

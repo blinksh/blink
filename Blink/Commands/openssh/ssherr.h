@@ -77,6 +77,9 @@
 #define SSH_ERR_CONN_TIMEOUT			-53
 #define SSH_ERR_CONN_CORRUPT			-54
 #define SSH_ERR_PROTOCOL_ERROR			-55
+#define SSH_ERR_KEY_LENGTH      -56
+#define SSH_ERR_NUMBER_TOO_LARGE    -57
+#define SSH_ERR_SIGN_ALG_UNSUPPORTED    -58
 
 /* Translate a numeric error code to a human-readable error string */
 const char *ssh_err(int n);

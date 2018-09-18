@@ -9,5 +9,19 @@
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
 		<string>no</string>
 	</array>
+  <key>ssh-add</key>
+  <array>
+    <string>MAIN</string>
+    <string>ssh_add_main</string>
+    <string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
+    <string>no</string>
+  </array>
+  <key>ssh-agent</key>
+  <array>
+    <string>MAIN</string>
+    <string>ssh_agent_main</string>
+    <string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
+    <string>no</string>
+  </array>
 </dict>
 </plist>

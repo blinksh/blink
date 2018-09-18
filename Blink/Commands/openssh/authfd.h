@@ -1,4 +1,4 @@
-/* $OpenBSD: authfd.h,v 1.41 2017/06/28 01:09:22 djm Exp $ */
+/* $OpenBSD: authfd.h,v 1.44 2018/07/12 04:35:25 djm Exp $ */
 
 /*
  * Author: Tatu Ylonen <ylo@cs.hut.fi>
@@ -23,22 +23,22 @@ struct ssh_identitylist {
 	char **comments;
 };
 
-struct ssh_x509chain {
-	size_t ncerts;
-	u_char **certs;
-	size_t *certlen;
-};
+int	ssh_get_authentication_socket(int *fdp);
+void	ssh_close_authentication_socket(int sock);
 
+int	ssh_lock_agent(int sock, int lock, const char *password);
 int	ssh_fetch_identitylist(int sock, struct ssh_identitylist **idlp);
 void	ssh_free_identitylist(struct ssh_identitylist *idl);
+int	ssh_add_identity_constrained(int sock, const struct sshkey *key,
+	    const char *comment, u_int life, u_int confirm, u_int maxsign);
+int	ssh_remove_identity(int sock, struct sshkey *key);
+int	ssh_update_card(int sock, int add, const char *reader_id,
+	    const char *pin, u_int life, u_int confirm);
+int	ssh_remove_all_identities(int sock, int version);
 
 int	ssh_agent_sign(int sock, const struct sshkey *key,
 	    u_char **sigp, size_t *lenp,
 	    const u_char *data, size_t datalen, const char *alg, u_int compat);
-
-void	ssh_free_x509chain(struct ssh_x509chain *chain);
-int	ssh_agent_get_x509(int sock, const struct sshkey *key,
-    struct ssh_x509chain **pchain);
 
 /* Messages for the authentication agent connection. */
 #define SSH_AGENTC_REQUEST_RSA_IDENTITIES	1
@@ -72,18 +72,10 @@ int	ssh_agent_get_x509(int sock, const struct sshkey *key,
 #define SSH_AGENTC_ADD_RSA_ID_CONSTRAINED	24
 #define SSH2_AGENTC_ADD_ID_CONSTRAINED		25
 #define SSH_AGENTC_ADD_SMARTCARD_KEY_CONSTRAINED 26
-#define	SSH2_AGENTC_EXTENSION			27
-
-#define	SSH2_AGENT_EXT_FAILURE			28
-
-#define SSH2_AGENTC_REQUEST_X509		250
-#define SSH2_AGENT_X509_RESPONSE		251
-#define SSH2_AGENTC_REQUEST_ECDH		252
-#define SSH2_AGENT_ECDH_RESPONSE		253
 
 #define	SSH_AGENT_CONSTRAIN_LIFETIME		1
 #define	SSH_AGENT_CONSTRAIN_CONFIRM		2
-#define  SSH_AGENT_CONSTRAIN_MAXSIGN    3
+#define	SSH_AGENT_CONSTRAIN_MAXSIGN		3
 
 /* extended failure messages */
 #define SSH2_AGENT_FAILURE			30

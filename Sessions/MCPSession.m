@@ -88,7 +88,8 @@
   replaceCommand(@"bench", @"bench_main", true);
   replaceCommand(@"geo", @"geo_main", true);
   replaceCommand(@"udptunnel", @"udptunnel_main", true);
-  replaceCommand(@"ssh-agent", @"ssh_agent_main", true);
+//  replaceCommand(@"ssh-agent", @"ssh_agent_main", true);
+//  replaceCommand(@"ssh-add", @"ssh_add_main", true);
   // TODO: move all our commands to plist
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
   
