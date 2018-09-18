@@ -73,7 +73,7 @@
 #include "blink-compat.h"
 
 /* argv0 */
-extern char *__progname;
+char *__ssh_add_progname;
 
 /* Default files to add */
 static char *default_files[] = {
@@ -507,7 +507,7 @@ do_file(int agent_fd, int deleting, int key_only, char *file, int qflag)
 static void
 usage(void)
 {
-  fprintf(stderr, "usage: %s [options] [file ...]\n", __progname);
+  fprintf(stderr, "usage: %s [options] [file ...]\n", __ssh_add_progname);
   fprintf(stderr, "Options:\n");
   fprintf(stderr, "  -l          List fingerprints of all identities.\n");
   fprintf(stderr, "  -E hash     Specify hash algorithm used for fingerprints.\n");
@@ -540,7 +540,7 @@ ssh_add_main(int argc, char **argv)
   /* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
 //  sanitise_stdfd();
   
-  __progname = "ssh-add";//ssh_get_progname(argv[0]);
+  __ssh_add_progname = "ssh-add";//ssh_get_progname(argv[0]);
 //  seed_rng();
   
 #ifdef WITH_OPENSSL

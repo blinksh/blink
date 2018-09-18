@@ -271,7 +271,7 @@ int locked = 0;
 u_char lock_pwhash[LOCK_SIZE];
 u_char lock_salt[LOCK_SALT_SIZE];
 
-extern char *__progname;
+char *__ssh_agent_progname;
 
 /* Default lifetime in seconds (0 == forever) */
 static long lifetime = 0;
@@ -1222,7 +1222,7 @@ ssh_agent_main(int ac, char **av)
   OpenSSL_add_all_algorithms();
 #endif
   
-  __progname = "ssh-agent";// ssh_get_progname(av[0]);
+  __ssh_agent_progname = "ssh-agent";// ssh_get_progname(av[0]);
   //  seed_rng(); /* Handled in arc4random() */
   
   while ((ch = getopt(ac, av, "cDdksE:a:P:t:")) != -1) {
