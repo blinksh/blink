@@ -559,7 +559,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
             
             NSArray * answers =nil;
             
-            if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
+            if (password.length > 0 && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
               answers = @[password];
             } else {
               answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
