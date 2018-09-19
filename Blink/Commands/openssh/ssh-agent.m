@@ -1360,7 +1360,7 @@ ssh_agent_main(int ac, char **av)
    * Fork, and have the parent execute the command, if any, or present
    * the socket data.  The child continues as the authentication agent.
    */
-  if (D_flag || d_flag) {
+//  if (D_flag || d_flag) {
 //    log_init(__progname,
 //             d_flag ? SYSLOG_LEVEL_DEBUG3 : SYSLOG_LEVEL_INFO,
 //             SYSLOG_FACILITY_AUTH, 1);
@@ -1371,7 +1371,7 @@ ssh_agent_main(int ac, char **av)
     printf("echo Agent pid %ld;\n", (long)parent_pid);
     fflush(stdout);
     goto skip;
-  }
+//  }
   pid = fork();
   if (pid == -1) {
     perror("fork");
