@@ -1245,6 +1245,7 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
     }
   }
   
+  ssh_disconnect(_session);
   [self _log_error];
   
   [self close];

@@ -319,10 +319,14 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         _inputStream = nil;
         ssh_channel_send_eof(_channel);
         return;
+      case NSStreamEventOpenCompleted:
+        return;
       case NSStreamEventErrorOccurred:
         NSLog(@"Error: %@", _inputStream.streamError);
-        return;
-      case NSStreamEventOpenCompleted:
+        [_inputStream close];
+        [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+        _inputStream = nil;
+        ssh_channel_send_eof(_channel);
         return;
       default:
         NSLog(@"input: event %@", @(eventCode));
@@ -345,6 +349,9 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
       return;
     case NSStreamEventErrorOccurred:
       NSLog(@"Error: %@", stream.streamError);
+      [_outputStream close];
+      [_outputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
+      _outputStream = nil;
       return;
     default:
       NSLog(@"output: event %@", @(eventCode));
