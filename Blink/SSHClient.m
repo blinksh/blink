@@ -97,7 +97,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   struct ssh_callbacks_struct _ssh_callbacks;
   bool _doExit;
   int _exitCode;
-  pthread_t _thread;
   __weak TermDevice *_device;
 }
 
@@ -115,7 +114,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _runLoop = [NSRunLoop currentRunLoop];
     
     _isTTY = isTTY;
-    _thread = pthread_self();
     
     _doExit = NO;
     _exitCode = 0;
@@ -146,6 +144,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     ssh_free(_session);
     _session = NULL;
   }
+  
+  _ssh_callbacks.userdata = NULL;
 }
 
 - (void)dealloc {
@@ -156,12 +156,24 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 #pragma mark - UTILS
 
 - (void)sigwinch {
+  __weak SSHClient *weakSelf = self;
   [self _schedule:^{
-    ssh_channel channel = _sessionChannel.channel;
+    SSHClient *client = weakSelf;
+    if (client == nil) {
+      return;
+    }
+    ssh_channel channel = client->_sessionChannel.channel;
     if (channel == NULL) {
       return;
     }
     ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
+  }];
+}
+
+- (void)kill {
+  __weak SSHClient *weakSelf = self;
+  [self _schedule:^{
+    [weakSelf _exitWithCode:-1];
   }];
 }
 
@@ -368,9 +380,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   int methods = ssh_userauth_list(_session, NULL);
   
   NSString *password = _options[SSHOptionPassword];
+  if (password.length == 0) {
+    password = nil;
+  }
   
   // 4. user entered password in settings. So try to use it first to save AuthTries
-  if (password.length > 0) {
+  if (password) {
     if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
       rc = [self _auth_with_password: password prompts: 1];
       if (rc == SSH_AUTH_SUCCESS) {
@@ -470,6 +485,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     NSString *user = _options[SSHOptionUser];
     bool tryNextIdentityFile = NO;
     for (;;) {
+      if (_doExit) {
+        return SSH_ERROR;
+      }
       rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
       switch (rc) {
         case SSH_AUTH_SUCCESS:
@@ -502,7 +520,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       return SSH_ERROR;
     }
     
-    if (password.length == 0) {
+    if (!password) {
       const int NO_ECHO = NO;
       NSArray *prompts = @[@[@"Password:", @(NO_ECHO)]];
       password = [[self _getAnswersWithName:NULL instruction:NULL andPrompts:prompts] firstObject];
@@ -559,7 +577,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
             
             NSArray * answers =nil;
             
-            if (password.length > 0 && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
+            if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
               answers = @[password];
             } else {
               answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
@@ -700,15 +718,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   if (rc != SSH_OK) {
-    [self _exitWithCode:rc];
-    return rc;
+    return [self _exitWithCode:rc];
   }
   
   for (NSString *address in _options[SSHOptionLocalForward]) {
     rc = [self _start_listen_direct_forward: address];
     if (rc != SSH_OK && [SSHOptionValueYES isEqual:_options[SSHOptionExitOnForwardFailure]]) {
-      [self _exitWithCode:rc];
-      return rc;
+      return [self _exitWithCode:rc];
     }
   }
   
@@ -726,7 +742,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   for (;;) {
     if (_doExit) {
-      ssh_channel_free(channel);
       return SSH_ERROR;
     }
     rc = ssh_channel_open_session(channel);
@@ -757,8 +772,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   if (doRequestPTY) {
     for (;;) {
       if (_doExit) {
-        ssh_channel_close(channel);
-        ssh_channel_free(channel);
         return SSH_ERROR;
       }
       
@@ -829,6 +842,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     
     for(;;) {
+      if (_doExit) {
+        return;
+      }
       int rc = ssh_channel_request_env(channel, varName.UTF8String, varValue);
       switch (rc) {
         case SSH_AGAIN:
@@ -1008,7 +1024,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   address.sin_family = AF_INET;
   address.sin_addr.s_addr = INADDR_ANY;
   
-  address.sin_port=htons(port);
+  address.sin_port = htons(port);
   
   int rc = connect(sock, (struct sockaddr *)&address, sizeof(address));
   if (rc == -1) {
@@ -1098,7 +1114,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
                                                            void *userdata) {
   SSHClient *client = (__bridge SSHClient *)userdata;
-//  ssh_channel channel = ssh_channel_new(session);
   return [client _authChannel];
 }
 
@@ -1159,6 +1174,8 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
   if ([_options configureSSHSession:session] == SSH_OK) {
     return session;
   }
+  
+  _ssh_callbacks.userdata = NULL;
   ssh_free(session);
   return NULL;
 }
@@ -1190,12 +1207,12 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
   
   rc = [self _connect];
   if (rc != SSH_OK) {
-    [self _exitWithCode:rc];
+    return [self _exitWithCode:rc];
   }
 
   rc = [self _verify_known_host];
   if (rc != SSH_OK) {
-    [self _exitWithCode:rc];
+    return [self _exitWithCode:rc];
   }
   
   rc = [self _auth];

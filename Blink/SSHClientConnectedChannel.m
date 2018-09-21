@@ -249,7 +249,8 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
     close(_socket);
     _socket = SSH_INVALID_SOCKET;
   }
-
+  
+  _channel_cb.userdata = NULL;
   [super close];
 }
 
@@ -487,6 +488,8 @@ void __sock_callback(CFSocketRef s, CFSocketCallBackType type, CFDataRef address
     CFRelease(_socketRef);
     _socketRef = NULL;
   }
+  
+  _channel_cb.userdata = NULL;
   [super close];
 }
 

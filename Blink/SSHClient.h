@@ -47,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
                         isTTY:(BOOL)isTTY;
 - (int)main:(int) argc argv:(char **) argv;
 - (void)sigwinch;
+- (void)kill;
 
 @end
 

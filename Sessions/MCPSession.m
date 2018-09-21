@@ -238,7 +238,11 @@
     if ([_device rawMode]) {
       return NO;
     }
-    ios_kill();
+    if (_sshClient) {
+      [_sshClient kill];
+    } else {
+      ios_kill();
+    }
     return YES;
   }
 
