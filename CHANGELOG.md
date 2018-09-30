@@ -1,5 +1,15 @@
 # Version 12.0
 
+## Changes in Build 33
+
+* New `ssh-agent` command.
+* New `ssh-add` command.
+* New `ssh -A` flag. Enables forwarding of the authentication agent connection. #81, #204
+* Fixed auth attempt with empty password. 
+* Fixed memory leaks.
+
+Huge thanks to [@myneid](at discrord), @rfldn, @brandonshough.
+
 ## Changes in Build 29
 
 * Fixed issue with ssh servers without compression.
