@@ -355,8 +355,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
                                                                            message:message
                                                                     preferredStyle:UIAlertControllerStyleAlert];
+  __weak UIAlertController *weakAlertController = alertController;
   [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-    [_delegate.viewController dismissViewControllerAnimated:YES completion:nil];
+    [weakAlertController dismissViewControllerAnimated:YES completion:nil];
   }]];
   
   [_delegate.viewController presentViewController:alertController animated:YES completion:nil];

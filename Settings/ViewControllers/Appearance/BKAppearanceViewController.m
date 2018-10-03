@@ -453,6 +453,18 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   return NO;
 }
 
+- (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message {
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  __weak UIAlertController *weakAlertController = alertController;
+  [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [weakAlertController dismissViewControllerAnimated:YES completion:nil];
+  }]];
+  
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
 - (void)_writeColorShowcase
 {
   // Write content
