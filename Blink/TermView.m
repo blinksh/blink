@@ -372,6 +372,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
     [_device viewCopyString: data[@"content"]];
+  } else if ([operation isEqualToString:@"alert"]) {
+    [_device viewShowAlert:data[@"title"] andMessage:data[@"message"]];
   } else if ([operation isEqualToString:@"sendString"]) {
     [_device viewSendString:data[@"string"]];
   }

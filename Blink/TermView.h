@@ -48,6 +48,7 @@
 - (void)viewWinSizeChanged:(struct winsize)win;
 - (void)viewSendString:(NSString *)data;
 - (void)viewCopyString:(NSString *)text;
+- (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
 
 @end
 

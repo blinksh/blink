@@ -351,5 +351,16 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   return NO;
 }
 
+- (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message {
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
+                                                                           message:message
+                                                                    preferredStyle:UIAlertControllerStyleAlert];
+  [alertController addAction:[UIAlertAction actionWithTitle:@"Ok" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [_delegate.viewController dismissViewControllerAnimated:YES completion:nil];
+  }]];
+  
+  [_delegate.viewController presentViewController:alertController animated:YES completion:nil];
+}
+
 
 @end

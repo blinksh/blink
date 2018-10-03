@@ -83,8 +83,13 @@ function term_setup() {
 
 function term_init() {
   term_setupDefaults();
-  applyUserSettings();
-  waitForFontFamily(term_setup);
+  try {
+    applyUserSettings();
+    waitForFontFamily(term_setup);
+  } catch (e) {
+    _postMessage('alert', {title: 'Error', message: "Failed to setup theme. Please check syntax of your theme.\n" + e.toString()})
+    term_setup();
+  }
 }
 
 function term_write(data) {
