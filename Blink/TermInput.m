@@ -507,6 +507,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
+// Delete forward. See https://github.com/blinksh/blink/issues/559
+- (void)_deleteForwardAndNotify:(bool)notify {
+  [_device write:@"\x1b\x5b\x33\x7e"];
+}
+
 - (void)deleteBackward
 {
   if (_markedText.length == 1) {
