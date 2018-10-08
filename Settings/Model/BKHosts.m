@@ -55,6 +55,7 @@ static UICKeyChainStore *Keychain = nil;
   _lastModifiedTime = [coder decodeObjectForKey:@"lastModifiedTime"];
   _iCloudRecordId = [coder decodeObjectForKey:@"iCloudRecordId"];
   _iCloudConflictDetected = [coder decodeObjectForKey:@"iCloudConflictDetected"];
+  _proxyCmd = [coder decodeObjectForKey:@"proxyCmd"];
   return self;
 }
 
@@ -73,9 +74,10 @@ static UICKeyChainStore *Keychain = nil;
   [encoder encodeObject:_lastModifiedTime forKey:@"lastModifiedTime"];
   [encoder encodeObject:_iCloudRecordId forKey:@"iCloudRecordId"];
   [encoder encodeObject:_iCloudConflictDetected forKey:@"iCloudConflictDetected"];
+  [encoder encodeObject:_proxyCmd forKey:@"proxyCmd"];
 }
 
-- (id)initWithHost:(NSString *)host hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user passwordRef:(NSString *)passwordRef hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
+- (id)initWithHost:(NSString *)host hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user passwordRef:(NSString *)passwordRef hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
 {
   self = [super init];
   if (self) {
@@ -95,6 +97,7 @@ static UICKeyChainStore *Keychain = nil;
     }
     _moshStartup = startUpCmd;
     _prediction = [NSNumber numberWithInt:prediction];
+    _proxyCmd = proxyCmd;
   }
   return self;
 }
@@ -149,7 +152,7 @@ static UICKeyChainStore *Keychain = nil;
   return [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
 }
 
-+ (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction
++ (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
 {
   NSString *pwdRef = @"";
   if (password) {
@@ -160,7 +163,7 @@ static UICKeyChainStore *Keychain = nil;
   BKHosts *bkHost = [BKHosts withHost:host];
   // Save password to keychain if it changed
   if (!bkHost) {
-    bkHost = [[BKHosts alloc] initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshServer:moshServer moshPort:moshPort startUpCmd:startUpCmd prediction:prediction];
+    bkHost = [[BKHosts alloc] initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshServer:moshServer moshPort:moshPort startUpCmd:startUpCmd prediction:prediction proxyCmd:proxyCmd];
     [Hosts addObject:bkHost];
   } else {
     bkHost.host = newHost;
@@ -181,6 +184,7 @@ static UICKeyChainStore *Keychain = nil;
     }
     bkHost.moshStartup = startUpCmd;
     bkHost.prediction = [NSNumber numberWithInt:prediction];
+    bkHost.proxyCmd = proxyCmd;
   }
   if (![BKHosts saveHosts]) {
     return nil;
@@ -290,12 +294,23 @@ static UICKeyChainStore *Keychain = nil;
     [hostRecord setValue:host.port forKey:@"port"];
   [hostRecord setValue:host.prediction forKey:@"prediction"];
   [hostRecord setValue:host.user forKey:@"user"];
+  [hostRecord setValue:host.proxyCmd forKey:@"proxyCmd"];
   return hostRecord;
 }
 
 + (BKHosts *)hostFromRecord:(CKRecord *)hostRecord
 {
-  BKHosts *host = [[BKHosts alloc] initWithHost:[hostRecord valueForKey:@"host"] hostName:[hostRecord valueForKey:@"hostName"] sshPort:[hostRecord valueForKey:@"port"] ? [[hostRecord valueForKey:@"port"] stringValue] : @"" user:[hostRecord valueForKey:@"user"] passwordRef:[hostRecord valueForKey:@"passwordRef"] hostKey:[hostRecord valueForKey:@"key"] moshServer:[hostRecord valueForKey:@"moshServer"] moshPort:[hostRecord valueForKey:@"moshPort"] ? [[hostRecord valueForKey:@"moshPort"] stringValue] : @"" startUpCmd:[hostRecord valueForKey:@"moshStartup"] prediction:[[hostRecord valueForKey:@"prediction"] intValue]];
+  BKHosts *host = [[BKHosts alloc] initWithHost:[hostRecord valueForKey:@"host"]
+                                       hostName:[hostRecord valueForKey:@"hostName"]
+                                        sshPort:[hostRecord valueForKey:@"port"] ? [[hostRecord valueForKey:@"port"] stringValue] : @""
+                                           user:[hostRecord valueForKey:@"user"]
+                                    passwordRef:[hostRecord valueForKey:@"passwordRef"]
+                                        hostKey:[hostRecord valueForKey:@"key"]
+                                     moshServer:[hostRecord valueForKey:@"moshServer"]
+                                       moshPort:[hostRecord valueForKey:@"moshPort"] ? [[hostRecord valueForKey:@"moshPort"] stringValue] : @""
+                                     startUpCmd:[hostRecord valueForKey:@"moshStartup"]
+                                     prediction:[[hostRecord valueForKey:@"prediction"] intValue]
+                                       proxyCmd:[hostRecord valueForKey:@"proxyCmd"]];
   return host;
 }
 

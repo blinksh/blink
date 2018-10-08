@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14313.3.2" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14460.23.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
     <device id="ipad9_7" orientation="portrait">
         <adaptation id="fullscreen"/>
     </device>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14283.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14460.16.1"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -699,12 +699,43 @@
                                             <segue destination="HHX-Dn-6ZJ" kind="show" identifier="keysSegue" id="9Nb-rb-KdA"/>
                                         </connections>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Jao-c1-eGd" style="IBUITableViewCellStyleDefault" id="l6S-F1-ICS">
+                                        <rect key="frame" x="0.0" y="574.5" width="768" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="l6S-F1-ICS" id="J9T-PX-im6">
+                                            <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="ProxyCmd" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Jao-c1-eGd">
+                                                    <rect key="frame" x="20" y="0.0" width="728" height="43.5"/>
+                                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="ssh -W %h:%p bastion" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="T6I-WR-OPH">
+                                                    <rect key="frame" x="118" y="12" width="637" height="20"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no"/>
+                                                    <connections>
+                                                        <action selector="textFieldDidChange:" destination="B0L-YN-Jg0" eventType="editingChanged" id="8CH-eA-eEw"/>
+                                                        <outlet property="delegate" destination="B0L-YN-Jg0" id="Ffl-3W-KPQ"/>
+                                                    </connections>
+                                                </textField>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstItem="T6I-WR-OPH" firstAttribute="leading" secondItem="J9T-PX-im6" secondAttribute="leadingMargin" constant="98" id="QgP-5Z-QEf"/>
+                                                <constraint firstItem="T6I-WR-OPH" firstAttribute="centerY" secondItem="Jao-c1-eGd" secondAttribute="centerY" id="ixP-A1-d6X"/>
+                                                <constraint firstAttribute="trailingMargin" secondItem="T6I-WR-OPH" secondAttribute="trailing" constant="-7" id="poh-9T-XgS"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                             <tableViewSection headerTitle="Mosh" footerTitle="Startup command to execute on the host after connecting: &quot;screen -r&quot;, &quot;tmux attach&quot;..." id="Dzd-eD-Dly">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Ery-Ry-Hhs" style="IBUITableViewCellStyleDefault" id="f4U-5H-6PO">
-                                        <rect key="frame" x="0.0" y="638" width="768" height="44"/>
+                                        <rect key="frame" x="0.0" y="682" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="f4U-5H-6PO" id="1n3-ko-Ntc">
                                             <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -735,7 +766,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="wgs-Y6-7N3" style="IBUITableViewCellStyleDefault" id="id1-5u-pco">
-                                        <rect key="frame" x="0.0" y="682" width="768" height="44"/>
+                                        <rect key="frame" x="0.0" y="726" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="id1-5u-pco" id="fSR-BB-Wzc">
                                             <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -766,7 +797,7 @@
                                         </tableViewCellContentView>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Od0-4m-MMl" detailTextLabel="12a-eq-qbY" style="IBUITableViewCellStyleValue1" id="WQZ-Ty-rT1">
-                                        <rect key="frame" x="0.0" y="726" width="768" height="44"/>
+                                        <rect key="frame" x="0.0" y="770" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="WQZ-Ty-rT1" id="f6k-Ap-LnT">
                                             <rect key="frame" x="0.0" y="0.0" width="730" height="43.5"/>
@@ -793,7 +824,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" id="jvv-Tw-3QM">
-                                        <rect key="frame" x="0.0" y="770" width="768" height="44"/>
+                                        <rect key="frame" x="0.0" y="814" width="768" height="44"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="jvv-Tw-3QM" id="ls1-Me-PAF">
                                             <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -850,6 +881,7 @@
                         <outlet property="moshServerField" destination="iq0-7S-0zf" id="F1h-03-imY"/>
                         <outlet property="passwordField" destination="XA2-j1-yfV" id="7rw-Lx-3U5"/>
                         <outlet property="predictionDetail" destination="12a-eq-qbY" id="eZ6-UQ-lCu"/>
+                        <outlet property="proxyCmdField" destination="T6I-WR-OPH" id="W1l-Ph-TUc"/>
                         <outlet property="saveButton" destination="Yea-uC-btb" id="Sgp-Zx-uRd"/>
                         <outlet property="sshPortField" destination="zXP-Ax-bOc" id="SGi-WS-sCP"/>
                         <outlet property="startUpCmdField" destination="mXI-j0-XM4" id="TZt-4l-kPo"/>
@@ -2314,7 +2346,7 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="dlZ-04-Kay"/>
-        <segue reference="y9I-rB-ZKT"/>
+        <segue reference="9Nb-rb-KdA"/>
         <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>
 </document>

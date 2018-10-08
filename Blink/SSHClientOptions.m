@@ -562,8 +562,11 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     if (!args[SSHOptionIdentityFile] && savedHost.key) {
       args[SSHOptionIdentityFile] = [@[savedHost.key] mutableCopy];
     }
-    if (savedHost.password) {
+    if (savedHost.password.length > 0) {
       args[SSHOptionPassword] = savedHost.password;
+    }
+    if (savedHost.proxyCmd.length > 0) {
+      args[SSHOptionProxyCommand] = savedHost.proxyCmd;
     }
   }
 }
