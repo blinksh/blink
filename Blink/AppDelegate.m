@@ -106,7 +106,8 @@ void __setupProcessEnv() {
 
 // MARK: NSUserActivity
 
-- (BOOL)application:(UIApplication *)application willContinueUserActivityWithType:(NSString *)userActivityType {
+- (BOOL)application:(UIApplication *)application willContinueUserActivityWithType:(NSString *)userActivityType 
+{
   return YES;
 }
 
