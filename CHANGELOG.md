@@ -1,5 +1,14 @@
 # Version 12.0
 
+## Changes in Build 34
+
+* Fixed writes to ssh channels after EOF.
+* New `ProxyCmd` option in hosts ssh config section.
+* Fixed `del` (delete forward) key press on hardware keyboards.
+
+Huge thanks to [@x0wl](at discrord), @aphecetche, @SilverEzhik.
+
+
 ## Changes in Build 33
 
 * New `ssh-agent` command.
