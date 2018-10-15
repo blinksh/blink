@@ -3,8 +3,10 @@
 ## Changes in Build 34
 
 * Fixed writes to ssh channels after EOF.
-* New `ProxyCmd` option in hosts ssh config section.
-* Fixed `del` (delete forward) key press on hardware keyboards.
+* New `ProxyCmd` option in hosts ssh config section. #203
+* Fixed `del` (delete forward) key press on hardware keyboards. #559
+* Fixed blank screen if custom theme use unknown js functions. #558
+* Updated FiraCode to v1.206
 
 Huge thanks to [@x0wl](at discrord), @aphecetche, @SilverEzhik.
 
