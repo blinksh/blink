@@ -87,6 +87,10 @@ void __write_channel(ssh_channel channel, NSMutableData *data, enum ssh_connecto
     }
     NSUInteger size = byteRange.length;
     int effectiveSize = (int)MIN(window, size);
+    if (effectiveSize == 0) {
+      *stop = YES;
+      return;
+    }
     int wrote = 0;
     
     if (channel_flags & SSH_CONNECTOR_STDOUT) {
@@ -304,7 +308,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
 }
 
 - (void)stream:(NSStream *)stream handleEvent:(NSStreamEvent)eventCode {
-  
+  int remote_eof = 0;
   if (_inputStream == stream) {
     switch (eventCode) {
       case NSStreamEventHasBytesAvailable:
@@ -317,7 +321,10 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         [_inputStream close];
         [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         _inputStream = nil;
-        ssh_channel_send_eof(_channel);
+        remote_eof = ssh_channel_is_eof(_channel);
+        if (remote_eof != 1) {
+          ssh_channel_send_eof(_channel);
+        }
         return;
       case NSStreamEventOpenCompleted:
         return;
@@ -326,7 +333,10 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         [_inputStream close];
         [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         _inputStream = nil;
-        ssh_channel_send_eof(_channel);
+        remote_eof = ssh_channel_is_eof(_channel);
+        if (remote_eof != 1) {
+          ssh_channel_send_eof(_channel);
+        }
         return;
       default:
         NSLog(@"input: event %@", @(eventCode));
