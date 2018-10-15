@@ -87,7 +87,8 @@ void __write_channel(ssh_channel channel, NSMutableData *data, enum ssh_connecto
     }
     NSUInteger size = byteRange.length;
     int effectiveSize = (int)MIN(window, size);
-    if (effectiveSize == 0) {
+    // We can't write to channel after eof
+    if (effectiveSize == 0 || ssh_channel_is_eof(channel)) {
       *stop = YES;
       return;
     }
@@ -322,7 +323,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         _inputStream = nil;
         remote_eof = ssh_channel_is_eof(_channel);
-        if (remote_eof != 1) {
+        if (!remote_eof) {
           ssh_channel_send_eof(_channel);
         }
         return;
@@ -334,7 +335,7 @@ void __stream_connector_channel_exit_status_cb(ssh_session session,
         [_inputStream removeFromRunLoop:[NSRunLoop currentRunLoop] forMode:NSDefaultRunLoopMode];
         _inputStream = nil;
         remote_eof = ssh_channel_is_eof(_channel);
-        if (remote_eof != 1) {
+        if (!remote_eof) {
           ssh_channel_send_eof(_channel);
         }
         return;
