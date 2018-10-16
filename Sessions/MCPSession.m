@@ -47,9 +47,19 @@
 
 #include "ios_error.h"
 
+@interface WeakSSHClient : NSObject
+@property (weak) SSHClient *value;
+@end
+
+@implementation WeakSSHClient
+
+@end
+
+
 @implementation MCPSession {
   Session *_childSession;
   NSString *_currentCmd;
+  NSMutableArray<WeakSSHClient *> *_sshClients;
 }
 
 @dynamic sessionParameters;
@@ -58,6 +68,7 @@
 {
   if (self = [super initWithDevice:device andParametes:parameters]) {
     _repl = [[Repl alloc] initWithDevice:device andStream: _stream];
+    _sshClients = [[NSMutableArray alloc] init];
   }
   
   return self;
@@ -121,6 +132,7 @@
       setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
       ios_system(cmdline.UTF8String);
       _currentCmd = nil;
+      _sshClients = [[NSMutableArray alloc] init];
     }
     
     return YES;
@@ -129,6 +141,24 @@
   puts("Bye!");
   
   return 0;
+}
+
+- (void)registerSSHClient:(SSHClient *)sshClient {
+  WeakSSHClient *client = [[WeakSSHClient alloc] init];
+  client.value = sshClient;
+  [_sshClients addObject:client];
+}
+
+- (void)unregisterSSHClient:(SSHClient *)sshClient {
+  WeakSSHClient *foundClient = nil;
+  for (WeakSSHClient *client in _sshClients) {
+    if ([client isEqual:sshClient]) {
+      foundClient = client;
+      break;
+    }
+  }
+  
+  [_sshClients removeObject:foundClient];
 }
 
 - (bool)isRunningCmd {
@@ -205,7 +235,9 @@
 {
   [_repl sigwinch];
   [_childSession sigwinch];
-  [_sshClient sigwinch];
+  for (WeakSSHClient *client in _sshClients) {
+    [client.value sigwinch];
+  }
 }
 
 - (void)kill
@@ -238,8 +270,10 @@
     if ([_device rawMode]) {
       return NO;
     }
-    if (_sshClient) {
-      [_sshClient kill];
+    if (_sshClients.count > 0) {
+      for (WeakSSHClient *client in _sshClients) {
+        [client.value kill];
+      }
     } else {
       ios_kill();
     }

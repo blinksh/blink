@@ -36,11 +36,14 @@
 #import "MCPSessionParameters.h"
 #import "SSHClient.h"
 
+
 @interface MCPSession : Session
 
 @property (strong) MCPSessionParameters *sessionParameters;
 @property (strong, readonly) Repl *repl;
-@property (weak) SSHClient *sshClient;
+
+- (void)registerSSHClient:(SSHClient *)sshClient;
+- (void)unregisterSSHClient:(SSHClient *)sshClient;
 
 - (bool)isRunningCmd;
 

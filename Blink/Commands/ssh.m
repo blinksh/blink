@@ -82,8 +82,10 @@ int ssh_main(int argc, char *argv[]) {
                               stdErr: fileno(thread_stderr)
                        device: session.device
                        isTTY: ios_isatty(fileno(thread_stdout))];
-  session.sshClient = client;
+  [session registerSSHClient:client];
+  
   int rc = [client main:argc argv:argv];
-  session.sshClient = nil;
+  [session unregisterSSHClient:client];
+
   return rc;
 }
