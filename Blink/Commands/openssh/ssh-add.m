@@ -73,7 +73,7 @@
 #include "blink-compat.h"
 
 /* argv0 */
-char *__ssh_add_progname;
+__thread char *__ssh_add_progname;
 
 /* Default files to add */
 static char *default_files[] = {
@@ -89,20 +89,20 @@ static char *default_files[] = {
   NULL
 };
 
-static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
+__thread static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
 
 /* Default lifetime (0 == forever) */
-static int lifetime = 0;
+__thread static int lifetime = 0;
 
 /* User has to confirm key use */
-static int confirm = 0;
+__thread static int confirm = 0;
 
 /* Maximum number of signatures (XMSS) */
-static u_int maxsign = 0;
-static u_int minleft = 0;
+__thread static u_int maxsign = 0;
+__thread static u_int minleft = 0;
 
 /* we keep a cache of one passphrase */
-static char *pass = NULL;
+__thread static char *pass = NULL;
 static void
 clear_pass(void)
 {

@@ -227,8 +227,8 @@ typedef struct {
   struct sshbuf *request;
 } SocketEntry;
 
-u_int sockets_alloc = 0;
-SocketEntry *sockets = NULL;
+__thread u_int sockets_alloc = 0;
+__thread SocketEntry *sockets = NULL;
 
 typedef struct identity {
   TAILQ_ENTRY(identity) next;
@@ -245,38 +245,38 @@ struct idtable {
 };
 
 /* private key table */
-struct idtable *idtab;
+__thread struct idtable *idtab;
 
-int max_fd = 0;
+__thread int max_fd = 0;
 
 /* pid of shell == parent of agent */
-pid_t parent_pid = -1;
-time_t parent_alive_interval = 0;
+__thread pid_t parent_pid = -1;
+__thread time_t parent_alive_interval = 0;
 
 /* pid of process for which cleanup_socket is applicable */
-pid_t cleanup_pid = 0;
+__thread pid_t cleanup_pid = 0;
 
 /* pathname and directory for AUTH_SOCKET */
-char socket_name[PATH_MAX];
-char socket_dir[PATH_MAX];
+__thread char socket_name[PATH_MAX];
+__thread char socket_dir[PATH_MAX];
 
 /* PKCS#11 path whitelist */
-static char *pkcs11_whitelist;
+__thread static char *pkcs11_whitelist;
 
 /* locking */
 #define LOCK_SIZE  32
 #define LOCK_SALT_SIZE  16
 #define LOCK_ROUNDS  1
-int locked = 0;
-u_char lock_pwhash[LOCK_SIZE];
-u_char lock_salt[LOCK_SALT_SIZE];
+__thread int locked = 0;
+__thread u_char lock_pwhash[LOCK_SIZE];
+__thread u_char lock_salt[LOCK_SALT_SIZE];
 
-char *__ssh_agent_progname;
+__thread char *__ssh_agent_progname;
 
 /* Default lifetime in seconds (0 == forever) */
-static long lifetime = 0;
+__thread static long lifetime = 0;
 
-static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
+__thread static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
 
 static void
 close_socket(SocketEntry *e)
@@ -1162,6 +1162,15 @@ cleanup_handler(int sig)
 }
 
 static void
+thread_cleanup_handler(void *arg)
+{
+  cleanup_socket();
+#ifdef ENABLE_PKCS11
+  pkcs11_terminate();
+#endif
+}
+
+static void
 check_parent_exists(void)
 {
   /*
@@ -1279,6 +1288,8 @@ ssh_agent_main(int ac, char **av)
   if (ac > 0 && (c_flag || k_flag || s_flag || d_flag || D_flag))
     usage();
   
+  D_flag = 1;
+  
   if (pkcs11_whitelist == NULL)
     pkcs11_whitelist = strdup(DEFAULT_PKCS11_WHITELIST);
   
@@ -1325,6 +1336,7 @@ ssh_agent_main(int ac, char **av)
 //    fatal("%s: file descriptior rlimit %lld too low (minimum %u)",
 //          __progname, (long long)rlim.rlim_cur, SSH_AGENT_MIN_FDS);
 //  maxfds = rlim.rlim_cur - SSH_AGENT_MIN_FDS;
+  maxfds = 1000; // ??
   
   parent_pid = getpid();
   
@@ -1360,7 +1372,7 @@ ssh_agent_main(int ac, char **av)
    * Fork, and have the parent execute the command, if any, or present
    * the socket data.  The child continues as the authentication agent.
    */
-//  if (D_flag || d_flag) {
+  if (D_flag || d_flag) {
 //    log_init(__progname,
 //             d_flag ? SYSLOG_LEVEL_DEBUG3 : SYSLOG_LEVEL_INFO,
 //             SYSLOG_FACILITY_AUTH, 1);
@@ -1371,7 +1383,7 @@ ssh_agent_main(int ac, char **av)
     printf("echo Agent pid %ld;\n", (long)parent_pid);
     fflush(stdout);
     goto skip;
-//  }
+  }
   pid = fork();
   if (pid == -1) {
     perror("fork");
@@ -1436,10 +1448,12 @@ skip:
   if (ac > 0)
     parent_alive_interval = 10;
   idtab_init();
-  signal(SIGPIPE, SIG_IGN);
-  signal(SIGINT, (d_flag | D_flag) ? cleanup_handler : SIG_IGN);
-  signal(SIGHUP, cleanup_handler);
-  signal(SIGTERM, cleanup_handler);
+
+  pthread_cleanup_push(thread_cleanup_handler, NULL);
+//  signal(SIGPIPE, SIG_IGN);
+//  signal(SIGINT, (d_flag | D_flag) ? cleanup_handler : SIG_IGN);
+//  signal(SIGHUP, cleanup_handler);
+//  signal(SIGTERM, cleanup_handler);
   
 //  if (pledge("stdio rpath cpath unix id proc exec", NULL) == -1)
 //    fatal("%s: pledge: %s", __progname, strerror(errno));
@@ -1459,5 +1473,8 @@ skip:
     } else if (result > 0)
       after_poll(pfd, npfd, maxfds);
   }
+  pthread_cleanup_pop(0)
+  thread_cleanup_handler(NULL);
+  
   /* NOTREACHED */
 }
