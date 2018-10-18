@@ -214,7 +214,9 @@ add_file(int agent_fd, const char *filename, int key_only, int qflag)
     fd = STDIN_FILENO;
     filename = "(stdin)";
   } else if ((fd = open(filename, O_RDONLY)) < 0) {
-    perror(filename);
+    // perror(filename);
+    fprintf(stderr, "%s: %s\n",
+            filename, sys_errlist[errno]);
     return -1;
   }
   
