@@ -89,7 +89,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   NSMutableArray<SSHClientPortListener *> *_portListeners;
   SSHClientConnectedChannel *_sessionChannel;
-  SSHClientConnectedChannel *_authAgentChannel;
   NSMutableArray<SSHClientConnectedChannel *> *_connectedChannels;
   
   NSMutableDictionary<NSNumber *, NSNumber *> *_reversePortsMap;
@@ -1118,10 +1117,6 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
 }
 
 - (ssh_channel)_authChannel {
-  if (_authAgentChannel) {
-    return _authAgentChannel.channel;
-  }
-  
   
   struct sockaddr_un sunaddr;
   int saved_errno, sock;
@@ -1157,7 +1152,6 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
   SSHClientConnectedChannel *connectedChannel = [SSHClientConnectedChannel connect:channel withSocket:sock];
   connectedChannel.delegate = self;
   [_connectedChannels addObject:connectedChannel];
-  _authAgentChannel = connectedChannel;
   return channel;
 }
 
