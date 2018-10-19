@@ -5,8 +5,9 @@
 * Fixed resize issue for sessions with proxy command.
 * Fixed command line parsing with `>` inside quotes. #203
 * Improve socket cleanup and error messages for `ssh-add` and `ssh-agent` commands. #563
+* New scp use custom host port from blink host config. #564
 
-Huge thanks to @holzschu, @thariman, @saptarshiguha and [@x0wl](at discrord).
+Huge thanks to @holzschu, @0x0000null, @thariman, @saptarshiguha and [@x0wl](at discrord).
 
 ## Changes in Build 34
 
