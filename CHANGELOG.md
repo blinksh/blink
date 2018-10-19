@@ -1,5 +1,13 @@
 # Version 12.0
 
+## Changes in Build 35
+
+* Fixed resize issue for sessions with proxy command.
+* Fixed command line parsing with `>` inside quotes. #203
+* Improve socket cleanup and error messages for `ssh-add` and `ssh-agent` commands. #563
+
+Huge thanks to @holzschu, @thariman, @saptarshiguha and [@x0wl](at discrord).
+
 ## Changes in Build 34
 
 * Fixed writes to ssh channels after EOF.
