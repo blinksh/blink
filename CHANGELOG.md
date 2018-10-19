@@ -1,5 +1,10 @@
 # Version 12.0
 
+## Changes in Build 36
+
+* Fixed crash with ssh agent forwarding.  #563
+
+
 ## Changes in Build 35
 
 * Fixed resize issue for sessions with proxy command.
@@ -8,6 +13,7 @@
 * New scp use custom host port from blink host config. #564
 
 Huge thanks to @holzschu, @0x0000null, @thariman, @saptarshiguha and [@x0wl](at discrord).
+
 
 ## Changes in Build 34
 
