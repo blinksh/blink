@@ -31,6 +31,7 @@
 
 #import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
+#import "ScreenController.h"
 #import "Blink-Swift.h"
 
 const NSNotificationName BKUserAuthenticated = @"BKUserAuthenticated";
@@ -122,6 +123,7 @@ static BOOL authRequired = NO;
     return;
   }
   
+  [[ScreenController shared] switchToTouchScreen];
   UIApplication *app = [UIApplication sharedApplication];
   
   PasscodeLockViewController *ctrl = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];

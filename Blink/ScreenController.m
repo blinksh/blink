@@ -85,6 +85,10 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   return [[_windows firstObject] rootViewController];
 }
 
+- (UIWindow *)touchWindow {
+  return [_windows firstObject];
+}
+
 - (void)subscribeForScreenNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
@@ -178,6 +182,10 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 - (void)switchToOtherScreen
 {
   if ([_windows count] == 1) {
+    UIWindow *win = [_windows firstObject];
+    if (!win.isKeyWindow) {
+      [win makeKeyAndVisible];
+    }
     return;
   }
   
@@ -188,6 +196,13 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   [willBeKeyWindow makeKeyAndVisible];
   
   [[[self nonKeyWindow] spaceController] viewScreenDidBecomeInactive];
+}
+
+- (void)switchToTouchScreen {
+  if (self.touchWindow.isKeyWindow) {
+    return;
+  }
+  [self switchToOtherScreen];
 }
 
 - (void)moveCurrentShellToOtherScreen

@@ -36,9 +36,11 @@
 + (ScreenController *)shared;
 
 @property (nonatomic, readonly, strong) UIViewController *mainScreenRootViewController;
+@property (nonatomic, readonly, strong) UIWindow *touchWindow;
 
 - (void)setup;
 - (void)switchToOtherScreen;
+- (void)switchToTouchScreen;
 - (void)moveCurrentShellToOtherScreen;
 - (void)suspend;
 - (void)resume;
