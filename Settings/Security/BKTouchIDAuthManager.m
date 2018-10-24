@@ -124,27 +124,27 @@ static BOOL authRequired = NO;
   }
   
   [[ScreenController shared] switchToTouchScreen];
-  UIApplication *app = [UIApplication sharedApplication];
+  UIWindow *keyWindow = [[UIApplication sharedApplication] keyWindow];
   
   PasscodeLockViewController *ctrl = [[PasscodeLockViewController alloc] initWithStateString:@"EnterPassCode"];
 
   __weak BKTouchIDAuthManager *weakSelf = self;
   
   ctrl.dismissCompletionCallback = ^{
-    authRequired = NO;
-    [[app keyWindow] setRootViewController:weakSelf.rootViewController];
-    
-    weakSelf.lockViewController = nil;
-    weakSelf.rootViewController = nil;
-    
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+      authRequired = NO;
+      [keyWindow setRootViewController:weakSelf.rootViewController];
+      
+      weakSelf.lockViewController = nil;
+      weakSelf.rootViewController = nil;
+      
       [[NSNotificationCenter defaultCenter] postNotificationName:BKUserAuthenticated object:nil];
     }];
   };
   
   _lockViewController = ctrl;
-  _rootViewController = [[app keyWindow] rootViewController];
-  [[app keyWindow] setRootViewController:_lockViewController];
+  _rootViewController = [keyWindow rootViewController];
+  [keyWindow setRootViewController:_lockViewController];
 }
 
 
