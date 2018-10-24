@@ -230,7 +230,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [_device setRawMode:NO];
   
   if (instruction.length > 0) {
-    __write(_fdOut, instruction);
+    fwrite(instruction.UTF8String, [instruction lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
   }
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
   
@@ -241,18 +241,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     NSString *prompt = prompts[i][0];
     // write prompt directly to device stream?...
     fwrite(prompt.UTF8String, [prompt lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
-//    __write(_device.stream.out, prompts[i][0]);
     
-    FILE *fp = fdopen(_fdIn, "r");
     char * line = NULL;
     size_t len = 0;
-    ssize_t read = getline(&line, &len, fp);
-//    ssize_t read = getline(&line, &len, _device.stream.in);
+    ssize_t read = getline(&line, &len, _device.stream.in);
     
-    if (read != -1) {
-      
-    } else {
-      
+    if (read == -1) {
+      [self _log_info:@"Cant read input"];
     }
     
     if (line) {
@@ -260,7 +255,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       [answers addObject:lineStr];
       free(line);
     }
-    __write(_fdOut, @"\n");
+    fwrite("\n", 1, 1, _device.stream.out);
     //    fclose(fp);
   }
   [_device setEchoMode:echoMode];
