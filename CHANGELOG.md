@@ -1,5 +1,15 @@
 # Version 12.0
 
+## Changes in Build 38
+
+* Fixed interactive prompts in ssh command. #203
+* Fixed passcode lock screen with external monitor. #570
+* Fixed passcode lock screen crash. #571
+* Fixed do not print remote ip by default in ssh command.
+
+Huge thanks to @juneoh, @thariman, @saptarshiguha.
+
+
 ## Changes in Build 36
 
 * Fixed crash with ssh agent forwarding.  #563
