@@ -247,7 +247,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     ssize_t read = getline(&line, &len, _device.stream.in);
     
     if (read == -1) {
-      [self _log_info:@"Cant read input"];
+      [self _log_verbose:@"Can't read input"];
     }
     
     if (line) {
@@ -314,7 +314,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         return rc;
       case SSH_OK: {
         int sock = ssh_get_fd(_session);
-        
+    
         CFSocketRef sockRef = CFSocketCreateWithNative(NULL, sock, 0, NULL, NULL);
         NSData * data = (__bridge NSData *)CFSocketCopyPeerAddress(sockRef);
         CFRelease(sockRef);
@@ -339,7 +339,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           getnameinfo((const struct sockaddr *)[data bytes], (socklen_t)data.length, host, sizeof(host), NULL, 0, NI_NUMERICHOST);
           NSString *address = [NSString stringWithUTF8String:host];
           
-          if (address && address.length) {
+          if (address && address.length && [_options[SSHOptionPrintAddress] isEqual:SSHOptionValueYES]) {
             [self _log_info:[NSString stringWithFormat:@"Connected to %@", address]];
           }
         }

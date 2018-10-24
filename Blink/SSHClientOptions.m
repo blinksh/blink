@@ -74,6 +74,7 @@ const NSString * SSHOptionPassword = @"_password"; //
 const NSString * SSHOptionPrintConfiguration = @"_printconfiguration"; // -G
 const NSString * SSHOptionPrintVersion = @"_printversion"; // -V
 const NSString * SSHOptionSTDIOForwarding = @"_stdioforwarding"; // -W
+const NSString * SSHOptionPrintAddress = @"_printaddress"; // -o
 
 const NSString * SSHOptionValueYES = @"yes";
 const NSString * SSHOptionValueNO = @"no";
@@ -158,6 +159,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionCompression: @[yesNoType, SSHOptionValueYES], // We mobile terminal, so we set compression to yes by default.
                          SSHOptionCompressionLevel: @[compressionLevelType, @(6)], // Default compression for speed
                          SSHOptionSTDIOForwarding: @[hostportType],
+                         SSHOptionPrintAddress: @[yesNoType, SSHOptionValueNO],
                          
                          // Auth
                          SSHOptionPubkeyAuthentication: @[yesNoType, SSHOptionValueYES],

@@ -292,7 +292,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   ssh = ssh ? ssh : @"ssh";
   
-  NSMutableArray*sshArgs = [@[ssh, @"-o compression=no", @"-t", userHost, command] mutableCopy];
+  NSMutableArray*sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", @"-t", userHost, command] mutableCopy];
   if (port) {
     [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
   }
