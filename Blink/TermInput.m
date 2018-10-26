@@ -263,6 +263,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   self = [super initWithFrame:frame];
   
   if (self) {
+    
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     self.inputAssistantItem.trailingBarButtonGroups = @[];
     
@@ -377,7 +378,25 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (BOOL)becomeFirstResponder
 {
   BOOL res = [super becomeFirstResponder];
+  
   if (res) {
+    // This is hack to fix https://github.com/blinksh/blink/issues/401 iOS kb layout bug
+    // we set dummy bar buttons group to leadingBarButtonGroups and set it back to empty array
+    // so iOS relayout kb
+    
+    UIBarButtonItem *item = [[UIBarButtonItem alloc] initWithTitle:@""
+                                                             style:UIBarButtonItemStyleDone
+                                                            target:self
+                                                            action:@selector(resignFirstResponder)];
+    
+    UIBarButtonItemGroup *group = [[UIBarButtonItemGroup alloc] initWithBarButtonItems:@[item]
+                                                                    representativeItem:nil];
+    
+    
+    self.inputAssistantItem.leadingBarButtonGroups = @[group];
+    self.inputAssistantItem.leadingBarButtonGroups = @[];
+
+    
     // reload input views to get rid of kb input views from other apps.
     dispatch_async(dispatch_get_main_queue(), ^{
       [self reloadInputViews];
