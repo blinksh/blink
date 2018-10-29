@@ -469,7 +469,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   }
   
   if (args[SSHOptionHostName] == NULL && args[SSHOptionPrintVersion] == NULL) {
-    return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];;
+    return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];
   }
   
   if (localforward.count > 0) {
@@ -490,6 +490,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   if ([@[SSHOptionValueDEBUG, SSHOptionValueDEBUG1] indexOfObject:logLevel] != NSNotFound) {
     return SSH_LOG_WARN;
   }
+  
   if ([SSHOptionValueDEBUG2 isEqual:logLevel]) {
     return SSH_LOG_INFO;
   }
@@ -526,7 +527,25 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   [self _applySSH:session optionKey:SSHOptionProxyCommand withOption:SSH_OPTIONS_PROXYCOMMAND];
   
   NSString *configFile = _options[SSHOptionConfigFile];
-  return ssh_options_parse_config(session, configFile.UTF8String);
+  int rc = ssh_options_parse_config(session, configFile.UTF8String);
+  if (rc != SSH_OK) {
+    return rc;
+  }
+  
+  char *identity = NULL;
+  ssh_options_get(session, SSH_OPTIONS_IDENTITY, &identity);
+  if (identity) {
+    _options[SSHOptionIdentityFile] = [@[@(identity)] mutableCopy];
+    ssh_string_free_char(identity);
+  }
+  char *proxyCmd = NULL;
+  ssh_options_get(session, SSH_OPTIONS_PROXYCOMMAND, &proxyCmd);
+  if (proxyCmd) {
+    _options[SSHOptionProxyCommand] = @(proxyCmd);
+    ssh_string_free_char(proxyCmd);
+  }
+  
+  return rc;
 }
 
 - (NSString *)_usage {
