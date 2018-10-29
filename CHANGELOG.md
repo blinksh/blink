@@ -1,5 +1,10 @@
 # Version 12.0
 
+## Changes in Build 40
+
+* Fixed extra space under software kb on iPads. #401
+
+
 ## Changes in Build 38
 
 * Fixed interactive prompts in ssh command. #203
