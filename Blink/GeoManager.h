@@ -34,13 +34,17 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern NSString * BLGeoLockNotification;
+
 @interface GeoManager : NSObject
 
 @property (readonly) BOOL traking;
 
+
 + (GeoManager *)shared;
 
 - (void)start;
+- (void)lockInDistance:(NSNumber *)meters;
 - (void)stop;
 - (void)authorize;
 - (NSString *)lastJSONN:(int)n;

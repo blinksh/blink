@@ -41,6 +41,7 @@
 #import "MusicManager.h"
 #import "TouchOverlay.h"
 #import "BKTouchIDAuthManager.h"
+#import "GeoManager.h"
 
 @interface SpaceController () <
   UIPageViewControllerDataSource,
@@ -254,6 +255,11 @@
 		    selector:@selector(keyboardFuncTriggerChanged:)
 			name:BKKeyboardFuncTriggerChanged
 		      object:nil];
+  
+  [defaultCenter addObserver:self
+                    selector:@selector(_onGeoLock)
+                        name:BLGeoLockNotification
+                      object:nil];
 }
 
 - (void)_appDidBecomeActive
@@ -1029,6 +1035,13 @@ API_AVAILABLE(ios(11.0)){
   _termInput.frame = CGRectZero;
   _termInput.hidden = YES;
   [_termInput reset];
+}
+
+- (void)_onGeoLock {
+  NSUInteger count = _viewports.count;
+  for (int i = 0; i < count; i++) {
+    [self removeCurrentSpace];
+  }
 }
 
 @end
