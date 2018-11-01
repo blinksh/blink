@@ -33,7 +33,10 @@
 #import "GeoManager.h"
 #import <CoreLocation/CoreLocation.h>
 #import <ImageIO/ImageIO.h>
+#import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
+NSString * BLGeoLockNotification = @"BLGeoLockNotification";
 
 @interface GeoManager() <CLLocationManagerDelegate>
 
@@ -111,6 +114,8 @@ NSDictionary *__locationToJson(CLLocation * location) {
 @implementation GeoManager {
   CLLocationManager * _locManager;
   NSMutableArray<CLLocation *> *_recentLocations;
+  NSNumber *_lockDistanceInMeters;
+  CLLocation *_lockCenter;
 }
 
 - (instancetype)init {
@@ -149,10 +154,59 @@ NSDictionary *__locationToJson(CLLocation * location) {
   _traking = YES;
 }
 
+- (void)lockInDistance:(NSNumber *)meters {
+  if (_traking) {
+    return;
+  }
+  
+  _lockDistanceInMeters = meters;
+  _locManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation;
+  _locManager.allowsBackgroundLocationUpdates = YES;
+  _locManager.pausesLocationUpdatesAutomatically = NO;
+  [_locManager startUpdatingLocation];
+  
+  _traking = YES;
+}
+
+- (void)_postLockNotifications {
+  [[NSNotificationCenter defaultCenter] postNotificationName:BLGeoLockNotification object:nil];
+  UNUserNotificationCenter * center = [UNUserNotificationCenter currentNotificationCenter];
+  [center getNotificationSettingsWithCompletionHandler:^(UNNotificationSettings * _Nonnull settings) {
+    if (settings.authorizationStatus != UNAuthorizationStatusAuthorized) {
+      return;
+    }
+    if (settings.alertSetting != UNNotificationSettingEnabled) {
+      return;
+    }
+    
+    UNMutableNotificationContent *content = [[UNMutableNotificationContent alloc] init];
+    content.title = @"Geo lock";
+    content.body = @"Your device get out of geo range lock.\nAll session are terminated.";
+    UNNotificationRequest *req = [UNNotificationRequest requestWithIdentifier:@"geo.lock" content:content trigger:nil];
+    
+    [center addNotificationRequest:req withCompletionHandler:^(NSError * _Nullable error) {
+      
+    }];
+  }];
+}
+
 - (void)locationManager:(CLLocationManager *)manager didUpdateLocations:(NSArray<CLLocation *> *)locations {
   [_recentLocations addObjectsFromArray:locations];
   
-  int maxHistory = 100;
+  if (_lockDistanceInMeters) {
+
+    if (_lockCenter) {
+      CLLocationDistance distance = [_lockCenter distanceFromLocation:[_recentLocations lastObject]];
+      if (distance > _lockDistanceInMeters.doubleValue) {
+        [self stop];
+        [self _postLockNotifications];
+      }
+    } else if (_recentLocations.count > 10) {
+      _lockCenter = [_recentLocations lastObject];
+    }
+  }
+  
+  int maxHistory = 200;
   if (_recentLocations.count > maxHistory) {
     [_recentLocations removeObjectsInRange:NSMakeRange(0, _recentLocations.count - maxHistory)];
   }
@@ -196,6 +250,11 @@ NSDictionary *__locationToJson(CLLocation * location) {
 }
 
 - (void)stop {
+  if (_lockCenter) {
+    [_recentLocations removeAllObjects];
+  }
+  _lockDistanceInMeters = nil;
+  _lockCenter = nil;
   [_locManager stopUpdatingLocation];
   _traking = NO;
 }

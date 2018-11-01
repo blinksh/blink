@@ -35,6 +35,9 @@
 //#include "ios_error.h"
 #import "GeoManager.h"
 #import <CoreLocation/CoreLocation.h>
+#import <UserNotifications/UserNotifications.h>
+
+
 
 NSString * _preauthorize_check_geo_premissions() {
   if (!CLLocationManager.locationServicesEnabled) {
@@ -79,11 +82,32 @@ NSString * _prestart_check_geo_premissions() {
   return nil;
 }
 
+NSNumber * _parse_distance(NSString *str) {
+  if (str == nil) {
+    return nil;
+  }
+  
+  str = [str lowercaseString];
+  str = [str stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  double scale = 1;
+  if ([str hasSuffix:@"km"]) {
+    scale = 1000;
+  } else if ([str hasSuffix:@"mi"]) {
+    scale = 1609.344;
+  } else if ([str hasSuffix:@"ft"]) {
+    scale = 0.3048;
+  } else if ([str hasSuffix:@"m"]) {
+    scale = 1;
+  }
+  
+  return @(str.doubleValue * scale);
+}
+
 int geo_main(int argc, char *argv[]) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   TermDevice *device = session.device;
   
-  NSString *usage = @"Usage: geo track | stop | authorize | current | last N";
+  NSString *usage = @"Usage: geo track | geo lock Nm | stop | authorize | current | last N";
 
   if (argc < 2) {
     [session.device writeOutLn:usage];
@@ -104,6 +128,37 @@ int geo_main(int argc, char *argv[]) {
       }
       [[GeoManager shared] start];
       [device writeOutLn:@"Location tracking is started."];
+    } else if ([@"lock" isEqual:action] && argc == 3) {
+      NSNumber *distance = _parse_distance(@(argv[2]));
+      if (distance == nil) {
+        [session.device writeOutLn:@"Can't parse distance value. Example: 10m, 0.5km, 1mi"];
+        return;
+      }
+      
+      __block BOOL grantedNotifications = NO;
+      
+      dispatch_semaphore_t sema = dispatch_semaphore_create(0);
+      
+      UNUserNotificationCenter *center = [UNUserNotificationCenter currentNotificationCenter];
+      [center requestAuthorizationWithOptions:
+        (UNAuthorizationOptionAlert )
+                            completionHandler:^(BOOL granted, NSError * _Nullable error) {
+                              grantedNotifications = granted;
+                              dispatch_semaphore_signal(sema);
+                            }];
+      
+      dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
+      NSString *reason = _prestart_check_geo_premissions();
+      if (reason) {
+        [session.device writeOutLn:reason];
+        return;
+      }
+      if (GeoManager.shared.traking) {
+        [device writeOutLn:@"Location tracking is already started."];
+        return;
+      }
+      [[GeoManager shared] lockInDistance:distance];
+      [device writeOutLn:[NSString stringWithFormat:@"Location locked within %@ meters.", distance]];
     } else if ([@"stop" isEqual:action]) {
       [[GeoManager shared] stop];
       [device writeOutLn:@"Location tracking is stopped."];

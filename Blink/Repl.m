@@ -390,7 +390,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   } else if ([@"blink-music" isEqualToString:completionType]) {
     completions = [[MusicManager shared] commands];
   } else if ([@"blink-geo" isEqualToString:completionType]) {
-    completions = @[@"track", @"stop", @"current", @"authorize", @"last"];
+    completions = @[@"track", @"lock", @"stop", @"current", @"authorize", @"last"];
   } else if ([@"file" isEqualToString:completionType]) {
     completions = [self _allFiles:prefix];
   } else if ([@"directory" isEqualToString:completionType]) {
