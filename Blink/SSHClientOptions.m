@@ -535,7 +535,10 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   char *identity = NULL;
   ssh_options_get(session, SSH_OPTIONS_IDENTITY, &identity);
   if (identity) {
-    _options[SSHOptionIdentityFile] = [@[@(identity)] mutableCopy];
+    NSString *identityStr = @(identity);
+    if (![identityStr hasPrefix:@"%d/"]) {
+      _options[SSHOptionIdentityFile] = [@[@(identity)] mutableCopy];
+    }
     ssh_string_free_char(identity);
   }
   char *proxyCmd = NULL;
