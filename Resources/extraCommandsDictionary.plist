@@ -51,6 +51,13 @@
       <string></string>
       <string>file</string>
     </array>
+    <key>ed</key>
+    <array>
+      <string>text.framework/text</string>
+      <string>ed_main</string>
+      <string>p:sx</string>
+      <string>file</string>
+    </array>
     <key>ctags</key>
     <array>
       <string>libctags.dylib</string>

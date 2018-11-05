@@ -443,5 +443,12 @@
       <string>aAbc:fgh:iIklmp:PQrRS</string>
       <string>no</string>
     </array>
+    <key>xargs</key>
+    <array>
+      <string>shell.framework/shell</string>
+      <string>xargs_main</string>
+      <string>0E:I:J:L:n:oP:pR:s:tx</string>
+      <string>no</string>
+    </array>
   </dict>
 </plist>
