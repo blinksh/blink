@@ -106,7 +106,6 @@
 		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
-		D2060A5120E2501E00CF5122 /* libssh_threadsd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2060A4A20E2501E00CF5122 /* libssh_threadsd.a */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
 		D2071B732150E4AA000156D7 /* ssh-add.m in Sources */ = {isa = PBXBuildFile; fileRef = D2071B722150E4AA000156D7 /* ssh-add.m */; };
 		D2071B7B2150EBC1000156D7 /* authfile.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7A2150EBC1000156D7 /* authfile.c */; };
@@ -466,7 +465,6 @@
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
-		D2060A4A20E2501E00CF5122 /* libssh_threadsd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libssh_threadsd.a; sourceTree = "<group>"; };
 		D2060A5220E2644400CF5122 /* SSHClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClient.h; sourceTree = "<group>"; };
 		D2060A5320E2644400CF5122 /* SSHClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClient.m; sourceTree = "<group>"; };
 		D2071B722150E4AA000156D7 /* ssh-add.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-add.m"; sourceTree = "<group>"; };
@@ -636,7 +634,6 @@
 				D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
-				D2060A5120E2501E00CF5122 /* libssh_threadsd.a in Frameworks */,
 				D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */,
 				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
@@ -797,7 +794,6 @@
 		0732F0561D062BB300AB5438 /* lib */ = {
 			isa = PBXGroup;
 			children = (
-				D2060A4A20E2501E00CF5122 /* libssh_threadsd.a */,
 				D263489720BEBFE000A8E89F /* libsshd.a */,
 				076FBD511DB6BE1D00F6D997 /* libprotobuf.a */,
 			);
