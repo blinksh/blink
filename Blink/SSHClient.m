@@ -629,33 +629,28 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     return rc;
   }
   
-  enum ssh_server_known_e state = ssh_is_server_known(_session);
+  enum ssh_known_hosts_e state = ssh_session_is_known_server(_session);
   
   switch(state) {
-    case SSH_SERVER_KNOWN_OK:
-      break; /* ok */
-    case SSH_SERVER_KNOWN_CHANGED:
+    case SSH_KNOWN_HOSTS_CHANGED:
       [self _log_info:@"Host key for server changed : server's one is now :"];
       ssh_print_hexa("Public key hash",hash, hlen);
       ssh_clean_pubkey_hash(&hash);
       [self _log_info:@"For security reason, connection will be stopped"];
       return SSH_ERROR;
-    case SSH_SERVER_FOUND_OTHER:
-      [self _log_info: [
-        @[@"The host key for this server was not found but an other type of key exists.",
-          @"An attacker might change the default server key to confuse your client",
-          @"into thinking the key does not exist."]
-          componentsJoinedByString:@"\n"] ];
+    case SSH_KNOWN_HOSTS_OTHER:
+      [self _log_info:@"The host key for this server was not found but an other type of key exists."];
+      [self _log_info:@"An attacker might change the default server key to confuse your client"];
+      [self _log_info:@"into thinking the key does not exist"];
+      [self _log_info:@"For security reason, connection will be stopped"];
       return SSH_ERROR;
-      
-    case SSH_SERVER_FILE_NOT_FOUND:
+    case SSH_KNOWN_HOSTS_NOT_FOUND:
       [self _log_info: [
-         @[@"Could not find known host file. If you accept the host key here,",
+        @[@"Could not find known host file. If you accept the host key here.",
           @"the file will be automatically created."]
-          componentsJoinedByString:@"\n"]];
-      /* fallback to SSH_SERVER_NOT_KNOWN behavior */
-      //      FALL_THROUGH;
-    case SSH_SERVER_NOT_KNOWN: {
+          componentsJoinedByString:@"\n"] ];
+//      FALL_THROUGH;
+    case SSH_KNOWN_HOSTS_UNKNOWN: {
       hexa = ssh_get_hexa(hash, hlen);
       [self _log_info: [NSString stringWithFormat:@"Public key hash: %s", hexa]];
       ssh_string_free_char(hexa);
@@ -682,16 +677,15 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           [self _log_error];
           return SSH_ERROR;
         }
-      } else {
-        ssh_clean_pubkey_hash(&hash);
-        return SSH_ERROR;
       }
     }
       break;
-    case SSH_SERVER_ERROR:
+    case SSH_KNOWN_HOSTS_ERROR:
       ssh_clean_pubkey_hash(&hash);
       [self _log_error];
       return SSH_ERROR;
+    case SSH_KNOWN_HOSTS_OK:
+      break; /* ok */
   }
   ssh_clean_pubkey_hash(&hash);
       
