@@ -178,13 +178,15 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
 
 - (NSString *)privateKey
 {
-  ssh_string blob = NULL;
-  ssh_pki_export_privkey_blob(_ssh_key, NULL, NULL, NULL, &blob);
+  char *b64_key = NULL;
   
-  NSString *key = [[NSString alloc] initWithBytes:ssh_string_data(blob) length:ssh_string_len(blob) encoding:NSUTF8StringEncoding];
+  int rc =ssh_pki_export_privkey_base64(_ssh_key, NULL, NULL, NULL, &b64_key);
+  if (rc != SSH_OK) {
+    return nil;
+  }
   
-  ssh_string_burn(blob);
-  ssh_string_free(blob);
+  NSString *key = [[NSString alloc] initWithUTF8String:b64_key];
+  ssh_string_free_char(b64_key);
   
   return key;
 }
@@ -192,23 +194,24 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
 // Generate OpenSSH or PEM public key
 - (NSString *)publicKeyWithComment:(NSString*)comment
 {
-//  ssh_key pubkey = NULL;
-//  int rc = ssh_pki_export_privkey_to_pubkey(_ssh_key, &pubkey);
-//  if (rc != SSH_OK) {
-//    return nil;
-//  }
-  
-  char *buf = NULL;
-  int rc = ssh_pki_export_pubkey_base64(_ssh_key, &buf);
+  char *b64_key = NULL;
+  int rc = ssh_pki_export_pubkey_base64(_ssh_key, &b64_key);
   if (rc != SSH_OK) {
-//    ssh_key_free(pubkey);
     return nil;
   }
-  NSString *key = @(buf);
-//  ssh_key_free(pubkey);
+
+  NSString *key = [[NSString alloc] initWithUTF8String:b64_key];
+  ssh_string_free_char(b64_key);
+
   enum ssh_keytypes_e key_type = ssh_key_type(_ssh_key);
-  const char *key_type_chars = ssh_key_type_to_char(key_type);
-  NSString *keyType = @(key_type_chars);
+  NSString *keyType = nil;
+  if (key_type == SSH_KEYTYPE_ECDSA) {
+    const char *name = ssh_pki_key_ecdsa_name(_ssh_key);
+    keyType = @(name);
+  } else {
+    const char *key_type_chars = ssh_key_type_to_char(key_type);
+    keyType = @(key_type_chars);
+  }
   
   NSString *commentedKey = [NSString stringWithFormat:@"%@ %@ %@", keyType, key, comment];
   return commentedKey;
