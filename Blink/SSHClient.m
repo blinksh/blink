@@ -510,8 +510,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
           [self _poll];
           continue;
         case SSH_AUTH_DENIED:
-        case SSH_AUTH_PARTIAL:
           tryNextIdentityFile = YES;
+          break;
+        case SSH_AUTH_PARTIAL: {
+            int methods = ssh_userauth_list(_session, NULL);
+            tryNextIdentityFile = methods & SSH_AUTH_METHOD_PUBLICKEY;
+          }
           break;
         default:
           break;
