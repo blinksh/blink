@@ -370,51 +370,71 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   // 2. print issue banner if any
   __write_ssh_chars_and_free(_fdOut, ssh_get_issue_banner(_session));
   
-  // 3. get auth methods from server
-  int methods = ssh_userauth_list(_session, NULL);
-  
-  NSString *password = _options[SSHOptionPassword];
-  if (password.length == 0) {
-    password = nil;
+  BOOL optionPasswordAuth = [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]];
+  BOOL optionKbdInteractiveAuth = [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]];
+  BOOL optionPubKeyAuth = [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]];
+  int  optionPasswordPromptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
+  NSString *optionPassword = _options[SSHOptionPassword];
+  if (optionPassword.length == 0) {
+    optionPassword = nil;
   }
   
-  // 4. user entered password in settings. So try to use it first to save AuthTries
-  if (password) {
-    if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
-      rc = [self _auth_with_password: password prompts: 1];
+  int maxPartialAuths = 5;
+  
+  for (int i = 0; i <  maxPartialAuths; i++) {
+    [self _log_verbose:[NSString stringWithFormat:@"using auth methods attempt: %@ of %@\n", @(i + 1), @(maxPartialAuths)]];
+    
+    // 3. get auth methods from server
+    int methods = ssh_userauth_list(_session, NULL);
+    
+    // 4. user entered password in settings. So try to use it first to save AuthTries
+    if (optionPassword) {
+      if (methods & SSH_AUTH_METHOD_PASSWORD && optionPasswordAuth) {
+        rc = [self _auth_with_password: optionPassword prompts: 1];
+        if (rc == SSH_AUTH_SUCCESS) {
+          return SSH_OK;
+        } else if (rc == SSH_AUTH_PARTIAL) {
+          continue;
+        }
+      } else if (methods & SSH_AUTH_METHOD_INTERACTIVE && optionKbdInteractiveAuth) {
+        rc = [self _auth_with_interactive_with_password:optionPassword prompts:1];
+        if (rc == SSH_AUTH_SUCCESS) {
+          return SSH_OK;
+        } else if (rc == SSH_AUTH_PARTIAL) {
+          continue;
+        }
+      }
+    }
+  
+    // 5. public keys
+    if (methods & SSH_AUTH_METHOD_PUBLICKEY && optionPubKeyAuth) {
+      rc = [self _auth_with_publickey];
       if (rc == SSH_AUTH_SUCCESS) {
         return SSH_OK;
+      } else if (rc == SSH_AUTH_PARTIAL) {
+        continue;
       }
-    } else if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
-      rc = [self _auth_with_interactive_with_password:password prompts:1];
+    }
+    
+    // 4. interactive
+    if (methods & SSH_AUTH_METHOD_INTERACTIVE && optionKbdInteractiveAuth) {
+      rc = [self _auth_with_interactive_with_password:optionPassword prompts:optionPasswordPromptsCount];
       if (rc == SSH_AUTH_SUCCESS) {
         return SSH_OK;
+      } else if (rc == SSH_AUTH_PARTIAL) {
+        continue;
+      }
+    } else if (methods & SSH_AUTH_METHOD_PASSWORD && optionPasswordAuth) {
+      // 6. even we don't have password. Ask it
+      rc = [self _auth_with_password: optionPassword prompts:optionPasswordPromptsCount];
+      if (rc == SSH_AUTH_SUCCESS) {
+        return SSH_OK;
+      } else if (rc == SSH_AUTH_PARTIAL) {
+        continue;
       }
     }
-  }
-  
-  // 5. public keys
-  if (methods & SSH_AUTH_METHOD_PUBLICKEY && [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]]) {
-    rc = [self _auth_with_publickey];
-    if (rc == SSH_AUTH_SUCCESS) {
-      return SSH_OK;
-    }
-  }
-  
-  int promptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
-  
-  // 4. interactive
-  if (methods & SSH_AUTH_METHOD_INTERACTIVE && [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]]) {
-    rc = [self _auth_with_interactive_with_password:password prompts:promptsCount];
-    if (rc == SSH_AUTH_SUCCESS) {
-      return SSH_OK;
-    }
-  } else if (methods & SSH_AUTH_METHOD_PASSWORD && [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]]) {
-    // 6. even we don't have password. Ask it
-    rc = [self _auth_with_password: password prompts:promptsCount];
-    if (rc == SSH_AUTH_SUCCESS) {
-      return SSH_OK;
-    }
+    
+    break;
   }
 
   return [self _exitWithCode:SSH_ERROR];
