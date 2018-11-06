@@ -71,6 +71,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
   _lightKeyboard = [coder decodeBoolForKey:@"lightKeyboard"];
+  _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   return self;
 }
 
@@ -89,6 +90,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
   [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
+  [encoder encodeBool:_alternateAppIcon forKey:@"alternateAppIcon"];
 }
 
 + (void)loadDefaults
@@ -185,6 +187,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (void)setLightKeyboard:(BOOL)state
 {
   defaults.lightKeyboard = state;
+}
+
++ (void)setAlternateAppIcon:(BOOL)state
+{
+  defaults.alternateAppIcon = state;
 }
 
 + (void)setEnableBold:(NSUInteger)state
@@ -292,6 +299,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)isLightKeyboard
 {
   return defaults.lightKeyboard;
+}
+
++ (BOOL)isAlternateAppIcon
+{
+  return defaults.alternateAppIcon;
 }
 
 + (NSString*)defaultUserName

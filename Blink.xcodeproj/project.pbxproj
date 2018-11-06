@@ -143,6 +143,23 @@
 		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
 		D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D263489720BEBFE000A8E89F /* libsshd.a */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
+		D284BAD22191B9B400DCE581 /* old-settings-iphone-29pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC12191B99F00DCE581 /* old-settings-iphone-29pt@2x.png */; };
+		D284BAD32191B9B400DCE581 /* old-settings-iphone-29pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC22191B99F00DCE581 /* old-settings-iphone-29pt@3x.png */; };
+		D284BAD42191B9B400DCE581 /* old-spotlight-ipad-40pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC32191B99F00DCE581 /* old-spotlight-ipad-40pt@2x.png */; };
+		D284BAD52191B9B400DCE581 /* old-app-ipad-pro-83.5pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC42191B99F00DCE581 /* old-app-ipad-pro-83.5pt@2x.png */; };
+		D284BAD62191B9B400DCE581 /* old-settings-ipad-29pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC52191B99F00DCE581 /* old-settings-ipad-29pt@2x.png */; };
+		D284BAD72191B9B400DCE581 /* old-app-iphone-60pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC62191B99F00DCE581 /* old-app-iphone-60pt@2x.png */; };
+		D284BAD82191B9B400DCE581 /* old-app-ipad-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC72191B99F00DCE581 /* old-app-ipad-29pt.png */; };
+		D284BAD92191B9B400DCE581 /* old-app-iphone-60pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC82191B99F00DCE581 /* old-app-iphone-60pt@3x.png */; };
+		D284BADA2191B9B400DCE581 /* old-notification-ipad-20pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAC92191B99F00DCE581 /* old-notification-ipad-20pt@2x.png */; };
+		D284BADB2191B9B400DCE581 /* old-app-ipad-76pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACA2191B99F00DCE581 /* old-app-ipad-76pt@2x.png */; };
+		D284BADC2191B9B400DCE581 /* old-spotlight-iphone-40pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACB2191B99F00DCE581 /* old-spotlight-iphone-40pt@3x.png */; };
+		D284BADD2191B9B400DCE581 /* old-notification-iphone-20pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACC2191B99F00DCE581 /* old-notification-iphone-20pt@3x.png */; };
+		D284BADE2191B9B400DCE581 /* old-notification-ipad-20pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACD2191B99F00DCE581 /* old-notification-ipad-20pt.png */; };
+		D284BADF2191B9B400DCE581 /* old-settings-iphone-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACE2191B99F00DCE581 /* old-settings-iphone-29pt.png */; };
+		D284BAE02191B9B400DCE581 /* old-notification-iphone-20pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BACF2191B99F00DCE581 /* old-notification-iphone-20pt@2x.png */; };
+		D284BAE12191B9B400DCE581 /* old-app-ipad-76pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAD02191B99F00DCE581 /* old-app-ipad-76pt.png */; };
+		D284BAE22191B9B400DCE581 /* old-spotlight-ipad-40pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D284BAD12191B99F00DCE581 /* old-spotlight-ipad-40pt.png */; };
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D2961970214F89360070935A /* ssh-agent.m in Sources */ = {isa = PBXBuildFile; fileRef = D296196F214F89210070935A /* ssh-agent.m */; };
@@ -541,6 +558,23 @@
 		D263489720BEBFE000A8E89F /* libsshd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsshd.a; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
+		D284BAC12191B99F00DCE581 /* old-settings-iphone-29pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-settings-iphone-29pt@2x.png"; sourceTree = "<group>"; };
+		D284BAC22191B99F00DCE581 /* old-settings-iphone-29pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-settings-iphone-29pt@3x.png"; sourceTree = "<group>"; };
+		D284BAC32191B99F00DCE581 /* old-spotlight-ipad-40pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-spotlight-ipad-40pt@2x.png"; sourceTree = "<group>"; };
+		D284BAC42191B99F00DCE581 /* old-app-ipad-pro-83.5pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-ipad-pro-83.5pt@2x.png"; sourceTree = "<group>"; };
+		D284BAC52191B99F00DCE581 /* old-settings-ipad-29pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-settings-ipad-29pt@2x.png"; sourceTree = "<group>"; };
+		D284BAC62191B99F00DCE581 /* old-app-iphone-60pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-iphone-60pt@2x.png"; sourceTree = "<group>"; };
+		D284BAC72191B99F00DCE581 /* old-app-ipad-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-ipad-29pt.png"; sourceTree = "<group>"; };
+		D284BAC82191B99F00DCE581 /* old-app-iphone-60pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-iphone-60pt@3x.png"; sourceTree = "<group>"; };
+		D284BAC92191B99F00DCE581 /* old-notification-ipad-20pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-notification-ipad-20pt@2x.png"; sourceTree = "<group>"; };
+		D284BACA2191B99F00DCE581 /* old-app-ipad-76pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-ipad-76pt@2x.png"; sourceTree = "<group>"; };
+		D284BACB2191B99F00DCE581 /* old-spotlight-iphone-40pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-spotlight-iphone-40pt@3x.png"; sourceTree = "<group>"; };
+		D284BACC2191B99F00DCE581 /* old-notification-iphone-20pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-notification-iphone-20pt@3x.png"; sourceTree = "<group>"; };
+		D284BACD2191B99F00DCE581 /* old-notification-ipad-20pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-notification-ipad-20pt.png"; sourceTree = "<group>"; };
+		D284BACE2191B99F00DCE581 /* old-settings-iphone-29pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-settings-iphone-29pt.png"; sourceTree = "<group>"; };
+		D284BACF2191B99F00DCE581 /* old-notification-iphone-20pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-notification-iphone-20pt@2x.png"; sourceTree = "<group>"; };
+		D284BAD02191B99F00DCE581 /* old-app-ipad-76pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-app-ipad-76pt.png"; sourceTree = "<group>"; };
+		D284BAD12191B99F00DCE581 /* old-spotlight-ipad-40pt.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "old-spotlight-ipad-40pt.png"; sourceTree = "<group>"; };
 		D28DB3AB210B110B008A1139 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D296196F214F89210070935A /* ssh-agent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-agent.m"; sourceTree = "<group>"; };
@@ -1190,6 +1224,30 @@
 			path = libssh;
 			sourceTree = "<group>";
 		};
+		D284BAC02191B99F00DCE581 /* OldAppIcon */ = {
+			isa = PBXGroup;
+			children = (
+				D284BAC12191B99F00DCE581 /* old-settings-iphone-29pt@2x.png */,
+				D284BAC22191B99F00DCE581 /* old-settings-iphone-29pt@3x.png */,
+				D284BAC32191B99F00DCE581 /* old-spotlight-ipad-40pt@2x.png */,
+				D284BAC42191B99F00DCE581 /* old-app-ipad-pro-83.5pt@2x.png */,
+				D284BAC52191B99F00DCE581 /* old-settings-ipad-29pt@2x.png */,
+				D284BAC62191B99F00DCE581 /* old-app-iphone-60pt@2x.png */,
+				D284BAC72191B99F00DCE581 /* old-app-ipad-29pt.png */,
+				D284BAC82191B99F00DCE581 /* old-app-iphone-60pt@3x.png */,
+				D284BAC92191B99F00DCE581 /* old-notification-ipad-20pt@2x.png */,
+				D284BACA2191B99F00DCE581 /* old-app-ipad-76pt@2x.png */,
+				D284BACB2191B99F00DCE581 /* old-spotlight-iphone-40pt@3x.png */,
+				D284BACC2191B99F00DCE581 /* old-notification-iphone-20pt@3x.png */,
+				D284BACD2191B99F00DCE581 /* old-notification-ipad-20pt.png */,
+				D284BACE2191B99F00DCE581 /* old-settings-iphone-29pt.png */,
+				D284BACF2191B99F00DCE581 /* old-notification-iphone-20pt@2x.png */,
+				D284BAD02191B99F00DCE581 /* old-app-ipad-76pt.png */,
+				D284BAD12191B99F00DCE581 /* old-spotlight-ipad-40pt.png */,
+			);
+			path = OldAppIcon;
+			sourceTree = "<group>";
+		};
 		D2961968214F89060070935A /* openssh */ = {
 			isa = PBXGroup;
 			children = (
@@ -1300,6 +1358,7 @@
 				0732F0481D062B9A00AB5438 /* Resources */,
 				074F30781D062A2800A73445 /* main.m */,
 				07E4C5201C935E28000C571A /* Media.xcassets */,
+				D284BAC02191B99F00DCE581 /* OldAppIcon */,
 				07F670621D05EEE200C0A53C /* Sessions */,
 				0716B5231CFFAB9300268B5B /* Blink */,
 				EA0BA18C1C0CC57B00719C1A /* Products */,
@@ -1505,30 +1564,47 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D284BAD52191B9B400DCE581 /* old-app-ipad-pro-83.5pt@2x.png in Resources */,
+				D284BAD42191B9B400DCE581 /* old-spotlight-ipad-40pt@2x.png in Resources */,
 				07E3AED31D919272007BC086 /* css in Resources */,
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
 				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
+				D284BADD2191B9B400DCE581 /* old-notification-iphone-20pt@3x.png in Resources */,
 				D296199B214F995D0070935A /* ge25519_base.data in Resources */,
 				07AA06571E08B12E008310B7 /* PasscodeLockView.xib in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
 				07E4C5211C935E28000C571A /* Media.xcassets in Resources */,
+				D284BADF2191B9B400DCE581 /* old-settings-iphone-29pt.png in Resources */,
 				0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */,
+				D284BAD92191B9B400DCE581 /* old-app-iphone-60pt@3x.png in Resources */,
+				D284BADB2191B9B400DCE581 /* old-app-ipad-76pt@2x.png in Resources */,
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
+				D284BAD62191B9B400DCE581 /* old-settings-ipad-29pt@2x.png in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
+				D284BAD22191B9B400DCE581 /* old-settings-iphone-29pt@2x.png in Resources */,
+				D284BADA2191B9B400DCE581 /* old-notification-ipad-20pt@2x.png in Resources */,
 				D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */,
 				D2496F412003941B00E75FE9 /* term.js in Resources */,
 				07AA06491E08B12E008310B7 /* PasscodeLock.strings in Resources */,
 				C94437651D838ABF0096F84E /* Fonts in Resources */,
+				D284BADE2191B9B400DCE581 /* old-notification-ipad-20pt.png in Resources */,
 				D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */,
+				D284BAE02191B9B400DCE581 /* old-notification-iphone-20pt@2x.png in Resources */,
+				D284BAD82191B9B400DCE581 /* old-app-ipad-29pt.png in Resources */,
 				D2094662204D3FC5003C4F72 /* cacert.pem in Resources */,
+				D284BAD72191B9B400DCE581 /* old-app-iphone-60pt@2x.png in Resources */,
+				D284BAE22191B9B400DCE581 /* old-spotlight-ipad-40pt.png in Resources */,
 				85A34309200A8FAF009324F1 /* term.css in Resources */,
 				0732F04E1D062B9A00AB5438 /* term.html in Resources */,
 				07E3AED11D9191B4007BC086 /* blink.png in Resources */,
 				C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */,
+				D284BAD32191B9B400DCE581 /* old-settings-iphone-29pt@3x.png in Resources */,
 				D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */,
+				D284BAE12191B9B400DCE581 /* old-app-ipad-76pt.png in Resources */,
+				D284BADC2191B9B400DCE581 /* old-spotlight-iphone-40pt@3x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

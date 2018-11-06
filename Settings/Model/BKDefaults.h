@@ -62,6 +62,7 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 @property (nonatomic) NSUInteger enableBold;
 @property (nonatomic) BOOL boldAsBright;
 @property (nonatomic) BOOL lightKeyboard;
+@property (nonatomic) BOOL alternateAppIcon;
 
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
@@ -73,6 +74,7 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (void)setBoldAsBright:(BOOL)state;
 + (void)setEnableBold:(NSUInteger)state;
 + (void)setLightKeyboard:(BOOL)state;
++ (void)setAlternateAppIcon:(BOOL)state;
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
@@ -92,6 +94,7 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (NSUInteger)enableBold;
 + (BOOL)isBoldAsBright;
 + (BOOL)isLightKeyboard;
++ (BOOL)isAlternateAppIcon;
 + (void)setDefaultUserName:(NSString*)name;
 + (NSString*)defaultUserName;
 @end

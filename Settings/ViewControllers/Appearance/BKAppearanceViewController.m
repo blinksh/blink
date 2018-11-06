@@ -42,13 +42,15 @@
 #define BOLD_AS_BRIGHT_TAG 2004
 #define LIGHT_KEYBOARD_TAG 2005
 #define ENABLE_BOLD_TAG 2006
+#define APP_ICON_ALTERNATE 2007
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
     BKAppearance_Themes,
     BKAppearance_Fonts,
     BKAppearance_FontSize,
-    BKAppearance_KeyboardAppearance
+    BKAppearance_KeyboardAppearance,
+    BKAppearance_AppIcon
 };
 
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
@@ -75,6 +77,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
   UISegmentedControl *_enableBoldSegmentedControl;
   NSUInteger _enableBoldValue;
+  
+  UISwitch *_alternateAppIconSwitch;
+  BOOL _alternateAppIconValue;
 }
 
 - (void)viewDidLoad
@@ -119,6 +124,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _boldAsBrightValue = [BKDefaults isBoldAsBright];
   _lightKeyboardValue = [BKDefaults isLightKeyboard];
   _enableBoldValue = [BKDefaults enableBold];
+  _alternateAppIconValue = [BKDefaults isAlternateAppIcon];
 }
 
 - (void)saveDefaultValues
@@ -136,6 +142,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [BKDefaults setCursorBlink:_cursorBlinkValue];
   [BKDefaults setBoldAsBright:_boldAsBrightValue];
   [BKDefaults setLightKeyboard:_lightKeyboardValue];
+  [BKDefaults setAlternateAppIcon:_alternateAppIconValue];
   [BKDefaults setEnableBold: _enableBoldValue];
 
   [BKDefaults saveDefaults];
@@ -148,7 +155,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-  return 5;
+  return 6;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -160,6 +167,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
   } else if (section == BKAppearance_KeyboardAppearance) {
+    return 1;
+  } else if (section == BKAppearance_AppIcon) {
     return 1;
   } else {
     return 4;
@@ -222,7 +231,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     }
   } else if (section == BKAppearance_KeyboardAppearance) {
     cellIdentifier = @"lightKeyboardCell";
+  } else if (section == BKAppearance_AppIcon) {
+    cellIdentifier = @"alternateAppIconCell";
   }
+  
   
   return cellIdentifier;
 }
@@ -244,6 +256,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return @"FONTS";
   case BKAppearance_KeyboardAppearance:
     return @"Keyboard Appearance";
+  case BKAppearance_AppIcon:
+    return @"APP ICON";
   default:
     return nil;
   }
@@ -284,6 +298,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
     _lightKeyboardSwitch = [cell viewWithTag:LIGHT_KEYBOARD_TAG];
     _lightKeyboardSwitch.on = _lightKeyboardValue;
+  } else if (indexPath.section == BKAppearance_AppIcon && indexPath.row == 0) {
+    _alternateAppIconSwitch = [cell viewWithTag:APP_ICON_ALTERNATE];
+    _alternateAppIconSwitch.on = _alternateAppIconValue;
   }
   return cell;
 }
@@ -353,6 +370,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath
 {
+  if (indexPath.section == BKAppearance_AppIcon || indexPath.section == BKAppearance_KeyboardAppearance) {
+    return NO;
+  }
   return indexPath.section != BKAppearance_FontSize;
 }
 
@@ -415,6 +435,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _lightKeyboardValue = _lightKeyboardSwitch.on;
 }
 
+- (IBAction)alternateAppIconSwitchChanged:(id)sender
+{
+  _alternateAppIconValue = _alternateAppIconSwitch.on;
+  NSString *appIcon = nil;
+  if (_alternateAppIconValue) {
+    appIcon = @"OldAppIcon";
+  }
+  [[UIApplication sharedApplication] setAlternateIconName:appIcon completionHandler:nil];
+}
 
 #pragma mark - TermViewDeviceProtocol
 
