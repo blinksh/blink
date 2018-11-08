@@ -303,6 +303,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
             _session = [self _configured_session];
             continue;
           }
+          [self _log_error];
         }
         attempts--;
         if (attempts > 0) {
