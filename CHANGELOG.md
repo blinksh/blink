@@ -1,4 +1,30 @@
-# Version 12.0
+# Version 12.2
+
+## Changes in Build 47
+
+* Updated libssh to 0.8.5.
+* Added alternate icon. #583
+* Added xargs command.
+* Fixed don't grab ctrl+space by default. #588
+* Fixed log ssh connect error.
+* Fixed partial auth in ssh. #582
+* Fixed ecdsa public keys. #581
+* Fixed use id_rsa key by default. #582
+* Warn users for key dups in Blink Config and .ssh folder. #582
+
+Huge thanks to @andrius, @solarfl4re, @mgbaozi, @shannonmoeller, @goerz, @avysk  for help and patience.
+
+
+# Version 12.1
+
+## Changes in Build 43
+
+* Hot fix for ssh keys
+
+Thanks to @thinkberg for alarm.
+
+
+## Version 12.0
 
 ## Changes in Build 40
 
