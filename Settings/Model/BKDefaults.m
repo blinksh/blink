@@ -67,6 +67,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _capsAsEsc = [coder decodeBoolForKey:@"capsAsEsc"];
   _shiftAsEsc = [coder decodeBoolForKey:@"shiftAsEsc"];
   _autoRepeatKeys = [coder decodeBoolForKey:@"autoRepeatKeys"];
+  _grabCtrlSpace = [coder decodeBoolForKey:@"grabCtrlSpace"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
@@ -86,6 +87,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_capsAsEsc forKey:@"capsAsEsc"];
   [encoder encodeBool:_shiftAsEsc forKey:@"shiftAsEsc"];
   [encoder encodeBool:_autoRepeatKeys forKey:@"autoRepeatKeys"];
+  [encoder encodeBool:_grabCtrlSpace forKey:@"grabCtrlSpace"];
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
@@ -172,6 +174,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (void)setAutoRepeatKeys:(BOOL)state
 {
   defaults.autoRepeatKeys = state;
+}
+
++ (void)setGrabCtrlSpace:(BOOL)state
+{
+  defaults.grabCtrlSpace = state;
 }
 
 + (void)setCursorBlink:(BOOL)state
@@ -279,6 +286,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)autoRepeatKeys
 {
   return defaults.autoRepeatKeys;
+}
+
++ (BOOL)grabCtrlSpace
+{
+  return defaults.grabCtrlSpace;
 }
 
 + (BOOL)isCursorBlink

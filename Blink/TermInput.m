@@ -897,8 +897,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSMutableArray *cmds = [NSMutableArray array];
   NSString *charset;
   NSString *shiftCharset = nil;
-  if (seq == TermViewCtrlSeq || seq == TermViewEscCtrlSeq) {
-    charset = @"2345678qwertyuiopasdfghjklzxcvbnm[\\]^/_ \t";
+  if (seq == TermViewCtrlSeq) {
+    charset = @"2345678qwertyuiopasdfghjklzxcvbnm[\\]^/_\t";
+    if (BKDefaults.grabCtrlSpace) {
+      charset = [charset stringByAppendingString:@" "];
+    }
+  } else if (seq == TermViewEscCtrlSeq) {
+    charset = @"2345678qwertyuiopasdfghjklzxcvbnm[\\]^/_\t ";
   } else if (seq == TermViewEscSeq) {
     shiftCharset = @"qwertyuiopasdfghjklzxcvbnm";
     charset = [shiftCharset stringByAppendingString:@"1234567890`~!@#$%^&*()_=+[]{}\\|;':\",./<>?\t"];

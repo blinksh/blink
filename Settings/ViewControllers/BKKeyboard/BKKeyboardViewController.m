@@ -38,6 +38,7 @@
 #define KEY_LABEL_TAG 1001
 #define VALUE_LABEL_TAG 1002
 #define AUTOREPEAT_TAG 1003
+#define GRAB_CTRL_SPACE_TAG 1004
 
 NSString *const BKKeyboardConfigChanged = @"BKKeyboardConfigChanged";
 NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
@@ -53,7 +54,8 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
 @end
 
 @implementation BKKeyboardViewController {
-    UISwitch *_autoRepeatSwitch;
+  UISwitch *_autoRepeatSwitch;
+  UISwitch *_grabCtrlSpaceSwitch;
 }
 
 - (void)viewDidLoad
@@ -154,11 +156,16 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
           [_autoRepeatSwitch setOn:[BKDefaults autoRepeatKeys]];
           break;
         case 3:
+          cell = [tableView dequeueReusableCellWithIdentifier:@"grabCtrlSpaceCell" forIndexPath:indexPath];
+          _grabCtrlSpaceSwitch = [cell viewWithTag:GRAB_CTRL_SPACE_TAG];
+          [_grabCtrlSpaceSwitch setOn:[BKDefaults grabCtrlSpace]];
+          break;
+        case 4:
           cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
           cell.textLabel.text = (NSString*)BKKeyboardFuncFTriggers;
           cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncFTriggers];
           break;
-        case 4:
+        case 5:
           cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
           cell.textLabel.text = (NSString*)BKKeyboardFuncCursorTriggers;
           cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncCursorTriggers];
@@ -256,6 +263,7 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
   
   [_keyboardMapping setObject:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults setAutoRepeatKeys:_autoRepeatSwitch.on];
+  [BKDefaults setGrabCtrlSpace:_grabCtrlSpaceSwitch.on];
   [BKDefaults setModifer:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults saveDefaults];
 }
