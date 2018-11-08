@@ -466,6 +466,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     
     BKPubKey *secureKey = [BKPubKey withID:identityfile];
 
+    NSFileManager *fileManager = [NSFileManager defaultManager];
+    
     // we have this identity in
     if (secureKey) {
       [self _log_verbose:[NSString stringWithFormat:@"import key %@\n", identityfile]];
@@ -474,14 +476,20 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
                                          __ssh_auth_fn,
                                          (__bridge void *) self,
                                          &pkey);
+      
+      NSString *identityFilePath = [[BlinkPaths ssh] stringByAppendingPathComponent:identityfile];
+      if ([fileManager fileExistsAtPath:identityFilePath]) {
+        [self _log_verbose:[NSString stringWithFormat:@"warning: key '%@' duplicate in SE and file system. Using key from SE   \n", identityfile]];
+      }
     } else {
       NSString *identityFilePath = identityfile;
-      NSFileManager *fileManager = [NSFileManager defaultManager];
+      
       // if file doesn't exists. Fallback to ~/.ssh/<identifyfile>
       if (![fileManager fileExistsAtPath:identityFilePath]) {
         identityFilePath = [[BlinkPaths ssh] stringByAppendingPathComponent:identityFilePath];
       }
       if (![fileManager fileExistsAtPath:identityFilePath]) {
+        [self _log_verbose:[NSString stringWithFormat:@"warning: no key found: '%@' \n", identityfile]];
         continue;
       }
       
