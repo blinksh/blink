@@ -12,23 +12,14 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-			<key>OldAppIcon</key>
+			<key>DarkAppIcon</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>old-app-iphone-60pt</string>
-					<string>old-settings-iphone-29pt</string>
-					<string>old-notification-iphone-20pt</string>
-					<string>old-spotlight-iphone-40pt</string>
-				</array>
-				<key>CFBundleIconFiles~ipad</key>
-				<array>
-					<string>old-app-ipad-29pt</string>
-					<string>old-app-ipad-76pt</string>
-					<string>old-app-ipad-pro-83.5pt</string>
-					<string>old-notification-ipad-20pt</string>
-					<string>old-settings-ipad-29pt</string>
-					<string>old-spotlight-ipad-40pt</string>
+					<string>dark-app-iphone-60pt</string>
+					<string>dark-settings-iphone-29pt</string>
+					<string>dark-notification-iphone-20pt</string>
+					<string>dark-spotlight-iphone-40pt</string>
 				</array>
 			</dict>
 		</dict>
@@ -48,23 +39,15 @@
 	<dict>
 		<key>CFBundleAlternateIcons</key>
 		<dict>
-			<key>OldAppIcon</key>
+			<key>DarkAppIcon</key>
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>old-app-iphone-60pt</string>
-					<string>old-settings-iphone-29pt</string>
-					<string>old-notification-iphone-20pt</string>
-					<string>old-spotlight-iphone-40pt</string>
-				</array>
-				<key>CFBundleIconFiles~ipad</key>
-				<array>
-					<string>old-app-ipad-29pt</string>
-					<string>old-app-ipad-76pt</string>
-					<string>old-app-ipad-pro-83.5pt</string>
-					<string>old-notification-ipad-20pt</string>
-					<string>old-settings-ipad-29pt</string>
-					<string>old-spotlight-ipad-40pt</string>
+					<string>dark-app-ipad-60pt</string>
+					<string>dark-settings-ipad-29pt</string>
+					<string>dark-notification-ipad-20pt</string>
+					<string>dark-spotlight-ipad-40pt</string>
+					<string>dark-app-ipad-pro-83.5pt</string>
 				</array>
 			</dict>
 		</dict>

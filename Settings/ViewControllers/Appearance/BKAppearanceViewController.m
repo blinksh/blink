@@ -440,7 +440,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _alternateAppIconValue = _alternateAppIconSwitch.on;
   NSString *appIcon = nil;
   if (_alternateAppIconValue) {
-    appIcon = @"OldAppIcon";
+    appIcon = @"DarkAppIcon";
   }
   [[UIApplication sharedApplication] setAlternateIconName:appIcon completionHandler:nil];
 }
