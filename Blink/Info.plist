@@ -43,7 +43,7 @@
 			<dict>
 				<key>CFBundleIconFiles</key>
 				<array>
-					<string>dark-app-ipad-60pt</string>
+					<string>dark-app-ipad-76pt</string>
 					<string>dark-settings-ipad-29pt</string>
 					<string>dark-notification-ipad-20pt</string>
 					<string>dark-spotlight-ipad-40pt</string>
