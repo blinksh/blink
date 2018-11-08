@@ -583,7 +583,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     if (!args[SSHOptionUser] && savedHost.user) {
       args[SSHOptionUser] = savedHost.user;
     }
-    if (!args[SSHOptionIdentityFile] && savedHost.key) {
+    if (!args[SSHOptionIdentityFile] && savedHost.key && ![savedHost.key isEqual:@"None"] /* TODO: Check for None earlier */ ) {
       args[SSHOptionIdentityFile] = [@[savedHost.key] mutableCopy];
     }
     if (savedHost.password.length > 0) {
