@@ -128,45 +128,6 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
 
 # Changelog
-# Version 10.0
-	- Secured Mosh Persistent Connections and Restore.
-	- Image rendering!
-	- URL Links detection!
-	- Autocomplete for commands and hosts!
-	- Two fingers swipe up shows a new "control command" section.
-	- Support for Remote Copy under SSH.
-	- iPhone users, two fingers closes on-screen keyboard.
-	- More and better emojis support.
-	- Added "history" command to cleanup the history file.
-	- Bold fonts now with an option for bold or bright.
-	- New WWDC16 theme.
-	- Added Light/Dark keyboard setting.
-	- Support for installed fonts, so no more CSS is required.
-	- Control selections with keyboard! Read help for more information.
-	- Copy - Paste now works in unfocused mode too.
-	- Paste Selection.
-
-	- Faster Terminal rendering thanks to better writing flows.
-	- Updated HTerm!
-	- Updated Mosh to 1.3!
-	- Updated MBProgressHUD to fix race conditions.
-
-	- Fixed stuck Cmd key (deal with iOS issues).
-	- Fixed swipe ups triggering SmartKeys.
-	- Fixed Cmd as Ctrl for Ctrl+C and Ctlr+Z
-	- Fixed resize glitches.
-	- Improved loading time for terminal and custom fonts.
-	- Improved focus when switching between apps.
-	- Improved and smoother animations.
-	- Improved accessoryView handling if other screen is active.
-	- Improved all gestures internally.
-	- Fixed tab caching after closed.
-	- Fixed issues with irregular character widths misaligning columns.
-	- Fixed vertical rendering of fonts in some specific scenarios.
-	- Fixed issues with resizes and focus.
-	- Fixed unselect on tap.
-	- Fixed ssh restores crashing the app.
-	- Fixed external screen focus.
 
 [View all changes](CHANGELOG.md)
 
