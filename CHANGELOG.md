@@ -1,5 +1,11 @@
 # Version 12.2
 
+## Changes in Build 51
+
+* Improved mosh state restoration. #577
+* Fixed grab ctrl+space option. #588, #606
+
+
 ## Changes in Build 49
 
 * Improved mosh state restoration. #577
