@@ -89,6 +89,9 @@
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
+    if (self.sessionParameters.hasEncodedState) {
+      return 0;
+    }
   }
   
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
