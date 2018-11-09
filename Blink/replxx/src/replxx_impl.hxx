@@ -91,6 +91,7 @@ public:
 	void set_no_color( bool val );
 	void set_max_history_size( int len );
 	void clear_screen( void );
+  void clear_screen_to_end(void);
 	int install_window_change_handler( void );
   int window_changed( void );
 	completions_t call_completer( std::string const& input, int breakPos ) const;

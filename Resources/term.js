@@ -426,3 +426,9 @@ function term_applySexyTheme(theme) {
 function term_setAutoCarriageReturn(state) {
   t.setAutoCarriageReturn(state);
 }
+
+function term_restore() {
+  t.primaryScreen_.textAttributes.reset();
+  t.setVTScrollRegion(null, null);
+  t.setCursorVisible(true);
+}

@@ -80,6 +80,7 @@
 - (void)pasteSelection:(id _Nullable)sender;
 - (void)terminate;
 - (void)reset;
+- (void)restore;
 
 - (void)blur;
 - (void)focus;

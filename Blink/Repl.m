@@ -534,13 +534,23 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     if (!callback(cmdline)) {
       break;
     }
-
+    
+    dispatch_sync(dispatch_get_main_queue(), ^{
+      [_device.view restore];
+    });
+    
+    replxx_clear_screen_to_end(_replxx);
+    
     printf("\033]0;blink\007");
     [_device setRawMode:NO];
   }
   
 //  replxx_end(_replxx);
 //  _replxx = nil;
+}
+
+- (void)clearToEnd {
+  
 }
 
 - (NSString *)_input:(char *)prompt

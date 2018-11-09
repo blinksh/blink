@@ -268,6 +268,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_reset() completionHandler:nil];
 }
 
+- (void)restore
+{
+  [self _evalJSScript:term_restore()];
+}
+
 - (void)increaseFontSize
 {
   [_webView evaluateJavaScript:term_increaseFontSize() completionHandler:nil];

@@ -176,5 +176,9 @@ NSString *term_setAutoCarriageReturn(BOOL state)
   return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@);", state ? @"true" : @"false"];
 }
 
+NSString *term_restore() {
+  return @"term_restore()";
+}
+
 
 #endif /* TermJS_h */

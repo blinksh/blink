@@ -260,6 +260,7 @@ char const* replxx_history_line( Replxx*, int index );
 int replxx_history_save( Replxx*, const char* filename );
 int replxx_history_load( Replxx*, const char* filename );
 void replxx_clear_screen( Replxx* );
+void replxx_clear_screen_to_end( Replxx* );
 void replxx_debug_dump_print_codes(void);
 /* the following is extension to the original linenoise API */
 int replxx_install_window_change_handler( Replxx* );
