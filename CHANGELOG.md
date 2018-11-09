@@ -1,5 +1,11 @@
 # Version 12.2
 
+## Changes in Build 49
+
+* Improved mosh state restoration. #577
+* Fixed restore cursor and text styles after command termination.
+* Fixed memory leaks.
+
 ## Changes in Build 47
 
 * Updated libssh to 0.8.5.
