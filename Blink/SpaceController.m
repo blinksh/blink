@@ -170,7 +170,6 @@
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager
 {
   UIColor * bgColor = [coder decodeObjectForKey:@"bgColor"] ?: [UIColor blackColor];
-  self.view.backgroundColor = bgColor;
   _unfocused = [coder decodeBoolForKey:@"_unfocused"];
   NSArray *sessionStateKeys = [coder decodeObjectForKey:@"sessionStateKeys"];
   
@@ -191,6 +190,7 @@
   TermController *term = _viewports[idx];
   
   [self loadViewIfNeeded];
+  self.view.backgroundColor = bgColor;
   
   __weak typeof(self) weakSelf = self;
   [_viewportsController setViewControllers:@[term]
