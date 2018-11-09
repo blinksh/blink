@@ -1257,7 +1257,6 @@
                                             <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="10"/>
                                             <connections>
                                                 <action selector="autoRepeatChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="8vc-bU-907"/>
-                                                <action selector="cursorBlinkSwitchChanged:" destination="wNx-Mq-Q3D" eventType="valueChanged" id="Mkt-ed-QZD"/>
                                             </connections>
                                         </switch>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Auto Repeat" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3l2-Pw-5NA">
@@ -1289,8 +1288,7 @@
                                             <rect key="frame" x="699" y="6.5" width="51" height="31"/>
                                             <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="10"/>
                                             <connections>
-                                                <action selector="autoRepeatChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="jq5-bT-hpK"/>
-                                                <action selector="cursorBlinkSwitchChanged:" destination="wNx-Mq-Q3D" eventType="valueChanged" id="iif-EP-R1L"/>
+                                                <action selector="grabCtrlSpaceChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="RSZ-UW-n0W"/>
                                             </connections>
                                         </switch>
                                         <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Grab Ctrl+Space" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jaw-tg-t2q">
@@ -2403,7 +2401,7 @@
         <image name="user" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="dlZ-04-Kay"/>
+        <segue reference="Qg1-8I-Klb"/>
         <segue reference="y9I-rB-ZKT"/>
         <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>

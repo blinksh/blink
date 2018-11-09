@@ -232,11 +232,19 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
   [BKDefaults setShiftAsEsc:what];
   [BKDefaults saveDefaults];
 }
+
 - (IBAction)autoRepeatChanged:(id)sender {
   BOOL what = [sender isOn];
   [BKDefaults setAutoRepeatKeys:what];
   [BKDefaults saveDefaults];
 }
+
+- (IBAction)grabCtrlSpaceChanged:(id)sender {
+  BOOL what = [sender isOn];
+  [BKDefaults setGrabCtrlSpace:what];
+  [BKDefaults saveDefaults];
+}
+
 
 #pragma mark - Navigation
 
@@ -263,7 +271,6 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
   
   [_keyboardMapping setObject:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults setAutoRepeatKeys:_autoRepeatSwitch.on];
-  [BKDefaults setGrabCtrlSpace:_grabCtrlSpaceSwitch.on];
   [BKDefaults setModifer:valueLabel.text forKey:[self selectedObject]];
   [BKDefaults saveDefaults];
 }
