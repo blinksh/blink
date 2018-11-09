@@ -549,10 +549,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
 //  _replxx = nil;
 }
 
-- (void)clearToEnd {
-  
-}
-
 - (NSString *)_input:(char *)prompt
 {
   if (_replxx == nil || _stream.in == NULL) {

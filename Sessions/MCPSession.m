@@ -80,6 +80,10 @@
   ios_setMiniRoot([BlinkPaths documents]);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   ios_setContext((__bridge void*)self);
+  replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
+  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
+  [self updateAllowedPaths];
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
   
   if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
@@ -87,13 +91,6 @@
     _childSession = nil;
   }
   
-  replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
-  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
-  
-  
-  [self updateAllowedPaths];
-  
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
   
     NSArray *arr = [cmdline componentsSeparatedByString:@" "];
@@ -103,6 +100,9 @@
       return NO;
     } else if ([cmd isEqualToString:@"mosh"]) {
       [self _runMoshWithArgs:cmdline];
+      if (self.sessionParameters.hasEncodedState) {
+        return NO;
+      }
     } else if ([cmd isEqualToString:@"ssh2"]) {
       [self _runSSHWithArgs:cmdline];
     } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
@@ -124,7 +124,7 @@
     return YES;
   }];
 
-  puts("Bye!");
+  puts("Bye! 👋");
   
   return 0;
 }
@@ -203,7 +203,6 @@
   self.sessionParameters.childSessionType = @"mosh";
   _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
   [_childSession executeAttachedWithArgs:args];
-  
   _childSession = nil;
 }
 

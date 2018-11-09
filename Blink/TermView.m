@@ -139,39 +139,43 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_willResignActive
 {
-  if (self.window == nil) {
-    return;
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (self.window == nil) {
+      return;
+    }
 
-  if (@available(iOS 11.0, *)) {
-    [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
-      _snapshotImageView.image = snapshotImage;
+    if (@available(iOS 11.0, *)) {
+      [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+        _snapshotImageView.image = snapshotImage;
+        _snapshotImageView.frame = self.bounds;
+        _snapshotImageView.alpha = 1;
+        [self addSubview:_snapshotImageView];
+        [_webView removeFromSuperview];
+      }];
+    } else {
+      // Blank screen for ios 10?
       _snapshotImageView.frame = self.bounds;
-      _snapshotImageView.alpha = 1;
       [self addSubview:_snapshotImageView];
       [_webView removeFromSuperview];
-    }];
-  } else {
-    // Blank screen for ios 10?
-    _snapshotImageView.frame = self.bounds;
-    [self addSubview:_snapshotImageView];
-    [_webView removeFromSuperview];
-  }
+    }
+  });
 }
 
 - (void)_didBecomeActive
 {
-  if (_webView.superview) {
-    return;
-  }
-
-  _webView.frame = self.bounds;
-  [self insertSubview:_webView belowSubview:_snapshotImageView];
-  [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
-    _snapshotImageView.alpha = 0;
-  } completion:^(BOOL finished) {
-    [_snapshotImageView removeFromSuperview];
-  }];
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (_webView.superview) {
+      return;
+    }
+    
+    _webView.frame = self.bounds;
+    [self insertSubview:_webView belowSubview:_snapshotImageView];
+    [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
+      _snapshotImageView.alpha = 0;
+    } completion:^(BOOL finished) {
+      [_snapshotImageView removeFromSuperview];
+    }];
+  });
 }
 
 - (BOOL)canBecomeFirstResponder {
