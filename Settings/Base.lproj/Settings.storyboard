@@ -2280,7 +2280,7 @@
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
                             <tableViewSection id="1UE-Ue-ulN">
-                                <string key="footerTitle">Sync your Host information securely across all your devices via iCloud. Notifications are required to synchronize when not using the app.</string>
+                                <string key="footerTitle">Sync your Host information securely across all your devices via iCloud. For security reasons, keys won’t be synchronized and have to be created on the device. Notifications are required to synchronize when not using the app.</string>
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="ZSf-Ch-4WC">
                                         <rect key="frame" x="0.0" y="35" width="768" height="44"/>
