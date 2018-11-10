@@ -1,16 +1,14 @@
 # Version 12.2
 
-## Changes in Build 51
+## Changes in Build 52
 
 * Improved mosh state restoration. #577
 * Fixed grab ctrl+space option. #588, #606
-
-
-## Changes in Build 49
-
-* Improved mosh state restoration. #577
+* Fixed ssh default user. #605
+* Fixed known_hosts check.
 * Fixed restore cursor and text styles after command termination.
 * Fixed memory leaks.
+
 
 ## Changes in Build 47
 
