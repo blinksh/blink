@@ -220,7 +220,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
-  if (self.sessionParameters.encodedState == nil) {
+  NSData *encodedState = self.sessionParameters.encodedState;
+  if (encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
     if ( code < 0) {
       return code;
@@ -231,6 +232,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   setenv("PATH_LOCALE", [locales_path cStringUsingEncoding:1], 1);
   
   [_device setRawMode:YES];
+
+  [self.sessionParameters cleanEncodedState];
   
   mosh_main(
             _stream.in, _stream.out, &_device->win,
@@ -239,8 +242,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             [self.sessionParameters.port UTF8String],
             [self.sessionParameters.key UTF8String],
             [self.sessionParameters.predictionMode UTF8String],
-            self.sessionParameters.encodedState.bytes,
-            self.sessionParameters.encodedState.length
+            encodedState.bytes,
+            encodedState.length
             );
   
   [_device setRawMode:NO];
