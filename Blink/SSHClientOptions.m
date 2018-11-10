@@ -134,8 +134,14 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSObject *compressionLevelType = [[NSObject alloc] init];
   NSObject *hostportType = [[NSObject alloc] init];
   
+  NSArray *userOption = @[stringType];
+  NSString *defaultUserName = BKDefaults.defaultUserName;
+  if (defaultUserName.length > 0) {
+    userOption = [userOption arrayByAddingObject:defaultUserName];
+  }
+  
   NSDictionary *opts = @{
-                         SSHOptionUser: @[stringType],
+                         SSHOptionUser: userOption,
                          SSHOptionHostName: @[stringType],
                          SSHOptionPort: @[portType, @(22)],
                          SSHOptionRequestTTY: @[yesNoAutoType, SSHOptionValueAUTO],
@@ -580,7 +586,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     if (!args[SSHOptionPort] && savedHost.port) {
       args[SSHOptionPort] = savedHost.port;
     }
-    if (!args[SSHOptionUser] && savedHost.user) {
+    if (!args[SSHOptionUser] && savedHost.user && savedHost.user.length > 0) {
       args[SSHOptionUser] = savedHost.user;
     }
     if (!args[SSHOptionIdentityFile] && savedHost.key && ![savedHost.key isEqual:@"None"] /* TODO: Check for None earlier */ ) {
