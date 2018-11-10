@@ -664,6 +664,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   enum ssh_known_hosts_e state = ssh_session_is_known_server(_session);
   
+  if (state == SSH_KNOWN_HOSTS_OTHER) {
+    [self _log_verbose:@"The host key for this server was not found but an other type of key exists.\n"];
+    [self _log_verbose:@"An attacker might change the default server key to confuse your client\n"];
+    [self _log_verbose:@"into thinking the key does not exist.\n"];
+    state = SSH_KNOWN_HOSTS_UNKNOWN;
+  }
+  
   switch(state) {
     case SSH_KNOWN_HOSTS_CHANGED:
       [self _log_info:@"Host key for server changed : server's one is now :"];
