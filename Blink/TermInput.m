@@ -235,6 +235,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   NSString *_specialFKeysRow;
   NSSet<NSString *> *_imeLangSet;
 
+  NSMutableArray<UIKeyCommand *> *_rawAdditionalKbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutAutoRepeat;
   SmartKeysController *_smartKeys;
@@ -569,9 +570,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     [_device write:[CC ESC:input]];
   }
 }
+
 - (void)escSeq:(UIKeyCommand *)cmd
 {
   [self _escSeqWithInput:cmd.input];
+}
+
+- (void)escSeqNoInput:(UIKeyCommand *)cmd
+{
+  [self _escSeqWithInput:@""];
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
@@ -607,7 +614,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)ctrlSeq:(UIKeyCommand *)cmd
 {
-  [self _ctrlSeqWithInput:cmd.input];
+  if ([cmd.input length]) {
+    [self _ctrlSeqWithInput:cmd.input];
+  }
+}
+
+- (void)dummySeq:(UIKeyCommand *)cmd
+{
 }
 
 - (void)_escCtrlSeqWithInput:(NSString *)input
@@ -836,6 +849,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   for (NSNumber *modifier in _functionTriggerKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_functionTriggerKeys[modifier]];
   }
+  
+  [_kbdCommands addObjectsFromArray:_rawAdditionalKbdCommands];
   
   [_kbdCommands addObjectsFromArray:self._functionModifierKeys];
 
@@ -1114,6 +1129,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   _functionKeys = [[NSMutableDictionary alloc] init];
   _functionTriggerKeys = [[NSMutableDictionary alloc] init];
   _specialFKeysRow = @"1234567890";
+  _rawAdditionalKbdCommands = [[NSMutableArray alloc] init];
   [self _setKbdCommands];
 }
 
@@ -1169,9 +1185,21 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if ([BKDefaults isShiftAsEsc]) {
     [self _assignKey:UIKeyInputEscape toModifier:UIKeyModifierShift];
   }
-
+  
+  if ([BKDefaults isBackquoteAsEsc]) {
+    [_rawAdditionalKbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"`" modifierFlags:0 action:@selector(escSeqNoInput:)]];
+  }
+  
   if ([BKDefaults isCapsAsEsc]) {
     [self _assignKey:UIKeyInputEscape toModifier:UIKeyModifierAlphaShift];
+  }
+  
+  if ([BKDefaults isCapsAsCtrl]) {
+    NSMutableArray *cmds = [[NSMutableArray alloc] init];
+    [cmds addObject:[UIKeyCommand keyCommandWithInput:@""
+                                       modifierFlags:UIKeyModifierAlphaShift action:@selector(dummySeq:)]];
+    [_functionKeys setObject:cmds forKey:[NSNumber numberWithInteger:UIKeyModifierAlphaShift]];
+    [self _assignSequence:TermViewCtrlSeq toModifier:UIKeyModifierAlphaShift];
   }
 
   for (NSString *func in [BKDefaults keyboardFuncTriggers].allKeys) {
