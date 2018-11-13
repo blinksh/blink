@@ -1,5 +1,10 @@
 # Version 12.2
 
+## Changes in Build 53
+
+* Updated libssh to 0.8.5.
+
+
 ## Changes in Build 52
 
 * Improved mosh state restoration. #577
@@ -12,7 +17,7 @@
 
 ## Changes in Build 47
 
-* Updated libssh to 0.8.5.
+* Updated libssh to 0.8.3.
 * Added alternate icon. #583
 * Added xargs command.
 * Fixed don't grab ctrl+space by default. #588
