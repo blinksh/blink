@@ -56,6 +56,7 @@ static const char *usage_format =
 "-k      --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
 "-p NUM  --port=NUM           server-side UDP port\r\n"
 "-P NUM                       ssh connection port\r\n"
+"-T                           do not allocate a pseudo tty on ssh connection\r\n"
 "-I id                        ssh authentication identity name\r\n"
 //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
 //  "                                (example: \"ssh -p 2222\")\r\n"
@@ -98,6 +99,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 - (int)initParamaters:(int)argc argv:(char **)argv
 {
   NSString *ssh, *sshPort, *sshIdentity;
+  BOOL sshTTY = YES;
   int help = 0;
   NSString *colors;
   
@@ -120,7 +122,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   while (1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "anp:I:P:k:", long_options, &option_index);
+    int c = getopt_long(argc, argv, "anp:I:P:k:T", long_options, &option_index);
     if (c == -1) {
       break;
     }
@@ -158,6 +160,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       break;
       case 'I':
       sshIdentity = [NSString stringWithFormat:@"%s", optarg];
+      break;
+      case 'T':
+        sshTTY = NO;
       break;
       default:
       return [self dieMsg:@(usage_format)];
@@ -204,7 +209,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     [self debugMsg:moshServerCmd];
     
     NSError *error;
-    [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity moshCommand:moshServerCmd error:&error];
+    [self setConnParamsWithSsh:ssh userHost:userhost port:sshPort identity:sshIdentity sshTTY:sshTTY moshCommand:moshServerCmd error:&error];
     if (error) {
       return [self dieMsg:error.localizedDescription];
     }
@@ -291,11 +296,11 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   return [NSString stringWithFormat:@"%@", [moshServerArgs componentsJoinedByString:@" "]];
 }
 
-- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity moshCommand:(NSString *)command error:(NSError **)error
+- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity sshTTY:(BOOL)sshTTY moshCommand:(NSString *)command error:(NSError **)error
 {
   ssh = ssh ? ssh : @"ssh";
   
-  NSMutableArray*sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", @"-t", userHost, command] mutableCopy];
+  NSMutableArray*sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, command] mutableCopy];
   if (port) {
     [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
   }
