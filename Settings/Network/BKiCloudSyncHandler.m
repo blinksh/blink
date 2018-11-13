@@ -91,6 +91,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
     [database saveRecordZone:zone
 	   completionHandler:^(CKRecordZone *_Nullable zone, NSError *_Nullable error) {
 	     if (error) {
+         NSLog(@"iCloud save record error: %@", error);
 	       //Reset shared handler so that init is called again.
 	     }
 	   }];
@@ -220,31 +221,31 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       BKHosts *hosts = [BKHosts withiCloudId:hostRecord.recordID];
       //If host exists in system, Find which is new
       if (hosts) {
-	if ([hosts.lastModifiedTime compare:hostRecord.modificationDate] == NSOrderedDescending) {
-	  //Local is new...Update iCloud to Local values
-	  CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
-	  CKRecord *udpatedRecord = [BKHosts recordFromHost:hosts];
-	  CKModifyRecordsOperation *updateOperation = [[CKModifyRecordsOperation alloc] initWithRecordsToSave:@[ udpatedRecord ] recordIDsToDelete:nil];
-	  updateOperation.savePolicy = CKRecordSaveAllKeys;
-	  updateOperation.qualityOfService = NSQualityOfServiceUserInitiated;
-	  updateOperation.modifyRecordsCompletionBlock = ^(NSArray<CKRecord *> *_Nullable savedRecords, NSArray<CKRecordID *> *_Nullable deletedRecordIDs, NSError *_Nullable operationError) {
+        if ([hosts.lastModifiedTime compare:hostRecord.modificationDate] == NSOrderedDescending) {
+          //Local is new...Update iCloud to Local values
+          CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
+          CKRecord *udpatedRecord = [BKHosts recordFromHost:hosts];
+          CKModifyRecordsOperation *updateOperation = [[CKModifyRecordsOperation alloc] initWithRecordsToSave:@[ udpatedRecord ] recordIDsToDelete:nil];
+          updateOperation.savePolicy = CKRecordSaveAllKeys;
+          updateOperation.qualityOfService = NSQualityOfServiceUserInitiated;
+          updateOperation.modifyRecordsCompletionBlock = ^(NSArray<CKRecord *> *_Nullable savedRecords, NSArray<CKRecordID *> *_Nullable deletedRecordIDs, NSError *_Nullable operationError) {
 
 
-	  };
-	  [database addOperation:updateOperation];
-	} else {
-	  //iCloud is new, update local to reflect iCLoud values
-	  [self saveHostRecord:hostRecord withHost:host];
-	}
+          };
+          [database addOperation:updateOperation];
+        } else {
+          //iCloud is new, update local to reflect iCLoud values
+          [self saveHostRecord:hostRecord withHost:host];
+        }
       } else {
-	//If hosts is new, see if it exists
-	//Check if name exists, if YES, Mark as conflict else, add to local
-	BKHosts *existingHost = [BKHosts withHost:host];
-	if (existingHost) {
-	  [BKHosts markHost:host forRecord:hostRecord withConflict:YES];
-	} else {
-	  [self saveHostRecord:hostRecord withHost:host];
-	}
+        //If hosts is new, see if it exists
+        //Check if name exists, if YES, Mark as conflict else, add to local
+        BKHosts *existingHost = [BKHosts withHost:host];
+        if (existingHost) {
+          [BKHosts markHost:host forRecord:hostRecord withConflict:YES];
+        } else {
+          [self saveHostRecord:hostRecord withHost:host];
+        }
       }
     }
   }
@@ -257,11 +258,11 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       NSLog(@"Conflict detected Hence not saving to iCloud");
       //Find items deleted from iCloud
       if ((!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])) {
-	NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@", hosts.iCloudRecordId.recordName];
-	NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
-	if (filteredAray.count <= 0) {
-	  [itemsDeletedFromiCloud addObject:hosts];
-	}
+        NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@", hosts.iCloudRecordId.recordName];
+        NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
+        if (filteredAray.count <= 0) {
+          [itemsDeletedFromiCloud addObject:hosts];
+        }
       }
     }
   }
