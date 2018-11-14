@@ -566,9 +566,9 @@
 - (void)terminalHangup:(TermController *)control
 {
   // Close the Space if the terminal finishing is the current one.
-//  if (self.currentTerm == control) {
-//    [self closeCurrentSpace];
-//  }
+  if (self.currentTerm == control) {
+    [self closeCurrentSpace];
+  }
 }
 
 - (void)terminalDidResize:(TermController*)control

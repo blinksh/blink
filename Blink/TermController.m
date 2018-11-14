@@ -193,6 +193,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)sessionFinished
 {
+  if ([_sessionParameters hasEncodedState]) {
+    return;
+  }
+  
   [_delegate terminalHangup:self];
 }
 
