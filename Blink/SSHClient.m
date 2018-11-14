@@ -279,9 +279,18 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   bool tcpKeepAlive = [_options[SSHOptionTCPKeepAlive] isEqual:SSHOptionValueYES];
+  
+  NSNumber *connectTimeout = _options[SSHOptionConnectTimeout];
+  NSDate *connectStart = [NSDate date];
 
   for(;;) {
+    
     if (_doExit) {
+      return SSH_ERROR;
+    }
+
+    if (connectTimeout.integerValue > 0 && -connectStart.timeIntervalSinceNow > connectTimeout.integerValue) {
+      [self _log_info:@"Connect timeout"];
       return SSH_ERROR;
     }
     
@@ -309,6 +318,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         if (attempts > 0) {
           ssh_free(_session);
           _session = [self _configured_session];
+          connectStart = [NSDate date];
           continue;
         }
       }
