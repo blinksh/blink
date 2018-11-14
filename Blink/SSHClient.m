@@ -94,7 +94,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   NSMutableDictionary<NSNumber *, NSNumber *> *_reversePortsMap;
   
   struct ssh_callbacks_struct _ssh_callbacks;
-  bool _doExit;
+  BOOL _doExit;
+  BOOL _killed;
   int _exitCode;
   __weak TermDevice *_device;
 }
@@ -115,6 +116,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     _isTTY = isTTY;
     
     _doExit = NO;
+    _killed = NO;
     _exitCode = 0;
   }
   
@@ -170,6 +172,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)kill {
+  _killed = YES;
   __weak SSHClient *weakSelf = self;
   [self _schedule:^{
     [weakSelf _exitWithCode:-1];
@@ -1088,6 +1091,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_log_error {
+  if (_killed) {
+    return;
+  }
   if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]]) {
     return;
   }
@@ -1110,6 +1116,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_log_info:(NSString *)message {
+  if (_killed) {
+    return;
+  }
   if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]]) {
     return;
   }
@@ -1118,6 +1127,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_log_verbose:(NSString *)message {
+  if (_killed) {
+    return;
+  }
   if ([SSHOptionValueQUIET isEqual:_options[SSHOptionLogLevel]] ||
       [SSHOptionValueINFO isEqual:_options[SSHOptionLogLevel]]) {
     return;
