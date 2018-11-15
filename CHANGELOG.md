@@ -1,8 +1,9 @@
 # Version 12.2
 
-## Changes in Build 55
+## Changes in Build 56
 
 * Fixes for ssh command
+* Fixed scp with custom port
 
 
 ## Changes in Build 53
