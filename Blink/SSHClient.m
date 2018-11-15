@@ -781,6 +781,47 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   return SSH_OK;
 }
 
+- (int)_request_pty:(ssh_channel)channel {
+  int rc = SSH_ERROR;
+
+  for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
+    rc = ssh_channel_request_pty_size(channel, "xterm-256color", _device->win.ws_col, _device->win.ws_row);
+    switch (rc) {
+      case SSH_OK:
+        [_device setRawMode:YES];
+        break;
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+        return rc;
+    }
+    break;
+  }
+  
+  for (;;) {
+    if (_doExit) {
+      return SSH_ERROR;
+    }
+    
+    rc = ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
+    switch (rc) {
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+        return rc;
+    }
+    break;
+  }
+
+  return rc;
+}
+
 - (int)_start_session_channel {
   [self _log_verbose:@"open session\n"];
   int rc = SSH_ERROR;
@@ -811,35 +852,20 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     rc = ssh_channel_request_auth_agent(channel);
   }
   
-  [self _ssh_send_env: channel];
-  
-  BOOL doRequestPTY = _options[SSHOptionRequestTTY] == SSHOptionValueYES
-  || (_options[SSHOptionRequestTTY] == SSHOptionValueAUTO && _isTTY);
+  BOOL doRequestPTY = [_options[SSHOptionRequestTTY] isEqual:SSHOptionValueYES]
+                  || ([_options[SSHOptionRequestTTY] isEqual:SSHOptionValueAUTO] && _isTTY);
   
   if (doRequestPTY) {
-    for (;;) {
-      if (_doExit) {
-        return SSH_ERROR;
-      }
-      
-      rc = ssh_channel_request_pty_size(channel, @"xterm-256color".UTF8String, _device->win.ws_col, _device->win.ws_row);
-      switch (rc) {
-        case SSH_OK:
-          [_device setRawMode:YES];
-          break;
-        case SSH_AGAIN:
-          [self _poll];
-          continue;
-        default:
-        case SSH_ERROR:
-          ssh_channel_close(channel);
-          ssh_channel_free(channel);
-          return rc;
-      }
-      break;
+    rc = [self _request_pty: channel];
+    if (rc != SSH_OK) {
+      ssh_channel_close(channel);
+      ssh_channel_free(channel);
+      return rc;
     }
   }
   
+  [self _ssh_send_env: channel];
+
   NSString *remoteCommand = _options[SSHOptionRemoteCommand];
   for (;;) {
     if (_doExit) {
@@ -866,7 +892,6 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     break;
   }
-  
   
   
   _sessionChannel = [SSHClientConnectedChannel connect:channel withFdIn:_fdIn fdOut:_fdOut fdErr:_fdErr];
