@@ -141,6 +141,12 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   _portListeners = nil;
   
+  if (_sessionChannel) {
+    _sessionChannel.delegate = nil;
+    [_sessionChannel close];
+    _sessionChannel = nil;
+  }
+  
   if (_session) {
     ssh_free(_session);
     _session = NULL;
