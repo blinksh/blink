@@ -1,5 +1,10 @@
 # Version 12.2
 
+## Changes in Build 55
+
+* Fixes for ssh command
+
+
 ## Changes in Build 53
 
 * Updated libssh to 0.8.5.
