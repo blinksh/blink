@@ -80,7 +80,6 @@
   ios_setMiniRoot([BlinkPaths documents]);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   ios_setContext((__bridge void*)self);
-  replaceCommand(@"curl", @"curl_static_main", true); // replace curl in ios_system with our own, accessing Blink keys.
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
