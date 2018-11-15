@@ -277,8 +277,8 @@
 	</array>
 	<key>scp</key>
 	<array>
-		<string>curl_ios.framework/curl_ios</string>
-		<string>curl_main</string>
+		<string>MAIN</string>
+		<string>curl_static_main</string>
 		<string>q</string>
 		<string>file</string>
 	</array>
@@ -298,8 +298,8 @@
 	</array>
 	<key>sftp</key>
 	<array>
-		<string>curl_ios.framework/curl_ios</string>
-		<string>curl_main</string>
+		<string>MAIN</string>
+		<string>curl_static_main</string>
 		<string>q</string>
 		<string>file</string>
 	</array>
