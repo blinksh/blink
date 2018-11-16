@@ -791,35 +791,16 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     
     rc = ssh_channel_request_pty_size(channel, "xterm-256color", _device->win.ws_col, _device->win.ws_row);
     switch (rc) {
+      case SSH_AGAIN:
+        [self _poll];
+        continue;
       case SSH_OK:
         [_device setRawMode:YES];
-        break;
-      case SSH_AGAIN:
-        [self _poll];
-        continue;
+        return rc;
       default:
         return rc;
     }
-    break;
   }
-  
-  for (;;) {
-    if (_doExit) {
-      return SSH_ERROR;
-    }
-    
-    rc = ssh_channel_change_pty_size(channel, _device->win.ws_col, _device->win.ws_row);
-    switch (rc) {
-      case SSH_AGAIN:
-        [self _poll];
-        continue;
-      default:
-        return rc;
-    }
-    break;
-  }
-
-  return rc;
 }
 
 - (int)_start_session_channel {
