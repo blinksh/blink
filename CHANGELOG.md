@@ -1,9 +1,10 @@
 # Version 12.2
 
-## Changes in Build 56
+## Changes in Build 57
 
-* Fixes for ssh command
-* Fixed scp with custom port
+* Fixes for ssh command.
+* Fixed scp with custom port.
+* Added -2 flag for ssh2 to mosh command.
 
 
 ## Changes in Build 53
