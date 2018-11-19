@@ -49,7 +49,9 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
 @property (nonatomic, strong) NSMutableArray *keyList;
 @property (nonatomic, strong) NSMutableDictionary *keyboardMapping;
 @property (strong, nonatomic) IBOutlet UISwitch *capsAsEscSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *capsAsCtrlSwitch;
 @property (strong, nonatomic) IBOutlet UISwitch *shiftAsEscSwitch;
+@property (strong, nonatomic) IBOutlet UISwitch *backquoteAsEscSwitch;
 
 @end
 
@@ -105,7 +107,7 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
     case 0:
       return _keyList.count;
     case 1:
-      return 5;
+      return 8;
     case 2:
       return 1;
   }
@@ -147,25 +149,33 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
           [_capsAsEscSwitch setOn:[BKDefaults isCapsAsEsc]];
           break;
         case 1:
+          cell = [tableView dequeueReusableCellWithIdentifier:@"capsAsCtrlCell" forIndexPath:indexPath];
+          [_capsAsCtrlSwitch setOn:[BKDefaults isCapsAsCtrl]];
+          break;
+        case 2:
           cell = [tableView dequeueReusableCellWithIdentifier:@"shiftAsEscCell" forIndexPath:indexPath];
           [_shiftAsEscSwitch setOn:[BKDefaults isShiftAsEsc]];
           break;
-        case 2:
+        case 3:
+          cell = [tableView dequeueReusableCellWithIdentifier:@"backquoteAsEscCell" forIndexPath:indexPath];
+          [_backquoteAsEscSwitch setOn:[BKDefaults isBackquoteAsEsc]];
+          break;
+        case 4:
           cell = [tableView dequeueReusableCellWithIdentifier:@"autoRepeatCell" forIndexPath:indexPath];
           _autoRepeatSwitch = [cell viewWithTag:AUTOREPEAT_TAG];
           [_autoRepeatSwitch setOn:[BKDefaults autoRepeatKeys]];
           break;
-        case 3:
+        case 5:
           cell = [tableView dequeueReusableCellWithIdentifier:@"grabCtrlSpaceCell" forIndexPath:indexPath];
           _grabCtrlSpaceSwitch = [cell viewWithTag:GRAB_CTRL_SPACE_TAG];
           [_grabCtrlSpaceSwitch setOn:[BKDefaults grabCtrlSpace]];
           break;
-        case 4:
+        case 6:
           cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
           cell.textLabel.text = (NSString*)BKKeyboardFuncFTriggers;
           cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncFTriggers];
           break;
-        case 5:
+        case 7:
           cell = [tableView dequeueReusableCellWithIdentifier:@"multipleModifierCell" forIndexPath:indexPath];
           cell.textLabel.text = (NSString*)BKKeyboardFuncCursorTriggers;
           cell.detailTextLabel.text = [self detailForKeyboardFunc:BKKeyboardFuncCursorTriggers];
@@ -222,7 +232,23 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
 #pragma mark - Actions
 - (IBAction)capsAsEscChanged:(UISwitch *)sender
 {
-  [BKDefaults setCapsAsEsc:[sender isOn]];
+  BOOL what = [sender isOn];
+  if (what) {
+    [_capsAsCtrlSwitch setOn:NO];
+    [BKDefaults setCapsAsCtrl:NO];
+  }
+  [BKDefaults setCapsAsEsc:what];
+  [BKDefaults saveDefaults];
+}
+
+- (IBAction)capsAsCtrlChanged:(UISwitch *)sender
+{
+  BOOL what = [sender isOn];
+  if (what) {
+    [_capsAsEscSwitch setOn:NO];
+    [BKDefaults setCapsAsEsc:NO];
+  }
+  [BKDefaults setCapsAsCtrl:what];
   [BKDefaults saveDefaults];
 }
 
@@ -230,6 +256,13 @@ NSString *const BKKeyboardFuncTriggerChanged = @"BKKeyboardConfigChanged";
 {
   BOOL what = [sender isOn];
   [BKDefaults setShiftAsEsc:what];
+  [BKDefaults saveDefaults];
+}
+
+- (IBAction)backquoteAsEscChanged:(UISwitch *)sender
+{
+  BOOL what = [sender isOn];
+  [BKDefaults setBackquoteAsEsc:what];
   [BKDefaults saveDefaults];
 }
 

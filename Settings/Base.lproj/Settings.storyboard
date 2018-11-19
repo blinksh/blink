@@ -1225,8 +1225,28 @@
                                     <outlet property="accessoryView" destination="36q-3k-F54" id="RR7-Al-OFb"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="shiftAsEscCell" textLabel="WGZ-rJ-vrc" style="IBUITableViewCellStyleDefault" id="I6Z-IV-PPq">
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="capsAsCtrlCell" textLabel="Z7m-6x-enS" style="IBUITableViewCellStyleDefault" id="7cN-se-kZ3">
                                 <rect key="frame" x="0.0" y="143.5" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="7cN-se-kZ3" id="4sh-sH-dW8">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Caps as Ctrl" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Z7m-6x-enS">
+                                            <rect key="frame" x="20" y="0.0" width="728" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="accessoryView" destination="pVS-Bn-gbl" id="V6u-A2-geX"/>
+                                </connections>
+                            </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="shiftAsEscCell" textLabel="WGZ-rJ-vrc" style="IBUITableViewCellStyleDefault" id="I6Z-IV-PPq">
+                                <rect key="frame" x="0.0" y="187.5" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="I6Z-IV-PPq" id="MdN-Zo-QML">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -1246,7 +1266,7 @@
                                 </connections>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="autoRepeatCell" id="FV1-a7-KK0">
-                                <rect key="frame" x="0.0" y="187.5" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="231.5" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="FV1-a7-KK0" id="1X5-Hn-Zyc">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -1278,7 +1298,7 @@
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="grabCtrlSpaceCell" id="ptc-Qr-91X" userLabel="grabCtrlSpaceCell">
-                                <rect key="frame" x="0.0" y="231.5" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="275.5" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="ptc-Qr-91X" id="GgK-Yh-yny">
                                     <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
@@ -1310,7 +1330,7 @@
                                 </tableViewCellContentView>
                             </tableViewCell>
                             <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="none" accessoryType="disclosureIndicator" indentationWidth="10" reuseIdentifier="multipleModifierCell" textLabel="XE5-AE-x0L" detailTextLabel="gYW-Y1-qzY" style="IBUITableViewCellStyleValue1" id="RfM-9g-AlL">
-                                <rect key="frame" x="0.0" y="275.5" width="768" height="44"/>
+                                <rect key="frame" x="0.0" y="319.5" width="768" height="44"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="RfM-9g-AlL" id="xG1-iY-VNO">
                                     <rect key="frame" x="0.0" y="0.0" width="730" height="43.5"/>
@@ -1333,6 +1353,26 @@
                                     </subviews>
                                 </tableViewCellContentView>
                             </tableViewCell>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" reuseIdentifier="backquoteAsEscCell" textLabel="mhe-HC-FZT" style="IBUITableViewCellStyleDefault" id="X3H-kO-GfY">
+                                <rect key="frame" x="0.0" y="363.5" width="768" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="X3H-kO-GfY" id="1e7-JH-1og">
+                                    <rect key="frame" x="0.0" y="0.0" width="768" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Backquote as Esc" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="mhe-HC-FZT">
+                                            <rect key="frame" x="20" y="0.0" width="728" height="43.5"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                                <connections>
+                                    <outlet property="accessoryView" destination="tUW-Ey-Ra4" id="bP0-XU-2b9"/>
+                                </connections>
+                            </tableViewCell>
                         </prototypes>
                         <sections/>
                         <connections>
@@ -1342,6 +1382,8 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Keyboard" id="eU8-AE-erx"/>
                     <connections>
+                        <outlet property="backquoteAsEscSwitch" destination="tUW-Ey-Ra4" id="Nvl-ov-2O2"/>
+                        <outlet property="capsAsCtrlSwitch" destination="pVS-Bn-gbl" id="yfQ-X9-CIk"/>
                         <outlet property="capsAsEscSwitch" destination="36q-3k-F54" id="62w-1s-LUB"/>
                         <outlet property="shiftAsEscSwitch" destination="KOT-ej-LV9" id="veT-Ug-U8C"/>
                         <segue destination="IfA-0a-fov" kind="show" identifier="selectTriggersSegue" id="dlZ-04-Kay"/>
@@ -1356,11 +1398,25 @@
                         <action selector="capsAsEscChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="QMo-e1-hnc"/>
                     </connections>
                 </switch>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="pVS-Bn-gbl">
+                    <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="capsAsCtrlChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="Zzx-Gm-TOI"/>
+                    </connections>
+                </switch>
                 <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="KOT-ej-LV9">
                     <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
                     <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     <connections>
                         <action selector="shiftAsEscChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="mkH-Rc-Aqs"/>
+                    </connections>
+                </switch>
+                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" id="tUW-Ey-Ra4">
+                    <rect key="frame" x="0.0" y="0.0" width="51" height="31"/>
+                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                    <connections>
+                        <action selector="backquoteAsEscChanged:" destination="Man-FB-xZk" eventType="valueChanged" id="xon-aD-Q1l"/>
                     </connections>
                 </switch>
             </objects>
@@ -2401,8 +2457,8 @@
         <image name="user" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Qg1-8I-Klb"/>
-        <segue reference="y9I-rB-ZKT"/>
+        <segue reference="dlZ-04-Kay"/>
+        <segue reference="9Nb-rb-KdA"/>
         <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>
 </document>
