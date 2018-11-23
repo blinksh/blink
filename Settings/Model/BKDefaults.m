@@ -106,6 +106,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   if (!defaults) {
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
+    defaults.autoRepeatKeys = YES;
   }
   
   if (!defaults.keyboardMaps) {
@@ -126,7 +127,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
     [defaults setThemeName:@"Default"];
   }
   if (!defaults.fontSize) {
-    [defaults setFontSize:[NSNumber numberWithInt:10]];
+    if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+      [defaults setFontSize:[NSNumber numberWithInt:18]];
+    } else {
+      [defaults setFontSize:[NSNumber numberWithInt:10]];
+    }
   }
   if(!defaults.defaultUser || ![[defaults.defaultUser stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]){
     [defaults setDefaultUser:[UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeUserName]];
