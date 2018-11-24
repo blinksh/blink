@@ -341,7 +341,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
         [result addObject:folder];
       }
     }
-    return result;
+    return [self _escapePaths:result];
   }
   return @[];
 }
@@ -372,11 +372,23 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       NSString *file = deeper ? [directory stringByAppendingPathComponent:fileOrFolder] : fileOrFolder;
       [result addObject:file];
     }
-    return result;
+    return [self _escapePaths:result];
   }
   return @[];
 }
 
+- (NSArray<NSString *> *)_escapePaths:(NSArray<NSString *> *)paths {
+  NSMutableArray *result = [[NSMutableArray alloc] initWithCapacity:paths.count];
+  for (NSString * path in paths) {
+    if ([path containsString:@" "]) {
+      NSString *escapedPath = [path stringByReplacingOccurrencesOfString:@" " withString:@"\\ "];
+      [result addObject:escapedPath];
+    } else {
+      [result addObject:path];
+    }
+  }
+  return result;
+}
 
 -(NSArray<NSString *> *)_completionsByType:(NSString *)completionType andPrefix:(NSString *)prefix {
   NSArray<NSString *> *completions = @[];
