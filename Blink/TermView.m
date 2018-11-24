@@ -161,6 +161,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   });
 }
 
+- (CGRect)_webViewFrame {
+  CGRect frame = self.bounds;
+  frame.origin = CGPointMake(5, 5);
+  frame.size.width -= 10;
+  return frame;
+}
+
 - (void)_didBecomeActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -168,7 +175,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
       return;
     }
     
-    _webView.frame = self.bounds;
+    _webView.frame = [self _webViewFrame];
     [self insertSubview:_webView belowSubview:_snapshotImageView];
     [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
       _snapshotImageView.alpha = 0;
@@ -188,7 +195,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BKWebView alloc] initWithFrame:self.bounds configuration:configuration];
+  _webView = [[BKWebView alloc] initWithFrame:[self _webViewFrame] configuration:configuration];
   
   _webView.scrollView.delaysContentTouches = NO;
   _webView.scrollView.canCancelContentTouches = NO;
