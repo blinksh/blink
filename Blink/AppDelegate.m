@@ -69,7 +69,6 @@ void __setupProcessEnv() {
   setlocale(LC_CTYPE, "UTF-8");
   setlocale(LC_ALL, "UTF-8");
   
-
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
   ssh_init();
 }
@@ -86,6 +85,7 @@ void __setupProcessEnv() {
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
+  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
   [[ScreenController shared] setup];
   return YES;
 }

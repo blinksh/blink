@@ -80,7 +80,6 @@
   ios_setMiniRoot([BlinkPaths documents]);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   ios_setContext((__bridge void*)self);
-  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]);
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
   
