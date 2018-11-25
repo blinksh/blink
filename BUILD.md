@@ -15,8 +15,10 @@ a separate license by Apple Inc.
 
 ## Cloning
 Clone Blink into your local repository and make sure to obtain any submodules:
+```
 git submodule init
 git submodule update
+```
 
 ## Dependencies & Requirements
 Blink makes use of multiple dependencies that you have to compile
