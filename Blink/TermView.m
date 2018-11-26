@@ -164,7 +164,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (CGRect)_webViewFrame {
   CGRect frame = self.bounds;
   frame.origin = CGPointMake(5, 5);
-  frame.size.width -= 10;
+  frame.size.width -= frame.origin.x * 2;
+  frame.size.height -= frame.origin.y;
   return frame;
 }
 
