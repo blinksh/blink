@@ -171,7 +171,7 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
   // Temporary fix for https://github.com/blinksh/blink/issues/632
   // Turns out there is a type in libssh (https://gitlab.com/libssh/libssh-mirror/blob/master/src/pki_crypto.c#L561)
   // Need to report to libssh team.
-  if ([BK_KEYTYPE_ECDSA isEqual:type]) {
+  if ([BK_KEYTYPE_ECDSA isEqual:type] && bits == 521) {
     bits = 512;
   }
   
