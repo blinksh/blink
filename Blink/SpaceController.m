@@ -300,7 +300,7 @@
   CGFloat bottomInset = 0;
   
   CGRect kbFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
-  NSTimeInterval duration = [sender.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
+//  NSTimeInterval duration = [sender.userInfo[UIKeyboardAnimationDurationUserInfoKey] doubleValue];
   
   CGFloat viewHeight = CGRectGetHeight(self.view.bounds);
   if (CGRectGetMaxY(kbFrame) >= viewHeight) {
