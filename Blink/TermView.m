@@ -44,6 +44,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   struct winsize res;
   res.ws_col = [json[@"cols"] integerValue];
   res.ws_row = [json[@"rows"] integerValue];
+  res.ws_xpixel = 0;
+  res.ws_ypixel = 0;
   
   return res;
 }
