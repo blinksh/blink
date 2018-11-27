@@ -78,8 +78,6 @@
 {
   [super loadView];
   
-  self.automaticallyAdjustsScrollViewInsets = NO;
-  
   self.view.opaque = YES;
   
   NSDictionary *options = [NSDictionary dictionaryWithObject:
