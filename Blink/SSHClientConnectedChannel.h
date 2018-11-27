@@ -52,8 +52,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)close;
 
-+ (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
-+ (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd;
++ (nullable SSHClientConnectedChannel *)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr;
++ (nullable SSHClientConnectedChannel *)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd;
 
 @end
 

@@ -163,22 +163,22 @@ void __readin(NSInputStream *inputStream, NSMutableData *data) {
   [_delegate connectedChannelDidClose:self];
 }
 
-+ (instancetype)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd {
++ (nullable SSHClientConnectedChannel *)connect:(ssh_channel)channel withSocket:(dispatch_fd_t)sockFd {
   StreamConnector *connector = [[StreamConnector alloc] init];
   int rc = [connector pairChannel:channel withSocket:sockFd];
   if (rc == SSH_OK) {
     return connector;
   }
-  return NULL;
+  return nil;
 }
 
-+ (instancetype)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
++ (nullable SSHClientConnectedChannel *)connect:(ssh_channel)channel withFdIn:(dispatch_fd_t)fdIn fdOut:(dispatch_fd_t)fdOut fdErr:(dispatch_fd_t)fdErr {
   SockConnector *connector = [[SockConnector alloc] init];
   int rc = [connector pairChannel:channel withFdIn:fdIn fdOut:fdOut fdErr:fdErr];
   if (rc == SSH_OK) {
     return connector;
   }
-  return NULL;
+  return nil;
 }
 
 @end
