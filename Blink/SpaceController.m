@@ -334,13 +334,6 @@
     
     [self.view setNeedsLayout];
     [self.view layoutIfNeeded];
-    
-    // Workaround broken KB... suspend tap recognizers for a little bit;
-    _touchOverlay.oneFingerTapGestureRecognizer.enabled = NO;
-    
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (duration + 0.3) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-      _touchOverlay.oneFingerTapGestureRecognizer.enabled = YES;
-    });
   }
 }
 
