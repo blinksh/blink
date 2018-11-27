@@ -342,7 +342,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         int sock = ssh_get_fd(_session);
     
         CFSocketRef sockRef = CFSocketCreateWithNative(NULL, sock, 0, NULL, NULL);
-        NSData * data = (__bridge NSData *)CFSocketCopyPeerAddress(sockRef);
+        NSData * data = (__bridge_transfer NSData *)CFSocketCopyPeerAddress(sockRef);
         CFRelease(sockRef);
         
         if (data) {
