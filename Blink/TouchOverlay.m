@@ -32,7 +32,7 @@
 #import "TouchOverlay.h"
 
 
-const CGFloat kToolBarHeight = 82;
+const CGFloat kToolBarHeight = 94;
 
 @interface TouchOverlay () <UIGestureRecognizerDelegate, UIScrollViewDelegate>
 @end

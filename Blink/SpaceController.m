@@ -78,7 +78,7 @@
 {
   [super loadView];
   
-  
+  self.automaticallyAdjustsScrollViewInsets = NO;
   
   self.view.opaque = YES;
   
@@ -119,19 +119,22 @@
   
   CGRect rect = self.view.bounds;
   
+  // We want overlay full screen.
+  _touchOverlay.frame = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
+  
   if (@available(iOS 11.0, *)) {
     UIEdgeInsets insets = self.view.safeAreaInsets;
     insets.bottom = MAX(_rootLayoutMargins.bottom, insets.bottom);
     if (insets.bottom == 0) {
       insets.bottom = 1;
     }
+
     rect = UIEdgeInsetsInsetRect(rect, insets);
   } else {
     rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
   }
   
   _viewportsController.view.frame = rect;
-  _touchOverlay.frame = rect;
 }
 
 - (void)viewDidLoad
@@ -326,6 +329,9 @@
   
   if (accessoryView.hidden) {
     bottomInset -= accessoryHeight;
+    if (bottomInset < 0) {
+      bottomInset = 0;
+    }
     _termInput.softwareKB = NO;
   }
   
