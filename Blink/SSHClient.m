@@ -238,7 +238,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   BOOL rawMode = _device.rawMode;
   [_device setRawMode:NO];
   
+  if (name.length > 0) {
+    name = [name stringByAppendingString:@"\n"];
+    fwrite(name.UTF8String, [name lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
+  }
+  
   if (instruction.length > 0) {
+    instruction = [instruction stringByAppendingString:@"\n"];
     fwrite(instruction.UTF8String, [instruction lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
   }
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
@@ -593,6 +599,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (int)_auth_with_interactive_with_password:(NSString *)password prompts:(int)promptsCount {
+  // https://gitlab.com/libssh/libssh-mirror/blob/master/doc/authentication.dox#L124
   for (;;) {
     if (_doExit) {
       return SSH_ERROR;
@@ -605,48 +612,47 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         [self _poll];
         continue;
       case SSH_AUTH_INFO: {
-          const char *nameChars = ssh_userauth_kbdint_getname(_session);
-          const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
+        const char *nameChars = ssh_userauth_kbdint_getname(_session);
+        const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
+        
+        NSString *name = nameChars ? @(nameChars) : nil;
+        NSString *instruction = instructionChars ? @(instructionChars) : nil;
+        
+        int nprompts = ssh_userauth_kbdint_getnprompts(_session);
+        if (nprompts < 0) {
+          return SSH_AUTH_ERROR;
+        }
+
+        NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
+        for (int i = 0; i < nprompts; i++) {
+          char echo = NO;
+          const char *prompt = ssh_userauth_kbdint_getprompt(_session, i, &echo);
           
-          NSString *name = nameChars ? @(nameChars) : nil;
-          NSString *instruction = instructionChars ? @(instructionChars) : nil;
-          
-          int nprompts = ssh_userauth_kbdint_getnprompts(_session);
-          if (nprompts >= 0) {
-            NSMutableArray *prompts = [[NSMutableArray alloc] initWithCapacity:nprompts];
-            for (int i = 0; i < nprompts; i++) {
-              char echo = NO;
-              const char *prompt = ssh_userauth_kbdint_getprompt(_session, i, &echo);
-              
-              [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
-            }
-            
-            NSArray * answers =nil;
-            
-            if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
-              answers = @[password];
-            } else {
-              answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
-            }
-            
-            for (int i = 0; i < answers.count; i++) {
-              int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
-              if (rc < 0) {
-                break;
-              }
-            }
+          [prompts addObject:@[prompt == NULL ? @"" : @(prompt), @(echo)]];
+        }
+        
+        NSArray * answers = nil;
+        
+        if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
+          answers = @[password];
+        } else {
+          answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
+        }
+        
+        for (int i = 0; i < answers.count; i++) {
+          int rc = ssh_userauth_kbdint_setanswer(_session, i, [answers[i] UTF8String]);
+          if (rc < 0) {
+            return SSH_AUTH_ERROR;
           }
-          
-          rc = ssh_userauth_kbdint(_session, NULL, NULL);
+        }
+        continue;
       }
-        break;
       case SSH_AUTH_DENIED: {
         if (--promptsCount > 0) {
           if (password == nil) {
             [self _log_info:@"Permission denied, please try again."];
           }
           password = nil;
-          rc = ssh_userauth_kbdint(_session, NULL, NULL);
           continue;
         }
         return rc;
