@@ -185,6 +185,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   [_termDevice attachView:nil];
   _termDevice = nil;
   _session.device = nil;
+  _session.stream = nil;
   _session = nil;
   [self.userActivity resignCurrent];
 }
@@ -245,6 +246,9 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
+
+  _sessionParameters.viewWidth = self.view.bounds.size.width;
+  _sessionParameters.viewHeight = self.view.bounds.size.height;
 }
 
 #pragma mark Notifications
@@ -259,10 +263,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 - (void)suspend
 {
   [_sessionParameters cleanEncodedState];
-  
-  _sessionParameters.viewWidth = self.view.bounds.size.width;
-  _sessionParameters.viewHeight = self.view.bounds.size.height;
-  
   [_session suspend];
 }
 

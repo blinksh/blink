@@ -139,7 +139,7 @@
 - (void)unregisterSSHClient:(SSHClient *)sshClient {
   WeakSSHClient *foundClient = nil;
   for (WeakSSHClient *client in _sshClients) {
-    if ([client isEqual:sshClient]) {
+    if ([client.value isEqual:sshClient]) {
       foundClient = client;
       break;
     }
@@ -234,11 +234,14 @@
   
   // Instruct ios_system to release the data for this shell:
   ios_closeSession((__bridge void*)self);
+  ios_setContext(nil);
   
   if (_device.stream.in) {
     fclose(_device.stream.in);
     _device.stream.in = NULL;
   }
+  _repl = nil;
+  _sshClients = nil;
 }
 
 - (void)suspend
@@ -284,6 +287,8 @@
 
 - (void)dealloc {
   _repl = nil;
+  _childSession = nil;
+  _sshClients = nil;
 }
 
 @end

@@ -216,4 +216,9 @@ void *run_session(void *params)
 - (void)setActiveSession {
 }
 
+- (void)dealloc {
+  _device = nil;
+  _stream = nil;
+}
+
 @end
