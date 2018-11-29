@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
+#import "BKDefaults.h"
 
 @interface SessionParameters: NSObject<NSSecureCoding>
 @property NSData *encodedState;

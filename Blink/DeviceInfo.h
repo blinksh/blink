@@ -36,6 +36,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DeviceInfo : NSObject
 
++ (DeviceInfo *)shared;
+
+@property (readonly) NSString *sysname;
+@property (readonly) NSString *nodename;
+@property (readonly) NSString *release_;
+@property (readonly) NSString *version;
+@property (readonly) NSString *machine;
+@property (readonly) NSString *marketingName;
+
+@property (readonly) BOOL hasNotch;
+@property (readonly) BOOL hasCorners;
+
 @end
 
 NS_ASSUME_NONNULL_END

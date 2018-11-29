@@ -64,6 +64,7 @@
 @property (nonatomic, readonly) NSURL *detectedLink;
 @property (nonatomic, readonly) NSString *selectedText;
 @property (nonatomic) id<TermViewDeviceProtocol> device;
+@property (nonatomic) UIEdgeInsets additionalInsets;
 
 - (id)initWithFrame:(CGRect)frame andBgColor: (UIColor *)bgColor;
 - (void)loadWith:(MCPSessionParameters *)params;

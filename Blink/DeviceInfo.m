@@ -34,17 +34,37 @@
 
 #import <sys/utsname.h>
 
-NSString * __uts_machine() {
-  struct utsname info;
-  uname(&info);
-  
-  return @(info.machine);
-}
-
 
 @implementation DeviceInfo
 
-+(NSString *)_machine {
++ (DeviceInfo *)shared {
+  static DeviceInfo *ctrl = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    ctrl = [[self alloc] init];
+  });
+  return ctrl;
+}
+
+- (instancetype)init {
+  if (self = [super init]) {
+    struct utsname info;
+    uname(&info);
+    
+    _machine = @(info.machine);
+    _release_ = @(info.release);
+    _sysname = @(info.sysname);
+    _nodename = @(info.nodename);
+    _version = @(info.version);
+    
+    _hasNotch = [self.marketingName hasPrefix:@"iPhone X"];
+    _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"];
+    
+  }
+  return self;
+}
+
+-(NSString *)marketingName {
   // https://en.wikipedia.org/wiki/List_of_iOS_devices
   
   NSDictionary * codes =
@@ -119,11 +139,12 @@ NSString * __uts_machine() {
     @"iPad8,8"   : @"iPad Pro (12.9\") 3G"
   };
   
-  NSString *value = codes[__uts_machine()];
+  NSString *value = codes[_machine];
   if (value) {
     return value;
   }
   return @"unknown";
 }
+
 
 @end

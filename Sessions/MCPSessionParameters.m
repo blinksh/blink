@@ -44,6 +44,7 @@ NSString * const EnableBoldKey = @"enableBold";
 NSString * const BoldAsBrightKey = @"boldAsBright";
 NSString * const ViewWidth = @"viewWidth";
 NSString * const ViewHeight = @"viewHeight";
+NSString * const LayoutMode = @"layoutMode";
 
 @implementation MCPSessionParameters
 
@@ -64,6 +65,7 @@ NSString * const ViewHeight = @"viewHeight";
     self.boldAsBright = [aDecoder decodeBoolForKey:BoldAsBrightKey];
     self.viewWidth = [aDecoder decodeFloatForKey:ViewWidth];
     self.viewHeight = [aDecoder decodeFloatForKey:ViewHeight];
+    self.layoutMode = (BKLayoutMode)[aDecoder decodeIntegerForKey:LayoutMode];
   }
   
   return self;
@@ -83,6 +85,7 @@ NSString * const ViewHeight = @"viewHeight";
   [coder encodeBool:_boldAsBright forKey:BoldAsBrightKey];
   [coder encodeFloat:_viewWidth forKey:ViewWidth];
   [coder encodeFloat:_viewHeight forKey:ViewHeight];
+  [coder encodeInteger:_layoutMode forKey:LayoutMode];
 }
 
 + (BOOL)supportsSecureCoding

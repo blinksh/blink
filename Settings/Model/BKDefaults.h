@@ -46,6 +46,13 @@ extern NSString const *BKKeyboardFuncFTriggers;
 extern NSString const *BKKeyboardFuncCursorTriggers;
 extern NSString const *BKKeyboardFuncShortcutTriggers;
 
+typedef NS_ENUM(NSInteger, BKLayoutMode) {
+  BKLayoutModeDefault = 0,
+  BKLayoutModeFill, // Fit screen
+  BKLayoutModeCover, //  Cover screen
+  BKLayoutModeSafeFit, // Honors safe layout guides
+};
+
 
 @interface BKDefaults : NSObject <NSCoding>
 
@@ -66,6 +73,7 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 @property (nonatomic) BOOL boldAsBright;
 @property (nonatomic) BOOL lightKeyboard;
 @property (nonatomic) BOOL alternateAppIcon;
+@property (nonatomic) BKLayoutMode layoutMode;
 
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
@@ -106,4 +114,6 @@ extern NSString const *BKKeyboardFuncShortcutTriggers;
 + (BOOL)isAlternateAppIcon;
 + (void)setDefaultUserName:(NSString*)name;
 + (NSString*)defaultUserName;
++ (BKLayoutMode)layoutMode;
++ (void)setLayoutMode:(BKLayoutMode)mode;
 @end

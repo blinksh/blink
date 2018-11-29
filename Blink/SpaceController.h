@@ -31,9 +31,9 @@
 
 #import <UIKit/UIKit.h>
 #import "StateManager.h"
+#import "LayoutManager.h"
 
-
-@interface SpaceController : UIViewController
+@interface SpaceController : SafeLayoutViewController
 
 - (void)viewScreenWillBecomeActive;
 - (void)viewScreenDidBecomeInactive;

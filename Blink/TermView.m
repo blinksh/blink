@@ -111,7 +111,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
   _jsBuffer = [[NSMutableString alloc] init];
 
-  self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+//  self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   [self _addWebView];
   self.opaque = YES;
   _webView.opaque = YES;
@@ -139,6 +139,17 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+
+  _webView.frame = [self _webViewFrame];
+  _snapshotImageView.frame = _webView.frame;
+}
+
+- (UIEdgeInsets)safeAreaInsets {
+  return UIEdgeInsetsZero;
+}
+
 - (void)_willResignActive
 {
   dispatch_async(dispatch_get_main_queue(), ^{
@@ -149,14 +160,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     if (@available(iOS 11.0, *)) {
       [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
         _snapshotImageView.image = snapshotImage;
-        _snapshotImageView.frame = [self _webViewFrame];
+//        _snapshotImageView.frame = [self _webViewFrame];
         _snapshotImageView.alpha = 1;
         [self addSubview:_snapshotImageView];
         [_webView removeFromSuperview];
       }];
     } else {
       // Blank screen for ios 10?
-      _snapshotImageView.frame = [self _webViewFrame];
+//      _snapshotImageView.frame = [self _webViewFrame];
       [self addSubview:_snapshotImageView];
       [_webView removeFromSuperview];
     }
@@ -164,11 +175,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (CGRect)_webViewFrame {
-  CGRect frame = self.bounds;
-  frame.origin = CGPointMake(5, 5);
-  frame.size.width -= frame.origin.x * 2;
-  frame.size.height -= frame.origin.y;
-  return frame;
+  return UIEdgeInsetsInsetRect(self.bounds, self.additionalInsets);
 }
 
 - (void)_didBecomeActive

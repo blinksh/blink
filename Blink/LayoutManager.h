@@ -1,4 +1,4 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
@@ -29,26 +29,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "SessionParameters.h"
+#import "BKDefaults.h"
 
-@interface MCPSessionParameters: SessionParameters
+NS_ASSUME_NONNULL_BEGIN
 
-@property (strong) NSString *childSessionType;
-@property (strong) SessionParameters *childSessionParameters;
-@property NSInteger rows;
-@property NSInteger cols;
-@property NSInteger fontSize;
-@property NSString *fontName;
-@property NSString *themeName;
-@property BOOL boldAsBright;
-@property NSUInteger enableBold;
-@property CGFloat viewWidth;
-@property CGFloat viewHeight;
-@property BKLayoutMode layoutMode;
+@interface SafeLayoutViewController: UIViewController
 
-- (BOOL)hasEncodedState;
+@property (readonly) UIEdgeInsets kbSafeMargins;
+@property (readonly) UIEdgeInsets deviceSafeMargins;
+
+- (void)updateKbBottomSafeMargins:(CGFloat)bottomInset;
+- (void)updateDeviceSafeMarings:(UIEdgeInsets)deviceMargins;
 
 @end
 
+@interface UIViewController ( SafeLayout )
+
+@property (readonly) UIEdgeInsets viewKbSafeMargins;
+@property (readonly) UIEdgeInsets viewDeviceSafeMargins;
+
+- (void)viewKbMarginsDidChange;
+- (void)viewDeviceMarginsDidChange;
+
+@end
+
+@interface LayoutManager: NSObject
+
++ (BKLayoutMode) deviceDefaultLayoutMode;
++ (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode;
+
+@end
+
+NS_ASSUME_NONNULL_END

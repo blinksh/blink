@@ -33,6 +33,7 @@
 #import "BKFont.h"
 #import "UIDevice+DeviceName.h"
 #import "BlinkPaths.h"
+#import "LayoutManager.h"
 
 BKDefaults *defaults;
 
@@ -75,6 +76,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
   _lightKeyboard = [coder decodeBoolForKey:@"lightKeyboard"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
+  _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
   return self;
 }
 
@@ -97,6 +99,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
   [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
   [encoder encodeBool:_alternateAppIcon forKey:@"alternateAppIcon"];
+  [encoder encodeInteger:_layoutMode forKey:@"layoutMode"];
 }
 
 + (void)loadDefaults
@@ -115,6 +118,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   if (!defaults.keyboardFuncTriggers) {
     [defaults setDefaultKeyboardFuncTriggers];
   }
+  
+  if (defaults.layoutMode == BKLayoutModeDefault) {
+    defaults.layoutMode = [LayoutManager deviceDefaultLayoutMode];
+  }
 
   if (!defaults.fontName) {
     if ([BKFont withName:@"Pragmata Pro Mono"] != nil) {
@@ -126,6 +133,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   if (!defaults.themeName) {
     [defaults setThemeName:@"Default"];
   }
+  
   if (!defaults.fontSize) {
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
       [defaults setFontSize:[NSNumber numberWithInt:18]];
@@ -254,6 +262,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   defaults.defaultUser = name;
 }
 
++ (void)setLayoutMode:(BKLayoutMode)mode {
+  defaults.layoutMode = mode;
+}
+
 + (NSString *)selectedFontName
 {
   return defaults.fontName;
@@ -352,6 +364,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (NSString*)defaultUserName
 {
   return defaults.defaultUser;
+}
+
++ (BKLayoutMode)layoutMode
+{
+  return defaults.layoutMode;
 }
 
 @end

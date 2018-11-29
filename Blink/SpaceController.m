@@ -29,8 +29,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "SpaceController.h"
 #import "BKDefaults.h"
+#import "SpaceController.h"
 #import "BKSettingsNotifications.h"
 #import "BKUserConfigurationManager.h"
 #import "MBProgressHUD/MBProgressHUD.h"
@@ -68,7 +68,6 @@
 
   NSMutableArray<UIKeyCommand *> *_kbdCommands;
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
-  UIEdgeInsets _rootLayoutMargins;
   TermInput *_termInput;
   BOOL _unfocused;
 }
@@ -93,13 +92,13 @@
   _viewportsController.delegate = self;
   
   [self addChildViewController:_viewportsController];
+  _viewportsController.view.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   _viewportsController.view.layoutMargins = UIEdgeInsetsZero;
   _viewportsController.view.frame = self.view.bounds;
   [self.view addSubview:_viewportsController.view];
   [_viewportsController didMoveToParentViewController:self];
   
   _touchOverlay = [[TouchOverlay alloc] initWithFrame:self.view.bounds];
-  
   [self.view addSubview:_touchOverlay];
   _touchOverlay.touchDelegate = self;
   _touchOverlay.controlPanel.controlPanelDelegate = self;
@@ -111,28 +110,15 @@
   
 }
 
-- (void)viewWillLayoutSubviews
-{
-  [super viewWillLayoutSubviews];
-  
-  CGRect rect = self.view.bounds;
-  
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
   // We want overlay full screen.
-  _touchOverlay.frame = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
-  
-  if (@available(iOS 11.0, *)) {
-    UIEdgeInsets insets = self.view.safeAreaInsets;
-    insets.bottom = MAX(_rootLayoutMargins.bottom, insets.bottom);
-    if (insets.bottom == 0) {
-      insets.bottom = 1;
-    }
+  _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, self.kbSafeMargins);
+}
 
-    rect = UIEdgeInsetsInsetRect(rect, insets);
-  } else {
-    rect = UIEdgeInsetsInsetRect(rect, _rootLayoutMargins);
-  }
-  
-  _viewportsController.view.frame = rect;
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self updateDeviceSafeMarings:self.view.safeAreaInsets];
 }
 
 - (void)viewDidLoad
@@ -333,12 +319,7 @@
     _termInput.softwareKB = NO;
   }
   
-  if (_rootLayoutMargins.bottom != bottomInset) {
-    _rootLayoutMargins.bottom = bottomInset;
-    
-    [self.view setNeedsLayout];
-    [self.view layoutIfNeeded];
-  }
+  [self updateKbBottomSafeMargins:bottomInset];
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController
@@ -406,7 +387,7 @@
 
   [_hud hideAnimated:NO];
 
-  _musicHUD = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:YES];
+  _musicHUD = [MBProgressHUD showHUDAddedTo:_touchOverlay animated:YES];
   _musicHUD.mode = MBProgressHUDModeCustomView;
   _musicHUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
   _musicHUD.bezelView.color = [UIColor clearColor];
@@ -438,7 +419,7 @@
     self.view.window.backgroundColor = currentTerm.view.backgroundColor;
   }
 
-  _hud = [MBProgressHUD showHUDAddedTo:_viewportsController.view animated:_hud == nil];
+  _hud = [MBProgressHUD showHUDAddedTo:_touchOverlay animated:_hud == nil];
   _hud.mode = MBProgressHUDModeCustomView;
   _hud.bezelView.color = [UIColor darkGrayColor];
   _hud.contentColor = [UIColor whiteColor];

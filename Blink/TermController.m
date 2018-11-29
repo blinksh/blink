@@ -36,6 +36,7 @@
 #import "Session.h"
 #import "StateManager.h"
 #import "TermView.h"
+#import "LayoutManager.h"
 
 
 NSString * const BKUserActivityTypeCommandLine = @"com.blink.cmdline";
@@ -158,8 +159,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _sessionParameters.themeName = [BKDefaults selectedThemeName];
   _sessionParameters.enableBold = [BKDefaults enableBold];
   _sessionParameters.boldAsBright = [BKDefaults isBoldAsBright];
-  _sessionParameters.viewWidth = self.view.bounds.size.width;
-  _sessionParameters.viewHeight = self.view.bounds.size.height;
+  CGSize size = self.view.bounds.size;
+  _sessionParameters.viewWidth = size.width;
+  _sessionParameters.viewHeight = size.height;
+  _sessionParameters.layoutMode = BKDefaults.layoutMode;
 }
 
 - (void)startSession
@@ -243,12 +246,20 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   return self;
 }
 
+- (void)viewWillLayoutSubviews {
+  [super viewWillLayoutSubviews];
+  _termView.additionalInsets = [LayoutManager
+                                buildSafeInsetsForController:self
+                                andMode:_sessionParameters.layoutMode];
+}
+
 - (void)viewDidLayoutSubviews
 {
   [super viewDidLayoutSubviews];
 
-  _sessionParameters.viewWidth = self.view.bounds.size.width;
-  _sessionParameters.viewHeight = self.view.bounds.size.height;
+  CGSize size = self.view.bounds.size;
+  _sessionParameters.viewWidth = size.width;
+  _sessionParameters.viewHeight = size.height;
 }
 
 #pragma mark Notifications
