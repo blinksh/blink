@@ -70,6 +70,8 @@
   NSMutableArray<UIKeyCommand *> *_kbdCommandsWithoutDiscoverability;
   TermInput *_termInput;
   BOOL _unfocused;
+  NSTimer *_activeTimer;
+  BOOL _active;
 }
 
 #pragma mark Setup
@@ -136,6 +138,20 @@
     
     UIDropInteraction *termInputDropInteraction = [[UIDropInteraction alloc] initWithDelegate:self];
     [_termInput addInteraction:termInputDropInteraction];
+  }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+  [super viewDidAppear:animated];
+
+  if ([_termInput isFirstResponder]) {
+    [self _attachInputToCurrentTerm];
+    return;
+  }
+
+  if (!_unfocused) {
+    [self _focusOnShell];
   }
 }
 
@@ -215,6 +231,19 @@
   [coder encodeObject:self.view.backgroundColor forKey:@"bgColor"];
 }
 
+//applicationFinishedRestoringState
+
+- (void)applicationFinishedRestoringState {
+    if ([_termInput isFirstResponder]) {
+      [self _attachInputToCurrentTerm];
+      return;
+    }
+  
+    if (!_unfocused) {
+      [self _focusOnShell];
+    }
+}
+
 - (void)registerForNotifications
 {
   NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
@@ -255,26 +284,37 @@
 
 - (void)_appDidBecomeActive
 {
-  if ([_termInput isFirstResponder]) {
-    [self _attachInputToCurrentTerm];
-    return;
-  }
-
-  if (!_unfocused) {
-    [self _focusOnShell];
-  }
+  [_activeTimer invalidate];
+  _activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.15 target:self selector:@selector(_delayedDidBecomeActive) userInfo:nil repeats:NO];
 }
 
-- (void)_focusOnShell
+- (void)_delayedDidBecomeActive
 {
-  [_termInput becomeFirstResponder];
-  [self _attachInputToCurrentTerm];
+  [_activeTimer invalidate];
+  _activeTimer = nil;
+  
+  _active = YES;
 }
 
 -(void)_appWillResignActive
 {
+  if (_activeTimer) {
+    [_activeTimer invalidate];
+    _activeTimer = nil;
+    return;
+  }
+  
+  _active = NO;
   _unfocused = ![_termInput isFirstResponder];
 }
+
+- (void)_focusOnShell
+{
+  _active = YES;
+  [_termInput becomeFirstResponder];
+  [self _attachInputToCurrentTerm];
+}
+
 
 
 #pragma mark Events
@@ -284,6 +324,13 @@
 // In this case we make sure we take the SmartBar/Keys into account.
 - (void)_keyboardWillChangeFrame:(NSNotification *)sender
 {
+  if (!self.view.window) {
+    NSLog(@"!!!!!!!!!!!!!!");
+    return;
+  }
+  if (!_active) {
+    return;
+  }
   CGFloat bottomInset = 0;
   
   CGRect kbFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -296,8 +343,8 @@
   
   UIView *accessoryView = _termInput.inputAccessoryView;
   CGFloat accessoryHeight = accessoryView.frame.size.height;
-  
-  if (bottomInset > accessoryHeight) {
+  NSLog(@"accessory view: %@", accessoryView);
+  if (bottomInset > 80) {
     accessoryView.hidden = NO;
     _termInput.softwareKB = YES;
   } else if (bottomInset == accessoryHeight) {

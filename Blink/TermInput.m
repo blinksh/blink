@@ -396,12 +396,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     self.inputAssistantItem.leadingBarButtonGroups = @[group];
     self.inputAssistantItem.leadingBarButtonGroups = @[];
-
     
     // reload input views to get rid of kb input views from other apps.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self reloadInputViews];
-    });
+    [self reloadInputViews];
     [_device focus];
   } else {
     [_device blur];
@@ -409,8 +406,15 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return res;
 }
 
+- (BOOL)canResignFirstResponder {
+  return UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
+}
+
 - (BOOL)resignFirstResponder
 {
+  if (UIApplication.sharedApplication.applicationState == UIApplicationStateInactive) {
+    return NO;
+  }
   [_device blur];
   return [super resignFirstResponder];
 }
@@ -813,11 +817,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return NO;
   }
   
-  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
-  
-  if (appState != UIApplicationStateActive) {
-    return NO;
-  }
+//  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
+//  
+//  if (appState != UIApplicationStateActive) {
+//    return NO;
+//  }
   
   // super returns NO (No text?), so we check ourselves.
   if (action == @selector(paste:) ||

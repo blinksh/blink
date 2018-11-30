@@ -35,8 +35,10 @@
 
 @implementation SafeLayoutViewController
 
+
 - (void)updateKbBottomSafeMargins:(CGFloat)bottomInset {
   if (_kbSafeMargins.bottom != bottomInset) {
+    NSLog(@"Update KB! %@", @(bottomInset));
     _kbSafeMargins.bottom = bottomInset;
     [self viewKbMarginsDidChange];
   }
@@ -84,9 +86,7 @@
   }
 }
 
-
 @end
-
 
 @implementation LayoutManager
 
@@ -104,8 +104,21 @@
 }
 
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
-  UIEdgeInsets result = UIEdgeInsetsZero;
+  
   UIEdgeInsets deviceMargins = ctrl.viewDeviceSafeMargins;
+  UIScreen *mainScreen = UIScreen.mainScreen;
+  UIWindow *window = ctrl.view.window;
+  BOOL isMainScreen = window.screen == mainScreen;
+  
+  // we are external monitor, so we use device margins to accomodate overscan and ignore mode
+  // it is like BKLayoutModeSafeFit mode
+  if (!isMainScreen) {
+    return deviceMargins;
+  }
+  
+  BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
+  
+  UIEdgeInsets result = UIEdgeInsetsZero;
   UIEdgeInsets kbMargins = ctrl.viewKbSafeMargins;
   
   switch (mode) {
@@ -115,7 +128,8 @@
       break;
     case BKLayoutModeSafeFit:
       result = deviceMargins;
-      if (DeviceInfo.shared.hasCorners && UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+      if (DeviceInfo.shared.hasCorners &&
+          UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         result.top = 16;
         result.bottom = 16;
       }
@@ -131,8 +145,8 @@
       if (!deviceInfo.hasNotch) {
         result.top = 5;
         result.left = 5;
-        result.right = 5;
-        result.bottom = 5;
+        result.right = MAX(deviceMargins.right, 5);
+        result.bottom = fullScreen ? 5 : 10;
         break;
       }
       
@@ -143,6 +157,7 @@
         result.bottom = deviceMargins.bottom - 10;
         break;
       }
+      
       if (orientation == UIDeviceOrientationLandscapeLeft) {
         result.left = deviceMargins.left - 4; // notch
         result.right = 10;
@@ -150,6 +165,7 @@
         result.bottom = 8;
         break;
       }
+      
       if (orientation == UIDeviceOrientationLandscapeRight) {
         result.right = deviceMargins.right - 4;  // notch
         result.left = 10;
@@ -162,9 +178,7 @@
     }
   }
   
-  if (ctrl.view.window.screen == UIScreen.mainScreen) {
-    result.bottom = MAX(result.bottom, kbMargins.bottom);
-  }
+  result.bottom = MAX(result.bottom, kbMargins.bottom);
   
   return result;
 }

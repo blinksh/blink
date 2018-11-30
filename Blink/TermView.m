@@ -92,6 +92,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 @implementation TermView {
   WKWebView *_webView;
   UIImageView *_snapshotImageView;
+  NSTimer *_activeTimer;
   
   BOOL _focused;
   BOOL _jsIsBusy;
@@ -111,7 +112,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
   _jsBuffer = [[NSMutableString alloc] init];
 
-//  self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
   [self _addWebView];
   self.opaque = YES;
   _webView.opaque = YES;
@@ -130,6 +130,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
   [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
+  
 
   return self;
 }
@@ -142,8 +143,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)layoutSubviews {
   [super layoutSubviews];
 
-  _webView.frame = [self _webViewFrame];
-  _snapshotImageView.frame = _webView.frame;
+  CGRect webViewFrame = [self _webViewFrame];
+  if (CGRectEqualToRect(_webView.frame, webViewFrame)) {
+    return;
+  }
+  
+//  _snapshotImageView.frame = webViewFrame;
+  if (_webView.superview) {
+    _webView.frame = webViewFrame;
+  }
 }
 
 - (UIEdgeInsets)safeAreaInsets {
@@ -152,43 +160,62 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_willResignActive
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (self.window == nil) {
-      return;
-    }
-
-    if (@available(iOS 11.0, *)) {
-      [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
-        _snapshotImageView.image = snapshotImage;
-//        _snapshotImageView.frame = [self _webViewFrame];
-        _snapshotImageView.alpha = 1;
-        [self addSubview:_snapshotImageView];
-        [_webView removeFromSuperview];
-      }];
-    } else {
-      // Blank screen for ios 10?
-//      _snapshotImageView.frame = [self _webViewFrame];
+  if (_activeTimer) {
+    [_activeTimer invalidate];
+    _activeTimer = nil;
+    return;
+  }
+  
+  if (self.window == nil) {
+    return;
+  }
+  
+  NSLog(@"- (void)_willResignActive");
+  
+  if (@available(iOS 11.0, *)) {
+    [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+      _snapshotImageView.image = snapshotImage;
+      _snapshotImageView.frame = _webView.frame;
+      _snapshotImageView.alpha = 1;
       [self addSubview:_snapshotImageView];
       [_webView removeFromSuperview];
-    }
-  });
-}
-
-- (CGRect)_webViewFrame {
-  return UIEdgeInsetsInsetRect(self.bounds, self.additionalInsets);
+    }];
+  } else {
+    // Blank screen for ios 10?
+    _snapshotImageView.frame = _webView.frame;
+    [self addSubview:_snapshotImageView];
+    [_webView removeFromSuperview];
+  }
 }
 
 - (void)_didBecomeActive
 {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    if (_webView.superview) {
-      return;
-    }
-    
-    _webView.frame = [self _webViewFrame];
-    [self insertSubview:_webView belowSubview:_snapshotImageView];
-    [_snapshotImageView removeFromSuperview];
-  });
+  [_activeTimer invalidate];
+  _activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_delayedDidBecomeActive) userInfo:nil repeats:NO];
+}
+
+- (void)_delayedDidBecomeActive
+{
+  [_activeTimer invalidate];
+  _activeTimer = nil;
+  
+  if (self.window == nil) {
+    return;
+  }
+  
+  if (_webView.superview) {
+    return;
+  }
+  
+  NSLog(@"- (void)_delayedDidBecomeActive");
+  
+  [self insertSubview:_webView belowSubview:_snapshotImageView];
+  [_snapshotImageView removeFromSuperview];
+  [self setNeedsLayout];
+}
+
+- (CGRect)_webViewFrame {
+  return UIEdgeInsetsInsetRect(self.bounds, self.additionalInsets);
 }
 
 - (BOOL)canBecomeFirstResponder {
@@ -208,9 +235,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.scrollView.scrollEnabled = NO;
   _webView.scrollView.panGestureRecognizer.enabled = NO;
   
-  _webView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-  
   [self addSubview:_webView];
+  [self setNeedsLayout];
 }
 
 - (NSString *)title

@@ -167,16 +167,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
 - (void)startSession
 {
-  TermInput *input = _termDevice.input;
-  _termDevice = [[TermDevice alloc] init];
-  _termDevice->win.ws_col = _sessionParameters.cols;
-  _termDevice->win.ws_row = _sessionParameters.rows;
-  
-  _termDevice.delegate = self;
-
-  [_termDevice attachView:_termView];
-  [_termDevice attachInput:input];
-
   _session = [[MCPSession alloc] initWithDevice:_termDevice andParametes:_sessionParameters];
   _session.delegate = self;
   [_session executeWithArgs:@""];
@@ -282,6 +272,17 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   if (![_sessionParameters hasEncodedState]) {
     return;
   }
+  
+  TermInput *input = _termDevice.input;
+  
+  _termDevice = [[TermDevice alloc] init];
+  _termDevice->win.ws_col = _sessionParameters.cols;
+  _termDevice->win.ws_row = _sessionParameters.rows;
+  
+  _termDevice.delegate = self;
+  
+  [_termDevice attachView:_termView];
+  [_termDevice attachInput:input];
 
   [self startSession];
   
