@@ -2,7 +2,7 @@
 
 New iPad Pro ❤️😍
 
-## Changes in Build 65
+## Changes in Build 66
 
 * Fixed prefer home idicator to be hidden. #608
 * New bigger default font for ipads.
