@@ -114,7 +114,7 @@
   UIWindow *window = ctrl.view.window;
   BOOL isMainScreen = window.screen == mainScreen;
   
-  // we are external monitor, so we use device margins to accomodate overscan and ignore mode
+  // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
   // it is like BKLayoutModeSafeFit mode
   if (!isMainScreen) {
     return deviceMargins;

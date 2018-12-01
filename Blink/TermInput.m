@@ -398,7 +398,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.inputAssistantItem.leadingBarButtonGroups = @[];
     
     // reload input views to get rid of kb input views from other apps.
-    [self reloadInputViews];
+    // also we should reload input views on next event loop. Otherwise inputs messed up
+    // with multiple screens
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self reloadInputViews];
+    });
     [_device focus];
   } else {
     [_device blur];
