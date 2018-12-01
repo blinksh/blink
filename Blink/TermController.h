@@ -53,6 +53,8 @@
 @property (strong) MCPSessionParameters *sessionParameters;
 @property (strong, nonatomic) UIColor *bgColor;
 
+- (void)lockLayout;
+- (void)unlockLayout;
 - (void)terminate;
 - (void)suspend;
 - (void)resume;

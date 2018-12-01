@@ -47,6 +47,8 @@
 @property CGFloat viewWidth;
 @property CGFloat viewHeight;
 @property BKLayoutMode layoutMode;
+@property BOOL layoutLocked;
+@property CGRect layoutLockedFrame;
 
 - (BOOL)hasEncodedState;
 

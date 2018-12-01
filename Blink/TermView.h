@@ -65,8 +65,13 @@
 @property (nonatomic, readonly) NSString *selectedText;
 @property (nonatomic) id<TermViewDeviceProtocol> device;
 @property (nonatomic) UIEdgeInsets additionalInsets;
+@property (nonatomic) BOOL layoutLocked;
+@property (nonatomic) CGRect layoutLockedFrame;
+
+
 
 - (id)initWithFrame:(CGRect)frame andBgColor: (UIColor *)bgColor;
+- (CGRect)webViewFrame;
 - (void)loadWith:(MCPSessionParameters *)params;
 - (void)reloadWith:(MCPSessionParameters *)params;
 - (void)clear;

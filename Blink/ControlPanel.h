@@ -30,16 +30,21 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
+#import "TermController.h"
 
 @protocol ControlPanelDelegate
 
 - (void)controlPanelOnClose;
 - (void)controlPanelOnPaste;
+- (TermController *)currentTerm;
 
 @end
 
 @interface ControlPanel : UIView
 
 @property (weak) id<ControlPanelDelegate> controlPanelDelegate;
+
+
+- (void)updateLayoutBar;
 
 @end

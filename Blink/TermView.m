@@ -116,7 +116,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   self.opaque = YES;
   _webView.opaque = YES;
   
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:[self _webViewFrame]];
+  UIImageView *imageView = [[UIImageView alloc] initWithFrame:[self webViewFrame]];
   imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
   imageView.autoresizingMask =  UIViewAutoresizingNone;
   
@@ -143,7 +143,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)layoutSubviews {
   [super layoutSubviews];
 
-  CGRect webViewFrame = [self _webViewFrame];
+  CGRect webViewFrame = [self webViewFrame];
   if (CGRectEqualToRect(_webView.frame, webViewFrame)) {
     return;
   }
@@ -214,7 +214,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self setNeedsLayout];
 }
 
-- (CGRect)_webViewFrame {
+- (CGRect)webViewFrame {
+  if (_layoutLocked) {
+    return _layoutLockedFrame;
+  }
   return UIEdgeInsetsInsetRect(self.bounds, self.additionalInsets);
 }
 
@@ -228,7 +231,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BKWebView alloc] initWithFrame:[self _webViewFrame] configuration:configuration];
+  _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
   _webView.scrollView.delaysContentTouches = NO;
   _webView.scrollView.canCancelContentTouches = NO;
@@ -263,7 +266,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)reloadWith:(MCPSessionParameters *)params;
 {
-  _snapshotImageView.frame = [self _webViewFrame];
+  _snapshotImageView.frame = [self webViewFrame];
   [self addSubview:_snapshotImageView];
   _snapshotImageView.alpha = 1;
   [_webView.configuration.userContentController removeAllUserScripts];

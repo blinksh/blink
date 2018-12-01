@@ -241,6 +241,8 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _termView.additionalInsets = [LayoutManager
                                 buildSafeInsetsForController:self
                                 andMode:_sessionParameters.layoutMode];
+  _termView.layoutLockedFrame = _sessionParameters.layoutLockedFrame;
+  _termView.layoutLocked = _sessionParameters.layoutLocked;
 }
 
 - (void)viewDidLayoutSubviews
@@ -250,6 +252,16 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   CGSize size = self.view.bounds.size;
   _sessionParameters.viewWidth = size.width;
   _sessionParameters.viewHeight = size.height;
+}
+
+- (void)lockLayout {
+  _sessionParameters.layoutLocked = YES;
+  _sessionParameters.layoutLockedFrame = [_termView webViewFrame];
+}
+
+- (void)unlockLayout {
+  _sessionParameters.layoutLocked = NO;
+  [self.view setNeedsLayout];
 }
 
 #pragma mark Notifications
@@ -286,8 +298,10 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 
   [self startSession];
   
-  if (self.view.bounds.size.width != _sessionParameters.viewWidth ||
-      self.view.bounds.size.height != _sessionParameters.viewHeight) {
+  CGSize size = self.view.bounds.size;
+  
+  if (size.width != _sessionParameters.viewWidth ||
+      size.height != _sessionParameters.viewHeight) {
     [_session sigwinch];
   }
 }

@@ -500,6 +500,8 @@
   }
 
   [_hud hideAnimated:YES afterDelay:1.f];
+  
+  [_touchOverlay.controlPanel updateLayoutBar];
 }
 
 - (void)closeCurrentSpace

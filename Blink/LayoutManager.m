@@ -32,6 +32,7 @@
 
 #import "LayoutManager.h"
 #import "DeviceInfo.h"
+#import "RoundedToolbar.h"
 
 @implementation SafeLayoutViewController
 
@@ -88,7 +89,9 @@
 
 @end
 
-@implementation LayoutManager
+@implementation LayoutManager {
+
+}
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
   DeviceInfo *device = [DeviceInfo shared];
@@ -102,6 +105,7 @@
   
   return BKLayoutModeCover;
 }
+
 
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
   
@@ -181,6 +185,19 @@
   result.bottom = MAX(result.bottom, kbMargins.bottom);
   
   return result;
+}
+
++ (NSString *) layoutModeToString:(BKLayoutMode)mode {
+  switch (mode) {
+    case BKLayoutModeFill:
+      return @"Fill";
+    case BKLayoutModeCover:
+      return @"Cover";
+    case BKLayoutModeSafeFit:
+      return @"Fit";
+    default:
+      return @"Default";
+  }
 }
 
 @end

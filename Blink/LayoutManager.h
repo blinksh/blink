@@ -59,8 +59,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface LayoutManager: NSObject
 
+
 + (BKLayoutMode) deviceDefaultLayoutMode;
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode;
++ (NSString *) layoutModeToString:(BKLayoutMode)mode;
 
 @end
 

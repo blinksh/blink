@@ -41,12 +41,12 @@
 }
 
 + (MusicManager *)shared {
-  static MusicManager *ctrl = nil;
+  static MusicManager *instance = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
-    ctrl = [[self alloc] init];
+    instance = [[self alloc] init];
   });
-  return ctrl;
+  return instance;
 }
 
 - (instancetype)init

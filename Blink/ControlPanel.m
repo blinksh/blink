@@ -30,14 +30,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "ControlPanel.h"
-#import "MusicManager.h"
+#import "LayoutManager.h"
 #import "RoundedToolbar.h"
+#import "DeviceInfo.h"
 
 @implementation ControlPanel {
   UIStackView *_stackView;
   
   UIToolbar *_closeToolbar;
   UIToolbar *_clipboardToolbar;
+  
+  UIToolbar *_layoutToolbar;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -62,6 +65,9 @@
     [_stackView setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
                                                 forAxis:UILayoutConstraintAxisHorizontal];
     
+    _layoutToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
+    [_layoutToolbar setItems:[self _layoutToolbarItems]];
+    
     _clipboardToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
     
     UIButton *pasteBtn = [UIButton buttonWithType:UIButtonTypeSystem];
@@ -84,7 +90,7 @@
     
     [_closeToolbar setItems:@[closeButton]];
     
-    [_stackView addArrangedSubview:[[MusicManager shared] controlPanelView]];
+    [_stackView addArrangedSubview:_layoutToolbar];
     [_stackView addArrangedSubview:_closeToolbar];
     [_stackView addArrangedSubview:_clipboardToolbar];
     
@@ -104,5 +110,83 @@
 {
   [_controlPanelDelegate controlPanelOnPaste];
 }
+
+- (void)updateLayoutBar {
+  [_layoutToolbar setItems:[self _layoutToolbarItems]];
+}
+
+- (NSArray<UIBarButtonItem *> *)_layoutToolbarItems
+{
+  TermController *term = [_controlPanelDelegate currentTerm];
+  if (!term) {
+    return @[];
+  }
+  
+  MCPSessionParameters *params = term.sessionParameters;
+  NSString * modeName = [LayoutManager  layoutModeToString:params.layoutMode];
+  
+  UIButton *layoutModeBtn = [UIButton buttonWithType:UIButtonTypeSystem];
+  [layoutModeBtn setTitle:modeName forState:UIControlStateNormal];
+  layoutModeBtn.tintColor = [UIColor whiteColor];
+  [layoutModeBtn addTarget:self action:@selector(_layoutModeBtnTap) forControlEvents:UIControlEventTouchUpInside];
+  [layoutModeBtn sizeToFit];
+  
+  UIBarButtonItem * layoutModeButton = [[UIBarButtonItem alloc] initWithCustomView:layoutModeBtn];
+  
+  UIBarButtonItem *lockButton = [[UIBarButtonItem alloc]
+                                 initWithImage: [UIImage imageNamed: params.layoutLocked ? @"lock-locked" : @"lock-unlocked"]
+                                 style:UIBarButtonItemStylePlain
+                                 target:self action:@selector(_layoutLockBtnTap)];
+  
+  if (!DeviceInfo.shared.hasCorners) {
+    return @[lockButton];
+  }
+  return @[layoutModeButton, lockButton];
+}
+
+- (void)_layoutLockBtnTap {
+  TermController *term = [_controlPanelDelegate currentTerm];
+  if (!term) {
+    return;
+  }
+  
+  MCPSessionParameters *params = term.sessionParameters;
+  if (params.layoutLocked) {
+    [term unlockLayout];
+  } else {
+    [term lockLayout];
+  }
+  [term.view setNeedsLayout];
+  [self updateLayoutBar];
+}
+
+- (void)_layoutModeBtnTap {
+  TermController *term = [_controlPanelDelegate currentTerm];
+  if (!term) {
+    return;
+  }
+  
+  MCPSessionParameters *params = term.sessionParameters;
+  params.layoutMode = [self _nextLayoutMode:params.layoutMode];
+  if (params.layoutLocked) {
+    [term unlockLayout];
+  }
+  [term.view setNeedsLayout];
+  [self updateLayoutBar];
+}
+
+- (BKLayoutMode)_nextLayoutMode:(BKLayoutMode)mode {
+  switch (mode) {
+    case BKLayoutModeDefault:
+      return BKLayoutModeDefault;
+    case BKLayoutModeSafeFit:
+      return BKLayoutModeFill;
+    case BKLayoutModeFill:
+      return BKLayoutModeCover;
+    case BKLayoutModeCover:
+      return BKLayoutModeSafeFit;
+  }
+}
+
 
 @end
