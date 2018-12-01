@@ -1,3 +1,29 @@
+# Version 12.3
+
+New iPad Pro ❤️😍
+
+## Changes in Build 65
+
+* Fixed prefer home idicator to be hidden. #608
+* New bigger default font for ipads.
+* New key auto repeat is on by default.
+* Fixed few crashes.
+* Fixed some memory leaks.
+* Fixed completion of paths with spaces. #627
+* Updated hterm to latest
+* Improved keyboard interactive auth in ssh command.
+* Fixed key generation for ECDSA 521. #632
+* New layout modes (Fill, Fit, Cover)
+* Improved layout system (fewer resizes)
+* New cmd+o shortcut toggles focus on current session. #561
+* New option to map ~ as ESC. PR #619
+
+Huge thanks to @botanicus, @premist, @xipher1, @s8m2s, @jaydenk, and @reyharris.
+
+Special thanks to @BillWSY for his PR!
+
+
+
 # Version 12.2
 
 ## Changes in Build 57
