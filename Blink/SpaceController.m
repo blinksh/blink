@@ -724,6 +724,14 @@
 
 - (void)otherScreen:(UIKeyCommand *)cmd
 {
+  if ([UIScreen screens].count == 1) {
+    if (_termInput.isFirstResponder) {
+      [_termInput resignFirstResponder];
+    } else {
+      [self _focusOnShell];
+    }
+    return;
+  }
   [[ScreenController shared] switchToOtherScreen];
 }
 
