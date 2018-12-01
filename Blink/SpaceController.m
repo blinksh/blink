@@ -71,6 +71,7 @@
   TermInput *_termInput;
   BOOL _unfocused;
   NSTimer *_activeTimer;
+  CGFloat _proposedKBBottomInset;
   BOOL _active;
 }
 
@@ -115,7 +116,8 @@
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   // We want overlay full screen.
-  _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, self.kbSafeMargins);
+  UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, _proposedKBBottomInset, 0);
+  _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, insets);
 }
 
 - (void)viewSafeAreaInsetsDidChange {
@@ -324,13 +326,6 @@
 // In this case we make sure we take the SmartBar/Keys into account.
 - (void)_keyboardWillChangeFrame:(NSNotification *)sender
 {
-  if (!self.view.window) {
-    NSLog(@"!!!!!!!!!!!!!!");
-    return;
-  }
-  if (!_active) {
-    return;
-  }
   CGFloat bottomInset = 0;
   
   CGRect kbFrame = [sender.userInfo[UIKeyboardFrameEndUserInfoKey] CGRectValue];
@@ -366,6 +361,12 @@
     _termInput.softwareKB = NO;
   }
   
+  _proposedKBBottomInset = bottomInset;
+  
+  if (!_active) {
+    [self.view setNeedsLayout];
+    return;
+  }
   [self updateKbBottomSafeMargins:bottomInset];
 }
 
