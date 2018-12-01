@@ -115,9 +115,13 @@
 
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
-  // We want overlay full screen.
-  UIEdgeInsets insets = UIEdgeInsetsMake(0, 0, _proposedKBBottomInset, 0);
-  _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, insets);
+
+  if (self.view.window.screen == UIScreen.mainScreen) {
+    UIEdgeInsets insets =  UIEdgeInsetsMake(0, 0, _proposedKBBottomInset, 0);
+    _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, insets);
+  } else {
+    _touchOverlay.frame = self.view.bounds;
+  }
 }
 
 - (void)viewSafeAreaInsetsDidChange {
