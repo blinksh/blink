@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include "MCPSession.h"
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
 #include <getopt.h>
