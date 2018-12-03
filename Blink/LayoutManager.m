@@ -39,7 +39,6 @@
 
 - (void)updateKbBottomSafeMargins:(CGFloat)bottomInset {
   if (_kbSafeMargins.bottom != bottomInset) {
-    NSLog(@"Update KB! %@", @(bottomInset));
     _kbSafeMargins.bottom = bottomInset;
     [self viewKbMarginsDidChange];
   }

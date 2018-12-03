@@ -342,7 +342,6 @@
   
   UIView *accessoryView = _termInput.inputAccessoryView;
   CGFloat accessoryHeight = accessoryView.frame.size.height;
-  NSLog(@"accessory view: %@", accessoryView);
   if (bottomInset > 80) {
     accessoryView.hidden = NO;
     _termInput.softwareKB = YES;
