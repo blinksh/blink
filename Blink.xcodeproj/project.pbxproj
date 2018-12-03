@@ -208,6 +208,7 @@
 		D2A92352201732B600043596 /* MusicManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A92351201732B600043596 /* MusicManager.m */; };
 		D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C0F30F20E64FAD00E48F3A /* SSHClientConnectedChannel.m */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
+		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2D0AD081FFB7A74007EC56A /* MCPSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D75EDF21AFDA10007336B6 /* LayoutManager.m */; };
@@ -643,6 +644,7 @@
 		D2C0F30E20E64FAD00E48F3A /* SSHClientConnectedChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientConnectedChannel.h; sourceTree = "<group>"; };
 		D2C0F30F20E64FAD00E48F3A /* SSHClientConnectedChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientConnectedChannel.m; sourceTree = "<group>"; };
 		D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = blinkCommandsDictionary.plist; sourceTree = "<group>"; };
+		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2D0AD061FFB7A74007EC56A /* MCPSessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MCPSessionParameters.h; sourceTree = "<group>"; };
 		D2D0AD071FFB7A74007EC56A /* MCPSessionParameters.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MCPSessionParameters.m; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
@@ -1356,6 +1358,7 @@
 				D2A90ADB20D277DF0073BF3D /* ssh.m */,
 				D23742C921106ADF00366359 /* bench.m */,
 				D2179F2E2136DBC600B0850A /* geo.m */,
+				D2C8D30921B544B100AC39C3 /* say.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
 			);
 			path = Commands;
@@ -1766,6 +1769,7 @@
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
+				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */,
 				D29619A4214F99A30070935A /* rsa.c in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,

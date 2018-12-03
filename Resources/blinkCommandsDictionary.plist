@@ -100,5 +100,12 @@
     <string></string>
     <string>no</string>
   </array>
+  <key>say</key>
+  <array>
+    <string>MAIN</string>
+    <string>say_main</string>
+    <string>f:v:r:</string>
+    <string>no</string>
+  </array>
 </dict>
 </plist>
