@@ -71,6 +71,7 @@
   TermInput *_termInput;
   BOOL _unfocused;
   NSTimer *_activeTimer;
+  NSTimer *_restoreLayoutTimer;
   CGFloat _proposedKBBottomInset;
   BOOL _active;
 }
@@ -300,6 +301,14 @@
   _activeTimer = nil;
   
   _active = YES;
+  _restoreLayoutTimer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(_restoreLayoutAfterBecomeActive) userInfo:nil repeats:NO];
+}
+
+- (void)_restoreLayoutAfterBecomeActive {
+  [_restoreLayoutTimer invalidate];
+  _restoreLayoutTimer = nil;
+  [self updateKbBottomSafeMargins:_proposedKBBottomInset];
+  [self.view setNeedsLayout];
 }
 
 -(void)_appWillResignActive
@@ -308,6 +317,11 @@
     [_activeTimer invalidate];
     _activeTimer = nil;
     return;
+  }
+  
+  if (_restoreLayoutTimer) {
+    [_restoreLayoutTimer invalidate];
+    _restoreLayoutTimer = nil;
   }
   
   _active = NO;
