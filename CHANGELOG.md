@@ -2,7 +2,7 @@
 
 New iPad Pro ❤️😍
 
-## Changes in Build 67
+## Changes in Build 70
 
 * New say command. #629
 * Fixed font-family detection in single line css. #643
