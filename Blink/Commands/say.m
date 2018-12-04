@@ -91,7 +91,13 @@ int say_main(int argc, char *argv[]) {
   optind = 1;
   
   
-  NSString *usage = @"Usage: say [-v voice] [-r rate] [-f file] [message]";
+  NSString *usage = [@[@"Usage: say [-v voice] [-r rate] [-f file] [message]",
+                       @"Examples:",
+                       @"  say -v '?'",
+                       @"  say Hello, Blink",
+                       @"  echo Hello | say",
+                       @"  say -v Monica Hola mundo",
+                       @"  say -v Milena Привет всем"] componentsJoinedByString:@"\n"];
   
   NSString *voice = nil;
   NSString *file = nil;
@@ -141,7 +147,7 @@ int say_main(int argc, char *argv[]) {
   
   if ([voice isEqual:@"?"]) {
     for (AVSpeechSynthesisVoice * v in AVSpeechSynthesisVoice.speechVoices) {
-      puts([NSString stringWithFormat:@"%-20s %@\n", v.name.UTF8String, v.language].UTF8String);
+      puts([NSString stringWithFormat:@"%-20s %@", v.name.UTF8String, v.language].UTF8String);
     }
     return 0;
   } else if (voice) {
