@@ -607,7 +607,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (NSString *)_detectFontFamilyFromContent:(NSString *)content
 {
   NSRegularExpression *regex = [NSRegularExpression
-                                regularExpressionWithPattern:@"font-family:\\s*(.+);"
+                                regularExpressionWithPattern:@"font-family:\\s*([^;]+);"
                                 options:NSRegularExpressionCaseInsensitive
                                 error:nil];
   __block NSString *result = nil;
