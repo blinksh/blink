@@ -34,6 +34,7 @@
 #include "ios_error.h"
 #include <getopt.h>
 #import <AVFoundation/AVFoundation.h>
+#import "MCPSession.h"
 
 @interface SpeechSynthesizerDelegate : NSObject<AVSpeechSynthesizerDelegate>
 
@@ -67,6 +68,24 @@
 }
 
 @end
+
+void _sayText(NSString *text, NSNumber* rate, AVSpeechSynthesisVoice *voice) {
+  AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString: text];
+  if (rate) {
+    utterance.rate = rate.floatValue;
+  }
+  utterance.pitchMultiplier = 1;
+  if (voice) {
+    utterance.voice = voice;
+  }
+  
+  SpeechSynthesizerDelegate *delegate = [[SpeechSynthesizerDelegate alloc] init];
+  AVSpeechSynthesizer *synth = [[AVSpeechSynthesizer alloc] init];
+  synth.delegate = delegate;
+  [synth speakUtterance:utterance];
+  [delegate wait];
+}
+
 
 int say_main(int argc, char *argv[]) {
   optind = 1;
@@ -132,37 +151,54 @@ int say_main(int argc, char *argv[]) {
     }
   }
   
-  if (!text) {
-    const int bufsize = 1024;
-    char buffer[bufsize];
-    NSMutableData* data = [[NSMutableData alloc] init];
-    ssize_t count = 0;
-    while ((count = read(fileno(thread_stdin), buffer, bufsize-1))) {
-      [data appendBytes:buffer length:count];
+  if (text) {
+    _sayText(text, rate, speechVoice);
+    return 0;
+  }
+  
+  BOOL isatty = ios_isatty(fileno(thread_stdin));
+  
+  if (!isatty) {
+    if (!text) {
+      const int bufsize = 1024;
+      char buffer[bufsize];
+      NSMutableData* data = [[NSMutableData alloc] init];
+      ssize_t count = 0;
+      while ((count = read(fileno(thread_stdin), buffer, bufsize-1))) {
+        [data appendBytes:buffer length:count];
+      }
+      
+      text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
     }
     
-    text = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    if (!text) {
+      printf("%s\n", usage.UTF8String);
+      return 1;
+    }
+    
+    _sayText(text, rate, speechVoice);
+    return 0;
   }
   
-  if (!text) {
-    printf("%s\n", usage.UTF8String);
-    return 1;
+  MCPSession *session = (__bridge MCPSession *)thread_context;
+  
+  BOOL echoMode = session.device.echoMode;
+  [session.device setEchoMode:YES];
+  
+  for (;;) {
+    char * line = NULL;
+    size_t len = 0;
+    
+    ssize_t read = getline(&line, &len, session.device.stream.in);
+    if (read <= 0) {
+      break;
+    }
+    puts("");
+    _sayText(@(line), rate, speechVoice);
   }
   
-  AVSpeechUtterance *utterance = [[AVSpeechUtterance alloc] initWithString: text];
-  if (rate) {
-    utterance.rate = rate.floatValue;
-  }
-  utterance.pitchMultiplier = 1;
-  if (speechVoice) {
-    utterance.voice = speechVoice;
-  }
-  
-  SpeechSynthesizerDelegate *delegate = [[SpeechSynthesizerDelegate alloc] init];
-  AVSpeechSynthesizer *synth = [[AVSpeechSynthesizer alloc] init];
-  synth.delegate = delegate;
-  [synth speakUtterance:utterance];
-  [delegate wait];
+  [session.device setEchoMode:echoMode];
   
   return 0;
 }
+
