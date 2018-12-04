@@ -97,9 +97,10 @@ int say_main(int argc, char *argv[]) {
   NSString *file = nil;
   NSNumber *rate = nil;
   NSString *text = nil;
+  BOOL showHelp = NO;
     
   for (;;) {
-    int c = getopt(argc, argv, "v:f:r:");
+    int c = getopt(argc, argv, "v:f:r:h");
     if (c == -1) {
       break;
     }
@@ -114,12 +115,19 @@ int say_main(int argc, char *argv[]) {
       case 'r':
         rate = @([@(optarg) floatValue]);
         break;
+      case 'h':
+        showHelp = YES;
+        break;
       default:
         printf("%s\n", usage.UTF8String);
-        return -1;//[self _exitWithCode:SSH_ERROR andMessage:[self _usage]];
+        return -1;
     }
   }
   
+  if (showHelp) {
+    printf("%s\n", usage.UTF8String);
+    return 0;
+  }
   
   if (optind < argc) {
     NSMutableArray<NSString *> *words = [[NSMutableArray alloc] init];
