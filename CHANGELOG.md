@@ -5,6 +5,7 @@ New iPad Pro ❤️😍
 ## Changes in Build 67
 
 * New say command. #629
+* Fixed font-family detection in single line css. #643
 * Fixed prefer home idicator to be hidden. #608
 * New bigger default font for ipads.
 * New key auto repeat is on by default.
