@@ -178,7 +178,7 @@
 - (BKLayoutMode)_nextLayoutMode:(BKLayoutMode)mode {
   switch (mode) {
     case BKLayoutModeDefault:
-      return BKLayoutModeDefault;
+      return BKLayoutModeSafeFit;
     case BKLayoutModeSafeFit:
       return BKLayoutModeFill;
     case BKLayoutModeFill:
