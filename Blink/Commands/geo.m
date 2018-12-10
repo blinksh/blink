@@ -30,13 +30,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
-#include "MCPSession.h"
 #include "ios_system/ios_system.h"
-//#include "ios_error.h"
+#include "ios_error.h"
 #import "GeoManager.h"
 #import <CoreLocation/CoreLocation.h>
 #import <UserNotifications/UserNotifications.h>
-
 
 
 NSString * _preauthorize_check_geo_premissions() {
@@ -104,34 +102,34 @@ NSNumber * _parse_distance(NSString *str) {
 }
 
 int geo_main(int argc, char *argv[]) {
-  MCPSession *session = (__bridge MCPSession *)thread_context;
-  TermDevice *device = session.device;
   
   NSString *usage = @"Usage: geo track | geo lock Nm | stop | authorize | current | last N";
 
   if (argc < 2) {
-    [session.device writeOutLn:usage];
+    puts(usage.UTF8String);
     return 1;
   }
   NSString *action = @(argv[1]);
+  __block NSString *output = nil;
   
   dispatch_sync(dispatch_get_main_queue(), ^{
     if ([@"track" isEqual:action] || [@"start" isEqual:action]) {
       NSString *reason = _prestart_check_geo_premissions();
       if (reason) {
-        [session.device writeOutLn:reason];
+        output = reason;
         return;
       }
       if (GeoManager.shared.traking) {
-        [device writeOutLn:@"Location tracking is already started."];
+        output = @"Location tracking is already started.";
         return;
       }
       [[GeoManager shared] start];
-      [device writeOutLn:@"Location tracking is started."];
+      output = @"Location tracking is started.";
+      return;
     } else if ([@"lock" isEqual:action] && argc == 3) {
       NSNumber *distance = _parse_distance(@(argv[2]));
       if (distance == nil) {
-        [session.device writeOutLn:@"Can't parse distance value. Example: 10m, 0.5km, 1mi"];
+        output = @"Can't parse distance value. Example: 10m, 0.5km, 1mi";
         return;
       }
       
@@ -150,39 +148,47 @@ int geo_main(int argc, char *argv[]) {
       dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
       NSString *reason = _prestart_check_geo_premissions();
       if (reason) {
-        [session.device writeOutLn:reason];
+        output = reason;
         return;
       }
       if (GeoManager.shared.traking) {
-        [device writeOutLn:@"Location tracking is already started."];
+        output = @"Location tracking is already started.";
         return;
       }
       [[GeoManager shared] lockInDistance:distance];
-      [device writeOutLn:[NSString stringWithFormat:@"Location locked within %@ meters.", distance]];
+      output = [NSString stringWithFormat:@"Location locked within %@ meters.", distance];
+      return;
     } else if ([@"stop" isEqual:action]) {
       [[GeoManager shared] stop];
-      [device writeOutLn:@"Location tracking is stopped."];
+      output = @"Location tracking is stopped.";
+      return;
     } else if ([@"current" isEqual:action]) {
-      [device writeOutLn:[GeoManager.shared currentJSON]];
+      output = [GeoManager.shared currentJSON];
+      return;
     } else if ([@"last" isEqual:action] || [@"latest" isEqual:action]) {
       int n = 1;
       if (argc == 3) {
         NSString *nStr = [NSString stringWithUTF8String:argv[2]];
         n = [nStr intValue];
       }
-      [device writeOutLn:[GeoManager.shared lastJSONN:n]];
+      output = [GeoManager.shared lastJSONN:n];
+      return;
     } else if ([@"authorize" isEqual:action]) {
       NSString *reason = _preauthorize_check_geo_premissions();
       if (reason) {
-        [device writeOutLn:reason];
+        output = reason;
         return;
       }
       [[GeoManager shared] authorize];
     } else {
-      [session.device writeOutLn:usage];
+      output = usage;
       return;
     }
   });
+  
+  if (output) {
+    puts(output.UTF8String);
+  }
 
   return 0;
 }

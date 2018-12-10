@@ -35,8 +35,8 @@
 #import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BKPubKey.h"
-#include <getopt.h>
-#include <zlib.h>
+#import <ios_system/ios_system.h>
+#import "bk_getopts.h"
 
 const NSString * SSHOptionStrictHostKeyChecking = @"stricthostkeychecking";
 const NSString * SSHOptionHostName =  @"hostname";
@@ -361,7 +361,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
 }
 
 - (int)parseArgs:(int) argc argv:(char **) argv {
-  optind = 1;
+  thread_optind = 1;
   
   NSMutableDictionary *args = [[NSMutableDictionary alloc] init];
   NSMutableArray<NSString *> *options = [[NSMutableArray alloc] init];
@@ -373,8 +373,8 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   int clientLogLevel = 0;
   BOOL quiet = NO;
   
-  while (1) {
-    int c = getopt(argc, argv, "AaxR:L:Vo:CGp:i:hqTtvl:F:-W:");
+  for(;;) {
+    int c = thread_getopt(argc, argv, "AaxR:L:Vo:CGp:i:hqTtvl:F:-W:");
     if (c == -1) {
       break;
     }
@@ -390,7 +390,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:SSHOptionValueNO forKey:SSHOptionForwardX11];
         break;
       case 'p':
-        [args setObject:[self _tryParsePort:optarg] forKey:SSHOptionPort];
+        [args setObject:[self _tryParsePort:thread_optarg] forKey:SSHOptionPort];
         break;
       case 'C':
         [args setObject:SSHOptionValueYES forKey:SSHOptionCompression];
@@ -406,7 +406,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         quiet = YES;
         break;
       case 'i':
-        [identityfiles addObject:@(optarg)];
+        [identityfiles addObject:@(thread_optarg)];
         break;
       case 't':
         [args setObject:SSHOptionValueYES forKey:SSHOptionRequestTTY];
@@ -415,20 +415,20 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:SSHOptionValueNO forKey:SSHOptionRequestTTY];
         break;
       case 'l':
-        [args setObject:@(optarg) forKey:SSHOptionUser];
+        [args setObject:@(thread_optarg) forKey:SSHOptionUser];
         break;
       case 'L':
-        [localforward addObject:@(optarg)];
+        [localforward addObject:@(thread_optarg)];
         break;
       case 'R':
-        [remoteforward addObject:@(optarg)];
+        [remoteforward addObject:@(thread_optarg)];
         break;
       case 'F':
-        [args setObject:@(optarg) forKey:SSHOptionConfigFile];
+        [args setObject:@(thread_optarg) forKey:SSHOptionConfigFile];
         break;
       case 'o':
         // Will apply later
-        [options addObject:@(optarg)];
+        [options addObject:@(thread_optarg)];
         break;
       case 'G':
         [args setObject:SSHOptionValueYES forKey:SSHOptionPrintConfiguration];
@@ -437,7 +437,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
         [args setObject:SSHOptionValueYES forKey:SSHOptionPrintVersion];
         break;
       case 'W':
-        [args setObject:@(optarg) forKey:SSHOptionSTDIOForwarding];
+        [args setObject:@(thread_optarg) forKey:SSHOptionSTDIOForwarding];
         break;
       default:
         return [self _exitWithCode:SSH_ERROR andMessage:[self _usage]];
@@ -461,13 +461,13 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
     args[SSHOptionIdentityFile] = identityfiles;
   }
   
-  if (optind < argc) {
-    [self _parseUserAtHostStr:@(argv[optind++]) toArgs:args];
+  if (thread_optind < argc) {
+    [self _parseUserAtHostStr:@(argv[thread_optind++]) toArgs:args];
   }
   
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
-  while (optind < argc) {
-    [cmds addObject:[NSString stringWithUTF8String:argv[optind++]]];
+  while (thread_optind < argc) {
+    [cmds addObject:[NSString stringWithUTF8String:argv[thread_optind++]]];
   }
   
   if (cmds.count > 0) {

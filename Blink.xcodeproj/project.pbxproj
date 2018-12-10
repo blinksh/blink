@@ -163,6 +163,7 @@
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
 		D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D28F301921AD8A6B00E5259F /* DeviceInfo.m */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
+		D29568B921BE629100480A83 /* bk_getopts.c in Sources */ = {isa = PBXBuildFile; fileRef = D29568B821BE629100480A83 /* bk_getopts.c */; };
 		D2961970214F89360070935A /* ssh-agent.m in Sources */ = {isa = PBXBuildFile; fileRef = D296196F214F89210070935A /* ssh-agent.m */; };
 		D2961975214F8A580070935A /* sshbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961972214F8A580070935A /* sshbuf.c */; };
 		D296197C214F8ABE0070935A /* atomicio.c in Sources */ = {isa = PBXBuildFile; fileRef = D296197A214F8ABD0070935A /* atomicio.c */; };
@@ -582,6 +583,8 @@
 		D28F301821AD8A6B00E5259F /* DeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		D28F301921AD8A6B00E5259F /* DeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfo.m; sourceTree = "<group>"; };
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
+		D29568B721BE629100480A83 /* bk_getopts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bk_getopts.h; sourceTree = "<group>"; };
+		D29568B821BE629100480A83 /* bk_getopts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bk_getopts.c; sourceTree = "<group>"; };
 		D296196F214F89210070935A /* ssh-agent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-agent.m"; sourceTree = "<group>"; };
 		D2961971214F8A580070935A /* sshbuf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sshbuf.h; sourceTree = "<group>"; };
 		D2961972214F8A580070935A /* sshbuf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sshbuf.c; sourceTree = "<group>"; };
@@ -762,6 +765,8 @@
 				D28F301921AD8A6B00E5259F /* DeviceInfo.m */,
 				D2D75EDE21AFDA10007336B6 /* LayoutManager.h */,
 				D2D75EDF21AFDA10007336B6 /* LayoutManager.m */,
+				D29568B721BE629100480A83 /* bk_getopts.h */,
+				D29568B821BE629100480A83 /* bk_getopts.c */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1708,6 +1713,7 @@
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */,
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
+				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
