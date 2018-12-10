@@ -698,8 +698,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   switch(state) {
     case SSH_KNOWN_HOSTS_CHANGED:
-      [self _log_info:@"Host key for server changed : server's one is now :"];
-      ssh_print_hexa("Public key hash",hash, hlen);
+      [self _log_info:@"Host key for server changed."];
+      hexa = ssh_get_hexa(hash, hlen);
+      [self _log_info: [NSString stringWithFormat:@"server's one is now: %s", hexa]];
+      ssh_string_free_char(hexa);
       ssh_clean_pubkey_hash(&hash);
       [self _log_info:@"For security reason, connection will be stopped"];
       return SSH_ERROR;
@@ -722,8 +724,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       
       NSNumber * doEcho = @(YES);
       NSString *answer = [[[self _getAnswersWithName:@""
-                                         instruction:@"The server is unknown. Do you trust the host key?"
-                                          andPrompts:@[@[@" (yes/no):", doEcho]]] firstObject] lowercaseString];
+                                         instruction:@"The server is unknown."
+                                          andPrompts:@[@[@"Do you trust the host key? (yes/no):", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         
@@ -733,8 +735,8 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
       
       answer = [[[self _getAnswersWithName:@""
-                               instruction:@"This new key will be written on disk for further usage. do you agree?"
-                                andPrompts:@[@[@" (yes/no):", doEcho]]] firstObject] lowercaseString];
+                               instruction:@"This new key will be written on disk for further usage."
+                                andPrompts:@[@[@"Do you agree? (yes/no):", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         if (ssh_write_knownhost(_session) < 0) {
