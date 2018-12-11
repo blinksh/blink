@@ -153,6 +153,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   _ssh_callbacks.userdata = NULL;
+  _doExit = YES;
 }
 
 - (void)dealloc {
@@ -284,6 +285,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   [_runLoop runMode:NSDefaultRunLoopMode beforeDate:[NSDate dateWithTimeIntervalSinceNow:0.1]];
 }
 
+- (BOOL)_notConnected {
+  return _doExit || !ssh_is_connected(_session);
+}
+
 
 #pragma mark - CONNECT
 
@@ -407,7 +412,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   
   int maxPartialAuths = 5;
   
-  for (int i = 0; i <  maxPartialAuths; i++) {
+  for (int i = 0; i < maxPartialAuths; i++) {
     [self _log_verbose:[NSString stringWithFormat:@"using auth methods attempt: %@ of %@\n", @(i + 1), @(maxPartialAuths)]];
     
     // 3. get auth methods from server
@@ -468,7 +473,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_none {
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
@@ -530,15 +535,56 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       continue;
     }
     
-    NSString *user = _options[SSHOptionUser];
     bool tryNextIdentityFile = NO;
+    
     for (;;) {
-      if (_doExit) {
+      if ([self _notConnected]) {
+        ssh_key_free(pkey);
         return SSH_ERROR;
       }
-      rc = ssh_userauth_publickey(_session, user.UTF8String, pkey);
+      rc = ssh_userauth_try_publickey(_session, NULL, pkey);
+      switch (rc) {
+        case SSH_AUTH_ERROR:
+          break;
+        case SSH_AUTH_SUCCESS:
+          break;
+        case SSH_AUTH_AGAIN:
+          [self _poll];
+          continue;
+        case SSH_AUTH_DENIED:
+          tryNextIdentityFile = YES;
+          break;
+        case SSH_AUTH_PARTIAL: {
+          int methods = ssh_userauth_list(_session, NULL);
+          tryNextIdentityFile = methods & SSH_AUTH_METHOD_PUBLICKEY;
+          break;
+        }
+        
+      }
+      break;
+    }
+    
+    if (tryNextIdentityFile) {
+      ssh_key_free(pkey);
+      continue;
+    }
+    
+    if (rc != SSH_AUTH_SUCCESS) {
+      ssh_key_free(pkey);
+      return rc;
+    }
+    
+    tryNextIdentityFile = NO;
+    
+    for (;;) {
+      if ([self _notConnected]) {
+        ssh_key_free(pkey);
+        return SSH_ERROR;
+      }
+      rc = ssh_userauth_publickey(_session, NULL, pkey);
       switch (rc) {
         case SSH_AUTH_SUCCESS:
+          ssh_key_free(pkey);
           return rc;
         case SSH_AUTH_AGAIN:
           [self _poll];
@@ -556,9 +602,13 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
       break;
     }
+    
+    ssh_key_free(pkey);
+    
     if (tryNextIdentityFile) {
       continue;
     }
+    
     break;
   }
   
@@ -568,7 +618,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)_auth_with_password:(NSString *)password prompts:(int)promptsCount {
   
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
@@ -601,7 +651,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 - (int)_auth_with_interactive_with_password:(NSString *)password prompts:(int)promptsCount {
   // https://gitlab.com/libssh/libssh-mirror/blob/master/doc/authentication.dox#L124
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
@@ -793,7 +843,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   int rc = SSH_ERROR;
 
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
@@ -818,7 +868,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_channel_set_blocking(channel, 0);
   
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     rc = ssh_channel_open_session(channel);
@@ -857,7 +907,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
   NSString *remoteCommand = _options[SSHOptionRemoteCommand];
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       ssh_channel_close(channel);
       ssh_channel_free(channel);
       return SSH_ERROR;
@@ -903,7 +953,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
     
     for(;;) {
-      if (_doExit) {
+      if ([self _notConnected]) {
         return;
       }
       int rc = ssh_channel_request_env(channel, varName.UTF8String, varValue);
@@ -933,7 +983,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_channel channel = ssh_channel_new(_session);
   
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       ssh_channel_free(channel);
       return SSH_ERROR;
     }
@@ -982,7 +1032,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   ssh_channel channel = ssh_channel_new(_session);
   
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       ssh_channel_free(channel);
       return;
     }
@@ -1049,7 +1099,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   sourcehost = [parts lastObject] ?: @"localhost";
   
   for (;;) {
-    if (_doExit) {
+    if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
@@ -1175,7 +1225,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (void)_on_server_keep_alive {
-  if (_doExit) {
+  if ([self _notConnected]) {
     return;
   }
   ssh_client_send_keepalive(_session);
