@@ -1,3 +1,16 @@
+# Version 12.4
+
+## Changes in Build 74
+
+* Improved ssh pubkey authentication.
+* Improved host verification. #648.
+* Fixed command pipes. #637.
+* Fixed geo command output, so it can be redirected. #626
+* Clarify mosh configuration UI. #106
+* Increased layout lock icon tappable area.
+
+Huge thanks to @holzschu, @cjay, @jjarava and @goerz.
+
 # Version 12.3
 
 New iPad Pro ❤️😍
