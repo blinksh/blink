@@ -77,16 +77,33 @@
 }
 
 #pragma mark Setup
-- (void)loadView
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  if (self.view.window.screen == UIScreen.mainScreen) {
+    UIEdgeInsets insets =  UIEdgeInsetsMake(0, 0, _proposedKBBottomInset, 0);
+    _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, insets);
+  } else {
+    _touchOverlay.frame = self.view.bounds;
+  }
+}
+
+- (void)viewSafeAreaInsetsDidChange {
+  [super viewSafeAreaInsetsDidChange];
+  [self updateDeviceSafeMarings:self.view.safeAreaInsets];
+}
+
+- (void)viewDidLoad
 {
-  [super loadView];
+  [super viewDidLoad];
   
   self.view.opaque = YES;
   
   NSDictionary *options = [NSDictionary dictionaryWithObject:
                            [NSNumber numberWithInt:UIPageViewControllerSpineLocationMid]
-                                            forKey:UIPageViewControllerOptionSpineLocationKey];
-
+                                                      forKey:UIPageViewControllerOptionSpineLocationKey];
+  
   _viewportsController = [[UIPageViewController alloc]
                           initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
                           navigationOrientation:UIPageViewControllerNavigationOrientationVertical
@@ -111,28 +128,6 @@
   _termInput = [[TermInput alloc] init];
   [self.view addSubview:_termInput];
   [self registerForNotifications];
-  
-}
-
-- (void)viewDidLayoutSubviews {
-  [super viewDidLayoutSubviews];
-
-  if (self.view.window.screen == UIScreen.mainScreen) {
-    UIEdgeInsets insets =  UIEdgeInsetsMake(0, 0, _proposedKBBottomInset, 0);
-    _touchOverlay.frame = UIEdgeInsetsInsetRect(self.view.bounds, insets);
-  } else {
-    _touchOverlay.frame = self.view.bounds;
-  }
-}
-
-- (void)viewSafeAreaInsetsDidChange {
-  [super viewSafeAreaInsetsDidChange];
-  [self updateDeviceSafeMarings:self.view.safeAreaInsets];
-}
-
-- (void)viewDidLoad
-{
-  [super viewDidLoad];
 
   [self setKbdCommands];
   if (_viewports == nil) {

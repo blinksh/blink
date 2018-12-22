@@ -438,7 +438,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   // Discard CAPS on characters when caps are mapped and there is no SW keyboard.
   BOOL capsWithoutSWKeyboard = !self.softwareKB && [self _capsMapped];
   if (capsWithoutSWKeyboard && text.length == 1 && [text characterAtIndex:0] > 0x1F) {
-    text = [text lowercaseString];
+    if (!_markedText) {
+      text = [text lowercaseString];
+    }
   }
   
   if  (_device.view.hasSelection) {
@@ -850,39 +852,50 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)_setKbdCommands
 {
   _kbdCommands = [NSMutableArray array];
+  _kbdCommandsWithoutAutoRepeat = [NSMutableArray array];
   
   for (NSNumber *modifier in _functionKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_functionKeys[modifier]];
+    if (modifier.integerValue == UIKeyModifierAlphaShift || modifier.integerValue == UIKeyModifierShift) {
+      continue;
+    }
+    [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:_functionKeys[modifier]];
   }
   for (NSNumber *modifier in _functionTriggerKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_functionTriggerKeys[modifier]];
+    [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:_functionTriggerKeys[modifier]];
   }
   
   [_kbdCommands addObjectsFromArray:_rawAdditionalKbdCommands];
+  [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:_rawAdditionalKbdCommands];
   
   [_kbdCommands addObjectsFromArray:self._functionModifierKeys];
+  [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:self._functionModifierKeys];
 
   // This dummy command to hand stuck cmd key
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@""
-                                              modifierFlags:UIKeyModifierCommand
-                                                     action:@selector(_kbCmd:)]];
+  UIKeyCommand *cmdCommand = [UIKeyCommand keyCommandWithInput:@""
+                                                 modifierFlags:UIKeyModifierCommand
+                                                        action:@selector(_kbCmd:)];
+  [_kbdCommands addObject:cmdCommand];
+  [_kbdCommandsWithoutAutoRepeat addObject:cmdCommand];
 
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"\r"
-                                              modifierFlags:UIKeyModifierAlternate
-                                                     action:@selector(_altEnter:)]];
+  UIKeyCommand *altEnterCommand = [UIKeyCommand keyCommandWithInput:@"\r"
+                                                      modifierFlags:UIKeyModifierAlternate
+                                                             action:@selector(_altEnter:)];
+  [_kbdCommands addObject:altEnterCommand];
+  [_kbdCommandsWithoutAutoRepeat addObject:altEnterCommand];
   
-  [_kbdCommands addObject:[UIKeyCommand keyCommandWithInput:@"\t"
-                                              modifierFlags:UIKeyModifierShift
-                                                     action:@selector(_shiftTab:)]];
+  UIKeyCommand *shiftTabCommand = [UIKeyCommand keyCommandWithInput:@"\t"
+                                                      modifierFlags:UIKeyModifierShift
+                                                             action:@selector(_shiftTab:)];
+  [_kbdCommands addObject:shiftTabCommand];
+  [_kbdCommandsWithoutAutoRepeat addObject:shiftTabCommand];
   
-  if (_controlKeys != _controlKeysWithoutAutoRepeat) {
-    _kbdCommandsWithoutAutoRepeat = [_kbdCommands mutableCopy];
-    for (NSNumber *modifier in _controlKeysWithoutAutoRepeat.allKeys) {
-      [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:_controlKeys[modifier]];
-    }
-  } else {
-    _kbdCommandsWithoutAutoRepeat = _kbdCommands;
+
+  for (NSNumber *modifier in _controlKeysWithoutAutoRepeat.allKeys) {
+    [_kbdCommandsWithoutAutoRepeat addObjectsFromArray:_controlKeys[modifier]];
   }
+  
   for (NSNumber *modifier in _controlKeys.allKeys) {
     [_kbdCommands addObjectsFromArray:_controlKeys[modifier]];
   }
@@ -1134,6 +1147,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)_resetDefaultControlKeys
 {
   _controlKeys = [[NSMutableDictionary alloc] init];
+  _controlKeysWithoutAutoRepeat = [[NSMutableDictionary alloc] init];
   _functionKeys = [[NSMutableDictionary alloc] init];
   _functionTriggerKeys = [[NSMutableDictionary alloc] init];
   _specialFKeysRow = @"1234567890";
