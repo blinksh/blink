@@ -713,6 +713,21 @@
     [_kbdCommandsWithoutDiscoverability addObject:commandWithoutDiscoverability];
   }
   
+  // Alternative key commands for keyboard layouts having problems to access
+  // some of the default ones (e.g. the German keyboard layout)
+  UIKeyCommand * altPrevShell = [UIKeyCommand keyCommandWithInput: UIKeyInputLeftArrow
+                                                    modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
+                                                           action: @selector(prevShell:)];
+  
+  UIKeyCommand * altNextShell = [UIKeyCommand keyCommandWithInput: UIKeyInputRightArrow
+                                                    modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
+                                                           action: @selector(nextShell:)];
+  
+  [_kbdCommandsWithoutDiscoverability addObjectsFromArray:@[
+                                                            altPrevShell,
+                                                            altNextShell
+                                                            ]];
+  
 }
 
 - (void)_increaseFontSize:(UIKeyCommand *)cmd
