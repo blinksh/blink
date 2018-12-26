@@ -648,6 +648,7 @@
 - (void)setKbdCommands
 {
   UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
+  UIKeyModifierFlags prevNextShellModifierFlags = [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell];
   
   _kbdCommands = [[NSMutableArray alloc] initWithObjects:
                   [UIKeyCommand keyCommandWithInput: @"t" modifierFlags:modifierFlags
@@ -656,17 +657,24 @@
                   [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
                                              action: @selector(closeShell:)
                                discoverabilityTitle: @"Close shell"],
-                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
+                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: prevNextShellModifierFlags
                                              action: @selector(nextShell:)
                                discoverabilityTitle: @"Next shell"],
-                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
+                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: prevNextShellModifierFlags
                                              action: @selector(prevShell:)
                                discoverabilityTitle: @"Previous shell"],
+                  // Alternative key commands for keyboard layouts having problems to access
+                  // some of the default ones (e.g. the German keyboard layout)
+                  [UIKeyCommand keyCommandWithInput: UIKeyInputRightArrow modifierFlags: prevNextShellModifierFlags
+                                             action: @selector(nextShell:)],
+                  [UIKeyCommand keyCommandWithInput: UIKeyInputLeftArrow modifierFlags: prevNextShellModifierFlags
+                                             action: @selector(prevShell:)],
+                  
                   
                   [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
                                              action: @selector(otherScreen:)
                                discoverabilityTitle: @"Other Screen"],
-                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
+                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: prevNextShellModifierFlags
                                              action: @selector(moveToOtherScreen:)
                                discoverabilityTitle: @"Move shell to other Screen"],
                   [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
@@ -712,21 +720,6 @@
     commandWithoutDiscoverability.discoverabilityTitle = nil;
     [_kbdCommandsWithoutDiscoverability addObject:commandWithoutDiscoverability];
   }
-  
-  // Alternative key commands for keyboard layouts having problems to access
-  // some of the default ones (e.g. the German keyboard layout)
-  UIKeyCommand * altPrevShell = [UIKeyCommand keyCommandWithInput: UIKeyInputLeftArrow
-                                                    modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
-                                                           action: @selector(prevShell:)];
-  
-  UIKeyCommand * altNextShell = [UIKeyCommand keyCommandWithInput: UIKeyInputRightArrow
-                                                    modifierFlags: [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell]
-                                                           action: @selector(nextShell:)];
-  
-  [_kbdCommandsWithoutDiscoverability addObjectsFromArray:@[
-                                                            altPrevShell,
-                                                            altNextShell
-                                                            ]];
   
 }
 
