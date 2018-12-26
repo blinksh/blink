@@ -136,11 +136,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _deadZoneLeft = [[UIView alloc] initWithFrame:CGRectZero];
   _deadZoneRight = [[UIView alloc] initWithFrame:CGRectZero];
-//  _deadZoneRight.backgroundColor = [UIColor redColor];
-//  _deadZoneLeft.backgroundColor = [UIColor orangeColor];
   
-  [self addSubview:_deadZoneLeft];
-  [self addSubview:_deadZoneRight];
+//  [self addSubview:_deadZoneLeft];
+//  [self addSubview:_deadZoneRight];
 
   return self;
 }

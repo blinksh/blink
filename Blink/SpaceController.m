@@ -106,7 +106,7 @@
   
   _viewportsController = [[UIPageViewController alloc]
                           initWithTransitionStyle:UIPageViewControllerTransitionStyleScroll
-                          navigationOrientation:UIPageViewControllerNavigationOrientationVertical
+                          navigationOrientation:UIPageViewControllerNavigationOrientationHorizontal
                           options:options];
   _viewportsController.view.opaque = YES;
   _viewportsController.dataSource = self;
