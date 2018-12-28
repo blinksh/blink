@@ -1242,10 +1242,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [self _setKbdCommands];
 }
 
-- (void)_handleKeyUIEvent:(id)event {
-  KeyInput *input = [KeyInput buildKeyInputFrom:event];
-  NSLog(@"%@", input);
-  [super _handleKeyUIEvent:event];
-}
+//- (void)_handleKeyUIEvent:(id)event {
+//  KeyInput *input = [KeyInput buildKeyInputFrom:event];
+//  NSLog(@"%@", input);
+//  [super _handleKeyUIEvent:event];
+//}
 
 @end
