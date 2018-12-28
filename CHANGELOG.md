@@ -1,7 +1,10 @@
 # Version 12.4
 
-## Changes in Build 74
+## Changes in Build 79
 
+* Fixed images display over ssh. #663
+* New cmd+shift+left/right shortcuts to switch terminals. #419, #496
+* Fixed umlaut with capitals. #657
 * Improved ssh pubkey authentication.
 * Improved host verification. #648.
 * Fixed command pipes. #637.
@@ -9,7 +12,10 @@
 * Clarify mosh configuration UI. #106
 * Increased layout lock icon tappable area.
 
-Huge thanks to @holzschu, @cjay, @jjarava and @goerz.
+Huge thanks to @holzschu, @cjay, @jjarava, @DixonCider and @goerz.
+
+Special thanks to @b00giZm for hist PR!
+
 
 # Version 12.3
 
