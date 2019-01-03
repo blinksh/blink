@@ -455,8 +455,11 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       } else if (rc == SSH_AUTH_PARTIAL) {
         continue;
       }
-    } else if (methods & SSH_AUTH_METHOD_PASSWORD && optionPasswordAuth) {
-      // 6. even we don't have password. Ask it
+    }
+    
+    // 5. password
+    if (methods & SSH_AUTH_METHOD_PASSWORD && optionPasswordAuth) {
+      // even we don't have password. Ask it
       rc = [self _auth_with_password: optionPassword prompts:optionPasswordPromptsCount];
       if (rc == SSH_AUTH_SUCCESS) {
         return SSH_OK;
@@ -650,6 +653,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_auth_with_interactive_with_password:(NSString *)password prompts:(int)promptsCount {
   // https://gitlab.com/libssh/libssh-mirror/blob/master/doc/authentication.dox#L124
+  BOOL wasInAuthInfo = NO;
   for (;;) {
     if ([self _notConnected]) {
       return SSH_ERROR;
@@ -662,6 +666,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         [self _poll];
         continue;
       case SSH_AUTH_INFO: {
+        wasInAuthInfo = YES;
         const char *nameChars = ssh_userauth_kbdint_getname(_session);
         const char *instructionChars = ssh_userauth_kbdint_getinstruction(_session);
         
@@ -698,6 +703,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         continue;
       }
       case SSH_AUTH_DENIED: {
+        if (!wasInAuthInfo) {
+          return rc;
+        }
         if (--promptsCount > 0) {
           if (password == nil) {
             [self _log_info:@"Permission denied, please try again."];
