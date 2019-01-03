@@ -89,7 +89,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>79</string>
+	<string>80</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>blinkshell</string>
