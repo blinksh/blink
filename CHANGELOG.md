@@ -1,7 +1,9 @@
 # Version 12.4
 
-## Changes in Build 79
+## Changes in Build 80
 
+* Fixed disabled kbd interactive auth method. #667
+* Updated libssh to 0.8.6.
 * Fixed images display over ssh. #663
 * New cmd+shift+left/right shortcuts to switch terminals. #419, #496
 * Fixed umlaut with capitals. #657
@@ -12,7 +14,7 @@
 * Clarify mosh configuration UI. #106
 * Increased layout lock icon tappable area.
 
-Huge thanks to @holzschu, @cjay, @jjarava, @DixonCider and @goerz.
+Huge thanks to @holzschu, @cjay, @jjarava, @DixonCider, @rdparker and @goerz.
 
 Special thanks to @b00giZm for hist PR!
 
