@@ -124,8 +124,6 @@
     
     return YES;
   }];
-
-  puts("Bye! 👋");
   
   return 0;
 }
