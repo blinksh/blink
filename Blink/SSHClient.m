@@ -881,13 +881,22 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (int)_request_pty:(ssh_channel)channel {
   int rc = SSH_ERROR;
+  char *default_term = "xterm-256color";
+  char *term = getenv("TERM");
+  if (term) {
+    if (strlen(term) == 0) {
+      term = default_term;
+    }
+  } else {
+    term = default_term;
+  }
 
   for (;;) {
     if ([self _notConnected]) {
       return SSH_ERROR;
     }
     
-    rc = ssh_channel_request_pty_size(channel, "xterm-256color", _device->win.ws_col, _device->win.ws_row);
+    rc = ssh_channel_request_pty_size(channel, term, _device->win.ws_col, _device->win.ws_row);
     switch (rc) {
       case SSH_AGAIN:
         [self _poll];
