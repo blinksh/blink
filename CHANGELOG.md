@@ -1,7 +1,8 @@
 # Version 12.4
 
-## Changes in Build 80
+## Changes in Build 81
 
+* Fixed ssh use TERM env var for TTY. #604
 * Fixed disabled kbd interactive auth method. #667
 * Updated libssh to 0.8.6.
 * Fixed images display over ssh. #663
