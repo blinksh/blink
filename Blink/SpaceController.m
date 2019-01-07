@@ -404,7 +404,7 @@
   }
   NSInteger idx = [_viewports indexOfObject:viewController];
 
-  if (idx <= 0) {
+  if (idx <= 0 || idx == NSNotFound) {
     return nil;
   }
   return _viewports[idx - 1];
