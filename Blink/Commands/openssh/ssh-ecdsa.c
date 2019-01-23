@@ -25,6 +25,8 @@
  */
 
 //#include "includes.h"
+#define WITH_OPENSSL
+#define OPENSSL_HAS_ECC
 
 #if defined(WITH_OPENSSL) && defined(OPENSSL_HAS_ECC)
 
@@ -43,7 +45,8 @@
 #define SSHKEY_INTERNAL
 #include "sshkey.h"
 
-//#include "openbsd-compat/openssl-compat.h"
+#include "openssl-compat.h"
+#include "blink-compat.h"
 
 /* ARGSUSED */
 int

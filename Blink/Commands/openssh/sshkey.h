@@ -28,16 +28,19 @@
 
 #include <sys/types.h>
 
+#define WITH_OPENSSL
+#define OPENSSL_HAS_ECC
+
 #ifdef WITH_OPENSSL
 #include <openssl/rsa.h>
 #include <openssl/dsa.h>
-# ifdef OPENSSL_HAS_ECC
-#  include <openssl/ec.h>
-# else /* OPENSSL_HAS_ECC */
-#  define EC_KEY  void
-#  define EC_GROUP  void
-#  define EC_POINT  void
-# endif /* OPENSSL_HAS_ECC */
+#ifdef OPENSSL_HAS_ECC
+#include <openssl/ec.h>
+#else /* OPENSSL_HAS_ECC */
+#define EC_KEY  void
+#define EC_GROUP  void
+#define EC_POINT  void
+#endif /* OPENSSL_HAS_ECC */
 #else /* WITH_OPENSSL */
 # define BIGNUM    void
 # define RSA    void
@@ -263,15 +266,15 @@ int ssh_xmss_verify(const struct sshkey *key,
 #endif
 
 #if !defined(WITH_OPENSSL)
-# undef RSA
-# undef DSA
-# undef EC_KEY
-# undef EC_GROUP
-# undef EC_POINT
+#undef RSA
+#undef DSA
+#undef EC_KEY
+#undef EC_GROUP
+#undef EC_POINT
 #elif !defined(OPENSSL_HAS_ECC)
-# undef EC_KEY
-# undef EC_GROUP
-# undef EC_POINT
+#undef EC_KEY
+#undef EC_GROUP
+#undef EC_POINT
 #endif
 
 #endif /* SSHKEY_H */

@@ -31,6 +31,9 @@
 #include <netinet/in.h>
 
 #define WITH_OPENSSL
+#define OPENSSL_HAS_ECC
+#define OPENSSL_HAS_NISTP521
+
 #ifdef WITH_OPENSSL
 #include <openssl/evp.h>
 #include <openssl/err.h>
@@ -124,16 +127,16 @@ static const struct keytype keytypes[] = {
   { "rsa-sha2-256", "RSA", NULL, KEY_RSA, 0, 0, 1 },
   { "rsa-sha2-512", "RSA", NULL, KEY_RSA, 0, 0, 1 },
   { "ssh-dss", "DSA", NULL, KEY_DSA, 0, 0, 0 },
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
   { "ecdsa-sha2-nistp256", "ECDSA", NULL,
     KEY_ECDSA, NID_X9_62_prime256v1, 0, 0 },
   { "ecdsa-sha2-nistp384", "ECDSA", NULL,
     KEY_ECDSA, NID_secp384r1, 0, 0 },
-#  ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
   { "ecdsa-sha2-nistp521", "ECDSA", NULL,
     KEY_ECDSA, NID_secp521r1, 0, 0 },
-#  endif /* OPENSSL_HAS_NISTP521 */
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_ECC */
   { "ssh-rsa-cert-v01@openssh.com", "RSA-CERT", NULL,
     KEY_RSA_CERT, 0, 1, 0 },
   { "rsa-sha2-256-cert-v01@openssh.com", "RSA-CERT",
@@ -150,16 +153,16 @@ static const struct keytype keytypes[] = {
     "ssh-rsa-sha2-512", KEY_RSA_CERT, 0, 1, 1 },
   { "ssh-dss-cert-v01@openssh.com", "DSA-CERT", NULL,
     KEY_DSA_CERT, 0, 1, 0 },
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
   { "ecdsa-sha2-nistp256-cert-v01@openssh.com", "ECDSA-CERT", NULL,
     KEY_ECDSA_CERT, NID_X9_62_prime256v1, 1, 0 },
   { "ecdsa-sha2-nistp384-cert-v01@openssh.com", "ECDSA-CERT", NULL,
     KEY_ECDSA_CERT, NID_secp384r1, 1, 0 },
-#  ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
   { "ecdsa-sha2-nistp521-cert-v01@openssh.com", "ECDSA-CERT", NULL,
     KEY_ECDSA_CERT, NID_secp521r1, 1, 0 },
-#  endif /* OPENSSL_HAS_NISTP521 */
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
   { NULL, NULL, NULL, -1, -1, 0, 0 }
 };
@@ -392,10 +395,10 @@ sshkey_curve_name_to_nid(const char *name)
     return NID_X9_62_prime256v1;
   else if (strcmp(name, "nistp384") == 0)
     return NID_secp384r1;
-# ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
   else if (strcmp(name, "nistp521") == 0)
     return NID_secp521r1;
-# endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_NISTP521 */
   else
     return -1;
 }
@@ -408,10 +411,10 @@ sshkey_curve_nid_to_bits(int nid)
       return 256;
     case NID_secp384r1:
       return 384;
-# ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
     case NID_secp521r1:
       return 521;
-# endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_NISTP521 */
     default:
       return 0;
   }
@@ -425,10 +428,10 @@ sshkey_ecdsa_bits_to_nid(int bits)
       return NID_X9_62_prime256v1;
     case 384:
       return NID_secp384r1;
-# ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
     case 521:
       return NID_secp521r1;
-# endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_NISTP521 */
     default:
       return -1;
   }
@@ -442,10 +445,10 @@ sshkey_curve_nid_to_name(int nid)
       return "nistp256";
     case NID_secp384r1:
       return "nistp384";
-# ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
     case NID_secp521r1:
       return "nistp521";
-# endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_NISTP521 */
     default:
       return NULL;
   }
@@ -592,13 +595,13 @@ sshkey_free(struct sshkey *k)
       DSA_free(k->dsa);
       k->dsa = NULL;
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
     case KEY_ECDSA_CERT:
       EC_KEY_free(k->ecdsa);
       k->ecdsa = NULL;
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
     case KEY_ED25519:
     case KEY_ED25519_CERT:
@@ -658,9 +661,9 @@ sshkey_equal_public(const struct sshkey *a, const struct sshkey *b)
   const BIGNUM *rsa_e_b, *rsa_n_b;
   const BIGNUM *dsa_p_a, *dsa_q_a, *dsa_g_a, *dsa_pub_key_a;
   const BIGNUM *dsa_p_b, *dsa_q_b, *dsa_g_b, *dsa_pub_key_b;
-# if defined(OPENSSL_HAS_ECC)
+#if defined(OPENSSL_HAS_ECC)
   BN_CTX *bnctx;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
   
   if (a == NULL || b == NULL ||
@@ -689,7 +692,7 @@ sshkey_equal_public(const struct sshkey *a, const struct sshkey *b)
       BN_cmp(dsa_q_a, dsa_q_b) == 0 &&
       BN_cmp(dsa_g_a, dsa_g_b) == 0 &&
       BN_cmp(dsa_pub_key_a, dsa_pub_key_b) == 0;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA_CERT:
     case KEY_ECDSA:
       if (a->ecdsa == NULL || b->ecdsa == NULL ||
@@ -708,7 +711,7 @@ sshkey_equal_public(const struct sshkey *a, const struct sshkey *b)
           }
       BN_CTX_free(bnctx);
       return 1;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
     case KEY_ED25519:
     case KEY_ED25519_CERT:
@@ -789,7 +792,7 @@ to_blob_buf(const struct sshkey *key, struct sshbuf *b, int force_plain,
           (ret = sshbuf_put_bignum2(b, dsa_pub_key)) != 0)
         return ret;
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       if (key->ecdsa == NULL)
         return SSH_ERR_INVALID_ARGUMENT;
@@ -799,7 +802,7 @@ to_blob_buf(const struct sshkey *key, struct sshbuf *b, int force_plain,
           (ret = sshbuf_put_eckey(b, key->ecdsa)) != 0)
         return ret;
       break;
-# endif
+#endif
     case KEY_RSA:
       if (key->rsa == NULL)
         return SSH_ERR_INVALID_ARGUMENT;
@@ -1353,7 +1356,7 @@ sshkey_read(struct sshkey *ret, char **cpp)
       DSA_print_fp(stderr, ret->dsa, 8);
 #endif
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       EC_KEY_free(ret->ecdsa);
       ret->ecdsa = k->ecdsa;
@@ -1364,7 +1367,7 @@ sshkey_read(struct sshkey *ret, char **cpp)
       sshkey_dump_ec_key(ret->ecdsa);
 #endif
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
     case KEY_ED25519:
       freezero(ret->ed25519_pk, ED25519_PK_SZ);
@@ -1547,7 +1550,7 @@ out:
   return ret;
 }
 
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
 int
 sshkey_ecdsa_key_to_nid(EC_KEY *k)
 {
@@ -1555,9 +1558,9 @@ sshkey_ecdsa_key_to_nid(EC_KEY *k)
   int nids[] = {
     NID_X9_62_prime256v1,
     NID_secp384r1,
-#  ifdef OPENSSL_HAS_NISTP521
+#ifdef OPENSSL_HAS_NISTP521
     NID_secp521r1,
-#  endif /* OPENSSL_HAS_NISTP521 */
+#endif /* OPENSSL_HAS_NISTP521 */
     -1
   };
   int nid;
@@ -1625,7 +1628,7 @@ out:
   EC_KEY_free(private);
   return ret;
 }
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
 
 int
@@ -1658,12 +1661,12 @@ sshkey_generate(int type, u_int bits, struct sshkey **keyp)
     case KEY_DSA:
       ret = dsa_generate_private_key(bits, &k->dsa);
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       ret = ecdsa_generate_private_key(bits, &k->ecdsa_nid,
                                        &k->ecdsa);
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA:
       ret = rsa_generate_private_key(bits, &k->rsa);
       break;
@@ -1793,7 +1796,7 @@ sshkey_from_private(const struct sshkey *k, struct sshkey **pkp)
       dsa_pub_key_dup = NULL; /* transferred */
       
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
     case KEY_ECDSA_CERT:
       if ((n = sshkey_new(k->type)) == NULL) {
@@ -1812,7 +1815,7 @@ sshkey_from_private(const struct sshkey *k, struct sshkey **pkp)
         goto out;
       }
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA:
     case KEY_RSA_CERT:
       if ((n = sshkey_new(k->type)) == NULL) {
@@ -2045,9 +2048,9 @@ sshkey_from_blob_internal(struct sshbuf *b, struct sshkey **keyp,
 #if defined(WITH_OPENSSL)
   BIGNUM *rsa_n = NULL, *rsa_e = NULL;
   BIGNUM *dsa_p = NULL, *dsa_q = NULL, *dsa_g = NULL, *dsa_pub_key = NULL;
-# if defined(OPENSSL_HAS_ECC)
+#if defined(OPENSSL_HAS_ECC)
   EC_POINT *q = NULL;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
   
 #ifdef DEBUG_PK /* XXX */
@@ -2151,7 +2154,7 @@ sshkey_from_blob_internal(struct sshbuf *b, struct sshkey **keyp,
         goto out;
       }
       /* FALLTHROUGH */
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       if ((key = sshkey_new(type)) == NULL) {
         ret = SSH_ERR_ALLOC_FAIL;
@@ -2194,7 +2197,7 @@ sshkey_from_blob_internal(struct sshbuf *b, struct sshkey **keyp,
       sshkey_dump_ec_point(EC_KEY_get0_group(key->ecdsa), q);
 #endif
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
     case KEY_ED25519_CERT:
       /* Skip nonce */
@@ -2280,9 +2283,9 @@ out:
   BN_clear_free(dsa_q);
   BN_clear_free(dsa_g);
   BN_clear_free(dsa_pub_key);
-# if defined(OPENSSL_HAS_ECC)
+#if defined(OPENSSL_HAS_ECC)
   EC_POINT_free(q);
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
   return ret;
 }
@@ -2425,11 +2428,11 @@ sshkey_sign(const struct sshkey *key,
     case KEY_DSA_CERT:
     case KEY_DSA:
       return ssh_dss_sign(key, sigp, lenp, data, datalen, compat);
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA_CERT:
     case KEY_ECDSA:
       return ssh_ecdsa_sign(key, sigp, lenp, data, datalen, compat);
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA_CERT:
     case KEY_RSA:
       return ssh_rsa_sign(key, sigp, lenp, data, datalen, alg);
@@ -2463,11 +2466,11 @@ sshkey_verify(const struct sshkey *key,
     case KEY_DSA_CERT:
     case KEY_DSA:
       return ssh_dss_verify(key, sig, siglen, data, dlen, compat);
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA_CERT:
     case KEY_ECDSA:
       return ssh_ecdsa_verify(key, sig, siglen, data, dlen, compat);
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA_CERT:
     case KEY_RSA:
       return ssh_rsa_verify(key, sig, siglen, data, dlen, alg);
@@ -2590,7 +2593,7 @@ sshkey_certify_custom(struct sshkey *k, struct sshkey *ca, const char *alg,
           (ret = sshbuf_put_bignum2(cert, dsa_pub_key)) != 0)
         goto out;
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA_CERT:
       if ((ret = sshbuf_put_cstring(cert,
                                     sshkey_curve_nid_to_name(k->ecdsa_nid))) != 0 ||
@@ -2599,7 +2602,7 @@ sshkey_certify_custom(struct sshkey *k, struct sshkey *ca, const char *alg,
                                EC_KEY_get0_group(k->ecdsa))) != 0)
         goto out;
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA_CERT:
       RSA_get0_key(k->rsa, &rsa_n, &rsa_e, NULL);
       if ((ret = sshbuf_put_bignum2(cert, rsa_e)) != 0 ||
@@ -2852,7 +2855,7 @@ sshkey_private_serialize_opt(const struct sshkey *key, struct sshbuf *b,
           (r = sshbuf_put_bignum2(b, dsa_priv_key)) != 0)
         goto out;
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       if ((r = sshbuf_put_cstring(b,
                                   sshkey_curve_nid_to_name(key->ecdsa_nid))) != 0 ||
@@ -2871,7 +2874,7 @@ sshkey_private_serialize_opt(const struct sshkey *key, struct sshbuf *b,
                                   EC_KEY_get0_private_key(key->ecdsa))) != 0)
         goto out;
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
 #endif /* WITH_OPENSSL */
     case KEY_ED25519:
       if ((r = sshbuf_put_string(b, key->ed25519_pk,
@@ -3007,7 +3010,7 @@ sshkey_private_deserialize(struct sshbuf *buf, struct sshkey **kp)
       }
       dsa_priv_key = NULL; /* transferred */
       break;
-# ifdef OPENSSL_HAS_ECC
+#ifdef OPENSSL_HAS_ECC
     case KEY_ECDSA:
       if ((k = sshkey_new(type)) == NULL) {
         r = SSH_ERR_ALLOC_FAIL;
@@ -3057,7 +3060,7 @@ sshkey_private_deserialize(struct sshbuf *buf, struct sshkey **kp)
           (r = sshkey_ec_validate_private(k->ecdsa)) != 0)
         goto out;
       break;
-# endif /* OPENSSL_HAS_ECC */
+#endif /* OPENSSL_HAS_ECC */
     case KEY_RSA:
       if ((k = sshkey_new(type)) == NULL) {
         r = SSH_ERR_ALLOC_FAIL;

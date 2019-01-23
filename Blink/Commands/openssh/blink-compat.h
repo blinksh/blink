@@ -43,6 +43,8 @@
 #define fatal printf
 #define verbose printf
 #define error printf
+
+
 #define debug printf
 #define debug2 printf
 #define debug3 printf

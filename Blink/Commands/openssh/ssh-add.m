@@ -36,6 +36,8 @@
  */
 
 #define WITH_OPENSSL
+#define OPENSSL_HAS_ECC
+
 #include "ssh2.h"
 
 #import "BKPubKey.h"
