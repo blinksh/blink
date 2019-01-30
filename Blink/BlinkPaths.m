@@ -139,6 +139,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self blink] stringByAppendingPathComponent:@"syncItems"];
 }
 
++ (NSString *)blinkProfileFile
+{
+  return [[self blink] stringByAppendingPathComponent:@"profile"];
+}
+
+
 + (NSString *)historyFile
 {
   return [[self blink] stringByAppendingPathComponent:@"history.txt"];

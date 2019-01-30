@@ -48,6 +48,7 @@
 + (NSString *)blinkKeysFile;
 + (NSString *)blinkHostsFile;
 + (NSString *)blinkSyncItemsFile;
++ (NSString *)blinkProfileFile;
 
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;

@@ -91,12 +91,39 @@ void __setupProcessEnv() {
   return YES;
 }
 
+- (void)_loadProfileVars {
+  NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceCharacterSet];
+  NSString *profile = [NSString stringWithContentsOfFile:[BlinkPaths blinkProfileFile] encoding:NSUTF8StringEncoding error:nil];
+  [profile enumerateLinesUsingBlock:^(NSString * _Nonnull line, BOOL * _Nonnull stop) {
+    NSMutableArray<NSString *> *parts = [[line componentsSeparatedByString:@"="] mutableCopy];
+    if (parts.count < 2) {
+      return;
+    }
+    
+    NSString *varName = [parts.firstObject stringByTrimmingCharactersInSet:whiteSpace];
+    if (varName.length == 0) {
+      return;
+    }
+    [parts removeObjectAtIndex:0];
+    NSString *varValue = [[parts componentsJoinedByString:@"="] stringByTrimmingCharactersInSet:whiteSpace];
+    if ([varValue hasSuffix:@"\""] || [varValue hasPrefix:@"\""]) {
+      varValue = [varValue substringWithRange:NSMakeRange(1, varValue.length - 1)];
+    }
+    if (varValue.length == 0) {
+      return;
+    }
+    BOOL forceOverwrite = 1;
+    setenv(varName.UTF8String, varValue.UTF8String, forceOverwrite);
+  }];
+}
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
   [Migrator migrateIfNeeded];
   [BKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
+  [self _loadProfileVars];
   return YES;
 }
 
