@@ -1,4 +1,18 @@
+# Version 12.5
+
+## Changes in Build 81
+
+* New ifconfig and openurl commands.
+* Fixed adding ecdsa keys to ssh-agent with ssh-add command. #681
+* New openurl command and open selected links honors BROWSER env var (googlechrome and firefox). #529
+* New load env vars from .blink/profile file.
+* New auth with keys from agent. #685
+
+Huge thanks to @holzschu, @treyharris, @TypedLambda and @lohitv9.
+
+
 # Version 12.4
+
 
 ## Changes in Build 81
 
