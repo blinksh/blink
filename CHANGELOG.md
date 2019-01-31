@@ -1,6 +1,6 @@
 # Version 12.5
 
-## Changes in Build 81
+## Changes in Build 82
 
 * New ifconfig and openurl commands.
 * Fixed adding ecdsa keys to ssh-agent with ssh-add command. #681
