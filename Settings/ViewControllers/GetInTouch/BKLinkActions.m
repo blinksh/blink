@@ -32,6 +32,7 @@
 #import <UIKit/UIKit.h>
 
 #import "BKLinkActions.h"
+#import "openurl.h"
 
 @implementation BKLinkActions
 
@@ -44,7 +45,7 @@
   if ([app canOpenURL:twitterApp]) {
     [app openURL:twitterApp options:@{} completionHandler:nil];
   } else {
-    [app openURL:twitterURL options:@{} completionHandler:nil];
+    blink_openurl(twitterURL);
   }
 }
 
@@ -54,7 +55,7 @@
   if (location) {
     githubURL = [githubURL URLByAppendingPathComponent:location];
   }
-  [[UIApplication sharedApplication] openURL:githubURL options:@{} completionHandler:nil];
+  blink_openurl(githubURL);
 }
 
 + (void)sendToAppStore

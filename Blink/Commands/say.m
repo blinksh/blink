@@ -36,13 +36,13 @@
 #import <AVFoundation/AVFoundation.h>
 #import "MCPSession.h"
 
-@interface SpeechSynthesizerDelegate : NSObject<AVSpeechSynthesizerDelegate>
+@interface BlinkSpeechSynthesizerDelegate : NSObject<AVSpeechSynthesizerDelegate>
 
 - (void)wait;
 
 @end
 
-@implementation SpeechSynthesizerDelegate {
+@implementation BlinkSpeechSynthesizerDelegate {
   dispatch_semaphore_t _sema;
 }
 
@@ -79,7 +79,7 @@ void _sayText(NSString *text, NSNumber* rate, AVSpeechSynthesisVoice *voice) {
     utterance.voice = voice;
   }
   
-  SpeechSynthesizerDelegate *delegate = [[SpeechSynthesizerDelegate alloc] init];
+  BlinkSpeechSynthesizerDelegate *delegate = [[BlinkSpeechSynthesizerDelegate alloc] init];
   AVSpeechSynthesizer *synth = [[AVSpeechSynthesizer alloc] init];
   synth.delegate = delegate;
   [synth speakUtterance:utterance];

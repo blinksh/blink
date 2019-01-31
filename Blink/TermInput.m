@@ -38,6 +38,7 @@
 #import "BKKeyboardModifierViewController.h"
 #import "TermDevice.h"
 #import "KeyInput.h"
+#import "openurl.h"
 
 static NSDictionary *bkModifierMaps = nil;
 
@@ -795,12 +796,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return;
   }
   
-  UIApplication * app = [UIApplication sharedApplication];
-  if (![app canOpenURL:url]) {
-    return;
-  }
-  
-  [app openURL:url options:@{} completionHandler:nil];
+  blink_openurl(url);
 }
 
 - (void)unselect:(id)sender

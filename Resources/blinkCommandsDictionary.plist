@@ -107,5 +107,12 @@
     <string>f:v:r:</string>
     <string>no</string>
   </array>
+  <key>openurl</key>
+  <array>
+    <string>MAIN</string>
+    <string>blink_openurl_main</string>
+    <string></string>
+    <string>no</string>
+  </array>
 </dict>
 </plist>
