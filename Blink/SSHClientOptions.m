@@ -68,6 +68,7 @@ const NSString * SSHOptionSendEnv = @"sendenv"; // -o
 const NSString * SSHOptionKbdInteractiveAuthentication = @"kbdinteractiveauthentication"; // -o
 const NSString * SSHOptionPubkeyAuthentication = @"pubkeyauthentication"; // -o
 const NSString * SSHOptionPasswordAuthentication = @"passwordauthentication"; // -o
+const NSString * SSHOptionIdentitiesOnly = @"identitiesonly"; // -o
 
 // Non standart
 const NSString * SSHOptionPassword = @"_password"; //
@@ -171,6 +172,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
                          SSHOptionPubkeyAuthentication: @[yesNoType, SSHOptionValueYES],
                          SSHOptionKbdInteractiveAuthentication: @[yesNoType, SSHOptionValueYES],
                          SSHOptionPasswordAuthentication: @[yesNoType, SSHOptionValueYES],
+                         SSHOptionIdentitiesOnly: @[yesNoType, SSHOptionValueNO]
                          };
   
   NSMutableDictionary *result = [[NSMutableDictionary alloc] init];

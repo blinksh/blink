@@ -68,6 +68,8 @@ extern NSString * SSHOptionKbdInteractiveAuthentication; // -o
 extern NSString * SSHOptionPubkeyAuthentication; // -o
 extern NSString * SSHOptionPasswordAuthentication; // -o
 
+extern NSString * SSHOptionIdentitiesOnly; // -o
+
 
 // Non standart
 extern const NSString * SSHOptionPassword; //

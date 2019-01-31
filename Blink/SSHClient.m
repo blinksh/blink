@@ -404,7 +404,9 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   BOOL optionPasswordAuth = [SSHOptionValueYES isEqual:_options[SSHOptionPasswordAuthentication]];
   BOOL optionKbdInteractiveAuth = [SSHOptionValueYES isEqual:_options[SSHOptionKbdInteractiveAuthentication]];
   BOOL optionPubKeyAuth = [SSHOptionValueYES isEqual:_options[SSHOptionPubkeyAuthentication]];
+  BOOL optionIdenitiesOnly = [SSHOptionValueYES isEqual:_options[SSHOptionIdentitiesOnly]];
   int  optionPasswordPromptsCount = [_options[SSHOptionNumberOfPasswordPrompts] intValue];
+  
   NSString *optionPassword = _options[SSHOptionPassword];
   if (optionPassword.length == 0) {
     optionPassword = nil;
@@ -438,6 +440,18 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     }
   
     // 5. public keys
+    
+    // 5.1 Agent first if possible
+    if (methods & SSH_AUTH_METHOD_PUBLICKEY && optionPubKeyAuth && !optionIdenitiesOnly) {
+      rc = [self _auth_with_agent];
+      if (rc == SSH_AUTH_SUCCESS) {
+        return SSH_OK;
+      } else if (rc == SSH_AUTH_PARTIAL) {
+        continue;
+      }
+    }
+    
+    // 5.2 Identities
     if (methods & SSH_AUTH_METHOD_PUBLICKEY && optionPubKeyAuth) {
       rc = [self _auth_with_publickey];
       if (rc == SSH_AUTH_SUCCESS) {
@@ -447,7 +461,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
     }
     
-    // 4. interactive
+    // 6. interactive
     if (methods & SSH_AUTH_METHOD_INTERACTIVE && optionKbdInteractiveAuth) {
       rc = [self _auth_with_interactive_with_password:optionPassword prompts:optionPasswordPromptsCount];
       if (rc == SSH_AUTH_SUCCESS) {
@@ -457,7 +471,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       }
     }
     
-    // 5. password
+    // 7. password
     if (methods & SSH_AUTH_METHOD_PASSWORD && optionPasswordAuth) {
       // even we don't have password. Ask it
       rc = [self _auth_with_password: optionPassword prompts:optionPasswordPromptsCount];
@@ -616,6 +630,24 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   
   return rc;
+}
+
+- (int)_auth_with_agent {
+  int rc = SSH_ERROR;
+  for (;;) {
+    if ([self _notConnected]) {
+      return SSH_ERROR;
+    }
+    
+    rc = ssh_userauth_agent(_session, NULL);
+    switch (rc) {
+      case SSH_AUTH_AGAIN:
+        [self _poll];
+        continue;
+      default:
+        return rc;
+    }
+  }
 }
 
 - (int)_auth_with_password:(NSString *)password prompts:(int)promptsCount {
