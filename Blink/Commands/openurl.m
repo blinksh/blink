@@ -36,8 +36,7 @@
 
 NSArray<NSString *> *__blink_known_browsers() {
   // TODO: @"opera" opera-http(s): doesn't work
-  //       @"yandexbrowser"
-  return @[@"googlechrome", @"firefox", @"safari"];
+  return @[@"googlechrome", @"firefox", @"safari", @"yandexbrowser"];
 }
 
 NSURL *__blink_browser_app_url(NSURL *srcURL) {
@@ -71,6 +70,13 @@ NSURL *__blink_browser_app_url(NSURL *srcURL) {
     NSString *url = [absSrcURLStr
                         stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
     url = [@"firefox://open-url?url=" stringByAppendingString:url];
+    return [NSURL URLWithString:url];
+  }
+  
+  if ([browser isEqualToString:@"yandexbrowser"]) {
+    NSString *url = [absSrcURLStr
+                     stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+    url = [@"yandexbrowser-open-url://" stringByAppendingString:url];
     return [NSURL URLWithString:url];
   }
   
