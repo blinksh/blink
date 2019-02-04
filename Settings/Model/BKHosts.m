@@ -284,14 +284,13 @@ static UICKeyChainStore *Keychain = nil;
   [hostRecord setValue:host.host forKey:@"host"];
   [hostRecord setValue:host.hostName forKey:@"hostName"];
   [hostRecord setValue:host.key forKey:@"key"];
-  if (host.moshPort)
-    [hostRecord setValue:host.moshPort forKey:@"moshPort"];
+  
+  [hostRecord setValue:host.moshPort forKey:@"moshPort"];
   [hostRecord setValue:host.moshServer forKey:@"moshServer"];
   [hostRecord setValue:host.moshStartup forKey:@"moshStartup"];
   [hostRecord setValue:host.password forKey:@"password"];
   [hostRecord setValue:host.passwordRef forKey:@"passwordRef"];
-  if (host.port)
-    [hostRecord setValue:host.port forKey:@"port"];
+  [hostRecord setValue:host.port forKey:@"port"];
   [hostRecord setValue:host.prediction forKey:@"prediction"];
   [hostRecord setValue:host.user forKey:@"user"];
   [hostRecord setValue:host.proxyCmd forKey:@"proxyCmd"];
