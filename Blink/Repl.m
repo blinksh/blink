@@ -547,8 +547,14 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       break;
     }
     
+    __weak TermView *termView = _device.view;
     dispatch_sync(dispatch_get_main_queue(), ^{
-      [_device.view restore];
+      // We have strange crash here
+      // [termView restore];
+      // so we need to check if we can restore
+      if ([termView canPerformAction:@selector(restore) withSender:nil]) {
+        [termView restore];
+      }
     });
     
     replxx_clear_screen_to_end(_replxx);
