@@ -90,26 +90,25 @@
 {
   [[CKContainer defaultContainer] accountStatusWithCompletionHandler:
 				    ^(CKAccountStatus accountStatus, NSError *error) {
-				      if (accountStatus == CKAccountStatusNoAccount) {
-					dispatch_async(dispatch_get_main_queue(), ^{
-					  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Please login to your iCloud account to enable Sync" preferredStyle:UIAlertControllerStyleAlert];
-					  UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-					  [alertController addAction:ok];
-					  [self presentViewController:alertController animated:YES completion:nil];
-					  [_toggleiCloudSync setOn:NO];
-					});
-				      } else {
+              
+    dispatch_async(dispatch_get_main_queue(), ^{
 
-					if (_toggleiCloudSync.isOn) {
-					  [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert)
-													      completionHandler:^(BOOL granted, NSError *_Nullable error){
-
-													      }];
-					  [[UIApplication sharedApplication] registerForRemoteNotifications];
-					}
-					[BKUserConfigurationManager setUserSettingsValue:_toggleiCloudSync.isOn forKey:@"iCloudSync"];
-				      }
-				    }];
+      if (accountStatus == CKAccountStatusNoAccount) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"Error" message:@"Please login to your iCloud account to enable Sync" preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+        [alertController addAction:ok];
+        [self presentViewController:alertController animated:YES completion:nil];
+        [_toggleiCloudSync setOn:NO];
+      } else {
+        if (_toggleiCloudSync.isOn) {
+          [[UNUserNotificationCenter currentNotificationCenter] requestAuthorizationWithOptions:(UNAuthorizationOptionAlert)
+                                                                              completionHandler:^(BOOL granted, NSError *_Nullable error){}];
+          [[UIApplication sharedApplication] registerForRemoteNotifications];
+        }
+        [BKUserConfigurationManager setUserSettingsValue:_toggleiCloudSync.isOn forKey:@"iCloudSync"];
+      }
+    });
+  }];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
