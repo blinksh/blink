@@ -448,6 +448,7 @@
   [_hud hideAnimated:NO];
 
   _musicHUD = [MBProgressHUD showHUDAddedTo:_touchOverlay animated:YES];
+  _musicHUD.defaultMotionEffectsEnabled = NO; // Do not use core motion
   _musicHUD.mode = MBProgressHUDModeCustomView;
   _musicHUD.bezelView.style = MBProgressHUDBackgroundStyleSolidColor;
   _musicHUD.bezelView.color = [UIColor clearColor];
@@ -480,6 +481,7 @@
   }
 
   _hud = [MBProgressHUD showHUDAddedTo:_touchOverlay animated:_hud == nil];
+  _hud.defaultMotionEffectsEnabled = NO; // Do not use core motion
   _hud.mode = MBProgressHUDModeCustomView;
   _hud.bezelView.color = [UIColor darkGrayColor];
   _hud.contentColor = [UIColor whiteColor];
