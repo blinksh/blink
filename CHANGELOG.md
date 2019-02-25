@@ -1,3 +1,11 @@
+# Version 12.6
+
+## Changes in Build 85
+
+* Added Encrypt-then-MAC support. #616
+* Fix crashes during closing windows. #602
+
+
 # Version 12.5
 
 ## Changes in Build 83
