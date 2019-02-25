@@ -1,12 +1,12 @@
 [submodule "Frameworks/UICKeyChainStore"]
 	path = Frameworks/UICKeyChainStore
 	url = https://github.com/kishikawakatsumi/UICKeyChainStore.git
-[submodule "Frameworks/MBProgressHUD"]
-	path = Frameworks/MBProgressHUD
-	url = https://github.com/jdg/MBProgressHUD.git
 [submodule "Frameworks/PasscodeLock"]
 	path = Frameworks/PasscodeLock
 	url = https://github.com/blinksh/SwiftPasscodeLock.git
 [submodule "Frameworks/ios_system"]
 	path = Frameworks/ios_system
 	url = https://github.com/holzschu/ios_system.git
+[submodule "Frameworks/MBProgressHUD"]
+	path = Frameworks/MBProgressHUD
+	url = https://github.com/blinksh/MBProgressHUD.git
