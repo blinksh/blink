@@ -115,8 +115,8 @@ NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
 
 @implementation Repl {
   Replxx* _replxx;
-  TermDevice *_device;
-  TermStream *_stream;
+  __weak TermDevice *_device;
+  __weak TermStream *_stream;
 }
 
 void __hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud) {
@@ -532,8 +532,10 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
   [self initCompletions];
   NSString *cmdline = nil;
   [_device setRawMode:NO];
+  __weak TermView *termView = _device.view;
   
   while ((cmdline = [self _input:"blink> "]) != nil) {
+    
     cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
     
     if ([cmdline length] == 0) {
@@ -547,7 +549,10 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       break;
     }
     
-    __weak TermView *termView = _device.view;
+    if (!_stream) {
+      return;
+    }
+    
     dispatch_sync(dispatch_get_main_queue(), ^{
       // We have strange crash here
       // [termView restore];
@@ -556,6 +561,10 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
         [termView restore];
       }
     });
+    
+    if (!_stream) {
+      return;
+    }
     
     replxx_clear_screen_to_end(_replxx);
     
