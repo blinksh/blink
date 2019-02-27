@@ -1,12 +1,11 @@
 # Version 12.6
 
-## Changes in Build 86
+## Changes in Build 85
 
 * Updated libssh to 0.8.7
   * Added Encrypt-then-MAC support. #616
   * Fixed Ed25519 keys export. #681
 * Fix crashes during closing windows. #602
-* Update openssl to 1.0.2r
 
 Huge thanks to @TypedLambda, @botanicus, @vorband and @derekbelrose.
 
