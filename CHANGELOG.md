@@ -2,9 +2,12 @@
 
 ## Changes in Build 85
 
-* Added Encrypt-then-MAC support. #616
+* Updated libssh to 0.8.7
+  * Added Encrypt-then-MAC support. #616
+  * Fixed Ed25519 keys export. #681
 * Fix crashes during closing windows. #602
 
+Huge thanks to @TypedLambda, @botanicus, @vorband and @derekbelrose.
 
 # Version 12.5
 
