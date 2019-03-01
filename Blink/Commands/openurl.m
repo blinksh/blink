@@ -35,8 +35,14 @@
 #include "openurl.h"
 
 NSArray<NSString *> *__blink_known_browsers() {
-  // TODO: @"opera" opera-http(s): doesn't work
-  return @[@"googlechrome", @"firefox", @"safari", @"yandexbrowser", @"brave"];
+  return @[
+           @"brave",
+           @"firefox",
+           @"googlechrome",
+           @"opera",
+           @"safari",
+           @"yandexbrowser",
+           ];
 }
 
 NSURL *__blink_browser_app_url(NSURL *srcURL) {
@@ -66,10 +72,14 @@ NSURL *__blink_browser_app_url(NSURL *srcURL) {
   
   NSString *absSrcURLStr = [srcURL absoluteString];
   
-  if ([browser isEqualToString:@"firefox"]) {
+  // browsers with the open-url scheme:
+  if (([browser isEqualToString:@"firefox"]) ||
+      ([browser isEqualToString:@"brave"]) ||
+      ([browser isEqualToString:@"opera"])) {
     NSString *url = [absSrcURLStr
-                        stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-    url = [@"firefox://open-url?url=" stringByAppendingString:url];
+                     stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
+    NSString *openUrl = [@"://open-url?url=" stringByAppendingString:url];
+    url = [browser stringByAppendingString:openUrl];
     return [NSURL URLWithString:url];
   }
   
@@ -77,13 +87,6 @@ NSURL *__blink_browser_app_url(NSURL *srcURL) {
     NSString *url = [absSrcURLStr
                      stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
     url = [@"yandexbrowser-open-url://" stringByAppendingString:url];
-    return [NSURL URLWithString:url];
-  }
-  
-  if ([browser isEqualToString:@"brave"]) {
-    NSString *url = [absSrcURLStr
-                     stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLQueryAllowedCharacterSet];
-    url = [@"brave://open-url?url=" stringByAppendingString:url];
     return [NSURL URLWithString:url];
   }
   
