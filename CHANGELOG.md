@@ -1,13 +1,15 @@
 # Version 12.6
 
-## Changes in Build 85
+## Changes in Build 87
 
 * Updated libssh to 0.8.7
   * Added Encrypt-then-MAC support. #616
   * Fixed Ed25519 keys export. #681
+* Updated openssl to v1.0.2r.
+* Added brave and opera browsers support for opening urls.
 * Fix crashes during closing windows. #602
 
-Huge thanks to @TypedLambda, @botanicus, @vorband and @derekbelrose.
+Huge thanks to @holzschu, @TypedLambda, @botanicus, @vorband and @derekbelrose.
 
 # Version 12.5
 
