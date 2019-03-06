@@ -114,5 +114,12 @@
     <string></string>
     <string>no</string>
   </array>
+  <key>xcall</key>
+  <array>
+    <string>MAIN</string>
+    <string>blink_xcall_main</string>
+    <string>ap:j:b:</string>
+    <string>no</string>
+  </array>
 </dict>
 </plist>

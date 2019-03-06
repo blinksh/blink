@@ -40,6 +40,7 @@
 #import "BKHosts.h"
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
+#include "xcall.h"
 
 
 @import CloudKit;
@@ -271,6 +272,7 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
+  blink_handle_url(url);
   // What we can do useful?
   return YES;
 }

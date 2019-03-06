@@ -80,6 +80,8 @@
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
+			<key>CFBundleURLIconFile</key>
+			<string></string>
 			<key>CFBundleURLName</key>
 			<string>Blink</string>
 			<key>CFBundleURLSchemes</key>
