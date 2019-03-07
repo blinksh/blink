@@ -34,13 +34,13 @@
 #include "ios_error.h"
 #include "bk_getopts.h"
 #include "xcall.h"
-
+#include "openurl.h"
 
 @implementation BlinkXCall {
-  dispatch_semaphore_t _sema;
+  NSCondition *_condition;
 }
 
-+ (NSMutableDictionary<NSString *, BlinkXCall *> *)registry {
++ (NSMutableDictionary<NSString *, BlinkXCall *> *)_registry {
   static NSMutableDictionary *registry = nil;
   static dispatch_once_t onceToken;
   dispatch_once(&onceToken, ^{
@@ -48,7 +48,6 @@
   });
   return registry;
 }
-
 
 - (instancetype)init
 {
@@ -66,9 +65,18 @@
   return self;
 }
 
+- (void)_register {
+  [[BlinkXCall _registry] setObject:self forKey:_callID];
+}
+
+- (void)_unregister {
+  [[BlinkXCall _registry] removeObjectForKey:_callID];
+}
+
 - (int)run {
 
   if (!_xURL) {
+    puts("no url");
     return 0;
   }
 
@@ -109,22 +117,33 @@
   
   [components setQueryItems:newQueryItems];
   
-  NSURL * url = [components URL];
+  NSURL *url = [components URL];
+  
+  if (_verbose) {
+    puts(url.absoluteString.UTF8String);
+  }
 
-  puts(url.absoluteString.UTF8String);
-  _sema = dispatch_semaphore_create(0);
-  dispatch_async(dispatch_get_main_queue(), ^{
-    NSMutableDictionary *registry = [BlinkXCall registry];
-    [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
-      if (success) {
-        [registry setObject:self forKey:_callID];
-      }
-    }];
-  });
+  if (_async) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
+    });
+    return 0;
+  } else {
+    _condition = [[NSCondition alloc] init];
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
+        if (success) {
+          [self _register];
+        }
+      }];
+    });
+    
+    [_condition wait];
+  }
   
-  dispatch_semaphore_wait(_sema, DISPATCH_TIME_FOREVER);
-  
-  puts(_xCallbackURL.absoluteString.UTF8String);
+  if (_verbose) {
+    puts(_xCallbackURL.absoluteString.UTF8String);
+  }
   
   NSURLComponents *comps = [NSURLComponents componentsWithURL:_xCallbackURL resolvingAgainstBaseURL:YES];
   NSArray<NSURLQueryItem *> *queryItems = [comps queryItems];
@@ -136,9 +155,48 @@
       }
       
       NSString *decoder = decode.lastObject;
-      puts(item.value.UTF8String);
-      
+      if ([@"json" isEqual:decoder]) {
+        id json = [NSJSONSerialization JSONObjectWithData:[item.value dataUsingEncoding:NSUTF8StringEncoding] options:NSJSONReadingAllowFragments error:nil];
+        if (!json) {
+          continue;
+        }
+        NSData *prettyJSON = [NSJSONSerialization dataWithJSONObject:json options:NSJSONWritingPrettyPrinted error:nil];
+        fwrite(prettyJSON.bytes, prettyJSON.length, 1, thread_stdout);
+        puts("");
+      } else if ([@"base64" isEqual:decoder]) {
+        NSData * b64data = [[NSData alloc] initWithBase64EncodedString:item.value options:NSDataBase64DecodingIgnoreUnknownCharacters];
+        if (!b64data) {
+          continue;
+        }
+        fwrite(b64data.bytes, b64data.length, 1, thread_stdout);
+        puts("");
+      } else {
+        if (item.value) {
+          puts(item.value.UTF8String);
+        }
+      }
     }
+  }
+  
+  NSURL *originalCallbackURL = nil;
+  NSString *xCallbackType = _xCallbackURL.host;
+  if ([@"x-success" isEqual:xCallbackType] && _xOriginalSuccessURL) {
+    originalCallbackURL = _xOriginalSuccessURL;
+  } else if ([@"x-error" isEqual:xCallbackType] && _xOriginalErrorURL) {
+    originalCallbackURL = _xOriginalErrorURL;
+  } else if ([@"x-cancel" isEqual:xCallbackType] && _xOriginalCancelURL) {
+    originalCallbackURL = _xOriginalCancelURL;
+  }
+  
+  if (originalCallbackURL) {
+    if (_verbose) {
+      puts(originalCallbackURL.absoluteString.UTF8String);
+    }
+    
+    NSURLComponents * originalComps = [NSURLComponents componentsWithURL:originalCallbackURL resolvingAgainstBaseURL:YES];
+    originalComps.queryItems = comps.queryItems;
+    NSURL *url = originalComps.URL;
+    blink_openurl(url);
   }
   
   return 0;
@@ -146,35 +204,80 @@
 
 - (void)onCallback: (NSURL *)url {
   _xCallbackURL = url;
-  dispatch_semaphore_signal(_sema);
+  [_condition signal];
+}
+
+- (int)_exitCode {
+  if (!_xCallbackURL) {
+    return -1;
+  }
+  
+  NSString *xCallbackType = _xCallbackURL.host;
+  
+  if ([@"x-success" isEqual:xCallbackType]) {
+    return 0;
+  } else if ([@"x-error" isEqual:xCallbackType]) {
+    return -1;
+  } else if ([@"x-cancel" isEqual:xCallbackType]) {
+    return -2;
+  }
+  return -1;
 }
 
 @end
 
 void blink_handle_url(NSURL *url) {
-  if ([@"x-success" isEqual:url.host] || [@"x-error" isEqual:url.host] || [@"x-cancel" isEqual:url.host]) {
-    NSString *callID = [url.pathComponents lastObject];
-    NSMutableDictionary *registry = [BlinkXCall registry];
-    BlinkXCall *call = registry[callID];
-    [registry removeObjectForKey:callID];
-    [call onCallback:url];
+
+  NSString *xType = url.host;
+  if (!xType) {
+    return;
   }
+  BOOL isValidXType = [xType isEqual:@"x-success"] || [xType isEqual:@"x-error"] || [xType isEqual:@"x-cancel"];
+  if (!isValidXType) {
+    return;
+  }
+  
+  NSString *callID = [url.pathComponents lastObject];
+  NSMutableDictionary *registry = [BlinkXCall _registry];
+  BlinkXCall *call = registry[callID];
+  [call _unregister];
+  [call onCallback:url];
+}
+
+void __blink_call_cleanup_callback(void *callData) {
+  BlinkXCall *call = (__bridge BlinkXCall *)callData;
+  [call _unregister];
 }
 
 int blink_xcall_main(int argc, char *argv[]) {
   thread_optind = 1;
   
-  NSString *usage = @"Usage: xcall [ap:j:b:i:s:] url";
+  NSString *opts = @"ap:j:b:i:s:vh";
+  NSString *usage = [NSString stringWithFormat:@"Usage: xcall [%@] url", opts];
   
   BlinkXCall *call = [[BlinkXCall alloc] init];
   
   for (;;) {
-    int c = thread_getopt(argc, argv, "ap:j:b:i:s:x");
+    int c = thread_getopt(argc, argv, opts.UTF8String);
     
     if (c == -1) {
       break;
     }
     switch (c) {
+      case 'h': {
+       NSString *help =
+       [@[usage,
+          @"-a                runs command asynchoniosly.",
+          @"-i <param_name>   reads stdin and pass content to url as param_name.",
+          @"-p name=value     url encode value and adds that parameter to query.",
+          @"-b <param_name>   decodes value of result param_name in base64 and prints it.",
+          @"-j <param_name>   prints value of result param_name in pretty json format.",
+          @"-s <param_name>   prints value of result param_name (url decoded).",
+          @"-v                verbose.",
+         ] componentsJoinedByString:@"\n"];
+        puts(help.UTF8String);
+        return 0;
+      }
       case 'a':
         call.async = YES;
         break;
@@ -202,12 +305,14 @@ int blink_xcall_main(int argc, char *argv[]) {
         call.stdInParameterName = @(thread_optarg);
         break;
       }
+      case 'v': {
+        call.verbose = YES;
+        break;
+      }
       default:
         printf("%s\n", usage.UTF8String);
         return -1;
     }
-        
-        
   }
   
   NSString * urlStr = nil;
@@ -249,9 +354,10 @@ int blink_xcall_main(int argc, char *argv[]) {
     }
   }
   
+  pthread_cleanup_push(__blink_call_cleanup_callback, (__bridge void *)call);
   [call run];
+  pthread_cleanup_pop(YES);
   
-  
-  return 0;
+  return [call _exitCode];
 }
 

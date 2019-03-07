@@ -38,6 +38,7 @@
 @property NSString *callID;
 
 @property BOOL async;
+@property BOOL verbose;
 
 @property NSURL *xURL;
 @property NSURL *xCallbackURL;
