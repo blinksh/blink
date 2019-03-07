@@ -1,3 +1,10 @@
+# Version 12.8
+
+## Changes in next build
+
+* Added xcall command for x-callback-url protocol.
+
+
 # Version 12.7
 
 ## Changes in Build 87
