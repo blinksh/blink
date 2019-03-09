@@ -35,6 +35,9 @@
 #import "MCPSessionParameters.h"
 #import "StateManager.h"
 
+extern NSString * const BKUserActivityTypeCommandLine;
+extern NSString * const BKUserActivityCommandLineKey;
+
 
 @class TermController;
 

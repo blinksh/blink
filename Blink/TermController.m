@@ -87,7 +87,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
     activity.eligibleForPrediction = YES;
   }
   
-  
   _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
   [activity setTitle:_activityKey];
   
