@@ -4,6 +4,7 @@
 
 * Added xcall command for x-callback-url protocol.
 * Fixed missing host in siri shortcuts. #592
+* Added blinkshell://run?cmd=<> url handling.
 
 
 # Version 12.7
