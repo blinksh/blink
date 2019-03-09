@@ -15,26 +15,23 @@
         height: 100%;
         margin: 0;
         padding: 0;
-        
+
         /* this removes blink on single tap */
         -webkit-tap-highlight-color:  transparent;
-        
+
         /* Menlo font fix. See #511 */
         font-feature-settings: "liga" 0;
       }
-    
+
       ime {
         position: absolute;
         display: block;
         min-height: var(--hterm-charsize-height);
-        max-width: 100%;  
+        max-width: 100%;
         z-index:1000;
         overflow-wrap: break-word;
       }
-    
     </style>
-  <body>
-    <div id="terminal"></div>
-  </body>
+  <body><div id="terminal"></div></body>
 </html>
 
