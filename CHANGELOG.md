@@ -3,6 +3,7 @@
 ## Changes in next build
 
 * Added xcall command for x-callback-url protocol.
+* Fixed missing host in siri shortcuts. #592
 
 
 # Version 12.7
