@@ -1,7 +1,8 @@
 # Version 12.8
 
-## Changes in Build 90
+## Changes in Build 91
 
+* Fixed missing PragmataPro font in TestFlight build. #701
 * Added xcall command for x-callback-url protocol.
 * Fixed missing host in siri shortcuts. #592
 * Added blinkshell://run?cmd=<> url handling.
