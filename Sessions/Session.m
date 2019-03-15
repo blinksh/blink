@@ -136,7 +136,10 @@ void *run_session(void *params)
   // Object back to ARC
   Session *session = (__bridge Session *)p->session;
   char **argv;
-  int argc = makeargs(p->args, &argv);
+  // makeargs modifies original args. We don't want that. So we make tmp copy
+  char * argscopy = strdup(p->args);
+  int argc = makeargs(argscopy, &argv);
+  free(argscopy);
   [session main:argc argv:argv];
   [session.stream close];
   [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];

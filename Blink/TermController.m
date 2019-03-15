@@ -77,7 +77,6 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
 }
 
 - (void)indexCommand:(NSString *)cmdLine {
-  
   NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
   activity.eligibleForPublicIndexing = NO;
   activity.eligibleForSearch = YES;
@@ -90,7 +89,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
   [activity setTitle:_activityKey];
   
-  _activityUserInfo = @{BKUserActivityCommandLineKey: cmdLine ?: @"help"};
+  _activityUserInfo = @{BKUserActivityCommandLineKey: cmdLine ? [cmdLine copy] : @"help"};
   
   activity.userInfo = _activityUserInfo;
   
