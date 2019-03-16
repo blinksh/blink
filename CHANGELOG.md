@@ -1,8 +1,10 @@
 # Version 12.8
 
-## Changes in Build 91
+## Changes in Build 92
 
-* Fixed missing PragmataPro font in TestFlight build. #701
+* New font size measure algorythm.
+* Added Iosevka font.
+* Added `config delete-activities all` command. #700
 * Added xcall command for x-callback-url protocol.
 * Fixed missing host in siri shortcuts. #592
 * Added blinkshell://run?cmd=<> url handling.
