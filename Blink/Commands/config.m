@@ -30,13 +30,32 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
+#include <UIKit/UIKit.h>
 #include "ios_system/ios_system.h"
+#include "ios_error.h"
 
 int config_main(int argc, char *argv[]) {
-  dispatch_async(dispatch_get_main_queue(), ^{
-    [[UIApplication sharedApplication]
-     sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
-  });
+  if (argc == 1) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIApplication sharedApplication]
+       sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+    });
+    
+    return 0;
+  }
+  
+  if (argc == 3 && [@"delete-activities" isEqual: @(argv[1])]) {
+    if (@available(iOS 12.0, *)) {
+      NSString *activityKey = @(argv[2]);
+      if ([activityKey isEqualToString:@"all"]) {
+        [NSUserActivity deleteAllSavedUserActivitiesWithCompletionHandler:^{}];
+      } else {
+        [NSUserActivity deleteSavedUserActivitiesWithPersistentIdentifiers:@[activityKey] completionHandler:^{}];
+      }
+    } else {
+      puts("delete-activities available for iOS 12 and later.");
+    }
+  }
   
   return 0;
 }

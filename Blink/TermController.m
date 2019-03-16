@@ -76,7 +76,14 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   return _termDevice.view.title;
 }
 
-- (void)indexCommand:(NSString *)cmdLine {
+- (void)indexCommand:(NSString *)originalCmdLine {
+  NSString *cmdLine = [
+                        [NSString stringWithFormat:@"%@", originalCmdLine]
+                            stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  
+  if ([cmdLine hasPrefix:@"config "] || [cmdLine isEqualToString:@"config"]) {
+    return;
+  }
   NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
   activity.eligibleForPublicIndexing = NO;
   activity.eligibleForSearch = YES;
@@ -84,6 +91,7 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   
   if (@available(iOS 12.0, *)) {
     activity.eligibleForPrediction = YES;
+    activity.persistentIdentifier = cmdLine;
   }
   
   _activityKey = [NSString stringWithFormat:@"run: %@ ", cmdLine];
