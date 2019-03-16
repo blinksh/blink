@@ -75,6 +75,37 @@
   font-style: italic;
 }
 
+/* Iosevka */
+
+@font-face {
+  font-family: 'Iosevka';
+  src: url('Fonts/iosevka-regular.ttf') format('truetype');
+  font-weight: normal;  
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Iosevka';
+  src: url('Fonts/iosevka-italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Iosevka';
+  src: url('Fonts/iosevka-bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Iosevka';
+  src: url('Fonts/iosevka-bolditalic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+
 /* Roboto Mono */
 
 @font-face {
