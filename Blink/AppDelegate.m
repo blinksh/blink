@@ -273,12 +273,27 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
 {
-  // TODO: secure call with a key parameter
   if ([url.host isEqualToString:@"run"]) {
+    if (![BKDefaults isXCallBackURLEnabled]) {
+      return NO;
+    }
+    
     NSURLComponents *components = [NSURLComponents componentsWithURL:url resolvingAgainstBaseURL:YES];
     NSArray * items = components.queryItems;
-    NSURLQueryItem *item = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", @"cmd"]] firstObject];
-    NSString *cmd = item.value ?: @"help";
+    NSURLQueryItem *keyItem = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", @"key"]] firstObject];
+    
+    NSString *urlKey = [BKDefaults xCallBackURLKey];
+
+    if (!keyItem.value) {
+      return NO;
+    }
+    
+    if (![keyItem.value isEqual:urlKey]) {
+      return NO;
+    }
+    
+    NSURLQueryItem *cmdItem = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", @"cmd"]] firstObject];
+    NSString *cmd = cmdItem.value ?: @"help";
 
     NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
     activity.eligibleForPublicIndexing = NO;

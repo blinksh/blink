@@ -146,6 +146,7 @@
 		D239710720A07B9100881637 /* util.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FA20A07B9100881637 /* util.cxx */; };
 		D239710820A07B9100881637 /* windows.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FB20A07B9100881637 /* windows.cxx */; };
 		D239710920A07B9100881637 /* wcwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970FE20A07B9100881637 /* wcwidth.cpp */; };
+		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23B18851FF7CEBA00A6C903 /* StateManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B18841FF7CEBA00A6C903 /* StateManager.m */; };
 		D23B188B1FFB76B300A6C903 /* SessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188A1FFB76B300A6C903 /* SessionParameters.m */; };
 		D23B188E1FFB776000A6C903 /* MoshSessionParameters.m in Sources */ = {isa = PBXBuildFile; fileRef = D23B188D1FFB776000A6C903 /* MoshSessionParameters.m */; };
@@ -557,6 +558,8 @@
 		D23970FC20A07B9100881637 /* utfstring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utfstring.hxx; sourceTree = "<group>"; };
 		D23970FD20A07B9100881637 /* conversion.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = conversion.hxx; sourceTree = "<group>"; };
 		D23970FE20A07B9100881637 /* wcwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wcwidth.cpp; sourceTree = "<group>"; };
+		D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKXCallBackUrlConfigurationViewController.h; sourceTree = "<group>"; };
+		D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKXCallBackUrlConfigurationViewController.m; sourceTree = "<group>"; };
 		D23B18831FF7CEBA00A6C903 /* StateManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = StateManager.h; sourceTree = "<group>"; };
 		D23B18841FF7CEBA00A6C903 /* StateManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StateManager.m; sourceTree = "<group>"; };
 		D23B18891FFB76B300A6C903 /* SessionParameters.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SessionParameters.h; sourceTree = "<group>"; };
@@ -1029,6 +1032,8 @@
 				B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */,
 				B752EE2C1DFEF45300E305C8 /* BKSecurityConfigurationViewController.h */,
 				B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */,
+				D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */,
+				D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */,
 			);
 			path = UserConfiguration;
 			sourceTree = "<group>";
@@ -1674,6 +1679,7 @@
 				D29619AD214FB5EA0070935A /* ssh-ed25519.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D239710420A07B9100881637 /* inputbuffer.cxx in Sources */,
+				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,

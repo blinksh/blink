@@ -42,6 +42,7 @@
 @property (nonatomic, weak) IBOutlet UILabel *userNameLabel;
 @property (nonatomic, weak) IBOutlet UILabel *iCloudSyncStatusLabel;
 @property (nonatomic, weak) IBOutlet UILabel *autoLockStatusLabel;
+@property (nonatomic, weak) IBOutlet UILabel *xCallbackStatusLabel;
 
 @end
 
@@ -88,8 +89,6 @@
   return YES;
 }
 
-
-
 - (void)viewWillAppear:(BOOL)animated
 {
   [super viewWillAppear:animated];
@@ -97,6 +96,7 @@
   self.userNameLabel.text = [BKDefaults defaultUserName];;
   self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] ? @"On" : @"Off";
   self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] ? @"On" : @"Off";
+  self.xCallbackStatusLabel.text = [BKDefaults isXCallBackURLEnabled] ? @"On" : @"Off";
   
   // Layout tableview so it will place labels correctly
   [self.tableView layoutIfNeeded];
