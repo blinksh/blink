@@ -2,11 +2,11 @@
 
 ## Changes in Build 92
 
-* New font size measure algorythm.
+* New font size measure algorithm.
 * Added Iosevka font.
 * Added `config delete-activities all` command. #700
-* Added xcall command for x-callback-url protocol.
 * Fixed missing host in siri shortcuts. #592
+* Added xcall command for x-callback-url protocol.
 * Added blinkshell://run?cmd=<> url handling.
 
 
