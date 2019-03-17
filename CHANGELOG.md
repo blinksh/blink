@@ -1,7 +1,8 @@
 # Version 12.8
 
-## Changes in Build 92
+## Changes in Build 93
 
+* Added configuration views for x-callback-url.
 * New font size measure algorithm.
 * Added Iosevka font.
 * Added `config delete-activities all` command. #700
