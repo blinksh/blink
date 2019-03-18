@@ -91,7 +91,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>93</string>
+	<string>94</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>blinkshell</string>
