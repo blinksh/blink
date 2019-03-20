@@ -1,7 +1,8 @@
 # Version 12.8
 
-## Changes in Build 93
+## Changes in Build 96
 
+* Fixed system wide font selection. #701, 704
 * Added configuration views for x-callback-url.
 * New font size measure algorithm.
 * Added Iosevka font.
