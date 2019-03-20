@@ -131,5 +131,19 @@
   return [super isCustom];
 }
 
+- (BOOL)isEqual:(id)object {
+  if ([super isEqual:object]) {
+    return YES;
+  }
+  
+  if (![object isKindOfClass:[BKFont class]]) {
+    return NO;
+  }
+  
+  BKFont *other = (BKFont *)object;
+  
+  return [self isCustom] == [other isCustom] && [self.name isEqualToString:other.name];
+}
+
 
 @end
