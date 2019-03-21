@@ -11,6 +11,8 @@
 * Added xcall command for x-callback-url protocol.
 * Added blinkshell://run?cmd=<> url handling.
 
+Huge thanks to @toph-allen, @Kamik423, @comfortablynick, @Harwood and @maurizio-manuguerra-mq.
+
 
 # Version 12.7
 
