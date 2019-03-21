@@ -1,10 +1,10 @@
 # Version 12.8
 
-## Changes in Build 96
+## Changes in Build 97
 
 * Fixed system wide font selection. #701, 704
 * Added configuration views for x-callback-url.
-* New font size measure algorithm.
+* New font size measure algorithm. #702, #668
 * Added Iosevka font.
 * Added `config delete-activities all` command. #700
 * Fixed missing host in siri shortcuts. #592
