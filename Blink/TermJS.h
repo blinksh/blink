@@ -141,9 +141,9 @@ NSString *term_setBoldEnabled(NSUInteger state)
   return [NSString stringWithFormat:@"term_set('enable-bold', %@)", stateStr];
 }
 
-NSString *term_setFontFamily(NSString *family)
+NSString *term_setFontFamily(NSString *family, NSString * fontSizeDetectionMethod)
 {
-  return [NSString stringWithFormat:@"term_setFontFamily(%@[0]);", _encodeString(family)];
+  return [NSString stringWithFormat:@"term_setFontFamily(%@[0], %@[0]);", _encodeString(family), _encodeString(fontSizeDetectionMethod)];
 }
 
 NSString *term_appendUserCss(NSString *css)

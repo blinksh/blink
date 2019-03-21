@@ -2,6 +2,8 @@
 
 hterm.defaultStorage = new lib.Storage.Memory();
 
+window.fontSizeDetectionMethod = 'canvas';
+
 function _postMessage(op, data) {
   window.webkit.messageHandlers.interOp.postMessage({ op, data });
 }
@@ -252,7 +254,8 @@ function term_setFontSize(size) {
   _postMessage('fontSizeChanged', { size: parseInt(size) });
 }
 
-function term_setFontFamily(name) {
+function term_setFontFamily(name, fontSizeDetectionMethod) {
+  window.fontSizeDetectionMethod = fontSizeDetectionMethod;
   term_set('font-family', name + ', "DejaVu Sans Mono"');
 }
 

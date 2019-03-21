@@ -653,7 +653,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [script addObject:@"function applyUserSettings() {"];
   {
     if (fontFamily) {
-      [script addObject: term_setFontFamily(fontFamily)];
+      [script addObject: term_setFontFamily(fontFamily, font.systemWide ? @"dom" : @"canvas")];
     }
     
     [script addObject:term_setBoldEnabled(params.enableBold)];
