@@ -131,7 +131,7 @@
 
 - (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
   NSString *urlKey = [BKDefaults xCallBackURLKey] ?: @"<URL key>";
-  return [NSString stringWithFormat: @"Use x-callback-url and for automation and inter-app communication. Your URL key should be kept secret.\n\nExample:\nblinkshell://run?key=%@&cmd=ls", urlKey];
+  return [NSString stringWithFormat: @"Use x-callback-url for automation and inter-app communication. Your URL key should be kept secret.\n\nExample:\nblinkshell://run?key=%@&cmd=ls", urlKey];
 }
 
 - (void)textFieldDidEndEditing:(UITextField *)textField {
