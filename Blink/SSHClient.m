@@ -1387,6 +1387,10 @@ ssh_channel __ssh_channel_open_request_auth_agent_callback(ssh_session session,
 
 - (int)main:(int) argc argv:(char **) argv {
 
+  if (_device == nil) {
+    return SSH_ERROR;
+  }
+  
   __block int rc = [_options parseArgs:argc argv: argv];
 
   if (rc != SSH_OK) {

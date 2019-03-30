@@ -140,7 +140,9 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   char ctrlK = 'k' - 'a' + 1;
   // delete all input on current line - ctrl+a ctrl+k
   // run command
-  [_termDevice write:[NSString stringWithFormat:@"%c%c%@\n", ctrlA, ctrlK, cmdLine]];
+  if (self.userActivity) {
+    [_termDevice write:[NSString stringWithFormat:@"%c%c%@\n", ctrlA, ctrlK, cmdLine]];
+  }
 }
 
 - (void)viewDidLoad
