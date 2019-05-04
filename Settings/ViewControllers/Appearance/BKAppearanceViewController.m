@@ -35,6 +35,7 @@
 #import "BKTheme.h"
 #import "TermView.h"
 #import "TermDevice.h"
+#import "ScreenController.h"
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
@@ -44,6 +45,7 @@
 #define ENABLE_BOLD_TAG 2006
 #define APP_ICON_ALTERNATE_TAG 2007
 #define LAYOUT_MODE_TAG 2008
+#define OVERSCAN_COMPENSATION_TAG 2009
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -85,6 +87,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
   UISegmentedControl *_defaultLayoutModeSegmentedControl;
   BKLayoutMode _defaultLayoutModeValue;
+  
+  UISegmentedControl *_overscanCompensationSegmentedControl;
+  BKOverscanCompensation _overscanCompensationValue;
 }
 
 - (void)viewDidLoad
@@ -131,6 +136,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _enableBoldValue = [BKDefaults enableBold];
   _alternateAppIconValue = [BKDefaults isAlternateAppIcon];
   _defaultLayoutModeValue = BKDefaults.layoutMode;
+  _overscanCompensationValue = BKDefaults.overscanCompensation;
 }
 
 - (void)saveDefaultValues
@@ -151,6 +157,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [BKDefaults setAlternateAppIcon:_alternateAppIconValue];
   [BKDefaults setEnableBold: _enableBoldValue];
   [BKDefaults setLayoutMode:_defaultLayoutModeValue];
+  [BKDefaults setOversanCompensation:_overscanCompensationValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -178,7 +185,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_AppIcon) {
     return 1;
   } else if (section == BKAppearance_Layout) {
-    return 1;
+    return 2;
   } else {
     return 4;
   }
@@ -243,7 +250,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_AppIcon) {
     cellIdentifier = @"alternateAppIconCell";
   } else if (section == BKAppearance_Layout) {
-    cellIdentifier = @"defaultLayoutCell";
+    if (indexPath.row == 0) {
+      cellIdentifier = @"defaultLayoutCell";
+    } else {
+      cellIdentifier = @"overscanCompensationCell";
+    }
   }
   
   
@@ -317,6 +328,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (indexPath.section == BKAppearance_Layout && indexPath.row == 0) {
     _defaultLayoutModeSegmentedControl = [cell viewWithTag:LAYOUT_MODE_TAG];
     _defaultLayoutModeSegmentedControl.selectedSegmentIndex = [self _layoutModeToIndex:_defaultLayoutModeValue];
+  } else if (indexPath.section == BKAppearance_Layout && indexPath.row == 1) {
+    _overscanCompensationSegmentedControl = [cell viewWithTag:OVERSCAN_COMPENSATION_TAG];
+    _overscanCompensationSegmentedControl.selectedSegmentIndex = [self _overscanCompensationToIndex:_overscanCompensationValue];
   }
   return cell;
 }
@@ -347,6 +361,34 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
   return BKLayoutModeDefault;
 }
+
+- (NSInteger)_overscanCompensationToIndex:(BKOverscanCompensation) value {
+  switch (value) {
+    case BKBKOverscanCompensationScale:
+      return 0;
+    case BKBKOverscanCompensationInsetBounds:
+      return 1;
+    case BKBKOverscanCompensationNone:
+      return 2;
+    default:
+      return UISegmentedControlNoSegment;
+  }
+}
+
+- (BKOverscanCompensation)_overscanCompensationFromIndex:(NSInteger) index {
+  if (index == 0) {
+    return BKBKOverscanCompensationScale;
+  }
+  if (index == 1) {
+    return BKBKOverscanCompensationInsetBounds;
+  }
+  if (index == 2) {
+    return BKBKOverscanCompensationNone;
+  }
+  
+  return BKBKOverscanCompensationScale;
+}
+
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -479,6 +521,14 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   _defaultLayoutModeValue = [self _layoutModeFromIndex:sender.selectedSegmentIndex];
 }
+
+- (IBAction)overscanCompensationChanged:(UISegmentedControl *)sender
+{
+  _overscanCompensationValue = [self _overscanCompensationFromIndex:sender.selectedSegmentIndex];
+  
+  [ScreenController applyOverscanOptionToScreen:[UIScreen.screens lastObject] value:_overscanCompensationValue];
+}
+
 
 - (IBAction)lightKeyboardSwitchChanged:(id)sender
 {

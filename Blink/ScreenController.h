@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <Foundation/Foundation.h>
+#import "BKDefaults.h"
 
 @interface ScreenController : NSObject<UIViewControllerRestoration>
 
@@ -45,5 +46,7 @@
 - (void)suspend;
 - (void)resume;
 - (void)finishRestoring;
+
++ (void)applyOverscanOptionToScreen:(UIScreen *)screen value:(BKOverscanCompensation)value;
 
 @end

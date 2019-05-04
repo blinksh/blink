@@ -149,6 +149,7 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 - (void)screenDidConnect:(NSNotification *) notification
 {
   UIScreen *screen = (UIScreen *)notification.object;
+  [ScreenController applyOverscanOptionToScreen:screen value:BKDefaults.overscanCompensation];
   [self setupWindowForScreen:screen];
 }
 
@@ -264,6 +265,27 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
   [stateManager reset];
   [stateManager save];
 }
+
++ (void)applyOverscanOptionToScreen:(UIScreen *)screen value:(BKOverscanCompensation)value {
+  if (!screen || screen == UIScreen.mainScreen) {
+    return;
+  }
+  
+  switch (value) {
+    case BKBKOverscanCompensationNone:
+      screen.overscanCompensation = UIScreenOverscanCompensationNone;
+      break;
+    case BKBKOverscanCompensationScale:
+      screen.overscanCompensation = UIScreenOverscanCompensationScale;
+      break;
+    case BKBKOverscanCompensationInsetBounds:
+      screen.overscanCompensation = UIScreenOverscanCompensationInsetBounds;
+      break;
+    default:
+      break;
+  }
+}
+
 
 
 @end

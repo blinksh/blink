@@ -116,7 +116,7 @@
   // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
   // it is like BKLayoutModeSafeFit mode
   if (!isMainScreen) {
-    return deviceMargins;
+    return  deviceMargins;
   }
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
