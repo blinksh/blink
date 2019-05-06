@@ -1,3 +1,14 @@
+# Version 12.9
+
+## Changes in Build 99
+
+* Fixed Pragmata Pro (without ligatures) mu. #705
+* Fixed row with image cleanup
+* Fixed username from ./ssh/config. #379
+* Added external screen overscan compensation modes. #708
+
+Many thanks to @jakejarvis, @axot, @kkk669, @coppercash, @dmd and @andrius.
+
 # Version 12.8
 
 ## Changes in Build 97
@@ -11,8 +22,8 @@
 * Added xcall command for x-callback-url protocol.
 * Added blinkshell://run?cmd=<> url handling.
 
-Huge thanks to @toph-allen, @Kamik423, @comfortablynick, @Harwood and @maurizio-manuguerra-mq.
-
+Huge thanks to @toph-allen, @Kamik423, @comfortablynick, @Harwood and
+@maurizio-manuguerra-mq.
 
 # Version 12.7
 
@@ -33,16 +44,15 @@ Huge thanks to @holzschu, @TypedLambda, @botanicus, @vorband and @derekbelrose.
 
 * New ifconfig and openurl commands.
 * Fixed adding ecdsa keys to ssh-agent with ssh-add command. #681
-* New openurl command and open selected links honors BROWSER env var (googlechrome and firefox). #529
+* New openurl command and open selected links honors BROWSER env var
+  (googlechrome and firefox). #529
 * New load env vars from .blink/profile file.
 * New auth with keys from agent. #685
 * Fixed icloud hosts ports sync. #333
 
 Huge thanks to @holzschu, @treyharris, @TypedLambda and @lohitv9.
 
-
 # Version 12.4
-
 
 ## Changes in Build 81
 
@@ -62,7 +72,6 @@ Huge thanks to @holzschu, @treyharris, @TypedLambda and @lohitv9.
 Huge thanks to @holzschu, @cjay, @jjarava, @DixonCider, @rdparker and @goerz.
 
 Special thanks to @b00giZm for hist PR!
-
 
 # Version 12.3
 
@@ -90,8 +99,6 @@ Huge thanks to @botanicus, @premist, @xipher1, @s8m2s, @jaydenk, and @reyharris.
 
 Special thanks to @BillWSY for his PR!
 
-
-
 # Version 12.2
 
 ## Changes in Build 57
@@ -100,11 +107,9 @@ Special thanks to @BillWSY for his PR!
 * Fixed scp with custom port.
 * Added -2 flag for ssh2 to mosh command.
 
-
 ## Changes in Build 53
 
 * Updated libssh to 0.8.5.
-
 
 ## Changes in Build 52
 
@@ -114,7 +119,6 @@ Special thanks to @BillWSY for his PR!
 * Fixed known_hosts check.
 * Fixed restore cursor and text styles after command termination.
 * Fixed memory leaks.
-
 
 ## Changes in Build 47
 
@@ -128,8 +132,8 @@ Special thanks to @BillWSY for his PR!
 * Fixed use id_rsa key by default. #582
 * Warn users for key dups in Blink Config and .ssh folder. #582
 
-Huge thanks to @andrius, @solarfl4re, @mgbaozi, @shannonmoeller, @goerz, @avysk  for help and patience.
-
+Huge thanks to @andrius, @solarfl4re, @mgbaozi, @shannonmoeller, @goerz, @avysk
+for help and patience.
 
 # Version 12.1
 
@@ -139,13 +143,11 @@ Huge thanks to @andrius, @solarfl4re, @mgbaozi, @shannonmoeller, @goerz, @avysk 
 
 Thanks to @thinkberg for alarm.
 
-
 ## Version 12.0
 
 ## Changes in Build 40
 
 * Fixed extra space under software kb on iPads. #401
-
 
 ## Changes in Build 38
 
@@ -156,21 +158,20 @@ Thanks to @thinkberg for alarm.
 
 Huge thanks to @juneoh, @thariman, @saptarshiguha.
 
-
 ## Changes in Build 36
 
-* Fixed crash with ssh agent forwarding.  #563
-
+* Fixed crash with ssh agent forwarding. #563
 
 ## Changes in Build 35
 
 * Fixed resize issue for sessions with proxy command.
 * Fixed command line parsing with `>` inside quotes. #203
-* Improve socket cleanup and error messages for `ssh-add` and `ssh-agent` commands. #563
+* Improve socket cleanup and error messages for `ssh-add` and `ssh-agent`
+  commands. #563
 * New scp use custom host port from blink host config. #564
 
-Huge thanks to @holzschu, @0x0000null, @thariman, @saptarshiguha and [@x0wl](at discrord).
-
+Huge thanks to @holzschu, @0x0000null, @thariman, @saptarshiguha and [@x0wl](at
+discrord).
 
 ## Changes in Build 34
 
@@ -182,13 +183,13 @@ Huge thanks to @holzschu, @0x0000null, @thariman, @saptarshiguha and [@x0wl](at 
 
 Huge thanks to [@x0wl](at discrord), @aphecetche, @SilverEzhik.
 
-
 ## Changes in Build 33
 
 * New `ssh-agent` command.
 * New `ssh-add` command.
-* New `ssh -A` flag. Enables forwarding of the authentication agent connection. #81, #204
-* Fixed auth attempt with empty password. 
+* New `ssh -A` flag. Enables forwarding of the authentication agent
+  connection. #81, #204
+* Fixed auth attempt with empty password.
 * Fixed memory leaks.
 
 Huge thanks to [@myneid](at discrord), @rfldn, @brandonshough.
@@ -208,12 +209,21 @@ Credits:
 
 Huge thanks to [@rob](at discord), @goerz, @treyharris.
 
-The road to 12. This is the version many have been waiting for. SSH is crucial for Blink, so not only we are supercharging and getting ahead of everyone else, we will also be ahead in the future. This release has a lot of under the covers work to set the basis of what Blink will become in the future, so stay tuned! Here is what is new and what we would like you to help us out testing:
+The road to 12. This is the version many have been waiting for. SSH is crucial
+for Blink, so not only we are supercharging and getting ahead of everyone else,
+we will also be ahead in the future. This release has a lot of under the covers
+work to set the basis of what Blink will become in the future, so stay tuned!
+Here is what is new and what we would like you to help us out testing:
 
-* Support for new keys, including ECDSA and Ed25519! (DSA too, but you shouldn't be using that).
-* Keys can now also be files stored on ~/.ssh within Blink. Please note those keys are not stored within the Secure Enclave, but you can always import them in Blink.
-* Port Forwarding! Tunnel to a remote server using the usual -L and -R. Supports both direct/reverse!
-* ProxyCommand support! (We are working on the agent and it should be ready before release).
+* Support for new keys, including ECDSA and Ed25519! (DSA too, but you shouldn't
+  be using that).
+* Keys can now also be files stored on ~/.ssh within Blink. Please note those
+  keys are not stored within the Secure Enclave, but you can always import them
+  in Blink.
+* Port Forwarding! Tunnel to a remote server using the usual -L and -R. Supports
+  both direct/reverse!
+* ProxyCommand support! (We are working on the agent and it should be ready
+  before release).
 * SSH connections should now last a lot longer too, without any tricks.
 * Libssh supported ciphers, etc...
 * SSH should now support piping with > and better exec commands.
@@ -225,24 +235,39 @@ The road to 12. This is the version many have been waiting for. SSH is crucial f
 And then some more:
 
 * Support to move sessions between screens when using AirTerminals.
-* We have improved the speed of the main loop for ssh and now in many cases, it is even faster than Mosh for daily use.
+* We have improved the speed of the main loop for ssh and now in many cases, it
+  is even faster than Mosh for daily use.
 * Fixed IPv6 addresses for Mosh.
-* Fixed issue for servers without a password.  Fixed ^L in built-in shell temporarily changing linefeed handling.
-* Blink Keys stored within the Secure Enclave won't offer the passphrase option as that was redundant (the Secure Enclave already encrypts in hardware).
+* Fixed issue for servers without a password. Fixed ^L in built-in shell
+  temporarily changing linefeed handling.
+* Blink Keys stored within the Secure Enclave won't offer the passphrase option
+  as that was redundant (the Secure Enclave already encrypts in hardware).
 * iOS tuning and more general performance tweaks.
 * We will keep libssh2 based version as ssh2 command.
 
-
 # Version 11
 
-* New Rendering engine. Smoother, faster and more accurate. We improved it so much that you may not need a new iPad next week. We had to go to desktop apps to compare the speed. Blink is now many times faster than Hyper.js and even faster than iTerm 2 long renderings. Big kudos to Yury for his outstanding work on this.
-* Inertial Scrolling and Mouse events! As part of changing our rendering engine, we now support Inertial scrolling and mousedown and mouseup events. We will continue improving mouse support in next versions.
+* New Rendering engine. Smoother, faster and more accurate. We improved it so
+  much that you may not need a new iPad next week. We had to go to desktop apps
+  to compare the speed. Blink is now many times faster than Hyper.js and even
+  faster than iTerm 2 long renderings. Big kudos to Yury for his outstanding
+  work on this.
+* Inertial Scrolling and Mouse events! As part of changing our rendering engine,
+  we now support Inertial scrolling and mousedown and mouseup events. We will
+  continue improving mouse support in next versions.
 * Drag & Drop text from and to Blink.
-* UNIX tools: You can now curl, scp, sftp, telnet, cd, ping, nc... I know what you are typing... telnet towel.blinkenlights.nl :)
-* File Management: Blink's sandbox is now accessible within your device so you can operate with your files. Want to send something to a different app? Use the "open" command!
-* iCloud Drive: Blink is now connected to iCloud Drive! You can seamlessly copy files from your iMac or any other devices to the Blink container.
-* Linking to other apps: We took that further, and you can also "mount" other apps within Blink! You can now grep your git repositories from Working Copy, or curl a file and drop it to a different app!
-* Better shell: We dropped linenoise and use REPL. We now have better autocompletions, "Reverse Search" and pipe commands or files!
+* UNIX tools: You can now curl, scp, sftp, telnet, cd, ping, nc... I know what
+  you are typing... telnet towel.blinkenlights.nl :)
+* File Management: Blink's sandbox is now accessible within your device so you
+  can operate with your files. Want to send something to a different app? Use
+  the "open" command!
+* iCloud Drive: Blink is now connected to iCloud Drive! You can seamlessly copy
+  files from your iMac or any other devices to the Blink container.
+* Linking to other apps: We took that further, and you can also "mount" other
+  apps within Blink! You can now grep your git repositories from Working Copy,
+  or curl a file and drop it to a different app!
+* Better shell: We dropped linenoise and use REPL. We now have better
+  autocompletions, "Reverse Search" and pipe commands or files!
 * We have enabled ssh compression by default to increase speed.
 * Multiple fixes and bugs crashed.
 
@@ -307,7 +332,8 @@ And then some more:
 * Updated Layout guides for terminal. Better behaviour on iOS11 and iPhone X
 * Shortcuts working again.
 * Send INTerrupt instead of TERMinate to Mosh.
-* Ignore commands when app doesn't have focus. Should fix empty tabs and improve stability.
+* Ignore commands when app doesn't have focus. Should fix empty tabs and improve
+  stability.
 
 # Version 8.026
 
@@ -327,9 +353,11 @@ And then some more:
 * Remember KB language selection between sessions.
 
 * Fixed issue with terminal resizing not resetting after rotation or SplitView
-* Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main thread.
+* Fixed issue with iOS11 beta 3 breaking due to WKWebView changing on non-main
+  thread.
 
-PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes behave as the terminal expects. This will be fixed once iOS11 goes gold.
+PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
+behave as the terminal expects. This will be fixed once iOS11 goes gold.
 
 # Version 5.028.1
 
@@ -343,8 +371,11 @@ PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
 # Version 4.024.2
 
 * AirTerminals! Put a terminal on your remote AirPlay screen :)
-* Blink shortcuts. Use your external keyboard to move, create, or remove terminals. Configure the trigger too! View settings > Keyboard > Shortcuts for more info.
-* Want to use SmartKeys when an external keyboard is connected? Now you can switch them on and off from configuration.
+* Blink shortcuts. Use your external keyboard to move, create, or remove
+  terminals. Configure the trigger too! View settings > Keyboard > Shortcuts for
+  more info.
+* Want to use SmartKeys when an external keyboard is connected? Now you can
+  switch them on and off from configuration.
 * View geometry of the screen from the overlay with each resize.
 * Switch cursor blinking on/off from Appearance settings.
 
@@ -357,14 +388,20 @@ PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
 
 # Version 3.021.2
 
-* iCloud Hosts sync. Synchronize hosts between devices. If a Host already has been synced, it provides conflict resolution. No critical data like passwords is saved.
-* Auto Lock. If enabled, when you lock/unlock your device, Blink will also be locked. Passcode and TouchID will be required to unlock the app.
-* Added ARMv7 support. Support for 32 bit devices like iPad 2, 3, iPhone 5, etc... We will publish depending on how well it performs!
+* iCloud Hosts sync. Synchronize hosts between devices. If a Host already has
+  been synced, it provides conflict resolution. No critical data like passwords
+  is saved.
+* Auto Lock. If enabled, when you lock/unlock your device, Blink will also be
+  locked. Passcode and TouchID will be required to unlock the app.
+* Added ARMv7 support. Support for 32 bit devices like iPad 2, 3, iPhone 5,
+  etc... We will publish depending on how well it performs!
 * Added IPv6 support for hosts.
-* Share Public Encryption Keys. You can now share the public key from the Keys section to other apps, like Mail.
+* Share Public Encryption Keys. You can now share the public key from the Keys
+  section to other apps, like Mail.
 
 * Updated Fira Code font to v1.204.
-* Improved error checking on Themes and Font uploads. Auto correct if the GH URL is not a raw one.
+* Improved error checking on Themes and Font uploads. Auto correct if the GH URL
+  is not a raw one.
 
 * Fixed bug with password not getting saved on host creation.
 * Fixed crash when hitting arrows with landscape keyboard on Plus devices.
@@ -382,9 +419,15 @@ PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
 
 # Version 1.031
 
-* NEW On-screen keyboard with more space for modifiers, FKeys and Cursor keys. Redesigned for more space on the modifiers, and with a central scrollable area that handles more keys. Activate the Alternate keys by taping on the Alt key. And now tap on a modifier to activate it as a normal button, or make a long press to chain different combinations.
-* NEW Add your own Fonts & Themes! More info on (https://github.com/blinksh/fonts) and (https://github.com/blinksh/themes)
-* NEW Multistep authentication. Servers with google authenticator or similar will now connect without problems :)
+* NEW On-screen keyboard with more space for modifiers, FKeys and Cursor keys.
+  Redesigned for more space on the modifiers, and with a central scrollable area
+  that handles more keys. Activate the Alternate keys by taping on the Alt key.
+  And now tap on a modifier to activate it as a normal button, or make a long
+  press to chain different combinations.
+* NEW Add your own Fonts & Themes! More info on
+  (https://github.com/blinksh/fonts) and (https://github.com/blinksh/themes)
+* NEW Multistep authentication. Servers with google authenticator or similar
+  will now connect without problems :)
 * NEW Fira Code font with ligatures included.
 
 * Added -l parameter to ssh for Hosts.
@@ -413,7 +456,9 @@ PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
 
 # Version 0.1010
 
-* Terminal customization! Customize your terminal with different default themes and fonts. Preview your changes within the Settings Preview section. Save your changes and restore them on each execution. Enjoy!
+* Terminal customization! Customize your terminal with different default themes
+  and fonts. Preview your changes within the Settings Preview section. Save your
+  changes and restore them on each execution. Enjoy!
 
 * Create an id_rsa on first boot as default key.
 
@@ -433,17 +478,23 @@ PLEASE NOTE: If using iOS11, disable smart punctuation to have quotes and dashes
 
 # Version 0.927
 
-This version should complete the experience in relation to ssh and terminal configurations, mimicking a big part of what you can do in a normal shell:
+This version should complete the experience in relation to ssh and terminal
+configurations, mimicking a big part of what you can do in a normal shell:
 
-* Hosts Configuration. Preconfigure a host parameters, like user, port, key and commands.
+* Hosts Configuration. Preconfigure a host parameters, like user, port, key and
+  commands.
 * Connect to a Host by specifying its name. Do "mosh plankton"
-* Overwrite parameters from host configuration from the shell. So carlos@plankton will override the user field on plankton.
-* Default Modifier keys settings changed: Ctrl is Ctrl, and Alt sends Esc. Everything else is undefined.
-* Modifier keys configuration. CAPS as Ctrl or ESC, no problem! Cmd as Ctrl? You have it! Configure everything to you liking.
+* Overwrite parameters from host configuration from the shell. So
+  carlos@plankton will override the user field on plankton.
+* Default Modifier keys settings changed: Ctrl is Ctrl, and Alt sends Esc.
+  Everything else is undefined.
+* Modifier keys configuration. CAPS as Ctrl or ESC, no problem! Cmd as Ctrl? You
+  have it! Configure everything to you liking.
 * Added secure passwords stored on Keychain to Host Configuration.
 * Exiting the session within the MCP closes the Space.
 
-* Fixed hang after "exec request accepted". Establishing connections should be smooth now.
+* Fixed hang after "exec request accepted". Establishing connections should be
+  smooth now.
 * Fixed adjustments on viewport after rotating the display.
 * Fixed Ctrl + Space sequences.
 * Fixed wrong/unexisting Ctrl sequences.
@@ -453,12 +504,14 @@ This version should complete the experience in relation to ssh and terminal conf
 
 # Version 0.916
 
-This version contains many important bug fixes that should improve the experience a lot and reduce crashes to, hopefully, close to zero:
+This version contains many important bug fixes that should improve the
+experience a lot and reduce crashes to, hopefully, close to zero:
 
 * Unicode support to Blink shell. Thanks Yury!
 * Support for function keys + modifiers. Now you can do Ctrl/Alt/Shift + Arrows.
 * Improved experience with drag down to close. Let me know what you think :)
-* SSH with improved function keys in ncurses apps. htop, less, etc... should now work perfectly.
+* SSH with improved function keys in ncurses apps. htop, less, etc... should now
+  work perfectly.
 * New help message with version and gestures.
 * Added asterisk, underscore and escape to SmartKeys.
 * Added HockeySDKResources.bundle to project for improved updates.
@@ -466,11 +519,13 @@ This version contains many important bug fixes that should improve the experienc
 * Fixed resize when in SplitView mode getting stuck.
 * Fixed port bug.
 * Optimized messaging to terminal to avoid overloading WKWebView.
-* Optimized Terminal switching and closing that was causing crashes and inconsistencies.
+* Optimized Terminal switching and closing that was causing crashes and
+  inconsistencies.
 
 # Version 0.722
 
-* SSH session support. You can now start full ssh sessions inside the shell, or send remote ssh commands to a host.
+* SSH session support. You can now start full ssh sessions inside the shell, or
+  send remote ssh commands to a host.
 
 # Version 0.716
 
@@ -512,19 +567,25 @@ This version contains many important bug fixes that should improve the experienc
 
 # Version 0.511
 
-This version has seen major improvements on Mosh, terminal display and keyboard support. Please read previous notes:
+This version has seen major improvements on Mosh, terminal display and keyboard
+support. Please read previous notes:
 
 * The terminal is faster and most of the identified glitches have been fixed.
-* We have added a Powerline font so you can have fun and test tools like zsh, tmux or spacemacs!
+* We have added a Powerline font so you can have fun and test tools like zsh,
+  tmux or spacemacs!
 * Mosh is now cleaner when restoring.
-* CAPS as Ctrl now preserves the state. Mapped Cmd and Alt special events to the right commands.
+* CAPS as Ctrl now preserves the state. Mapped Cmd and Alt special events to the
+  right commands.
 
 # Version 0.504
 
-This version continues the previous goal to stabilise Mosh by exposing it to real life scenarios. Many problems have been fixed since last version:
+This version continues the previous goal to stabilise Mosh by exposing it to
+real life scenarios. Many problems have been fixed since last version:
 
-* Terminal problems have been fixed (misalignments, problems when switching to other apps, etc..)
-* Mosh issues fixed: Restore the session after device suspension; Mosh crashing right after start; Threading problems restarting a session.
+* Terminal problems have been fixed (misalignments, problems when switching to
+  other apps, etc..)
+* Mosh issues fixed: Restore the session after device suspension; Mosh crashing
+  right after start; Threading problems restarting a session.
 
 ## New from this version:
 
@@ -533,17 +594,24 @@ This version continues the previous goal to stabilise Mosh by exposing it to rea
 
 ## What to test:
 
-* Problems establishing a connection, multiple concurrent sessions open, closing connections correctly, reconnecting after long periods
-* Keyboard support:  For this version we have configured Ctrl, Cmd and Caps as Ctrl, Alt as meta.
-* Terminal rendering glitches: Complex terminal layouts, split view positioning, Unicode, color rendering.
+* Problems establishing a connection, multiple concurrent sessions open, closing
+  connections correctly, reconnecting after long periods
+* Keyboard support: For this version we have configured Ctrl, Cmd and Caps as
+  Ctrl, Alt as meta.
+* Terminal rendering glitches: Complex terminal layouts, split view positioning,
+  Unicode, color rendering.
 
 # Version 0.429
 
-The purpose of this build is to test our Mosh version in real life scenarios that could help us identify errors and misbehaviours. Sorry if there are no bells and whistles yet, we want everyone to focus on stabilising our Mosh changes.
+The purpose of this build is to test our Mosh version in real life scenarios
+that could help us identify errors and misbehaviours. Sorry if there are no
+bells and whistles yet, we want everyone to focus on stabilising our Mosh
+changes.
 
 ## What to test:
 
-* Problems establishing a connection, multiple concurrent sessions open, closing connections correctly, reconnecting after long periods...
-* Keyboard support:  For this version we have configured Ctrl, Cmd and Caps as Ctrl, Alt as meta.
+* Problems establishing a connection, multiple concurrent sessions open, closing
+  connections correctly, reconnecting after long periods...
+* Keyboard support: For this version we have configured Ctrl, Cmd and Caps as
+  Ctrl, Alt as meta.
 * Terminal rendering glitches: Unicode, color rendering, garbled rendering...
-
