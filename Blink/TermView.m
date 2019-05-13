@@ -380,7 +380,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     _jsIsBusy = YES;
     _jsBuffer = [[NSMutableString alloc] init];
     
-    const NSString *jsScript = term_write(buffer);
+    NSString *jsScript = term_write(buffer);
     [self _evalJSScript:jsScript];
   });
 }

@@ -43,7 +43,7 @@ NSString *term_init()
   return @"term_init();";
 }
 
-const NSString *term_write(NSString *data) {
+NSString *term_write(NSString *data) {
   NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
   
   NSMutableData *result = [[NSMutableData alloc] initWithCapacity:jsonData.length + 11 + 5];
