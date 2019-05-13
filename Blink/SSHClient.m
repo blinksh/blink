@@ -286,7 +286,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 }
 
 - (BOOL)_notConnected {
-  return _doExit || !ssh_is_connected(_session);
+  return _doExit || !ssh_is_connected(_session) || _device == nil;
 }
 
 
