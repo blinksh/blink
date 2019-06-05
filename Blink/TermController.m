@@ -101,8 +101,11 @@ NSString * const BKUserActivityCommandLineKey = @"com.blink.cmdline.key";
   
   activity.userInfo = _activityUserInfo;
   
-  self.userActivity = activity;
-  [self.userActivity becomeCurrent];
+  __weak TermController *weakSelf = self;
+  dispatch_async(dispatch_get_main_queue(), ^{
+    weakSelf.userActivity = activity;
+    [weakSelf.userActivity becomeCurrent];
+  });
 }
 
 - (void)updateUserActivityState:(NSUserActivity *)activity
