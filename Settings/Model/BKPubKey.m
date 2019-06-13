@@ -267,8 +267,12 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
   if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
     // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
-    Pki *defaultKey = [[Pki alloc] initRSAWithLength:4096];
-    [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
+    
+    // Create default key in next main queue step in order to speedup app start.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      Pki *defaultKey = [[Pki alloc] initRSAWithLength:4096];
+      [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
+    });
   }
 }
 
