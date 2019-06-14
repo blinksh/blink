@@ -163,16 +163,24 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   CKDatabase *database = [[CKContainer containerWithIdentifier:BKiCloudContainerIdentifier] privateCloudDatabase];
   CKQuery *hostQuery = [[CKQuery alloc] initWithRecordType:@"BKHost" predicate:[NSPredicate predicateWithValue:YES]];
   [database performQuery:hostQuery
-	    inZoneWithID:nil
+            inZoneWithID:nil
        completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
-	 [self mergeHosts:results];
+         if (error) {
+           NSLog(@"Error fetching hosts from icloud: %@", error);
+           return;
+         }
+         [self mergeHosts:results];
        }];
 
   if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloudKeys]) {
     CKQuery *pubKeyQuery = [[CKQuery alloc] initWithRecordType:@"BKPubKey" predicate:[NSPredicate predicateWithValue:YES]];
     [database performQuery:pubKeyQuery
-	      inZoneWithID:nil
-	 completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
+              inZoneWithID:nil
+         completionHandler:^(NSArray<CKRecord *> *_Nullable results, NSError *_Nullable error) {
+           if (error) {
+             NSLog(@"Error fetching pubkeys from icloud: %@", error);
+             return;
+           }
 	   [self mergeKeys:results];
 	 }];
   }
