@@ -84,11 +84,13 @@ void __setupProcessEnv() {
   
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
-  sideLoading = false; // Turn off extra commands from iOS system
-  initializeEnvironment(); // initialize environment variables for iOS system
-  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
-  __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
-  
+  dispatch_async(dispatch_get_main_queue(), ^{
+    sideLoading = false; // Turn off extra commands from iOS system
+    initializeEnvironment(); // initialize environment variables for iOS system
+    addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
+    __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+  });
+
   [[ScreenController shared] setup];
   return YES;
 }

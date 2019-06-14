@@ -269,9 +269,12 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
     Identities = [[NSMutableArray alloc] init];
     
     // Create default key in next main queue step in order to speedup app start.
-    dispatch_async(dispatch_get_main_queue(), ^{
+    
+    dispatch_async(dispatch_get_global_queue(QOS_CLASS_DEFAULT, DISPATCH_QUEUE_PRIORITY_DEFAULT), ^{
       Pki *defaultKey = [[Pki alloc] initRSAWithLength:4096];
-      [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
+      dispatch_async(dispatch_get_main_queue(), ^{
+          [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
+      });
     });
   }
 }
