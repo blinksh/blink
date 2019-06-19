@@ -36,11 +36,29 @@
 #import "UICKeyChainStore/UICKeyChainStore.h"
 
 #import "BlinkPaths.h"
+#import "sshbuf.h"
+#import "sshkey.h"
+#import "ssherr.h"
 
 const NSString *BK_KEYTYPE_RSA = @"RSA";
 const NSString *BK_KEYTYPE_DSA = @"DSA";
 const NSString *BK_KEYTYPE_ECDSA = @"ECDSA";
 const NSString *BK_KEYTYPE_Ed25519 = @"Ed25519";
+
+struct blink_ssh_key_struct {
+  enum ssh_keytypes_e type;
+  int flags;
+  const char *type_c; /* Don't free it ! it is static */
+  int ecdsa_nid;
+  DSA *dsa;
+  RSA *rsa;
+  EC_KEY *ecdsa;
+  u_char  *ed25519_pubkey;
+  u_char  *ed25519_privkey;
+  void *cert;
+  enum ssh_keytypes_e cert_type;
+};
+
 
 
 NSMutableArray *Identities;
@@ -51,12 +69,10 @@ static UICKeyChainStore *Keychain = nil;
   ssh_key _ssh_key;
 }
 
-int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
-                                  int echo, int verify, void *userdata) {
-  UIViewController *controller = (__bridge UIViewController *)userdata;
-  __block NSString *result = NULL;
+NSString *__get_passphrase(UIViewController *ctrl) {
   
   dispatch_semaphore_t dsema = dispatch_semaphore_create(0);
+  __block NSString *result = NULL;
   
   dispatch_async(dispatch_get_main_queue(),^{
     UIAlertController *passphraseRequest = [UIAlertController alertControllerWithTitle:@"Encrypted key"
@@ -66,52 +82,123 @@ int __ssh_auth_callback (const char *prompt, char *buf, size_t len,
       textField.placeholder = NSLocalizedString(@"Enter passphrase", @"Passphrase");
       textField.secureTextEntry = YES;
     }];
-  
+    
     
     UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK"
                                                  style:UIAlertActionStyleDefault
                                                handler:^(UIAlertAction *_Nonnull action) {
                                                  UITextField *passphrase = passphraseRequest.textFields.lastObject;
-                                                 result = passphrase.text;
+                                                 result = passphrase.text ?: @"";
                                                  dispatch_semaphore_signal(dsema);
                                                }];
+    UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
+                                                 style:UIAlertActionStyleCancel
+                                               handler:^(UIAlertAction *_Nonnull action) {
+                                                 result = nil;
+                                                 dispatch_semaphore_signal(dsema);
+                                               }];
+    
+    [passphraseRequest addAction:cancel];
     [passphraseRequest addAction:ok];
-    [controller presentViewController:passphraseRequest animated:YES completion:nil];
+    [ctrl presentViewController:passphraseRequest animated:YES completion:nil];
   });
   
   dispatch_semaphore_wait(dsema, DISPATCH_TIME_FOREVER);
   
-  if (!result) {
-    return SSH_ERROR;
-  }
-  
-  [result getBytes:buf
-         maxLength:len
-        usedLength:nil
-          encoding:NSUTF8StringEncoding
-           options:NSStringEncodingConversionAllowLossy
-             range:NSMakeRange(0, result.length)
-    remainingRange:nil];
-  
-  return SSH_OK;
+  return result;
 }
 
-+ (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki *))callback
++ (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki *, NSString *))callback
 {
   dispatch_async(dispatch_get_global_queue(0, 0), ^{
-    ssh_key ssh_key = NULL;
-    int rc = ssh_pki_import_privkey_base64(privateKey.UTF8String, NULL, __ssh_auth_callback, (__bridge void *)controller, &ssh_key);
-    if (rc != SSH_OK) {
-      dispatch_async(dispatch_get_main_queue(), ^{
-        callback(nil);
+    
+    struct sshbuf *b = sshbuf_from(privateKey.UTF8String, [privateKey lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+    
+    if (b == NULL) {
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        callback(nil, nil);
       });
       return;
     }
     
+    struct sshkey *keyp = NULL;
+    char *commepntp = NULL;
+    int rcs = 0;
+    NSString *passphrase = @"";
+    for (;;) {
+      rcs = sshkey_parse_private_fileblob(b, passphrase.UTF8String, &keyp, &commepntp);
+      if (rcs == SSH_ERR_KEY_WRONG_PASSPHRASE) {
+        passphrase = __get_passphrase(controller);
+        if (passphrase == nil) {
+          sshbuf_free(b);
+          dispatch_sync(dispatch_get_main_queue(), ^{
+            callback(nil, nil);
+          });
+          return;
+        }
+        continue;
+      }
+      
+      if (rcs == SSH_ERR_SUCCESS) {
+        break;
+      }
+      
+      dispatch_sync(dispatch_get_main_queue(), ^{
+        callback(nil, nil);
+      });
+      return;
+    }
+
+    sshbuf_free(b);
+    ssh_key skey = ssh_key_new();
+    struct blink_ssh_key_struct *bkey = (struct blink_ssh_key_struct *)skey;
+    bkey->flags = 0x0002 | 0x0001;
+    bkey->dsa = keyp->dsa;
+    bkey->rsa = keyp->rsa;
+    bkey->ecdsa = keyp->ecdsa;
+    bkey->ecdsa_nid = keyp->ecdsa_nid;
+    bkey->ed25519_pubkey = keyp->ed25519_pk;
+    bkey->ed25519_privkey = keyp->ed25519_sk;
+    switch (keyp -> type) {
+      case KEY_RSA:
+        bkey->type = SSH_KEYTYPE_RSA;
+        bkey->type_c = ssh_key_type_to_char(bkey->type);
+        break;
+      case KEY_DSA:
+        bkey->type = SSH_KEYTYPE_DSS;
+        bkey->type_c = ssh_key_type_to_char(bkey->type);
+        break;
+      case KEY_ECDSA:
+        bkey->type = SSH_KEYTYPE_ECDSA;
+        bkey->type_c = ssh_pki_key_ecdsa_name(skey);
+        break;
+      case KEY_ED25519:
+        bkey->type = SSH_KEYTYPE_ED25519;
+        bkey->type_c = ssh_key_type_to_char(bkey->type);
+        break;
+      default:
+        ssh_key_free(skey);
+        if (commepntp != NULL) {
+          free(commepntp);
+        }
+        free(keyp);
+        dispatch_sync(dispatch_get_main_queue(), ^{
+          callback(nil, nil);
+        });
+        return;
+    }
+    free(keyp);
+    
+    
     Pki *pki = [[Pki alloc] init];
-    pki->_ssh_key = ssh_key;
+    pki->_ssh_key = skey;
     dispatch_async(dispatch_get_main_queue(), ^{
-      callback(pki);
+      NSString *comment = nil;
+      if (commepntp != NULL) {
+        comment = @(commepntp);
+        free(commepntp);
+      }
+      callback(pki, comment);
     });
   });
 }

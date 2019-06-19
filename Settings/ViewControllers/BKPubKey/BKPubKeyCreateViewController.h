@@ -47,6 +47,7 @@
 
 @property BKPubKey *pubkey;
 @property NSString *name;
+@property NSString *comment;
 @property Pki *key;
 
 @end

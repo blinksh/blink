@@ -119,7 +119,7 @@ typedef NS_ENUM(NSInteger, ROW_ID) {
   
   _commentsTextField = [[UITextField alloc] init];
   _commentsTextField.placeholder = @"Comments for you key";
-  _commentsTextField.text = [NSString stringWithFormat:@"%@@%@", [BKDefaults defaultUserName] , [UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeDeviceName]];
+  _commentsTextField.text = _comment ?: [NSString stringWithFormat:@"%@@%@", [BKDefaults defaultUserName] , [UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeDeviceName]];
 
   _saveBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSave
                                                                      target:self

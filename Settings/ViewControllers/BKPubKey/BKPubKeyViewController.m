@@ -168,7 +168,7 @@
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   
-  [Pki importPrivateKey:pb.string controller:self andCallback:^(Pki *key) {
+  [Pki importPrivateKey:pb.string controller:self andCallback:^(Pki *key, NSString *comment) {
     if (key == nil) {
       UIAlertController *alertCtrl = [UIAlertController
                                       alertControllerWithTitle:@"Invalid key"
@@ -183,6 +183,7 @@
     BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
     ctrl.importMode = YES;
     ctrl.key = key;
+    ctrl.comment = comment;
     ctrl.createKeyDelegate = self;
     [self.navigationController pushViewController:ctrl animated:YES];
   }];
