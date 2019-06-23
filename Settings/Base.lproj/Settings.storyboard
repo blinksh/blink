@@ -871,7 +871,7 @@
                                     </tableViewCell>
                                 </cells>
                             </tableViewSection>
-                            <tableViewSection headerTitle="Mosh" footerTitle="Startup command to execute on the host after connecting: &quot;screen -r&quot;, &quot;tmux attach&quot;..." id="Dzd-eD-Dly">
+                            <tableViewSection headerTitle="Mosh" footerTitle="Startup command to execute on the host after connecting, e.g. &quot;screen -r&quot;, &quot;tmux attach&quot;..." id="Dzd-eD-Dly">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" textLabel="Ery-Ry-Hhs" style="IBUITableViewCellStyleDefault" id="f4U-5H-6PO">
                                         <rect key="frame" x="0.0" y="638" width="768" height="44"/>
