@@ -39,13 +39,16 @@
 
 
 void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out) {
-  
-//  const char *args[]={command,NULL};
-  /* redirect in and out to stdin, stdout and stderr */
-  ios_dup2(in,  0);
-  ios_dup2(out, 1);
-  ios_dup2(out, 2);
-  
+  /* Prepare /dev/null socket for the stderr redirection */
+  int devnull = open("/dev/null", O_WRONLY);
+  if (devnull == -1) {
+    ios_exit(1);
+  }
+
+  /* redirect in and out to stdin, stdout */
+  ios_dup2(in,  STDIN_FILENO);
+  ios_dup2(out, STDOUT_FILENO);
+  ios_dup2(devnull, STDERR_FILENO);
 //  close(in);
 //  close(out);
   ios_system(command);
