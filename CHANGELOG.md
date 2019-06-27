@@ -1,12 +1,14 @@
 # Version 12.9
 
-## Changes in Build 100
+## Changes in Build 107
 
 * Fixed Pragmata Pro (without ligatures) mu. #705
 * Fixed row with image cleanup
 * Fixed username from ./ssh/config. #379
 * Added external screen overscan compensation modes. #708
 * Speedup initial app start after new install. #734
+* Updated mosh v1.3.2 (master). #609
+* Updated libssh v0.9-stable. #717, #711, #709, #616
 
 Many thanks to @jakejarvis, @axot, @kkk669, @coppercash, @dmd, @pablopunk,
 @hpetersen and @andrius.
