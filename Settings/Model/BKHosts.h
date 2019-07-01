@@ -58,7 +58,6 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSNumber *iCloudConflictDetected;
 @property (nonatomic, strong) BKHosts *iCloudConflictCopy;
 
-+ (void)initialize;
 + (instancetype)withHost:(NSString *)ID;
 + (void)loadHosts;
 + (BOOL)saveHosts;

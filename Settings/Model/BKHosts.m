@@ -36,7 +36,9 @@
 
 NSMutableArray *Hosts;
 
-static UICKeyChainStore *Keychain = nil;
+static UICKeyChainStore *__get_keychain() {
+  return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
+}
 
 @implementation BKHosts
 
@@ -107,13 +109,8 @@ static UICKeyChainStore *Keychain = nil;
   if (!_passwordRef) {
     return nil;
   } else {
-    return [Keychain stringForKey:_passwordRef];
+    return [__get_keychain() stringForKey:_passwordRef];
   }
-}
-
-+ (void)initialize
-{
-  Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
 }
 
 + (instancetype)withHost:(NSString *)aHost
@@ -157,7 +154,7 @@ static UICKeyChainStore *Keychain = nil;
   NSString *pwdRef = @"";
   if (password) {
     pwdRef = [newHost stringByAppendingString:@".pwd"];
-    [Keychain setString:password forKey:pwdRef];
+    [__get_keychain() setString:password forKey:pwdRef];
   }
 
   BKHosts *bkHost = [BKHosts withHost:host];

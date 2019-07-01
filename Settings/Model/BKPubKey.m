@@ -61,7 +61,7 @@ struct blink_ssh_key_struct {
 
 NSMutableArray *Identities;
 
-UICKeyChainStore *__get_keychain() {
+static UICKeyChainStore *__get_keychain() {
   return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pkcard"];
 }
 
