@@ -185,20 +185,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     return;
   }
   
-  if (@available(iOS 11.0, *)) {
-    [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
-      _snapshotImageView.image = snapshotImage;
-      _snapshotImageView.frame = _webView.frame;
-      _snapshotImageView.alpha = 1;
-      [self addSubview:_snapshotImageView];
-      [_webView removeFromSuperview];
-    }];
-  } else {
-    // Blank screen for ios 10?
+  [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
+    _snapshotImageView.image = snapshotImage;
     _snapshotImageView.frame = _webView.frame;
+    _snapshotImageView.alpha = 1;
     [self addSubview:_snapshotImageView];
     [_webView removeFromSuperview];
-  }
+  }];
 }
 
 - (void)_didBecomeActive
