@@ -59,11 +59,11 @@ struct blink_ssh_key_struct {
   enum ssh_keytypes_e cert_type;
 };
 
-
-
 NSMutableArray *Identities;
 
-static UICKeyChainStore *Keychain = nil;
+UICKeyChainStore *__get_keychain() {
+  return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pkcard"];
+}
 
 @implementation Pki {
   ssh_key _ssh_key;
@@ -322,7 +322,6 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 {
   // Maintain compatibility with previous version of the class
   [NSKeyedUnarchiver setClass:self forClassName:@"PKCard"];
-  Keychain = [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pkcard"];
 }
 
 + (instancetype)withID:(NSString *)ID
@@ -371,8 +370,9 @@ NSString *__get_passphrase(UIViewController *ctrl) {
   // Save privateKey to storage
   // If the card already exists, then it is replaced
   NSString *privateKeyRef = [ID stringByAppendingString:@".pem"];
+  UICKeyChainStore *keychain = __get_keychain();
   NSError *error;
-  if (![Keychain setString:privateKey forKey:privateKeyRef error:&error]) {
+  if (![keychain setString:privateKey forKey:privateKeyRef error:&error]) {
     return nil;
   }
 
@@ -434,7 +434,8 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 
 - (NSString *)privateKey
 {
-  return [Keychain stringForKey:_privateKeyRef];
+  UICKeyChainStore *keychain = __get_keychain();
+  return [keychain stringForKey:_privateKeyRef];
 }
 
 - (BOOL)isEncrypted
