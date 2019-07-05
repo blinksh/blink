@@ -134,6 +134,7 @@
 		D21A3FE721943BE200269705 /* dark-app-ipad-76pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FD621943BE200269705 /* dark-app-ipad-76pt@2x.png */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
+		D235579522CE03F00094AADB /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D235579422CE03F00094AADB /* SceneDelegate.swift */; };
 		D23742CA21106ADF00366359 /* bench.m in Sources */ = {isa = PBXBuildFile; fileRef = D23742C921106ADF00366359 /* bench.m */; };
 		D23970FF20A07B9100881637 /* prompt.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970E820A07B9100881637 /* prompt.cxx */; };
 		D239710020A07B9100881637 /* conversion.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970EC20A07B9100881637 /* conversion.cxx */; };
@@ -531,6 +532,8 @@
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
+		D235579422CE03F00094AADB /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D235579622CE07D20094AADB /* Blink-bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Blink-bridge.h"; sourceTree = "<group>"; };
 		D23742C921106ADF00366359 /* bench.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = bench.m; sourceTree = "<group>"; };
 		D23970E420A07B8300881637 /* replxx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = replxx.h; sourceTree = "<group>"; };
 		D23970E520A07B8300881637 /* replxx.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx.hxx; sourceTree = "<group>"; };
@@ -781,6 +784,8 @@
 				D29568B821BE629100480A83 /* bk_getopts.c */,
 				D24D18C721D4CFB200239C9D /* KeyInput.h */,
 				D24D18C821D4CFB200239C9D /* KeyInput.m */,
+				D235579422CE03F00094AADB /* SceneDelegate.swift */,
+				D235579622CE07D20094AADB /* Blink-bridge.h */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1778,6 +1783,7 @@
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				0716B5961CFFAB9300268B5B /* TermController.m in Sources */,
 				D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */,
+				D235579522CE03F00094AADB /* SceneDelegate.swift in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				0716B5911CFFAB9300268B5B /* SpaceController.m in Sources */,
 				D239710520A07B9100881637 /* history.cxx in Sources */,
@@ -2008,6 +2014,7 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -2046,6 +2053,7 @@
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
+				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;

@@ -697,6 +697,14 @@
                                       modifierFlags:modifierFlags
                                              action:@selector(_resetFontSize:)
                                discoverabilityTitle:@"Reset Zoom"],
+                  [UIKeyCommand keyCommandWithInput:@"t"
+                                      modifierFlags:prevNextShellModifierFlags
+                                             action:@selector(_newWindow:)
+                               discoverabilityTitle:@"New Window"],
+                  [UIKeyCommand keyCommandWithInput:@"w"
+                                      modifierFlags:prevNextShellModifierFlags
+                                             action:@selector(_closeWindow:)
+                               discoverabilityTitle:@"Close Window"],
                   nil];
   
   UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: @"0-9"
@@ -755,6 +763,20 @@
 {
   [self _createShellWithUserActivity: nil sessionStateKey:nil animated:YES completion:nil];
 }
+
+- (void)_newWindow:(UIKeyCommand *)cmd
+{
+  UIApplication *app = [UIApplication sharedApplication];
+  [app requestSceneSessionActivation:nil userActivity:nil options:nil errorHandler:nil];
+}
+
+- (void)_closeWindow:(UIKeyCommand *)cmd
+{
+  UIApplication *app = [UIApplication sharedApplication];
+  UISceneSession *session = self.view.window.windowScene.session;
+  [app requestSceneSessionDestruction:session options:nil errorHandler:nil];
+}
+
 
 - (void)closeShell:(UIKeyCommand *)cmd
 {
@@ -1052,8 +1074,7 @@
 
 #pragma mark - UIDropInteractionDelegate
 
-- (BOOL)dropInteraction:(UIDropInteraction *)interaction canHandleSession:(id<UIDropSession>)session
-API_AVAILABLE(ios(11.0)){
+- (BOOL)dropInteraction:(UIDropInteraction *)interaction canHandleSession:(id<UIDropSession>)session {
   BOOL res = [session canLoadObjectsOfClass:[NSString class]];
   if (res) {
     [_termInput reset];
@@ -1067,13 +1088,11 @@ API_AVAILABLE(ios(11.0)){
    return res;
 }
 
-- (UIDropProposal *)dropInteraction:(UIDropInteraction *)interaction sessionDidUpdate:(id<UIDropSession>)session
-API_AVAILABLE(ios(11.0)){
+- (UIDropProposal *)dropInteraction:(UIDropInteraction *)interaction sessionDidUpdate:(id<UIDropSession>)session {
   return [[UIDropProposal alloc] initWithDropOperation:UIDropOperationCopy];
 }
 
-- (void)dropInteraction:(UIDropInteraction *)interaction performDrop:(id<UIDropSession>)session
-API_AVAILABLE(ios(11.0)){
+- (void)dropInteraction:(UIDropInteraction *)interaction performDrop:(id<UIDropSession>)session {
   [session loadObjectsOfClass:[NSString class] completion:^(NSArray<__kindof id<NSItemProviderReading>> * _Nonnull objects) {
     NSString * str = [objects firstObject];
     if (str) {
@@ -1083,15 +1102,13 @@ API_AVAILABLE(ios(11.0)){
   }];
 }
 
-- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidEnd:(id<UIDropSession>)session
-API_AVAILABLE(ios(11.0)){
+- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidEnd:(id<UIDropSession>)session {
   _termInput.frame = CGRectZero;
   _termInput.hidden = YES;
   [_termInput reset];
 }
 
-- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidExit:(id<UIDropSession>)session
-API_AVAILABLE(ios(11.0)){
+- (void)dropInteraction:(UIDropInteraction *)interaction sessionDidExit:(id<UIDropSession>)session {
   _termInput.frame = CGRectZero;
   _termInput.hidden = YES;
   [_termInput reset];

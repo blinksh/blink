@@ -42,6 +42,7 @@
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
+#include "Blink-swift.h"
 
 
 @import CloudKit;
@@ -89,7 +90,6 @@ void __setupProcessEnv() {
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
   __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   
-  [[ScreenController shared] setup];
   return YES;
 }
 
@@ -127,6 +127,16 @@ void __setupProcessEnv() {
   [BKHosts loadHosts];
   [self _loadProfileVars];
   return YES;
+}
+
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+  UISceneConfiguration *configuration = [[UISceneConfiguration alloc]
+                                         initWithName:@"main" sessionRole:connectingSceneSession.configuration.role];
+  
+  configuration.delegateClass = [SceneDelegate class];
+  //configuration.sceneClass = [Scene class];
+  
+  return configuration;
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -174,10 +184,10 @@ void __setupProcessEnv() {
 }
 
 
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [self _startMonitoringForSuspending];
-}
+//- (void)applicationDidEnterBackground:(UIApplication *)application
+//{
+//  [self _startMonitoringForSuspending];
+//}
 
 - (void)_startMonitoringForSuspending
 {
@@ -204,15 +214,15 @@ void __setupProcessEnv() {
                                                   repeats:NO];
 }
 
-- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
-{
-  return YES;
-}
-
-- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
-{
-  return YES;
-}
+//- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
+//{
+//  return YES;
+//}
+//
+//- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
+//{
+//  return YES;
+//}
 
 - (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
 {
