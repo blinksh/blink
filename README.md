@@ -28,13 +28,10 @@ compress, uncompress, gzip, gunzip,
 * cat, grep, wc
 * curl (includes http, https, scp, sftp...), scp, sftp
 * tar 
-* Using external projects: [Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)
 
 * You can call commands individually, or use small scripts using python or lua. There is redirection (">", "<", "&>" ...), but no pipe. 
 
 All these commands are inside the `ios_system.framework` (precompiled, for facility). If you want to edit the source (to add more commands), see: https://github.com/holzschu/ios_system . 
-
-I suggest installing iVim (https://github.com/terrychou/iVim or https://itunes.apple.com/us/app/ivim/id1266544660?mt=8 ) and use iOS 11 "edit-in-place" to edit files inside Blink sandbox. 
 
 curl opens access to file transfers to and from your iPad (ftp, http, scp, sftp...). It uses the key management of BLINKSHELL  (the keys you created with "config"). You can also specify keys with a path:
 ```
@@ -47,10 +44,6 @@ sftp localFilename user@host.name.edu:~/
 ```
 
 scp and sftp are implemented through curl, by rewriting the arguments to follow the curl syntax. Pro: lighter implementation, smaller memory cost, less likely to have function name collisions. Con: some switches might not have exactly the same meaning. 
-
-The language packages ([Python](https://github.com/holzschu/python_ios), [Lua](https://github.com/holzschu/lua_ios) and [TeX](https://github.com/holzschu/lib-tex)) only provide the equivalent of the binaries. It is up to you to transfer the directories with the packages (`/usr/local/texlive` or `/usr/lib/python2.7`), and place them in the Library folder of the Blink application. This is where commands such as ls, rm, tar, mv... will be useful.
-
-Note: all frameworks (except curl) are dynamic frameworks, to reduce the Application memory footprint. 
 
 # Environment variables
 
@@ -91,29 +84,6 @@ cd blink && ./get_frameworks.sh
 This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 
 Although this is the quickest method to get you up and running, if you would like to compile all libraries and resources yourself, refer to [BUILD](https://github.com/blinksh/blink/blob/master/BUILD.md). Please let us know if you find any issues. Blink is a complex project with multiple low level dependencies and we are still looking for ways to simplify and automate the full compilation process.
-
-## Packages
-
-The precompiled version of `ios_system` already containes the `python` and `lua` "binaries", but not their associated modules.
-
-If you want to use python, you will have to transfer the python modules. On your computer:
-```bash
-curl -OL https://www.python.org/ftp/python/2.7.13/Python-2.7.13.tgz
-tar -xvzf Python-2.7.13.tgz
-rm Python-2.7.13.tgz
-cd Python-2.7.13/
-tar -cvzf packages.tar.gz Lib/
-```
-transfer the file `packages.tar.gz` to your iOS device, using iTunes or the scp command in Blink. 
-
-On your device:
-```bash
-cd ~/Library/
-mkdir lib/
-tar -xvzf ~/packages.tar.gz 
-mv Lib lib/python2.7
-cd ~
-```
 
 # Using Blink
 Our UI is very straightforward and optimizes the experience on touch devices for the really important part, the terminal. You will jump right into a very simple shell, so you will know what to do. Here are a few more tricks:
