@@ -525,6 +525,8 @@
     return;
   }
 
+  [[WidgetsManager shared] unRegisterWidget:self.currentTerm];
+  
   NSInteger numViewports = [_viewports count];
 
   __weak typeof(self) weakSelf = self;
@@ -565,7 +567,9 @@
                             animated:(BOOL)animated
                           completion:(void (^)(BOOL finished))completion
 {
-  TermController *term = [[TermController alloc] init];
+  TermController *term = [[TermController alloc] initWithWidgetID:sessionStateKey];
+  [[WidgetsManager shared] registerWidget:term];
+  
   term.sessionStateKey = sessionStateKey;
   term.delegate = self;
   term.userActivity = userActivity;

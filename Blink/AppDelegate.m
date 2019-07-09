@@ -42,7 +42,6 @@
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
-#include "Blink-swift.h"
 
 
 @import CloudKit;
@@ -130,13 +129,8 @@ void __setupProcessEnv() {
 }
 
 - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-  UISceneConfiguration *configuration = [[UISceneConfiguration alloc]
-                                         initWithName:@"main" sessionRole:connectingSceneSession.configuration.role];
   
-  configuration.delegateClass = [SceneDelegate class];
-  //configuration.sceneClass = [Scene class];
-  
-  return configuration;
+  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
 }
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
@@ -174,22 +168,7 @@ void __setupProcessEnv() {
   [self _suspendApplicationOnWillTerminate];
 }
 
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-  if (_suspendedMode) {
-    [[ScreenController shared] resume];
-  }
-
-  [self _cancelApplicationSuspend];
-}
-
-
-//- (void)applicationDidEnterBackground:(UIApplication *)application
-//{
-//  [self _startMonitoringForSuspending];
-//}
-
-- (void)_startMonitoringForSuspending
+- (void)startMonitoringForSuspending
 {
   if (_suspendedMode) {
     return;
@@ -214,22 +193,12 @@ void __setupProcessEnv() {
                                                   repeats:NO];
 }
 
-//- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
-//{
-//  return YES;
-//}
-//
-//- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
-//{
-//  return YES;
-//}
-
 - (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
 {
   [[ScreenController shared] finishRestoring];
 }
 
-- (void)_cancelApplicationSuspend
+- (void)cancelApplicationSuspend
 {
   [_suspendTimer invalidate];
   _suspendedMode = NO;

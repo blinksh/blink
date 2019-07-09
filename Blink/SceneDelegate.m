@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,13 +29,41 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#import "SceneDelegate.h"
+#import "SpaceController.h"
+#import "AppDelegate.h"
 
-@property (strong, nonatomic) UIWindow *window;
+@implementation SceneDelegate {
+  UIWindow *_window;
+}
 
-- (void)startMonitoringForSuspending;
-- (void)cancelApplicationSuspend;
+- (void)scene:(UIScene *)scene
+  willConnectToSession:(UISceneSession *)session
+               options:(UISceneConnectionOptions *)connectionOptions {
+  
+  UIWindowScene *winScene = (UIWindowScene *)scene;
+  
+  UIWindow *window = [[UIWindow alloc] initWithWindowScene:winScene];
+  window.rootViewController = [[SpaceController alloc] init];
+  [window makeKeyAndVisible];
+  _window = window;
+}
+
+- (void)sceneDidEnterBackground:(UIScene *)scene {
+  AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
+  
+  // TODO: check if we are last active scene here
+  [appDelegate startMonitoringForSuspending];
+}
+
+- (void)sceneWillEnterForeground:(UIScene *)scene {
+  
+}
+
+
+- (NSUserActivity *)stateRestorationActivityForScene:(UIScene *)scene {
+  return [[NSUserActivity alloc] initWithActivityType:@"state.restoration.activity"];
+}
 
 @end

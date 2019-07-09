@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,13 +29,36 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+#import "WidgetsManager.h"
 
-@property (strong, nonatomic) UIWindow *window;
+@implementation WidgetsManager {
+  NSMutableDictionary<NSString *, id<WidgetProtocol>> *_map;
+}
 
-- (void)startMonitoringForSuspending;
-- (void)cancelApplicationSuspend;
++ (WidgetsManager *)shared {
+  static WidgetsManager *instance = nil;
+  static dispatch_once_t onceToken;
+  dispatch_once(&onceToken, ^{
+    instance = [[self alloc] init];
+  });
+  return instance;
+}
+
+- (instancetype)init {
+  if (self = [super init]) {
+    _map = [[NSMutableDictionary alloc] init];
+  }
+  
+  return self;
+}
+
+- (void)registerWidget:(id<WidgetProtocol>)widget {
+  _map[widget.widgetID] = widget;
+}
+
+- (void)unRegisterWidget:(id<WidgetProtocol>)widget {
+  [_map removeObjectForKey:widget.widgetID];
+}
 
 @end

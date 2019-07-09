@@ -30,41 +30,23 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import UIKit
+#import <Foundation/Foundation.h>
 
-open class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  public var window: UIWindow? = nil
+NS_ASSUME_NONNULL_BEGIN
 
-  public func scene(
-    _ scene: UIScene,
-    willConnectTo session: UISceneSession,
-    options connectionOptions: UIScene.ConnectionOptions) {
-    
-    guard
-      let windowScene = scene as? UIWindowScene else {
-      return
-    }
-    
-    let activity = session.stateRestorationActivity
-    
-    let ctrl = SpaceController()
-    ctrl.restorationIdentifier = "SpaceController"
-    window = UIWindow(windowScene: windowScene)
-    window?.rootViewController = ctrl
-    window?.makeKeyAndVisible()
-  }
-  
-  open override func restoreUserActivityState(_ activity: NSUserActivity) {
-    
-  }
-  
-  open override func updateUserActivityState(_ activity: NSUserActivity) {
-    
-  }
-  
-  public func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-//    return scene.userActivity
-    let activity = NSUserActivity(activityType: "BlinkStateRestoration")
-    return activity
-  }
-}
+@protocol WidgetProtocol <NSObject>
+
+@property (strong) NSString *widgetID;
+
+@end
+
+@interface WidgetsManager : NSObject
+
+- (void)registerWidget:(id<WidgetProtocol>)widget;
+- (void)unRegisterWidget:(id<WidgetProtocol>)widget;
+
++ (WidgetsManager *) shared;
+
+@end
+
+NS_ASSUME_NONNULL_END

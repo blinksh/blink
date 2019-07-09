@@ -34,6 +34,7 @@
 #import "TermDevice.h"
 #import "MCPSessionParameters.h"
 #import "StateManager.h"
+#import "WidgetsManager.h"
 
 extern NSString * const BKUserActivityTypeCommandLine;
 extern NSString * const BKUserActivityCommandLineKey;
@@ -48,13 +49,16 @@ extern NSString * const BKUserActivityCommandLineKey;
 
 @end
 
-@interface TermController : UIViewController<SecureRestoration>
+@interface TermController : UIViewController<SecureRestoration, WidgetProtocol>
+
 @property (readonly, strong, nonatomic) TermDevice *termDevice;
 @property (weak) id<TermControlDelegate> delegate;
 @property (strong, nonatomic) NSString* activityKey;
 @property (strong) NSString* sessionStateKey;
 @property (strong) MCPSessionParameters *sessionParameters;
 @property (strong, nonatomic) UIColor *bgColor;
+
+- (instancetype)initWithWidgetID:(NSString *)widgetID;
 
 - (void)lockLayout;
 - (void)unlockLayout;

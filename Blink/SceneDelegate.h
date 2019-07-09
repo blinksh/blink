@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,13 +29,13 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <UIKit/UIKit.h>
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+NS_ASSUME_NONNULL_BEGIN
 
-@property (strong, nonatomic) UIWindow *window;
-
-- (void)startMonitoringForSuspending;
-- (void)cancelApplicationSuspend;
+@interface SceneDelegate : UIResponder<UIWindowSceneDelegate>
 
 @end
+
+NS_ASSUME_NONNULL_END
