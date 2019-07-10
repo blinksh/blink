@@ -780,6 +780,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_device.view pasteSelection: sender];
 }
 
+- (void)shareSelection:(UIMenuController *)menu
+{
+  UIActivityViewController * controller = [[UIActivityViewController alloc] initWithActivityItems: @[_device.view.selectedText] applicationActivities: nil];
+  controller.popoverPresentationController.sourceView = _device.view;
+  controller.popoverPresentationController.sourceRect = menu.menuFrame; // at this stage we no longer have the selection frame so I'm using the menu's frame for now. Its close.
+  [[[_device delegate] viewController] presentViewController:controller animated:true completion:nil];
+}
+
 - (void)copyLink:(id)sender
 {
   UIPasteboard.generalPasteboard.URL = [_device.view detectedLink];
@@ -811,6 +819,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     if (action == @selector(paste:) ||
         (action == @selector(copy:) && _device.view.hasSelection) ||
         (action == @selector(pasteSelection:) && _device.view.hasSelection) ||
+        (action == @selector(shareSelection:) && _device.view.hasSelection) ||
         (action == @selector(copyLink:) && _device.view.detectedLink) ||
         (action == @selector(openLink:) && _device.view.detectedLink)
       ) {

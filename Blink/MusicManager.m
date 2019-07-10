@@ -114,38 +114,37 @@
 {
   if (!_keyCommands) {
     UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
-    
-    _keyCommands =
-    @[
-      [UIKeyCommand keyCommandWithInput:@"n"
-                          modifierFlags:modifierFlags
-                                 action:@selector(musicCommand:)
-                   discoverabilityTitle:@"Next track"],
 
-      [UIKeyCommand keyCommandWithInput:@"s"
-                          modifierFlags:modifierFlags
-                                 action:@selector(musicCommand:)
-                   discoverabilityTitle:@"Pause"],
+    UIKeyCommand *next = [UIKeyCommand keyCommandWithInput:@"n"
+                                             modifierFlags:modifierFlags
+                                                    action:@selector(musicCommand:)];
+    next.discoverabilityTitle = NSLocalizedString(@"Next track", nil);
 
-      [UIKeyCommand keyCommandWithInput:@"p"
-                          modifierFlags:modifierFlags
-                                 action:@selector(musicCommand:)
-                   discoverabilityTitle:@"Play"],
+    UIKeyCommand *pause = [UIKeyCommand keyCommandWithInput:@"s"
+                                              modifierFlags:modifierFlags
+                                                     action:@selector(musicCommand:)];
+    pause.discoverabilityTitle = NSLocalizedString(@"Pause", nil);
 
-      [UIKeyCommand keyCommandWithInput:@"r"
-                          modifierFlags:modifierFlags
-                                 action:@selector(musicCommand:)
-                   discoverabilityTitle:@"Previous track"],
-      
-      [UIKeyCommand keyCommandWithInput:@"b"
-                          modifierFlags:modifierFlags
-                                 action:@selector(musicCommand:)
-                   discoverabilityTitle:@"Play from beggining"],
+    UIKeyCommand *play = [UIKeyCommand keyCommandWithInput:@"p"
+                                             modifierFlags:modifierFlags
+                                                    action:@selector(musicCommand:)];
+    play.discoverabilityTitle = NSLocalizedString(@"Play", nil);
 
-      [UIKeyCommand keyCommandWithInput:@"m"
-                          modifierFlags:modifierFlags
-                                 action:@selector(_toggleMusicHUD)],
-      ];
+    UIKeyCommand *previous = [UIKeyCommand keyCommandWithInput:@"r"
+                                                 modifierFlags:modifierFlags
+                                                        action:@selector(musicCommand:)];
+    previous.discoverabilityTitle = NSLocalizedString(@"Previous track", nil);
+
+    UIKeyCommand *beginning = [UIKeyCommand keyCommandWithInput:@"b"
+                                                  modifierFlags:modifierFlags
+                                                         action:@selector(musicCommand:)];
+    beginning.discoverabilityTitle = NSLocalizedString(@"Play from beginning", nil);
+
+    UIKeyCommand *toggle = [UIKeyCommand keyCommandWithInput:@"m"
+                                               modifierFlags:modifierFlags
+                                                      action:@selector(_toggleMusicHUD)];
+
+    _keyCommands = @[ next, pause, play, previous, beginning, toggle ];
   }
   
   return _keyCommands;

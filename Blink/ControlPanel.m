@@ -71,7 +71,7 @@
     _clipboardToolbar = [[RoundedToolbar alloc] initWithFrame:CGRectZero];
     
     UIButton *pasteBtn = [UIButton buttonWithType:UIButtonTypeSystem];
-    [pasteBtn setTitle:@"Paste" forState:UIControlStateNormal];
+    [pasteBtn setTitle:NSLocalizedString(@"Paste", nil) forState:UIControlStateNormal];
     pasteBtn.tintColor = [UIColor whiteColor];
     [pasteBtn addTarget:self action:@selector(_paste) forControlEvents:UIControlEventTouchUpInside];
     [pasteBtn sizeToFit];

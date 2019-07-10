@@ -2713,31 +2713,43 @@ sshkey_cert_check_authority(const struct sshkey *k,
   
   if (want_host) {
     if (k->cert->type != SSH2_CERT_TYPE_HOST) {
-      *reason = "Certificate invalid: not a host certificate";
+      if (reason) {
+        *reason = "Certificate invalid: not a host certificate";
+      }
       return SSH_ERR_KEY_CERT_INVALID;
     }
   } else {
     if (k->cert->type != SSH2_CERT_TYPE_USER) {
-      *reason = "Certificate invalid: not a user certificate";
+      if (reason) {
+        *reason = "Certificate invalid: not a user certificate";
+      }
       return SSH_ERR_KEY_CERT_INVALID;
     }
   }
   if (now < 0) {
     /* yikes - system clock before epoch! */
-    *reason = "Certificate invalid: not yet valid";
+    if (reason) {
+      *reason = "Certificate invalid: not yet valid";
+    }
     return SSH_ERR_KEY_CERT_INVALID;
   }
   if ((u_int64_t)now < k->cert->valid_after) {
-    *reason = "Certificate invalid: not yet valid";
+    if (reason) {
+      *reason = "Certificate invalid: not yet valid";
+    }
     return SSH_ERR_KEY_CERT_INVALID;
   }
   if ((u_int64_t)now >= k->cert->valid_before) {
-    *reason = "Certificate invalid: expired";
+    if (reason) {
+      *reason = "Certificate invalid: expired";
+    }
     return SSH_ERR_KEY_CERT_INVALID;
   }
   if (k->cert->nprincipals == 0) {
     if (require_principal) {
-      *reason = "Certificate lacks principal list";
+      if (reason) {
+        *reason = "Certificate lacks principal list";
+      }
       return SSH_ERR_KEY_CERT_INVALID;
     }
   } else if (name != NULL) {
@@ -2749,8 +2761,9 @@ sshkey_cert_check_authority(const struct sshkey *k,
       }
     }
     if (!principal_matches) {
-      *reason = "Certificate invalid: name is not a listed "
-      "principal";
+      if (reason) {
+        *reason = "Certificate invalid: name is not a listed principal";
+      }
       return SSH_ERR_KEY_CERT_INVALID;
     }
   }
@@ -3430,7 +3443,8 @@ sshkey_private_to_blob2(const struct sshkey *prv, struct sshbuf *blob,
   u_char *cp, *key = NULL, *pubkeyblob = NULL;
   u_char salt[SALT_LEN];
   char *b64 = NULL;
-  size_t i, pubkeylen, keylen, ivlen, blocksize, authlen;
+  size_t i, pubkeylen = 0, blocksize, authlen = 0;
+  u_int keylen = 0, ivlen = 0;
   u_int check;
   int r = SSH_ERR_INTERNAL_ERROR;
   struct sshcipher_ctx *ciphercontext = NULL;

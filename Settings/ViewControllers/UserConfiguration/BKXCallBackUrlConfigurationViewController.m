@@ -95,7 +95,7 @@
   if (indexPath.row == 0) {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"switch" forIndexPath:indexPath];
     cell.accessoryView = _xCallbackUrlEnabledSwitch;
-    cell.textLabel.text = @"Allow URL actions";
+    cell.textLabel.text = NSLocalizedString(@"Allow URL actions", nil);
     return cell;
   } else if (indexPath.row == 1) {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"URLKey" forIndexPath:indexPath];

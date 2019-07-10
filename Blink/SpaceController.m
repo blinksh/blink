@@ -649,60 +649,79 @@
 {
   UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
   UIKeyModifierFlags prevNextShellModifierFlags = [BKUserConfigurationManager shortCutModifierFlagsForNextPrevShell];
-  
-  _kbdCommands = [[NSMutableArray alloc] initWithObjects:
-                  [UIKeyCommand keyCommandWithInput: @"t" modifierFlags:modifierFlags
-                                             action: @selector(newShell:)
-                               discoverabilityTitle: @"New shell"],
-                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
-                                             action: @selector(closeShell:)
-                               discoverabilityTitle: @"Close shell"],
-                  [UIKeyCommand keyCommandWithInput: @"]" modifierFlags: prevNextShellModifierFlags
-                                             action: @selector(nextShell:)
-                               discoverabilityTitle: @"Next shell"],
-                  [UIKeyCommand keyCommandWithInput: @"[" modifierFlags: prevNextShellModifierFlags
-                                             action: @selector(prevShell:)
-                               discoverabilityTitle: @"Previous shell"],
-                  // Alternative key commands for keyboard layouts having problems to access
-                  // some of the default ones (e.g. the German keyboard layout)
-                  [UIKeyCommand keyCommandWithInput: UIKeyInputRightArrow modifierFlags: prevNextShellModifierFlags
-                                             action: @selector(nextShell:)],
-                  [UIKeyCommand keyCommandWithInput: UIKeyInputLeftArrow modifierFlags: prevNextShellModifierFlags
-                                             action: @selector(prevShell:)],
-                  
-                  
-                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: modifierFlags
-                                             action: @selector(otherScreen:)
-                               discoverabilityTitle: @"Other Screen"],
-                  [UIKeyCommand keyCommandWithInput: @"o" modifierFlags: prevNextShellModifierFlags
-                                             action: @selector(moveToOtherScreen:)
-                               discoverabilityTitle: @"Move shell to other Screen"],
-                  [UIKeyCommand keyCommandWithInput: @"," modifierFlags: modifierFlags
-                                             action: @selector(showConfig:)
-                               discoverabilityTitle: @"Show config"],
-                  
-                  [UIKeyCommand keyCommandWithInput: @"m" modifierFlags: modifierFlags
-                                             action: @selector(_toggleMusicHUD)
-                               discoverabilityTitle: @"Music Controls"],
-                  
-                  [UIKeyCommand keyCommandWithInput:@"+"
-                                      modifierFlags:modifierFlags
-                                             action:@selector(_increaseFontSize:)
-                               discoverabilityTitle:@"Zoom In"],
-                  [UIKeyCommand keyCommandWithInput:@"-"
-                                      modifierFlags:modifierFlags
-                                             action:@selector(_decreaseFontSize:)
-                               discoverabilityTitle:@"Zoom Out"],
-                  [UIKeyCommand keyCommandWithInput:@"="
-                                      modifierFlags:modifierFlags
-                                             action:@selector(_resetFontSize:)
-                               discoverabilityTitle:@"Reset Zoom"],
-                  nil];
+
+  UIKeyCommand *newShell = [UIKeyCommand keyCommandWithInput: @"t"
+                      modifierFlags: modifierFlags
+                             action: @selector(newShell:)];
+  newShell.discoverabilityTitle = NSLocalizedString(@"New shell", nil);
+
+  UIKeyCommand *closeShell = [UIKeyCommand keyCommandWithInput: @"w"
+                      modifierFlags: modifierFlags
+                             action: @selector(closeShell:)];
+  closeShell.discoverabilityTitle = NSLocalizedString(@"Close shell", nil);
+
+  UIKeyCommand *nextShell = [UIKeyCommand keyCommandWithInput: @"]"
+                      modifierFlags: prevNextShellModifierFlags
+                             action: @selector(nextShell:)];
+  nextShell.discoverabilityTitle = NSLocalizedString(@"Next shell", nil);
+
+  UIKeyCommand *previousShell = [UIKeyCommand keyCommandWithInput: @"["
+                      modifierFlags: prevNextShellModifierFlags
+                             action: @selector(prevShell:)];
+  previousShell.discoverabilityTitle = NSLocalizedString(@"Previous shell", nil);
+
+  // Alternative key commands for keyboard layouts having problems to access
+  // some of the default ones (e.g. the German keyboard layout)
+  UIKeyCommand *nextShellArrows = [UIKeyCommand keyCommandWithInput: UIKeyInputRightArrow
+                      modifierFlags: prevNextShellModifierFlags
+                             action: @selector(nextShell:)];
+
+  UIKeyCommand *previousShellArrow = [UIKeyCommand keyCommandWithInput: UIKeyInputLeftArrow
+                      modifierFlags: prevNextShellModifierFlags
+                             action: @selector(prevShell:)];
+
+  UIKeyCommand *otherScreen = [UIKeyCommand keyCommandWithInput: @"o"
+                      modifierFlags: modifierFlags
+                             action: @selector(otherScreen:)];
+  otherScreen.discoverabilityTitle = NSLocalizedString(@"Other Screen", nil);
+
+  UIKeyCommand *moveShell = [UIKeyCommand keyCommandWithInput: @"o"
+                      modifierFlags: prevNextShellModifierFlags
+                             action: @selector(moveToOtherScreen:)];
+  moveShell.discoverabilityTitle = NSLocalizedString(@"Move shell to other Screen", nil);
+
+  UIKeyCommand *showConfig = [UIKeyCommand keyCommandWithInput: @","
+                      modifierFlags: modifierFlags
+                             action: @selector(showConfig:)];
+  showConfig.discoverabilityTitle = NSLocalizedString(@"Show config", nil);
+
+  UIKeyCommand *musicControls = [UIKeyCommand keyCommandWithInput: @"m"
+                      modifierFlags: modifierFlags
+                             action: @selector(_toggleMusicHUD)];
+  musicControls.discoverabilityTitle = NSLocalizedString(@"Music Controls", nil);
+
+  UIKeyCommand *zoomIn = [UIKeyCommand keyCommandWithInput:@"+"
+                      modifierFlags:modifierFlags
+                             action:@selector(_increaseFontSize:)];
+  zoomIn.discoverabilityTitle = NSLocalizedString(@"Zoom In", nil);
+
+  UIKeyCommand *zoomOut = [UIKeyCommand keyCommandWithInput:@"-"
+                      modifierFlags:modifierFlags
+                             action:@selector(_decreaseFontSize:)];
+  zoomOut.discoverabilityTitle = NSLocalizedString(@"Zoom Out", nil);
+
+  UIKeyCommand *resetZoom = [UIKeyCommand keyCommandWithInput:@"="
+                      modifierFlags:modifierFlags
+                             action:@selector(_resetFontSize:)];
+  resetZoom.discoverabilityTitle = NSLocalizedString(@"Reset Zoom", nil);
+
+  _kbdCommands = [[NSMutableArray alloc] initWithObjects: newShell, closeShell, nextShell, previousShell, nextShellArrows,
+                  previousShellArrow, otherScreen, moveShell, showConfig, musicControls, zoomIn, zoomOut, resetZoom, nil];
   
   UIKeyCommand * cmd = [UIKeyCommand keyCommandWithInput: @"0-9"
                                          modifierFlags: modifierFlags
-                                                action: @selector(switchToShellN:)
-                                  discoverabilityTitle: @"Switch to shell 0-9" ];
+                                                action: @selector(switchToShellN:)];
+  cmd.discoverabilityTitle = NSLocalizedString(@"Switch to shell 0-9", nil);
   [_kbdCommands addObject:cmd];
   
   for (NSInteger i = 1; i < 11; i++) {

@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
                        stdErr:(dispatch_fd_t)fdErr
                        device:(TermDevice *)device
                         isTTY:(BOOL)isTTY;
-- (int)main:(int) argc argv:(char **) argv;
+- (int)main:(int) argc argv:(char * _Nonnull * _Nonnull) argv;
 - (void)sigwinch;
 - (void)kill;
 

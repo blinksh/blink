@@ -356,7 +356,7 @@ static void kbd_callback(const char *name, int name_len,
   return res;
 }
 
-- (void)ssh_connect:(const char *)host addrs:(struct addrinfo *)aitop succ_addr:(struct sockaddr_storage *)hostaddr error:(NSError **)error
+- (bool)ssh_connect:(const char *)host addrs:(struct addrinfo *)aitop succ_addr:(struct sockaddr_storage *)hostaddr error:(NSError **)error
 {
   struct addrinfo *ai;
   char ntop[NI_MAXHOST], strport[NI_MAXSERV];
@@ -378,8 +378,10 @@ static void kbd_callback(const char *name, int name_len,
     if (_sock < 0) {
       [self debugMsg:[NSString stringWithFormat:@"%s", strerror(errno)]];
       if (!ai->ai_next) {
-        *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"ssh: connect to host %s port %s: %s", host, strport, strerror(errno)] }];
-        return;
+        if (error) {
+          *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"ssh: connect to host %s port %s: %s", host, strport, strerror(errno)] }];
+        }
+        return false;
       }
       
       continue;
@@ -400,25 +402,32 @@ static void kbd_callback(const char *name, int name_len,
   }
   
   if (_sock < 0) {
-    *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"ssh: connect to host %s port %s: %s", host, strport, strerror(errno)] }];
+    if (error) {
+      *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"ssh: connect to host %s port %s: %s", host, strport, strerror(errno)] }];
+    }
     [self debugMsg:@"Could not establish a successful connection."];
-    return;
+    return false;
   }
   
   if (0 != [self ssh_set_session]) {
-    *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"Error establishing SSH session." }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"Error establishing SSH session." }];
+    }
+    return false;
   }
   
   if (!_options.disableHostKeyCheck) {
     if (![self verify_host:ntop]) {
-      *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"Host key verification failed." }];
+      if (error) {
+        *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"Host key verification failed." }];
+      }
+      return false;
     }
   } else {
     [self errMsg:@"@@@@@@ WARNING @@@@@@@@ --- Host Key check disabled."];
   }
   
-  return;
+  return true;
 }
 
 - (int)ssh_set_session
@@ -459,10 +468,10 @@ static void kbd_callback(const char *name, int name_len,
   return 0;
 }
 
-- (void)ssh_login:(NSArray *)ids to:(struct sockaddr *)addr port:(int)port user:(const char *)user timeout:(int)timeout error:(NSError **)error
+- (bool)ssh_login:(NSArray *)ids to:(struct sockaddr *)addr port:(int)port user:(const char *)user timeout:(int)timeout error:(NSError **)error
 {
   char *userauthlist = NULL;
-  int auth_type;
+  int auth_type = 0;
   
   // Set supported auth_type from server
   do {
@@ -470,8 +479,10 @@ static void kbd_callback(const char *name, int name_len,
     
     if (!userauthlist) {
       if (libssh2_session_last_errno(_session) != LIBSSH2_ERROR_EAGAIN) {
-        *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"No userauth list" }];
-        return;
+        if (error) {
+          *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : @"No userauth list" }];
+        }
+        return false;
       } else {
         waitsocket(_sock, _session); /* now we wait */
       }
@@ -479,7 +490,7 @@ static void kbd_callback(const char *name, int name_len,
   } while (!userauthlist);
   
   [self debugMsg:[NSString stringWithFormat:@"Authenticating as '%s'.", user]];
-  
+
   if (strstr(userauthlist, "password") != NULL) {
     auth_type |= 1;
   }
@@ -506,11 +517,13 @@ static void kbd_callback(const char *name, int name_len,
   }
   
   if (!succ) {
-    *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Permission denied (%s).", userauthlist] }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blk.ssh.libssh2" code:-1 userInfo:@{ NSLocalizedDescriptionKey : [NSString stringWithFormat:@"Permission denied (%s).", userauthlist] }];
+    }
+    return false;
   }
   
-  return;
+  return true;
 }
 
 - (int)ssh_login_password:(const char *)user password:(char *)password

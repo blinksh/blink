@@ -73,7 +73,7 @@ int
 rsa_public_encrypt(BIGNUM *out, BIGNUM *in, RSA *key)
 {
 	u_char *inbuf = NULL, *outbuf = NULL;
-	int len, ilen, olen, r = SSH_ERR_INTERNAL_ERROR;
+	int len, ilen = 0, olen, r = SSH_ERR_INTERNAL_ERROR;
 
 	if (BN_num_bits(key->e) < 2 || !BN_is_odd(key->e))
 		return SSH_ERR_INVALID_ARGUMENT;
@@ -121,7 +121,7 @@ int
 rsa_private_decrypt(BIGNUM *out, BIGNUM *in, RSA *key)
 {
 	u_char *inbuf = NULL, *outbuf = NULL;
-	int len, ilen, olen, r = SSH_ERR_INTERNAL_ERROR;
+	int len, ilen = 0, olen, r = SSH_ERR_INTERNAL_ERROR;
 
 	olen = BN_num_bytes(key->n);
 	if ((outbuf = malloc(olen)) == NULL) {

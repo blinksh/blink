@@ -54,6 +54,7 @@
 - (void)openLink:(id)sender;
 - (void)yank:(id)sender;
 - (void)pasteSelection:(id)sender;
+- (void)shareSelection:(id)sender;
 
 - (void)reset;
 

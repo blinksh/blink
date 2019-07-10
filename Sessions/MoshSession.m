@@ -305,7 +305,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   return [NSString stringWithFormat:@"%@", [moshServerArgs componentsJoinedByString:@" "]];
 }
 
-- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity sshTTY:(BOOL)sshTTY moshCommand:(NSString *)command error:(NSError **)error
+- (bool)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity sshTTY:(BOOL)sshTTY moshCommand:(NSString *)command error:(NSError **)error
 {
   ssh = ssh ? ssh : @"ssh";
   
@@ -359,17 +359,23 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   fclose(term_r);
   
   if (!self.sessionParameters.ip) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    }
+    return false;
   }
   
   if (self.sessionParameters.key == nil || self.sessionParameters.port == nil) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    }
+    return false;
   }
+
+  return true;
 }
 
-- (void)setConnParamsWithSsh2:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity moshCommand:(NSString *)command error:(NSError **)error
+- (bool)setConnParamsWithSsh2:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity moshCommand:(NSString *)command error:(NSError **)error
 {
   ssh = ssh ? ssh : @"ssh2";
   
@@ -432,14 +438,20 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   }
   
   if (!self.sessionParameters.ip) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    }
+    return false;
   }
   
   if (self.sessionParameters.key == nil || self.sessionParameters.port == nil) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
-    return;
+    if (error) {
+      *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    }
+    return false;
   }
+
+  return true;
 }
 
 

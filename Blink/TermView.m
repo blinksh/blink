@@ -511,14 +511,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSMutableArray *items = [[NSMutableArray alloc] init];
   UIMenuController * menu = [UIMenuController sharedMenuController];
   
-  [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste selection"
+  [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Paste selection", nil)
                                               action:@selector(pasteSelection:)]];
   
   _detectedLink = [self _detectLinkInSelection:data];
   
   if (_detectedLink) {
     NSString *urlName = [self _menuTitleFromNSURL: _detectedLink];
-    [items addObject:[[UIMenuItem alloc] initWithTitle:[@"Copy " stringByAppendingString:urlName]
+    [items addObject:[[UIMenuItem alloc] initWithTitle:[NSLocalizedString(@"Copy ", nil) stringByAppendingString:urlName]
                                                 action:@selector(copyLink:)]];
     
     NSString *actionTitle = [NSString stringWithFormat:@"%@ %@",
@@ -527,11 +527,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
                                                 action:@selector(openLink:)]];
   }
 
+  [items addObject:[[UIMenuItem alloc] initWithTitle:NSLocalizedString(@"Share", nil)
+                                              action:@selector(shareSelection:)]];
   
   CGRect rect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
-  [menu setTargetRect:rect inView:self];
-  [menu setMenuVisible:YES animated:NO];
+  [menu showMenuFromView:self rect:rect];
 }
 
 - (void)modifySideOfSelection
@@ -598,8 +599,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)copy:(id)sender
 {
   [_webView copy:sender];
-  UIMenuController * menu = [UIMenuController sharedMenuController];
-  [menu setMenuVisible:NO animated:YES];
 }
 
 - (void)paste:(id)sender
@@ -611,6 +610,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   [self cleanSelection];
 }
+
 
 - (NSString *)_detectFontFamilyFromContent:(NSString *)content
 {

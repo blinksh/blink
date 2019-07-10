@@ -56,12 +56,12 @@
   [super viewDidLoad];
   
   UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
-  
-  _kbCommands = @[
-                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
-                                             action: @selector(_closeConfig:)
-                               discoverabilityTitle: @"Close Settings"]
-                  ];
+
+  UIKeyCommand *close = [UIKeyCommand keyCommandWithInput: @"w"
+                                            modifierFlags: modifierFlags
+                                                   action: @selector(_closeConfig:)];
+  close.discoverabilityTitle = NSLocalizedString(@"Close settings", nil);
+  _kbCommands = @[ close ];
   
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
@@ -94,12 +94,17 @@
   [super viewWillAppear:animated];
   
   self.userNameLabel.text = [BKDefaults defaultUserName];;
-  self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] ? @"On" : @"Off";
-  self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] ? @"On" : @"Off";
-  self.xCallbackStatusLabel.text = [BKDefaults isXCallBackURLEnabled] ? @"On" : @"Off";
+  self.iCloudSyncStatusLabel.text = [self titleForActive:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud]];
+  self.autoLockStatusLabel.text = [self titleForActive:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock]];
+  self.xCallbackStatusLabel.text = [self titleForActive:[BKDefaults isXCallBackURLEnabled]];
   
   // Layout tableview so it will place labels correctly
   [self.tableView layoutIfNeeded];
+}
+
+- (NSString * _Nonnull)titleForActive:(bool)isActive
+{
+  return isActive ? NSLocalizedString(@"On", nil) : NSLocalizedString(@"Off", nil);
 }
 
 - (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender

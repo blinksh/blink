@@ -104,7 +104,7 @@ extern const NSString * SSHOptionValueDEBUG3; // -vvv ; SSH_LOG_PACKET
 
 @property (nonatomic) NSString *exitMessage;
 
-- (int)parseArgs:(int) argc argv:(char **) argv;
+- (int)parseArgs:(int) argc argv:(char * _Nonnull * _Nonnull)argv;
 - (nullable id)objectForKeyedSubscript:(const NSString *)key;
 - (void)setObject:(NSString *)obj forKeyedSubscript:(NSString <NSCopying> *)key;
 - (int)configureSSHSession:(ssh_session)session;
