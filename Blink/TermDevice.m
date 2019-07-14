@@ -269,6 +269,22 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   _view = nil;
 }
 
+- (NSInteger)rows {
+  return win.ws_row;
+}
+
+- (void)setRows:(NSInteger)rows {
+  win.ws_row = rows;
+}
+
+- (NSInteger)cols {
+  return win.ws_col;
+}
+
+- (void)setCols:(NSInteger)cols {
+  win.ws_col = cols;
+}
+
 - (void)attachInput:(TermInput *)termInput
 {
   _input = termInput;

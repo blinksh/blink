@@ -33,7 +33,6 @@
 #import "Migrator.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
-#import "TermController.h"
 #import "ScreenController.h"
 #import "BlinkPaths.h"
 #import "BKDefaults.h"
@@ -42,6 +41,7 @@
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
+#include "Blink-swift.h"
 
 
 @import CloudKit;
@@ -160,12 +160,12 @@ void __setupProcessEnv() {
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
-  [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
+  [[StateRegistry shared] suspend];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-  [self _suspendApplicationOnWillTerminate];
+  [[StateRegistry shared] suspend];
 }
 
 - (void)startMonitoringForSuspending
@@ -273,12 +273,14 @@ void __setupProcessEnv() {
     
     NSURLQueryItem *cmdItem = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", @"cmd"]] firstObject];
     NSString *cmd = cmdItem.value ?: @"help";
+    
+    return NO;
 
-    NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
-    activity.eligibleForPublicIndexing = NO;
-    [activity setTitle:[NSString stringWithFormat:@"run: %@ ", cmd]];
-    [activity setUserInfo:@{BKUserActivityCommandLineKey: cmd}];
-    [[[ScreenController shared] mainScreenRootViewController] restoreUserActivityState:activity];
+//    NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
+//    activity.eligibleForPublicIndexing = NO;
+//    [activity setTitle:[NSString stringWithFormat:@"run: %@ ", cmd]];
+//    [activity setUserInfo:@{BKUserActivityCommandLineKey: cmd}];
+//    [[[ScreenController shared] mainScreenRootViewController] restoreUserActivityState:activity];
     return YES;
   }
   blink_handle_url(url);

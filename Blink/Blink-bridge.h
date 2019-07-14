@@ -34,5 +34,7 @@
 #define Blink_bridge_h
 
 #import "SpaceController.h"
+#import "MCPSession.h"
+#import "TermDevice.h"
 
 #endif /* Blink_bridge_h */

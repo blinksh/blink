@@ -36,12 +36,12 @@
 #import "MBProgressHUD/MBProgressHUD.h"
 #import "ScreenController.h"
 #import "SmartKeysController.h"
-#import "TermController.h"
 #import "TermInput.h"
 #import "MusicManager.h"
 #import "TouchOverlay.h"
 #import "BKTouchIDAuthManager.h"
 #import "GeoManager.h"
+#import "Blink-swift.h"
 
 @interface SpaceController () <
   UIPageViewControllerDataSource,
@@ -525,7 +525,9 @@
     return;
   }
 
-  [[WidgetsManager shared] unRegisterWidget:self.currentTerm];
+//  [StateRegistry.shared remove: self.currentTerm.meta.key];
+  
+//  [[WidgetsManager shared] unRegisterWidget:self.currentTerm];
   
   NSInteger numViewports = [_viewports count];
 
@@ -567,8 +569,11 @@
                             animated:(BOOL)animated
                           completion:(void (^)(BOOL finished))completion
 {
-  TermController *term = [[TermController alloc] initWithWidgetID:sessionStateKey];
-  [[WidgetsManager shared] registerWidget:term];
+  TermController *term = [[TermController alloc] init];
+  [[StateRegistry shared] trackWithController:term];
+//  [StateRegistry.shared track: term];
+//  TermController *term = [[TermController alloc] initWithWidgetID:sessionStateKey];
+//  [[WidgetsManager shared] registerWidget:term];
   
   term.sessionStateKey = sessionStateKey;
   term.delegate = self;
@@ -991,21 +996,6 @@
               animated: NO];
 }
 
-- (void)suspendWith:(StateManager *) stateManager
-{
-  for (TermController * term in _viewports) {
-    [term suspend];
-    [stateManager snapshotState:term];
-  }
-}
-
-- (void)resumeWith:(StateManager *)stateManager
-{
-  for (TermController * term in _viewports) {
-    [stateManager restoreState:term];
-    [term resume];
-  };
-}
 
 - (void)musicCommand:(UIKeyCommand *)cmd
 {

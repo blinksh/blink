@@ -58,6 +58,8 @@
 @property (nonatomic) BOOL rawMode;
 @property (nonatomic) BOOL echoMode;
 @property (nonatomic) BOOL secureTextEntry;
+@property (nonatomic) NSInteger rows;
+@property (nonatomic) NSInteger cols;
 
 - (void)attachInput:(TermInput *)termInput;
 - (void)attachView:(TermView *)termView;

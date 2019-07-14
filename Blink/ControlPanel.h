@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
-#import "TermController.h"
+#import "Blink-swift.h"
 
 @protocol ControlPanelDelegate
 

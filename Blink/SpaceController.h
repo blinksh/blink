@@ -39,8 +39,6 @@
 - (void)viewScreenDidBecomeInactive;
 - (void)moveAllShellsFromSpaceController:(SpaceController *)spaceController;
 - (void)moveCurrentShellFromSpaceController:(SpaceController *)spaceController;
-- (void)suspendWith:(StateManager *)stateManager;
-- (void)resumeWith: (StateManager *)stateManager;
 - (void)decodeRestorableStateWithCoder:(NSCoder *)coder andStateManager: (StateManager *)stateManager;
 
 @end
