@@ -41,7 +41,7 @@
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
-#include "Blink-swift.h"
+#include "Blink-Swift.h"
 
 
 @import CloudKit;

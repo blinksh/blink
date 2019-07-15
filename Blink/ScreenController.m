@@ -34,7 +34,7 @@
 //#import "SpaceController.h"
 #import "StateManager.h"
 #import "BKTouchIDAuthManager.h"
-#import "Blink-swift.h"
+#import "Blink-Swift.h"
 
 NSString * const MainSpaceControllerKey = @"MainSpaceControllerKey";
 NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";

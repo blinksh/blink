@@ -175,7 +175,9 @@ public class TermController: StateViewController {
     return _session?.isRunningCmd() ?? false
   }
   
-  @objc public func canRestoreUserActivityState(_ activity: NSUserActivity) -> Bool {
+  @objc public func canRestoreUserActivityState(
+    _ activity: NSUserActivity) -> Bool
+  {
     return _session?.isRunningCmd() == false || activity.title == activityKey
   }
   

@@ -37,9 +37,8 @@ import UIKit
 public class State: Codable {
 }
 
-// TODO: Fill with data
 public class StateMeta: Codable {
-  var key: String = UUID().uuidString
+  var key: String = UUID().uuidString // TODO: use UUID itself
   var title: String? = nil
   var suspended: Bool = false
 }

@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
-//#import "Blink-swift.h"
+//#import "Blink-Swift.h"
 
 
 @interface ControlPanel : UIView
