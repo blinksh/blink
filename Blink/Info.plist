@@ -136,7 +136,7 @@
 			<array>
 				<dict>
 					<key>UISceneDelegateClassName</key>
-					<string>SceneDelegate</string>
+					<string>Blink.SceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>main</string>
 				</dict>

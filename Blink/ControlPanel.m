@@ -103,12 +103,12 @@
 
 -(void)_close
 {
-  [_controlPanelDelegate controlPanelOnClose];
+//  [_controlPanelDelegate controlPanelOnClose];
 }
 
 - (void)_paste
 {
-  [_controlPanelDelegate controlPanelOnPaste];
+//  [_controlPanelDelegate controlPanelOnPaste];
 }
 
 - (void)updateLayoutBar {
@@ -117,6 +117,9 @@
 
 - (NSArray<UIBarButtonItem *> *)_layoutToolbarItems
 {
+  return @[];
+  /*
+   
   TermController *term = [_controlPanelDelegate currentTerm];
   if (!term) {
     return @[];
@@ -142,9 +145,13 @@
     return @[lockButton];
   }
   return @[layoutModeButton, lockButton];
+   */
 }
 
 - (void)_layoutLockBtnTap {
+  return;
+  /*
+   
   TermController *term = [_controlPanelDelegate currentTerm];
   if (!term) {
     return;
@@ -173,6 +180,7 @@
   }
   [term.view setNeedsLayout];
   [self updateLayoutBar];
+   */
 }
 
 - (BKLayoutMode)_nextLayoutMode:(BKLayoutMode)mode {

@@ -30,19 +30,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <UIKit/UIKit.h>
-#import "Blink-swift.h"
+//#import "Blink-swift.h"
 
-@protocol ControlPanelDelegate
-
-- (void)controlPanelOnClose;
-- (void)controlPanelOnPaste;
-- (TermController *)currentTerm;
-
-@end
 
 @interface ControlPanel : UIView
 
-@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
+//@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
 
 
 - (void)updateLayoutBar;

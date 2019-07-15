@@ -33,7 +33,14 @@
 #ifndef Blink_bridge_h
 #define Blink_bridge_h
 
-#import "SpaceController.h"
+#import "LayoutManager.h"
+#import "ControlPanel.h"
+#import "MusicManager.h"
+#import "BKTouchIDAuthManager.h"
+#import "BKUserConfigurationManager.h"
+#import "Session.h"
+#import "TermInput.h"
+#import "TouchOverlay.h"
 #import "MCPSession.h"
 #import "TermDevice.h"
 

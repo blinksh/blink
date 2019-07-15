@@ -34,22 +34,27 @@ import Foundation
 import UIKit
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
-  // May be do them optional
+  // May be do it optional
   func terminalHangup(control: TermController)
   @objc optional func terminalDidResize(control: TermController)
 }
 
-@objc public class TermController: StateViewController {
+@objc protocol ControlPanelDelegate: NSObjectProtocol {
+  func controlPanelOnClose()
+  func controlPanelOnPaste()
+  func currentTerm() -> TermController!
+}
+
+public class TermController: StateViewController {
   private var _termDevice = TermDevice()
-  private var _termView: TermView? = nil
+  private var _termView = TermView(frame: .zero, andBgColor: nil)
   private var _sessionParameters: MCPSessionParameters? = nil
   private var _bgColor: UIColor? = nil
   private var _fontSizeBeforeScaling: Int? = nil
   
   @objc public var activityKey: String? = nil
-  @objc public var termDevice: TermDevice { get { _termDevice }}
+  @objc public var termDevice: TermDevice { get { _termDevice } }
   @objc weak var delegate: TermControlDelegate? = nil
-  @objc public var sessionStateKey: String? = nil
   @objc public var sessionParameters: MCPSessionParameters? { get { _sessionParameters }}
   @objc public var bgColor: UIColor? {
     get { _bgColor }
@@ -67,18 +72,7 @@ import UIKit
   }
   
   public override func loadView() {
-    super.loadView()
-    
-    if (sessionStateKey == nil) {
-      sessionStateKey = UUID().uuidString
-    }
-    
     _termDevice.delegate = self
-    
-    _termView = TermView(
-      frame: view.bounds,
-      andBgColor: _bgColor
-    )
     _termDevice.attachView(_termView)
     view = _termView
   }
@@ -86,7 +80,7 @@ import UIKit
   public override func viewDidLoad() {
     super.viewDidLoad()
     
-    if (_sessionParameters == nil) {
+    if _sessionParameters == nil {
       _initSessionParameters()
     }
     
@@ -214,7 +208,7 @@ import UIKit
 
 extension TermController: SessionDelegate {
   public func indexCommand(_ cmdLine: String!) {
-    
+    // TODO:
   }
   
   public func sessionFinished() {
@@ -241,7 +235,7 @@ extension TermController: TermDeviceDelegate {
   
   public func viewFontSizeChanged(_ size: Int) {
     _sessionParameters?.fontSize = size
-    termDevice.input.reset()
+    termDevice.input?.reset()
   }
   
   public func handleControl(_ control: String!) -> Bool {

@@ -31,9 +31,10 @@
 
 #import <UIKit/UIKit.h>
 #import "ScreenController.h"
-#import "SpaceController.h"
+//#import "SpaceController.h"
 #import "StateManager.h"
 #import "BKTouchIDAuthManager.h"
+#import "Blink-swift.h"
 
 NSString * const MainSpaceControllerKey = @"MainSpaceControllerKey";
 NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
@@ -228,7 +229,8 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 
     SpaceController *spaceController = [[SpaceController alloc] init];
     spaceController.restorationIdentifier = identifier;
-    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
+    // TODO:
+//    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
     [ScreenController shared]->_bootControllers[identifier] = spaceController;
     return spaceController;
   }

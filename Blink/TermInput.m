@@ -37,7 +37,6 @@
 #import "BKUserConfigurationManager.h"
 #import "BKKeyboardModifierViewController.h"
 #import "TermDevice.h"
-#import "KeyInput.h"
 #import "openurl.h"
 
 static NSDictionary *bkModifierMaps = nil;

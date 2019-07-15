@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,26 +30,26 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#import <UIKit/UIKit.h>
+import Foundation
 
-NS_ASSUME_NONNULL_BEGIN
-
-@interface KeyInput : NSObject
-
-@property (nonatomic) long long modifierFlags;
-@property (nonatomic) long long keyCode;
-@property (nonatomic) BOOL isKeyDown;
-
-+ (KeyInput *)buildKeyInputFrom:(id) event;
-
-@end
-
-
-@interface UIResponder (KeyInput)
-
-- (void)_handleKeyUIEvent:(id) event;
-
-@end
-
-
-NS_ASSUME_NONNULL_END
+class SceneDelegate: UIResponder, UIWindowSceneDelegate {
+  var window: UIWindow? = nil
+  
+  func scene(
+    _ scene: UIScene,
+    willConnectTo session: UISceneSession,
+    options connectionOptions: UIScene.ConnectionOptions)
+  {
+    guard let windowScene = scene as? UIWindowScene else {
+      return
+    }
+    
+    self.window = UIWindow(windowScene: windowScene)
+    window?.rootViewController = SpaceController()
+    window?.makeKeyAndVisible()
+  }
+  
+  func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
+    return NSUserActivity(activityType: "state.restoration.activity")
+  }
+}

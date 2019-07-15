@@ -34,17 +34,17 @@ import Foundation
 import UIKit
 
 // TODO: Fill with data
-@objc public class State: NSObject, Codable {
+public class State: Codable {
 }
 
 // TODO: Fill with data
-@objc public class StateMeta: NSObject, Codable {
+public class StateMeta: Codable {
   var key: String = UUID().uuidString
   var title: String? = nil
   var suspended: Bool = false
 }
 
-@objc public class StateViewController: UIViewController {
+public class StateViewController: UIViewController {
   private var _meta: StateMeta
   public var meta: StateMeta { get { return _meta } }
   public weak var stateRegistry: StateRegistry? = nil
@@ -106,6 +106,15 @@ import UIKit
     _metaIndex[key] = meta
     _controllersIndex[key] = controller
     controller.stateRegistry = self
+  }
+  
+  @objc func get(forKey key: String) -> StateViewController? {
+    if let ctrl = _controllersIndex[key] {
+      return ctrl
+    }
+    
+    // TODO load
+    return nil
   }
   
   @objc func remove(forKey key: String) {
