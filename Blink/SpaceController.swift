@@ -463,172 +463,88 @@ extension SpaceController {
 // MARK: Commands
 
 extension SpaceController {
+  
+  
+  public override var keyCommands: [UIKeyCommand]? {
+    return _kbdCommands
+  }
+  
+  // simple helper
+  func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
+    return UIKeyCommand(
+      __title: title,
+      image: nil,
+      action: action,
+      input: input,
+      modifierFlags: flags,
+      propertyList: nil
+    )
+  }
+  
   private func _setupKBCommands() {
     let modifierFlags = BKUserConfigurationManager.shortCutModifierFlags()
     let prevNextShellModifierFlags = BKUserConfigurationManager.shortCutModifierFlagsForNextPrevShell()
     
-    _kbdCommands.removeAll()
+    let right = UIKeyCommand.inputRightArrow
+    let left = UIKeyCommand.inputLeftArrow
     
-    _kbdCommands.append(_newShellCommand())
+    _kbdCommands = [
+      _cmd("New Window",     #selector(_newWindowAction),   "t", prevNextShellModifierFlags),
+      _cmd("Close Window",   #selector(_closeWindowAction), "w", prevNextShellModifierFlags),
     
-    /*
-     
-     _kbdCommands.append(contentsOf: [
-     UIKeyCommand(
-     title: "New Shell",
-     action: #selector(newShell(_:)),
-     input: "t",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "New Shell"
-     ),
-     UIKeyCommand(
-     title: "Close Shell",
-     action: #selector(closeShell(_:)),
-     input: "w",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Close Shell"
-     ),
-     UIKeyCommand(
-     title: "Next Shell",
-     action: #selector(nextShell(_:)),
-     input: "]",
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Next Shell"
-     ),
-     UIKeyCommand(
-     title: "Previous Shell",
-     action: #selector(prevShell(_:)),
-     input: "[",
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Previous Shell"
-     ),
-     // Alternative key commands for keyboard layouts having problems to access
-     // some of the default ones (e.g. the German keyboard layout)
-     UIKeyCommand(
-     title: "Next Shell",
-     action: #selector(nextShell(_:)),
-     input: UIKeyCommand.inputRightArrow,
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Next Shell"
-     ),
-     UIKeyCommand(
-     title: "Previous Shell",
-     action: #selector(prevShell(_:)),
-     input: UIKeyCommand.inputLeftArrow,
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Previous Shell"
-     ),
-     
-     UIKeyCommand(
-     title: "Other Screen",
-     action: #selector(otherScreen(_:)),
-     input: "o",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Other Screen"
-     ),
-     UIKeyCommand(
-     title: "Move shell to other Screen",
-     action: #selector(otherScreen(_:)),
-     input: "o",
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Move shell to other Screen"
-     ),
-     UIKeyCommand(
-     title: "Show config",
-     action: #selector(showConfig(_:)),
-     input: ",",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Show config"
-     ),
-     UIKeyCommand(
-     title: "Music Controls",
-     action: #selector(_toggleMusicHUD),
-     input: "m",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Music Controls"
-     ),
-     
-     
-     UIKeyCommand(
-     title: "Zoom In",
-     action: #selector(_increaseFontSize(_:)),
-     input: "+",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Zoom In"
-     ),
-     UIKeyCommand(
-     title: "Zoom Out",
-     action: #selector(_decreaseFontSize(_:)),
-     input: "-",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Zoom Out"
-     ),
-     UIKeyCommand(
-     title: "Reset Zoom",
-     action: #selector(_resetFontSize(_:)),
-     input: "=",
-     modifierFlags: modifierFlags,
-     discoverabilityTitle: "Reset Zoom"
-     ),
-     
-     UIKeyCommand(
-     title: "New Window",
-     action: #selector(_newWindow(_:)),
-     input: "t",
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "New Window"
-     ),
-     UIKeyCommand(
-     title: "Close Window",
-     action: #selector(_closeWindow(_:)),
-     input: "w",
-     modifierFlags: prevNextShellModifierFlags,
-     discoverabilityTitle: "Close Window"
-     ),
-     ]
-     )
-     
-     */
-  }
-  
-  
-  func _newShellCommand() -> UIKeyCommand {
-    UIKeyCommand(
-      title: "New Shell",
-      action: #selector(_newShellAction),
-      input: "t",
-      modifierFlags: BKUserConfigurationManager.shortCutModifierFlags(),
-      discoverabilityTitle: "New Shell"
-    )
-  }
-  
-  @objc func _newShellAction() {
-  }
-  
-  
-  
-  
-  @objc func otherScreen(_ cmd: UIKeyCommand) {
+      _cmd("New Shell",      #selector(_newShellAction),   "t", modifierFlags),
+      _cmd("Close Shell",    #selector(_closeShellAction), "w", modifierFlags),
+      
+      _cmd("Next Shell",     #selector(_nextShellAction), "]", prevNextShellModifierFlags),
+      _cmd("Previous Shell", #selector(_prevShellAction), "[", prevNextShellModifierFlags),
     
+      // Alternative key commands for keyboard layouts having problems to access
+      // some of the default ones (e.g. the German keyboard layout)
+      _cmd("Next Shell",     #selector(_nextShellAction),  right, prevNextShellModifierFlags),
+      _cmd("Previous Shell", #selector(_prevShellAction),  left,  prevNextShellModifierFlags),
+      
+      // Font size
+      _cmd("Zoom In",    #selector(_increaseFontSizeAction), "+",  modifierFlags),
+      _cmd("Zoom Out",   #selector(_decreaseFontSizeAction), "-",  modifierFlags),
+      _cmd("Zoom Reset", #selector(_resetFontSizeAction),    "=",  modifierFlags),
+      
+      //
+      _cmd("Focus Other Screen",         #selector(_focusOtherScreenAction), "o", modifierFlags),
+      _cmd("Move shell to other Screen", #selector(_moveToOtherScreenAction), "o", prevNextShellModifierFlags),
+      
+      // Misc
+      _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
+      _cmd("Music Controls", #selector(_toggleMusicHUD),   "m", modifierFlags)
+    ]
   }
   
-  @objc func moveToOtherScreen(_ cmd: UIKeyCommand) {
-    
+  @objc private func _newShellAction() {
+    _createShell(userActivity: nil, key: nil, animated: true)
   }
   
-  @objc func nextShell(_ cmd: UIKeyCommand) {
-    
-  }
-  
-  @objc func prevShell(_ cmd: UIKeyCommand) {
-    
-  }
-  
-  @objc func closeShell(_ cmd: UIKeyCommand) {
+  @objc private func _closeShellAction() {
     _closeCurrentSpace()
   }
   
-  @objc func _newWindow(_ cmd: UIKeyCommand) {
+  @objc private func _nextShellAction() {
+    
+  }
+  
+  @objc private func _prevShellAction() {
+    
+  }
+  
+  
+  @objc func _focusOtherScreenAction() {
+    
+  }
+  
+  @objc func _moveToOtherScreenAction() {
+    
+  }
+  
+  
+  @objc func _newWindowAction() {
     UIApplication
       .shared
       .requestSceneSessionActivation(nil,
@@ -637,7 +553,7 @@ extension SpaceController {
                                      errorHandler: nil)
   }
   
-  @objc func _closeWindow(_ cmd: UIKeyCommand) {
+  @objc func _closeWindowAction() {
     guard let session = view.window?.windowScene?.session else {
       return
     }
@@ -648,19 +564,19 @@ extension SpaceController {
                                       errorHandler: nil)
   }
   
-  @objc func _increaseFontSize(_ cmd: UIKeyCommand) {
+  @objc func _increaseFontSizeAction() {
     currentDevice?.view?.increaseFontSize()
   }
   
-  @objc func _decreaseFontSize(_ cmd: UIKeyCommand) {
+  @objc func _decreaseFontSizeAction() {
     currentDevice?.view?.decreaseFontSize()
   }
   
-  @objc func _resetFontSize(_ cmd: UIKeyCommand) {
+  @objc func _resetFontSizeAction() {
     currentDevice?.view?.resetFontSize()
   }
   
-  @objc func showConfig(_ cmd: UIKeyCommand) {
+  @objc func _showConfigAction() {
   }
   
 }
