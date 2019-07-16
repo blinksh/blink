@@ -33,6 +33,41 @@
 import Foundation
 import UIKit
 
+struct CodableColor: Codable {
+  var r: CGFloat = 0
+  var g: CGFloat = 0
+  var b: CGFloat = 0
+  var a: CGFloat = 0
+  
+  init() {
+  }
+  
+  init(uiColor: UIColor) {
+    uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+  }
+  
+  init?(uiColor: UIColor?) {
+    guard let color = uiColor else {
+      return nil
+    }
+    self.init(uiColor: color)
+  }
+}
+
+extension UIColor {
+  convenience init(codableColor: CodableColor) {
+    self.init(red: codableColor.r, green: codableColor.g, blue: codableColor.b, alpha: codableColor.a)
+  }
+  
+  convenience init?(codableColor: CodableColor?) {
+    guard let color = codableColor else {
+      return nil
+    }
+    self.init(codableColor: color)
+  }
+}
+
+
 // TODO: Fill with data
 public class State: Codable {
 }

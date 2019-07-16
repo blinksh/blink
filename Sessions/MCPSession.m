@@ -46,6 +46,7 @@
 #include <ios_system/ios_system.h>
 
 #include "ios_error.h"
+#include "Blink-Swift.h"
 
 @interface WeakSSHClient : NSObject
 @property (weak) SSHClient *value;
@@ -62,11 +63,11 @@
   NSMutableArray<WeakSSHClient *> *_sshClients;
 }
 
-@dynamic sessionParameters;
+@dynamic sessionParams;
 
-- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
+- (id)initWithDevice:(TermDevice *)device andParams:(MCPParams *)params
 {
-  if (self = [super initWithDevice:device andParametes:parameters]) {
+  if (self = [super initWithDevice:device andParams:params]) {
     _repl = [[Repl alloc] initWithDevice:device andStream: _stream];
     _sshClients = [[NSMutableArray alloc] init];
   }
@@ -83,11 +84,11 @@
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
   
-  if ([@"mosh" isEqualToString:self.sessionParameters.childSessionType]) {
-    _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
+  if ([@"mosh" isEqualToString:self.sessionParams.childSessionType]) {
+    _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
-    if (self.sessionParameters.hasEncodedState) {
+    if (self.sessionParams.hasEncodedState) {
       return 0;
     }
   }
@@ -101,7 +102,7 @@
       return NO;
     } else if ([cmd isEqualToString:@"mosh"]) {
       [self _runMoshWithArgs:cmdline];
-      if (self.sessionParameters.hasEncodedState) {
+      if (self.sessionParams.hasEncodedState) {
         return NO;
       }
     } else if ([cmd isEqualToString:@"ssh2"]) {
@@ -188,9 +189,9 @@
 
 - (void)_runSSHCopyIDWithArgs:(NSString *)args
 {
-  self.sessionParameters.childSessionParameters = nil;
-  _childSession = [[SSHCopyIDSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
-  self.sessionParameters.childSessionType = @"sshcopyid";
+  self.sessionParams.childSessionParams = nil;
+  _childSession = [[SSHCopyIDSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+  self.sessionParams.childSessionType = @"sshcopyid";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
@@ -198,19 +199,19 @@
 - (void)_runMoshWithArgs:(NSString *)args
 {
   [self.delegate indexCommand:args];
-  self.sessionParameters.childSessionParameters = [[MoshParameters alloc] init];
-  self.sessionParameters.childSessionType = @"mosh";
-  _childSession = [[MoshSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
+  self.sessionParams.childSessionParams = [[MoshParams alloc] init];
+  self.sessionParams.childSessionType = @"mosh";
+  _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
 
 - (void)_runSSHWithArgs:(NSString *)args
 {
-  self.sessionParameters.childSessionParameters = nil;
+  self.sessionParams.childSessionParams = nil;
   [self.delegate indexCommand:args];
-  _childSession = [[SSHSession alloc] initWithDevice:_device andParametes:self.sessionParameters.childSessionParameters];
-  self.sessionParameters.childSessionType = @"ssh";
+  _childSession = [[SSHSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+  self.sessionParams.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }

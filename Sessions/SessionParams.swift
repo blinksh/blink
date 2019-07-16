@@ -31,39 +31,46 @@
 
 
 import Foundation
+import UIKit
 
-class SceneDelegate: UIResponder, UIWindowSceneDelegate {
-  var window: UIWindow? = nil
+@objc class SessionParams: NSObject, Codable {
+  @objc var encodedState: Data? = nil
   
-  func scene(
-    _ scene: UIScene,
-    willConnectTo session: UISceneSession,
-    options connectionOptions: UIScene.ConnectionOptions)
-  {
-    guard let windowScene = scene as? UIWindowScene else {
-      return
-    }
-    
-    self.window = UIWindow(windowScene: windowScene)
-    let spaceCntrl = SpaceController()
-    spaceCntrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
-    window?.rootViewController = spaceCntrl
-    window?.makeKeyAndVisible()
+  @objc func cleanEncodedState() {
+    encodedState = nil
+  }
+}
+
+@objc class MoshParams: SessionParams {
+  @objc var ip: String? = nil
+  @objc var port: String? = nil
+  @objc var key: String? = nil
+  @objc var predictionMode: String? = nil
+  @objc var startupCmd: String? = nil
+  @objc var serverPath: String? = nil
+}
+
+@objc class MCPParams: SessionParams {
+  @objc var childSessionType: String? = nil
+  @objc var childSessionParams: SessionParams? = nil
+  @objc var viewSize: CGSize = .zero
+  @objc var rows: Int = 0
+  @objc var cols: Int = 0
+  @objc var themeName: String? = nil
+  @objc var fontName: String? = nil
+  @objc var fontSize: Int = 16
+  @objc var layoutMode: BKLayoutMode = .safeFit
+  @objc var boldAsBright: Bool = false
+  @objc var enableBold: UInt = 0
+  @objc var layoutLocked: Bool = false
+  @objc var layoutLockedFrame: CGRect = .zero
+  
+  @objc func hasEncodedState() -> Bool {
+    childSessionParams?.encodedState != nil
   }
   
-  func sceneDidBecomeActive(_ scene: UIScene) {
-    // cancel suspend
-  }
-  
-  func sceneDidEnterBackground(_ scene: UIScene) {
-    // monitorForSuspend
-  }
-  
-  func sceneDidDisconnect(_ scene: UIScene) {
-    // what we can do useful here?
-  }
-  
-  func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    (window?.rootViewController as? SpaceController)?.stateRestorationActivity()
+  override func cleanEncodedState() {
+    childSessionParams?.cleanEncodedState()
+    super.cleanEncodedState()
   }
 }

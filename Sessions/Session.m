@@ -130,9 +130,9 @@ int makeargs(const char *command, char ***aa)
   return argc;
 }
 
-void *run_session(void *params)
+void *run_session(void *args)
 {
-  SessionParams *p = (SessionParams *)params;
+  SessionArgs *p = (SessionArgs *)args;
   // Object back to ARC
   Session *session = (__bridge Session *)p->session;
   char **argv;
@@ -145,53 +145,53 @@ void *run_session(void *params)
   session.delegate = nil;
   CFRelease(p->session);
   free(argv);
-  free(params);
+  free(args);
 
   return NULL;
 }
 
 @implementation Session
 
-- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
+- (id)initWithDevice:(TermDevice *)device andParams:(SessionParams *)params
 {
   self = [super init];
 
   if (self) {
     _device = device;
     _stream = [_device.stream duplicate];
-    _sessionParameters = parameters;
+    _sessionParams = params;
   }
 
   return self;
 }
 
-- (void)executeWithArgs:(NSString *)args
+- (void)executeWithArgs:(NSString *)argstr
 {
-  SessionParams *params = [self createSessionParams:args];
+  SessionArgs *args = [self createSessionArgs:argstr];
 
   pthread_attr_t attr;
   pthread_attr_init(&attr);
   pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  pthread_create(&_tid, &attr, run_session, params);
+  pthread_create(&_tid, &attr, run_session, args);
 }
 
-- (void)executeAttachedWithArgs:(NSString *)args
+- (void)executeAttachedWithArgs:(NSString *)argstr
 {
-  SessionParams *params = [self createSessionParams:args];
+  SessionArgs *args = [self createSessionArgs:argstr];
 
-  pthread_create(&_tid, NULL, run_session, params);
+  pthread_create(&_tid, NULL, run_session, args);
   pthread_join(_tid, NULL);
 }
 
-- (SessionParams *)createSessionParams:(NSString *)args
+- (SessionArgs *)createSessionArgs:(NSString *)argstr
 {
-  SessionParams *params = malloc(sizeof(SessionParams));
+  SessionArgs *args = malloc(sizeof(SessionArgs));
   // Pointer to our struct, we are responsible of release
-  params->session = CFBridgingRetain(self);
-  params->args = [args UTF8String];
-  params->attached = false;
+  args->session = CFBridgingRetain(self);
+  args->args = [argstr UTF8String];
+  args->attached = false;
 
-  return params;
+  return args;
 }
 
 - (int)main:(int)argc argv:(char **)argv {

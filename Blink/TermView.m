@@ -39,6 +39,7 @@
 #import <zlib.h>
 
 #import <compression.h>
+#import "Blink-Swift.h"
 
 struct winsize __winSizeFromJSON(NSDictionary *json) {
   struct winsize res;
@@ -257,7 +258,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.backgroundColor = backgroundColor;
 }
 
-- (void)loadWith:(MCPSessionParameters *)params;
+- (void)loadWith:(MCPParams *)params;
 {
   [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];
   
@@ -268,7 +269,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView loadRequest:request];
 }
 
-- (void)reloadWith:(MCPSessionParameters *)params;
+- (void)reloadWith:(MCPParams *)params;
 {
   _snapshotImageView.frame = [self webViewFrame];
   [self addSubview:_snapshotImageView];
@@ -632,7 +633,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return result;
 }
 
-- (WKUserScript *)_termInitScriptWith:(MCPSessionParameters *)params;
+- (WKUserScript *)_termInitScriptWith:(MCPParams *)params;
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
   BKFont *font = [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];

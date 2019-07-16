@@ -133,6 +133,10 @@ void __setupProcessEnv() {
   return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
 }
 
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+  
+}
+
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
   // TODO: pass completion handler.
@@ -160,12 +164,12 @@ void __setupProcessEnv() {
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
-  [[StateRegistry shared] suspend];
+  [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-  [[StateRegistry shared] suspend];
+  [self _suspendApplicationOnWillTerminate];
 }
 
 - (void)startMonitoringForSuspending
@@ -191,11 +195,6 @@ void __setupProcessEnv() {
                                                  selector:@selector(_suspendApplicationWithSuspendTimer)
                                                  userInfo:nil
                                                   repeats:NO];
-}
-
-- (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
-{
-  [[ScreenController shared] finishRestoring];
 }
 
 - (void)cancelApplicationSuspend
@@ -237,7 +236,7 @@ void __setupProcessEnv() {
     return;
   }
   
-  [[ScreenController shared] suspend];
+  [[StateRegistry shared] suspend];
   _suspendedMode = YES;
   
   if (_suspendTaskId != UIBackgroundTaskInvalid) {

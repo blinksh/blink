@@ -40,6 +40,7 @@
 #import "MoshSession.h"
 #import "SSHSession.h"
 #import <ios_system/ios_system.h>
+#import "Blink-Swift.h"
 
 
 static NSDictionary *predictionModeStrings = nil;
@@ -84,7 +85,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSLock * _lock;
 }
 
-@dynamic sessionParameters;
+@dynamic sessionParams;
 
 + (void)initialize
 {
@@ -118,8 +119,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     {0, 0, 0, 0}};
   
   optind = 0;
-  if (self.sessionParameters == nil) {
-    self.sessionParameters = [[MoshParameters alloc] init];
+  if (self.sessionParams == nil) {
+    self.sessionParams = [[MoshParams alloc] init];
   }
   
   while (1) {
@@ -136,29 +137,29 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     
     switch (c) {
       case 's':
-      self.sessionParameters.serverPath = [NSString stringWithFormat:@"%s", optarg];
+      self.sessionParams.serverPath = [NSString stringWithFormat:@"%s", optarg];
       break;
       case '2':
       useSSH2 = YES;
       break;
       case 'r':
-      self.sessionParameters.predictionMode = [NSString stringWithFormat:@"%s", optarg];
+      self.sessionParams.predictionMode = [NSString stringWithFormat:@"%s", optarg];
       break;
       case 'p':
-      self.sessionParameters.port = [NSString stringWithFormat:@"%s", optarg];
+      self.sessionParams.port = [NSString stringWithFormat:@"%s", optarg];
       break;
       case 'k':
-      self.sessionParameters.key = [NSString stringWithFormat:@"%s", optarg];
+      self.sessionParams.key = [NSString stringWithFormat:@"%s", optarg];
       break;
       //      case 'S':
       //        param = optarg;
       //  ssh = [NSString stringWithFormat:@"%s", optarg];
       //  break;
       case 'a':
-      self.sessionParameters.predictionMode = @"always";
+      self.sessionParams.predictionMode = @"always";
       break;
       case 'n':
-      self.sessionParameters.predictionMode = @"never";
+      self.sessionParams.predictionMode = @"never";
       break;
       case 'P':
       sshPort = [NSString stringWithFormat:@"%s", optarg];
@@ -199,18 +200,21 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     for (int i = 0; i < idx_remote_command; i++) {
       [remoteCmdChunks addObject:[NSString stringWithFormat:@"%s", remote_command[i]]];
     }
-    self.sessionParameters.startupCmd = [remoteCmdChunks componentsJoinedByString:@" "];
+    self.sessionParams.startupCmd = [remoteCmdChunks componentsJoinedByString:@" "];
   }
   
   [self processMoshSettings:hostCfg];
   
-  if (self.sessionParameters.key) {
-    self.sessionParameters.ip = hostCfg.hostName ?: userhost;
-    if (self.sessionParameters.port == nil) {
+  if (self.sessionParams.key) {
+    self.sessionParams.ip = hostCfg.hostName ?: userhost;
+    if (self.sessionParams.port == nil) {
       return [self dieMsg:@"If MOSH_KEY is set port is required. (-p)"];
     }
   } else  {
-    NSString *moshServerCmd = [self getMoshServerStringCmd:self.sessionParameters.serverPath port:self.sessionParameters.port withColors:colors run:self.sessionParameters.startupCmd];
+    NSString *moshServerCmd = [self getMoshServerStringCmd:self.sessionParams.serverPath
+                                                      port:self.sessionParams.port
+                                                withColors:colors
+                                                       run:self.sessionParams.startupCmd];
     [self debugMsg:moshServerCmd];
     
     NSError *error;
@@ -225,8 +229,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   }
   
   // Validate prediction mode
-  self.sessionParameters.predictionMode = self.sessionParameters.predictionMode ?: @"adaptive";
-  if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:self.sessionParameters.predictionMode] == NSNotFound) {
+  self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: @"adaptive";
+  if ([@[ @"always", @"adaptive", @"never" ] indexOfObject:self.sessionParams.predictionMode] == NSNotFound) {
     return [self dieMsg:@"Unknown prediction mode. Use one of: always, adaptive, never"];
   }
   return 0;
@@ -234,7 +238,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
-  NSData *encodedState = self.sessionParameters.encodedState;
+  NSData *encodedState = self.sessionParams.encodedState;
   if (encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
     if ( code < 0) {
@@ -247,15 +251,15 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   [_device setRawMode:YES];
 
-  [self.sessionParameters cleanEncodedState];
+  [self.sessionParams cleanEncodedState];
   
   mosh_main(
             _stream.in, _stream.out, &_device->win,
             &__state_callback, (__bridge void *) self,
-            [self.sessionParameters.ip UTF8String],
-            [self.sessionParameters.port UTF8String],
-            [self.sessionParameters.key UTF8String],
-            [self.sessionParameters.predictionMode UTF8String],
+            [self.sessionParams.ip UTF8String],
+            [self.sessionParams.port UTF8String],
+            [self.sessionParams.key UTF8String],
+            [self.sessionParams.predictionMode UTF8String],
             encodedState.bytes,
             encodedState.length
             );
@@ -274,15 +278,15 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   [NSString stringWithFormat:@"\"%@\"", [host.moshServer stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""]]
   : nil;
   
-  self.sessionParameters.serverPath = self.sessionParameters.serverPath ?: server;
+  self.sessionParams.serverPath = self.sessionParams.serverPath ?: server;
   
-  self.sessionParameters.port = self.sessionParameters.port ?: [host.moshPort stringValue];
+  self.sessionParams.port = self.sessionParams.port ?: [host.moshPort stringValue];
   
   NSString *startupCmd = host.moshStartup.length ? host.moshStartup : nil;
-  self.sessionParameters.startupCmd = self.sessionParameters.startupCmd ?: startupCmd;
+  self.sessionParams.startupCmd = self.sessionParams.startupCmd ?: startupCmd;
   
   NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
-  self.sessionParameters.predictionMode = self.sessionParameters.predictionMode ?: predictionMode;
+  self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server port:(NSString *)port withColors:(NSString *)colors run:(NSString *)command
@@ -344,12 +348,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     if ((match = [ipFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
-      self.sessionParameters.ip = [line substringWithRange:matchRange];
+      self.sessionParams.ip = [line substringWithRange:matchRange];
     } else if ((match = [connFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
-      self.sessionParameters.port = [line substringWithRange:matchRange];
+      self.sessionParams.port = [line substringWithRange:matchRange];
       matchRange = [match rangeAtIndex:2];
-      self.sessionParameters.key = [line substringWithRange:matchRange];
+      self.sessionParams.key = [line substringWithRange:matchRange];
       break;
     } else {
       fwrite(buf, 1, n, _stream.out);
@@ -358,12 +362,12 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   fclose(term_r);
   
-  if (!self.sessionParameters.ip) {
+  if (!self.sessionParams.ip) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
     return;
   }
   
-  if (self.sessionParameters.key == nil || self.sessionParameters.port == nil) {
+  if (self.sessionParams.key == nil || self.sessionParams.port == nil) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
     return;
   }
@@ -387,7 +391,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *sshCmd = [sshArgs componentsJoinedByString:@" "];
   [self debugMsg:sshCmd];
   
-  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParametes:nil];
+  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParams:nil];
   
   int poutput[2];
   pipe(poutput);
@@ -419,24 +423,24 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     if ((match = [ipFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
-      self.sessionParameters.ip = [line substringWithRange:matchRange];
+      self.sessionParams.ip = [line substringWithRange:matchRange];
     } else if ((match = [connFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
-      self.sessionParameters.port = [line substringWithRange:matchRange];
+      self.sessionParams.port = [line substringWithRange:matchRange];
       matchRange = [match rangeAtIndex:2];
-      self.sessionParameters.key = [line substringWithRange:matchRange];
+      self.sessionParams.key = [line substringWithRange:matchRange];
       break;
     } else {
       fwrite(buf, 1, n, _stream.out);
     }
   }
   
-  if (!self.sessionParameters.ip) {
+  if (!self.sessionParams.ip) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
     return;
   }
   
-  if (self.sessionParameters.key == nil || self.sessionParameters.port == nil) {
+  if (self.sessionParams.key == nil || self.sessionParams.port == nil) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
     return;
   }
@@ -481,7 +485,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)onStateEncoded: (NSData *) encodedState
 {
-  self.sessionParameters.encodedState = encodedState;
+  self.sessionParams.encodedState = encodedState;
   [_lock unlock];
 }
 

@@ -33,6 +33,7 @@
 #ifndef Blink_bridge_h
 #define Blink_bridge_h
 
+#import "BKDefaults.h"
 #import "LayoutManager.h"
 #import "ControlPanel.h"
 #import "MusicManager.h"

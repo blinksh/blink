@@ -32,7 +32,6 @@
 #import <UIKit/UIKit.h>
 #import "ScreenController.h"
 //#import "SpaceController.h"
-#import "StateManager.h"
 #import "BKTouchIDAuthManager.h"
 #import "Blink-Swift.h"
 
@@ -221,46 +220,46 @@ NSString * const SecondarySpaceControllerKey = @"SecondarySpaceControllerKey";
 
 + (UIViewController *)viewControllerWithRestorationIdentifierPath:(NSArray *)identifierComponents coder:(NSCoder *)coder
 {
-  NSString *identifier = [identifierComponents lastObject];
-  
-  if ([identifier isEqualToString:MainSpaceControllerKey] || [identifier isEqualToString:SecondarySpaceControllerKey]) {
-    StateManager *stateManager = [[StateManager alloc] init];
-    [stateManager load];
-
-    SpaceController *spaceController = [[SpaceController alloc] init];
-    spaceController.restorationIdentifier = identifier;
-    // TODO:
-//    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
-    [ScreenController shared]->_bootControllers[identifier] = spaceController;
-    return spaceController;
-  }
-  
+//  NSString *identifier = [identifierComponents lastObject];
+//  
+//  if ([identifier isEqualToString:MainSpaceControllerKey] || [identifier isEqualToString:SecondarySpaceControllerKey]) {
+//    StateManager *stateManager = [[StateManager alloc] init];
+//    [stateManager load];
+//
+//    SpaceController *spaceController = [[SpaceController alloc] init];
+//    spaceController.restorationIdentifier = identifier;
+//    // TODO:
+////    [spaceController decodeRestorableStateWithCoder:coder andStateManager: stateManager];
+//    [ScreenController shared]->_bootControllers[identifier] = spaceController;
+//    return spaceController;
+//  }
+//  
   return nil;
 }
 
 - (void)suspend
 {
-  StateManager *stateManager = [[StateManager alloc] init];
+//  StateManager *stateManager = [[StateManager alloc] init];
   
   
-  [stateManager save];
+//  [stateManager save];
 }
 
 - (void)resume
 {
-  StateManager *stateManager = [[StateManager alloc] init];
-  [stateManager load];
-  
-  
-  [stateManager reset];
-  [stateManager save];
+//  StateManager *stateManager = [[StateManager alloc] init];
+//  [stateManager load];
+//
+//
+//  [stateManager reset];
+//  [stateManager save];
 }
 
 - (void)finishRestoring
 {
-  StateManager *stateManager = [[StateManager alloc] init];
-  [stateManager reset];
-  [stateManager save];
+//  StateManager *stateManager = [[StateManager alloc] init];
+//  [stateManager reset];
+//  [stateManager save];
 }
 
 + (void)applyOverscanOptionToScreen:(UIScreen *)screen value:(BKOverscanCompensation)value {

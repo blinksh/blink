@@ -33,7 +33,17 @@
 import Foundation
 import MBProgressHUD
 
+
 @objc public class SpaceController: SafeLayoutViewController {
+  
+  struct UIState: UserActivityCodable {
+    var keys: [String] = []
+    var unfocused: Bool = true
+    var bgColor:CodableColor? = nil
+    
+    static var activityType: String { "space.ctrl.ui.state" }
+  }
+
   private var _viewportsController = UIPageViewController(
     transitionStyle: .scroll,
     navigationOrientation: .horizontal,
@@ -102,10 +112,24 @@ import MBProgressHUD
     view.addSubview(_termInput)
     _registerForNotifications()
     _setupKBCommands()
+    
     if _viewportsKeys.isEmpty {
       _createShell(userActivity: nil, key: nil, animated: false)
     }
     
+  }
+  
+  public override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    if _termInput.isFirstResponder && view.window?.isKeyWindow == true {
+      _attachInputToCurrentTerm()
+      return
+    }
+    
+    if !_unfocused {
+      _focusOnShell()
+    }
   }
   
   deinit {
@@ -127,6 +151,23 @@ import MBProgressHUD
                    selector: #selector(_focusOnShell),
                    name: NSNotification.Name.BKUserAuthenticated,
                    object: nil)
+    
+    nc.addObserver(self,
+                   selector: #selector(_didBecomeKeyWindow),
+                   name: UIWindow.didBecomeKeyNotification,
+                   object: nil)
+  }
+  
+  @objc func _didBecomeKeyWindow() {
+    guard let window = view.window else {
+      return
+    }
+    
+    if window.isKeyWindow {
+      _focusOnShell()
+    } else {
+      currentDevice?.blur()
+    }
   }
   
   @objc func _keyboardFuncTriggerChanged(_ notification: NSNotification) {
@@ -285,7 +326,7 @@ import MBProgressHUD
     
     guard
       let term = currentTerm(),
-      let params = term.sessionParameters
+      let params = term.sessionParams
     else {
       return
     }
@@ -326,6 +367,26 @@ import MBProgressHUD
     _touchOverlay.controlPanel.updateLayoutBar()
   }
   
+}
+
+extension SpaceController: UIStateRestorable {
+  func restore(withState state: SpaceController.UIState) {
+    _viewportsKeys = state.keys
+    _unfocused = state.unfocused
+    if let bgColor = UIColor(codableColor: state.bgColor) {
+      view.backgroundColor = bgColor
+    }
+    
+    view.setNeedsLayout()
+    view.layoutIfNeeded()
+  }
+  
+  func dumpUIState() -> SpaceController.UIState {
+    UIState(keys: _viewportsKeys,
+            unfocused: _unfocused,
+            bgColor: CodableColor(uiColor: view.backgroundColor)
+    )
+  }
 }
 
 extension SpaceController: UIPageViewControllerDelegate {
@@ -384,7 +445,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     let key = ctrl.meta.key
     guard
       let idx = _viewportsKeys.firstIndex(of: key),
-      idx < _viewportsKeys.endIndex else {
+      idx + 1 < _viewportsKeys.endIndex else {
         return nil
     }
     
@@ -403,16 +464,16 @@ extension SpaceController: UIPageViewControllerDataSource {
 }
 
 extension SpaceController: ControlPanelDelegate {
-  @objc public func controlPanelOnClose() {
+  @objc func controlPanelOnClose() {
     _closeCurrentSpace()
   }
   
-  @objc public func controlPanelOnPaste() {
+  @objc func controlPanelOnPaste() {
     _attachInputToCurrentTerm()
     _termInput.yank(self);
   }
   
-  @objc public func currentTerm() -> TermController! {
+  @objc func currentTerm() -> TermController! {
     return _viewportsController.viewControllers?.first as? TermController
   }
 }
@@ -463,14 +524,12 @@ extension SpaceController {
 // MARK: Commands
 
 extension SpaceController {
-  
-  
   public override var keyCommands: [UIKeyCommand]? {
     return _kbdCommands
   }
   
   // simple helper
-  func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
+  private func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
     return UIKeyCommand(
       __title: title,
       image: nil,
@@ -509,7 +568,7 @@ extension SpaceController {
       _cmd("Zoom Reset", #selector(_resetFontSizeAction),    "=",  modifierFlags),
       
       //
-      _cmd("Focus Other Screen",         #selector(_focusOtherScreenAction), "o", modifierFlags),
+      _cmd("Focus Other Screen",         #selector(_focusOtherScreenAction),  "o", modifierFlags),
       _cmd("Move shell to other Screen", #selector(_moveToOtherScreenAction), "o", prevNextShellModifierFlags),
       
       // Misc

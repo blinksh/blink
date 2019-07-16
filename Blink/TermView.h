@@ -31,11 +31,11 @@
 
 #import <UIKit/UIKit.h>
 #import <WebKit/WebKit.h>
-#import "MCPSessionParameters.h"
 
 @class TermView;
 @class TermDevice;
 @class TermInput;
+@class MCPParams;
 
 
 @protocol TermViewDeviceProtocol
@@ -72,8 +72,8 @@
 
 - (id)initWithFrame:(CGRect)frame andBgColor: (UIColor *)bgColor;
 - (CGRect)webViewFrame;
-- (void)loadWith:(MCPSessionParameters *)params;
-- (void)reloadWith:(MCPSessionParameters *)params;
+- (void)loadWith:(MCPParams *)params;
+- (void)reloadWith:(MCPParams *)params;
 - (void)clear;
 - (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
