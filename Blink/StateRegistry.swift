@@ -134,7 +134,7 @@ public class StateViewController: UIViewController {
   
   @objc public static let shared = StateRegistry()
   
-  @objc func track(controller: StateViewController) {
+  func track(controller: StateViewController) {
     let meta = controller.meta
     let key = meta.key
     _metaIndex[key] = meta
@@ -142,7 +142,7 @@ public class StateViewController: UIViewController {
     controller.stateRegistry = self
   }
   
-  @objc func get(forKey key: String) -> StateViewController? {
+  func get(forKey key: String) -> StateViewController? {
     if let ctrl = _controllersIndex[key] {
       return ctrl
     }
@@ -151,7 +151,7 @@ public class StateViewController: UIViewController {
     return nil
   }
   
-  @objc func remove(forKey key: String) {
+  func remove(forKey key: String) {
     if let ctrl = _controllersIndex.removeValue(forKey: key) {
       ctrl.stateRegistry = nil
     }
@@ -159,7 +159,7 @@ public class StateViewController: UIViewController {
     // TODO: remove from FS
   }
   
-  @objc func remove(controller: StateViewController?) {
+  func remove(controller: StateViewController?) {
     if let key = controller?.meta.key {
       remove(forKey: key)
     }
@@ -169,7 +169,7 @@ public class StateViewController: UIViewController {
     _controllersIndex.values.forEach { $0.suspendIfNeeded() }
   }
   
-  @objc func resume(forKey key: String) {
+  func resume(forKey key: String) {
     guard
       let ctrl =  _controllersIndex[key]
       else {
@@ -185,7 +185,7 @@ public class StateViewController: UIViewController {
     meta.suspended = true
   }
   
-  func _loadState(forKey key: String) -> State? {
+  private func _loadState(forKey key: String) -> State? {
     // load from FS
     return nil
   }
