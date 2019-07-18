@@ -263,9 +263,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   NSString *path = [[NSBundle mainBundle] pathForResource:@"term" ofType:@"html"];
   NSURL *url = [NSURL fileURLWithPath:path];
-  NSURLRequest *request = [NSURLRequest requestWithURL:url];
-  
-  [_webView loadRequest:request];
+  [_webView loadFileURL:url allowingReadAccessToURL:url];
 }
 
 - (void)reloadWith:(MCPSessionParameters *)params;
