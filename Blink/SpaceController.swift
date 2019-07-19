@@ -37,23 +37,23 @@ import MBProgressHUD
 @objc public class SpaceController: SafeLayoutViewController {
   
   struct UIState: UserActivityCodable {
-    var keys: [String] = []
+    var keys: [UUID] = []
     var unfocused: Bool = true
     var bgColor:CodableColor? = nil
     
     static var activityType: String { "space.ctrl.ui.state" }
   }
 
-  private var _viewportsController = UIPageViewController(
+  private lazy var _viewportsController = UIPageViewController(
     transitionStyle: .scroll,
     navigationOrientation: .horizontal,
     options:
       [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
-  private var _termInput = TermInput()
+  private lazy var _termInput = TermInput()
   private var _touchOverlay = TouchOverlay(frame: .zero)
   
-  private var _viewportsKeys = [String]()
+  private var _viewportsKeys = [UUID]()
   
   private var _hud: MBProgressHUD? = nil
   private var _musicHUD: MBProgressHUD? = nil
@@ -195,7 +195,7 @@ import MBProgressHUD
     
     _viewportsKeys = [term.meta.key]
     
-    StateRegistry.shared.track(controller: term)
+    SessionRegistry.shared.track(session: term)
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
@@ -423,13 +423,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     
     let newKey = _viewportsKeys[idx - 1]
     
-    if let newCtrl = StateRegistry.shared.get(forKey: newKey) as? TermController {
-      return newCtrl
-    }
-    
-    let newCtrl = TermController()
-    _viewportsKeys[idx - 1] = newCtrl.meta.key
-    StateRegistry.shared.track(controller: newCtrl)
+    let newCtrl: TermController = SessionRegistry.shared[newKey]
     return newCtrl
   }
   
@@ -451,13 +445,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     
     let newKey = _viewportsKeys[idx + 1]
     
-    if let newCtrl = StateRegistry.shared.get(forKey: newKey) as? TermController {
-      return newCtrl
-    }
-    
-    let newCtrl = TermController()
-    _viewportsKeys[idx + 1] = newCtrl.meta.key
-    StateRegistry.shared.track(controller: newCtrl)
+    let newCtrl: TermController = SessionRegistry.shared[newKey]
     return newCtrl
   }
   

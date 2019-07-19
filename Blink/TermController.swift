@@ -45,7 +45,10 @@ import UIKit
   func currentTerm() -> TermController!
 }
 
-class TermController: StateViewController {
+class TermController: UIViewController {
+  private weak var _sessionRegistry: SessionRegistry? = nil
+  private let _meta: SessionMeta
+  
   private var _termDevice = TermDevice()
   private var _termView = TermView(frame: .zero, andBgColor: nil)
   private var _sessionParams: MCPParams? = nil
@@ -55,7 +58,7 @@ class TermController: StateViewController {
   @objc public var activityKey: String? = nil
   @objc public var termDevice: TermDevice { get { _termDevice } }
   @objc weak var delegate: TermControlDelegate? = nil
-  @objc var sessionParams: MCPParams? { get { _sessionParams }}
+  @objc var sessionParams: MCPParams? { _sessionParams }
   @objc var bgColor: UIColor? {
     get { _bgColor }
     set { _bgColor = newValue }
@@ -63,8 +66,9 @@ class TermController: StateViewController {
   
   private var _session: MCPSession? = nil
   
-  @objc public init() {
-    super.init(meta: nil)
+  required init(meta: SessionMeta? = nil) {
+    _meta = meta ?? SessionMeta()
+    super.init(nibName: nil, bundle: nil)
   }
   
   required public init?(coder aDecoder: NSCoder) {
@@ -79,6 +83,8 @@ class TermController: StateViewController {
   
   public override func viewDidLoad() {
     super.viewDidLoad()
+    resumeIfNeeded()
+    
     
     if _sessionParams == nil {
       _initSessionParams()
@@ -103,12 +109,7 @@ class TermController: StateViewController {
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    
-    
-    guard let params = _sessionParams else {
-      return
-    }
-    params.viewSize = view.bounds.size
+    _sessionParams?.viewSize = view.bounds.size
   }
   
   func _initSessionParams() {
@@ -149,19 +150,6 @@ class TermController: StateViewController {
   @objc public func unlockLayout() {
     _sessionParams?.layoutLocked = false
     view.setNeedsLayout()
-  }
-  
-  @objc public func suspend() {
-    _sessionParams?.cleanEncodedState()
-    _session?.suspend()
-  }
-  
-  @objc public func resume() {
-    guard
-      _sessionParams?.hasEncodedState() == true
-    else {
-      return
-    }
   }
   
   @objc public func isRunningCmd() -> Bool {
@@ -222,15 +210,15 @@ extension TermController: TermDeviceDelegate {
   }
   
   public func deviceSizeChanged() {
-    _sessionParams?.rows = termDevice.rows
-    _sessionParams?.cols = termDevice.cols
+    _sessionParams?.rows = _termDevice.rows
+    _sessionParams?.cols = _termDevice.cols
     
     delegate?.terminalDidResize?(control: self)
   }
   
   public func viewFontSizeChanged(_ size: Int) {
     _sessionParams?.fontSize = size
-    termDevice.input?.reset()
+    _termDevice.input?.reset()
   }
   
   public func handleControl(_ control: String!) -> Bool {
@@ -243,5 +231,56 @@ extension TermController: TermDeviceDelegate {
   
   public func viewController() -> UIViewController! {
     return self
+  }
+}
+
+extension TermController: SuspendableSession {
+  
+  var sessionRegistry: SessionRegistry? {
+    get { _sessionRegistry }
+    set { _sessionRegistry = newValue }
+  }
+  
+  var meta: SessionMeta { _meta }
+  
+  var _decodableKey: String { "params" }
+  
+  func resume(with unarchiver: NSKeyedUnarchiver) {
+    _sessionParams = unarchiver.decodeDecodable(MCPParams.self, forKey: _decodableKey)
+    
+    guard let params = _sessionParams,
+      params.hasEncodedState()
+    else {
+      return
+    }
+    
+    let input = _termDevice.input
+    _termDevice = TermDevice()
+    _termDevice.cols = params.cols
+    _termDevice.rows = params.rows
+    _termDevice.delegate = self
+    _termDevice.attachView(_termView)
+    _termDevice.attachInput(input)
+    
+    startSession()
+    
+    if view.bounds.size != params.viewSize {
+      _session?.sigwinch()
+    }
+  }
+  
+  func suspendedSession(with archiver: NSKeyedArchiver) {
+    
+    guard
+      let params = _sessionParams,
+      let session = _session
+    else {
+      return
+    }
+    
+    params.cleanEncodedState()
+    session.suspend()
+    
+    try? archiver.encodeEncodable(params, forKey: _decodableKey)
   }
 }

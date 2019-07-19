@@ -31,48 +31,38 @@
 
 
 import Foundation
-import UIKit
 
-@objc class SessionParams: NSObject, Codable {
-  @objc var encodedState: Data? = nil
+struct CodableColor: Codable {
+  fileprivate var r: CGFloat = 0
+  fileprivate var g: CGFloat = 0
+  fileprivate var b: CGFloat = 0
+  fileprivate var a: CGFloat = 0
   
-  @objc func cleanEncodedState() {
-    encodedState = nil
+  init() {
+  }
+  
+  init(uiColor: UIColor) {
+    uiColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+  }
+  
+  init?(uiColor: UIColor?) {
+    guard let color = uiColor else {
+      return nil
+    }
+    self.init(uiColor: color)
   }
 }
 
-@objc class MoshParams: SessionParams {
-  @objc var ip: String? = nil
-  @objc var port: String? = nil
-  @objc var key: String? = nil
-  @objc var predictionMode: String? = nil
-  @objc var startupCmd: String? = nil
-  @objc var serverPath: String? = nil
+extension UIColor {
+  convenience init(codableColor: CodableColor) {
+    self.init(red: codableColor.r, green: codableColor.g, blue: codableColor.b, alpha: codableColor.a)
+  }
+  
+  convenience init?(codableColor: CodableColor?) {
+    guard let color = codableColor else {
+      return nil
+    }
+    self.init(codableColor: color)
+  }
 }
 
-@objc class MCPParams: SessionParams {
-  @objc var childSessionType: String? = nil
-  @objc var childSessionParams: SessionParams? = nil
-  
-  // TODO: Move to UIState?
-  @objc var viewSize: CGSize = .zero
-  @objc var rows: Int = 0
-  @objc var cols: Int = 0
-  @objc var themeName: String? = nil
-  @objc var fontName: String? = nil
-  @objc var fontSize: Int = 16
-  @objc var layoutMode: BKLayoutMode = .safeFit
-  @objc var boldAsBright: Bool = false
-  @objc var enableBold: UInt = 0
-  @objc var layoutLocked: Bool = false
-  @objc var layoutLockedFrame: CGRect = .zero
-  
-  @objc func hasEncodedState() -> Bool {
-    childSessionParams?.encodedState != nil
-  }
-  
-  override func cleanEncodedState() {
-    childSessionParams?.cleanEncodedState()
-    super.cleanEncodedState()
-  }
-}

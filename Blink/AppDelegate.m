@@ -236,7 +236,7 @@ void __setupProcessEnv() {
     return;
   }
   
-  [[StateRegistry shared] suspend];
+  [[SessionRegistry shared] suspend];
   _suspendedMode = YES;
   
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
