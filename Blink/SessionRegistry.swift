@@ -63,6 +63,11 @@ extension SuspendableSession {
   
   @objc public static let shared = SessionRegistry()
   
+  override init() {
+    super.init()
+    _fsReadMetaIndex()
+  }
+  
   func track(session: SuspendableSession) {
     let meta = session.meta
     let key = meta.key
@@ -110,7 +115,7 @@ extension SuspendableSession {
   
   @objc func suspend() {
     _sessionsIndex.forEach { self.suspendIfNeeded(session: $1) }
-    
+    _fsWriteMetaIndex()
   }
   
   func suspendIfNeeded(session: SuspendableSession) {
@@ -141,7 +146,7 @@ extension SuspendableSession {
   func resume(forKey key: UUID) {
     guard
       let session = _sessionsIndex[key],
-      let data = _fsLoad(forKey: key),
+      let data = _fsRead(forKey: key),
       let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
     else {
         return
@@ -194,7 +199,7 @@ extension SuspendableSession {
     }
   }
   
-  private func _fsLoad(forKey key: UUID) -> Data? {
+  private func _fsRead(forKey key: UUID) -> Data? {
    do {
       let sessionURL = try _fsSessionURL(key)
       let data = try Data(contentsOf: sessionURL)
@@ -202,6 +207,30 @@ extension SuspendableSession {
     } catch let e {
       debugPrint(e)
       return nil
+    }
+  }
+  
+  private func _fsWriteMetaIndex() {
+    let jsonEncoder = JSONEncoder()
+    do {
+      let data = try jsonEncoder.encode(_metaIndex)
+      let sessionsFolder = try _fsSessionsFolder()
+      let indexURL = sessionsFolder.appendingPathComponent("index.json")
+      try data.write(to: indexURL, options: [.atomic])
+    } catch let e {
+      debugPrint(e)
+    }
+  }
+  
+  private func _fsReadMetaIndex() {
+    do {
+      let sessionsFolder = try _fsSessionsFolder()
+      let indexURL = sessionsFolder.appendingPathComponent("index.json")
+      let data = try Data(contentsOf: indexURL)
+      let jsonDecoder = JSONDecoder()
+      _metaIndex = try jsonDecoder.decode(type(of: _metaIndex), from: data)
+    } catch let e {
+      debugPrint(e)
     }
   }
 }

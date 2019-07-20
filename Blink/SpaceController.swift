@@ -38,6 +38,7 @@ import MBProgressHUD
   
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
+    var currentKey: UUID? = nil
     var unfocused: Bool = true
     var bgColor:CodableColor? = nil
     
@@ -54,6 +55,7 @@ import MBProgressHUD
   private var _touchOverlay = TouchOverlay(frame: .zero)
   
   private var _viewportsKeys = [UUID]()
+  private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   private var _musicHUD: MBProgressHUD? = nil
@@ -115,6 +117,14 @@ import MBProgressHUD
     
     if _viewportsKeys.isEmpty {
       _createShell(userActivity: nil, key: nil, animated: false)
+    } else if let key = _currentKey {
+      let term: TermController = SessionRegistry.shared[key]
+      term.delegate = self
+//      term.userActivity = userActivity
+      term.bgColor = view.backgroundColor ?? .black
+      _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
+            self._attachInputToCurrentTerm()
+          }
     }
     
   }
@@ -198,6 +208,7 @@ import MBProgressHUD
     SessionRegistry.shared.track(session: term)
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
+      self._currentKey = term.meta.key
       self._displayHUD()
       self._attachInputToCurrentTerm()
       if let completion = completion {
@@ -373,6 +384,7 @@ extension SpaceController: UIStateRestorable {
   func restore(withState state: SpaceController.UIState) {
     _viewportsKeys = state.keys
     _unfocused = state.unfocused
+    _currentKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
@@ -383,6 +395,7 @@ extension SpaceController: UIStateRestorable {
   
   func dumpUIState() -> SpaceController.UIState {
     UIState(keys: _viewportsKeys,
+            currentKey: _currentKey,
             unfocused: _unfocused,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
@@ -399,6 +412,7 @@ extension SpaceController: UIPageViewControllerDelegate {
       return
     }
     
+    _currentKey = (pageViewController.viewControllers?.first as? TermController)?.meta.key
     _displayHUD()
     _attachInputToCurrentTerm()
   }
@@ -462,7 +476,10 @@ extension SpaceController: ControlPanelDelegate {
   }
   
   @objc func currentTerm() -> TermController! {
-    return _viewportsController.viewControllers?.first as? TermController
+    if let currentKey = _currentKey {
+      return SessionRegistry.shared[currentKey]
+    }
+    return nil
   }
 }
 
