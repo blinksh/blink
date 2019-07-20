@@ -99,7 +99,7 @@ extension SuspendableSession {
       session.sessionRegistry = nil
     }
     _metaIndex.removeValue(forKey: key)
-    // TODO: remove from FS
+    _fsRemove(forKey: key)
   }
   
   func remove(session: SuspendableSession?) {
@@ -121,6 +121,10 @@ extension SuspendableSession {
       return
     }
     
+    let archiver = NSKeyedArchiver(requiringSecureCoding: true)
+    session.suspendedSession(with: archiver)
+    _fsWrite(archiver.encodedData, forKey: meta.key)
+    meta.isSuspended = true
   }
   
   func resumeIfNeeded(session: SuspendableSession) {
@@ -137,7 +141,7 @@ extension SuspendableSession {
   func resume(forKey key: UUID) {
     guard
       let session = _sessionsIndex[key],
-      let data = _loadStateData(forKey: key),
+      let data = _fsLoad(forKey: key),
       let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
     else {
         return
@@ -147,13 +151,57 @@ extension SuspendableSession {
     session.meta.isSuspended = false
   }
   
-  func writeState(session: SuspendableSession) {
-    // write to FS
-    session.meta.isSuspended = true
+  private func _fsSessionsFolder() throws -> URL {
+    let fm = FileManager.default
+    var supporDirUrl = try fm.url(
+        for: .applicationSupportDirectory,
+        in: .userDomainMask,
+        appropriateFor: nil,
+        create: true
+    )
+    
+    supporDirUrl.appendPathComponent("sessions")
+    var isDir:ObjCBool = false
+    if !fm.fileExists(atPath: supporDirUrl.path, isDirectory: &isDir) {
+      try fm.createDirectory(at: supporDirUrl, withIntermediateDirectories: true, attributes: nil)
+    }
+    
+    return supporDirUrl
   }
   
-  private func _loadStateData(forKey key: UUID) -> Data? {
-    // load from FS
-    return nil
+  private func _fsSessionURL(_ key: UUID) throws -> URL {
+    let sessionsFolderURL = try _fsSessionsFolder()
+    var fileURL = sessionsFolderURL
+    fileURL.appendPathComponent(key.uuidString)
+    return fileURL
+  }
+  
+  private func _fsRemove(forKey key: UUID) {
+    do {
+      let sessionURL = try _fsSessionURL(key)
+      try FileManager.default.removeItem(at: sessionURL)
+    } catch let e {
+      debugPrint(e)
+    }
+  }
+  
+  private func _fsWrite(_ data: Data, forKey key: UUID) {
+    do {
+      let sessionURL = try _fsSessionURL(key)
+      try data.write(to: sessionURL, options: [.atomic, .completeFileProtection])
+    } catch let e {
+      debugPrint(e)
+    }
+  }
+  
+  private func _fsLoad(forKey key: UUID) -> Data? {
+   do {
+      let sessionURL = try _fsSessionURL(key)
+      let data = try Data(contentsOf: sessionURL)
+      return data
+    } catch let e {
+      debugPrint(e)
+      return nil
+    }
   }
 }
