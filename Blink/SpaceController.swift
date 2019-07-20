@@ -335,12 +335,11 @@ import MBProgressHUD
     
     _hud?.hide(animated: false)
     
-    guard
-      let term = currentTerm(),
-      let params = term.sessionParams
-    else {
+    guard let term = currentTerm() else {
       return
     }
+    
+    let params = term.sessionParams
     
     if let bgColor = term.view.backgroundColor, bgColor != .clear {
       view.backgroundColor = bgColor

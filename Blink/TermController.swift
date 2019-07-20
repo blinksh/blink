@@ -51,14 +51,26 @@ class TermController: UIViewController {
   
   private var _termDevice = TermDevice()
   private var _termView = TermView(frame: .zero, andBgColor: nil)
-  private var _sessionParams: MCPParams? = nil
+  private var _sessionParams: MCPParams = {
+    let params = MCPParams()
+    
+    params.fontSize = BKDefaults.selectedFontSize()?.intValue ?? 16
+    params.fontName = BKDefaults.selectedFontName()
+    params.themeName = BKDefaults.selectedThemeName()
+    params.enableBold = BKDefaults.enableBold()
+    params.boldAsBright = BKDefaults.isBoldAsBright()
+    params.viewSize = .zero
+    params.layoutMode = BKDefaults.layoutMode()
+    
+    return params
+  }()
   private var _bgColor: UIColor? = nil
   private var _fontSizeBeforeScaling: Int? = nil
   
   @objc public var activityKey: String? = nil
   @objc public var termDevice: TermDevice { get { _termDevice } }
   @objc weak var delegate: TermControlDelegate? = nil
-  @objc var sessionParams: MCPParams? { _sessionParams }
+  @objc var sessionParams: MCPParams { _sessionParams }
   @objc var bgColor: UIColor? {
     get { _bgColor }
     set { _bgColor = newValue }
@@ -85,45 +97,24 @@ class TermController: UIViewController {
     super.viewDidLoad()
     resumeIfNeeded()
     
-    
-    if _sessionParams == nil {
-      _initSessionParams()
-    }
-    
     _termView?.load(with: _sessionParams)
   }
   
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     
-    guard
-      let termView = _termView,
-      let params = _sessionParams
-    else {
+    guard let termView = _termView else {
       return
     }
-    termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: params.layoutMode)
-    termView.layoutLockedFrame = params.layoutLockedFrame
-    termView.layoutLocked = params.layoutLocked
+    
+    termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: _sessionParams.layoutMode)
+    termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
+    termView.layoutLocked = _sessionParams.layoutLocked
   }
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
-    _sessionParams?.viewSize = view.bounds.size
-  }
-  
-  func _initSessionParams() {
-    let params = MCPParams()
-    
-    params.fontSize = BKDefaults.selectedFontSize()?.intValue ?? 16
-    params.fontName = BKDefaults.selectedFontName()
-    params.themeName = BKDefaults.selectedThemeName()
-    params.enableBold = BKDefaults.enableBold()
-    params.boldAsBright = BKDefaults.isBoldAsBright()
-    params.viewSize = view.bounds.size
-    params.layoutMode = BKDefaults.layoutMode()
-    
-    _sessionParams = params
+    _sessionParams.viewSize = view.bounds.size
   }
   
   func startSession() {
@@ -141,14 +132,14 @@ class TermController: UIViewController {
   }
   
   @objc public func lockLayout() {
-    _sessionParams?.layoutLocked = true
+    _sessionParams.layoutLocked = true
     if let frame = _termView?.webViewFrame() {
-      _sessionParams?.layoutLockedFrame = frame
+      _sessionParams.layoutLockedFrame = frame
     }
   }
   
   @objc public func unlockLayout() {
-    _sessionParams?.layoutLocked = false
+    _sessionParams.layoutLocked = false
     view.setNeedsLayout()
   }
   
@@ -166,13 +157,13 @@ class TermController: UIViewController {
     switch pinch.state {
     case .began: fallthrough
     case .ended:
-      _fontSizeBeforeScaling = _sessionParams?.fontSize
+      _fontSizeBeforeScaling = _sessionParams.fontSize
     case .changed:
       guard let initialSize = _fontSizeBeforeScaling else {
         return
       }
       let newSize = Int(round(CGFloat(initialSize) * pinch.scale))
-      guard newSize == _sessionParams?.fontSize else {
+      guard newSize == _sessionParams.fontSize else {
         return
       }
       _termView?.setFontSize(newSize as NSNumber)
@@ -195,7 +186,7 @@ extension TermController: SessionDelegate {
   }
   
   public func sessionFinished() {
-    if (_sessionParams?.hasEncodedState() == true) {
+    if _sessionParams.hasEncodedState() {
       return
     }
     
@@ -210,14 +201,14 @@ extension TermController: TermDeviceDelegate {
   }
   
   public func deviceSizeChanged() {
-    _sessionParams?.rows = _termDevice.rows
-    _sessionParams?.cols = _termDevice.cols
+    _sessionParams.rows = _termDevice.rows
+    _sessionParams.cols = _termDevice.cols
     
     delegate?.terminalDidResize?(control: self)
   }
   
   public func viewFontSizeChanged(_ size: Int) {
-    _sessionParams?.fontSize = size
+    _sessionParams.fontSize = size
     _termDevice.input?.reset()
   }
   
@@ -246,11 +237,15 @@ extension TermController: SuspendableSession {
   var _decodableKey: String { "params" }
   
   func resume(with unarchiver: NSKeyedUnarchiver) {
-    _sessionParams = unarchiver.decodeDecodable(MCPParams.self, forKey: _decodableKey)
-    
-    guard let params = _sessionParams,
-      params.hasEncodedState()
+    guard
+      let params = unarchiver.decodeDecodable(MCPParams.self, forKey: _decodableKey)
     else {
+      return
+    }
+    
+    _sessionParams = params
+    
+    guard _sessionParams.hasEncodedState() else {
       return
     }
     
@@ -270,17 +265,15 @@ extension TermController: SuspendableSession {
   }
   
   func suspendedSession(with archiver: NSKeyedArchiver) {
-    
     guard
-      let params = _sessionParams,
       let session = _session
     else {
       return
     }
     
-    params.cleanEncodedState()
+    _sessionParams.cleanEncodedState()
     session.suspend()
     
-    try? archiver.encodeEncodable(params, forKey: _decodableKey)
+    try? archiver.encodeEncodable(_sessionParams, forKey: _decodableKey)
   }
 }
