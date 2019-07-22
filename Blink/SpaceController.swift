@@ -203,7 +203,12 @@ import MBProgressHUD
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black
     
-    _viewportsKeys = [term.meta.key]
+    if let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey) {
+      _viewportsKeys.insert(term.meta.key, at: idx + 1)
+    } else {
+      _viewportsKeys.insert(term.meta.key, at: _viewportsKeys.count)
+    }
     
     SessionRegistry.shared.track(session: term)
     
@@ -602,12 +607,34 @@ extension SpaceController {
     _closeCurrentSpace()
   }
   
-  @objc private func _nextShellAction() {
+  private func _advanceShell(by: Int) {
+    guard
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by),
+
+      idx >= _viewportsKeys.startIndex,
+      idx < _viewportsKeys.endIndex
+    else {
+      return
+    }
+        
+    let key = _viewportsKeys[idx]
+    let term: TermController = SessionRegistry.shared[key]
+    let direction: UIPageViewController.NavigationDirection = by > 0 ? .forward : .reverse
     
+    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
+      self._currentKey = term.meta.key
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
+    }
+  }
+  
+  @objc private func _nextShellAction() {
+    _advanceShell(by: 1)
   }
   
   @objc private func _prevShellAction() {
-    
+    _advanceShell(by: -1)
   }
   
   

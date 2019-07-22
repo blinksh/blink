@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
-#import "Migrator.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
 #import "BlinkPaths.h"
@@ -75,8 +74,7 @@ void __setupProcessEnv() {
   ssh_init();
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   signal(SIGPIPE, __on_pipebroken_signal);
   
   [BlinkPaths linkICloudDriveIfNeeded];
@@ -125,9 +123,7 @@ void __setupProcessEnv() {
   }];
 }
 
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  [Migrator migrateIfNeeded];
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   [BKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
@@ -172,7 +168,7 @@ void __setupProcessEnv() {
   [self _suspendApplicationOnWillTerminate];
 }
 
-- (void)startMonitoringForSuspending
+- (void)_startMonitoringForSuspending
 {
   if (_suspendedMode) {
     return;
@@ -197,8 +193,7 @@ void __setupProcessEnv() {
                                                   repeats:NO];
 }
 
-- (void)cancelApplicationSuspend
-{
+- (void)_cancelApplicationSuspend {
   [_suspendTimer invalidate];
   _suspendedMode = NO;
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -208,28 +203,23 @@ void __setupProcessEnv() {
 }
 
 // Simple wrappers to get the reason of failure from call stack
-- (void)_suspendApplicationWithSuspendTimer
-{
+- (void)_suspendApplicationWithSuspendTimer {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationWithExpirationHandler
-{
+- (void)_suspendApplicationWithExpirationHandler {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationOnWillTerminate
-{
+- (void)_suspendApplicationOnWillTerminate {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
-{
+- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplication
-{
+- (void)_suspendApplication {
   [_suspendTimer invalidate];
   
   if (_suspendedMode) {
@@ -249,8 +239,7 @@ void __setupProcessEnv() {
 
 #pragma mark - LSSupportsOpeningDocumentsInPlace
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
   if ([url.host isEqualToString:@"run"]) {
     if (![BKDefaults isXCallBackURLEnabled]) {
       return NO;
@@ -299,24 +288,17 @@ void __setupProcessEnv() {
 }
 
 - (void)_onSceneDidEnterBackground:(NSNotification *)notification {
-  for (UIScene *scene in UIApplication.sharedApplication.connectedScenes.allObjects) {
+  NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
+  for (UIScene *scene in scenes) {
     if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
       return;
     }
   }
-  [self startMonitoringForSuspending];
+  [self _startMonitoringForSuspending];
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
-  [self cancelApplicationSuspend];
+  [self _cancelApplicationSuspend];
 }
-
-//NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
-//  [nc addObserver:self
-//         selector:@selector(_onSceneDidEnterBackground:)
-//             name:UISceneDidEnterBackgroundNotification object:self];
-//  [nc addObserver:self
-//           selector:@selector(_onSceneWillEnterForeground:)
-//               name:UISceneWillEnterForegroundNotification object:self];
 
 @end

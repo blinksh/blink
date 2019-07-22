@@ -74,17 +74,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    
-    
     _spaceController?.currentTerm()?.resumeIfNeeded()
-  }
-  
-  func sceneDidEnterBackground(_ scene: UIScene) {
-    // monitorForSuspend
-  }
-  
-  func sceneDidDisconnect(_ scene: UIScene) {
-    // what we can do useful here?
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
