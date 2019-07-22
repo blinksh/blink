@@ -250,7 +250,36 @@ import MBProgressHUD
   }
   
   @objc public func removeCurrentSpace() {
+    guard
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)
+    else {
+      return
+    }
     
+    SessionRegistry.shared.remove(forKey: currentKey)
+    _viewportsKeys.remove(at: idx)
+    if _viewportsKeys.isEmpty {
+      _createShell(userActivity: nil, key: nil, animated: true)
+      return
+    }
+
+    let direction: UIPageViewController.NavigationDirection
+    let term: TermController
+    
+    if idx < _viewportsKeys.endIndex {
+      direction = .forward
+      term = SessionRegistry.shared[_viewportsKeys[idx]]
+    } else {
+      direction = .reverse
+      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
+    }
+      
+    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
+      self._currentKey = term.meta.key
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
+    }
   }
   
   @objc func _focusOnShell() {
@@ -611,7 +640,6 @@ extension SpaceController {
     guard
       let currentKey = _currentKey,
       let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by),
-
       idx >= _viewportsKeys.startIndex,
       idx < _viewportsKeys.endIndex
     else {
