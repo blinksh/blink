@@ -182,9 +182,12 @@ extension SuspendableSession {
   }
   
   private func _fsRemove(forKey key: UUID) {
+    let fm = FileManager.default
     do {
       let sessionURL = try _fsSessionURL(key)
-      try FileManager.default.removeItem(at: sessionURL)
+      if fm.fileExists(atPath: sessionURL.path) {
+        try fm.removeItem(at: sessionURL)
+      }
     } catch let e {
       debugPrint(e)
     }

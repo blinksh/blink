@@ -88,6 +88,14 @@ void __setupProcessEnv() {
   addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
   __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   
+  NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
+  [nc addObserver:self
+         selector:@selector(_onSceneDidEnterBackground:)
+             name:UISceneDidEnterBackgroundNotification object:self];
+  [nc addObserver:self
+           selector:@selector(_onSceneWillEnterForeground:)
+               name:UISceneWillEnterForegroundNotification object:self];
+  
   return YES;
 }
 
@@ -127,14 +135,7 @@ void __setupProcessEnv() {
   return YES;
 }
 
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-  
-  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
-}
 
-- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
-  [SpaceController onDidDiscardSceneSessions: sceneSessions];
-}
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
@@ -285,5 +286,37 @@ void __setupProcessEnv() {
   // What we can do useful?
   return YES;
 }
+
+#pragma mark - Scenes
+
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+  
+  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
+}
+
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+  [SpaceController onDidDiscardSceneSessions: sceneSessions];
+}
+
+- (void)_onSceneDidEnterBackground:(NSNotification *)notification {
+  for (UIScene *scene in UIApplication.sharedApplication.connectedScenes.allObjects) {
+    if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
+      return;
+    }
+  }
+  [self startMonitoringForSuspending];
+}
+
+- (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  [self cancelApplicationSuspend];
+}
+
+//NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
+//  [nc addObserver:self
+//         selector:@selector(_onSceneDidEnterBackground:)
+//             name:UISceneDidEnterBackgroundNotification object:self];
+//  [nc addObserver:self
+//           selector:@selector(_onSceneWillEnterForeground:)
+//               name:UISceneWillEnterForegroundNotification object:self];
 
 @end

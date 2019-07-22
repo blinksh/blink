@@ -74,7 +74,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    // cancel suspend
+    
+    
+    _spaceController?.currentTerm()?.resumeIfNeeded()
   }
   
   func sceneDidEnterBackground(_ scene: UIScene) {
@@ -86,6 +88,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    (window?.rootViewController as? SpaceController)?.stateRestorationActivity()
+    _spaceController?.stateRestorationActivity()
+  }
+  
+  private var _spaceController: SpaceController? {
+    window?.rootViewController as? SpaceController
   }
 }
