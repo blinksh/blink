@@ -344,14 +344,6 @@ import MBProgressHUD
     }
   }
   
-  @objc public func viewScreenWillBecomeActive() {
-    
-  }
-  
-  @objc public func viewScreenDidBecomeInactive() {
-    
-  }
-  
   @objc public func moveAllShellsFromSpaceController(_ spaceController: SpaceController) {
     
   }
