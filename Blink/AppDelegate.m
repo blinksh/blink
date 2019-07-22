@@ -33,7 +33,6 @@
 #import "Migrator.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
-#import "ScreenController.h"
 #import "BlinkPaths.h"
 #import "BKDefaults.h"
 #import "BKPubKey.h"
@@ -156,7 +155,7 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-  restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
+//  restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
   return YES;
 }
 

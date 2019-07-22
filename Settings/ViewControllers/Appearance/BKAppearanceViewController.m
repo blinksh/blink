@@ -35,7 +35,6 @@
 #import "BKTheme.h"
 #import "TermView.h"
 #import "TermDevice.h"
-#import "ScreenController.h"
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
@@ -526,7 +525,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   _overscanCompensationValue = [self _overscanCompensationFromIndex:sender.selectedSegmentIndex];
   
-  [ScreenController applyOverscanOptionToScreen:[UIScreen.screens lastObject] value:_overscanCompensationValue];
+//  [ScreenController applyOverscanOptionToScreen:[UIScreen.screens lastObject] value:_overscanCompensationValue];
 }
 
 

@@ -52,7 +52,7 @@ import MBProgressHUD
       [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
   private lazy var _termInput = TermInput()
-  private var _touchOverlay = TouchOverlay(frame: .zero)
+  private lazy var _touchOverlay = TouchOverlay(frame: .zero)
   
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
