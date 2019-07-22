@@ -99,9 +99,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
-  
-  UIView *_deadZoneLeft;
-  UIView *_deadZoneRight;
 }
 
 
@@ -134,12 +131,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
   [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
-  
-  _deadZoneLeft = [[UIView alloc] initWithFrame:CGRectZero];
-  _deadZoneRight = [[UIView alloc] initWithFrame:CGRectZero];
-  
-//  [self addSubview:_deadZoneLeft];
-//  [self addSubview:_deadZoneRight];
 
   return self;
 }
@@ -151,13 +142,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-
-  CGFloat gripSize = 14;
-  _deadZoneLeft.frame = CGRectMake(0, 0, gripSize, self.bounds.size.height);
-  _deadZoneRight.frame = CGRectMake(self.bounds.size.width - gripSize, 0, gripSize, self.bounds.size.height);
-  
-  [self bringSubviewToFront:_deadZoneLeft];
-  [self bringSubviewToFront:_deadZoneRight];
   
   CGRect webViewFrame = [self webViewFrame];
   if (CGRectEqualToRect(_webView.frame, webViewFrame)) {
