@@ -399,6 +399,19 @@ extension SpaceController: UIStateRestorable {
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
   }
+  
+  @objc static func onDidDiscardSceneSessions(_ sessions: Set<UISceneSession>) {
+    let registry = SessionRegistry.shared
+    sessions.forEach { session in
+      guard
+        let uiState = SpaceController.UIState(userActivity: session.stateRestorationActivity)
+      else {
+        return
+      }
+      
+      uiState.keys.forEach { registry.remove(forKey: $0) }
+    }
+  }
 }
 
 extension SpaceController: UIPageViewControllerDelegate {

@@ -74,6 +74,8 @@ protocol UIStateRestorable {
   
   func dumpUIState() -> UIState
   func restore(withState: UIState)
+  
+  static func onDidDiscardSceneSessions(_ sessions: Set<UISceneSession>)
 }
 
 extension UIStateRestorable {
