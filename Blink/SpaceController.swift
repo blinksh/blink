@@ -203,8 +203,8 @@ public class SpaceController: SafeLayoutViewController {
     term.bgColor = view.backgroundColor ?? .black
     
     if let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey) {
-      _viewportsKeys.insert(term.meta.key, at: idx + 1)
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
+      _viewportsKeys.insert(term.meta.key, at: idx)
     } else {
       _viewportsKeys.insert(term.meta.key, at: _viewportsKeys.count)
     }
@@ -245,10 +245,10 @@ public class SpaceController: SafeLayoutViewController {
   
   func _closeCurrentSpace() {
     currentTerm()?.terminate()
-    removeCurrentSpace()
+    _removeCurrentSpace()
   }
   
-  @objc public func removeCurrentSpace() {
+  private func _removeCurrentSpace() {
     guard
       let currentKey = _currentKey,
       let idx = _viewportsKeys.firstIndex(of: currentKey)
@@ -608,25 +608,35 @@ extension SpaceController {
     _closeCurrentSpace()
   }
   
-  private func _advanceShell(by: Int) {
+  private func _moveToShell(idx: Int) {
     guard
-      let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by),
       idx >= _viewportsKeys.startIndex,
-      idx < _viewportsKeys.endIndex
+      idx < _viewportsKeys.endIndex,
+      let currentKey = _currentKey,
+      let currentIdx = _viewportsKeys.firstIndex(of: currentKey)
     else {
       return
     }
-        
     let key = _viewportsKeys[idx]
     let term: TermController = SessionRegistry.shared[key]
-    let direction: UIPageViewController.NavigationDirection = by > 0 ? .forward : .reverse
-    
+    let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
+        
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
       self._currentKey = term.meta.key
       self._displayHUD()
       self._attachInputToCurrentTerm()
     }
+  }
+  
+  private func _advanceShell(by: Int) {
+    guard
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
+    else {
+      return
+    }
+        
+    _moveToShell(idx: idx)
   }
   
   @objc private func _nextShellAction() {
@@ -680,6 +690,7 @@ extension SpaceController {
   }
   
   @objc func _showConfigAction() {
+    
   }
   
 }
