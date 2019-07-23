@@ -119,28 +119,22 @@ extension SuspendableSession {
   }
   
   func suspendIfNeeded(session: SuspendableSession) {
-    let meta = session.meta
-    guard
-      !meta.isSuspended
-    else {
+    guard !session.meta.isSuspended else {
       return
     }
     
     let archiver = NSKeyedArchiver(requiringSecureCoding: true)
     session.suspendedSession(with: archiver)
-    _fsWrite(archiver.encodedData, forKey: meta.key)
-    meta.isSuspended = true
+    _fsWrite(archiver.encodedData, forKey: session.meta.key)
+    session.meta.isSuspended = true
   }
   
   func resumeIfNeeded(session: SuspendableSession) {
-    let meta = session.meta
-    guard
-      meta.isSuspended
-    else {
+    guard session.meta.isSuspended else {
       return
     }
 
-    resume(forKey: meta.key)
+    resume(forKey: session.meta.key)
   }
   
   func resume(forKey key: UUID) {
