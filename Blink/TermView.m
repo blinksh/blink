@@ -102,7 +102,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 
-- (id)initWithFrame:(CGRect)frame andBgColor:(UIColor *)bgColor
+- (id)initWithFrame:(CGRect)frame
 {
   self = [super initWithFrame:frame];
 
@@ -115,16 +115,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   [self _addWebView];
   self.opaque = YES;
-  _webView.opaque = YES;
+  _webView.opaque = NO;
   
   UIImageView *imageView = [[UIImageView alloc] initWithFrame:[self webViewFrame]];
   imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
   imageView.autoresizingMask =  UIViewAutoresizingNone;
-  
-  bgColor = bgColor ?: [UIColor blackColor];
-  imageView.backgroundColor = bgColor;
-  self.backgroundColor = bgColor;
-  
+
   _snapshotImageView = imageView;
   [self addSubview:imageView];
   
@@ -133,6 +129,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 
   return self;
+}
+
+- (void)setBackgroundColor:(UIColor *)backgroundColor {
+  [super setBackgroundColor:backgroundColor];
+  _webView.backgroundColor = backgroundColor;
+  _snapshotImageView.backgroundColor = backgroundColor;
 }
 
 - (void)dealloc
@@ -234,12 +236,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (NSString *)title
 {
   return _webView.title;
-}
-
-- (void)setBackgroundColor:(UIColor *)backgroundColor
-{
-  [super setBackgroundColor:backgroundColor];
-  _webView.backgroundColor = backgroundColor;
 }
 
 - (void)loadWith:(MCPParams *)params;

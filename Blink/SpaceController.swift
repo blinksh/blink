@@ -273,6 +273,7 @@ public class SpaceController: SafeLayoutViewController {
       direction = .reverse
       term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
     }
+    term.bgColor = view.backgroundColor ?? .black
       
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
       self._currentKey = term.meta.key
@@ -470,6 +471,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     
     let newKey = _viewportsKeys[idx]
     let newCtrl: TermController = SessionRegistry.shared[newKey]
+    newCtrl.bgColor = view.backgroundColor ?? .black
     return newCtrl
   }
   

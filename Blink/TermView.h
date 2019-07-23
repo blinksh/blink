@@ -68,9 +68,6 @@
 @property (nonatomic) BOOL layoutLocked;
 @property (nonatomic) CGRect layoutLockedFrame;
 
-
-
-- (id)initWithFrame:(CGRect)frame andBgColor: (UIColor *)bgColor;
 - (CGRect)webViewFrame;
 - (void)loadWith:(MCPParams *)params;
 - (void)reloadWith:(MCPParams *)params;

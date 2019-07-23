@@ -50,7 +50,7 @@ class TermController: UIViewController {
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
-  private var _termView = TermView(frame: .zero, andBgColor: nil)
+  private var _termView = TermView(frame: .zero)
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
     
@@ -90,6 +90,7 @@ class TermController: UIViewController {
   public override func loadView() {
     _termDevice.delegate = self
     _termDevice.attachView(_termView)
+    _termView.backgroundColor = _bgColor
     view = _termView
   }
   
@@ -97,19 +98,15 @@ class TermController: UIViewController {
     super.viewDidLoad()
     resumeIfNeeded()
     
-    _termView?.load(with: _sessionParams)
+    _termView.load(with: _sessionParams)
   }
   
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     
-    guard let termView = _termView else {
-      return
-    }
-    
-    termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: _sessionParams.layoutMode)
-    termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
-    termView.layoutLocked = _sessionParams.layoutLocked
+    _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: _sessionParams.layoutMode)
+    _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
+    _termView.layoutLocked = _sessionParams.layoutLocked
   }
   
   public override func viewDidLayoutSubviews() {
@@ -127,15 +124,13 @@ class TermController: UIViewController {
   }
   
   @objc public func terminate() {
-    _termView?.terminate()
+    _termView.terminate()
     _session?.kill()
   }
   
   @objc public func lockLayout() {
     _sessionParams.layoutLocked = true
-    if let frame = _termView?.webViewFrame() {
-      _sessionParams.layoutLockedFrame = frame
-    }
+    _sessionParams.layoutLockedFrame = _termView.webViewFrame()
   }
   
   @objc public func unlockLayout() {
@@ -166,7 +161,7 @@ class TermController: UIViewController {
       guard newSize == _sessionParams.fontSize else {
         return
       }
-      _termView?.setFontSize(newSize as NSNumber)
+      _termView.setFontSize(newSize as NSNumber)
     default:  break
     }
   }
