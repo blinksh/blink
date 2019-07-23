@@ -132,7 +132,7 @@
 		<true/>
 		<key>UISceneConfigurations</key>
 		<dict>
-			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
 					<key>UISceneDelegateClassName</key>
@@ -141,7 +141,7 @@
 					<string>main</string>
 				</dict>
 			</array>
-			<key>UIWindowSceneSessionRoleApplication</key>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
 			<array>
 				<dict>
 					<key>UISceneDelegateClassName</key>

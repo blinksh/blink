@@ -49,7 +49,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let spaceCntrl = SpaceController()
     spaceCntrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     window?.rootViewController = spaceCntrl
-    window?.makeKeyAndVisible()
+    window?.isHidden = false
   }
   
   private func _tuneOverscanIfNeeded(session: UISceneSession) {
@@ -84,4 +84,5 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   private var _spaceController: SpaceController? {
     window?.rootViewController as? SpaceController
   }
+
 }

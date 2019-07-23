@@ -651,7 +651,37 @@ extension SpaceController {
   
   
   @objc func _focusOtherScreenAction() {
+    let app = UIApplication.shared
+    let sessions = Array(app.openSessions)
+      .sorted(by: {(a, b) in
+      a.persistentIdentifier > b.persistentIdentifier
+    })
+//    view.window?.windowScene?.session.persistentIdentifier
+    guard
+      sessions.count > 1,
+      let session = view.window?.windowScene?.session,
+      let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
+    else  {
+      return
+    }
     
+    let nextSession: UISceneSession
+    if idx < sessions.endIndex {
+      nextSession = sessions[idx]
+    } else {
+     nextSession = sessions[0]
+    }
+    
+    if let scene = nextSession.scene as? UIWindowScene,
+      scene.activationState == .foregroundActive || scene.activationState == .foregroundInactive,
+      let delegate = scene.delegate as? SceneDelegate,
+      let window = delegate.window,
+      let spaceCtrl = window.rootViewController as? SpaceController
+      {
+      window.makeKeyAndVisible()
+    } else {
+      app.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
+    }
   }
   
   @objc func _moveToOtherScreenAction() {

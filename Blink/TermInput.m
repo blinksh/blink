@@ -411,19 +411,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return res;
 }
 
-- (BOOL)canResignFirstResponder {
-  return UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
-}
-
-- (BOOL)resignFirstResponder
-{
-  if (UIApplication.sharedApplication.applicationState == UIApplicationStateInactive) {
-    return NO;
-  }
-  [_device blur];
-  return [super resignFirstResponder];
-}
-
 - (void)reset
 {
   _skipTextStorageDelete = YES;
