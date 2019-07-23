@@ -690,7 +690,11 @@ extension SpaceController {
   }
   
   @objc func _showConfigAction() {
-    
+    DispatchQueue.main.async {
+      let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+      let vc = storyboard.instantiateViewController(identifier: "NavSettingsController")
+      self.present(vc, animated: true, completion: nil)
+    }
   }
   
 }

@@ -38,7 +38,7 @@ int config_main(int argc, char *argv[]) {
   if (argc == 1) {
     dispatch_async(dispatch_get_main_queue(), ^{
       [[UIApplication sharedApplication]
-       sendAction:NSSelectorFromString(@"showConfig:") to:nil from:nil forEvent:nil];
+       sendAction:NSSelectorFromString(@"_showConfigAction") to:nil from:nil forEvent:nil];
     });
     
     return 0;
