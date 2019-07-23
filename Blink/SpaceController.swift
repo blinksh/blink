@@ -33,8 +33,7 @@
 import Foundation
 import MBProgressHUD
 
-
-@objc public class SpaceController: SafeLayoutViewController {
+public class SpaceController: SafeLayoutViewController {
   
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
@@ -457,48 +456,29 @@ extension SpaceController: UIPageViewControllerDelegate {
 }
 
 extension SpaceController: UIPageViewControllerDataSource {
-  public func pageViewController(
-    _ pageViewController: UIPageViewController,
-    viewControllerBefore viewController: UIViewController
-    ) -> UIViewController?
-  {
-    guard let ctrl = viewController as? TermController else {
+  private func _controller(controller: UIViewController, advancedBy: Int) -> UIViewController? {
+    guard let ctrl = controller as? TermController else {
       return nil
     }
-    
     let key = ctrl.meta.key
     guard
-      let idx = _viewportsKeys.firstIndex(of: key),
-      idx > 0 else {
+      let idx = _viewportsKeys.firstIndex(of: key)?.advanced(by: advancedBy),
+      idx >= 0 && idx < _viewportsKeys.endIndex
+    else {
       return nil
     }
     
-    let newKey = _viewportsKeys[idx - 1]
-    
+    let newKey = _viewportsKeys[idx]
     let newCtrl: TermController = SessionRegistry.shared[newKey]
     return newCtrl
   }
   
-  public func pageViewController(
-    _ pageViewController: UIPageViewController,
-    viewControllerAfter viewController: UIViewController
-    ) -> UIViewController?
-  {
-    guard let ctrl = viewController as? TermController else {
-      return nil
-    }
-    
-    let key = ctrl.meta.key
-    guard
-      let idx = _viewportsKeys.firstIndex(of: key),
-      idx + 1 < _viewportsKeys.endIndex else {
-        return nil
-    }
-    
-    let newKey = _viewportsKeys[idx + 1]
-    
-    let newCtrl: TermController = SessionRegistry.shared[newKey]
-    return newCtrl
+  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+    _controller(controller: viewController, advancedBy: -1)
+  }
+  
+  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+    _controller(controller: viewController, advancedBy: 1)
   }
   
 }
@@ -610,7 +590,7 @@ extension SpaceController {
       _cmd("Zoom Out",   #selector(_decreaseFontSizeAction), "-",  modifierFlags),
       _cmd("Zoom Reset", #selector(_resetFontSizeAction),    "=",  modifierFlags),
       
-      //
+      // Screens
       _cmd("Focus Other Screen",         #selector(_focusOtherScreenAction),  "o", modifierFlags),
       _cmd("Move shell to other Screen", #selector(_moveToOtherScreenAction), "o", prevNextShellModifierFlags),
       
