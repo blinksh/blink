@@ -122,8 +122,11 @@ public class SpaceController: SafeLayoutViewController {
 //      term.userActivity = userActivity
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
-            self._attachInputToCurrentTerm()
-          }
+        DispatchQueue.main.async {
+          self._attachInputToCurrentTerm()
+        }
+            
+      }
     }
     
   }
@@ -173,7 +176,9 @@ public class SpaceController: SafeLayoutViewController {
     }
     
     if window.isKeyWindow {
-      _focusOnShell()
+      DispatchQueue.main.async {
+        self._focusOnShell()
+      }
     } else {
       currentDevice?.blur()
     }
@@ -212,11 +217,13 @@ public class SpaceController: SafeLayoutViewController {
     SessionRegistry.shared.track(session: term)
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
-      self._currentKey = term.meta.key
-      self._displayHUD()
-      self._attachInputToCurrentTerm()
-      if let completion = completion {
-        completion(didComplete)
+      DispatchQueue.main.async {
+        self._currentKey = term.meta.key
+        self._displayHUD()
+        self._attachInputToCurrentTerm()
+        if let completion = completion {
+          completion(didComplete)
+        }
       }
     }
   }

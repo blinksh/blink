@@ -270,18 +270,16 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     self.inputAssistantItem.trailingBarButtonGroups = @[];
     
     
-    // Disable Smart Anything introduced within iOS11
-    if (@available(iOS 11.0, *)) {
-      self.smartDashesType = UITextSmartDashesTypeNo;
-      self.smartQuotesType = UITextSmartQuotesTypeNo;
-      self.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
-    }
+    self.smartDashesType = UITextSmartDashesTypeNo;
+    self.smartQuotesType = UITextSmartQuotesTypeNo;
+    self.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
+    self.spellCheckingType = UITextSpellCheckingTypeNo;
     
     self.delegate = self;
     
-    _smartKeys = [[SmartKeysController alloc] init];
-    _smartKeys.textInputDelegate = self;
-    self.inputAccessoryView = [_smartKeys view];
+//    _smartKeys = [[SmartKeysController alloc] init];
+//    _smartKeys.textInputDelegate = self;
+//    self.inputAccessoryView = [_smartKeys view];
     
     _undoManager = [[UndoManager alloc] init];
     _undoManager.undoManagerDelegate = self;

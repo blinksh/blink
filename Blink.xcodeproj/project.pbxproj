@@ -148,6 +148,7 @@
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D23E143D20A977AB000FCF5C /* Repl.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E143C20A977AB000FCF5C /* Repl.m */; };
 		D240806120BC8DF800F30099 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = D240806020BC8DF800F30099 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I Frameworks/ios_system/curl/curl/include/ -I Frameworks/ios_system/curl/curl/lib/ -I Frameworks/ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I Frameworks/ios_system/"; }; };
+		D242157822E878950037E5A6 /* CodableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* CodableColor.swift */; };
 		D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67522DDDF130057FE67 /* UIStateRestorable.swift */; };
 		D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
@@ -158,7 +159,6 @@
 		D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D263489720BEBFE000A8E89F /* libsshd.a */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
-		D2884BA722E0A751002C991D /* CodableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2884BA622E0A751002C991D /* CodableColor.swift */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
 		D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */; };
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
@@ -560,6 +560,7 @@
 		D23E143B20A977AB000FCF5C /* Repl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Repl.h; sourceTree = "<group>"; };
 		D23E143C20A977AB000FCF5C /* Repl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Repl.m; sourceTree = "<group>"; };
 		D240806020BC8DF800F30099 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = Frameworks/ios_system/curl/curl/src/tool_main.c; sourceTree = SOURCE_ROOT; };
+		D242157122E878950037E5A6 /* CodableColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableColor.swift; sourceTree = "<group>"; };
 		D248E67522DDDF130057FE67 /* UIStateRestorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStateRestorable.swift; sourceTree = "<group>"; };
 		D248E67D22DE14100057FE67 /* SessionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParams.swift; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
@@ -576,7 +577,6 @@
 		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
-		D2884BA622E0A751002C991D /* CodableColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = CodableColor.swift; path = ../../../../../System/Volumes/Data/Users/yury/Projects/blink/Blink/CodableColor.swift; sourceTree = "<group>"; };
 		D2887A5522DC676F00701BD5 /* SpaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceController.swift; sourceTree = "<group>"; };
 		D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D28DB3AB210B110B008A1139 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
@@ -711,6 +711,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D242157122E878950037E5A6 /* CodableColor.swift */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D23E143B20A977AB000FCF5C /* Repl.h */,
 				D23E143C20A977AB000FCF5C /* Repl.m */,
@@ -763,7 +764,6 @@
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
-				D2884BA622E0A751002C991D /* CodableColor.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1712,7 +1712,6 @@
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
 				07AA065B1E08B61F008310B7 /* PasscodeLockConfiguration.swift in Sources */,
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
-				D2884BA722E0A751002C991D /* CodableColor.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
@@ -1725,6 +1724,7 @@
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D296199A214F995D0070935A /* blocks.c in Sources */,
+				D242157822E878950037E5A6 /* CodableColor.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,

@@ -77,15 +77,20 @@ void __setupProcessEnv() {
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   signal(SIGPIPE, __on_pipebroken_signal);
   
-  [BlinkPaths linkICloudDriveIfNeeded];
+  dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+  dispatch_async(bgQueue, ^{
+    [BlinkPaths linkICloudDriveIfNeeded];
+  });
   
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
-  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
-  __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
-  
+  dispatch_async(bgQueue, ^{
+    addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
+      __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+  });
+
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
          selector:@selector(_onSceneDidEnterBackground:)
