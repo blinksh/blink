@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -34,6 +34,7 @@
 
 @class TermDevice;
 @class UndoManager;
+@class KBProcessor;
 
 @protocol UndoManagerDelegate
 - (void)undoWithManager:(UndoManager *)manager;
@@ -50,6 +51,7 @@
 
 @property TermDevice *device;
 
+- (void)deviceWrite:(NSString *)input;
 - (void)copyLink:(id)sender;
 - (void)openLink:(id)sender;
 - (void)yank:(id)sender;

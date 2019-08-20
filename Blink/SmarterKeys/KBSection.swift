@@ -29,15 +29,50 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
-//#import "Blink-Swift.h"
+import Foundation
+import UIKit
 
+class KBSection {
+  private var _keys: [KBKey] = []
+  private var _filteredKeys: [KBKey] = []
+  
+  private var _views: [KBKeyView] = []
+  var views: [KBKeyView] { _views }
+  
+  private var _traits: KBTraits = []
+  
+  init(keys: [KBKey]) {
+    _keys = keys
+  }
 
-@interface ControlPanel : UIView
+  func apply(traits: KBTraits, for view: UIView, keyDelegate: KBKeyViewDelegate) -> [KBKeyView] {
+    if _traits == traits {
+      return _views
+    }
+    _traits = traits
+    
+    let filteredKeys = _keys.filter { $0.match(traits: traits) }
+    let diff = filteredKeys.difference(from: _filteredKeys)
+    
+    if diff.isEmpty {
+      return _views
+    }
+    
+    _filteredKeys = filteredKeys
+    
+    for change in diff {
+      switch change {
+      case .remove(let offset, _, _):
+        let keyView = _views[offset]
+        keyView.removeFromSuperview()
+        _views.remove(at: offset)
+      case .insert(let offset, element: let key, _):
+        let keyView = key.view(keyDelegate: keyDelegate)
+        _views.insert(keyView, at: offset)
+        view.addSubview(keyView)
+      }
+    }
 
-//@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
-
-
-- (void)updateLayoutBar;
-
-@end
+    return _views
+  }
+}

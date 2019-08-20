@@ -29,15 +29,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
-//#import "Blink-Swift.h"
+import Foundation
+import AudioToolbox
 
-
-@interface ControlPanel : UIView
-
-//@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
-
-
-- (void)updateLayoutBar;
-
-@end
+enum KBSound: UInt32, Codable {
+  case text     = 1104
+  case delete   = 1155
+  case modifier = 1156
+  
+  func play() {
+    AudioServicesPlaySystemSound(self.rawValue)
+  }
+  
+  func playIfPossible() {
+    // TODO: Find a way to check that
+    // I think: we can't detect this setting. We need to provide our own
+    play()
+  }
+}

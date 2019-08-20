@@ -148,6 +148,25 @@
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D23E143D20A977AB000FCF5C /* Repl.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E143C20A977AB000FCF5C /* Repl.m */; };
 		D240806120BC8DF800F30099 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = D240806020BC8DF800F30099 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I Frameworks/ios_system/curl/curl/include/ -I Frameworks/ios_system/curl/curl/lib/ -I Frameworks/ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I Frameworks/ios_system/"; }; };
+		D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */; };
+		D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */; };
+		D241CBD223040734003D64A5 /* KBDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC023040733003D64A5 /* KBDevice.swift */; };
+		D241CBD323040734003D64A5 /* KBSound.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC123040733003D64A5 /* KBSound.swift */; };
+		D241CBD423040734003D64A5 /* KBView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC223040733003D64A5 /* KBView.swift */; };
+		D241CBD523040734003D64A5 /* KBKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC323040733003D64A5 /* KBKey.swift */; };
+		D241CBD623040734003D64A5 /* KBSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC423040733003D64A5 /* KBSection.swift */; };
+		D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC523040733003D64A5 /* KBKeyShape.swift */; };
+		D241CBD823040734003D64A5 /* KBLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC623040733003D64A5 /* KBLayout.swift */; };
+		D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC723040733003D64A5 /* KBKeyView.swift */; };
+		D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC823040733003D64A5 /* KBTraits.swift */; };
+		D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBC923040733003D64A5 /* KBAccessoryView.swift */; };
+		D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCA23040733003D64A5 /* KBKeyViewVertical2.swift */; };
+		D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCB23040734003D64A5 /* KBProxy.swift */; };
+		D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCC23040734003D64A5 /* KBKeyValue.swift */; };
+		D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCD23040734003D64A5 /* KBKeyAccessibilityElement.swift */; };
+		D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */; };
+		D241CBE123040734003D64A5 /* KBKeyViewTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCF23040734003D64A5 /* KBKeyViewTriangle.swift */; };
+		D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBE5230562E9003D64A5 /* KBSizes.swift */; };
 		D242157822E878950037E5A6 /* CodableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* CodableColor.swift */; };
 		D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67522DDDF130057FE67 /* UIStateRestorable.swift */; };
 		D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
@@ -560,6 +579,25 @@
 		D23E143B20A977AB000FCF5C /* Repl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Repl.h; sourceTree = "<group>"; };
 		D23E143C20A977AB000FCF5C /* Repl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Repl.m; sourceTree = "<group>"; };
 		D240806020BC8DF800F30099 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = Frameworks/ios_system/curl/curl/src/tool_main.c; sourceTree = SOURCE_ROOT; };
+		D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewFlexible.swift; sourceTree = "<group>"; };
+		D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewArrows.swift; sourceTree = "<group>"; };
+		D241CBC023040733003D64A5 /* KBDevice.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBDevice.swift; sourceTree = "<group>"; };
+		D241CBC123040733003D64A5 /* KBSound.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSound.swift; sourceTree = "<group>"; };
+		D241CBC223040733003D64A5 /* KBView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBView.swift; sourceTree = "<group>"; };
+		D241CBC323040733003D64A5 /* KBKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKey.swift; sourceTree = "<group>"; };
+		D241CBC423040733003D64A5 /* KBSection.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSection.swift; sourceTree = "<group>"; };
+		D241CBC523040733003D64A5 /* KBKeyShape.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyShape.swift; sourceTree = "<group>"; };
+		D241CBC623040733003D64A5 /* KBLayout.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBLayout.swift; sourceTree = "<group>"; };
+		D241CBC723040733003D64A5 /* KBKeyView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyView.swift; sourceTree = "<group>"; };
+		D241CBC823040733003D64A5 /* KBTraits.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBTraits.swift; sourceTree = "<group>"; };
+		D241CBC923040733003D64A5 /* KBAccessoryView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBAccessoryView.swift; sourceTree = "<group>"; };
+		D241CBCA23040733003D64A5 /* KBKeyViewVertical2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewVertical2.swift; sourceTree = "<group>"; };
+		D241CBCB23040734003D64A5 /* KBProxy.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBProxy.swift; sourceTree = "<group>"; };
+		D241CBCC23040734003D64A5 /* KBKeyValue.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyValue.swift; sourceTree = "<group>"; };
+		D241CBCD23040734003D64A5 /* KBKeyAccessibilityElement.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyAccessibilityElement.swift; sourceTree = "<group>"; };
+		D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewSymbol.swift; sourceTree = "<group>"; };
+		D241CBCF23040734003D64A5 /* KBKeyViewTriangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewTriangle.swift; sourceTree = "<group>"; };
+		D241CBE5230562E9003D64A5 /* KBSizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSizes.swift; sourceTree = "<group>"; };
 		D242157122E878950037E5A6 /* CodableColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableColor.swift; sourceTree = "<group>"; };
 		D248E67522DDDF130057FE67 /* UIStateRestorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStateRestorable.swift; sourceTree = "<group>"; };
 		D248E67D22DE14100057FE67 /* SessionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParams.swift; sourceTree = "<group>"; };
@@ -711,13 +749,14 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D241CB93230406E2003D64A5 /* SmarterKeys */,
+				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				D242157122E878950037E5A6 /* CodableColor.swift */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D23E143B20A977AB000FCF5C /* Repl.h */,
 				D23E143C20A977AB000FCF5C /* Repl.m */,
 				D2F330C520A6C8E20074ADD7 /* Commands */,
 				D23970DC20A07B5800881637 /* replxx */,
-				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
 				0716B5291CFFAB9300268B5B /* AppDelegate.h */,
@@ -1246,6 +1285,40 @@
 			path = src;
 			sourceTree = "<group>";
 		};
+		D241CB93230406E2003D64A5 /* SmarterKeys */ = {
+			isa = PBXGroup;
+			children = (
+				D241CBE4230546DA003D64A5 /* KeyViews */,
+				D241CBC923040733003D64A5 /* KBAccessoryView.swift */,
+				D241CBCB23040734003D64A5 /* KBProxy.swift */,
+				D241CBC023040733003D64A5 /* KBDevice.swift */,
+				D241CBE5230562E9003D64A5 /* KBSizes.swift */,
+				D241CBC323040733003D64A5 /* KBKey.swift */,
+				D241CBC523040733003D64A5 /* KBKeyShape.swift */,
+				D241CBCC23040734003D64A5 /* KBKeyValue.swift */,
+				D241CBC623040733003D64A5 /* KBLayout.swift */,
+				D241CBC423040733003D64A5 /* KBSection.swift */,
+				D241CBC123040733003D64A5 /* KBSound.swift */,
+				D241CBC823040733003D64A5 /* KBTraits.swift */,
+				D241CBC223040733003D64A5 /* KBView.swift */,
+			);
+			path = SmarterKeys;
+			sourceTree = "<group>";
+		};
+		D241CBE4230546DA003D64A5 /* KeyViews */ = {
+			isa = PBXGroup;
+			children = (
+				D241CBCD23040734003D64A5 /* KBKeyAccessibilityElement.swift */,
+				D241CBC723040733003D64A5 /* KBKeyView.swift */,
+				D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */,
+				D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */,
+				D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */,
+				D241CBCF23040734003D64A5 /* KBKeyViewTriangle.swift */,
+				D241CBCA23040733003D64A5 /* KBKeyViewVertical2.swift */,
+			);
+			path = KeyViews;
+			sourceTree = "<group>";
+		};
 		D263488920BEBF5800A8E89F /* libssh */ = {
 			isa = PBXGroup;
 			children = (
@@ -1641,11 +1714,13 @@
 			files = (
 				D296197F214F91550070935A /* sshkey.c in Sources */,
 				D2961989214F96A10070935A /* chacha.c in Sources */,
+				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				07AA064F1E08B12E008310B7 /* PasscodeLock.swift in Sources */,
 				073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
 				D239710620A07B9100881637 /* escape.cxx in Sources */,
+				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				D239710920A07B9100881637 /* wcwidth.cpp in Sources */,
@@ -1659,6 +1734,8 @@
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D239710420A07B9100881637 /* inputbuffer.cxx in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
+				D241CBD623040734003D64A5 /* KBSection.swift in Sources */,
+				D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,
@@ -1676,11 +1753,14 @@
 				D2F330D420A6F1DF0074ADD7 /* clear.m in Sources */,
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
+				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				D29619AF214FB5EA0070935A /* ssh-ecdsa.c in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				07AA06551E08B12E008310B7 /* PasscodeLockType.swift in Sources */,
+				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
 				D296198A214F96A10070935A /* poly1305.c in Sources */,
 				D2961975214F8A580070935A /* sshbuf.c in Sources */,
 				D296199D214F995D0070935A /* hash.c in Sources */,
@@ -1694,6 +1774,7 @@
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
 				D2071B86215135A9000156D7 /* openssl-compat.c in Sources */,
+				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
 				D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */,
 				07AA06501E08B12E008310B7 /* SetPasscodeState.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
@@ -1701,12 +1782,14 @@
 				D29619AE214FB5EA0070935A /* ssh-rsa.c in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2961983214F968A0070935A /* cipher.c in Sources */,
+				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D29619A0214F995D0070935A /* fe25519.c in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
+				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */,
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
@@ -1721,6 +1804,7 @@
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				D23970FF20A07B9100881637 /* prompt.cxx in Sources */,
+				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D296199A214F995D0070935A /* blocks.c in Sources */,
@@ -1751,18 +1835,23 @@
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */,
+				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				07AA06581E08B12E008310B7 /* PasscodeSignButton.swift in Sources */,
 				D239710520A07B9100881637 /* history.cxx in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
+				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
 				D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */,
 				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
 				85047E71201F8A230090E974 /* RoundedToolbar.m in Sources */,
+				D241CBE123040734003D64A5 /* KBKeyViewTriangle.swift in Sources */,
+				D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */,
@@ -1775,12 +1864,15 @@
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
+				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */,
 				D29619A4214F99A30070935A /* rsa.c in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				C989E54E1D6CC488003E0079 /* BKKeyboardViewController.m in Sources */,
+				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
+				D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */,
 				07AA06591E08B12E008310B7 /* PasscodeSignPlaceholderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

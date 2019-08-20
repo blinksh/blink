@@ -50,8 +50,9 @@ public class SpaceController: SafeLayoutViewController {
     options:
       [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
-  private lazy var _termInput = TermInput()
+  private lazy var _termInput = SmarterTermInput()
   private lazy var _touchOverlay = TouchOverlay(frame: .zero)
+  private lazy var _kbProxy = KBProxy()
   
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
@@ -69,12 +70,25 @@ public class SpaceController: SafeLayoutViewController {
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    if view.window?.screen == UIScreen.main {
+    guard
+      let window = view.window,
+      let scene = window.windowScene
+      else {
+      return
+    }
+    
+    
+    if window.screen == UIScreen.main {
       var insets = UIEdgeInsets.zero
       insets.bottom = _proposedKBBottomInset
       _touchOverlay.frame = view.bounds.inset(by: insets)
     } else {
       _touchOverlay.frame = view.bounds
+    }
+    
+    if traitCollection.userInterfaceIdiom == .phone {
+      _kbProxy.kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+      _kbProxy.kbView.frame = CGRect(origin: .zero, size: _kbProxy.kbView.intrinsicContentSize)
     }
   }
   
@@ -109,6 +123,20 @@ public class SpaceController: SafeLayoutViewController {
     // TODO:
 //    _touchOverlay.controlPanel.controlPanelDelegate = self
     _touchOverlay.attach(_viewportsController)
+    
+    if traitCollection.userInterfaceIdiom == .pad {
+      let item = UIBarButtonItem(customView: _kbProxy)
+      _termInput.inputAssistantItem.leadingBarButtonGroups = []
+      _termInput.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+    } else {
+      let accessoryView = KBAccessoryView(kbView: _kbProxy.kbView)
+      accessoryView.frame = CGRect(origin: .zero, size: _kbProxy.kbView.intrinsicContentSize)
+      _termInput.inputAccessoryView = accessoryView
+    }
+    
+    // TODO: Remove cycle ref
+    _kbProxy.kbView.keyInput = _termInput
+    _termInput.kbView = _kbProxy.kbView
     
     view.addSubview(_termInput)
     _registerForNotifications()
@@ -300,9 +328,7 @@ public class SpaceController: SafeLayoutViewController {
   }
   
   var currentDevice: TermDevice? {
-    get {
       currentTerm()?.termDevice
-    }
   }
   
   @objc func _keyboardWillChangeFrame(sender: NSNotification) {
@@ -321,9 +347,10 @@ public class SpaceController: SafeLayoutViewController {
     if bottomInset > 80 {
       accessoryView?.isHidden = false
       _termInput.softwareKB = true
-    } else if bottomInset == accessoryHeight {
+    } else if bottomInset == accessoryHeight || accessoryView == nil {
       if _touchOverlay.panGestureRecognizer.state == .recognized {
-        accessoryView?.isHidden = true
+//        accessoryView?.isHidden = true
+        currentDevice?.blur()
       } else {
         accessoryView?.isHidden = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
         _termInput.softwareKB = false
@@ -332,7 +359,7 @@ public class SpaceController: SafeLayoutViewController {
       accessoryView?.isHidden = true
     }
     
-    if accessoryView?.isHidden == true,
+    if accessoryView?.isHidden == true || accessoryView == nil,
       let accessoryH = accessoryHeight {
       bottomInset -= accessoryH
       if bottomInset < 0 {
@@ -346,7 +373,6 @@ public class SpaceController: SafeLayoutViewController {
         view.setNeedsLayout()
         return
       }
-      
       updateKbBottomSafeMargins(bottomInset)
     }
   }

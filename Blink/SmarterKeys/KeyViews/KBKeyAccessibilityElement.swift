@@ -29,15 +29,34 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
-//#import "Blink-Swift.h"
+import UIKit
 
+protocol KBKeyAccessibilityElementDelegate: class {
+  func elementIncrement(element: KBKeyAccessibilityElement)
+  func elementDecrement(element: KBKeyAccessibilityElement)
+  func elementActivate(element: KBKeyAccessibilityElement) -> Bool
+}
 
-@interface ControlPanel : UIView
+class KBKeyAccessibilityElement: UIAccessibilityElement {
+  
+  weak var elementDelegate: KBKeyAccessibilityElementDelegate? = nil
+  
+  var accessibilityKBKeyValue: KBKeyValue? = nil {
+    didSet {
+      accessibilityValue = accessibilityKBKeyValue?.accessibilityLabel
+    }
+  }
 
-//@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
-
-
-- (void)updateLayoutBar;
-
-@end
+  override func accessibilityIncrement() {
+    elementDelegate?.elementIncrement(element: self)
+  }
+  
+  override func accessibilityDecrement() {
+    elementDelegate?.elementDecrement(element: self)
+  }
+  
+  override func accessibilityActivate() -> Bool {
+    return elementDelegate?.elementActivate(element: self) ?? false
+  }
+  
+}

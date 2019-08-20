@@ -29,15 +29,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
-//#import "Blink-Swift.h"
+import UIKit
 
-
-@interface ControlPanel : UIView
-
-//@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
-
-
-- (void)updateLayoutBar;
-
-@end
+class KBAccessoryView: UIInputView {
+  private let _kbView: KBView
+  
+  init(kbView: KBView) {
+    _kbView = kbView
+    super.init(frame: .zero, inputViewStyle: .keyboard)
+    addSubview(_kbView)
+  }
+  
+  required init?(coder: NSCoder) {
+    return nil
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    _kbView.frame = bounds
+  }
+}
