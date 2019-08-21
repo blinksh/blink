@@ -35,10 +35,15 @@ import UIKit
 class KBKeyViewArrows: KBKeyView {
   let _symbols: [UIImageView]
   private var _touchFirstLocation: CGPoint = .zero
+  
+  private var _prevValue: KBKeyValue? = nil
   private var _keyValue: KBKeyValue? = nil
   private var _values: [KBKeyValue]
   
   private var _accessibilityElements:[KBKeyAccessibilityElement]? = nil
+  private var _timer: Timer? = nil
+  private var _repeating: Bool = false
+  private var _repeatingSpeed: TimeInterval = 0.1
   
   override init(key: KBKey, keyDelegate: KBKeyViewDelegate) {
     
@@ -68,12 +73,45 @@ class KBKeyViewArrows: KBKeyView {
   }
   
   
+  func _startTimer() {
+    _timer?.invalidate()
+    weak var weakSelf = self
+    _timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+      weakSelf?._repeating = true
+      weakSelf?._continueTimer(interval: 0.1)
+    }
+  }
+  
+  func _continueTimer(interval: TimeInterval) {
+    _timer?.invalidate()
+    weak var weakSelf = self
+    _repeatingSpeed = interval
+    
+    weakSelf?._timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+      guard let view = weakSelf, let value = view._keyValue else {
+        return
+      }
+      
+      view.key.sound.playIfPossible()
+      view.keyDelegate.keyViewTriggered(keyView: view, value: value)
+    }
+  }
+  
+  func _stopTimer() {
+    _repeating = false
+    _timer?.invalidate()
+    _timer = nil
+  }
+  
   
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     guard let touch = touches.first else {
       return
     }
     
+    _stopTimer()
+    _prevValue = nil
+    _keyValue = nil
     _touchFirstLocation = touch.location(in: self)
     super.touchesBegan(touches, with: event)
     
@@ -100,6 +138,8 @@ class KBKeyViewArrows: KBKeyView {
     
     if abs(delta.x) < keyBounds.width * 0.2 && abs(delta.y) < keyBounds.height * 0.15 {
       _keyValue = nil
+      _prevValue = nil
+      _stopTimer()
       setNeedsLayout()
       return
     }
@@ -109,22 +149,39 @@ class KBKeyViewArrows: KBKeyView {
     } else {
       _keyValue = delta.y < 0 ? .down : .up
     }
-    setNeedsLayout()
+    
+    if _repeating {
+      var speed = 0.1
+      if abs(delta.x) > keyBounds.width * 0.9 || abs(delta.y) > keyBounds.height * 3  {
+        speed = 0.05
+      }
+      if abs(delta.x) > keyBounds.width * 2 || abs(delta.y) > keyBounds.height * 4  {
+        speed = 0.024
+      }
+      if speed !=  _repeatingSpeed {
+        _continueTimer(interval: speed)
+      }
+    }
+    
+    if _prevValue != _keyValue {
+      _prevValue = _keyValue
+      _startTimer()
+      setNeedsLayout()
+    }
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-    super.touchesEnded(touches, with: event)
     if let value = _keyValue {
       keyDelegate.keyViewTriggered(keyView: self, value: value)
     }
-    _keyValue = nil
-    setNeedsLayout()
+    super.touchesEnded(touches, with: event)
   }
   
-  override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-    super.touchesCancelled(touches, with: event)
+  override func turnOff() {
     _keyValue = nil
-    setNeedsLayout()
+    _prevValue = nil
+    _stopTimer()
+    super.turnOff()
   }
   
   override func layoutSubviews() {

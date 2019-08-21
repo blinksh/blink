@@ -71,7 +71,6 @@ class KBKeyView: UIView {
     return nil
   }
   
-  
   override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
     super.touchesBegan(touches, with: event)
     trackingTouch = touches.first
@@ -100,7 +99,6 @@ class KBKeyView: UIView {
     }
     turnOff()
     keyDelegate.keyViewCancelled(keyView: self)
-    setNeedsLayout()
   }
   
   
@@ -125,9 +123,10 @@ class KBKeyView: UIView {
   }
   
   open func turnOff() {
-    self.backgroundColor = .clear
+    backgroundColor = .clear
     trackingTouch = nil
     keyDelegate.keyViewOff(keyView: self, value: currentValue)
+    setNeedsLayout()
   }
   
   open func turnOn() {
@@ -136,7 +135,7 @@ class KBKeyView: UIView {
       _updateLayerShapeMask()
     }
     
-    self.backgroundColor = .tertiarySystemBackground
+    backgroundColor = .tertiarySystemBackground
     
     keyDelegate.keyViewOn(keyView: self, value: currentValue)
     key.sound.playIfPossible()

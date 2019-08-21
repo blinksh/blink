@@ -36,6 +36,16 @@
 @class UndoManager;
 @class KBProcessor;
 
+@interface CC : NSObject
+
++ (void)initialize;
++ (NSString *)CTRL:(NSString *)c;
++ (NSString *)ESC:(NSString *)c;
++ (NSString *)KEY:(NSString *)c;
+
+@end
+
+
 @protocol UndoManagerDelegate
 - (void)undoWithManager:(UndoManager *)manager;
 - (void)redoWithManager:(UndoManager *)manager;
@@ -58,5 +68,9 @@
 - (void)pasteSelection:(id)sender;
 
 - (void)reset;
+
+- (void)escCtrlSeqWithInput:(NSString *)input;
+- (void)escSeqWithInput:(NSString *)input;
+- (void)ctrlSeqWithInput:(NSString *)input;
 
 @end

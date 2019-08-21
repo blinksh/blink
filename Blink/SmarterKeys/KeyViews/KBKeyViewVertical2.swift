@@ -166,7 +166,6 @@ class KBKeyViewVertical2: KBKeyView {
     default: break
     }
     _progress = 0
-    setNeedsLayout()
     
     super.touchesEnded(touches, with: event)
   }

@@ -330,8 +330,8 @@ extension KBView: KBKeyViewDelegate {
     }
     
     switch value {
-    case .text(let value):
-      keyInput?.insertText(value)
+    case .text, .esc, .left, .right, .up, .down, .tab:
+      keyInput?.insertText(value.text)
     default: break
     }
     
@@ -367,7 +367,22 @@ class SmarterTermInput: TermInput {
   weak var kbView: KBView? = nil
   
   override func insertText(_ text: String) {
-    super.insertText(text)
+    guard let kbView = kbView
+    else {
+      super.insertText(text)
+      return
+    }
+    
+    let traits = kbView.traits
+    if traits.contains([.altOn, .ctrlOn]) {
+      escCtrlSeq(withInput:text)
+    } else if traits.contains(.altOn) {
+      escSeq(withInput: text)
+    } else if traits.contains(.ctrlOn) {
+      ctrlSeq(withInput: text)
+    } else {
+      super.insertText(text)
+    }
   }
   
   override func deviceWrite(_ input: String!) {

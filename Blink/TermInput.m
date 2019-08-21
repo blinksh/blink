@@ -54,16 +54,6 @@ NSString *const TermViewCursorFuncSeq = @"cursorSeq:";
 NSString *const TermViewFFuncSeq = @"fkeySeq:";
 NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
-
-@interface CC : NSObject
-
-+ (void)initialize;
-+ (NSString *)CTRL:(NSString *)c;
-+ (NSString *)ESC:(NSString *)c;
-+ (NSString *)KEY:(NSString *)c;
-
-@end
-
 @implementation CC
 + (void)initialize
 {
@@ -324,7 +314,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 
 - (void)deviceWrite:(NSString *) input {
-  [_device write:@"\x7f"];
+  [_device write:input];
 }
 
 - (void)textStorage:(NSTextStorage *)textStorage
@@ -462,11 +452,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   } else {
     NSUInteger modifiers = [[_smartKeys view] modifiers];
     if (modifiers == KbdCtrlModifier) {
-      [self _ctrlSeqWithInput:text];
+      [self ctrlSeqWithInput:text];
     } else if (modifiers == KbdAltModifier) {
-      [self _escSeqWithInput:text];
+      [self escSeqWithInput:text];
     } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
-      [self _escCtrlSeqWithInput: text];
+      [self escCtrlSeqWithInput: text];
     } else {
       [self deviceWrite:[CC KEY:text MOD:0 RAW:_device.rawMode]];
     }
@@ -559,7 +549,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)_escSeqWithInput:(NSString *)input
+- (void)escSeqWithInput:(NSString *)input
 {
   if (_device.view.hasSelection) {
     if ([input isEqualToString:@""]) {
@@ -574,12 +564,12 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)escSeq:(UIKeyCommand *)cmd
 {
-  [self _escSeqWithInput:cmd.input];
+  [self escSeqWithInput:cmd.input];
 }
 
 - (void)escSeqNoInput:(UIKeyCommand *)cmd
 {
-  [self _escSeqWithInput:@""];
+  [self escSeqWithInput:@""];
 }
 
 - (void)arrowSeq:(UIKeyCommand *)cmd
@@ -601,7 +591,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 }
 
-- (void)_ctrlSeqWithInput:(NSString *)input
+- (void)ctrlSeqWithInput:(NSString *)input
 {
   if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:input andFlags:UIKeyModifierControl];
@@ -616,7 +606,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)ctrlSeq:(UIKeyCommand *)cmd
 {
   if ([cmd.input length]) {
-    [self _ctrlSeqWithInput:cmd.input];
+    [self ctrlSeqWithInput:cmd.input];
   }
 }
 
@@ -624,7 +614,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
 }
 
-- (void)_escCtrlSeqWithInput:(NSString *)input
+- (void)escCtrlSeqWithInput:(NSString *)input
 {
   NSString *seq = [NSString stringWithFormat:@"%@%@", [CC ESC:nil], [CC CTRL:input]];
   [self deviceWrite:seq];
@@ -635,7 +625,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (_device.view.hasSelection) {
     [self _changeSelectionWithInput:cmd.input andFlags:UIKeyModifierControl | UIKeyModifierAlternate];
   } else {
-    [self _escCtrlSeqWithInput:cmd.input];
+    [self escCtrlSeqWithInput:cmd.input];
   }
 }
 
@@ -677,11 +667,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     NSString *text = command.input;
     NSUInteger modifiers = [[_smartKeys view] modifiers];
     if (modifiers == KbdCtrlModifier) {
-      [self _ctrlSeqWithInput:text];
+      [self ctrlSeqWithInput:text];
     } else if (modifiers == KbdAltModifier) {
-      [self _escSeqWithInput:text];
+      [self escSeqWithInput:text];
     } else if (modifiers == (KbdCtrlModifier | KbdAltModifier)) {
-      [self _escCtrlSeqWithInput: text];
+      [self escCtrlSeqWithInput: text];
     } else {
       [self deviceWrite:text];
     }
@@ -696,9 +686,9 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   }
 
   if (_cmdModifierSequence == TermViewCtrlSeq) {
-    [self _ctrlSeqWithInput:input];
+    [self ctrlSeqWithInput:input];
   } else if (_cmdModifierSequence == TermViewEscSeq) {
-    [self _escSeqWithInput:input];
+    [self escSeqWithInput:input];
   } else {
     // return NO?
   }
@@ -1148,10 +1138,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (BOOL)_remapInput:(NSString *)input forModifier:(const NSString *)modifer {
   NSString *sequence = [BKDefaults keyboardMapping][modifer];
   if ([sequence isEqual:BKKeyboardSeqCtrl]) {
-    [self _ctrlSeqWithInput:input];
+    [self ctrlSeqWithInput:input];
     return YES;
   } else if ([sequence isEqual:BKKeyboardSeqEsc]) {
-    [self _escSeqWithInput:input];
+    [self escSeqWithInput:input];
     return YES;
   }
   

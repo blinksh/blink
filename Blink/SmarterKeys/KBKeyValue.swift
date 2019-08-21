@@ -123,6 +123,12 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
   var text: String {
     switch self {
     case .text(let value): return value
+    case .esc: return UIKeyCommand.inputEscape
+    case .left: return UIKeyCommand.inputLeftArrow
+    case .right: return UIKeyCommand.inputRightArrow
+    case .up: return UIKeyCommand.inputUpArrow
+    case .down: return UIKeyCommand.inputDownArrow
+    case .tab: return "\t"
     default: return id
     }
   }
