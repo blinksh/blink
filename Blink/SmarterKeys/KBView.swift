@@ -51,7 +51,13 @@ class KBView: UIView {
   private let _indicatorLeft = UIView()
   private let _indicatorRight = UIView()
   var safeBarWidth: CGFloat = 0
-  var kbDevice: KBDevice = .detect()
+  var kbDevice: KBDevice = .detect() {
+    didSet {
+      if oldValue != kbDevice {
+        _updateSections()
+      }
+    }
+  }
   var kbSizes: KBSizes = .portrait_iPhone_4
   
   private var _onModifiersSet: Set<KBKeyView> = []
@@ -62,18 +68,7 @@ class KBView: UIView {
   var lang: String = "" {
     didSet {
       if oldValue != lang {
-        _leftSection.views.forEach { $0.removeFromSuperview() }
-        _middleSection.views.forEach { $0.removeFromSuperview() }
-        _rightSection.views.forEach { $0.removeFromSuperview() }
-        
-        let layout = kbDevice.layoutFor(lang: lang)
-        
-        _leftSection   = KBSection(keys:layout.left)
-        _middleSection = KBSection(keys:layout.middle)
-        _rightSection  = KBSection(keys:layout.right)
-        
-        traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
-        setNeedsLayout()
+        _updateSections()
       }
     }
   }
@@ -135,6 +130,21 @@ class KBView: UIView {
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  func _updateSections() {
+    _leftSection.views.forEach { $0.removeFromSuperview() }
+    _middleSection.views.forEach { $0.removeFromSuperview() }
+    _rightSection.views.forEach { $0.removeFromSuperview() }
+    
+    let layout = kbDevice.layoutFor(lang: lang)
+    
+    _leftSection   = KBSection(keys:layout.left)
+    _middleSection = KBSection(keys:layout.middle)
+    _rightSection  = KBSection(keys:layout.right)
+    
+    traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
+    setNeedsLayout()
   }
   
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
@@ -359,34 +369,5 @@ extension KBView: KBKeyViewDelegate {
 
       recognizer.dropTouches()
     }
-  }
-}
-
-class SmarterTermInput: TermInput {
-  
-  weak var kbView: KBView? = nil
-  
-  override func insertText(_ text: String) {
-    guard let kbView = kbView
-    else {
-      super.insertText(text)
-      return
-    }
-    
-    let traits = kbView.traits
-    if traits.contains([.altOn, .ctrlOn]) {
-      escCtrlSeq(withInput:text)
-    } else if traits.contains(.altOn) {
-      escSeq(withInput: text)
-    } else if traits.contains(.ctrlOn) {
-      ctrlSeq(withInput: text)
-    } else {
-      super.insertText(text)
-    }
-  }
-  
-  override func deviceWrite(_ input: String!) {
-    super.deviceWrite(input)
-    kbView?.turnOffUntracked()
   }
 }

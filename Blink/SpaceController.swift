@@ -38,7 +38,6 @@ public class SpaceController: SafeLayoutViewController {
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
-    var unfocused: Bool = true
     var bgColor:CodableColor? = nil
     
     static var activityType: String { "space.ctrl.ui.state" }
@@ -47,32 +46,27 @@ public class SpaceController: SafeLayoutViewController {
   private lazy var _viewportsController = UIPageViewController(
     transitionStyle: .scroll,
     navigationOrientation: .horizontal,
-    options:
-      [.spineLocation: UIPageViewController.SpineLocation.mid]
+    options: [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
-  private lazy var _termInput = SmarterTermInput()
   private lazy var _touchOverlay = TouchOverlay(frame: .zero)
-  private lazy var _kbProxy = KBProxy()
   
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   private var _musicHUD: MBProgressHUD? = nil
+  private var _previousKBFrame: CGRect = .zero
   
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
-  
-  private var _unfocused = false
   private var _proposedKBBottomInset: CGFloat = 0
-  private var _active = false
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
     guard
-      let window = view.window,
-      let scene = window.windowScene
+      let window = view.window
+//      let scene = window.windowScene
       else {
       return
     }
@@ -84,11 +78,6 @@ public class SpaceController: SafeLayoutViewController {
       _touchOverlay.frame = view.bounds.inset(by: insets)
     } else {
       _touchOverlay.frame = view.bounds
-    }
-    
-    if traitCollection.userInterfaceIdiom == .phone {
-      _kbProxy.kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-      _kbProxy.kbView.frame = CGRect(origin: .zero, size: _kbProxy.kbView.intrinsicContentSize)
     }
   }
   
@@ -124,21 +113,8 @@ public class SpaceController: SafeLayoutViewController {
 //    _touchOverlay.controlPanel.controlPanelDelegate = self
     _touchOverlay.attach(_viewportsController)
     
-    if traitCollection.userInterfaceIdiom == .pad {
-      let item = UIBarButtonItem(customView: _kbProxy)
-      _termInput.inputAssistantItem.leadingBarButtonGroups = []
-      _termInput.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
-    } else {
-      let accessoryView = KBAccessoryView(kbView: _kbProxy.kbView)
-      accessoryView.frame = CGRect(origin: .zero, size: _kbProxy.kbView.intrinsicContentSize)
-      _termInput.inputAccessoryView = accessoryView
-    }
     
-    // TODO: Remove cycle ref
-    _kbProxy.kbView.keyInput = _termInput
-    _termInput.kbView = _kbProxy.kbView
-    
-    view.addSubview(_termInput)
+//    view.addSubview(_termInput)
     _registerForNotifications()
     _setupKBCommands()
     
@@ -157,19 +133,6 @@ public class SpaceController: SafeLayoutViewController {
       }
     }
     
-  }
-  
-  public override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    
-    if _termInput.isFirstResponder && view.window?.isKeyWindow == true {
-      _attachInputToCurrentTerm()
-      return
-    }
-    
-    if !_unfocused {
-      _focusOnShell()
-    }
   }
   
   deinit {
@@ -198,15 +161,17 @@ public class SpaceController: SafeLayoutViewController {
                    object: nil)
   }
   
-  @objc func _didBecomeKeyWindow() {
+  @objc func _didBecomeKeyWindow(win: NSNotification) {
     guard let window = view.window else {
+      currentDevice?.blur()
       return
     }
     
     if window.isKeyWindow {
-      DispatchQueue.main.async {
-        self._focusOnShell()
+      if SmarterTermInput.shared.superview !== self.view {
+        self.view.addSubview(SmarterTermInput.shared)
       }
+      _focusOnShell()
     } else {
       currentDevice?.blur()
     }
@@ -318,62 +283,82 @@ public class SpaceController: SafeLayoutViewController {
   }
   
   @objc func _focusOnShell() {
-    _active = true
-    _termInput.becomeFirstResponder()
     _attachInputToCurrentTerm()
+    SmarterTermInput.shared.becomeFirstResponder()
   }
   
   func _attachInputToCurrentTerm() {
-    currentDevice?.attachInput(_termInput)
+    currentDevice?.attachInput(SmarterTermInput.shared)
   }
   
   var currentDevice: TermDevice? {
-      currentTerm()?.termDevice
+    currentTerm()?.termDevice
   }
   
   @objc func _keyboardWillChangeFrame(sender: NSNotification) {
-    var bottomInset: CGFloat = 0
-    guard let kbFrame = sender.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect else {
+    guard
+      let userInfo = sender.userInfo,
+      let kbFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocal ? _previousKBFrame != kbFrame :  abs(_previousKBFrame.height - kbFrame.height) > 6 // reduce reflows (local height 69, other - 72)!
+    else {
       return
     }
     
-    let viewHeight = view.bounds.height
-    if kbFrame.maxY >= viewHeight {
-      bottomInset = viewHeight - kbFrame.origin.y
+    _previousKBFrame = kbFrame
+    
+    var bottomInset: CGFloat = 0
+    var isFloatingKB = false
+    var isSoftwareKB = true
+    
+    let viewMaxY = view.frame.maxY
+    
+    let kbMaxY = kbFrame.maxY
+    let kbMinY = kbFrame.minY
+
+    let input = SmarterTermInput.shared
+    
+    if kbMaxY >= viewMaxY {
+      bottomInset = viewMaxY - kbMinY
+    } else if kbMinY < viewMaxY && kbMaxY < viewMaxY {
+      // Floating
+      isFloatingKB = true
+      isSoftwareKB = true
+      
+      if let accessoryView = input.inputAccessoryView {
+        bottomInset = accessoryView.bounds.height
+      }
     }
     
-    let accessoryView = _termInput.inputAccessoryView
-    let accessoryHeight = accessoryView?.frame.height
-    if bottomInset > 80 {
-      accessoryView?.isHidden = false
-      _termInput.softwareKB = true
-    } else if bottomInset == accessoryHeight || accessoryView == nil {
-      if _touchOverlay.panGestureRecognizer.state == .recognized {
-//        accessoryView?.isHidden = true
-        currentDevice?.blur()
-      } else {
-        accessoryView?.isHidden = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
-        _termInput.softwareKB = false
-      }
-    } else if kbFrame.height == 0 {
-      accessoryView?.isHidden = true
-    }
-    
-    if accessoryView?.isHidden == true || accessoryView == nil,
-      let accessoryH = accessoryHeight {
-      bottomInset -= accessoryH
-      if bottomInset < 0 {
-        bottomInset = 0
-      }
-      _termInput.softwareKB = false
-      
-      _proposedKBBottomInset = bottomInset
-      
-      if (!_active) {
-        view.setNeedsLayout()
-        return
-      }
+    defer {
+      _proposedKBBottomInset = bottomInset;
+      view.setNeedsLayout()
       updateKbBottomSafeMargins(bottomInset)
+    }
+    
+    guard view.window?.isKeyWindow == true
+    else {
+      return
+    }
+    // Control only on keyWindow
+    let kbView = input.kbView
+    
+    kbView.traits.isFloatingKB = isFloatingKB
+    
+    if traitCollection.userInterfaceIdiom == .phone {
+      // TODO: check software kb
+    } else if isFloatingKB && input.inputAccessoryView == nil {
+      // put in iphone mode
+      kbView.kbDevice = .in6_5
+      kbView.traits.isPortrait = true
+      kbView.traits.isHKBAttached = !isSoftwareKB
+      input.setupAccessoryView()
+      bottomInset = input.inputAccessoryView?.frame.height ?? 0
+      input.reloadInputViews()
+    } else if !isFloatingKB && input.inputAccessoryView != nil {
+      kbView.kbDevice = .detect()
+      input.setupAssistantItem()
+      input.reloadInputViews()
     }
   }
   
@@ -439,9 +424,8 @@ public class SpaceController: SafeLayoutViewController {
 }
 
 extension SpaceController: UIStateRestorable {
-  func restore(withState state: SpaceController.UIState) {
+  func restore(withState state: UIState) {
     _viewportsKeys = state.keys
-    _unfocused = state.unfocused
     _currentKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
@@ -451,10 +435,9 @@ extension SpaceController: UIStateRestorable {
     view.layoutIfNeeded()
   }
   
-  func dumpUIState() -> SpaceController.UIState {
+  func dumpUIState() -> UIState {
     UIState(keys: _viewportsKeys,
             currentKey: _currentKey,
-            unfocused: _unfocused,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
   }
@@ -525,7 +508,7 @@ extension SpaceController: ControlPanelDelegate {
   
   @objc func controlPanelOnPaste() {
     _attachInputToCurrentTerm()
-    _termInput.yank(self);
+    SmarterTermInput.shared.yank(self);
   }
   
   @objc func currentTerm() -> TermController! {
@@ -541,7 +524,7 @@ extension SpaceController: TouchOverlayDelegate {
     guard let term = currentTerm() else {
       return
     }
-    _termInput.reset()
+    SmarterTermInput.shared.reset()
     let point = recognizer.location(in: term.view)
     term.termDevice.focus()
     term.termDevice.view.reportTouch(in: point)
@@ -708,8 +691,8 @@ extension SpaceController {
     if let scene = nextSession.scene as? UIWindowScene,
       scene.activationState == .foregroundActive || scene.activationState == .foregroundInactive,
       let delegate = scene.delegate as? SceneDelegate,
-      let window = delegate.window,
-      let spaceCtrl = window.rootViewController as? SpaceController
+      let window = delegate.window
+//      let spaceCtrl = window.rootViewController as? SpaceController
       {
       window.makeKeyAndVisible()
     } else {

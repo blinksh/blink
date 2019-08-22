@@ -88,7 +88,7 @@ struct KBTraits: OptionSet, Hashable, Codable {
   
   static let modifiers:Self       = [.esc, .alt, .ctrl, .cmd]
   static let styles: Self         = [.light, .dark]
-  static let floatingKB: Self     = [.floatingKBOn, .floatingKBOn]
+  static let floatingKB: Self     = [.floatingKBOn, .floatingKBOff]
   static let floatingCursor: Self = [.floatingCursorOn, .floatingCursorOff]
   static let selection: Self      = [.selectionOn, .selectionOff]
   static let clipboard: Self      = [.clipboardOn, .clipboardOff]
@@ -116,7 +116,7 @@ struct KBTraits: OptionSet, Hashable, Codable {
   ]
   
   static let `default` = Self.all - [
-    .suggestionsOn, .hkb, .floatingCursorOn, .floatingKBOn
+    .suggestionsOn, .hkb, .floatingCursorOn
   ]
   
   static var defaultSuggestionsOnly: Self {
@@ -138,6 +138,11 @@ extension KBTraits {
   var isHKBAttached: Bool {
     get { contains(.hkb) }
     set { toggle(newValue, on: .hkb, off: .skb) }
+  }
+  
+  var isFloatingKB: Bool {
+    get { contains(.floatingKBOn) }
+    set { toggle(newValue, on: .floatingKBOn, off: .floatingKBOff)}
   }
   
   var isPortrait: Bool {

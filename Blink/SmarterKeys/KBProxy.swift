@@ -32,8 +32,16 @@
 import UIKit
 
 class KBProxy: UIView {
-  private let _kbView = KBView()
-  var kbView: KBView { _kbView }
+  private unowned var _kbView: KBView
+  
+  init(kbView: KBView) {
+    _kbView = kbView
+    super.init(frame: .zero)
+  }
+  
+  required init?(coder: NSCoder) {
+    return nil
+  }
   
   private var _barButtonView: UIView? {
     // BarButtonItemView

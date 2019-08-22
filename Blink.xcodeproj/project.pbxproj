@@ -224,6 +224,7 @@
 		D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; };
 		D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
 		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
@@ -676,6 +677,7 @@
 		D2A3F4E920690B71006BB305 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
 		D2A3F4F320690BE6006BB305 /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		D2A3F4F520690C24006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
+		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
 		D2A86D6720EB86F2000DF1DA /* SSHClientOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientOptions.h; sourceTree = "<group>"; };
 		D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientOptions.m; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
@@ -1301,6 +1303,7 @@
 				D241CBC123040733003D64A5 /* KBSound.swift */,
 				D241CBC823040733003D64A5 /* KBTraits.swift */,
 				D241CBC223040733003D64A5 /* KBView.swift */,
+				D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */,
 			);
 			path = SmarterKeys;
 			sourceTree = "<group>";
@@ -1789,6 +1792,7 @@
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
+				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */,

@@ -250,14 +250,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   };
 }
 
-- (id)initWithFrame:(CGRect)frame
-{
-  self = [super initWithFrame:frame];
+- (instancetype)initWithFrame:(CGRect)frame textContainer:(NSTextContainer *)textContainer {
+  
+  self = [super initWithFrame:frame textContainer:textContainer];
   
   if (self) {
     
-    self.inputAssistantItem.leadingBarButtonGroups = @[];
-    self.inputAssistantItem.trailingBarButtonGroups = @[];
+//    self.inputAssistantItem.leadingBarButtonGroups = @[];
+//    self.inputAssistantItem.trailingBarButtonGroups = @[];
     
     
     self.smartDashesType = UITextSmartDashesTypeNo;
@@ -325,6 +325,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   if (delta == -1 && !_skipTextStorageDelete && !_markedText) {
     [self deviceWrite:@"\x7f"];
   }
+}
+
+- (BOOL)hasText {
+  return YES;
 }
 
 - (NSUndoManager *)undoManager
@@ -467,7 +471,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 {
   [super setMarkedText:markedText selectedRange:selectedRange];
   _markedText = markedText;
-  [self.device.view setIme: _markedText
+  [_device.view setIme: _markedText
          completionHandler:^(id data, NSError * _Nullable error) {
      if (!data) {
        return;
@@ -790,12 +794,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
   if ([sender isKindOfClass:[UIMenuController class]]) {
+    TermView *deviceView = _device.view;
     // The menu can only perform paste methods
     if (action == @selector(paste:) ||
-        (action == @selector(copy:) && _device.view.hasSelection) ||
-        (action == @selector(pasteSelection:) && _device.view.hasSelection) ||
-        (action == @selector(copyLink:) && _device.view.detectedLink) ||
-        (action == @selector(openLink:) && _device.view.detectedLink)
+        (action == @selector(copy:) && deviceView.hasSelection) ||
+        (action == @selector(pasteSelection:) && deviceView.hasSelection) ||
+        (action == @selector(copyLink:) && deviceView.detectedLink) ||
+        (action == @selector(openLink:) && deviceView.detectedLink)
       ) {
       return YES;
     }
