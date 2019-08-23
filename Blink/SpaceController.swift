@@ -35,6 +35,8 @@ import MBProgressHUD
 
 public class SpaceController: SafeLayoutViewController {
   
+  weak var _nextSpaceCtrl: SpaceController? = nil
+  
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
@@ -169,7 +171,11 @@ public class SpaceController: SafeLayoutViewController {
     
     if window.isKeyWindow {
       if SmarterTermInput.shared.superview !== self.view {
-        self.view.addSubview(SmarterTermInput.shared)
+        if window.screen === UIScreen.main {
+          self.view.addSubview(SmarterTermInput.shared)
+//        } else {
+//          SmarterTermInput.shared.becomeFirstResponder()
+        }
       }
       _focusOnShell()
     } else {
@@ -707,10 +713,16 @@ extension SpaceController {
     if let scene = nextSession.scene as? UIWindowScene,
       scene.activationState == .foregroundActive || scene.activationState == .foregroundInactive,
       let delegate = scene.delegate as? SceneDelegate,
-      let window = delegate.window
-//      let spaceCtrl = window.rootViewController as? SpaceController
+      let window = delegate.window,
+      let spaceCtrl = window.rootViewController as? SpaceController
       {
-      window.makeKeyAndVisible()
+        if nextSession.role == .windowExternalDisplay {
+          SmarterTermInput.shared.nextResponder2 = spaceCtrl
+          spaceCtrl._focusOnShell()
+        } else {
+          SmarterTermInput.shared.nextResponder2 = nil
+          window.makeKeyAndVisible()
+        }
     } else {
       app.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
     }
@@ -719,7 +731,6 @@ extension SpaceController {
   @objc func _moveToOtherScreenAction() {
     
   }
-  
   
   @objc func _newWindowAction() {
     UIApplication

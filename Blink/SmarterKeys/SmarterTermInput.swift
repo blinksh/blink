@@ -33,6 +33,8 @@ import UIKit
 
 class SmarterTermInput: TermInput {
   
+  weak var nextResponder2: UIResponder? = nil
+  
   private var _kbView: KBView
   var kbView: KBView { _kbView }
   
@@ -52,6 +54,13 @@ class SmarterTermInput: TermInput {
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  override var next: UIResponder? {
+    if nextResponder2 != nil {
+      return nextResponder2
+    }
+    return super.next
   }
   
   override func layoutSubviews() {

@@ -316,9 +316,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 - (void)focus {
   [_view focus];
   [_delegate deviceFocused];
-  if (![_view.window isKeyWindow]) {
-    [_view.window makeKeyWindow];
-  }
+//  if (![_view.window isKeyWindow]) {
+//    [_view.window makeKeyWindow];
+//  }
   if (![_input isFirstResponder]) {
     [_input becomeFirstResponder];
   }
