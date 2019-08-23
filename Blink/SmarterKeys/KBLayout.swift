@@ -79,17 +79,18 @@ extension KBLayout {
       .vertical2(";", ":",  traits: .default - .cmdOff),
       .vertical2("&", "'",  traits: .default - .cmdOff),
       
-      .vertical2(.f(value: 1), .f(value: 7),  traits: .default - .cmdOff),
-      .vertical2(.f(value: 2), .f(value: 8),  traits: .default - .cmdOff),
-      .vertical2(.f(value: 3), .f(value: 9),  traits: .default - .cmdOff),
-      .vertical2(.f(value: 4), .f(value: 10),  traits: .default - .cmdOff),
-      .vertical2(.f(value: 5), .f(value: 11),  traits: .default - .cmdOff),
-      .vertical2(.f(value: 6), .f(value: 12),  traits: .default - .cmdOff),
-    
+      .vertical2(.f(value: 1), .f(value: 7),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(value: 2), .f(value: 8),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(value: 3), .f(value: 9),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(value: 4), .f(value: 10),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(value: 5), .f(value: 11),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(value: 6), .f(value: 12),  traits: .default + .hkb - .cmdOff),
+      //
+      .flexKey(.esc,  traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
     ],
     [
       .arrows(traits: .default - .cmdOn),
-      .wideKey(.cmd, traits: .default),
+      .wideKey(.cmd, traits: .default + .hkb),
     ])
   }
   

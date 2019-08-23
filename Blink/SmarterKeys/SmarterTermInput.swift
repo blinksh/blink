@@ -58,14 +58,14 @@ class SmarterTermInput: TermInput {
     super.layoutSubviews()
     
     guard
-      let scene = window?.windowScene
+      let window = window,
+      let scene = window.windowScene
     else {
       return
     }
-     if traitCollection.userInterfaceIdiom == .phone {
-       _kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-       _kbView.frame = CGRect(origin: .zero, size: _kbView.intrinsicContentSize)
-     }
+    if traitCollection.userInterfaceIdiom == .phone {
+      _kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+    }
   }
   
   override func insertText(_ text: String) {
@@ -90,10 +90,7 @@ class SmarterTermInput: TermInput {
   func setupAccessoryView() {
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
-    let accessoryView = KBAccessoryView(kbView: kbView)
-    accessoryView.frame = CGRect(origin: .zero, size: kbView.intrinsicContentSize)
-    inputAccessoryView = accessoryView
-    reloadInputViews()
+    inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
   func setupAssistantItem() {
@@ -104,6 +101,7 @@ class SmarterTermInput: TermInput {
     inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
+
   static let shared = SmarterTermInput()
 }
 

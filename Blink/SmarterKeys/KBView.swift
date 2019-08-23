@@ -338,11 +338,9 @@ extension KBView: KBKeyViewDelegate {
     if value.isModifier {
       return
     }
-    
-    switch value {
-    case .text, .esc, .left, .right, .up, .down, .tab:
-      keyInput?.insertText(value.text)
-    default: break
+
+    if let sequence = value.sequence {
+      keyInput?.insertText(sequence)
     }
     
     turnOffUntracked()

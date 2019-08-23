@@ -295,13 +295,17 @@ public class SpaceController: SafeLayoutViewController {
     currentTerm()?.termDevice
   }
   
+  var _skipKBChangeFrameHandler: Bool = false
+  
   @objc func _keyboardWillChangeFrame(sender: NSNotification) {
     guard
+      _skipKBChangeFrameHandler == false,
       let userInfo = sender.userInfo,
       let kbFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
       isLocal ? _previousKBFrame != kbFrame :  abs(_previousKBFrame.height - kbFrame.height) > 6 // reduce reflows (local height 69, other - 72)!
     else {
+      _skipKBChangeFrameHandler = false
       return
     }
     
@@ -331,22 +335,34 @@ public class SpaceController: SafeLayoutViewController {
     }
     
     defer {
+      input.setNeedsLayout()
       _proposedKBBottomInset = bottomInset;
       view.setNeedsLayout()
       updateKbBottomSafeMargins(bottomInset)
     }
     
+    // Only key window can change input props
     guard view.window?.isKeyWindow == true
     else {
       return
     }
-    // Control only on keyWindow
+
     let kbView = input.kbView
     
     kbView.traits.isFloatingKB = isFloatingKB
     
     if traitCollection.userInterfaceIdiom == .phone {
-      // TODO: check software kb
+      isSoftwareKB = kbFrame.height > 100
+      
+      if kbView.traits.isHKBAttached == isSoftwareKB {
+        kbView.traits.isHKBAttached = !isSoftwareKB
+        // TODO: find goodway to remove loop
+        _skipKBChangeFrameHandler = true
+        DispatchQueue.main.async {
+          kbView.inputAccessoryView?.invalidateIntrinsicContentSize()
+          kbView.reloadInputViews()
+        }
+      }
     } else if isFloatingKB && input.inputAccessoryView == nil {
       // put in iphone mode
       kbView.kbDevice = .in6_5
