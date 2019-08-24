@@ -710,17 +710,15 @@ extension SpaceController {
      nextSession = sessions[0]
     }
     
-    if let scene = nextSession.scene as? UIWindowScene,
+    if
+      let scene = nextSession.scene as? UIWindowScene,
       scene.activationState == .foregroundActive || scene.activationState == .foregroundInactive,
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
-      let spaceCtrl = window.rootViewController as? SpaceController
-      {
+      let spaceCtrl = window.rootViewController as? SpaceController {
         if nextSession.role == .windowExternalDisplay {
-          SmarterTermInput.shared.nextResponder2 = spaceCtrl
           spaceCtrl._focusOnShell()
         } else {
-          SmarterTermInput.shared.nextResponder2 = nil
           window.makeKeyAndVisible()
         }
     } else {

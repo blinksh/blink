@@ -33,8 +33,6 @@ import UIKit
 
 class SmarterTermInput: TermInput {
   
-  weak var nextResponder2: UIResponder? = nil
-  
   private var _kbView: KBView
   var kbView: KBView { _kbView }
   
@@ -56,11 +54,13 @@ class SmarterTermInput: TermInput {
     fatalError("init(coder:) has not been implemented")
   }
   
+  // overriding chain
   override var next: UIResponder? {
-    if nextResponder2 != nil {
-      return nextResponder2
+    guard let responder = device?.view?.superview
+    else {
+      return super.next
     }
-    return super.next
+    return responder
   }
   
   override func layoutSubviews() {
@@ -78,7 +78,6 @@ class SmarterTermInput: TermInput {
   }
   
   override func insertText(_ text: String) {
-    
     let traits = _kbView.traits
     if traits.contains([.altOn, .ctrlOn]) {
       escCtrlSeq(withInput:text)
@@ -110,7 +109,6 @@ class SmarterTermInput: TermInput {
     inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
-
   static let shared = SmarterTermInput()
 }
 
