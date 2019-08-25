@@ -46,6 +46,7 @@ class KBSection {
   }
 
   func apply(traits: KBTraits, for view: UIView, keyDelegate: KBKeyViewDelegate) -> [KBKeyView] {
+    // little optimization
     if _traits == traits {
       return _views
     }

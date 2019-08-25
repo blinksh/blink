@@ -167,7 +167,7 @@
 		D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */; };
 		D241CBE123040734003D64A5 /* KBKeyViewTriangle.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBCF23040734003D64A5 /* KBKeyViewTriangle.swift */; };
 		D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBE5230562E9003D64A5 /* KBSizes.swift */; };
-		D242157822E878950037E5A6 /* CodableColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* CodableColor.swift */; };
+		D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D242157122E878950037E5A6 /* UIColor+Codable.swift */; };
 		D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67522DDDF130057FE67 /* UIStateRestorable.swift */; };
 		D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
@@ -225,6 +225,7 @@
 		D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
+		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
 		D2A8C154201F377D002F415A /* TouchOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A8C153201F377D002F415A /* TouchOverlay.m */; };
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
@@ -599,7 +600,7 @@
 		D241CBCE23040734003D64A5 /* KBKeyViewSymbol.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewSymbol.swift; sourceTree = "<group>"; };
 		D241CBCF23040734003D64A5 /* KBKeyViewTriangle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewTriangle.swift; sourceTree = "<group>"; };
 		D241CBE5230562E9003D64A5 /* KBSizes.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBSizes.swift; sourceTree = "<group>"; };
-		D242157122E878950037E5A6 /* CodableColor.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodableColor.swift; sourceTree = "<group>"; };
+		D242157122E878950037E5A6 /* UIColor+Codable.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIColor+Codable.swift"; sourceTree = "<group>"; };
 		D248E67522DDDF130057FE67 /* UIStateRestorable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIStateRestorable.swift; sourceTree = "<group>"; };
 		D248E67D22DE14100057FE67 /* SessionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParams.swift; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
@@ -678,6 +679,7 @@
 		D2A3F4F320690BE6006BB305 /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
 		D2A3F4F520690C24006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
 		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
+		D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGestureRecognizer.swift; sourceTree = "<group>"; };
 		D2A86D6720EB86F2000DF1DA /* SSHClientOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientOptions.h; sourceTree = "<group>"; };
 		D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientOptions.m; sourceTree = "<group>"; };
 		D2A8C152201F377D002F415A /* TouchOverlay.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TouchOverlay.h; sourceTree = "<group>"; };
@@ -751,9 +753,9 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D2A52225231304A90010AC04 /* UIKit */,
 				D241CB93230406E2003D64A5 /* SmarterKeys */,
 				073D26AE1DC4137000965AB2 /* SmartKeys */,
-				D242157122E878950037E5A6 /* CodableColor.swift */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D23E143B20A977AB000FCF5C /* Repl.h */,
 				D23E143C20A977AB000FCF5C /* Repl.m */,
@@ -1409,6 +1411,15 @@
 			path = ed25519;
 			sourceTree = "<group>";
 		};
+		D2A52225231304A90010AC04 /* UIKit */ = {
+			isa = PBXGroup;
+			children = (
+				D242157122E878950037E5A6 /* UIColor+Codable.swift */,
+				D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */,
+			);
+			path = UIKit;
+			sourceTree = "<group>";
+		};
 		D2E4F92A20B2BB4500B30F7B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1764,6 +1775,7 @@
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
+				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D296198A214F96A10070935A /* poly1305.c in Sources */,
 				D2961975214F8A580070935A /* sshbuf.c in Sources */,
 				D296199D214F995D0070935A /* hash.c in Sources */,
@@ -1812,7 +1824,7 @@
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D296199A214F995D0070935A /* blocks.c in Sources */,
-				D242157822E878950037E5A6 /* CodableColor.swift in Sources */,
+				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				85047E77201F9B0E0090E974 /* ControlPanel.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,

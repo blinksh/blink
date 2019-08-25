@@ -32,15 +32,6 @@
 import Foundation
 import UIKit
 
-fileprivate extension UIGestureRecognizer {
-  func dropTouches() {
-    if isEnabled {
-      isEnabled = false
-      isEnabled = true
-    }
-  }
-}
-
 class KBView: UIView {
   private var _leftSection: KBSection
   private var _middleSection: KBSection
