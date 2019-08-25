@@ -54,6 +54,11 @@ class SmarterTermInput: TermInput {
     fatalError("init(coder:) has not been implemented")
   }
   
+  override var softwareKB: Bool {
+    get { !_kbView.traits.isHKBAttached }
+    set { _kbView.traits.isHKBAttached = !newValue }
+  }
+  
   // overriding chain
   override var next: UIResponder? {
     guard let responder = device?.view?.superview

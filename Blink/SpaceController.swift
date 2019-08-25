@@ -360,8 +360,8 @@ public class SpaceController: SafeLayoutViewController {
     if traitCollection.userInterfaceIdiom == .phone {
       isSoftwareKB = kbFrame.height > 100
       
-      if kbView.traits.isHKBAttached == isSoftwareKB {
-        kbView.traits.isHKBAttached = !isSoftwareKB
+      if input.softwareKB != isSoftwareKB {
+        input.softwareKB = isSoftwareKB
         // TODO: find goodway to remove loop
         _skipKBChangeFrameHandler = true
         DispatchQueue.main.async {
@@ -373,7 +373,7 @@ public class SpaceController: SafeLayoutViewController {
       // put in iphone mode
       kbView.kbDevice = .in6_5
       kbView.traits.isPortrait = true
-      kbView.traits.isHKBAttached = !isSoftwareKB
+      input.softwareKB = isSoftwareKB
       input.setupAccessoryView()
       bottomInset = input.inputAccessoryView?.frame.height ?? 0
       input.reloadInputViews()
