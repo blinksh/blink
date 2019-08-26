@@ -713,7 +713,7 @@ extension SpaceController {
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
       let spaceCtrl = window.rootViewController as? SpaceController {
-        if nextSession.role == .windowExternalDisplay {
+        if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
           spaceCtrl._focusOnShell()
         } else {
           window.makeKeyAndVisible()
