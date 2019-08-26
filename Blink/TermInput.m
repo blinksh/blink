@@ -256,21 +256,13 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   
   if (self) {
     
-//    self.inputAssistantItem.leadingBarButtonGroups = @[];
-//    self.inputAssistantItem.trailingBarButtonGroups = @[];
-    
-    
     self.smartDashesType = UITextSmartDashesTypeNo;
     self.smartQuotesType = UITextSmartQuotesTypeNo;
     self.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
     self.spellCheckingType = UITextSpellCheckingTypeNo;
     
     self.delegate = self;
-    
-//    _smartKeys = [[SmartKeysController alloc] init];
-//    _smartKeys.textInputDelegate = self;
-//    self.inputAccessoryView = [_smartKeys view];
-    
+        
     _undoManager = [[UndoManager alloc] init];
     _undoManager.undoManagerDelegate = self;
     

@@ -82,9 +82,41 @@ class SmarterTermInput: TermInput {
     }
   }
   
+  func _matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
+    var result: (UIKeyCommand, UIResponder)? = nil
+    
+    var iterator: UIResponder? = self
+    
+    while let responder = iterator {
+      if let cmd = responder.keyCommands?.first(
+        where: { $0.input == input && $0.modifierFlags == flags}),
+        let action = cmd.action,
+        responder.canPerformAction(action, withSender: self)
+        {
+        result = (cmd, responder)
+      }
+      iterator = responder.next
+    }
+    
+    return result
+  }
+  
   override func insertText(_ text: String) {
     let traits = _kbView.traits
-    if traits.contains([.altOn, .ctrlOn]) {
+    if traits.contains(.cmdOn) && text.count == 1 {
+      var flags = traits.modifierFlags
+      let input = text.lowercased()
+      if input != text {
+        flags.insert(.shift)
+      }
+      
+      if let (cmd, res) = _matchCommand(input: input, flags: flags),
+        let action = cmd.action  {
+        res.perform(action, with: cmd)
+      }
+      
+      _kbView.turnOffUntracked()
+    } else if traits.contains([.altOn, .ctrlOn]) {
       escCtrlSeq(withInput:text)
     } else if traits.contains(.altOn) {
       escSeq(withInput: text)

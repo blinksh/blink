@@ -230,6 +230,22 @@ extension KBTraits {
   }
 }
 
+extension KBTraits {
+  var modifierFlags: UIKeyModifierFlags {
+    var flags = UIKeyModifierFlags()
+    if contains(.cmdOn) {
+      flags.insert(.command)
+    }
+    if contains(.altOn) {
+      flags.insert(.alternate)
+    }
+    if contains(.ctrlOn) {
+      flags.insert(.control)
+    }
+    return flags
+  }
+}
+
 
 extension KBTraits {
   static func - (lhs: KBTraits, rhs: KBTraits) -> KBTraits {

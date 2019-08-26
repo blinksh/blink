@@ -170,13 +170,10 @@ public class SpaceController: SafeLayoutViewController {
     }
     
     if window.isKeyWindow {
-      if SmarterTermInput.shared.superview !== self.view {
-        if window.screen === UIScreen.main {
-          self.view.addSubview(SmarterTermInput.shared)
-//        } else {
-//          SmarterTermInput.shared.becomeFirstResponder()
+      if SmarterTermInput.shared.superview !== self.view
+        && window.screen === UIScreen.main {
+          view.addSubview(SmarterTermInput.shared)
         }
-      }
       _focusOnShell()
     } else {
       currentDevice?.blur()
