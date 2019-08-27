@@ -48,6 +48,12 @@ class SmarterTermInput: TermInput {
     }
     
     _kbView.keyInput = self
+    _kbView.lang = textInputMode?.primaryLanguage ?? ""
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(_inputModeChanged),
+      name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
   }
   
   required init?(coder: NSCoder) {
@@ -99,6 +105,26 @@ class SmarterTermInput: TermInput {
     }
     
     return result
+  }
+  
+  override func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
+    super.setMarkedText(markedText, selectedRange: selectedRange)
+    if let text = markedText {
+      _kbView.traits.isIME = !text.isEmpty
+    } else {
+      _kbView.traits.isIME = false
+    }
+  }
+  
+  override func unmarkText() {
+    super.unmarkText()
+    _kbView.traits.isIME = false
+  }
+  
+  @objc func _inputModeChanged() {
+    DispatchQueue.main.async {
+      self._kbView.lang = self.textInputMode?.primaryLanguage ?? ""
+    }
   }
   
   override func insertText(_ text: String) {

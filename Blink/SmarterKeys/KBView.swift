@@ -59,6 +59,7 @@ class KBView: UIView {
   var lang: String = "" {
     didSet {
       if oldValue != lang {
+        traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
         _updateSections()
       }
     }
@@ -134,7 +135,6 @@ class KBView: UIView {
     _middleSection = KBSection(keys:layout.middle)
     _rightSection  = KBSection(keys:layout.right)
     
-    traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
     setNeedsLayout()
   }
   
