@@ -333,16 +333,6 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return [BKDefaults isLightKeyboard] ? UIKeyboardAppearanceLight : UIKeyboardAppearanceDark;
 }
 
-- (void)didMoveToWindow
-{
-  [super didMoveToWindow];
-  
-  // Do not show smart kb on non touch screen
-  if (self.window && self.window.screen != [UIScreen mainScreen]) {
-    self.inputAccessoryView = nil;
-  }
-}
-
 - (NSString *)textInputContextIdentifier
 {
   // Remember current input
