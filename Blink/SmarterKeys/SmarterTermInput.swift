@@ -34,10 +34,42 @@ import UIKit
 class SmarterTermInput: TermInput {
   
   private var _kbView: KBView
+  private var _langCharsMap: [String: String]
   var kbView: KBView { _kbView }
   
   override init(frame: CGRect, textContainer: NSTextContainer?) {
     _kbView = KBView()
+    
+    _langCharsMap = [
+      // Russian
+      "й": "q",
+      "ц": "w",
+      "у": "e",
+      "к": "r",
+      "е": "t",
+      "н": "y",
+      "г": "u",
+      "ш": "i",
+      "щ": "o",
+      "з": "p",
+      "ф": "a",
+      "ы": "s",
+      "в": "d",
+      "а": "f",
+      "п": "g",
+      "р": "h",
+      "о": "j",
+      "л": "k",
+      "д": "l",
+      "я": "z",
+      "ч": "x",
+      "с": "c",
+      "м": "v",
+      "и": "b",
+      "т": "n",
+      "ь": "m",
+      
+    ]
     
     super.init(frame: frame, textContainer: textContainer)
     
@@ -131,10 +163,11 @@ class SmarterTermInput: TermInput {
     let traits = _kbView.traits
     if traits.contains(.cmdOn) && text.count == 1 {
       var flags = traits.modifierFlags
-      let input = text.lowercased()
+      var input = text.lowercased()
       if input != text {
         flags.insert(.shift)
       }
+      input = _langCharsMap[input] ?? input
       
       if let (cmd, res) = _matchCommand(input: input, flags: flags),
         let action = cmd.action  {
