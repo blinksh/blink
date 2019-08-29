@@ -81,6 +81,7 @@ const CGFloat kToolBarHeight = 94;
     _twoFingerTapGestureRecognizer.delegate = self;
     
     _pinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
+    
     _pinchGestureRecognizer.delegate = self;
     
     // The goal of this gesture recognizer is two guard long press selection.

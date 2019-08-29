@@ -88,6 +88,7 @@ class TermController: UIViewController {
   }
   
   public override func loadView() {
+    super.loadView()
     _termDevice.delegate = self
     _termDevice.attachView(_termView)
     _termView.backgroundColor = _bgColor
@@ -115,6 +116,11 @@ class TermController: UIViewController {
   }
   
   func startSession() {
+    guard _session == nil
+    else {
+      return
+    }
+    
     _session = MCPSession(
       device: _termDevice,
       andParams: _sessionParams)
@@ -200,6 +206,7 @@ extension TermController: TermDeviceDelegate {
     _sessionParams.cols = _termDevice.cols
     
     delegate?.terminalDidResize?(control: self)
+    _session?.sigwinch()
   }
   
   public func viewFontSizeChanged(_ size: Int) {

@@ -93,7 +93,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 @implementation TermView {
   WKWebView *_webView;
   UIImageView *_snapshotImageView;
-  NSTimer *_activeTimer;
   
   BOOL _focused;
   BOOL _jsIsBusy;
@@ -123,10 +122,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _snapshotImageView = imageView;
   [self addSubview:imageView];
-  
-  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
-  [nc addObserver:self selector:@selector(_willResignActive) name:UIApplicationWillResignActiveNotification object:nil];
-  [nc addObserver:self selector:@selector(_didBecomeActive) name:UIApplicationDidBecomeActiveNotification object:nil];
 
   return self;
 }
@@ -135,11 +130,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
   _snapshotImageView.backgroundColor = backgroundColor;
-}
-
-- (void)dealloc
-{
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 - (void)layoutSubviews {
@@ -160,14 +150,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return UIEdgeInsetsZero;
 }
 
-- (void)_willResignActive
+- (void)displaySnapshot
 {
-  if (_activeTimer) {
-    [_activeTimer invalidate];
-    _activeTimer = nil;
-    return;
-  }
-  
   if (self.window == nil) {
     return;
   }
@@ -181,17 +165,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }];
 }
 
-- (void)_didBecomeActive
-{
-  [_activeTimer invalidate];
-  _activeTimer = [NSTimer scheduledTimerWithTimeInterval:0.1 target:self selector:@selector(_delayedDidBecomeActive) userInfo:nil repeats:NO];
-}
 
-- (void)_delayedDidBecomeActive
+- (void)displayWebView
 {
-  [_activeTimer invalidate];
-  _activeTimer = nil;
-  
   if (self.window == nil) {
     return;
   }
@@ -220,6 +196,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
+  configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -319,7 +296,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)focus {
   _focused = YES;
-  [self _didBecomeActive]; // Double check and attach if we are detached
+  [self displayWebView];
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 

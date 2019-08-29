@@ -159,6 +159,18 @@ class SmarterTermInput: TermInput {
     }
   }
   
+  override func becomeFirstResponder() -> Bool {
+    let res = super.becomeFirstResponder()
+    device?.focus()
+    return res
+  }
+  
+  override func resignFirstResponder() -> Bool {
+    let res = super.resignFirstResponder()
+    device?.blur()
+    return res
+  }
+  
   override func insertText(_ text: String) {
     let traits = _kbView.traits
     if traits.contains(.cmdOn) && text.count == 1 {
@@ -172,6 +184,14 @@ class SmarterTermInput: TermInput {
       if let (cmd, res) = _matchCommand(input: input, flags: flags),
         let action = cmd.action  {
         res.perform(action, with: cmd)
+      } else {
+        switch(input) {
+        case "c": copy(self)
+        case "x": cut(self)
+        case "z": flags.contains(.shift) ? undoManager?.undo() : undoManager?.redo()
+        case "v": paste(self)
+        default: break;
+        }
       }
       
       _kbView.turnOffUntracked()

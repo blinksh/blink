@@ -68,6 +68,9 @@
 @property (nonatomic) BOOL layoutLocked;
 @property (nonatomic) CGRect layoutLockedFrame;
 
+- (void)displaySnapshot;
+- (void)displayWebView;
+
 - (CGRect)webViewFrame;
 - (void)loadWith:(MCPParams *)params;
 - (void)reloadWith:(MCPParams *)params;

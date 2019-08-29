@@ -134,7 +134,20 @@ public class SpaceController: SafeLayoutViewController {
             
       }
     }
-    
+  }
+  
+  public override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    _didBecomeKeyWindow()
+  }
+  
+  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+    if view.window?.isKeyWindow == true {
+      DispatchQueue.main.async {
+        SmarterTermInput.shared.reloadInputViews()
+      }
+    }
   }
   
   deinit {
@@ -163,7 +176,7 @@ public class SpaceController: SafeLayoutViewController {
                    object: nil)
   }
   
-  @objc func _didBecomeKeyWindow(win: NSNotification) {
+  @objc func _didBecomeKeyWindow() {
     guard let window = view.window else {
       currentDevice?.blur()
       return
@@ -485,7 +498,11 @@ extension SpaceController: UIPageViewControllerDelegate {
       return
     }
     
-    _currentKey = (pageViewController.viewControllers?.first as? TermController)?.meta.key
+    guard let termController = pageViewController.viewControllers?.first as? TermController
+    else {
+      return
+    }
+    _currentKey = termController.meta.key
     _displayHUD()
     _attachInputToCurrentTerm()
   }
@@ -545,7 +562,7 @@ extension SpaceController: TouchOverlayDelegate {
     }
     SmarterTermInput.shared.reset()
     let point = recognizer.location(in: term.view)
-    term.termDevice.focus()
+    _focusOnShell()
     term.termDevice.view.reportTouch(in: point)
   }
   

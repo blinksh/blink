@@ -319,9 +319,12 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 //  if (![_view.window isKeyWindow]) {
 //    [_view.window makeKeyWindow];
 //  }
-  if (![_input isFirstResponder]) {
-    [_input becomeFirstResponder];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (![_input isFirstResponder]) {
+      [_input becomeFirstResponder];
+    }
+  });
+  
 }
 
 - (void)blur {
