@@ -178,6 +178,7 @@
 		D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
+		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
@@ -617,6 +618,7 @@
 		D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkTests.swift; sourceTree = "<group>"; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
+		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
 		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
 		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
@@ -756,6 +758,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D265FBC7231904B50017EAC4 /* Foundation */,
 				D2A52225231304A90010AC04 /* UIKit */,
 				D241CB93230406E2003D64A5 /* SmarterKeys */,
 				073D26AE1DC4137000965AB2 /* SmartKeys */,
@@ -1342,6 +1345,14 @@
 			path = BlinkTests;
 			sourceTree = "<group>";
 		};
+		D265FBC7231904B50017EAC4 /* Foundation */ = {
+			isa = PBXGroup;
+			children = (
+				D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */,
+			);
+			path = Foundation;
+			sourceTree = "<group>";
+		};
 		D2961968214F89060070935A /* openssh */ = {
 			isa = PBXGroup;
 			children = (
@@ -1895,6 +1906,7 @@
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
+				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
