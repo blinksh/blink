@@ -65,22 +65,18 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_keyboardDidChangeFrame:(id)sender
 {
-  
 }
 
 - (void)_keyboardWillChangeFrame:(id)sender
 {
-  
 }
 
 - (void)_keyboardWillShow:(id)sender
 {
-  
 }
 
 - (void)_keyboardWillHide:(id)sender
 {
-  
 }
 
 
@@ -140,7 +136,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     return;
   }
   
-//  _snapshotImageView.frame = webViewFrame;
+  _snapshotImageView.frame = webViewFrame;
   if (_webView.superview) {
     _webView.frame = webViewFrame;
   }

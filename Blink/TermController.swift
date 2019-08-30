@@ -97,9 +97,26 @@ class TermController: UIViewController {
   
   public override func viewDidLoad() {
     super.viewDidLoad()
+    
     resumeIfNeeded()
     
     _termView.load(with: _sessionParams)
+    
+    NotificationCenter.default.addObserver(
+      self,
+      selector: #selector(_relayout),
+      name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate), object: nil)
+  }
+  
+  @objc func _relayout() {
+    guard
+      let window = view.window,
+      window.screen === UIScreen.main
+    else {
+      return
+    }
+    
+    view.setNeedsLayout()
   }
   
   public override func viewWillLayoutSubviews() {
@@ -160,6 +177,7 @@ class TermController: UIViewController {
   }
   
   deinit {
+    NotificationCenter.default.removeObserver(self)
     _termDevice.attachView(nil)
     _session?.device = nil
     _session?.stream = nil

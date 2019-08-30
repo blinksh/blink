@@ -33,7 +33,7 @@
 import Foundation
 import MBProgressHUD
 
-public class SpaceController: SafeLayoutViewController {
+public class SpaceController: UIViewController {
   
   weak var _nextSpaceCtrl: SpaceController? = nil
   
@@ -57,35 +57,37 @@ public class SpaceController: SafeLayoutViewController {
   
   private var _hud: MBProgressHUD? = nil
   private var _musicHUD: MBProgressHUD? = nil
-  private var _previousKBFrame: CGRect = .zero
   
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
-  private var _proposedKBBottomInset: CGFloat = 0
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    guard
-      let window = view.window
-//      let scene = window.windowScene
-      else {
+    guard let window = view.window
+    else {
       return
     }
     
-    
-    if window.screen == UIScreen.main {
+    if window.screen === UIScreen.main {
       var insets = UIEdgeInsets.zero
-      insets.bottom = _proposedKBBottomInset
+      insets.bottom = LayoutManager.mainWindowKBBottomInset()
+      // TODO: Bottom insets
       _touchOverlay.frame = view.bounds.inset(by: insets)
     } else {
       _touchOverlay.frame = view.bounds
     }
   }
   
-  public override func viewSafeAreaInsetsDidChange() {
-    super.viewSafeAreaInsetsDidChange()
-    updateDeviceSafeMarings(view.safeAreaInsets)
+  @objc func _relayout() {
+    guard
+      let window = view.window,
+      window.screen === UIScreen.main
+    else {
+      return
+    }
+    
+    view.setNeedsLayout()
   }
   
   public override func viewDidLoad() {
@@ -157,14 +159,6 @@ public class SpaceController: SafeLayoutViewController {
   func _registerForNotifications() {
     let nc = NotificationCenter.default
     
-    nc.removeObserver(self)
-    
-    nc.addObserver(self,
-                   selector: #selector(_keyboardWillChangeFrame(sender:)),
-                   name: UIResponder.keyboardWillChangeFrameNotification,
-                   object: nil)
-    
-
     nc.addObserver(self,
                    selector: #selector(_focusOnShell),
                    name: NSNotification.Name.BKUserAuthenticated,
@@ -173,6 +167,10 @@ public class SpaceController: SafeLayoutViewController {
     nc.addObserver(self,
                    selector: #selector(_didBecomeKeyWindow),
                    name: UIWindow.didBecomeKeyNotification,
+                   object: nil)
+    
+    nc.addObserver(self, selector: #selector(_relayout),
+                   name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate),
                    object: nil)
   }
   
@@ -300,7 +298,7 @@ public class SpaceController: SafeLayoutViewController {
   
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
-    SmarterTermInput.shared.becomeFirstResponder()
+    _ = SmarterTermInput.shared.becomeFirstResponder()
   }
   
   func _attachInputToCurrentTerm() {
@@ -309,89 +307,6 @@ public class SpaceController: SafeLayoutViewController {
   
   var currentDevice: TermDevice? {
     currentTerm()?.termDevice
-  }
-  
-  var _skipKBChangeFrameHandler: Bool = false
-  
-  @objc func _keyboardWillChangeFrame(sender: NSNotification) {
-    guard
-      _skipKBChangeFrameHandler == false,
-      let userInfo = sender.userInfo,
-      let kbFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocal ? _previousKBFrame != kbFrame :  abs(_previousKBFrame.height - kbFrame.height) > 6 // reduce reflows (local height 69, other - 72)!
-    else {
-      _skipKBChangeFrameHandler = false
-      return
-    }
-    
-    _previousKBFrame = kbFrame
-    
-    var bottomInset: CGFloat = 0
-    var isFloatingKB = false
-    var isSoftwareKB = true
-    
-    let viewMaxY = view.frame.maxY
-    
-    let kbMaxY = kbFrame.maxY
-    let kbMinY = kbFrame.minY
-
-    let input = SmarterTermInput.shared
-    
-    if kbMaxY >= viewMaxY {
-      bottomInset = viewMaxY - kbMinY
-    } else if kbMinY < viewMaxY && kbMaxY < viewMaxY {
-      // Floating
-      isFloatingKB = true
-      isSoftwareKB = true
-      
-      if let accessoryView = input.inputAccessoryView {
-        bottomInset = accessoryView.bounds.height
-      }
-    }
-    
-    defer {
-      input.setNeedsLayout()
-      _proposedKBBottomInset = bottomInset;
-      view.setNeedsLayout()
-      updateKbBottomSafeMargins(bottomInset)
-    }
-    
-    // Only key window can change input props
-    guard view.window?.isKeyWindow == true
-    else {
-      return
-    }
-
-    let kbView = input.kbView
-    
-    kbView.traits.isFloatingKB = isFloatingKB
-    
-    if traitCollection.userInterfaceIdiom == .phone {
-      isSoftwareKB = kbFrame.height > 100
-      
-      if input.softwareKB != isSoftwareKB {
-        input.softwareKB = isSoftwareKB
-        // TODO: find goodway to remove loop
-        _skipKBChangeFrameHandler = true
-        DispatchQueue.main.async {
-          kbView.inputAccessoryView?.invalidateIntrinsicContentSize()
-          kbView.reloadInputViews()
-        }
-      }
-    } else if isFloatingKB && input.inputAccessoryView == nil {
-      // put in iphone mode
-      kbView.kbDevice = .in6_5
-      kbView.traits.isPortrait = true
-      input.softwareKB = isSoftwareKB
-      input.setupAccessoryView()
-      bottomInset = input.inputAccessoryView?.frame.height ?? 0
-      input.reloadInputViews()
-    } else if !isFloatingKB && input.inputAccessoryView != nil {
-      kbView.kbDevice = .detect()
-      input.setupAssistantItem()
-      input.reloadInputViews()
-    }
   }
   
   @objc public func moveAllShellsFromSpaceController(_ spaceController: SpaceController) {
@@ -463,8 +378,8 @@ extension SpaceController: UIStateRestorable {
       view.backgroundColor = bgColor
     }
     
-    view.setNeedsLayout()
-    view.layoutIfNeeded()
+//    view.setNeedsLayout()
+//    view.layoutIfNeeded()
   }
   
   func dumpUIState() -> UIState {

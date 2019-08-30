@@ -173,9 +173,7 @@ import UIKit
   }
   
   required init?(coder: NSCoder) {
-    
     super.init(coder: coder)
-    
     
     self.childSessionType = coder.decode(for: Key.childSessionType)
     self.childSessionParams = coder.decode(of: [MoshParams.self, SessionParams.self], for: Key.childSessionParams)
