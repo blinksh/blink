@@ -134,16 +134,17 @@ extension SuspendableSession {
       return
     }
 
-    resume(forKey: session.meta.key)
+    _resume(forKey: session.meta.key)
+    session.meta.isSuspended = false
   }
   
-  func resume(forKey key: UUID) {
+  private func _resume(forKey key: UUID) {
     guard
       let session = _sessionsIndex[key],
       let data = _fsRead(forKey: key),
       let unarchiver = try? NSKeyedUnarchiver(forReadingFrom: data)
     else {
-        return
+      return
     }
     
     session.resume(with: unarchiver)

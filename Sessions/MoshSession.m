@@ -82,7 +82,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 @implementation MoshSession {
   int _debug;
-  NSLock * _lock;
+//  NSLock * _lock;
+  dispatch_semaphore_t _sema;
 }
 
 @dynamic sessionParams;
@@ -472,21 +473,19 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)suspend
 {
-  _lock = [[NSLock alloc] init];
-  [_lock lock];
+  _sema = dispatch_semaphore_create(0);
   [_device write:@"\x1e\x1a"];
-  NSTimeInterval timeout = 2;
-  NSDate *d = [[NSDate date] dateByAddingTimeInterval:timeout];
-  if ([_lock lockBeforeDate: d]) {
-    [_lock unlock];
-  }
-  _lock = nil;
+  NSLog(@"start waiting");
+  dispatch_semaphore_wait(_sema, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
+  NSLog(@"finished waiting");
 }
 
 - (void)onStateEncoded: (NSData *) encodedState
 {
   self.sessionParams.encodedState = encodedState;
-  [_lock unlock];
+  NSLog(@"signalling");
+  dispatch_semaphore_signal(_sema);
+  NSLog(@"signalled");
 }
 
 @end

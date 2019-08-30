@@ -33,12 +33,115 @@
 import Foundation
 import UIKit
 
-@objc class SessionParams: NSObject, Codable {
+
+extension NSCoder {
+  
+  func encode(_ value: Any?, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: Data?, for key: CodingKey) {
+    encode(value as NSData?, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: String?, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: Bool, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: Int, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: UInt, for key: CodingKey) {
+    encode(Int(value), forKey: key.stringValue)
+  }
+  
+  func encode(_ value: CGRect, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: CGSize, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+  func encode(_ value: CGPoint, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+  
+}
+
+extension NSCoder {
+  func decode<T>(for key: CodingKey) -> T? where T : NSObject, T : NSCoding {
+    decodeObject(of: T.self, forKey: key.stringValue) as T?
+  }
+  
+  func decode<T>(of: [AnyClass], for key: CodingKey) -> T? {
+    decodeObject(of: of, forKey: key.stringValue) as? T
+  }
+  
+  func decode(for key: CodingKey) -> String? {
+    decodeObject(of: NSString.self, forKey: key.stringValue) as String?
+  }
+  
+  func decode(for key: CodingKey) -> Data? {
+    decodeObject(of: NSData.self, forKey: key.stringValue) as Data?
+  }
+  
+  func decode(for key: CodingKey) -> CGRect {
+    decodeCGRect(forKey: key.stringValue)
+  }
+  
+  func decode(for key: CodingKey) -> CGSize {
+    decodeCGSize(forKey: key.stringValue)
+  }
+  
+  func decode(for key: CodingKey) -> CGPoint {
+    decodeCGPoint(forKey: key.stringValue)
+  }
+  
+  func decode(for key: CodingKey) -> Int {
+    decodeInteger(forKey: key.stringValue)
+  }
+  
+  func decode(for key: CodingKey) -> Bool {
+    decodeBool(forKey: key.stringValue)
+  }
+  
+  func decode(for key: CodingKey) -> UInt {
+    UInt(decodeInteger(forKey: key.stringValue))
+  }
+}
+
+@objc class SessionParams: NSObject, NSSecureCoding {
+
   @objc var encodedState: Data? = nil
   
   @objc func cleanEncodedState() {
     encodedState = nil
   }
+  
+  override init() {
+    super.init()
+  }
+  
+  private enum Key: CodingKey {
+    case encodedState
+  }
+  
+  func encode(with coder: NSCoder) {
+    coder.encode(encodedState, for: Key.encodedState)
+  }
+  
+  required init?(coder: NSCoder) {
+    super.init()
+    encodedState = coder.decode(for: Key.encodedState)
+  }
+  
+  class var supportsSecureCoding: Bool { true }
 }
 
 @objc class MoshParams: SessionParams {
@@ -48,6 +151,43 @@ import UIKit
   @objc var predictionMode: String? = nil
   @objc var startupCmd: String? = nil
   @objc var serverPath: String? = nil
+  
+  override init() {
+    super.init()
+  }
+  
+  private enum Key: CodingKey {
+    case ip
+    case port
+    case key
+    case predictionMode
+    case startupCmd
+    case serverPath
+  }
+  
+  override func encode(with coder: NSCoder) {
+    super.encode(with: coder)
+    
+    coder.encode(ip, for: Key.ip)
+    coder.encode(port, for: Key.port)
+    coder.encode(key, for: Key.key)
+    coder.encode(predictionMode, for: Key.predictionMode)
+    coder.encode(startupCmd, for: Key.startupCmd)
+    coder.encode(serverPath, for: Key.serverPath)
+  }
+  
+  required init?(coder: NSCoder) {
+    super.init(coder: coder)
+    
+    self.ip = coder.decode(for: Key.ip)
+    self.port = coder.decode(for: Key.port)
+    self.key = coder.decode(for: Key.key)
+    self.predictionMode = coder.decode(for: Key.predictionMode)
+    self.startupCmd = coder.decode(for: Key.startupCmd)
+    self.serverPath = coder.decode(for: Key.serverPath)
+  }
+  
+  override class var supportsSecureCoding: Bool { true }
 }
 
 @objc class MCPParams: SessionParams {
@@ -61,7 +201,7 @@ import UIKit
   @objc var themeName: String? = nil
   @objc var fontName: String? = nil
   @objc var fontSize: Int = 16
-  @objc var layoutMode: BKLayoutMode = .safeFit
+  @objc var layoutMode: Int = 0
   @objc var boldAsBright: Bool = false
   @objc var enableBold: UInt = 0
   @objc var layoutLocked: Bool = false
@@ -75,4 +215,66 @@ import UIKit
     childSessionParams?.cleanEncodedState()
     super.cleanEncodedState()
   }
+  
+  override init() {
+    super.init()
+  }
+  
+  private enum Key: CodingKey {
+    case childSessionType
+    case childSessionParams
+    case viewSize
+    case rows
+    case cols
+    case themeName
+    case fontName
+    case fontSize
+    case layoutMode
+    case boldAsBright
+    case enableBold
+    case layoutLocked
+    case u
+  }
+  
+  override func encode(with coder: NSCoder) {
+    super.encode(with: coder)
+    
+    coder.encode(childSessionType, for: Key.childSessionType)
+    coder.encode(childSessionParams, for: Key.childSessionParams)
+    coder.encode(viewSize, for: Key.viewSize)
+    coder.encode(rows, for: Key.rows)
+    coder.encode(cols, for: Key.cols)
+    coder.encode(themeName, for: Key.themeName)
+    coder.encode(fontName, for: Key.fontName)
+    coder.encode(fontSize, for: Key.fontSize)
+    coder.encode(layoutMode, for: Key.layoutMode)
+    coder.encode(boldAsBright, for: Key.boldAsBright)
+    coder.encode(enableBold, for: Key.enableBold)
+    coder.encode(layoutLocked, for: Key.layoutLocked)
+    coder.encode(layoutLockedFrame, for: Key.u)
+  }
+  
+  required init?(coder: NSCoder) {
+    
+    super.init(coder: coder)
+    
+    
+    self.childSessionType = coder.decode(for: Key.childSessionType)
+    self.childSessionParams = coder.decode(of: [MoshParams.self, SessionParams.self], for: Key.childSessionParams)
+    self.viewSize = coder.decode(for: Key.viewSize)
+    self.rows = coder.decode(for: Key.rows)
+    self.cols = coder.decode(for: Key.cols)
+    self.themeName = coder.decode(for: Key.themeName)
+    self.fontName = coder.decode(for: Key.fontName)
+    self.fontSize = coder.decode(for: Key.fontSize)
+    self.layoutMode = coder.decode(for: Key.layoutMode)
+    self.boldAsBright = coder.decode(for: Key.boldAsBright)
+    self.enableBold = coder.decode(for: Key.enableBold)
+    self.layoutLocked = coder.decode(for: Key.layoutLocked)
+    self.layoutLockedFrame = coder.decode(for: Key.u)
+    
+    
+  }
+  
+  override class var supportsSecureCoding: Bool { true }
 }

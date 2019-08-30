@@ -67,6 +67,7 @@
 @property (nonatomic) UIEdgeInsets additionalInsets;
 @property (nonatomic) BOOL layoutLocked;
 @property (nonatomic) CGRect layoutLockedFrame;
+@property (nonatomic, readonly) BOOL isReady;
 
 - (void)displaySnapshot;
 - (void)displayWebView;

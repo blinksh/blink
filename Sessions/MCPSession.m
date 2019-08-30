@@ -65,10 +65,8 @@
 
 @dynamic sessionParams;
 
-- (id)initWithDevice:(TermDevice *)device andParams:(MCPParams *)params
-{
+- (id)initWithDevice:(TermDevice *)device andParams:(MCPParams *)params {
   if (self = [super initWithDevice:device andParams:params]) {
-    _repl = [[Repl alloc] initWithDevice:device andStream: _stream];
     _sshClients = [[NSMutableArray alloc] init];
   }
   
@@ -84,7 +82,8 @@
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
   
-  if ([@"mosh" isEqualToString:self.sessionParams.childSessionType]) {
+  // We are restoring mosh session if possible first.
+  if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
     [_childSession executeAttachedWithArgs:@""];
     _childSession = nil;
@@ -93,6 +92,8 @@
     }
   }
   
+  // Running repl loop
+  _repl = [[Repl alloc] initWithDevice:_device andStream: _stream];
   [_repl loopWithCallback:^BOOL(NSString *cmdline) {
   
     NSArray *arr = [cmdline componentsSeparatedByString:@" "];

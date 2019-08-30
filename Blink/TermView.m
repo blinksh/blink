@@ -404,6 +404,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   self.alpha = 1;
 
+  _isReady = YES;
   [_device viewIsReady];
     
   if (_focused) {

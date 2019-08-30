@@ -60,7 +60,7 @@ class TermController: UIViewController {
     params.enableBold = BKDefaults.enableBold()
     params.boldAsBright = BKDefaults.isBoldAsBright()
     params.viewSize = .zero
-    params.layoutMode = BKDefaults.layoutMode()
+    params.layoutMode = BKDefaults.layoutMode().rawValue
     
     return params
   }()
@@ -105,7 +105,8 @@ class TermController: UIViewController {
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     
-    _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: _sessionParams.layoutMode)
+    let layoutMode = BKLayoutMode(rawValue: _sessionParams.layoutMode) ?? BKLayoutMode.default
+    _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
     _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
     _termView.layoutLocked = _sessionParams.layoutLocked
   }
@@ -113,20 +114,6 @@ class TermController: UIViewController {
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     _sessionParams.viewSize = view.bounds.size
-  }
-  
-  func startSession() {
-    guard _session == nil
-    else {
-      return
-    }
-    
-    _session = MCPSession(
-      device: _termDevice,
-      andParams: _sessionParams)
-    
-    _session?.delegate = self
-    _session?.execute(withArgs: "")
   }
   
   @objc public func terminate() {
@@ -188,9 +175,10 @@ extension TermController: SessionDelegate {
   
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {
+      _session = nil
       return
     }
-    
+
     delegate?.terminalHangup(control: self)
   }
 }
@@ -198,7 +186,6 @@ extension TermController: SessionDelegate {
 extension TermController: TermDeviceDelegate {
   public func deviceIsReady() {
     startSession()
-    // TODO: restore activity?
   }
   
   public func deviceSizeChanged() {
@@ -238,16 +225,35 @@ extension TermController: SuspendableSession {
   
   var _decodableKey: String { "params" }
   
+  func startSession() {
+    guard _session == nil
+    else {
+      return
+    }
+    
+    _session = MCPSession(
+      device: _termDevice,
+      andParams: _sessionParams)
+    
+    _session?.delegate = self
+    _session?.execute(withArgs: "")
+  }
+  
+  
   func resume(with unarchiver: NSKeyedUnarchiver) {
     guard
-      let params = unarchiver.decodeDecodable(MCPParams.self, forKey: _decodableKey)
+      unarchiver.containsValue(forKey: _decodableKey),
+      let params = unarchiver.decodeObject(of: MCPParams.self, forKey: _decodableKey)
     else {
       return
     }
     
     _sessionParams = params
     
-    guard _sessionParams.hasEncodedState() else {
+    guard
+      _sessionParams.hasEncodedState(),
+      _session == nil // will be created on startSession
+    else {
       return
     }
     
@@ -259,7 +265,9 @@ extension TermController: SuspendableSession {
     _termDevice.attachView(_termView)
     _termDevice.attachInput(input)
     
-    startSession()
+    if _termView.isReady {
+      startSession()
+    }
     
     if view.bounds.size != params.viewSize {
       _session?.sigwinch()
@@ -276,6 +284,9 @@ extension TermController: SuspendableSession {
     _sessionParams.cleanEncodedState()
     session.suspend()
     
-    try? archiver.encodeEncodable(_sessionParams, forKey: _decodableKey)
+    let hasEncodedState = _sessionParams.hasEncodedState()
+    
+    debugPrint("has encoded state", hasEncodedState)
+    archiver.encode(_sessionParams, forKey: _decodableKey)
   }
 }
