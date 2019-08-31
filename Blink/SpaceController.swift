@@ -349,23 +349,31 @@ public class SpaceController: UIViewController {
     let pages = UIPageControl()
     pages.currentPageIndicatorTintColor = .cyan
     pages.numberOfPages = _viewportsKeys.count
-    pages.currentPage = _viewportsKeys.firstIndex(of: term.meta.key) ?? NSNotFound
+    let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
+    pages.currentPage = pageNum ?? NSNotFound
     
     hud.customView = pages
     
     let title = term.title?.isEmpty == true ? nil : term.title
+    
+    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_viewportsKeys.count)] \(title ?? "blink")"
+    
     if params.rows == 0 && params.cols == 0 {
       hud.label.numberOfLines = 1
       hud.label.text = title ?? "blink"
     } else {
-      let geometry = "\(params.rows) x \(params.cols)"
+      let geometry = "\(params.cols)×\(params.rows)"
       hud.label.numberOfLines = 2
       hud.label.text = "\(title ?? "blink")\n\(geometry)"
+      
+      sceneTitle += " | " + geometry
     }
     
     _hud = hud
     hud.hide(animated: true, afterDelay: 1)
     _touchOverlay.controlPanel.updateLayoutBar()
+    
+    view.window?.windowScene?.title = sceneTitle
   }
   
 }
