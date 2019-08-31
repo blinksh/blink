@@ -292,7 +292,7 @@ class SmarterTermInput: TermInput {
     }
 
     defer {
-      //setNeedsLayout() //?
+      _kbView.setNeedsLayout()
       LayoutManager.updateMainWindowKBBottomInset(bottomInset);
     }
     
