@@ -91,7 +91,7 @@ class SmarterTermInput: TermInput {
       name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
     
     nc.addObserver(self,
-      selector: #selector(_keyboardWillChangeFrame(sender:)),
+      selector: #selector(_debounceKeyboardWillChangeFrame(notification:)),
       name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
   }
   
@@ -241,18 +241,23 @@ class SmarterTermInput: TermInput {
     }
   }
   
-  private var _skipKBChangeFrameHandler = false
+  private var _debounceTimer: Timer? = nil
   
-  @objc func _keyboardWillChangeFrame(sender: NSNotification) {
+  @objc func _debounceKeyboardWillChangeFrame(notification: NSNotification) {
+    _debounceTimer?.invalidate()
+    _debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+      self._keyboardWillChangeFrame(notification: notification)
+    })
+  }
+  
+  func _keyboardWillChangeFrame(notification: NSNotification) {
     guard
-      _skipKBChangeFrameHandler == false,
       let window = window,
-      let userInfo = sender.userInfo,
+      let userInfo = notification.userInfo,
       let kbFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
       isLocal ? _previousKBFrame != kbFrame :  abs(_previousKBFrame.height - kbFrame.height) > 6 // reduce reflows (local height 69, other - 72)!
     else {
-      _skipKBChangeFrameHandler = false
       return
     }
     
@@ -296,12 +301,10 @@ class SmarterTermInput: TermInput {
     kbView.traits.isFloatingKB = isFloatingKB
     
     if traitCollection.userInterfaceIdiom == .phone {
-      isSoftwareKB = kbFrame.height > 100
+      isSoftwareKB = kbFrame.height > 140
       
       if self.softwareKB != isSoftwareKB {
         self.softwareKB = isSoftwareKB
-        // TODO: find goodway to remove loop
-        _skipKBChangeFrameHandler = true
         DispatchQueue.main.async {
           self._kbView.inputAccessoryView?.invalidateIntrinsicContentSize()
           self._kbView.reloadInputViews()

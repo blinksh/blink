@@ -149,7 +149,7 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
   
   result.bottom = MAX(result.bottom, __mainWindowKBBottomInset);
   
-  if (result.bottom > slideOverVerticalMargin) {
+  if (slideOverVerticalMargin > 0 && result.bottom > slideOverVerticalMargin) {
     result.bottom -= slideOverVerticalMargin;
   }
   
