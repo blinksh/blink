@@ -262,7 +262,7 @@ class SmarterTermInput: TermInput {
     var isFloatingKB = false
     var isSoftwareKB = true
     
-    let viewMaxY = window.frame.maxY
+    let viewMaxY = UIScreen.main.bounds.height
     
     let kbMaxY = kbFrame.maxY
     let kbMinY = kbFrame.minY

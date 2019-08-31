@@ -86,6 +86,7 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
   }
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
+  CGFloat slideOverVerticalMargin = (mainScreen.bounds.size.height - window.bounds.size.height) * 0.5;
   
   UIEdgeInsets result = UIEdgeInsetsZero;
   
@@ -147,6 +148,10 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
   }
   
   result.bottom = MAX(result.bottom, __mainWindowKBBottomInset);
+  
+  if (result.bottom > slideOverVerticalMargin) {
+    result.bottom -= slideOverVerticalMargin;
+  }
   
   return result;
 }
