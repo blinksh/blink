@@ -58,7 +58,7 @@ class KBView: UIView {
   
   var lang: String = "" {
     didSet {
-      if oldValue != lang {
+      if oldValue != lang && traitCollection.userInterfaceIdiom == .pad {
         traits.hasSuggestions = ["zh-Hans", "zh-Hant", "ja-JP"].contains(lang)
         _updateSections()
       }

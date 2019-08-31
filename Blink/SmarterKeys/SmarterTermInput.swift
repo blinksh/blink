@@ -254,14 +254,15 @@ class SmarterTermInput: TermInput {
     guard
       let window = window,
       let userInfo = notification.userInfo,
-      let kbFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+//      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocal ? _previousKBFrame != kbFrame :  abs(_previousKBFrame.height - kbFrame.height) > 6 // reduce reflows (local height 69, other - 72)!
+      isLocal ? _previousKBFrame != kbFrameEnd :  abs(_previousKBFrame.height - kbFrameEnd.height) > 6 // reduce reflows (local height 69, other - 72)!
     else {
       return
     }
     
-    _previousKBFrame = kbFrame
+    _previousKBFrame = kbFrameEnd
     
     var bottomInset: CGFloat = 0
     var isFloatingKB = false
@@ -269,8 +270,8 @@ class SmarterTermInput: TermInput {
     
     let viewMaxY = UIScreen.main.bounds.height
     
-    let kbMaxY = kbFrame.maxY
-    let kbMinY = kbFrame.minY
+    let kbMaxY = kbFrameEnd.maxY
+    let kbMinY = kbFrameEnd.minY
     
     if kbMaxY >= viewMaxY {
       bottomInset = viewMaxY - kbMinY
@@ -301,7 +302,7 @@ class SmarterTermInput: TermInput {
     kbView.traits.isFloatingKB = isFloatingKB
     
     if traitCollection.userInterfaceIdiom == .phone {
-      isSoftwareKB = kbFrame.height > 140
+      isSoftwareKB = kbFrameEnd.height > 140
       
       if self.softwareKB != isSoftwareKB {
         self.softwareKB = isSoftwareKB
