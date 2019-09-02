@@ -65,7 +65,6 @@ int help_main(int argc, char *argv[]) {
     @"",
     @"Gestures:",
     @"  ✌️ tap -> New Terminal.  ",
-    @"  ✌️ swipe up -> Show control panel.  ",
     @"  ✌️ drag down -> Dismiss keyboard.  ",
     @"  👆 swipe left/right -> Switch Terminals.  ",
     @"  pinch -> Change font size.",

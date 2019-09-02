@@ -30,6 +30,76 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import UIKit
+import Combine
+
+@objc protocol CommandsHUDViewDelegate: NSObjectProtocol {
+  func currentTerm() -> TermController?
+}
+
+class CommandsHUGView: UIView {
+  var _alphaCancable: AnyCancellable? = nil
+  weak var delegate: CommandsHUDViewDelegate? = nil
+  
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    // R:0,33 G:0,33 B:0,35 A:0,33
+    // R:0,11 G:0,11 B:0,12 A:1
+    backgroundColor = UIColor(red: 0.33, green: 0.33, blue: 0.35, alpha: 0.33)
+    let subView = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 37))
+    subView.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha:1)
+    addSubview(subView)
+    let subView1 = UIView(frame: CGRect(x: 80.33333, y: 0, width: 80, height: 37))
+    subView1.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha:1)
+    addSubview(subView1)
+    self.layer.masksToBounds = true
+    self.layer.cornerRadius = 37 * 0.5
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  func attachToWindow(inputWindow: UIWindow?) {
+    removeFromSuperview()
+
+    guard let inputWin = inputWindow,
+      let hud = inputWin.rootViewController?.view.subviews.last?.subviews.first
+    else {
+      return
+    }
+
+    let alphaPath: ReferenceWritableKeyPath<UIView, CGFloat> = \.alpha
+    _alphaCancable = hud
+      .publisher(for: alphaPath)
+      .assign(to: alphaPath, on: self)
+    alpha = hud.alpha
+    
+    inputWin.rootViewController?.view?.addSubview(self)
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    guard let supView = superview
+    else {
+      return
+    }
+    
+    let size = CGSize(
+      width: 300,
+      height: 37
+    )
+    let origin = CGPoint(
+      x: 0,
+      y: supView.bounds.height - LayoutManager.mainWindowKBBottomInset() - size.height - 24
+    )
+    
+    self.frame = CGRect(origin: origin, size: size)
+    
+    if let width = delegate?.currentTerm()?.view?.bounds.size.width {
+      self.center = CGPoint(x: width * 0.5, y: self.center.y)
+    }
+  }
+}
 
 class SmarterTermInput: TermInput {
   
@@ -197,10 +267,9 @@ class SmarterTermInput: TermInput {
         case "x": cut(self)
         case "z": flags.contains(.shift) ? undoManager?.undo() : undoManager?.redo()
         case "v": paste(self)
-        default: break;
+        default: super.insertText(text);
         }
       }
-      
       _kbView.turnOffUntracked()
     } else if traits.contains([.altOn, .ctrlOn]) {
       escCtrlSeq(withInput:text)
@@ -245,7 +314,7 @@ class SmarterTermInput: TermInput {
   
   @objc func _debounceKeyboardWillChangeFrame(notification: NSNotification) {
     _debounceTimer?.invalidate()
-    _debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false, block: { _ in
+    _debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
       self._keyboardWillChangeFrame(notification: notification)
     })
   }

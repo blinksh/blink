@@ -38,6 +38,6 @@
 //@property (weak) id<ControlPanelDelegate> controlPanelDelegate;
 
 
-- (void)updateLayoutBar;
+//- (void)updateLayoutBar;
 
 @end

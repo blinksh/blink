@@ -77,6 +77,8 @@ public class SpaceController: UIViewController {
     } else {
       _touchOverlay.frame = view.bounds
     }
+    
+    _commandsHUD.setNeedsLayout()
   }
   
   @objc func _relayout() {
@@ -113,12 +115,10 @@ public class SpaceController: UIViewController {
     _touchOverlay.frame = view.bounds
     view.addSubview(_touchOverlay)
     _touchOverlay.touchDelegate = self
-    // TODO:
-//    _touchOverlay.controlPanel.controlPanelDelegate = self
     _touchOverlay.attach(_viewportsController)
     
     
-//    view.addSubview(_termInput)
+    _commandsHUD.delegate = self
     _registerForNotifications()
     _setupKBCommands()
     
@@ -127,7 +127,6 @@ public class SpaceController: UIViewController {
     } else if let key = _currentKey {
       let term: TermController = SessionRegistry.shared[key]
       term.delegate = self
-//      term.userActivity = userActivity
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
         DispatchQueue.main.async {
@@ -137,6 +136,8 @@ public class SpaceController: UIViewController {
       }
     }
   }
+  
+  let _commandsHUD = CommandsHUGView(frame: .zero)
   
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -150,6 +151,16 @@ public class SpaceController: UIViewController {
         SmarterTermInput.shared.reloadInputViews()
       }
     }
+  }
+  
+  public override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    
+     DispatchQueue.main.async {
+      if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window {
+        self._commandsHUD.attachToWindow(inputWindow: win)
+      }
+    }
+    return .default
   }
   
   deinit {
@@ -370,7 +381,6 @@ public class SpaceController: UIViewController {
     
     _hud = hud
     hud.hide(animated: true, afterDelay: 1)
-    _touchOverlay.controlPanel.updateLayoutBar()
     
     view.window?.windowScene?.title = sceneTitle
   }
@@ -459,23 +469,23 @@ extension SpaceController: UIPageViewControllerDataSource {
   
 }
 
-extension SpaceController: ControlPanelDelegate {
-  @objc func controlPanelOnClose() {
-    _closeCurrentSpace()
-  }
-  
-  @objc func controlPanelOnPaste() {
-    _attachInputToCurrentTerm()
-    SmarterTermInput.shared.yank(self);
-  }
-  
-  @objc func currentTerm() -> TermController! {
-    if let currentKey = _currentKey {
-      return SessionRegistry.shared[currentKey]
-    }
-    return nil
-  }
-}
+//extension SpaceController: ControlPanelDelegate {
+//  @objc func controlPanelOnClose() {
+//    _closeCurrentSpace()
+//  }
+//
+//  @objc func controlPanelOnPaste() {
+//    _attachInputToCurrentTerm()
+//    SmarterTermInput.shared.yank(self);
+//  }
+//
+//  @objc func currentTerm() -> TermController! {
+//    if let currentKey = _currentKey {
+//      return SessionRegistry.shared[currentKey]
+//    }
+//    return nil
+//  }
+//}
 
 extension SpaceController: TouchOverlayDelegate {
   public func touchOverlay(_ overlay: TouchOverlay!, onOneFingerTap recognizer: UITapGestureRecognizer!) {
@@ -706,4 +716,13 @@ extension SpaceController {
     }
   }
   
+}
+
+extension SpaceController: CommandsHUDViewDelegate {
+  @objc func currentTerm() -> TermController? {
+    if let currentKey = _currentKey {
+      return SessionRegistry.shared[currentKey]
+    }
+    return nil
+  }
 }
