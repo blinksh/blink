@@ -123,7 +123,7 @@ public class SpaceController: UIViewController {
     _setupKBCommands()
     
     if _viewportsKeys.isEmpty {
-      _createShell(userActivity: nil, key: nil, animated: false)
+      _createShell(userActivity: nil, animated: false)
     } else if let key = _currentKey {
       let term: TermController = SessionRegistry.shared[key]
       term.delegate = self
@@ -205,7 +205,6 @@ public class SpaceController: UIViewController {
   
   func _createShell(
     userActivity: NSUserActivity?,
-    key: String?,
     animated: Bool,
     completion: ((Bool) -> Void)? = nil)
   {
@@ -273,7 +272,7 @@ public class SpaceController: UIViewController {
     SessionRegistry.shared.remove(forKey: currentKey)
     _viewportsKeys.remove(at: idx)
     if _viewportsKeys.isEmpty {
-      _createShell(userActivity: nil, key: nil, animated: true)
+      _createShell(userActivity: nil, animated: true)
       return
     }
 
@@ -490,7 +489,7 @@ extension SpaceController: TouchOverlayDelegate {
   }
   
   public func touchOverlay(_ overlay: TouchOverlay!, onTwoFingerTap recognizer: UITapGestureRecognizer!) {
-    
+    _createShell(userActivity: nil, animated: true)
   }
   
   public func touchOverlay(_ overlay: TouchOverlay!, onPinch recognizer: UIPinchGestureRecognizer!) {
@@ -578,7 +577,7 @@ extension SpaceController {
   }
   
   @objc private func _newShellAction() {
-    _createShell(userActivity: nil, key: nil, animated: true)
+    _createShell(userActivity: nil, animated: true)
   }
   
   @objc private func _closeShellAction() {
