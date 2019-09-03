@@ -36,21 +36,72 @@ import Combine
   func currentTerm() -> TermController?
 }
 
+
 class CommandsHUGView: UIView {
   var _alphaCancable: AnyCancellable? = nil
   weak var delegate: CommandsHUDViewDelegate? = nil
+  var _visualEffect: UIVisualEffectView
+  var _visualEffect2: UIVisualEffectView
+  var _contentView = UIView()
+  
+  struct Colors {
+    var bg: UIColor
+    var button: UIColor
+    
+    static var dark: Self {
+      Colors(
+        bg: UIColor(red: 0.33, green: 0.33, blue: 0.35, alpha: 0.33),
+        button: UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha:1)
+      )
+    }
+    
+    static var light: Self {
+      Colors(
+        bg: UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.33),
+        button: UIColor.white
+      )
+    }
+  }
+  
+  var colors: Colors {
+    return .light
+//    traitCollection.userInterfaceStyle == .dark ? Colors.dark : Colors.light
+  }
   
   override init(frame: CGRect) {
+    _visualEffect = UIVisualEffectView(effect: .none)
+    _visualEffect.backgroundColor = UIColor.separator
+//    UIBlurEffectStyleSystemVibrantBackgroundRegular
+    let effect = UIBlurEffect(style: .systemChromeMaterial)
+    _visualEffect2 = UIVisualEffectView(effect: effect)
+
     super.init(frame: frame)
-    // R:0,33 G:0,33 B:0,35 A:0,33
-    // R:0,11 G:0,11 B:0,12 A:1
-    backgroundColor = UIColor(red: 0.33, green: 0.33, blue: 0.35, alpha: 0.33)
+    
+    let vibrancy = UIVibrancyEffect(blurEffect: effect, style: .separator)
+    
+    addSubview(_visualEffect)
+    addSubview(_contentView)
+    _contentView.addSubview(_visualEffect2)
+    
+    let v = UIVisualEffectView(effect: vibrancy)
+    _visualEffect2.contentView.addSubview(v)
+    
+    let sep = UIView(frame: CGRect(x: 80, y: 0, width: 1, height: 37))
+    sep.backgroundColor = UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.1)
+    sep.backgroundColor = .red
+    
+    v.contentView.addSubview(sep)
+    
+    let cols = colors
+    _contentView.backgroundColor = cols.bg
     let subView = UIView(frame: CGRect(x: 0, y: 0, width: 80, height: 37))
-    subView.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha:1)
-    addSubview(subView)
-    let subView1 = UIView(frame: CGRect(x: 80.33333, y: 0, width: 80, height: 37))
-    subView1.backgroundColor = UIColor(red: 0.11, green: 0.11, blue: 0.12, alpha:1)
-    addSubview(subView1)
+    subView.backgroundColor = cols.button
+    _contentView.addSubview(subView)
+    let subView1 = UIView(frame: CGRect(x: 80.5, y: 0, width: 80, height: 37))
+    subView1.backgroundColor = cols.button
+    _contentView.addSubview(subView1)
+    
+    
     self.layer.masksToBounds = true
     self.layer.cornerRadius = 37 * 0.5
   }
@@ -94,6 +145,9 @@ class CommandsHUGView: UIView {
     )
     
     self.frame = CGRect(origin: origin, size: size)
+    _visualEffect.frame = self.bounds
+    _contentView.frame = self.bounds
+    _visualEffect2.frame = self.bounds
     
     if let width = delegate?.currentTerm()?.view?.bounds.size.width {
       self.center = CGPoint(x: width * 0.5, y: self.center.y)
@@ -385,10 +439,10 @@ class SmarterTermInput: TermInput {
       _kbView.kbDevice = .in6_5
       _kbView.traits.isPortrait = true
       self.softwareKB = isSoftwareKB
-      self.setupAccessoryView()
+      setupAccessoryView()
       bottomInset = inputAccessoryView?.frame.height ?? 0
       reloadInputViews()
-    } else if !isFloatingKB && self.inputAccessoryView != nil {
+    } else if !isFloatingKB && inputAccessoryView != nil {
       _kbView.kbDevice = .detect()
       setupAssistantItem()
       reloadInputViews()
