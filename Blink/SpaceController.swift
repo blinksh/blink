@@ -122,6 +122,8 @@ public class SpaceController: UIViewController {
     _registerForNotifications()
     _setupKBCommands()
     
+    _commandsHUD.delegate = self
+    
     if _viewportsKeys.isEmpty {
       _createShell(userActivity: nil, animated: false)
     } else if let key = _currentKey {
@@ -560,8 +562,8 @@ extension SpaceController {
       _cmd("New Window",     #selector(_newWindowAction),   "t", prevNextShellModifierFlags),
       _cmd("Close Window",   #selector(_closeWindowAction), "w", prevNextShellModifierFlags),
     
-      _cmd("New Shell",      #selector(_newShellAction),   "t", modifierFlags),
-      _cmd("Close Shell",    #selector(_closeShellAction), "w", modifierFlags),
+      _cmd("New Shell",      #selector(newShellAction),   "t", modifierFlags),
+      _cmd("Close Shell",    #selector(closeShellAction), "w", modifierFlags),
       
       _cmd("Next Shell",     #selector(_nextShellAction), "]", prevNextShellModifierFlags),
       _cmd("Previous Shell", #selector(_prevShellAction), "[", prevNextShellModifierFlags),
@@ -586,11 +588,11 @@ extension SpaceController {
     ]
   }
   
-  @objc private func _newShellAction() {
+  @objc func newShellAction() {
     _createShell(userActivity: nil, animated: true)
   }
   
-  @objc private func _closeShellAction() {
+  @objc func closeShellAction() {
     _closeCurrentSpace()
   }
   
@@ -724,5 +726,9 @@ extension SpaceController: CommandsHUDViewDelegate {
       return SessionRegistry.shared[currentKey]
     }
     return nil
+  }
+  
+  @objc func spaceController() -> SpaceController? {
+    return self
   }
 }

@@ -135,19 +135,19 @@
 			<key>UIWindowSceneSessionRoleApplication</key>
 			<array>
 				<dict>
-					<key>UISceneDelegateClassName</key>
-					<string>Blink.SceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>main</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.SceneDelegate</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleExternalDisplay</key>
 			<array>
 				<dict>
-					<key>UISceneDelegateClassName</key>
-					<string>Blink.SceneDelegate</string>
 					<key>UISceneConfigurationName</key>
 					<string>main</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.SceneDelegate</string>
 				</dict>
 			</array>
 		</dict>
