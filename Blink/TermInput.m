@@ -279,6 +279,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     
     _skipTextStorageDelete = NO;
     self.textStorage.delegate = self;
+    
+    self.keyboardAppearance = [self _keyboardAppearance];
   }
   
   return self;
@@ -329,9 +331,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return _cmdModifierSequence ? _undoManager : [super undoManager];
 }
 
-- (UIKeyboardAppearance)keyboardAppearance
+- (UIKeyboardAppearance)_keyboardAppearance
 {
-  return [BKDefaults isLightKeyboard] ? UIKeyboardAppearanceLight : UIKeyboardAppearanceDark;
+  BKKeyboardStyle style = [BKDefaults keyboardStyle];
+  switch (style) {
+    case BKKeyboardStyleLight: return UIKeyboardAppearanceLight;
+    case BKKeyboardStyleDark: return UIKeyboardAppearanceDark;
+    default: return UIKeyboardAppearanceDefault;
+  }
 }
 
 - (NSString *)textInputContextIdentifier
@@ -342,18 +349,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (void)_configureNotifications
 {
-  NSNotificationCenter *defaultCenter = [NSNotificationCenter defaultCenter];
-  [defaultCenter removeObserver:self];
+  NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
   
-  [defaultCenter addObserver:self
+  [nc addObserver:self
                     selector:@selector(_configureShotcuts)
                         name:BKKeyboardConfigChanged
                       object:nil];
   
-  [defaultCenter addObserver:self
+  [nc addObserver:self
                     selector:@selector(_configureShotcuts)
                         name:BKKeyboardFuncTriggerChanged
                       object:nil];
+  
+  [nc addObserver:self selector:@selector(_setupAppearance) name:BKAppearanceChanged object:nil];
+}
+
+- (void)_setupAppearance {
+  self.keyboardAppearance = [self _keyboardAppearance];
+  [self reloadInputViews];
 }
 
 //- (BOOL)becomeFirstResponder

@@ -40,11 +40,11 @@
 #define FONT_SIZE_STEPPER_TAG 2002
 #define CURSOR_BLINK_TAG 2003
 #define BOLD_AS_BRIGHT_TAG 2004
-#define LIGHT_KEYBOARD_TAG 2005
 #define ENABLE_BOLD_TAG 2006
 #define APP_ICON_ALTERNATE_TAG 2007
 #define LAYOUT_MODE_TAG 2008
 #define OVERSCAN_COMPENSATION_TAG 2009
+#define KEYBOARDSTYLE_TAG 2010
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -89,6 +89,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
   UISegmentedControl *_overscanCompensationSegmentedControl;
   BKOverscanCompensation _overscanCompensationValue;
+  
+  UISegmentedControl *_keyboardStyleSegmentedControl;
+  BKKeyboardStyle _keyboardStyleValue;
 }
 
 - (void)viewDidLoad
@@ -132,11 +135,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   _cursorBlinkValue = [BKDefaults isCursorBlink];
   _boldAsBrightValue = [BKDefaults isBoldAsBright];
-  _lightKeyboardValue = [BKDefaults isLightKeyboard];
   _enableBoldValue = [BKDefaults enableBold];
   _alternateAppIconValue = [BKDefaults isAlternateAppIcon];
   _defaultLayoutModeValue = BKDefaults.layoutMode;
   _overscanCompensationValue = BKDefaults.overscanCompensation;
+  _keyboardStyleValue = BKDefaults.keyboardStyle;
 }
 
 - (void)saveDefaultValues
@@ -151,13 +154,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     [BKDefaults setThemeName:[[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row] name]];
   }
   
+  _keyboardStyleValue = [self _keyboardStyleFromIndex:_keyboardStyleSegmentedControl.selectedSegmentIndex];
+  
   [BKDefaults setCursorBlink:_cursorBlinkValue];
   [BKDefaults setBoldAsBright:_boldAsBrightValue];
-  [BKDefaults setLightKeyboard:_lightKeyboardValue];
   [BKDefaults setAlternateAppIcon:_alternateAppIconValue];
   [BKDefaults setEnableBold: _enableBoldValue];
   [BKDefaults setLayoutMode:_defaultLayoutModeValue];
   [BKDefaults setOversanCompensation:_overscanCompensationValue];
+  [BKDefaults setKeyboardStyle:_keyboardStyleValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -246,7 +251,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       cellIdentifier = @"cursorBlinkCell";
     }
   } else if (section == BKAppearance_KeyboardAppearance) {
-    cellIdentifier = @"lightKeyboardCell";
+    cellIdentifier = @"keyboardStyleCell";
   } else if (section == BKAppearance_AppIcon) {
     cellIdentifier = @"alternateAppIconCell";
   } else if (section == BKAppearance_Layout) {
@@ -320,8 +325,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
     _cursorBlinkSwitch.on = _cursorBlinkValue;
   } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
-    _lightKeyboardSwitch = [cell viewWithTag:LIGHT_KEYBOARD_TAG];
-    _lightKeyboardSwitch.on = _lightKeyboardValue;
+    _keyboardStyleSegmentedControl = [cell viewWithTag:KEYBOARDSTYLE_TAG];
+    _keyboardStyleSegmentedControl.selectedSegmentIndex = [self _keyboardStyleToIndex: _keyboardStyleValue];
   } else if (indexPath.section == BKAppearance_AppIcon && indexPath.row == 0) {
     _alternateAppIconSwitch = [cell viewWithTag:APP_ICON_ALTERNATE_TAG];
     _alternateAppIconSwitch.on = _alternateAppIconValue;
@@ -387,6 +392,29 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   return BKBKOverscanCompensationScale;
+}
+
+- (NSInteger)_keyboardStyleToIndex:(BKKeyboardStyle) value {
+  switch (value) {
+    case BKKeyboardStyleSystem: return 0;
+    case BKKeyboardStyleLight: return 1;
+    case BKKeyboardStyleDark: return 2;
+    default: return 0;
+  }
+}
+
+- (BKKeyboardStyle)_keyboardStyleFromIndex:(NSInteger) index {
+  if (index == 0) {
+    return BKKeyboardStyleSystem;
+  }
+  if (index == 1) {
+    return BKKeyboardStyleLight;
+  }
+  if (index == 2) {
+    return BKKeyboardStyleDark;
+  }
+  
+  return BKKeyboardStyleSystem;
 }
 
 
@@ -529,11 +557,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 //  [ScreenController applyOverscanOptionToScreen:[UIScreen.screens lastObject] value:_overscanCompensationValue];
 }
 
-
-- (IBAction)lightKeyboardSwitchChanged:(id)sender
-{
-  _lightKeyboardValue = _lightKeyboardSwitch.on;
-}
 
 - (IBAction)alternateAppIconSwitchChanged:(id)sender
 {

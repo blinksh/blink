@@ -59,6 +59,12 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
   BKBKOverscanCompensationNone,
 };
 
+typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
+  BKKeyboardStyleDark = 0,
+  BKKeyboardStyleLight,
+  BKKeyboardStyleSystem,
+};
+
 @interface BKDefaults : NSObject <NSCoding>
 
 @property (nonatomic, strong) NSMutableDictionary *keyboardMaps;
@@ -76,7 +82,7 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
 @property (nonatomic) BOOL cursorBlink;
 @property (nonatomic) NSUInteger enableBold;
 @property (nonatomic) BOOL boldAsBright;
-@property (nonatomic) BOOL lightKeyboard;
+@property (nonatomic) BKKeyboardStyle keyboardStyle;
 @property (nonatomic) BOOL alternateAppIcon;
 @property (nonatomic) BKLayoutMode layoutMode;
 @property (nonatomic) BKOverscanCompensation overscanCompensation;
@@ -95,7 +101,6 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
 + (void)setCursorBlink:(BOOL)state;
 + (void)setBoldAsBright:(BOOL)state;
 + (void)setEnableBold:(NSUInteger)state;
-+ (void)setLightKeyboard:(BOOL)state;
 + (void)setAlternateAppIcon:(BOOL)state;
 + (void)setXCallBackURLEnabled:(BOOL)state;
 + (void)setXCallBackURLKey:(NSString *)key;
@@ -120,7 +125,6 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
 + (BOOL)isCursorBlink;
 + (NSUInteger)enableBold;
 + (BOOL)isBoldAsBright;
-+ (BOOL)isLightKeyboard;
 + (BOOL)isAlternateAppIcon;
 + (BOOL)isXCallBackURLEnabled;
 + (NSString *)xCallBackURLKey;
@@ -128,6 +132,8 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
 + (NSString*)defaultUserName;
 + (BKLayoutMode)layoutMode;
 + (BKOverscanCompensation)overscanCompensation;
++ (BKKeyboardStyle)keyboardStyle;
 + (void)setLayoutMode:(BKLayoutMode)mode;
 + (void)setOversanCompensation:(BKOverscanCompensation)value;
++ (void)setKeyboardStyle:(BKKeyboardStyle)value;
 @end
