@@ -59,7 +59,8 @@ import UIKit
     encodedState = coder.decode(for: Key.encodedState)
   }
   
-  class var supportsSecureCoding: Bool { true }
+  static var secureCoding1 = true
+  class var supportsSecureCoding: Bool { return secureCoding1 }
 }
 
 @objc class MoshParams: SessionParams {
@@ -105,7 +106,9 @@ import UIKit
     self.serverPath = coder.decode(for: Key.serverPath)
   }
   
-  override class var supportsSecureCoding: Bool { true }
+  
+  static var secureCoding2 = true
+  override class var supportsSecureCoding: Bool { secureCoding2 }
 }
 
 @objc class MCPParams: SessionParams {
@@ -192,5 +195,6 @@ import UIKit
     
   }
   
-  override class var supportsSecureCoding: Bool { true }
+  static var secureCoding2 = true
+  override class var supportsSecureCoding: Bool { secureCoding2 }
 }
