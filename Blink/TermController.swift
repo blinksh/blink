@@ -168,7 +168,7 @@ class TermController: UIViewController {
         return
       }
       let newSize = Int(round(CGFloat(initialSize) * pinch.scale))
-      guard newSize == _sessionParams.fontSize else {
+      guard newSize != _sessionParams.fontSize else {
         return
       }
       _termView.setFontSize(newSize as NSNumber)
