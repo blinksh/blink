@@ -31,9 +31,6 @@
 
 #import "TouchOverlay.h"
 
-
-const CGFloat kToolBarHeight = 94;
-
 @interface TouchOverlay () <UIGestureRecognizerDelegate, UIScrollViewDelegate>
 @end
 
@@ -45,8 +42,6 @@ const CGFloat kToolBarHeight = 94;
   UILongPressGestureRecognizer *_longPressGestureRecognizer;
   
   UIScrollView *_pagedScrollView;
-  
-  ControlPanel *_controlPanel;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame
@@ -67,8 +62,8 @@ const CGFloat kToolBarHeight = 94;
     self.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     
     // We want only two fingers
-    self.panGestureRecognizer.minimumNumberOfTouches = 2;
-    self.panGestureRecognizer.maximumNumberOfTouches = 2;
+    self.panGestureRecognizer.minimumNumberOfTouches = 1;
+    self.panGestureRecognizer.maximumNumberOfTouches = 1;
     self.directionalLockEnabled = YES;
     
     _oneFingerTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleOneFingerTap:)];
@@ -83,18 +78,13 @@ const CGFloat kToolBarHeight = 94;
     _pinchGestureRecognizer = [[UIPinchGestureRecognizer alloc] initWithTarget:self action:@selector(_handlePinch:)];
     
     _pinchGestureRecognizer.delegate = self;
+    [_pinchGestureRecognizer shouldRequireFailureOfGestureRecognizer:self.panGestureRecognizer];
     
     // The goal of this gesture recognizer is two guard long press selection.
     _longPressGestureRecognizer = [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(_handleLongPress:)];
     _longPressGestureRecognizer.numberOfTouchesRequired = 1;
     _longPressGestureRecognizer.delegate = self;
     [_oneFingerTapGestureRecognizer requireGestureRecognizerToFail:_longPressGestureRecognizer];
-    
-    
-    
-    _controlPanel = [[ControlPanel alloc] initWithFrame:self.bounds];
-    [self addSubview:_controlPanel];
-    self.delegate = self;
   }
   
   return self;
@@ -106,14 +96,14 @@ const CGFloat kToolBarHeight = 94;
   _oneFingerTapGestureRecognizer.enabled = NO;
   _twoFingerTapGestureRecognizer.enabled = NO;
   _longPressGestureRecognizer.enabled = NO;
-  
+  self.panGestureRecognizer.enabled = NO;
   _pagedScrollView.scrollEnabled = NO;
   
   
   _oneFingerTapGestureRecognizer.enabled = YES;
   _twoFingerTapGestureRecognizer.enabled = YES;
   _longPressGestureRecognizer.enabled = YES;
-  
+  self.panGestureRecognizer.enabled = NO;
   _pagedScrollView.scrollEnabled = YES;
 }
 
@@ -149,8 +139,9 @@ const CGFloat kToolBarHeight = 94;
 - (void)layoutSubviews
 {
   [super layoutSubviews];
-  self.contentSize = CGSizeMake(self.bounds.size.width, self.bounds.size.height + kToolBarHeight);
-  _controlPanel.frame = CGRectMake(0, self.contentSize.height - kToolBarHeight, self.bounds.size.width, kToolBarHeight);
+  CGSize contentSize = self.bounds.size;
+  contentSize.height += 1000;
+  self.contentSize = contentSize;
 }
 
 - (void)didMoveToSuperview
@@ -185,32 +176,17 @@ const CGFloat kToolBarHeight = 94;
 
 - (void)_handlePinch:(UIPinchGestureRecognizer *)recognizer
 {
-  [_touchDelegate touchOverlay:self onPinch:recognizer];
-  
   if (recognizer.state == UIGestureRecognizerStatePossible) {
     return;
   }
   
-  CGFloat scale = recognizer.scale;
-  if (scale < 0.95 || scale >= 1.05) {
+  CGFloat dScale = 1.0 - recognizer.scale;
+  if (ABS(dScale) > 0.05) {
+    [_touchDelegate touchOverlay:self onPinch:recognizer];
     [self _resetOtherInteractions];
     self.scrollEnabled = NO;
     self.scrollEnabled = YES;
   }
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-  // Determine which table cell the scrolling will stop on.
-  NSInteger cellIndex = floor(targetContentOffset->y / kToolBarHeight);
-  
-  // Round to the next cell if the scrolling will stop over halfway to the next cell.
-  if ((targetContentOffset->y - (floor(targetContentOffset->y / kToolBarHeight) * kToolBarHeight)) > kToolBarHeight) {
-    cellIndex++;
-  }
-  
-  // Adjust stopping point to exact beginning of cell.
-  targetContentOffset->y = cellIndex * kToolBarHeight;
 }
 
 - (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
@@ -232,14 +208,6 @@ const CGFloat kToolBarHeight = 94;
 {
   
   // We should start all our recognizers
-  return YES;
-}
-
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
-{
-  if (gestureRecognizer == _pinchGestureRecognizer) {
-    return ABS(self.contentOffset.y) <= kToolBarHeight * 0.5 || self.contentOffset.y == kToolBarHeight;
-  }
   return YES;
 }
 

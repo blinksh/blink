@@ -33,7 +33,6 @@
 #import "replxx.h"
 #import "BKHosts.h"
 #import "BKTheme.h"
-#import "MusicManager.h"
 #import "BlinkPaths.h"
 #include <arpa/inet.h>
 
@@ -190,7 +189,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       @"md5": @"Calculate a message-digest fingerprint (checksum) for a file.", // fish
       @"mkdir": @"Make directories.", // fish
       @"mosh": @"Runs mosh client. 🦄",
-      @"music": @"Control music player 🎧",
       @"mv": @"Move files and directories.",
   //    @"nc": @"", // TODO
       @"nslookup": @"Query Internet name servers interactively", // fish
@@ -399,8 +397,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     completions = [self _allBlinkHosts];
   } else if ([@"host" isEqualToString:completionType]) {
     completions = [self _allHosts];
-  } else if ([@"blink-music" isEqualToString:completionType]) {
-    completions = [[MusicManager shared] commands];
   } else if ([@"blink-geo" isEqualToString:completionType]) {
     completions = @[@"track", @"lock", @"stop", @"current", @"authorize", @"last"];
   } else if ([@"file" isEqualToString:completionType]) {
@@ -426,8 +422,6 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return @"directory";
   } else if ([@"open" isEqualToString:command]) {
     return @"file";
-  } else if ([@"music" isEqualToString:command]) {
-    return @"blink-music";
   } else if ([@"geo" isEqualToString:command]) {
     return @"blink-geo";
   } else if ([@[@"help", @"exit", @"whoami", @"config", @"clear", @"history", @"link-files"] indexOfObject:command] != NSNotFound) {

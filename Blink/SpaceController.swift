@@ -56,7 +56,6 @@ public class SpaceController: UIViewController {
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
-  private var _musicHUD: MBProgressHUD? = nil
   
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
@@ -247,28 +246,6 @@ public class SpaceController: UIViewController {
     }
   }
   
-  
-  @objc func _toggleMusicHUD() {
-    if let musicHUD = _musicHUD {
-      musicHUD.hide(animated: true)
-      _musicHUD = nil
-      return
-    }
-    
-    _hud?.hide(animated: false)
-    
-    let musicHud = MBProgressHUD.showAdded(to: _touchOverlay, animated: true)
-    musicHud.mode = .customView
-    musicHud.bezelView.style = .solidColor
-    musicHud.bezelView.color = .clear
-    musicHud.contentColor = .white
-    musicHud.customView = MusicManager.shared().hudView()
-    
-    let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(_toggleMusicHUD))
-    musicHud.backgroundView.addGestureRecognizer(tapRecognizer)
-    _musicHUD = musicHud
-  }
-  
   func _closeCurrentSpace() {
     currentTerm()?.terminate()
     _removeCurrentSpace()
@@ -330,12 +307,6 @@ public class SpaceController: UIViewController {
   }
   
   func _displayHUD() {
-    if let musicHUD = _musicHUD {
-      musicHUD.hide(animated: true)
-      _musicHUD = nil
-      return
-    }
-    
     _hud?.hide(animated: false)
     
     guard let term = currentTerm() else {
@@ -584,7 +555,6 @@ extension SpaceController {
       
       // Misc
       _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
-      _cmd("Music Controls", #selector(_toggleMusicHUD),   "m", modifierFlags)
     ]
   }
   

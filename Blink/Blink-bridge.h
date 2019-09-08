@@ -35,8 +35,6 @@
 
 #import "BKDefaults.h"
 #import "LayoutManager.h"
-#import "ControlPanel.h"
-#import "MusicManager.h"
 #import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
 #import "Session.h"
