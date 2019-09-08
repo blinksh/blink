@@ -460,33 +460,50 @@ class SmarterTermInput: TermInput {
   }
   
   func setupAccessoryView() {
+    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
+    forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
+    
+    if _kbView.traits.isHKBAttached && hideSmartKeysWithHKB {
+      inputAccessoryView?.isHidden = true
+      inputAssistantItem.leadingBarButtonGroups = []
+      inputAssistantItem.trailingBarButtonGroups = []
+      return;
+    }
+    
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
     inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
   func setupAssistantItem() {
+    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
+    forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
     inputAccessoryView = nil
+    
+    if _kbView.traits.isHKBAttached && hideSmartKeysWithHKB {
+      inputAccessoryView?.isHidden = true
+      inputAssistantItem.leadingBarButtonGroups = []
+      inputAssistantItem.trailingBarButtonGroups = []
+      return;
+    }
+    
     let proxy = KBProxy(kbView: kbView)
     let item = UIBarButtonItem(customView: proxy)
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
-  func removeIfHardwareKBAttached() {
-    let showSmartKeys = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
-    if kbView.traits.isHKBAttached && !showSmartKeys {
-      inputAccessoryView?.isHidden = true
-      inputAssistantItem.leadingBarButtonGroups = []
-      inputAssistantItem.trailingBarButtonGroups = []
-    }
+  func removeSmartKeysIfNeeded() {
+    
+    
+    
   }
   
   private var _debounceTimer: Timer? = nil
   
   @objc func _debounceKeyboardWillChangeFrame(notification: NSNotification) {
     _debounceTimer?.invalidate()
-    _debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.2, repeats: false, block: { _ in
+    _debounceTimer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false, block: { _ in
       self._keyboardWillChangeFrame(notification: notification)
     })
   }
@@ -505,14 +522,21 @@ class SmarterTermInput: TermInput {
     
     _previousKBFrame = kbFrameEnd
     
-    var bottomInset: CGFloat = 0
-    var isFloatingKB = false
-    var isSoftwareKB = true
+    // Only key window can change input props
+    guard window.isKeyWindow == true
+    else {
+      return
+    }
     
+    var bottomInset: CGFloat = 0
+
     let viewMaxY = UIScreen.main.bounds.height
     
     let kbMaxY = kbFrameEnd.maxY
     let kbMinY = kbFrameEnd.minY
+    
+    var isFloatingKB = false
+    var isSoftwareKB = kbFrameEnd.height > 140
     
     if kbMaxY >= viewMaxY {
       bottomInset = viewMaxY - kbMinY
@@ -525,26 +549,15 @@ class SmarterTermInput: TermInput {
         bottomInset = accessoryView.bounds.height
       }
     }
-    
-    // Only key window can change input props
-    guard window.isKeyWindow == true
-    else {
-      return
-    }
 
     defer {
       _kbView.setNeedsLayout()
       LayoutManager.updateMainWindowKBBottomInset(bottomInset);
     }
     
-    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
-    //[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigShowSmartKeysWithXKeyBoard];
-    
     kbView.traits.isFloatingKB = isFloatingKB
     
     if traitCollection.userInterfaceIdiom == .phone {
-      isSoftwareKB = kbFrameEnd.height > 140
-      
       if self.softwareKB != isSoftwareKB {
         self.softwareKB = isSoftwareKB
         DispatchQueue.main.async {
@@ -564,8 +577,11 @@ class SmarterTermInput: TermInput {
       _kbView.kbDevice = .detect()
       setupAssistantItem()
       reloadInputViews()
+    } else {
+      self.softwareKB = isSoftwareKB
+      setupAssistantItem()
+      reloadInputViews()
     }
-    
   }
   
   static let shared = SmarterTermInput()
