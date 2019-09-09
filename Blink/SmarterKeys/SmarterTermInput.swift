@@ -566,13 +566,26 @@ class SmarterTermInput: TermInput {
     
     kbView.traits.isFloatingKB = isFloatingKB
     
+    var needToSetupAssistant = false
+    
     if traitCollection.userInterfaceIdiom == .phone {
       if self.softwareKB != isSoftwareKB {
         self.softwareKB = isSoftwareKB
-        DispatchQueue.main.async {
-          self._kbView.inputAccessoryView?.invalidateIntrinsicContentSize()
-          self._kbView.reloadInputViews()
+        if _hideSmartKeysWithHKB && !isSoftwareKB && inputAccessoryView != nil {
+          inputAccessoryView = nil
+          bottomInset = 0
+        } else if _hideSmartKeysWithHKB && isSoftwareKB && inputAccessoryView == nil {
+          setupAccessoryView()
+        } else if !_hideSmartKeysWithHKB && inputAccessoryView == nil {
+          setupAccessoryView()
         }
+        DispatchQueue.main.async {
+          self.inputAccessoryView?.invalidateIntrinsicContentSize()
+          self.reloadInputViews()
+        }
+      }
+      if !isSoftwareKB && _hideSmartKeysWithHKB {
+        bottomInset = 0
       }
     } else if isFloatingKB && inputAccessoryView == nil {
       // put in iphone mode
@@ -584,13 +597,19 @@ class SmarterTermInput: TermInput {
       reloadInputViews()
     } else if !isFloatingKB && inputAccessoryView != nil {
       _kbView.kbDevice = .detect()
-      setupAssistantItem()
-      reloadInputViews()
-    } else {
+      needToSetupAssistant = true
+    } else if _hideSmartKeysWithHKB && !isSoftwareKB && inputAssistantItem.trailingBarButtonGroups.count >= 1 {
+      needToSetupAssistant = true
+    } else if _hideSmartKeysWithHKB && isSoftwareKB && inputAssistantItem.trailingBarButtonGroups.isEmpty {
+      needToSetupAssistant = true
+    }
+    
+    if needToSetupAssistant {
       self.softwareKB = isSoftwareKB
       setupAssistantItem()
       reloadInputViews()
     }
+    
   }
   
   static let shared = SmarterTermInput()
