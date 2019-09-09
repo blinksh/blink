@@ -154,15 +154,15 @@ public class SpaceController: UIViewController {
     }
   }
   
-  public override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-    
-     DispatchQueue.main.async {
-      if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window {
-        self._commandsHUD.attachToWindow(inputWindow: win)
-      }
-    }
-    return .default
-  }
+//  public override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+//
+//     DispatchQueue.main.async {
+//      if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window {
+//        self._commandsHUD.attachToWindow(inputWindow: win)
+//      }
+//    }
+//    return .default
+//  }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
@@ -198,6 +198,12 @@ public class SpaceController: UIViewController {
           view.addSubview(SmarterTermInput.shared)
         }
       _focusOnShell()
+      DispatchQueue.main.async {
+        if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window,
+          self._commandsHUD.superview == nil {
+          self._commandsHUD.attachToWindow(inputWindow: win)
+        }
+      }
     } else {
       currentDevice?.blur()
     }

@@ -232,6 +232,8 @@
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
 		D2AC6749220303D900177BC5 /* openurl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AC6742220303D900177BC5 /* openurl.m */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
+		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
+		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C0F30F20E64FAD00E48F3A /* SSHClientConnectedChannel.m */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
@@ -686,6 +688,8 @@
 		D2AC6742220303D900177BC5 /* openurl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = openurl.m; sourceTree = "<group>"; };
 		D2AC674A22031EE600177BC5 /* openurl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openurl.h; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
+		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
+		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
 		D2C0F30E20E64FAD00E48F3A /* SSHClientConnectedChannel.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientConnectedChannel.h; sourceTree = "<group>"; };
 		D2C0F30F20E64FAD00E48F3A /* SSHClientConnectedChannel.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientConnectedChannel.m; sourceTree = "<group>"; };
 		D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = blinkCommandsDictionary.plist; sourceTree = "<group>"; };
@@ -1286,6 +1290,8 @@
 				D241CBC823040733003D64A5 /* KBTraits.swift */,
 				D241CBC223040733003D64A5 /* KBView.swift */,
 				D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */,
+				D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */,
+				D2B1F8DE23265A4700634D67 /* CommandControl.swift */,
 			);
 			path = SmarterKeys;
 			sourceTree = "<group>";
@@ -1763,6 +1769,7 @@
 				07AA06531E08B12E008310B7 /* PasscodeLockConfigurationType.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,
 				D2961970214F89360070935A /* ssh-agent.m in Sources */,
+				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
 				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
@@ -1784,6 +1791,7 @@
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
+				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D296198A214F96A10070935A /* poly1305.c in Sources */,
 				D2961975214F8A580070935A /* sshbuf.c in Sources */,
