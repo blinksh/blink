@@ -36,6 +36,8 @@ NSString *const BKUserConfigiCloud = @"iCloudSync";
 NSString *const BKUserConfigiCloudKeys = @"iCloudKeysSync";
 NSString *const BKUserConfigAutoLock = @"autoLock";
 NSString *const BKUserConfigShowSmartKeysWithXKeyBoard = @"ShowSmartKeysWithXKeyBoard";
+NSString *const BKUserConfigChangedNotification = @"BKUserConfigChangedNotification";
+
 
 @implementation BKUserConfigurationManager
 
@@ -47,6 +49,8 @@ NSString *const BKUserConfigShowSmartKeysWithXKeyBoard = @"ShowSmartKeysWithXKey
   }
   [userSettings setObject:[NSNumber numberWithBool:value] forKey:key];
   [[NSUserDefaults standardUserDefaults] setObject:userSettings forKey:@"userSettings"];
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:BKUserConfigChangedNotification object:nil];
 }
 
 + (BOOL)userSettingsValueForKey:(NSString *)key

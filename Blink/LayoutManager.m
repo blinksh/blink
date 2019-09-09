@@ -37,6 +37,7 @@
 CGFloat __mainWindowKBBottomInset = 0;
 
 NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpdate";
+NSTimer *__debounceTimer = nil;
 
 @implementation LayoutManager {
 
@@ -50,9 +51,13 @@ NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpda
   if (__mainWindowKBBottomInset == bottomInset) {
     return;
   }
-  
+
   __mainWindowKBBottomInset = bottomInset;
-  [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
+  [__debounceTimer invalidate];
+  
+  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 repeats:NO block:^(NSTimer * _Nonnull timer) {
+    [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
+  }];
 }
 
 + (BKLayoutMode) deviceDefaultLayoutMode {

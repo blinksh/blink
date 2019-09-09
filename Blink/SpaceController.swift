@@ -287,7 +287,9 @@ public class SpaceController: UIViewController {
   
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
-    _ = SmarterTermInput.shared.becomeFirstResponder()
+    if !SmarterTermInput.shared.isFirstResponder {
+      _ = SmarterTermInput.shared.becomeFirstResponder()
+    }
   }
   
   func _attachInputToCurrentTerm() {
