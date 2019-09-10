@@ -367,6 +367,7 @@ class SmarterTermInput: TermInput {
     }
     
     if needToSetupAssistant {
+      _kbView.kbDevice = .detect()
       self.softwareKB = isSoftwareKB
       setupAssistantItem()
       reloadInputViews()

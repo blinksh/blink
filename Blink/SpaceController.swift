@@ -130,10 +130,11 @@ public class SpaceController: UIViewController {
       term.delegate = self
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
-        DispatchQueue.main.async {
-          self._attachInputToCurrentTerm()
-        }
-            
+        if SmarterTermInput.shared.device == nil {
+          DispatchQueue.main.async {
+            self._attachInputToCurrentTerm()
+          }
+        }   
       }
     }
   }
@@ -300,6 +301,7 @@ public class SpaceController: UIViewController {
   
   func _attachInputToCurrentTerm() {
     currentDevice?.attachInput(SmarterTermInput.shared)
+    currentDevice?.focus()
   }
   
   var currentDevice: TermDevice? {

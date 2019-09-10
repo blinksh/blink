@@ -255,6 +255,10 @@ extension TermController: SuspendableSession {
     
     _session?.delegate = self
     _session?.execute(withArgs: "")
+    
+    if view.bounds.size != _sessionParams.viewSize {
+      _session?.sigwinch()
+    }
   }
   
   
@@ -285,10 +289,6 @@ extension TermController: SuspendableSession {
     
     if _termView.isReady {
       startSession()
-    }
-    
-    if view.bounds.size != params.viewSize {
-      _session?.sigwinch()
     }
   }
   

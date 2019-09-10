@@ -304,21 +304,11 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [_input reset];
     [_input reloadInputViews];
   }
-  
-  if ([_input isFirstResponder]) {
-    [_view focus];
-    [_delegate deviceFocused];
-  } else {
-    [_view blur];
-  }
 }
 
 - (void)focus {
   [_view focus];
   [_delegate deviceFocused];
-//  if (![_view.window isKeyWindow]) {
-//    [_view.window makeKeyWindow];
-//  }
   dispatch_async(dispatch_get_main_queue(), ^{
     if (![_input isFirstResponder]) {
       [_input becomeFirstResponder];
