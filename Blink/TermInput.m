@@ -680,8 +680,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (BOOL)_remapCmdSeqWithSender:(id)sender andInput:(NSString *)input
 {
-  if (!_cmdModifierSequence ||
-      [sender isKindOfClass:[UIMenuController class]]) {
+  if (!_cmdModifierSequence || sender != nil) {
     return NO;
   }
 
@@ -1018,8 +1017,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_functionTriggerKeys setObject:functions forKey:function];
 }
 
-- (NSArray *)_functionModifierKeys
-{
+- (NSArray *)_functionModifierKeys {
   NSMutableArray *f = [NSMutableArray array];
   
   for (NSNumber *modifier in [CC FModifiers]) {
@@ -1044,8 +1042,7 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return f;
 }
 
-- (NSArray<UIKeyCommand *> *)keyCommands
-{
+- (NSArray<UIKeyCommand *> *)keyCommands {
   NSArray<UIKeyCommand *> * commands = _kbdCommands;
   NSString *lang = self.textInputMode.primaryLanguage;
   
@@ -1056,28 +1053,24 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return commands;
 }
 
-- (BOOL)_capsMapped
-{
+- (BOOL)_capsMapped {
   NSNumber *key = @(UIKeyModifierAlphaShift);
   
   return ([[_controlKeys objectForKey:key] count] ||
           [[_functionKeys objectForKey:key] count]);
 }
 
-- (void)yank:(id)sender
-{
+- (void)yank:(id)sender {
   [_device.view paste:sender];
 }
 
-- (void)_changeSelection:(UIKeyCommand *) cmd
-{
+- (void)_changeSelection:(UIKeyCommand *) cmd {
   NSString *input = cmd.input;
   UIKeyModifierFlags flags = cmd.modifierFlags;
   [self _changeSelectionWithInput:input andFlags:flags];
 }
 
-- (void)_changeSelectionWithInput:(NSString *)input andFlags: (UIKeyModifierFlags)flags
-{
+- (void)_changeSelectionWithInput:(NSString *)input andFlags: (UIKeyModifierFlags)flags {
   if ([input isEqualToString:UIKeyInputLeftArrow] || [input isEqualToString:@"h"]) {
     [_device.view modifySelectionInDirection:@"left" granularity:
      flags == UIKeyModifierShift ? @"word" : @"character"];
