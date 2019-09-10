@@ -168,7 +168,24 @@
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   
-  [Pki importPrivateKey:pb.string controller:self andCallback:^(Pki *key, NSString *comment) {
+  NSString *keyString = pb.string;
+  
+  if ([keyString length] == 0) {
+    UIAlertController *alertCtrl = [UIAlertController
+                                    alertControllerWithTitle:@"Invalid key"
+                                    message:@"Clipboard content couldn't be validated as a key"
+                                    preferredStyle:UIAlertControllerStyleAlert];
+    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    
+    [self presentViewController:alertCtrl animated:YES completion:nil];
+    return;
+  }
+  
+  if (![keyString hasSuffix:@"\n"]) {
+    keyString = [keyString stringByAppendingString:@"\n"];
+  }
+  
+  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
     if (key == nil) {
       UIAlertController *alertCtrl = [UIAlertController
                                       alertControllerWithTitle:@"Invalid key"

@@ -191,6 +191,7 @@ class SmarterTermInput: TermInput {
   override func becomeFirstResponder() -> Bool {
     let res = super.becomeFirstResponder()
     device?.focus()
+    _kbView.isHidden = false
     
     if res && _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
       let v = inputAccessoryView
@@ -206,6 +207,7 @@ class SmarterTermInput: TermInput {
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
     device?.blur()
+    _kbView.isHidden = true
     return res
   }
   
