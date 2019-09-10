@@ -372,7 +372,6 @@ class SmarterTermInput: TermInput {
       setupAssistantItem()
       reloadInputViews()
     }
-    
   }
   
   static let shared = SmarterTermInput()

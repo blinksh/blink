@@ -40,6 +40,8 @@ import Combine
 
 class CommandsHUGView: UIView {
   var _alphaCancable: AnyCancellable? = nil
+  var _layerCancable: AnyCancellable? = nil
+  weak var _window: UIWindow? = nil
   weak var delegate: CommandsHUDViewDelegate? = nil
   var _shadowEffectView: UIVisualEffectView
   var _visualEffect2: UIVisualEffectView
@@ -153,14 +155,17 @@ class CommandsHUGView: UIView {
   func attachToWindow(inputWindow: UIWindow?) {
     // UIEditingOverlayGestureView
     guard let inputWin = inputWindow,
+      inputWindow != _window,
       let gestureOverlayView = inputWin.rootViewController?.view.subviews.last
     else {
       return
     }
+    _window = inputWin;
+    
     gestureOverlayView.addSubview(self)
     
     let sublayers: ReferenceWritableKeyPath<CALayer, [CALayer]?> = \CALayer.sublayers
-    _alphaCancable = gestureOverlayView.layer.publisher(for: sublayers).sink(receiveValue: { (layers) in
+    _layerCancable = gestureOverlayView.layer.publisher(for: sublayers).sink(receiveValue: { (layers) in
       let hud = gestureOverlayView.subviews.filter({$0 != self}).first
       self._bindAlpha(hudView: hud)
       self.superview?.bringSubviewToFront(self)
