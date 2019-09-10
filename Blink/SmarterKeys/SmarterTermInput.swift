@@ -284,8 +284,9 @@ class SmarterTermInput: TermInput {
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
 //      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
+      kbFrameEnd.size.height >= 0,
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocal ? _previousKBFrame != kbFrameEnd :  abs(_previousKBFrame.height - kbFrameEnd.height) > 6 // reduce reflows (local height 69, other - 72)!
+      isLocal ? _previousKBFrame != kbFrameEnd :  abs(_previousKBFrame.size.height - kbFrameEnd.size.height) > 6 // reduce reflows (local height 69, other - 72)!
     else {
       return
     }
@@ -300,13 +301,13 @@ class SmarterTermInput: TermInput {
     
     var bottomInset: CGFloat = 0
 
-    let viewMaxY = UIScreen.main.bounds.height
+    let viewMaxY = UIScreen.main.bounds.size.height
     
     let kbMaxY = kbFrameEnd.maxY
     let kbMinY = kbFrameEnd.minY
     
     var isFloatingKB = false
-    var isSoftwareKB = kbFrameEnd.height > 140
+    var isSoftwareKB = kbFrameEnd.size.height > 140
     
     if kbMaxY >= viewMaxY {
       bottomInset = viewMaxY - kbMinY
@@ -316,7 +317,7 @@ class SmarterTermInput: TermInput {
       isSoftwareKB = true
       
       if let accessoryView = inputAccessoryView {
-        bottomInset = accessoryView.bounds.height
+        bottomInset = accessoryView.bounds.size.height
       }
     }
 
