@@ -36,9 +36,7 @@
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
-#import <zlib.h>
 
-#import <compression.h>
 #import "Blink-Swift.h"
 
 struct winsize __winSizeFromJSON(NSDictionary *json) {
@@ -83,17 +81,19 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 @end
 
 
-@interface TermView () <UIGestureRecognizerDelegate, WKScriptMessageHandler>
+@interface TermView () <WKScriptMessageHandler>
 @end
 
 @implementation TermView {
   WKWebView *_webView;
-  UIImageView *_snapshotImageView;
   
   BOOL _focused;
   BOOL _jsIsBusy;
   dispatch_queue_t _jsQueue;
   NSMutableString *_jsBuffer;
+  CGRect _currentBounds;
+  UIEdgeInsets _currentAdditionalInsets;
+  NSTimer *_layoutDebounceTimer;
 }
 
 
@@ -104,20 +104,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   if (!self) {
     return self;
   }
-    
+  
+  _layoutDebounceTimer = nil;
+  _currentBounds = CGRectZero;
   _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
   _jsBuffer = [[NSMutableString alloc] init];
 
   [self _addWebView];
   self.opaque = YES;
   _webView.opaque = NO;
-  
-  UIImageView *imageView = [[UIImageView alloc] initWithFrame:[self webViewFrame]];
-  imageView.contentMode = UIViewContentModeTop | UIViewContentModeLeft;
-  imageView.autoresizingMask =  UIViewAutoresizingNone;
-
-  _snapshotImageView = imageView;
-  [self addSubview:imageView];
 
   return self;
 }
@@ -125,56 +120,43 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
-  _snapshotImageView.backgroundColor = backgroundColor;
 }
 
 - (void)layoutSubviews {
   [super layoutSubviews];
   
-  CGRect webViewFrame = [self webViewFrame];
-  if (CGRectEqualToRect(_webView.frame, webViewFrame)) {
+  [_layoutDebounceTimer invalidate];
+  
+  if (CGRectEqualToRect(_currentBounds, CGRectZero)) {
+    [self _actualLayoutSubviews];
     return;
   }
   
-  _snapshotImageView.frame = webViewFrame;
-  if (_webView.superview) {
+  if (CGRectEqualToRect(_currentBounds, self.bounds) && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)) {
+    NSLog(@"Skipping alayout");
+    return;
+  }
+  
+  __weak typeof(self) weakSelf = self;
+  _layoutDebounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
+    [weakSelf _actualLayoutSubviews];
+  }];
+}
+
+- (void)_actualLayoutSubviews {
+  CGRect webViewFrame = [self webViewFrame];
+  
+  if (!CGRectEqualToRect(_webView.frame, webViewFrame)) {
     _webView.frame = webViewFrame;
   }
+
+  _currentBounds = self.bounds;
+  _currentAdditionalInsets = self.additionalInsets;
+  NSLog(@"Actual layout");
 }
 
 - (UIEdgeInsets)safeAreaInsets {
   return UIEdgeInsetsZero;
-}
-
-- (void)displaySnapshot
-{
-  if (self.window == nil) {
-    return;
-  }
-  
-  [_webView takeSnapshotWithConfiguration:nil completionHandler:^(UIImage * _Nullable snapshotImage, NSError * _Nullable error) {
-    _snapshotImageView.image = snapshotImage;
-    _snapshotImageView.frame = _webView.frame;
-    _snapshotImageView.alpha = 1;
-    [self addSubview:_snapshotImageView];
-    [_webView removeFromSuperview];
-  }];
-}
-
-
-- (void)displayWebView
-{
-  if (self.window == nil) {
-    return;
-  }
-  
-  if (_webView.superview) {
-    return;
-  }
-
-  [self insertSubview:_webView belowSubview:_snapshotImageView];
-  [_snapshotImageView removeFromSuperview];
-  [self setNeedsLayout];
 }
 
 - (CGRect)webViewFrame {
@@ -206,8 +188,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self setNeedsLayout];
 }
 
-- (NSString *)title
-{
+- (NSString *)title {
   return _webView.title;
 }
 
@@ -222,9 +203,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)reloadWith:(MCPParams *)params;
 {
-  _snapshotImageView.frame = [self webViewFrame];
-  [self addSubview:_snapshotImageView];
-  _snapshotImageView.alpha = 1;
   [_webView.configuration.userContentController removeAllUserScripts];
   [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];
   [_webView reload];
@@ -292,7 +270,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)focus {
   _focused = YES;
-  [self displayWebView];
   [_webView evaluateJavaScript:term_focus() completionHandler:nil];
 }
 
@@ -408,12 +385,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else {
     [self blur];
   }
-  
-  [UIView animateWithDuration:0.2 delay:0.0 options:kNilOptions animations:^{
-    _snapshotImageView.alpha = 0;
-  } completion:^(BOOL finished) {
-    [_snapshotImageView removeFromSuperview];
-  }];
 }
   
 - (NSString *)_menuTitleFromNSURL:(NSURL *)url

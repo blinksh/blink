@@ -155,16 +155,6 @@ public class SpaceController: UIViewController {
     }
   }
   
-//  public override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-//
-//     DispatchQueue.main.async {
-//      if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window {
-//        self._commandsHUD.attachToWindow(inputWindow: win)
-//      }
-//    }
-//    return .default
-//  }
-  
   deinit {
     NotificationCenter.default.removeObserver(self)
   }

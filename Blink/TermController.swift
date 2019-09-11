@@ -122,6 +122,13 @@ class TermController: UIViewController {
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     
+    guard let window = view.window,
+      let windowScene = window.windowScene,
+      windowScene.activationState == .foregroundActive
+    else {
+      return
+    }
+    
     let layoutMode = BKLayoutMode(rawValue: _sessionParams.layoutMode) ?? BKLayoutMode.default
     _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
     _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
@@ -225,6 +232,7 @@ extension TermController: TermDeviceDelegate {
   
   public func deviceFocused() {
     _session?.setActiveSession()
+    view.setNeedsLayout()
   }
   
   public func viewController() -> UIViewController! {

@@ -100,6 +100,7 @@ class SmarterTermInput: TermInput {
       name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     
     nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
+
   }
   
   required init?(coder: NSCoder) {
@@ -196,6 +197,7 @@ class SmarterTermInput: TermInput {
     if res && _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
       let v = inputAccessoryView
       inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+      _removeSmartKeys()
       DispatchQueue.main.async {
         self.reloadInputViews()
         self.inputAccessoryView = v
@@ -250,11 +252,15 @@ class SmarterTermInput: TermInput {
     _kbView.turnOffUntracked()
   }
   
+  func _removeSmartKeys() {
+    inputAccessoryView?.isHidden = true
+    inputAssistantItem.leadingBarButtonGroups = []
+    inputAssistantItem.trailingBarButtonGroups = []
+  }
+  
   func setupAccessoryView() {
     if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      inputAccessoryView?.isHidden = true
-      inputAssistantItem.leadingBarButtonGroups = []
-      inputAssistantItem.trailingBarButtonGroups = []
+      _removeSmartKeys()
       return;
     }
     
@@ -267,9 +273,7 @@ class SmarterTermInput: TermInput {
     inputAccessoryView = nil
     
     if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      inputAccessoryView?.isHidden = true
-      inputAssistantItem.leadingBarButtonGroups = []
-      inputAssistantItem.trailingBarButtonGroups = []
+      _removeSmartKeys()
       return;
     }
     
@@ -283,12 +287,15 @@ class SmarterTermInput: TermInput {
   @objc func _keyboardWillChangeFrame(notification: NSNotification) {
     guard
       let window = window,
+      let scene = window.windowScene,
+      scene.activationState == .foregroundActive,
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
 //      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
       kbFrameEnd.size.height >= 0,
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
       isLocal ? _previousKBFrame != kbFrameEnd :  abs(_previousKBFrame.size.height - kbFrameEnd.size.height) > 6 // reduce reflows (local height 69, other - 72)!
+      
     else {
       return
     }
