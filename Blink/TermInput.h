@@ -59,7 +59,7 @@
 
 @property BOOL softwareKB;
 
-@property TermDevice *device;
+@property (weak) TermDevice *device;
 
 - (void)deviceWrite:(NSString *)input;
 - (void)copyLink:(id)sender;

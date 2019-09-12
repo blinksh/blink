@@ -112,7 +112,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return code;
   } else {
     char x = [c characterAtIndex:0];
-    return [NSString stringWithFormat:@"%c", x - 'a' + 1];
+    NSString *str = [NSString stringWithFormat:@"%c", x - 'a' + 1];
+    return str;
   }
 }
 

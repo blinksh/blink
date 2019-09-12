@@ -468,6 +468,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)kill
 {
+//  char ctrl6 = '6' - 'a' + 1;
+  [_device writeIn:@"\x1e\x2e"];
+//  [_device writeIn:[NSString stringWithFormat:@"%c.", ctrl6]];
   pthread_kill(_tid, SIGINT);
 }
 

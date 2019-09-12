@@ -602,8 +602,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)terminate
 {
+  _device = nil;
   // Disconnect message handler
   [_webView.configuration.userContentController removeScriptMessageHandlerForName:@"interOp"];
+}
+
+- (void)dealloc {
+  [self terminate];
+  [_layoutDebounceTimer invalidate];
+  _layoutDebounceTimer = nil;
 }
 
 @end

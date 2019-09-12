@@ -58,9 +58,16 @@
 
 
 @implementation MCPSession {
+  int _sessionNum;
   Session *_childSession;
   NSString *_currentCmd;
   NSMutableArray<WeakSSHClient *> *_sshClients;
+}
+
+static int _sessionNum = 0;
+static int sessionNum() {
+  _sessionNum ++;
+  return _sessionNum;
 }
 
 @dynamic sessionParams;
@@ -68,6 +75,7 @@
 - (id)initWithDevice:(TermDevice *)device andParams:(MCPParams *)params {
   if (self = [super initWithDevice:device andParams:params]) {
     _sshClients = [[NSMutableArray alloc] init];
+    _sessionNum = sessionNum();
   }
   
   return self;
@@ -228,20 +236,31 @@
 
 - (void)kill
 {
-  [_childSession kill];
-
-  ios_kill();
+  [_repl forceExit];
+  ios_switchSession((void *)_sessionNum);
   
-  // Instruct ios_system to release the data for this shell:
-  ios_closeSession((__bridge void*)self);
-  ios_setContext(nil);
-  
-  if (_device.stream.in) {
-    fclose(_device.stream.in);
-    _device.stream.in = NULL;
+  if (_sshClients.count > 0) {
+    for (WeakSSHClient *client in _sshClients) {
+      [client.value kill];
+    }
+  } else {
+    if (_device.stream.in) {
+      fclose(_device.stream.in);
+      _device.stream.in = NULL;
+    }
   }
-  _repl = nil;
-  _sshClients = nil;
+    
+  if (_childSession) {
+    [_childSession kill];
+  } else {
+    ios_kill();
+  }
+  
+  ios_closeSession((void *)_sessionNum);
+  
+
+
+  [_device writeIn:@"\x03"];
 }
 
 - (void)suspend
@@ -279,16 +298,11 @@
   stdout = _stream.out;
   stderr = _stream.err;
   stdin = _stream.in;
-  ios_switchSession((__bridge void*)self);
+  ios_switchSession((void *)_sessionNum);
   stdout = savedStdOut;
   stderr = savedStdErr;
   stdin = savedStdIn;
 }
 
-- (void)dealloc {
-  _repl = nil;
-  _childSession = nil;
-  _sshClients = nil;
-}
 
 @end

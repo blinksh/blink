@@ -46,7 +46,6 @@ import UIKit
 }
 
 class TermController: UIViewController {
-  private weak var _sessionRegistry: SessionRegistry? = nil
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
@@ -141,6 +140,7 @@ class TermController: UIViewController {
   }
   
   @objc public func terminate() {
+    _termDevice.delegate = nil
     _termView.terminate()
     _session?.kill()
   }
@@ -185,10 +185,12 @@ class TermController: UIViewController {
   
   deinit {
     NotificationCenter.default.removeObserver(self)
-    _termDevice.attachView(nil)
-    _session?.device = nil
-    _session?.stream = nil
+    _session?.delegate = nil
     _session = nil
+//    _termDevice.attachView(nil)
+//    _session?.device = nil
+//    _session?.stream = nil
+//    _session = nil
   }
   
 }
@@ -200,6 +202,7 @@ extension TermController: SessionDelegate {
   
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {
+      _session?.delegate = nil
       _session = nil
       return
     }
@@ -242,11 +245,6 @@ extension TermController: TermDeviceDelegate {
 
 extension TermController: SuspendableSession {
   
-  var sessionRegistry: SessionRegistry? {
-    get { _sessionRegistry }
-    set { _sessionRegistry = newValue }
-  }
-  
   var meta: SessionMeta { _meta }
   
   var _decodableKey: String { "params" }
@@ -254,6 +252,9 @@ extension TermController: SuspendableSession {
   func startSession() {
     guard _session == nil
     else {
+      if view.bounds.size != _sessionParams.viewSize {
+        _session?.sigwinch()
+      }
       return
     }
     

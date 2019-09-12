@@ -41,4 +41,5 @@
 
 - (int)clear_main:(int)argc argv:(char **)argv;
 - (int)history_main:(int)argc argv:(char **)argv;
+- (void)forceExit;
 @end

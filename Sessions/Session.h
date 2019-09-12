@@ -37,13 +37,6 @@
 
 @class SessionParams;
 
-typedef struct SessionArgs {
-  CFTypeRef session;
-  const char *args;
-  bool attached;
-} SessionArgs;
-
-
 @protocol SessionDelegate
 
 - (void)sessionFinished;
@@ -61,7 +54,7 @@ typedef struct SessionArgs {
 @property (strong) TermStream *stream;
 @property (strong) TermDevice *device;
 
-@property (weak) NSObject<SessionDelegate>* delegate;
+@property (weak) id<SessionDelegate> delegate;
 
 - (id)init __unavailable;
 - (id)initWithDevice:(TermDevice *)device andParams:(SessionParams *)params;

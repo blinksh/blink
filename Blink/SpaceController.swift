@@ -231,9 +231,9 @@ public class SpaceController: UIViewController {
     
     SessionRegistry.shared.track(session: term)
     
+    self._currentKey = term.meta.key
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       DispatchQueue.main.async {
-        self._currentKey = term.meta.key
         self._displayHUD()
         self._attachInputToCurrentTerm()
         if let completion = completion {
@@ -255,7 +255,7 @@ public class SpaceController: UIViewController {
     else {
       return
     }
-    
+    currentTerm()?.delegate = nil
     SessionRegistry.shared.remove(forKey: currentKey)
     _viewportsKeys.remove(at: idx)
     if _viewportsKeys.isEmpty {
@@ -274,9 +274,10 @@ public class SpaceController: UIViewController {
       term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
     }
     term.bgColor = view.backgroundColor ?? .black
-      
+    
+    self._currentKey = term.meta.key
+    
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
-      self._currentKey = term.meta.key
       self._displayHUD()
       self._attachInputToCurrentTerm()
     }

@@ -39,7 +39,7 @@ class SessionMeta: Codable {
 }
 
 protocol SuspendableSession: class {
-  var sessionRegistry: SessionRegistry? { get set }
+//  var sessionRegistry: SessionRegistry? { get set }
   var meta: SessionMeta { get }
   init(meta: SessionMeta?)
   func resume(with unarchiver: NSKeyedUnarchiver)
@@ -48,11 +48,11 @@ protocol SuspendableSession: class {
 
 extension SuspendableSession {
   func suspendIfNeeded() {
-    sessionRegistry?.suspendIfNeeded(session: self)
+    SessionRegistry.shared.suspendIfNeeded(session: self)
   }
   
   func resumeIfNeeded() {
-    sessionRegistry?.resumeIfNeeded(session: self)
+    SessionRegistry.shared.resumeIfNeeded(session: self)
   }
 }
 
@@ -73,7 +73,6 @@ extension SuspendableSession {
     let key = meta.key
     _metaIndex[key] = meta
     _sessionsIndex[key] = session
-    session.sessionRegistry = self
   }
   
   subscript<T: SuspendableSession>(key: UUID) -> T {
@@ -100,11 +99,9 @@ extension SuspendableSession {
   }
   
   func remove(forKey key: UUID) {
-    if let session = _sessionsIndex.removeValue(forKey: key) {
-      session.sessionRegistry = nil
-    }
     _metaIndex.removeValue(forKey: key)
     _fsRemove(forKey: key)
+    _sessionsIndex.removeValue(forKey: key)
   }
   
   func remove(session: SuspendableSession?) {

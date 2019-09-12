@@ -116,6 +116,7 @@ NSArray<NSString *> *__historyActionsByPrefix(NSString *prefix)
   Replxx* _replxx;
   __weak TermDevice *_device;
   __weak TermStream *_stream;
+  BOOL _forceExit;
 }
 
 void __hints(char const* line, int bp, replxx_hints* lc, ReplxxColor* color, void* ud) {
@@ -543,7 +544,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       break;
     }
     
-    if (!_stream) {
+    if (_forceExit) {
       return;
     }
     
@@ -556,7 +557,7 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
       }
     });
     
-    if (!_stream) {
+    if (_forceExit) {
       return;
     }
     
@@ -657,6 +658,10 @@ void __completion(char const* line, int bp, replxx_completions* lc, void* ud) {
     return 1;
   }
   return 0;
+}
+
+- (void)forceExit {
+  _forceExit = YES;
 }
 
 
