@@ -237,30 +237,28 @@ static int sessionNum() {
 - (void)kill
 {
   [_repl forceExit];
-  ios_switchSession((void *)_sessionNum);
+//  ios_switchSession((void *)_sessionNum);
   
   if (_sshClients.count > 0) {
     for (WeakSSHClient *client in _sshClients) {
       [client.value kill];
     }
-  } else {
-    if (_device.stream.in) {
-      fclose(_device.stream.in);
-      _device.stream.in = NULL;
-    }
-  }
+    [_device writeIn:@"\x03"];
     
-  if (_childSession) {
+    return;
+  } else if (_childSession) {
     [_childSession kill];
-  } else {
+  } else { 
     ios_kill();
   }
   
   ios_closeSession((void *)_sessionNum);
   
-
-
   [_device writeIn:@"\x03"];
+  if (_device.stream.in) {
+    fclose(_device.stream.in);
+    _device.stream.in = NULL;
+  }
 }
 
 - (void)suspend
