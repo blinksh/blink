@@ -31,9 +31,6 @@
 
 import UIKit
 
-
-
-
 class SmarterTermInput: TermInput {
   
   private var _kbView: KBView
@@ -123,7 +120,7 @@ class SmarterTermInput: TermInput {
       } else {
         setupAccessoryView()
       }
-      reloadInputViews()
+      refreshInputViews()
     }
   }
   
@@ -193,17 +190,20 @@ class SmarterTermInput: TermInput {
     let res = super.becomeFirstResponder()
     device?.focus()
     _kbView.isHidden = false
-    
-    if res && _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      let v = inputAccessoryView
-      inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-      _removeSmartKeys()
-      DispatchQueue.main.async {
-        self.reloadInputViews()
-        self.inputAccessoryView = v
-      }
-    }
+    refreshInputViews()
     return res
+  }
+  
+  func refreshInputViews() {
+    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    let v = inputAccessoryView
+    if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
+      _removeSmartKeys()
+    }
+    DispatchQueue.main.async {
+      self.reloadInputViews()
+      self.inputAccessoryView = v
+    }
   }
   
   override func resignFirstResponder() -> Bool {
@@ -369,7 +369,7 @@ class SmarterTermInput: TermInput {
     } else if !isFloatingKB && inputAccessoryView != nil {
       _kbView.kbDevice = .detect()
       needToSetupAssistant = true
-    } else if _hideSmartKeysWithHKB && !isSoftwareKB && inputAssistantItem.trailingBarButtonGroups.count >= 1 {
+    } else if _hideSmartKeysWithHKB && !isSoftwareKB && !inputAssistantItem.trailingBarButtonGroups.isEmpty {
       needToSetupAssistant = true
     } else if _hideSmartKeysWithHKB && isSoftwareKB && inputAssistantItem.trailingBarButtonGroups.isEmpty {
       needToSetupAssistant = true

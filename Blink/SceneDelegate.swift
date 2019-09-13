@@ -75,6 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func sceneDidBecomeActive(_ scene: UIScene) {
     _spaceController?.currentTerm()?.resumeIfNeeded()
+    SmarterTermInput.shared.refreshInputViews()
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
