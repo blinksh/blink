@@ -66,6 +66,33 @@ extension SuspendableSession {
   override init() {
     super.init()
     _fsReadMetaIndex()
+    
+    DispatchQueue.main.asyncAfter(wallDeadline: DispatchWallTime.now() + TimeInterval(10)) {
+      self._cleanLostSessions()
+    }
+  }
+  
+  func _cleanLostSessions() {
+    guard UIApplication.shared.isProtectedDataAvailable
+    else {
+      return
+    }
+    
+    var keysSet = Set(_metaIndex.keys)
+    
+    for key in _sessionsIndex.keys {
+      keysSet.remove(key)
+    }
+    
+    for key in keysSet {
+      if _fsStateExists(forKey: key) == false {
+        _metaIndex.removeValue(forKey: key)
+      }
+    }
+    
+    // Enumerate files and delete missed in index
+    
+    _fsWriteMetaIndex()
   }
   
   func track(session: SuspendableSession) {
@@ -148,7 +175,13 @@ extension SuspendableSession {
     session.meta.isSuspended = false
   }
   
+  private var _fsSessionsFolderURL: URL? = nil
+  
   private func _fsSessionsFolder() throws -> URL {
+    if let fsSessionFolderURL = _fsSessionsFolderURL {
+      return fsSessionFolderURL
+    }
+    
     let fm = FileManager.default
     var supporDirUrl = try fm.url(
         for: .applicationSupportDirectory,
@@ -162,6 +195,8 @@ extension SuspendableSession {
     if !fm.fileExists(atPath: supporDirUrl.path, isDirectory: &isDir) {
       try fm.createDirectory(at: supporDirUrl, withIntermediateDirectories: true, attributes: nil)
     }
+    
+    _fsSessionsFolderURL = supporDirUrl
     
     return supporDirUrl
   }
@@ -191,6 +226,15 @@ extension SuspendableSession {
       try data.write(to: sessionURL, options: [.atomic, .completeFileProtection])
     } catch let e {
       debugPrint(e)
+    }
+  }
+  
+  private func _fsStateExists(forKey key: UUID) -> Bool? {
+    do {
+      let sessionURL = try _fsSessionURL(key)
+      return FileManager.default.fileExists(atPath: sessionURL.path)
+    } catch {
+      return nil
     }
   }
   
