@@ -58,16 +58,10 @@
 
 
 @implementation MCPSession {
-  int _sessionNum;
+  NSString * _sessionUUID;
   Session *_childSession;
   NSString *_currentCmd;
   NSMutableArray<WeakSSHClient *> *_sshClients;
-}
-
-static int _sessionNum = 0;
-static int sessionNum() {
-  _sessionNum ++;
-  return _sessionNum;
 }
 
 @dynamic sessionParams;
@@ -75,7 +69,7 @@ static int sessionNum() {
 - (id)initWithDevice:(TermDevice *)device andParams:(MCPParams *)params {
   if (self = [super initWithDevice:device andParams:params]) {
     _sshClients = [[NSMutableArray alloc] init];
-    _sessionNum = sessionNum();
+    _sessionUUID = [[NSProcessInfo processInfo] globallyUniqueString];
   }
   
   return self;
@@ -252,7 +246,7 @@ static int sessionNum() {
     ios_kill();
   }
   
-  ios_closeSession((void *)_sessionNum);
+  ios_closeSession(_sessionUUID.UTF8String);
   
   [_device writeIn:@"\x03"];
   if (_device.stream.in) {
@@ -296,7 +290,7 @@ static int sessionNum() {
   stdout = _stream.out;
   stderr = _stream.err;
   stdin = _stream.in;
-  ios_switchSession((void *)_sessionNum);
+  ios_switchSession(_sessionUUID.UTF8String);
   stdout = savedStdOut;
   stderr = savedStdErr;
   stdin = savedStdIn;
