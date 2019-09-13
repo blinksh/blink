@@ -85,6 +85,9 @@ class SmarterTermInput: TermInput {
     _kbView.keyInput = self
     _kbView.lang = textInputMode?.primaryLanguage ?? ""
     
+    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
+      forKey: BKUserConfigMuteSmartKeysPlaySound)
+    
     let nc = NotificationCenter.default
       
     nc.addObserver(
@@ -110,6 +113,9 @@ class SmarterTermInput: TermInput {
   }
   
   @objc func _updateSettings() {
+    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
+    forKey: BKUserConfigMuteSmartKeysPlaySound)
+    
     let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
     forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
     

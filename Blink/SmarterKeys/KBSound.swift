@@ -42,8 +42,12 @@ enum KBSound: UInt32, Codable {
   }
   
   func playIfPossible() {
-    // TODO: Find a way to check that
-    // I think: we can't detect this setting. We need to provide our own
+    if KBSound.isMutted {
+      return
+    }
+    
     play()
   }
+  
+  static var isMutted: Bool = false
 }

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14865.1" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="14868" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="hAE-Bj-MeI">
     <device id="ipad9_7" orientation="portrait" layout="fullscreen" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14819.2"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="14824"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
@@ -1578,6 +1578,42 @@
                                             </constraints>
                                         </tableViewCellContentView>
                                     </tableViewCell>
+                                    <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="UYH-v7-n9w">
+                                        <rect key="frame" x="0.0" y="62" width="768" height="44"/>
+                                        <autoresizingMask key="autoresizingMask"/>
+                                        <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" tableViewCell="UYH-v7-n9w" id="A4z-S5-gnK">
+                                            <rect key="frame" x="0.0" y="0.0" width="768" height="44"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <subviews>
+                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Keyboard clicks sound" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="C0h-tt-df9">
+                                                    <rect key="frame" x="20" y="11.5" width="220" height="21"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="21" id="Xfj-o1-uUB"/>
+                                                        <constraint firstAttribute="width" constant="220" id="ani-Ij-uIm"/>
+                                                    </constraints>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                    <nil key="textColor"/>
+                                                    <nil key="highlightedColor"/>
+                                                </label>
+                                                <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" on="YES" translatesAutoresizingMaskIntoConstraints="NO" id="vlY-oM-hc6">
+                                                    <rect key="frame" x="694" y="6.5" width="51" height="31"/>
+                                                    <constraints>
+                                                        <constraint firstAttribute="height" constant="31" id="JcM-hr-l5K"/>
+                                                        <constraint firstAttribute="width" constant="49" id="ubl-t0-huD"/>
+                                                    </constraints>
+                                                    <connections>
+                                                        <action selector="didToggleSwitch:" destination="Wbf-Ab-aSe" eventType="valueChanged" id="m9x-Uv-8L4"/>
+                                                    </connections>
+                                                </switch>
+                                            </subviews>
+                                            <constraints>
+                                                <constraint firstAttribute="trailingMargin" secondItem="vlY-oM-hc6" secondAttribute="trailing" constant="5" id="EfB-b7-F5X"/>
+                                                <constraint firstItem="vlY-oM-hc6" firstAttribute="centerY" secondItem="A4z-S5-gnK" secondAttribute="centerY" id="Vtt-bl-GqS"/>
+                                                <constraint firstAttribute="leadingMargin" secondItem="C0h-tt-df9" secondAttribute="leading" id="o7n-PS-WcZ"/>
+                                                <constraint firstItem="C0h-tt-df9" firstAttribute="centerY" secondItem="A4z-S5-gnK" secondAttribute="centerY" id="ogg-xb-qu1"/>
+                                            </constraints>
+                                        </tableViewCellContentView>
+                                    </tableViewCell>
                                 </cells>
                             </tableViewSection>
                         </sections>
@@ -1588,6 +1624,7 @@
                     </tableView>
                     <navigationItem key="navigationItem" title="Smart Keys" id="8ez-BY-Ioa"/>
                     <connections>
+                        <outlet property="keyboardClicksSoundSwitch" destination="vlY-oM-hc6" id="GWj-kl-Gfk"/>
                         <outlet property="showWithExternalKeyboard" destination="Xgm-hH-Hby" id="lWd-6w-1CG"/>
                     </connections>
                 </tableViewController>
@@ -2548,7 +2585,7 @@
         <image name="user" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Qg1-8I-Klb"/>
+        <segue reference="dlZ-04-Kay"/>
         <segue reference="y9I-rB-ZKT"/>
         <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>
