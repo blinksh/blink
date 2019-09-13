@@ -39,7 +39,6 @@ class SessionMeta: Codable {
 }
 
 protocol SuspendableSession: class {
-//  var sessionRegistry: SessionRegistry? { get set }
   var meta: SessionMeta { get }
   init(meta: SessionMeta?)
   func resume(with unarchiver: NSKeyedUnarchiver)
