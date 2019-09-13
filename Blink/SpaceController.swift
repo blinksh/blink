@@ -659,7 +659,10 @@ extension SpaceController {
   }
   
   @objc func _closeWindowAction() {
-    guard let session = view.window?.windowScene?.session else {
+    guard
+      let session = view.window?.windowScene?.session,
+      session.role == .windowApplication // Can't close windows on external monitor
+    else {
       return
     }
     UIApplication
