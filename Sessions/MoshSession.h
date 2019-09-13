@@ -29,14 +29,12 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
-
 #import "Session.h"
-#import "MoshSessionParameters.h"
+
+@class MoshParams;
 
 @interface MoshSession : Session
 
-@property (strong) MoshParameters *sessionParameters;
-
+@property (strong) MoshParams *sessionParams;
 
 @end

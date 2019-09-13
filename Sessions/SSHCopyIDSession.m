@@ -55,7 +55,7 @@ static const char *usage_format =
   }
   const char *public_key = [[pkcard publicKey] UTF8String];
 
-  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParametes:nil];
+  SSHSession *sshSession = [[SSHSession alloc] initWithDevice:_device andParams:nil];
   
   // Pipe public key
   int pinput[2];

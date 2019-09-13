@@ -87,6 +87,9 @@ function term_init() {
   term_setupDefaults();
   try {
     applyUserSettings();
+//    var bgColor = term_get('background-color');
+//    document.body.style.backgroundColor = bgColor;
+//    document.body.parentNode.style.backgroundColor = bgColor;
     waitForFontFamily(term_setup);
   } catch (e) {
     _postMessage('alert', {title: 'Error', message: "Failed to setup theme. Please check syntax of your theme.\n" + e.toString()})

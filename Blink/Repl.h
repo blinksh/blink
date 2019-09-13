@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -41,4 +41,5 @@
 
 - (int)clear_main:(int)argc argv:(char **)argv;
 - (int)history_main:(int)argc argv:(char **)argv;
+- (void)forceExit;
 @end

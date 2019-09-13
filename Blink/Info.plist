@@ -126,6 +126,32 @@
 	<array>
 		<string>com.blink.cmdline</string>
 	</array>
+	<key>UIApplicationSceneManifest</key>
+	<dict>
+		<key>UIApplicationSupportsMultipleScenes</key>
+		<true/>
+		<key>UISceneConfigurations</key>
+		<dict>
+			<key>UIWindowSceneSessionRoleApplication</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>main</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.SceneDelegate</string>
+				</dict>
+			</array>
+			<key>UIWindowSceneSessionRoleExternalDisplay</key>
+			<array>
+				<dict>
+					<key>UISceneConfigurationName</key>
+					<string>main</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.SceneDelegate</string>
+				</dict>
+			</array>
+		</dict>
+	</dict>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>

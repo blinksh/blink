@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -32,7 +32,5 @@
 #import <UIKit/UIKit.h>
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
-
-@property (strong, nonatomic) UIWindow *window;
 
 @end

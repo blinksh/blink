@@ -73,7 +73,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
-  _lightKeyboard = [coder decodeBoolForKey:@"lightKeyboard"];
+  _keyboardStyle = (BKKeyboardStyle)[coder decodeIntegerForKey:@"keyboardStyle"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
   _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
@@ -99,7 +99,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
-  [encoder encodeBool:_lightKeyboard forKey:@"lightKeyboard"];
+  [encoder encodeInteger: _keyboardStyle forKey:@"keyboardStyle"];
   [encoder encodeBool:_alternateAppIcon forKey:@"alternateAppIcon"];
   [encoder encodeInteger:_layoutMode forKey:@"layoutMode"];
   [encoder encodeInteger:_overscanCompensation forKey:@"overscanCompensation"];
@@ -225,11 +225,6 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   defaults.boldAsBright = state;
 }
 
-+ (void)setLightKeyboard:(BOOL)state
-{
-  defaults.lightKeyboard = state;
-}
-
 + (void)setAlternateAppIcon:(BOOL)state
 {
   defaults.alternateAppIcon = state;
@@ -273,6 +268,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 
 + (void)setOversanCompensation:(BKOverscanCompensation)value {
   defaults.overscanCompensation = value;
+}
+
++ (void)setKeyboardStyle:(BKKeyboardStyle)value {
+  defaults.keyboardStyle = value;
 }
 
 + (void)setXCallBackURLEnabled:(BOOL)value {
@@ -368,11 +367,6 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   return defaults.boldAsBright;
 }
 
-+ (BOOL)isLightKeyboard
-{
-  return defaults.lightKeyboard;
-}
-
 + (BOOL)isAlternateAppIcon
 {
   return defaults.alternateAppIcon;
@@ -391,6 +385,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BKOverscanCompensation)overscanCompensation
 {
   return defaults.overscanCompensation;
+}
+
++ (BKKeyboardStyle)keyboardStyle {
+  return defaults.keyboardStyle;
 }
 
 + (BOOL)isXCallBackURLEnabled

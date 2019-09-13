@@ -126,72 +126,76 @@ int makeargs(const char *command, char ***aa)
   }
   argv[argc] = NULL;
   *aa = argv;
+  free(dontExpand);
 
   return argc;
 }
 
-void *run_session(void *params)
-{
-  SessionParams *p = (SessionParams *)params;
-  // Object back to ARC
-  Session *session = (__bridge Session *)p->session;
-  char **argv;
-  int argc = makeargs(p->args, &argv);
-  [session main:argc argv:argv];
-  [session.stream close];
-  [session.delegate performSelectorOnMainThread:@selector(sessionFinished) withObject:nil waitUntilDone:YES];
-  session.stream = nil;
-  session.device = nil;
-  session.delegate = nil;
-  CFRelease(p->session);
-  free(argv);
-  free(params);
+@interface Session ()
 
+- (void)_run;
+
+@end
+
+void *run_session(void *sessionData)
+{
+  Session *session = CFBridgingRelease(sessionData);
+  [session _run];
   return NULL;
 }
 
-@implementation Session
+@implementation Session {
+  pthread_attr_t _attr;
+  bool _attached;
+  NSString *_args;
+}
 
-- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters
+- (void)_run {
+  char **argv;
+  int argc = makeargs(_args.UTF8String, &argv);
+  [self main:argc argv:argv];
+  [_stream close];
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [_delegate sessionFinished];
+  });
+  _stream = nil;
+  _device = nil;
+  _delegate = nil;
+  free(argv);
+}
+
+- (id)initWithDevice:(TermDevice *)device andParams:(SessionParams *)params
 {
   self = [super init];
 
   if (self) {
     _device = device;
     _stream = [_device.stream duplicate];
-    _sessionParameters = parameters;
+    _sessionParams = params;
   }
 
   return self;
 }
 
-- (void)executeWithArgs:(NSString *)args
+- (void)executeWithArgs:(NSString *)argstr
 {
-  SessionParams *params = [self createSessionParams:args];
+  _attached = NO;
+  _args = argstr;
 
-  pthread_attr_t attr;
-  pthread_attr_init(&attr);
-  pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
-  pthread_create(&_tid, &attr, run_session, params);
+  CFTypeRef selfRef = CFBridgingRetain(self);
+  pthread_attr_init(&_attr);
+  pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_DETACHED);
+  pthread_create(&_tid, &_attr, run_session, (void *)selfRef);
 }
 
-- (void)executeAttachedWithArgs:(NSString *)args
+- (void)executeAttachedWithArgs:(NSString *)argstr
 {
-  SessionParams *params = [self createSessionParams:args];
+  _attached = YES;
+  _args = argstr;
 
-  pthread_create(&_tid, NULL, run_session, params);
+  CFTypeRef selfRef = CFBridgingRetain(self);
+  pthread_create(&_tid, NULL, run_session, (void *)selfRef);
   pthread_join(_tid, NULL);
-}
-
-- (SessionParams *)createSessionParams:(NSString *)args
-{
-  SessionParams *params = malloc(sizeof(SessionParams));
-  // Pointer to our struct, we are responsible of release
-  params->session = CFBridgingRetain(self);
-  params->args = [args UTF8String];
-  params->attached = false;
-
-  return params;
 }
 
 - (int)main:(int)argc argv:(char **)argv {

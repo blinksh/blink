@@ -33,13 +33,13 @@
 
 #import "Repl.h"
 #import "Session.h"
-#import "MCPSessionParameters.h"
 #import "SSHClient.h"
 
+@class MCPParams;
 
 @interface MCPSession : Session
 
-@property (strong) MCPSessionParameters *sessionParameters;
+@property (strong) MCPParams *sessionParams;
 @property (strong, readonly) Repl *repl;
 
 - (void)registerSSHClient:(SSHClient *)sshClient;

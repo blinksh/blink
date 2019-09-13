@@ -34,15 +34,8 @@
 #include <sys/ioctl.h>
 
 #import "TermDevice.h"
-#import "SessionParameters.h"
 
-
-typedef struct SessionParams {
-  CFTypeRef session;
-  const char *args;
-  bool attached;
-} SessionParams;
-
+@class SessionParams;
 
 @protocol SessionDelegate
 
@@ -57,14 +50,14 @@ typedef struct SessionParams {
   TermDevice *_device;
 }
 
-@property (strong, atomic) SessionParameters *sessionParameters;
+@property (strong, atomic) SessionParams *sessionParams;
 @property (strong) TermStream *stream;
 @property (strong) TermDevice *device;
 
-@property (weak) NSObject<SessionDelegate>* delegate;
+@property (weak) id<SessionDelegate> delegate;
 
 - (id)init __unavailable;
-- (id)initWithDevice:(TermDevice *)device andParametes:(SessionParameters *)parameters;
+- (id)initWithDevice:(TermDevice *)device andParams:(SessionParams *)params;
 - (void)executeWithArgs:(NSString *)args;
 - (void)executeAttachedWithArgs:(NSString *)args;
 - (int)main:(int)argc argv:(char **)argv;

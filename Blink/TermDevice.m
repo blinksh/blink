@@ -161,6 +161,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   ViewStream *_outStream;
   ViewStream *_errStream;
+  KBProcessor *_kbProcessor;
 }
 
 - (id)init
@@ -205,6 +206,12 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     write(_poutput[1], input.UTF8String, len);
   }
 }
+
+- (void)writeIn:(NSString *)input
+{
+  [self write:input];
+}
+
 
 - (void)writeOut:(NSString *)output {
   fprintf(_stream.out, "%s", output.UTF8String);
@@ -269,6 +276,22 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   _view = nil;
 }
 
+- (NSInteger)rows {
+  return win.ws_row;
+}
+
+- (void)setRows:(NSInteger)rows {
+  win.ws_row = rows;
+}
+
+- (NSInteger)cols {
+  return win.ws_col;
+}
+
+- (void)setCols:(NSInteger)cols {
+  win.ws_col = cols;
+}
+
 - (void)attachInput:(TermInput *)termInput
 {
   _input = termInput;
@@ -287,24 +310,17 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [_input reset];
     [_input reloadInputViews];
   }
-  
-  if ([_input isFirstResponder]) {
-    [_view focus];
-    [_delegate deviceFocused];
-  } else {
-    [_view blur];
-  }
 }
 
 - (void)focus {
   [_view focus];
   [_delegate deviceFocused];
-  if (![_view.window isKeyWindow]) {
-    [_view.window makeKeyWindow];
-  }
-  if (![_input isFirstResponder]) {
-    [_input becomeFirstResponder];
-  }
+  dispatch_async(dispatch_get_main_queue(), ^{
+    if (![_input isFirstResponder]) {
+      [_input becomeFirstResponder];
+    }
+  });
+  
 }
 
 - (void)blur {

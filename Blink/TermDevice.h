@@ -46,18 +46,19 @@
 
 @end
 
-@interface TermDevice : NSObject
-{
+@interface TermDevice : NSObject {
   @public struct winsize win;
 }
 
 @property (readonly) TermStream *stream;
 @property (readonly) TermView *view;
 @property (readonly) TermInput *input;
-@property (weak) id<TermDeviceDelegate> delegate;
+@property id<TermDeviceDelegate> delegate;
 @property (nonatomic) BOOL rawMode;
 @property (nonatomic) BOOL echoMode;
 @property (nonatomic) BOOL secureTextEntry;
+@property (nonatomic) NSInteger rows;
+@property (nonatomic) NSInteger cols;
 
 - (void)attachInput:(TermInput *)termInput;
 - (void)attachView:(TermView *)termView;
@@ -66,6 +67,7 @@
 - (void)blur;
 
 - (void)write:(NSString *)input;
+- (void)writeIn:(NSString *)input;
 - (void)writeOut:(NSString *)output;
 - (void)writeOutLn:(NSString *)output;
 - (void)close;

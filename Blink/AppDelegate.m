@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,11 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "AppDelegate.h"
-#import "Migrator.h"
 #import "BKiCloudSyncHandler.h"
 #import "BKTouchIDAuthManager.h"
-#import "TermController.h"
-#import "ScreenController.h"
 #import "BlinkPaths.h"
 #import "BKDefaults.h"
 #import "BKPubKey.h"
@@ -42,6 +39,7 @@
 #import <ios_system/ios_system.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
+#include "Blink-Swift.h"
 
 
 @import CloudKit;
@@ -76,20 +74,31 @@ void __setupProcessEnv() {
   ssh_init();
 }
 
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   signal(SIGPIPE, __on_pipebroken_signal);
   
-  [BlinkPaths linkICloudDriveIfNeeded];
+  dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
+  dispatch_async(bgQueue, ^{
+    [BlinkPaths linkICloudDriveIfNeeded];
+  });
   
   [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system
-  addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
-  __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+  dispatch_async(bgQueue, ^{
+    addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
+      __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+  });
+
+  NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
+  [nc addObserver:self
+         selector:@selector(_onSceneDidEnterBackground:)
+             name:UISceneDidEnterBackgroundNotification object:self];
+  [nc addObserver:self
+           selector:@selector(_onSceneWillEnterForeground:)
+               name:UISceneWillEnterForegroundNotification object:self];
   
-  [[ScreenController shared] setup];
   return YES;
 }
 
@@ -119,15 +128,15 @@ void __setupProcessEnv() {
   }];
 }
 
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions
-{
-  [Migrator migrateIfNeeded];
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   [BKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
   [self _loadProfileVars];
   return YES;
 }
+
+
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];
@@ -148,7 +157,7 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-  restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
+//  restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
   return YES;
 }
 
@@ -162,21 +171,6 @@ void __setupProcessEnv() {
 - (void)applicationWillTerminate:(UIApplication *)application
 {
   [self _suspendApplicationOnWillTerminate];
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-  if (_suspendedMode) {
-    [[ScreenController shared] resume];
-  }
-
-  [self _cancelApplicationSuspend];
-}
-
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-  [self _startMonitoringForSuspending];
 }
 
 - (void)_startMonitoringForSuspending
@@ -204,23 +198,7 @@ void __setupProcessEnv() {
                                                   repeats:NO];
 }
 
-- (BOOL)application:(UIApplication *)application shouldSaveApplicationState:(nonnull NSCoder *)coder
-{
-  return YES;
-}
-
-- (BOOL)application:(UIApplication *)application shouldRestoreApplicationState:(nonnull NSCoder *)coder
-{
-  return YES;
-}
-
-- (void) application:(UIApplication *)application didDecodeRestorableStateWithCoder:(NSCoder *)coder
-{
-  [[ScreenController shared] finishRestoring];
-}
-
-- (void)_cancelApplicationSuspend
-{
+- (void)_cancelApplicationSuspend {
   [_suspendTimer invalidate];
   _suspendedMode = NO;
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -230,35 +208,30 @@ void __setupProcessEnv() {
 }
 
 // Simple wrappers to get the reason of failure from call stack
-- (void)_suspendApplicationWithSuspendTimer
-{
+- (void)_suspendApplicationWithSuspendTimer {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationWithExpirationHandler
-{
+- (void)_suspendApplicationWithExpirationHandler {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationOnWillTerminate
-{
+- (void)_suspendApplicationOnWillTerminate {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable
-{
+- (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable {
   [self _suspendApplication];
 }
 
-- (void)_suspendApplication
-{
+- (void)_suspendApplication {
   [_suspendTimer invalidate];
   
   if (_suspendedMode) {
     return;
   }
   
-  [[ScreenController shared] suspend];
+  [[SessionRegistry shared] suspend];
   _suspendedMode = YES;
   
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -271,8 +244,7 @@ void __setupProcessEnv() {
 
 #pragma mark - LSSupportsOpeningDocumentsInPlace
 
-- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options
-{
+- (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
   if ([url.host isEqualToString:@"run"]) {
     if (![BKDefaults isXCallBackURLEnabled]) {
       return NO;
@@ -294,17 +266,44 @@ void __setupProcessEnv() {
     
     NSURLQueryItem *cmdItem = [[items filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"name == %@", @"cmd"]] firstObject];
     NSString *cmd = cmdItem.value ?: @"help";
+    
+    return NO;
 
-    NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
-    activity.eligibleForPublicIndexing = NO;
-    [activity setTitle:[NSString stringWithFormat:@"run: %@ ", cmd]];
-    [activity setUserInfo:@{BKUserActivityCommandLineKey: cmd}];
-    [[[ScreenController shared] mainScreenRootViewController] restoreUserActivityState:activity];
+//    NSUserActivity * activity = [[NSUserActivity alloc] initWithActivityType:BKUserActivityTypeCommandLine];
+//    activity.eligibleForPublicIndexing = NO;
+//    [activity setTitle:[NSString stringWithFormat:@"run: %@ ", cmd]];
+//    [activity setUserInfo:@{BKUserActivityCommandLineKey: cmd}];
+//    [[[ScreenController shared] mainScreenRootViewController] restoreUserActivityState:activity];
     return YES;
   }
   blink_handle_url(url);
   // What we can do useful?
   return YES;
+}
+
+#pragma mark - Scenes
+
+- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+  
+  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
+}
+
+- (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
+  [SpaceController onDidDiscardSceneSessions: sceneSessions];
+}
+
+- (void)_onSceneDidEnterBackground:(NSNotification *)notification {
+  NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
+  for (UIScene *scene in scenes) {
+    if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
+      return;
+    }
+  }
+  [self _startMonitoringForSuspending];
+}
+
+- (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  [self _cancelApplicationSuspend];
 }
 
 @end

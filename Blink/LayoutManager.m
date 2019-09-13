@@ -32,64 +32,32 @@
 
 #import "LayoutManager.h"
 #import "DeviceInfo.h"
-#import "RoundedToolbar.h"
-
-@implementation SafeLayoutViewController
 
 
-- (void)updateKbBottomSafeMargins:(CGFloat)bottomInset {
-  if (_kbSafeMargins.bottom != bottomInset) {
-    _kbSafeMargins.bottom = bottomInset;
-    [self viewKbMarginsDidChange];
-  }
-}
+CGFloat __mainWindowKBBottomInset = 0;
 
-- (void)updateDeviceSafeMarings:(UIEdgeInsets)deviceMargins {
-  _deviceSafeMargins = deviceMargins;
-  [self viewDeviceMarginsDidChange];
-}
-
-@end
-
-@implementation UIViewController (SafeLayout)
-
-- (nullable SafeLayoutViewController *)safeLayoutController {
-  if ([self isKindOfClass:[SafeLayoutViewController class]]) {
-    return (SafeLayoutViewController *)self;
-  }
-  
-  return [self.parentViewController safeLayoutController];
-}
-
-- (UIEdgeInsets) viewKbSafeMargins {
-  return [self safeLayoutController].kbSafeMargins;
-}
-
-- (UIEdgeInsets) viewDeviceSafeMargins {
-  return [self safeLayoutController].deviceSafeMargins;
-}
-
-
-- (void)viewKbMarginsDidChange {
-  [self.view setNeedsLayout];
-  
-  for (UIViewController *ctrl in self.childViewControllers) {
-    [ctrl viewKbMarginsDidChange];
-  }
-}
-
-- (void)viewDeviceMarginsDidChange {
-  [self.view setNeedsLayout];
-  
-  for (UIViewController *ctrl in self.childViewControllers) {
-    [ctrl viewDeviceMarginsDidChange];
-  }
-}
-
-@end
+NSString * LayoutManagerBottomInsetDidUpdate = @"LayoutManagerBottomInsetDidUpdate";
+NSTimer *__debounceTimer = nil;
 
 @implementation LayoutManager {
 
+}
+
++ (CGFloat) mainWindowKBBottomInset {
+  return __mainWindowKBBottomInset;
+}
+
++ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset {
+  if (__mainWindowKBBottomInset == bottomInset) {
+    return;
+  }
+
+  __mainWindowKBBottomInset = bottomInset;
+  [__debounceTimer invalidate];
+  
+  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 repeats:NO block:^(NSTimer * _Nonnull timer) {
+    [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
+  }];
 }
 
 + (BKLayoutMode) deviceDefaultLayoutMode {
@@ -108,10 +76,12 @@
 
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode {
   
-  UIEdgeInsets deviceMargins = ctrl.viewDeviceSafeMargins;
   UIScreen *mainScreen = UIScreen.mainScreen;
   UIWindow *window = ctrl.view.window;
+  UIEdgeInsets deviceMargins = window.safeAreaInsets;// UIEdgeInsetsZero;// ctrl.viewDeviceSafeMargins;
   BOOL isMainScreen = window.screen == mainScreen;
+  
+  
   
   // we are on external monitor, so we use device margins to accomodate overscan and ignore mode
   // it is like BKLayoutModeSafeFit mode
@@ -120,9 +90,9 @@
   }
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
+  CGFloat slideOverVerticalMargin = (mainScreen.bounds.size.height - window.bounds.size.height) * 0.5;
   
   UIEdgeInsets result = UIEdgeInsetsZero;
-  UIEdgeInsets kbMargins = ctrl.viewKbSafeMargins;
   
   switch (mode) {
     case BKLayoutModeDefault:
@@ -181,7 +151,11 @@
     }
   }
   
-  result.bottom = MAX(result.bottom, kbMargins.bottom);
+  result.bottom = MAX(result.bottom, __mainWindowKBBottomInset);
+  
+  if (slideOverVerticalMargin > 0 && result.bottom > slideOverVerticalMargin) {
+    result.bottom -= slideOverVerticalMargin;
+  }
   
   return result;
 }

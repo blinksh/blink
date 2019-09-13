@@ -36,33 +36,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface SafeLayoutViewController: UIViewController
-
-@property (readonly) UIEdgeInsets kbSafeMargins;
-@property (readonly) UIEdgeInsets deviceSafeMargins;
-
-- (void)updateKbBottomSafeMargins:(CGFloat)bottomInset;
-- (void)updateDeviceSafeMarings:(UIEdgeInsets)deviceMargins;
-
-@end
-
-@interface UIViewController ( SafeLayout )
-
-@property (readonly) UIEdgeInsets viewKbSafeMargins;
-@property (readonly) UIEdgeInsets viewDeviceSafeMargins;
-
-- (void)viewKbMarginsDidChange;
-- (void)viewDeviceMarginsDidChange;
-
-@end
-
+extern NSString *LayoutManagerBottomInsetDidUpdate;
 
 @interface LayoutManager: NSObject
-
 
 + (BKLayoutMode) deviceDefaultLayoutMode;
 + (UIEdgeInsets) buildSafeInsetsForController:(UIViewController *)ctrl andMode:(BKLayoutMode) mode;
 + (NSString *) layoutModeToString:(BKLayoutMode)mode;
++ (CGFloat) mainWindowKBBottomInset;
++ (void) updateMainWindowKBBottomInset:(CGFloat) bottomInset;
 
 @end
 
