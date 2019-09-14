@@ -194,7 +194,6 @@ class CommandsHUGView: UIView {
     super.layoutSubviews()
     
     guard let supView = superview
-//    let hud = supView.subviews.filter({$0 != self}).first
     else {
       return
     }
@@ -218,7 +217,11 @@ class CommandsHUGView: UIView {
       y: supView.bounds.height - LayoutManager.mainWindowKBBottomInset() - size.height - 24
     )
     
-    self.frame = CGRect(origin: origin, size: size)
+    let f = CGRect(origin: origin, size: size)
+    if f == self.frame {
+      return
+    }
+    self.frame = f
     _shadowEffectView.frame = self.bounds
     _contentView.frame = self.bounds
     _visualEffect2.frame = self.bounds

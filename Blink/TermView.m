@@ -133,7 +133,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   
   if (CGRectEqualToRect(_currentBounds, self.bounds) && UIEdgeInsetsEqualToEdgeInsets(_currentAdditionalInsets, self.additionalInsets)) {
-    NSLog(@"Skipping alayout");
     return;
   }
   
@@ -152,7 +151,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _currentBounds = self.bounds;
   _currentAdditionalInsets = self.additionalInsets;
-  NSLog(@"Actual layout");
 }
 
 - (UIEdgeInsets)safeAreaInsets {

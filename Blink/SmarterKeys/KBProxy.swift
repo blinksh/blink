@@ -93,7 +93,7 @@ class KBProxy: UIView {
     }
     var traits = _kbView.traits
     
-    traits.isHKBAttached = hardwareKBAttached
+//    traits.isHKBAttached = hardwareKBAttached
     traits.isPortrait = win.bounds.width < win.bounds.height
     
     _kbView.traits = traits

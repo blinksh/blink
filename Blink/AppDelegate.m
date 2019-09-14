@@ -98,7 +98,6 @@ void __setupProcessEnv() {
   [nc addObserver:self
            selector:@selector(_onSceneWillEnterForeground:)
                name:UISceneWillEnterForegroundNotification object:self];
-  
   return YES;
 }
 

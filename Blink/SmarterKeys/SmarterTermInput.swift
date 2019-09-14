@@ -36,7 +36,6 @@ class SmarterTermInput: TermInput {
   private var _kbView: KBView
   private var _langCharsMap: [String: String]
   private var kbView: KBView { _kbView }
-  private var _previousKBFrame: CGRect = .zero
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   
@@ -95,9 +94,36 @@ class SmarterTermInput: TermInput {
       selector: #selector(_inputModeChanged),
       name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
     
-    nc.addObserver(self,
+    nc.addObserver(
+      self,
       selector: #selector(_keyboardWillChangeFrame(notification:)),
       name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
+    
+//    nc.addObserver(
+//    self,
+//    selector: #selector(_keyboardDidChangeFrame(notification:)),
+//    name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
+    
+    nc.addObserver(
+      self,
+      selector: #selector(_keyboardWillHideNotification(notification:)),
+      name: UIResponder.keyboardWillHideNotification, object: nil)
+    
+    nc.addObserver(
+      self,
+      selector: #selector(_keyboardDidHideNotification(notification:)),
+      name: UIResponder.keyboardDidHideNotification, object: nil)
+    
+    nc.addObserver(
+      self,
+      selector: #selector(_keyboardWillShowNotification),
+      name: UIResponder.keyboardWillShowNotification, object: nil)
+    
+    nc.addObserver(
+      self,
+      selector: #selector(_keyboardDidShowNotification),
+      name: UIResponder.keyboardDidShowNotification, object: nil)
+    
     
     nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
 
@@ -197,19 +223,23 @@ class SmarterTermInput: TermInput {
     device?.focus()
     _kbView.isHidden = false
     refreshInputViews()
+    if _kbView.traits.isFloatingKB {
+      DispatchQueue.main.async {
+        self.reloadInputViews()
+      }
+    }
     return res
   }
   
   func refreshInputViews() {
-    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    if traitCollection.userInterfaceIdiom != .pad {
+      return
+    }
+
     let v = inputAccessoryView
-    if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      _removeSmartKeys()
-    }
-    DispatchQueue.main.async {
-      self.reloadInputViews()
-      self.inputAccessoryView = v
-    }
+    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+    reloadInputViews()
+    inputAccessoryView = v
   }
   
   override func resignFirstResponder() -> Bool {
@@ -259,136 +289,150 @@ class SmarterTermInput: TermInput {
   }
   
   func _removeSmartKeys() {
-    inputAccessoryView?.isHidden = true
+    inputAccessoryView = nil
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
-    if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      _removeSmartKeys()
-      return;
-    }
-    
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
     inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
   func setupAssistantItem() {
-    inputAccessoryView = nil
-    
-    if _hideSmartKeysWithHKB && _kbView.traits.isHKBAttached {
-      _removeSmartKeys()
-      return;
-    }
-    
     let proxy = KBProxy(kbView: kbView)
     let item = UIBarButtonItem(customView: proxy)
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
+  func _setupWithKBNotification(notification: NSNotification) {
+    guard
+      let userInfo = notification.userInfo,
+      let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
+      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
+      isLocal // we reconfigure kb only for local notifications
+    else {
+      return
+    }
+    
+    var traits       = _kbView.traits
+    let isIPad       = traitCollection.userInterfaceIdiom == .pad
+    let isOnScreenKB = kbFrameEnd.size.height > 140
+    let isFloatingKB = isIPad && kbFrameEnd.origin.x > 0 && kbFrameEnd.origin.y > 0
+    
+    defer {
+      traits.isFloatingKB = isFloatingKB
+      traits.isHKBAttached = !isOnScreenKB
+      _kbView.traits = traits
+    }
+    
+    if traits.isHKBAttached && isOnScreenKB {
+      if isIPad {
+        if isFloatingKB {
+          _kbView.kbDevice = .in6_5
+          traits.isPortrait = true
+          setupAccessoryView()
+        } else {
+          setupAssistantItem()
+        }
+      } else {
+        setupAccessoryView()
+      }
+    } else if !traits.isHKBAttached && !isOnScreenKB {
+      _kbView.kbDevice = .detect()
+      if _hideSmartKeysWithHKB {
+        _removeSmartKeys()
+      } else if isIPad {
+        setupAssistantItem()
+      } else {
+        setupAccessoryView()
+      }
+    } else if !traits.isFloatingKB && isFloatingKB {
+      if isFloatingKB {
+        _kbView.kbDevice = .in6_5
+        traits.isPortrait = true
+        setupAccessoryView()
+      } else {
+        setupAssistantItem()
+      }
+    } else if traits.isFloatingKB && !isFloatingKB {
+      _kbView.kbDevice = .detect()
+      _removeSmartKeys()
+      setupAssistantItem()
+    } else {
+      return
+    }
+    
+    DispatchQueue.main.async {
+      self.inputAccessoryView?.invalidateIntrinsicContentSize()
+      self.reloadInputViews()
+    }
+  }
+  
+  @objc func _keyboardWillShowNotification(notification: NSNotification) {
+    _setupWithKBNotification(notification: notification)
+  }
+  
+  @objc func _keyboardWillHideNotification(notification: NSNotification) {
+    _setupWithKBNotification(notification: notification)
+  }
+  
+  @objc func _keyboardDidHideNotification(notification: NSNotification) {
+  }
+
+  @objc func _keyboardDidShowNotification(notification: NSNotification) {
+    _keyboardWillChangeFrame(notification: notification)
+  }
   
   @objc func _keyboardWillChangeFrame(notification: NSNotification) {
     guard
-      let window = window,
-      let scene = window.windowScene,
-      scene.activationState == .foregroundActive,
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-//      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
-      kbFrameEnd.size.height >= 0,
-      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
-      isLocal ? _previousKBFrame != kbFrameEnd :  abs(_previousKBFrame.size.height - kbFrameEnd.size.height) > 6 // reduce reflows (local height 69, other - 72)!
-      
+      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool
     else {
       return
     }
-    
-    _previousKBFrame = kbFrameEnd
-    
-    // Only key window can change input props
-    guard window.isKeyWindow == true
-    else {
-      return
-    }
-    
+        
     var bottomInset: CGFloat = 0
 
-    let viewMaxY = UIScreen.main.bounds.size.height
+    let screenMaxY = UIScreen.main.bounds.size.height
     
     let kbMaxY = kbFrameEnd.maxY
     let kbMinY = kbFrameEnd.minY
     
-    var isFloatingKB = false
-    var isSoftwareKB = kbFrameEnd.size.height > 140
-    
-    if kbMaxY >= viewMaxY {
-      bottomInset = viewMaxY - kbMinY
-    } else if kbMinY < viewMaxY && kbMaxY < viewMaxY {
-      // Floating
-      isFloatingKB = true
-      isSoftwareKB = true
-      
-      if let accessoryView = inputAccessoryView {
-        bottomInset = accessoryView.bounds.size.height
-      }
-    }
-
-    defer {
-      _kbView.setNeedsLayout()
-      LayoutManager.updateMainWindowKBBottomInset(bottomInset);
+    if kbMaxY >= screenMaxY {
+      bottomInset = screenMaxY - kbMinY
     }
     
-    kbView.traits.isFloatingKB = isFloatingKB
+    if (bottomInset < 30) {
+      bottomInset = 0
+    }
     
-    var needToSetupAssistant = false
-    
-    if traitCollection.userInterfaceIdiom == .phone {
-      if self.softwareKB != isSoftwareKB {
-        self.softwareKB = isSoftwareKB
-        if _hideSmartKeysWithHKB && !isSoftwareKB && inputAccessoryView != nil {
-          inputAccessoryView = nil
-          bottomInset = 0
-        } else if _hideSmartKeysWithHKB && isSoftwareKB && inputAccessoryView == nil {
-          setupAccessoryView()
-        } else if !_hideSmartKeysWithHKB && inputAccessoryView == nil {
-          setupAccessoryView()
-        }
+    if isLocal && traitCollection.userInterfaceIdiom == .pad {
+      let isFloating = kbFrameEnd.origin.y > 0 && kbFrameEnd.origin.x > 0 || kbFrameEnd == .zero
+      if !_kbView.traits.isFloatingKB && isFloating {
+        _kbView.kbDevice = .in6_5
+        _kbView.traits.isPortrait = true
+        setupAccessoryView()
         DispatchQueue.main.async {
-          self.inputAccessoryView?.invalidateIntrinsicContentSize()
+          self.reloadInputViews()
+        }
+      } else if _kbView.traits.isFloatingKB && !isFloating && !_kbView.traits.isHKBAttached {
+        _kbView.kbDevice = .detect()
+        _removeSmartKeys()
+        setupAssistantItem()
+        DispatchQueue.main.async {
           self.reloadInputViews()
         }
       }
-      if !isSoftwareKB && _hideSmartKeysWithHKB {
-        bottomInset = 0
-      }
-    } else if isFloatingKB && inputAccessoryView == nil {
-      // put in iphone mode
-      _kbView.kbDevice = .in6_5
-      _kbView.traits.isPortrait = true
-      self.softwareKB = isSoftwareKB
-      setupAccessoryView()
-      bottomInset = inputAccessoryView?.frame.height ?? 0
-      reloadInputViews()
-    } else if !isFloatingKB && inputAccessoryView != nil {
-      _kbView.kbDevice = .detect()
-      needToSetupAssistant = true
-    } else if _hideSmartKeysWithHKB && !isSoftwareKB && !inputAssistantItem.trailingBarButtonGroups.isEmpty {
-      needToSetupAssistant = true
-    } else if _hideSmartKeysWithHKB && isSoftwareKB && inputAssistantItem.trailingBarButtonGroups.isEmpty {
-      needToSetupAssistant = true
+      _kbView.traits.isFloatingKB = isFloating
     }
-    
-    if needToSetupAssistant {
-      _kbView.kbDevice = .detect()
-      self.softwareKB = isSoftwareKB
-      setupAssistantItem()
-      reloadInputViews()
-    }
+
+    LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }
   
-  static let shared = SmarterTermInput()
+  @objc static let shared = SmarterTermInput()
 }
 

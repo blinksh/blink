@@ -37,7 +37,7 @@ class KBAccessoryView: UIInputView {
   
   init(kbView: KBView) {
     _kbView = kbView
-    super.init(frame: .zero, inputViewStyle: .keyboard)
+    super.init(frame: CGRect(origin: .zero, size: _kbView.intrinsicContentSize), inputViewStyle: .keyboard)
     translatesAutoresizingMaskIntoConstraints = false
     allowsSelfSizing = true
     
