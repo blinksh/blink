@@ -41,6 +41,7 @@ enum KBDevice {
   case in6_5 // Xr!, Xs Max?         phone_5
   
   case in9_7 // iPad Mini is the same
+  case in10_2
   case in10_5
   case in11
   case in12_9
@@ -49,6 +50,7 @@ enum KBDevice {
   func layoutFor(lang: String) -> KBLayout {
     switch self {
     case .in9_7:   return .iPad_9_7(lang: lang)
+    case .in10_2:  return .iPad_9_7(lang: lang)
     case .in10_5:  return .iPad_10_5(lang: lang)
     case .in11:    return .iPad_11(lang: lang)
     case .in12_9:  return .iPad_12_9(lang: lang)
@@ -64,6 +66,7 @@ enum KBDevice {
     case .in5_8:  return portrait ? .portrait_iPhone_5_8 : .landscape_iPhone_5_8
     case .in6_5:  return portrait ? .portrait_iPhone_6_5 : .landscape_iPhone_6_5
     case .in9_7:  return portrait ? .portrait_iPad_9_7   : .landscape_iPad_9_7
+    case .in10_2: return portrait ? .portrait_iPad_9_7   : .landscape_iPad_9_7
     case .in10_5: return portrait ? .portrait_iPad_10_5  : .landscape_iPad_10_5
     case .in11:   return portrait ? .portrait_iPad_11    : .landscape_iPad_11
     case .in12_9: return portrait ? .portrait_iPad_12_9  : .landscape_iPad_12_9
@@ -81,6 +84,7 @@ enum KBDevice {
     case 812:  return .in5_8
     case 896:  return .in6_5
     case 1024: return .in9_7
+    case 1080: return .in10_2
     case 1112: return .in10_5
     case 1194: return .in11
     case 1366: return .in12_9
