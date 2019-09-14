@@ -576,9 +576,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [script addObject:term_setBoldEnabled(params.enableBold)];
     [script addObject:term_setBoldAsBright(params.boldAsBright)];
     
-    BKTheme *theme = [BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]];
-    if (theme) {
-      [script addObject:theme.content];
+    NSString *themeContent = [[BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]] content];
+    if (themeContent) {
+      [script addObject:themeContent];
     }
     
     [script addObject:term_setFontSize(params.fontSize == 0 ? [BKDefaults selectedFontSize] : @(params.fontSize))];
