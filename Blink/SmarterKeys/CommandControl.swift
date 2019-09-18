@@ -45,6 +45,9 @@ class CommandControl: UIControl {
     addSubview(backgroundView)
     addSubview(label)
     addTarget(target, action: action, for: .touchUpInside)
+    
+    let dragInteraction = UIDragInteraction(delegate: self)
+    addInteraction(dragInteraction)
   }
   
   required init?(coder: NSCoder) {
@@ -77,7 +80,9 @@ class CommandControl: UIControl {
     isHighlighted = true
     for t in touches {
       for r in t.gestureRecognizers ?? [] {
-        r.dropTouches()
+        if r.view != self {
+          r.dropTouches()
+        }
       }
     }
   }
@@ -95,5 +100,55 @@ class CommandControl: UIControl {
   
   override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
     isHighlighted = false
+  }
+}
+
+
+extension CommandControl: UIDragInteractionDelegate {
+  func dragInteraction(_ interaction: UIDragInteraction, itemsForBeginning session: UIDragSession) -> [UIDragItem] {
+    let stringItemProvider = NSItemProvider(object: "Hello World" as NSString)
+    let activity = NSUserActivity(activityType: "com.blink.cmdline")
+    stringItemProvider.registerObject(activity, visibility: .all)
+    return [
+        UIDragItem(itemProvider: stringItemProvider)
+    ]
+  }
+  
+  func dragInteraction(_ interaction: UIDragInteraction, previewForLifting item: UIDragItem, session: UIDragSession) -> UITargetedDragPreview? {
+    guard let window = window,
+      let scene = window.windowScene,
+      let win = scene.windows.first,
+      let view = win.rootViewController?.view
+      else {
+      return nil
+    }
+    return UITargetedDragPreview(view: view)
+  }
+  
+  func dragInteraction(_ interaction: UIDragInteraction, previewForCancelling item: UIDragItem, withDefault defaultPreview: UITargetedDragPreview) -> UITargetedDragPreview? {
+    guard let window = window,
+      let scene = window.windowScene,
+      let win = scene.windows.first,
+      let view = win.rootViewController?.view
+      else {
+      return nil
+    }
+    return UITargetedDragPreview(view: view)
+  }
+  
+  func dragInteraction(_ interaction: UIDragInteraction, willAnimateLiftWith animator: UIDragAnimating, session: UIDragSession) {
+    animator.addAnimations {
+      self.alpha = 0.5
+    }
+  }
+  
+  func dragInteraction(_ interaction: UIDragInteraction, item: UIDragItem, willAnimateCancelWith animator: UIDragAnimating) {
+    animator.addAnimations {
+      self.alpha = 1
+    }
+  }
+  
+  func dragInteraction(_ interaction: UIDragInteraction, session: UIDragSession, didEndWith operation: UIDropOperation) {
+    self.alpha = 1
   }
 }

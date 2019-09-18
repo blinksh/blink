@@ -125,6 +125,7 @@
 	<key>NSUserActivityTypes</key>
 	<array>
 		<string>com.blink.cmdline</string>
+		<string>com.blink.session</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
