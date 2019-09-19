@@ -39,8 +39,6 @@ enum SpaceSection {
 
 class SpaceController: UICollectionViewController {
   
-  weak var _nextSpaceCtrl: SpaceController? = nil
-  
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
@@ -61,28 +59,12 @@ class SpaceController: UICollectionViewController {
   private var _dataSource: UICollectionViewDiffableDataSource<SpaceSection, UUID>!
   
   init() {
-    
-    let config = UICollectionViewCompositionalLayoutConfiguration()
-    
-    let provider: UICollectionViewCompositionalLayoutSectionProvider = { _, env in
-      let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width),
-                                            heightDimension: .absolute(env.container.contentSize.height))
-      let item = NSCollectionLayoutItem(layoutSize: itemSize)
-      let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width),
-                                             heightDimension: .absolute(env.container.contentSize.height))
-      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-      group.interItemSpacing = .fixed(0)
-      group.contentInsets = .zero
-      
-      let section = NSCollectionLayoutSection(group: group)
-      let ins = env.container.contentInsets
-      section.contentInsets = .init(top: -ins.top, leading: -ins.leading, bottom: -ins.bottom, trailing: -ins.trailing)
-      section.interGroupSpacing = 10
-      section.orthogonalScrollingBehavior = .groupPaging
-      return section
-    }
-    
-    let layout = UICollectionViewCompositionalLayout(sectionProvider: provider, configuration: config)
+    let layout = UICollectionViewFlowLayout()
+    layout.scrollDirection = .horizontal
+    layout.minimumLineSpacing = 0
+    layout.minimumInteritemSpacing = 0
+    layout.sectionInset = .zero
+    layout.sectionInsetReference = .fromContentInset
     
     _termsSnapshot.appendSections([.main])
     
@@ -92,17 +74,24 @@ class SpaceController: UICollectionViewController {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
 
+  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    debugPrint("willDisplay", indexPath)
+  }
+  
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    debugPrint("didEndDisplaying", indexPath)
     if let cell = collectionView.visibleCells.first as? TermCell,
       let term = cell.term {
-      _currentKey = term.meta.key
-      _attachInputToCurrentTerm()
+      if (_currentKey != term.meta.key) {
+        _currentKey = term.meta.key
+        _attachInputToCurrentTerm()
+      }
 //      term.termDevice.attachInput(SmarterTermInput.shared)
 //      term.termDevice.focus()
     }
   }
+  
   
   
   public override func viewDidLayoutSubviews() {
@@ -149,12 +138,17 @@ class SpaceController: UICollectionViewController {
     collectionView.keyboardDismissMode = .interactive
     collectionView.isDirectionalLockEnabled = true
     collectionView.contentInsetAdjustmentBehavior = .never
+    collectionView.isPagingEnabled = true
+    collectionView.alwaysBounceHorizontal = true
+    collectionView.dropDelegate = self
     
     
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
-    
+    let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
+    layout?.itemSize = view.bounds.size
     
     _dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
+      debugPrint("cellForIndexPathh", indexPath, key)
       guard
         let self = self,
         let termCell = collectionView.dequeueReusableCell(withReuseIdentifier: TermCell.identifier, for: indexPath) as? TermCell
@@ -162,14 +156,17 @@ class SpaceController: UICollectionViewController {
         return nil
       }
       
+      
+      termCell.backgroundColor = self.view.backgroundColor
       let term: TermController = SessionRegistry.shared[key]
       term.delegate = self
-      
       self.addChild(term)
       termCell.term = term
       term.didMove(toParent: self)
+      
       return termCell;
     }
+    _dataSource.apply(_termsSnapshot, animatingDifferences: false)
     
     _touchOverlay.frame = view.bounds
     view.addSubview(_touchOverlay)
@@ -181,29 +178,44 @@ class SpaceController: UICollectionViewController {
     
     _commandsHUD.delegate = self
     
-    if _termsSnapshot.numberOfItems(inSection: .main) == 0{
-      _createShell(userActivity: nil, animated: false)
+    if _termsSnapshot.numberOfItems(inSection: .main) == 0 {
+      _createShell(animated:false)
+      return
     }
 
-    _updateCollectionView(animated: false)
+    if let idx = self._termsSnapshot.indexOfItem(self._currentKey ?? UUID()) {
+      collectionView.contentOffset = CGPoint(x: CGFloat(idx) * self.view.bounds.width, y: 0)
+    }
+//    _updateCollectionView(animated: false, initial: true)
   }
   
-  func _updateCollectionView(animated: Bool) {
+  func _updateCollectionView(animated: Bool, initial: Bool = false) {
     _dataSource.apply(_termsSnapshot, animatingDifferences: animated) {
       self._termsSnapshot = self._dataSource.snapshot()
       if let idx = self._termsSnapshot.indexOfItem(self._currentKey ?? UUID()) {
-        self.collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: animated)
+        if initial {
+          self.collectionView.contentOffset = CGPoint(x: CGFloat(idx) * self.view.bounds.width, y: 0)
+        } else {
+          self.collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: animated)
+        }
       }
     }
   }
+  
+
 
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
     collectionView.isScrollEnabled = false
+    currentTerm()?.termDevice.view?.dropTouches()
   }
   
   public override func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
     collectionView.isScrollEnabled = true
+  }
+  
+  override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
+    currentTerm()?.termDevice.view?.dropTouches()
   }
   
   let _commandsHUD = CommandsHUGView(frame: .zero)
@@ -218,24 +230,57 @@ class SpaceController: UICollectionViewController {
         
     super.viewWillTransition(to: size, with: coordinator)
     
-    // Voodoo thing to state on same scroll offset
-    if let cell = collectionView.visibleCells.first,
-      let scrollView = cell.superview as? UIScrollView {
-      let page = Int(scrollView.contentOffset.x / (view.bounds.width + 10))
-      let newOffset = CGPoint(x: CGFloat(page) * (size.width + 10), y: 0)
-      let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
-      
-      coordinator.animateAlongsideTransition(in: view, animation: { (t) in
-        scrollView.frame = CGRect(origin:.zero, size: size)
+    
+    if let scrollView = collectionView, let layout = self.collectionViewLayout as? UICollectionViewFlowLayout {
+      let page = Int(scrollView.contentOffset.x / (view.bounds.width))
+      let newOffset = CGPoint(x: CGFloat(page) * (size.width), y: 0)
+      let newContentSize = CGSize(width: (size.width) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
+      let newFrame = CGRect(origin: .zero, size: size)
+      let ctx1 = UICollectionViewFlowLayoutInvalidationContext()
+      ctx1.invalidateFlowLayoutAttributes = true
+
+      coordinator.animateAlongsideTransition(in: nil, animation: { (t) in
+        scrollView.frame = newFrame
         scrollView.contentSize = newContentSize
-        let offset = CGPoint(x: newOffset.x + (coordinator.isAnimated ? 0 : 0.5), y: newOffset.y)
+        let offset = CGPoint(x: newOffset.x, y: newOffset.y)
         scrollView.contentOffset = offset
+//        let layout2 = UICollectionViewFlowLayout()
+//        layout2.scrollDirection = .horizontal
+//        layout2.minimumLineSpacing = 10
+//        layout2.minimumInteritemSpacing = 10
+//        layout2.sectionInset = .zero
+        layout.itemSize = size
+//        self.collectionView.performBatchUpdates({
+        self.collectionView.setCollectionViewLayout(layout, animated: coordinator.isAnimated)
+//        }, completion: nil)
+//        layout.invalidateLayout(with: ctx1)
       }) { (ctx) in
-        if !coordinator.isAnimated {
-          scrollView.setContentOffset(newOffset, animated: true)
-        }
+        
+//        layout.itemSize = size
+//        if !coordinator.isAnimated {
+//          scrollView.setContentOffset(newOffset, animated: true)
+//        }
       }
     }
+    
+//    // Voodoo thing to state on same scroll offset
+//    if let cell = collectionView.visibleCells.first,
+//      let scrollView = cell.superview as? UIScrollView {
+//      let page = Int(scrollView.contentOffset.x / (view.bounds.width + 10))
+//      let newOffset = CGPoint(x: CGFloat(page) * (size.width + 10), y: 0)
+//      let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
+//
+//      coordinator.animateAlongsideTransition(in: view, animation: { (t) in
+//        scrollView.frame = CGRect(origin:.zero, size: size)
+//        scrollView.contentSize = newContentSize
+//        let offset = CGPoint(x: newOffset.x + (coordinator.isAnimated ? 0 : 0.5), y: newOffset.y)
+//        scrollView.contentOffset = offset
+//      }) { (ctx) in
+//        if !coordinator.isAnimated {
+//          scrollView.setContentOffset(newOffset, animated: true)
+//        }
+//      }
+//    }
     
     
     if view.window?.isKeyWindow == true {
@@ -290,6 +335,7 @@ class SpaceController: UICollectionViewController {
     }
   }
   
+  
   @objc func _keyboardFuncTriggerChanged(_ notification: NSNotification) {
     guard
       let userInfo = notification.userInfo,
@@ -302,14 +348,10 @@ class SpaceController: UICollectionViewController {
     _setupKBCommands()
   }
   
-  func _createShell(
-    userActivity: NSUserActivity?,
-    animated: Bool,
-    completion: ((Bool) -> Void)? = nil)
+  func _createShell(animated: Bool)
   {
-    let term = TermController()
+    let term: TermController = SessionRegistry.shared[UUID()]
     term.delegate = self
-    SessionRegistry.shared.track(session: term)
     
     if let currentKey = _currentKey {
       _termsSnapshot.insertItems([term.meta.key], afterItem: currentKey)
@@ -340,29 +382,19 @@ class SpaceController: UICollectionViewController {
     _termsSnapshot.deleteItems([currentKey])
     
     if _termsSnapshot.numberOfItems(inSection: .main) == 0 {
-      _createShell(userActivity: nil, animated: true)
+      _currentKey = nil
+      _createShell(animated: true)
       return
     }
 
     _updateCollectionView(animated: true)
-//    let term: TermController
-//
-//    if idx < _viewportsKeys.endIndex {
-//      term = SessionRegistry.shared[_viewportsKeys[idx]]
-//    } else {
-//      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
-//    }
-//    term.bgColor = view.backgroundColor ?? .black
-//
-//    self._currentKey = term.meta.key
-    
-//    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
-//      self._displayHUD()
-//      self._attachInputToCurrentTerm()
-//    }
   }
   
   @objc func _focusOnShell() {
+    if let idx = collectionView.indexPathsForVisibleItems.first,
+      let key = _dataSource.itemIdentifier(for: idx) {
+      _currentKey = key
+    }
     _attachInputToCurrentTerm()
     if !SmarterTermInput.shared.isFirstResponder {
       _ = SmarterTermInput.shared.becomeFirstResponder()
@@ -448,9 +480,6 @@ extension SpaceController: UIStateRestorable {
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
-    
-//    view.setNeedsLayout()
-//    view.layoutIfNeeded()
   }
   
   func dumpUIState() -> UIState {
@@ -462,11 +491,11 @@ extension SpaceController: UIStateRestorable {
   
   @objc static func onDidDiscardSceneSessions(_ sessions: Set<UISceneSession>) {
     let registry = SessionRegistry.shared
-    sessions.forEach { session in
+    for session in sessions {
       guard
-        let uiState = SpaceController.UIState(userActivity: session.stateRestorationActivity)
+        let uiState = UIState(userActivity: session.stateRestorationActivity)
       else {
-        return
+        continue
       }
       
       uiState.keys.forEach { registry.remove(forKey: $0) }
@@ -507,7 +536,7 @@ extension SpaceController: TouchOverlayDelegate {
   }
   
   public func touchOverlay(_ overlay: TouchOverlay!, onTwoFingerTap recognizer: UITapGestureRecognizer!) {
-    _createShell(userActivity: nil, animated: true)
+    _createShell(animated: true)
   }
   
   public func touchOverlay(_ overlay: TouchOverlay!, onPinch recognizer: UIPinchGestureRecognizer!) {
@@ -594,7 +623,7 @@ extension SpaceController {
   }
   
   @objc func newShellAction() {
-    _createShell(userActivity: nil, animated: true)
+    _createShell(animated: true)
   }
   
   @objc func closeShellAction() {
@@ -735,4 +764,38 @@ extension SpaceController: CommandsHUDViewDelegate {
   @objc func spaceController() -> SpaceController? {
     return self
   }
+}
+
+extension SpaceController: UICollectionViewDelegateFlowLayout{
+  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
+    self.view.bounds.size
+  }
+  
+  
+}
+
+extension SpaceController: UICollectionViewDropDelegate {
+  func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
+    
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
+    return true
+  }
+  
+  
+  func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
+//    collectionView.
+    
+    return UICollectionViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, dropPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
+//    let cell = collectionView.cellForItem(at: indexPath) as! TermCell
+    let previewParameters = UIDragPreviewParameters()
+//    previewParameters.visiblePath = UIBezierPath(rect: cell.clippingRectForPhoto)
+    return previewParameters
+  }
+  
+  
 }

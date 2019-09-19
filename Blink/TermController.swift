@@ -222,6 +222,7 @@ extension TermController: SessionDelegate {
 
 extension TermController: TermDeviceDelegate {
   public func deviceIsReady() {
+    debugPrint("term deviceIsRead", _meta.key)
     startSession()
   }
   

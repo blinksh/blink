@@ -32,46 +32,16 @@
 
 import UIKit
 
-class TermCell: UICollectionViewCell {
-  
-  override init(frame: CGRect) {
-    super.init(frame: frame)
-    contentView.clipsToBounds = true
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-  
-  weak var term: TermController? = nil {
-    willSet {
-      term?.willMove(toParent: nil)
-      term?.view.removeFromSuperview()
-      term?.removeFromParent()
-    }
-    didSet {
-      if let term = term {
-        contentView.addSubview(term.view)
-//        addSubview(term.view)
+extension UIView {
+  func dropTouches() {
+    if let recognizers = gestureRecognizers {
+      for r in recognizers {
+        r.dropTouches()
       }
-      setNeedsLayout()
+    }
+    
+    for view in subviews {
+      view.dropTouches()
     }
   }
-  
-  override func prepareForReuse() {
-    super.prepareForReuse()
-    term = nil
-    
-  }
-  
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    term?.view?.frame = contentView.bounds
-  }
-  
-  deinit {
-    term = nil
-  }
-  
-  static let identifier = "TermCell"
 }

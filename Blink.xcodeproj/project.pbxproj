@@ -238,6 +238,7 @@
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB353323334A5800088765 /* TermCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353223334A5800088765 /* TermCell.swift */; };
+		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D75EDF21AFDA10007336B6 /* LayoutManager.m */; };
 		D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EFE1EE20B7FAFC0087888B /* link_files.m */; };
@@ -696,6 +697,7 @@
 		D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = blinkCommandsDictionary.plist; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353223334A5800088765 /* TermCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermCell.swift; sourceTree = "<group>"; };
+		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
 		D2D75EDE21AFDA10007336B6 /* LayoutManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
@@ -1423,6 +1425,7 @@
 			children = (
 				D242157122E878950037E5A6 /* UIColor+Codable.swift */,
 				D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */,
+				D2CB353A23339D5C00088765 /* UIView+Touches.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -1889,6 +1892,7 @@
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				C9472D561D74E9BA001B6022 /* BKKeyboardFuncTriggersViewController.m in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
+				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D296197C214F8ABE0070935A /* atomicio.c in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,

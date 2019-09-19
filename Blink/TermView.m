@@ -80,6 +80,21 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 @end
 
+@implementation UIView (Scrolling)
+
+- (void)dropTouches {
+  for (UIGestureRecognizer *rec in self.gestureRecognizers) {
+    BOOL isEnabled = rec.isEnabled;
+    [rec setEnabled:NO];
+    [rec setEnabled:isEnabled];
+  }
+  for (UIView *view in self.subviews) {
+    [view dropTouches];
+  }
+}
+
+@end
+
 
 @interface TermView () <WKScriptMessageHandler>
 @end
@@ -94,6 +109,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   CGRect _currentBounds;
   UIEdgeInsets _currentAdditionalInsets;
   NSTimer *_layoutDebounceTimer;
+  
+  UIView *_coverView;
 }
 
 
@@ -111,19 +128,27 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _jsBuffer = [[NSMutableString alloc] init];
 
   [self _addWebView];
-  self.opaque = YES;
-  _webView.opaque = NO;
+  _coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+//  [self addSubview:_coverView];
+//  _coverView.backgroundColor = [UIColor redColor];
 
   return self;
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
+  if (!backgroundColor) {
+    return;
+  }
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
+//  _coverView.backgroundColor = backgroundColor;
 }
 
 - (void)layoutSubviews {
   [super layoutSubviews];
+  
+  _coverView.frame = self.bounds;
+  [self bringSubviewToFront:_coverView];
   
   [_layoutDebounceTimer invalidate];
   
@@ -183,7 +208,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.scrollView.panGestureRecognizer.enabled = NO;
   
   [self addSubview:_webView];
-  [self setNeedsLayout];
 }
 
 - (NSString *)title {
@@ -350,6 +374,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewWinSizeChanged:__winSizeFromJSON(data)];
   } else if ([operation isEqualToString:@"terminalReady"]) {
     [self _onTerminalReady:data];
+    [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0 initialSpringVelocity:0 options:kNilOptions animations:^{
+      _coverView.alpha = 0;
+    } completion:^(BOOL finished) {
+      [_coverView removeFromSuperview];
+      _coverView = nil;
+    }];
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
