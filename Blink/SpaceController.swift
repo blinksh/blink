@@ -37,6 +37,132 @@ enum SpaceSection {
   case main
 }
 
+class SpaceDataSource: NSObject, UICollectionViewDataSource {
+  
+  typealias CellBuilder = (_ collectionView: UICollectionView, _ indexPath: IndexPath, _ key: UUID) -> UICollectionViewCell?
+  
+  private var _workingData: [UUID] = []
+  private var _uiData: [UUID] = []
+  var cellBuilder: CellBuilder?
+  
+  func setInitialData(data: [UUID]) {
+    _uiData = data
+    _workingData = data
+  }
+  
+  var isUIEmpty: Bool {
+    _uiData.isEmpty
+  }
+  
+  func uiIndexOf(key: UUID) -> Int? {
+    _uiData.firstIndex(of: key)
+  }
+  
+  var uiData:[UUID] { _uiData }
+  
+  func keyFor(indexPath: IndexPath) -> UUID? {
+    if _uiData.startIndex >= indexPath.row && _uiData.endIndex < indexPath.row {
+      return _uiData[indexPath.row]
+    }
+    return nil
+  }
+  
+  var isEmpty: Bool {
+    _workingData.isEmpty
+  }
+  
+  func insert(items: [UUID], after: UUID?) {
+    if let after = after, let idx = _workingData.firstIndex(of: after) {
+      _workingData.insert(contentsOf: items, at: idx)
+    } else {
+      _workingData.append(contentsOf: items)
+    }
+  }
+  
+  func delete(items: [UUID]) {
+    _workingData.removeAll { (key) -> Bool in
+      items.firstIndex(of: key) != nil
+    }
+  }
+  
+  func indexPath(for key: UUID?) -> IndexPath? {
+    if let idx = index(for: key) {
+      return IndexPath(row: idx, section: 0)
+    }
+    return nil
+  }
+  
+  func index(for key: UUID?) -> Int? {
+    if let key = key {
+      return _uiData.firstIndex(of: key)
+    }
+    return nil
+  }
+  
+  func apply(collectionView: UICollectionView) {
+    let diff = _workingData.difference(from: _uiData)
+    if diff.isEmpty {
+      return
+    }
+    
+    let diffWithMoves = diff.inferringMoves()
+    
+    collectionView.performBatchUpdates({
+      var inserts: [IndexPath] = []
+      var deletes: [IndexPath] = []
+      var reloads: [IndexPath] = []
+      for change in diffWithMoves {
+        switch change {
+        case .insert(offset: let row, element: _, associatedWith: let associatedRow):
+          if let destRow = associatedRow {
+            if row == destRow {
+              reloads.append(IndexPath(row: row, section: 0))
+            } else {
+              collectionView.moveItem(at: IndexPath(row: row, section: 0), to: IndexPath(row: destRow, section: 0))
+            }
+          } else {
+            inserts.append(IndexPath(row: row, section: 0))
+          }
+        case .remove(offset: let row, element: _, associatedWith: let targetIndex):
+          if targetIndex == nil {
+            deletes.append(IndexPath(row: row, section: 0))
+          }
+        }
+      }
+      
+      collectionView.insertItems(at: inserts)
+      collectionView.deleteItems(at: deletes)
+      collectionView.reloadItems(at: reloads)
+      self._uiData = self._workingData
+    }) { (done) in
+      
+    }
+  }
+  
+  var count: Int {
+    _uiData.count
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+    if section == 0 {
+      return _uiData.count
+    }
+    return 0
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+    let key = _uiData[indexPath.row]
+    guard
+      let builder = cellBuilder,
+      let cell = builder(collectionView, indexPath, key)
+    else {
+      return UICollectionViewCell()
+    }
+    
+    return cell
+  }
+}
+
 class SpaceController: UICollectionViewController {
   
   struct UIState: UserActivityCodable {
@@ -49,14 +175,13 @@ class SpaceController: UICollectionViewController {
 
   private lazy var _touchOverlay = TouchOverlay(frame: .zero)
   
-  private var _termsSnapshot = NSDiffableDataSourceSnapshot<SpaceSection, UUID>()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
-  private var _dataSource: UICollectionViewDiffableDataSource<SpaceSection, UUID>!
+  private let _dataSource = SpaceDataSource()
   
   init() {
     let layout = UICollectionViewFlowLayout()
@@ -65,8 +190,6 @@ class SpaceController: UICollectionViewController {
     layout.minimumInteritemSpacing = 0
     layout.sectionInset = .zero
     layout.sectionInsetReference = .fromContentInset
-    
-    _termsSnapshot.appendSections([.main])
     
     super.init(collectionViewLayout: layout)
   }
@@ -141,13 +264,14 @@ class SpaceController: UICollectionViewController {
     collectionView.isPagingEnabled = true
     collectionView.alwaysBounceHorizontal = true
     collectionView.dropDelegate = self
+    collectionView.dataSource = _dataSource
     
     
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
     let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
     layout?.itemSize = view.bounds.size
     
-    _dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
+    _dataSource.cellBuilder = { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
       debugPrint("cellForIndexPathh", indexPath, key)
       guard
         let self = self,
@@ -166,7 +290,6 @@ class SpaceController: UICollectionViewController {
       
       return termCell;
     }
-    _dataSource.apply(_termsSnapshot, animatingDifferences: false)
     
     _touchOverlay.frame = view.bounds
     view.addSubview(_touchOverlay)
@@ -178,32 +301,10 @@ class SpaceController: UICollectionViewController {
     
     _commandsHUD.delegate = self
     
-    if _termsSnapshot.numberOfItems(inSection: .main) == 0 {
-      _createShell(animated:false)
-      return
-    }
-
-    if let idx = self._termsSnapshot.indexOfItem(self._currentKey ?? UUID()) {
-      collectionView.contentOffset = CGPoint(x: CGFloat(idx) * self.view.bounds.width, y: 0)
-    }
-//    _updateCollectionView(animated: false, initial: true)
-  }
-  
-  func _updateCollectionView(animated: Bool, initial: Bool = false) {
-    _dataSource.apply(_termsSnapshot, animatingDifferences: animated) {
-      self._termsSnapshot = self._dataSource.snapshot()
-      if let idx = self._termsSnapshot.indexOfItem(self._currentKey ?? UUID()) {
-        if initial {
-          self.collectionView.contentOffset = CGPoint(x: CGFloat(idx) * self.view.bounds.width, y: 0)
-        } else {
-          self.collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: animated)
-        }
-      }
+    if _dataSource.isEmpty {
+      _dataSource.setInitialData(data: [UUID()])
     }
   }
-  
-
-
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
     collectionView.isScrollEnabled = false
@@ -234,7 +335,7 @@ class SpaceController: UICollectionViewController {
     if let scrollView = collectionView, let layout = self.collectionViewLayout as? UICollectionViewFlowLayout {
       let page = Int(scrollView.contentOffset.x / (view.bounds.width))
       let newOffset = CGPoint(x: CGFloat(page) * (size.width), y: 0)
-      let newContentSize = CGSize(width: (size.width) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
+      let newContentSize = CGSize(width: (size.width) * CGFloat(_dataSource.count), height: size.height)
       let newFrame = CGRect(origin: .zero, size: size)
       let ctx1 = UICollectionViewFlowLayoutInvalidationContext()
       ctx1.invalidateFlowLayoutAttributes = true
@@ -353,15 +454,11 @@ class SpaceController: UICollectionViewController {
     let term: TermController = SessionRegistry.shared[UUID()]
     term.delegate = self
     
-    if let currentKey = _currentKey {
-      _termsSnapshot.insertItems([term.meta.key], afterItem: currentKey)
-    } else {
-      _termsSnapshot.appendItems([term.meta.key])
-    }
-    
+    _dataSource.insert(items: [term.meta.key], after: _currentKey)
     _currentKey = term.meta.key
     _attachInputToCurrentTerm()
-    _updateCollectionView(animated: animated)
+    
+    _dataSource.apply(collectionView: collectionView)
   }
   
   func _closeCurrentSpace() {
@@ -372,27 +469,26 @@ class SpaceController: UICollectionViewController {
   
   private func _removeCurrentSpace() {
     guard
-      let currentKey = _currentKey,
-      let _ = _termsSnapshot.indexOfItem(currentKey)
+      let currentKey = _currentKey
     else {
       return
     }
     currentTerm()?.delegate = nil
     SessionRegistry.shared.remove(forKey: currentKey)
-    _termsSnapshot.deleteItems([currentKey])
+    _dataSource.delete(items: [currentKey])
     
-    if _termsSnapshot.numberOfItems(inSection: .main) == 0 {
+    if _dataSource.isEmpty {
       _currentKey = nil
-      _createShell(animated: true)
+      _dataSource.insert(items: [UUID()], after: nil)
       return
     }
 
-    _updateCollectionView(animated: true)
+    _dataSource.apply(collectionView: collectionView)
   }
   
   @objc func _focusOnShell() {
     if let idx = collectionView.indexPathsForVisibleItems.first,
-      let key = _dataSource.itemIdentifier(for: idx) {
+      let key = _dataSource.keyFor(indexPath: idx) {
       _currentKey = key
     }
     _attachInputToCurrentTerm()
@@ -441,15 +537,15 @@ class SpaceController: UICollectionViewController {
     
     let pages = UIPageControl()
     pages.currentPageIndicatorTintColor = .cyan
-    pages.numberOfPages = _termsSnapshot.numberOfItems(inSection: .main)
-    let pageNum = _termsSnapshot.indexOfItem(term.meta.key)
+    pages.numberOfPages = _dataSource.count
+    let pageNum = _dataSource.uiIndexOf(key: term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound
     
     hud.customView = pages
     
     let title = term.title?.isEmpty == true ? nil : term.title
     
-    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_termsSnapshot.numberOfItems(inSection: .main))] \(title ?? "blink")"
+    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_dataSource.uiData.count)] \(title ?? "blink")"
     
     if params.rows == 0 && params.cols == 0 {
       hud.label.numberOfLines = 1
@@ -472,10 +568,7 @@ class SpaceController: UICollectionViewController {
 
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
-    var snapshot = NSDiffableDataSourceSnapshot<SpaceSection, UUID>()
-    snapshot.appendSections([.main])
-    snapshot.appendItems(state.keys)
-    _termsSnapshot = snapshot
+    _dataSource.setInitialData(data: state.keys)
     _currentKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
@@ -483,7 +576,7 @@ extension SpaceController: UIStateRestorable {
   }
   
   func dumpUIState() -> UIState {
-    UIState(keys: _termsSnapshot.itemIdentifiers(inSection: .main),
+    UIState(keys: _dataSource.uiData,
             currentKey: _currentKey,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
@@ -631,7 +724,7 @@ extension SpaceController {
   }
   
   private func _moveToShell(idx: Int) {
-    let viewPorts = _termsSnapshot.itemIdentifiers(inSection: .main)
+    let viewPorts = _dataSource.uiData
     guard
       idx >= viewPorts.startIndex,
       idx < viewPorts.endIndex
@@ -648,8 +741,7 @@ extension SpaceController {
   
   private func _advanceShell(by: Int) {
     guard
-      let currentKey = _currentKey,
-      let idx = _termsSnapshot.indexOfItem(currentKey)?.advanced(by: by)
+      let idx = _dataSource.index(for: _currentKey)?.advanced(by: by)
     else {
       return
     }
@@ -775,6 +867,11 @@ extension SpaceController: UICollectionViewDelegateFlowLayout{
 }
 
 extension SpaceController: UICollectionViewDropDelegate {
+  
+  func collectionView(_ collectionView: UICollectionView, dropSessionDidEnter session: UIDropSession) {
+    collectionView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+  }
+  
   func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
     
   }

@@ -131,6 +131,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
 //  [self addSubview:_coverView];
 //  _coverView.backgroundColor = [UIColor redColor];
+  
 
   return self;
 }
