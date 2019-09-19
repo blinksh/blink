@@ -36,9 +36,9 @@ import MBProgressHUD
 class TermCell: UICollectionViewCell {
   weak var term: TermController? = nil {
     willSet {
-      term?.willMove(toParent: nil)
+//      term?.willMove(toParent: nil)
       term?.view.removeFromSuperview()
-      term?.removeFromParent()
+//      term?.removeFromParent()
     }
     didSet {
       if let term = term {
@@ -58,7 +58,6 @@ class TermCell: UICollectionViewCell {
   }
   
   deinit {
-    term?.removeFromParent()
     term = nil
   }
   
@@ -92,6 +91,7 @@ class SpaceController: UICollectionViewController {
     let config = UICollectionViewCompositionalLayoutConfiguration()
     
     let provider: UICollectionViewCompositionalLayoutSectionProvider = { x, env in
+
       let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width), heightDimension: .absolute(env.container.contentSize.height))
       let item = NSCollectionLayoutItem(layoutSize: itemSize)
       let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width), heightDimension: .absolute(env.container.contentSize.height))
@@ -114,6 +114,17 @@ class SpaceController: UICollectionViewController {
   
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+
+  override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+    if let cell = collectionView.visibleCells.first as? TermCell,
+      let term = cell.term {
+      _currentKey = term.meta.key
+      _attachInputToCurrentTerm()
+//      term.termDevice.attachInput(SmarterTermInput.shared)
+//      term.termDevice.focus()
+    }
   }
   
   
@@ -149,6 +160,7 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewDidLoad() {
+    debugPrint("viewDidLoad")
     super.viewDidLoad()
   
     collectionView.allowsMultipleSelection = false
@@ -165,8 +177,8 @@ class SpaceController: UICollectionViewController {
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
     
     _touchOverlay.frame = view.bounds
-//    view.addSubview(_touchOverlay)
-//    _touchOverlay.touchDelegate = self
+    view.addSubview(_touchOverlay)
+    _touchOverlay.touchDelegate = self
     
     _commandsHUD.delegate = self
     _registerForNotifications()
@@ -208,11 +220,11 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    if !coordinator.isAnimated {
-      return
-    }
-    
+    debugPrint("viewWillTransition", coordinator.isAnimated)
+        
     super.viewWillTransition(to: size, with: coordinator)
+    
+    // Voodoo thing to state on same scroll offset
     if let cell = collectionView.visibleCells.first,
       let scrollView = cell.superview as? UIScrollView {
       let page = Int(scrollView.contentOffset.x / (view.bounds.width + 10))
@@ -220,13 +232,17 @@ class SpaceController: UICollectionViewController {
       let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._viewportsKeys.count), height: size.height)
       
       coordinator.animateAlongsideTransition(in: view, animation: { (t) in
+        scrollView.frame = CGRect(origin:.zero, size: size)
         scrollView.contentSize = newContentSize
-        scrollView.contentOffset = newOffset
+        let offset = CGPoint(x: newOffset.x + (coordinator.isAnimated ? 0 : 0.5), y: newOffset.y)
+        scrollView.contentOffset = offset
       }) { (ctx) in
-        
+        if !coordinator.isAnimated {
+          scrollView.setContentOffset(newOffset, animated: true)
+        }
       }
-      
     }
+    
     
     if view.window?.isKeyWindow == true {
       DispatchQueue.main.async {
@@ -343,7 +359,7 @@ class SpaceController: UICollectionViewController {
     let term: TermController = SessionRegistry.shared[key]
     term.delegate = self
     
-    term.willMove(toParent: self)
+    addChild(term)
     termCell.term = term
     term.didMove(toParent: self)
     return termCell;
@@ -672,17 +688,12 @@ extension SpaceController {
   private func _moveToShell(idx: Int) {
     guard
       idx >= _viewportsKeys.startIndex,
-      idx < _viewportsKeys.endIndex,
-      let currentKey = _currentKey,
-      let currentIdx = _viewportsKeys.firstIndex(of: currentKey)
+      idx < _viewportsKeys.endIndex
     else {
       return
     }
     
     collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: true)
-//    self._currentKey = term.meta.key
-//    self._displayHUD()
-//    self._attachInputToCurrentTerm()
   }
   
   private func _advanceShell(by: Int) {

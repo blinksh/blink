@@ -86,6 +86,15 @@ class TermController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    debugPrint("term viewWillTransition", coordinator.isAnimated)
+    if !coordinator.isAnimated {
+      return
+    }
+    
+    super.viewWillTransition(to: size, with: coordinator)
+  }
+  
   public override func loadView() {
     super.loadView()
     _termDevice.delegate = self
