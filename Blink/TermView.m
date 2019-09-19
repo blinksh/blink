@@ -137,7 +137,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   
   __weak typeof(self) weakSelf = self;
-  _layoutDebounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
+  _layoutDebounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 repeats:NO block:^(NSTimer * _Nonnull timer) {
     [weakSelf _actualLayoutSubviews];
   }];
 }

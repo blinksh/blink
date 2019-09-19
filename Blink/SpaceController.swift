@@ -33,35 +33,8 @@
 import Foundation
 import MBProgressHUD
 
-class TermCell: UICollectionViewCell {
-  weak var term: TermController? = nil {
-    willSet {
-//      term?.willMove(toParent: nil)
-      term?.view.removeFromSuperview()
-//      term?.removeFromParent()
-    }
-    didSet {
-      if let term = term {
-        contentView.addSubview(term.view)
-      }
-    }
-  }
-  
-  override func prepareForReuse() {
-    super.prepareForReuse()
-    term = nil
-  }
-  
-  override func layoutSubviews() {
-    super.layoutSubviews()
-    term?.view?.frame = contentView.bounds
-  }
-  
-  deinit {
-    term = nil
-  }
-  
-  static let identifier = "TermCell"
+enum SpaceSection {
+  case main
 }
 
 class SpaceController: UICollectionViewController {
@@ -78,23 +51,25 @@ class SpaceController: UICollectionViewController {
 
   private lazy var _touchOverlay = TouchOverlay(frame: .zero)
   
-  private var _viewportsKeys = [UUID]()
+  private var _termsSnapshot = NSDiffableDataSourceSnapshot<SpaceSection, UUID>()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
+  private var _dataSource: UICollectionViewDiffableDataSource<SpaceSection, UUID>!
   
   init() {
     
     let config = UICollectionViewCompositionalLayoutConfiguration()
     
-    let provider: UICollectionViewCompositionalLayoutSectionProvider = { x, env in
-
-      let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width), heightDimension: .absolute(env.container.contentSize.height))
+    let provider: UICollectionViewCompositionalLayoutSectionProvider = { _, env in
+      let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width),
+                                            heightDimension: .absolute(env.container.contentSize.height))
       let item = NSCollectionLayoutItem(layoutSize: itemSize)
-      let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width), heightDimension: .absolute(env.container.contentSize.height))
+      let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(env.container.contentSize.width),
+                                             heightDimension: .absolute(env.container.contentSize.height))
       let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
       group.interItemSpacing = .fixed(0)
       group.contentInsets = .zero
@@ -108,6 +83,8 @@ class SpaceController: UICollectionViewController {
     }
     
     let layout = UICollectionViewCompositionalLayout(sectionProvider: provider, configuration: config)
+    
+    _termsSnapshot.appendSections([.main])
     
     super.init(collectionViewLayout: layout)
   }
@@ -176,6 +153,24 @@ class SpaceController: UICollectionViewController {
     
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
     
+    
+    _dataSource = UICollectionViewDiffableDataSource(collectionView: collectionView) { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
+      guard
+        let self = self,
+        let termCell = collectionView.dequeueReusableCell(withReuseIdentifier: TermCell.identifier, for: indexPath) as? TermCell
+      else {
+        return nil
+      }
+      
+      let term: TermController = SessionRegistry.shared[key]
+      term.delegate = self
+      
+      self.addChild(term)
+      termCell.term = term
+      term.didMove(toParent: self)
+      return termCell;
+    }
+    
     _touchOverlay.frame = view.bounds
     view.addSubview(_touchOverlay)
     _touchOverlay.touchDelegate = self
@@ -186,22 +181,21 @@ class SpaceController: UICollectionViewController {
     
     _commandsHUD.delegate = self
     
-    if _viewportsKeys.isEmpty {
+    if _termsSnapshot.numberOfItems(inSection: .main) == 0{
       _createShell(userActivity: nil, animated: false)
-    } else if let key = _currentKey {
-//      let term: TermController = SessionRegistry.shared[key]
-//      term.delegate = self
-//      term.bgColor = view.backgroundColor ?? .black
-//      _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
-//        if SmarterTermInput.shared.device == nil {
-//          DispatchQueue.main.async {
-//            self._attachInputToCurrentTerm()
-//          }
-//        }   
-//      }
     }
+
+    _updateCollectionView(animated: false)
   }
   
+  func _updateCollectionView(animated: Bool) {
+    _dataSource.apply(_termsSnapshot, animatingDifferences: animated) {
+      self._termsSnapshot = self._dataSource.snapshot()
+      if let idx = self._termsSnapshot.indexOfItem(self._currentKey ?? UUID()) {
+        self.collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: animated)
+      }
+    }
+  }
 
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
@@ -229,7 +223,7 @@ class SpaceController: UICollectionViewController {
       let scrollView = cell.superview as? UIScrollView {
       let page = Int(scrollView.contentOffset.x / (view.bounds.width + 10))
       let newOffset = CGPoint(x: CGFloat(page) * (size.width + 10), y: 0)
-      let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._viewportsKeys.count), height: size.height)
+      let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
       
       coordinator.animateAlongsideTransition(in: view, animation: { (t) in
         scrollView.frame = CGRect(origin:.zero, size: size)
@@ -315,54 +309,17 @@ class SpaceController: UICollectionViewController {
   {
     let term = TermController()
     term.delegate = self
-//    term.userActivity = userActivity
-//    term.bgColor = view.backgroundColor ?? .black
-    
-    if let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
-      _viewportsKeys.insert(term.meta.key, at: idx)
-    } else {
-      _viewportsKeys.insert(term.meta.key, at: _viewportsKeys.count)
-    }
-    
     SessionRegistry.shared.track(session: term)
     
-    self._currentKey = term.meta.key
-    
-//    _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
-//      DispatchQueue.main.async {
-//        self._displayHUD()
-//        self._attachInputToCurrentTerm()
-//        if let completion = completion {
-//          completion(didComplete)
-//        }
-//      }
-//    }
-  }
-  
-  public override func numberOfSections(in collectionView: UICollectionView) -> Int {
-    1
-  }
-  
-  public override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    _viewportsKeys.count
-  }
-  
-  public override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    guard let termCell = collectionView.dequeueReusableCell(withReuseIdentifier: TermCell.identifier, for: indexPath) as? TermCell
-    else {
-      return UICollectionViewCell()
+    if let currentKey = _currentKey {
+      _termsSnapshot.insertItems([term.meta.key], afterItem: currentKey)
+    } else {
+      _termsSnapshot.appendItems([term.meta.key])
     }
     
-    let key = _viewportsKeys[indexPath.row];
-    
-    let term: TermController = SessionRegistry.shared[key]
-    term.delegate = self
-    
-    addChild(term)
-    termCell.term = term
-    term.didMove(toParent: self)
-    return termCell;
+    _currentKey = term.meta.key
+    _attachInputToCurrentTerm()
+    _updateCollectionView(animated: animated)
   }
   
   func _closeCurrentSpace() {
@@ -374,28 +331,30 @@ class SpaceController: UICollectionViewController {
   private func _removeCurrentSpace() {
     guard
       let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)
+      let _ = _termsSnapshot.indexOfItem(currentKey)
     else {
       return
     }
     currentTerm()?.delegate = nil
     SessionRegistry.shared.remove(forKey: currentKey)
-    _viewportsKeys.remove(at: idx)
-    if _viewportsKeys.isEmpty {
+    _termsSnapshot.deleteItems([currentKey])
+    
+    if _termsSnapshot.numberOfItems(inSection: .main) == 0 {
       _createShell(userActivity: nil, animated: true)
       return
     }
 
-    let term: TermController
-    
-    if idx < _viewportsKeys.endIndex {
-      term = SessionRegistry.shared[_viewportsKeys[idx]]
-    } else {
-      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
-    }
-    term.bgColor = view.backgroundColor ?? .black
-    
-    self._currentKey = term.meta.key
+    _updateCollectionView(animated: true)
+//    let term: TermController
+//
+//    if idx < _viewportsKeys.endIndex {
+//      term = SessionRegistry.shared[_viewportsKeys[idx]]
+//    } else {
+//      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
+//    }
+//    term.bgColor = view.backgroundColor ?? .black
+//
+//    self._currentKey = term.meta.key
     
 //    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
 //      self._displayHUD()
@@ -450,15 +409,15 @@ class SpaceController: UICollectionViewController {
     
     let pages = UIPageControl()
     pages.currentPageIndicatorTintColor = .cyan
-    pages.numberOfPages = _viewportsKeys.count
-    let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
+    pages.numberOfPages = _termsSnapshot.numberOfItems(inSection: .main)
+    let pageNum = _termsSnapshot.indexOfItem(term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound
     
     hud.customView = pages
     
     let title = term.title?.isEmpty == true ? nil : term.title
     
-    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_viewportsKeys.count)] \(title ?? "blink")"
+    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_termsSnapshot.numberOfItems(inSection: .main))] \(title ?? "blink")"
     
     if params.rows == 0 && params.cols == 0 {
       hud.label.numberOfLines = 1
@@ -481,7 +440,10 @@ class SpaceController: UICollectionViewController {
 
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
-    _viewportsKeys = state.keys
+    var snapshot = NSDiffableDataSourceSnapshot<SpaceSection, UUID>()
+    snapshot.appendSections([.main])
+    snapshot.appendItems(state.keys)
+    _termsSnapshot = snapshot
     _currentKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
@@ -492,7 +454,7 @@ extension SpaceController: UIStateRestorable {
   }
   
   func dumpUIState() -> UIState {
-    UIState(keys: _viewportsKeys,
+    UIState(keys: _termsSnapshot.itemIdentifiers(inSection: .main),
             currentKey: _currentKey,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
@@ -532,52 +494,6 @@ extension SpaceController: UIStateRestorable {
 //  }
 //}
 
-//extension SpaceController: UIPageViewControllerDataSource {
-//  private func _controller(controller: UIViewController, advancedBy: Int) -> UIViewController? {
-//    guard let ctrl = controller as? TermController else {
-//      return nil
-//    }
-//    let key = ctrl.meta.key
-//    guard
-//      let idx = _viewportsKeys.firstIndex(of: key)?.advanced(by: advancedBy),
-//      idx >= 0 && idx < _viewportsKeys.endIndex
-//    else {
-//      return nil
-//    }
-//
-//    let newKey = _viewportsKeys[idx]
-//    let newCtrl: TermController = SessionRegistry.shared[newKey]
-//    newCtrl.bgColor = view.backgroundColor ?? .black
-//    return newCtrl
-//  }
-//
-//  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
-//    _controller(controller: viewController, advancedBy: -1)
-//  }
-//
-//  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
-//    _controller(controller: viewController, advancedBy: 1)
-//  }
-//
-//}
-
-//extension SpaceController: ControlPanelDelegate {
-//  @objc func controlPanelOnClose() {
-//    _closeCurrentSpace()
-//  }
-//
-//  @objc func controlPanelOnPaste() {
-//    _attachInputToCurrentTerm()
-//    SmarterTermInput.shared.yank(self);
-//  }
-//
-//  @objc func currentTerm() -> TermController! {
-//    if let currentKey = _currentKey {
-//      return SessionRegistry.shared[currentKey]
-//    }
-//    return nil
-//  }
-//}
 
 extension SpaceController: TouchOverlayDelegate {
   public func touchOverlay(_ overlay: TouchOverlay!, onOneFingerTap recognizer: UITapGestureRecognizer!) {
@@ -686,20 +602,25 @@ extension SpaceController {
   }
   
   private func _moveToShell(idx: Int) {
+    let viewPorts = _termsSnapshot.itemIdentifiers(inSection: .main)
     guard
-      idx >= _viewportsKeys.startIndex,
-      idx < _viewportsKeys.endIndex
+      idx >= viewPorts.startIndex,
+      idx < viewPorts.endIndex
     else {
       return
     }
     
-    collectionView.scrollToItem(at: IndexPath(row: idx, section: 0), at: .left, animated: true)
+    let id = viewPorts[idx]
+    
+    if let path = _dataSource.indexPath(for: id) {
+      collectionView.scrollToItem(at: path, at: .left, animated: true)
+    }
   }
   
   private func _advanceShell(by: Int) {
     guard
       let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
+      let idx = _termsSnapshot.indexOfItem(currentKey)?.advanced(by: by)
     else {
       return
     }
