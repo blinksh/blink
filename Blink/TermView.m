@@ -80,27 +80,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 @end
 
-@implementation UIView (Scrolling)
-
-- (void)dropTouches {
-  for (UIGestureRecognizer *rec in self.gestureRecognizers) {
-    BOOL isEnabled = rec.isEnabled;
-    [rec setEnabled:NO];
-    [rec setEnabled:isEnabled];
-  }
-  for (UIView *view in self.subviews) {
-    [view dropTouches];
-  }
-}
-
-@end
-
-
 @interface TermView () <WKScriptMessageHandler>
 @end
 
 @implementation TermView {
   WKWebView *_webView;
+  WKWebViewScroller *_scroller;
   
   BOOL _focused;
   BOOL _jsIsBusy;
@@ -173,6 +158,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   if (!CGRectEqualToRect(_webView.frame, webViewFrame)) {
     _webView.frame = webViewFrame;
+//    _scroller.frame = webViewFrame;
   }
 
   _currentBounds = self.bounds;
@@ -207,6 +193,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _webView.scrollView.canCancelContentTouches = NO;
   _webView.scrollView.scrollEnabled = NO;
   _webView.scrollView.panGestureRecognizer.enabled = NO;
+  
+  _scroller = [_webView createScrollerWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   
   [self addSubview:_webView];
 }
@@ -375,6 +363,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewWinSizeChanged:__winSizeFromJSON(data)];
   } else if ([operation isEqualToString:@"terminalReady"]) {
     [self _onTerminalReady:data];
+//    for (id interaction in _webView.subviews.firstObject.subviews.firstObject.interactions) {
+//      [_webView.subviews.firstObject.subviews.firstObject removeInteraction:interaction];
+//    }
+    
     [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0 initialSpringVelocity:0 options:kNilOptions animations:^{
       _coverView.alpha = 0;
     } completion:^(BOOL finished) {

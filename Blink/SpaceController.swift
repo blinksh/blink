@@ -291,9 +291,9 @@ class SpaceController: UICollectionViewController {
       return termCell;
     }
     
-    _touchOverlay.frame = view.bounds
-    view.addSubview(_touchOverlay)
-    _touchOverlay.touchDelegate = self
+//    _touchOverlay.frame = view.bounds
+//    view.addSubview(_touchOverlay)
+//    _touchOverlay.touchDelegate = self
     
     _commandsHUD.delegate = self
     _registerForNotifications()
@@ -869,7 +869,17 @@ extension SpaceController: UICollectionViewDelegateFlowLayout{
 extension SpaceController: UICollectionViewDropDelegate {
   
   func collectionView(_ collectionView: UICollectionView, dropSessionDidEnter session: UIDropSession) {
-    collectionView.transform = CGAffineTransform(scaleX: 0.5, y: 0.5)
+//    collectionView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
+//    collectionView.isPagingEnabled = false
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
+//    collectionView.transform = CGAffineTransform.identity
+  }
+  
+  func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
+//    collectionView.transform = CGAffineTransform.identity
+//    collectionView.isPagingEnabled = true
   }
   
   func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
