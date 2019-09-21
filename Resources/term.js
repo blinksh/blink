@@ -234,12 +234,12 @@ function _setTermCoordinates(event, x, y) {
 }
 
 function term_reportTapInPoint(x, y) {
-  term_reportMouseEvent('mousedown', x, y);
-  term_reportMouseEvent('mouseup', x, y);
+  term_reportMouseEvent('mousedown', x, y, 1);
+  term_reportMouseEvent('mouseup', x, y, 1);
 }
 
-function term_reportMouseEvent(name, x, y) {
-  var event = new MouseEvent(name, {});
+function term_reportMouseEvent(name, x, y, buttons) {
+  var event = new MouseEvent(name, {buttons});
   _setTermCoordinates(event, x, y);
   t.onMouse(event);
 }

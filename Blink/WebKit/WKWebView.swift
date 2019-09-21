@@ -43,34 +43,26 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   }
 }
 
+/**
+ Gestures:
+ 
+ - 1 finger tap - reports click
+ - 2 finger pan - reports mouse wheel
+ - 2 finger long press and 1 finger pan reports mouse move
+ */
+
 @objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
   var view: UIView? = nil
   private var _wkWebView: WKWebView? = nil
   private var _scrollView = UIScrollViewWithoutHitTest()
   private var _jsScrollerPath: String
-  private var _panGestureRecognizer = UIPanGestureRecognizer()
-  private var _tapGestureRecognizer = UITapGestureRecognizer()
+  private var _2fPanRecognizer = UIPanGestureRecognizer()
+  private var _2fLongPressRecognizer = UILongPressGestureRecognizer()
+  private var _1fTapRecognizer = UITapGestureRecognizer()
+  private var _1fPanRecognizer = UIPanGestureRecognizer()
   
-  @objc init(jsScrollerPath: String) {
-    _jsScrollerPath = jsScrollerPath
-    super.init()
-    _scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    _scrollView.alwaysBounceVertical = true
-    _scrollView.alwaysBounceHorizontal = false
-    _scrollView.isDirectionalLockEnabled = true
-    _scrollView.keyboardDismissMode = .interactive
-    _scrollView.delaysContentTouches = false
-    _scrollView.delegate = self
-    
-    _panGestureRecognizer.minimumNumberOfTouches = 2
-    _panGestureRecognizer.maximumNumberOfTouches = 2
-    _panGestureRecognizer.addTarget(self, action: #selector(_onPan(_:)))
-    _panGestureRecognizer.delegate = self
-    
-    _tapGestureRecognizer.numberOfTapsRequired = 1
-    _tapGestureRecognizer.numberOfTouchesRequired = 1
-    _tapGestureRecognizer.addTarget(self, action: #selector(_onTap(_:)))
-    _tapGestureRecognizer.delegate = self
+  var allRecognizers:[UIGestureRecognizer] {
+    [_2fLongPressRecognizer, _2fPanRecognizer, _1fTapRecognizer, _1fPanRecognizer, _scrollView.panGestureRecognizer]
   }
   
   func willMove(to view: UIView?) {
@@ -90,11 +82,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       
       
       webView.addSubview(_scrollView)
-      webView.addGestureRecognizer(_scrollView.panGestureRecognizer)
       webView.configuration.userContentController.add(self, name: "wkScroller")
-      webView.addGestureRecognizer(_panGestureRecognizer)
-      webView.addGestureRecognizer(_tapGestureRecognizer)
-
+      
+      for r in allRecognizers {
+        webView.addGestureRecognizer(r)
+      }
       
       _wkWebView = webView
     } else {
@@ -102,14 +94,48 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
   }
   
+  @objc init(jsScrollerPath: String) {
+    _jsScrollerPath = jsScrollerPath
+    super.init()
+    _scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    _scrollView.alwaysBounceVertical = true
+    _scrollView.alwaysBounceHorizontal = false
+    _scrollView.isDirectionalLockEnabled = true
+    _scrollView.keyboardDismissMode = .interactive
+    _scrollView.delaysContentTouches = false
+    _scrollView.delegate = self
+    
+    _2fPanRecognizer.minimumNumberOfTouches = 2
+    _2fPanRecognizer.maximumNumberOfTouches = 2
+    _2fPanRecognizer.delegate = self
+    _2fPanRecognizer.addTarget(self, action: #selector(_on2fPan(_:)))
+    
+    _1fTapRecognizer.numberOfTapsRequired = 1
+    _1fTapRecognizer.numberOfTouchesRequired = 1
+    _1fTapRecognizer.delegate = self
+    _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
+    
+    _1fPanRecognizer.minimumNumberOfTouches = 1
+    _1fPanRecognizer.maximumNumberOfTouches = 1
+    _1fPanRecognizer.delegate = self
+    _1fPanRecognizer.addTarget(self, action: #selector(_on1fPan(_:)))
+    
+    _2fLongPressRecognizer.numberOfTouchesRequired = 2
+    _2fLongPressRecognizer.numberOfTapsRequired = 0
+    _2fLongPressRecognizer.delegate = self
+    _2fLongPressRecognizer.addTarget(self, action: #selector(_on2fLongPress(_:)))
+  }
+  
   private var _reportedY:CGFloat = 0
   
-  @objc func _onPan(_ recognizer: UIPanGestureRecognizer) {
+  @objc func _on2fPan(_ recognizer: UIPanGestureRecognizer) {
     let point = recognizer.location(in: recognizer.view)
     
     switch recognizer.state {
     case .began:
       _scrollView.panGestureRecognizer.dropTouches()
+      _2fLongPressRecognizer.dropTouches()
+      
       _scrollView.isScrollEnabled = false
       _scrollView.showsVerticalScrollIndicator = false
       _reportedY = point.y
@@ -130,7 +156,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
   }
   
-  @objc func _onTap(_ recognizer: UITapGestureRecognizer) {
+  @objc func _on1fTap(_ recognizer: UITapGestureRecognizer) {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
@@ -140,10 +166,57 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
   }
   
+  private var _is2fLongPressing = false
+  
+  @objc func _on2fLongPress(_ recognizer: UILongPressGestureRecognizer) {
+    switch recognizer.state {
+    case .began:
+      debugPrint("2f start");
+      _scrollView.isScrollEnabled = false
+      recognizer.view?.superview?.dropSuperViewTouches()
+      _2fPanRecognizer.dropTouches()
+      _is2fLongPressing = true
+    case .ended: fallthrough
+    case .failed: fallthrough
+    case .cancelled:
+      debugPrint("2f end");
+      _is2fLongPressing = false
+      _scrollView.isScrollEnabled = true
+    default: break
+    }
+  }
+  
+  @objc func _on1fPan(_ recognizer: UIPanGestureRecognizer) {
+    let point = recognizer.location(in: recognizer.view)
+    switch recognizer.state {
+    case .began:
+      _scrollView.panGestureRecognizer.dropTouches()
+      recognizer.view?.superview?.dropSuperViewTouches()
+      debugPrint("start");
+      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y), 1);", completionHandler: nil)
+    case .changed:
+      debugPrint("changed");
+      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousemove\", \(point.x), \(point.y), 1);", completionHandler: nil)
+    case .ended: fallthrough
+    case .cancelled:
+      debugPrint("ended");
+      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
+    default: break
+    }
+  }
+  
 }
 
 extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
+    return true
+  }
+  
+  func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
+    if (_1fPanRecognizer == gestureRecognizer) {
+      debugPrint("shoud begin", _is2fLongPressing)
+      return _is2fLongPressing
+    }
     return true
   }
 }

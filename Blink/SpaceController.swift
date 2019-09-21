@@ -308,7 +308,7 @@ class SpaceController: UICollectionViewController {
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
     collectionView.isScrollEnabled = false
-    currentTerm()?.termDevice.view?.dropTouches()
+//    currentTerm()?.termDevice.view?.dropTouches()
   }
   
   public override func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
