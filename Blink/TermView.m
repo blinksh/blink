@@ -85,7 +85,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 @implementation TermView {
   WKWebView *_webView;
-  WKWebViewScroller *_scroller;
   
   BOOL _focused;
   BOOL _jsIsBusy;
@@ -189,12 +188,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
-  _webView.scrollView.delaysContentTouches = NO;
-  _webView.scrollView.canCancelContentTouches = NO;
-  _webView.scrollView.scrollEnabled = NO;
-  _webView.scrollView.panGestureRecognizer.enabled = NO;
-  
-  _scroller = [_webView createScrollerWithJsScrollerPath:@"t.scrollPort_.scroller_"];
+  WKWebViewGesturesInteraction *gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
+  [_webView addInteraction:gestureInteraction];
   
   [self addSubview:_webView];
 }

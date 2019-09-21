@@ -33,89 +33,85 @@
 import UIKit
 import WebKit
 
-extension WKWebView {
+protocol WKWebViewGesturesInteractionDelegate: NSObjectProtocol {
   
-  @objc(WKWebViewScroller)
-  class Scroller: UIScrollView, UIScrollViewDelegate {
-    @objc weak var wkWebView: WKWebView? = nil
-    
-    let _jsScrollerPath: String
-    
-    fileprivate init(frame: CGRect, jsScrollerPath: String) {
-      _jsScrollerPath = jsScrollerPath
-      super.init(frame: frame)
-      
-      alwaysBounceVertical = true
-      alwaysBounceHorizontal = false
-      isDirectionalLockEnabled = true
-      keyboardDismissMode = .interactive
-      delaysContentTouches = false
-      
-      self.delegate = self
-    }
-    
-    required init?(coder: NSCoder) {
-      fatalError("init(coder:) has not been implemented")
-    }
-    
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-      wkWebView?.evaluateJavaScript("\(_jsScrollerPath).reportScroll(\(contentOffset.x), \(contentOffset.y));", completionHandler: nil)
-    }
-    
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-      let view = super.hitTest(point, with: event)
-      if view === self {
-        return nil
-      }
-      return view
-    }
-    
-    override func didMoveToSuperview() {
-      if (self.superview != nil) {
-        self.superview?.addGestureRecognizer(panGestureRecognizer)
-      }
-      
-    }
+}
 
+class UIScrollViewWithoutHitTest: UIScrollView {
+  override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    return nil
+  }
+}
+
+@objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
+  var view: UIView? = nil
+  private var _wkWebView: WKWebView? = nil
+  private var _scrollView = UIScrollViewWithoutHitTest()
+  private var _jsScrollerPath: String
+  
+  @objc init(jsScrollerPath: String) {
+    _jsScrollerPath = jsScrollerPath
+    super.init()
+    _scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+    _scrollView.alwaysBounceVertical = true
+    _scrollView.alwaysBounceHorizontal = false
+    _scrollView.isDirectionalLockEnabled = true
+    _scrollView.keyboardDismissMode = .interactive
+    _scrollView.delaysContentTouches = false
+    _scrollView.delegate = self
   }
   
-  class MessageHandler: NSObject, WKScriptMessageHandler {
-
-    private var _scroller: Scroller
-    
-    init(scroller: Scroller) {
-      _scroller = scroller
-    }
-    
-    func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
-      guard
-        let msg = message.body as? [String: Any],
-        let op = msg["op"] as? String
-      else {
-        return
-      }
-      
-      switch op {
-      case "resize":
-        _scroller.contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
-      case "scrollTo":
-        let animated = msg["animated"] as? Bool == true
-        let x: CGFloat = msg["x"] as? CGFloat ?? 0
-        let y: CGFloat = msg["y"] as? CGFloat ?? 0
-        _scroller.setContentOffset(CGPoint(x: x, y: y), animated: animated)
-      default: break
-      }
+  func willMove(to view: UIView?) {
+    if let view = view {
+      _scrollView.frame = view.bounds
+    } else {
+      _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: "wkScroller")
     }
   }
   
-  @objc func createScroller(jsScrollerPath: String) -> Scroller {
-    let scroller = Scroller(frame: bounds, jsScrollerPath: jsScrollerPath)
-    scroller.wkWebView = self
-    scroller.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-    let handler = MessageHandler(scroller: scroller)
-    self.configuration.userContentController.add(handler, name: "wkScroller")
-    addSubview(scroller)
-    return scroller
+  func didMove(to view: UIView?) {
+    if let webView = view as? WKWebView {
+      webView.addSubview(_scrollView)
+      webView.addGestureRecognizer(_scrollView.panGestureRecognizer)
+      webView.configuration.userContentController.add(self, name: "wkScroller")
+      
+      webView.scrollView.delaysContentTouches = false;
+      webView.scrollView.canCancelContentTouches = false;
+      webView.scrollView.isScrollEnabled = false;
+      webView.scrollView.panGestureRecognizer.isEnabled = false;
+      
+      _wkWebView = webView
+    } else {
+      _scrollView.removeFromSuperview()
+    }
   }
+}
 
+extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    let point = scrollView.contentOffset
+    _wkWebView?.evaluateJavaScript("\(_jsScrollerPath).reportScroll(\(point.x), \(point.y));", completionHandler: nil)
+  }
+}
+
+extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
+  func userContentController(_ userContentController: WKUserContentController, didReceive message: WKScriptMessage) {
+    guard
+      let msg = message.body as? [String: Any],
+      let op = msg["op"] as? String
+    else {
+      return
+    }
+    
+    switch op {
+    case "resize":
+      _scrollView.contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
+    case "scrollTo":
+      let animated = msg["animated"] as? Bool == true
+      let x: CGFloat = msg["x"] as? CGFloat ?? 0
+      let y: CGFloat = msg["y"] as? CGFloat ?? 0
+      _scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
+    default: break
+    }
+  }
 }
