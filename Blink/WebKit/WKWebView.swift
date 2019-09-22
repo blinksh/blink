@@ -39,6 +39,10 @@ protocol WKWebViewGesturesInteractionDelegate: NSObjectProtocol {
 
 class UIScrollViewWithoutHitTest: UIScrollView {
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    if let result = super.hitTest(point, with: event),
+      result !== self {
+      return result
+    }
     return nil
   }
 }
