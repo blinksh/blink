@@ -64,9 +64,18 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _2fLongPressRecognizer = UILongPressGestureRecognizer()
   private var _1fTapRecognizer = UITapGestureRecognizer()
   private var _1fPanRecognizer = UIPanGestureRecognizer()
+  private var _pinchRecognizer = UIPinchGestureRecognizer()
   
   var allRecognizers:[UIGestureRecognizer] {
-    [_2fLongPressRecognizer, _2fPanRecognizer, _1fTapRecognizer, _1fPanRecognizer, _scrollView.panGestureRecognizer]
+    let recognizers = [
+      _2fPanRecognizer,
+      _1fTapRecognizer,
+//      _2fLongPressRecognizer,
+//      _1fPanRecognizer,
+      _pinchRecognizer,
+      _scrollView.panGestureRecognizer
+    ]
+    return recognizers
   }
   
   func willMove(to view: UIView?) {
@@ -109,6 +118,8 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _scrollView.delaysContentTouches = false
     _scrollView.delegate = self
     
+    
+    
     _2fPanRecognizer.minimumNumberOfTouches = 2
     _2fPanRecognizer.maximumNumberOfTouches = 2
     _2fPanRecognizer.delegate = self
@@ -120,7 +131,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
     
     _1fPanRecognizer.minimumNumberOfTouches = 1
-    _1fPanRecognizer.maximumNumberOfTouches = 1
+    _1fPanRecognizer.maximumNumberOfTouches = 3
     _1fPanRecognizer.delegate = self
     _1fPanRecognizer.addTarget(self, action: #selector(_on1fPan(_:)))
     
@@ -128,6 +139,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fLongPressRecognizer.numberOfTapsRequired = 0
     _2fLongPressRecognizer.delegate = self
     _2fLongPressRecognizer.addTarget(self, action: #selector(_on2fLongPress(_:)))
+    
+    
+    _pinchRecognizer.delegate = self
+    _pinchRecognizer.addTarget(self, action: #selector(_onPinch(_:)))
+    
   }
   
   private var _reportedY:CGFloat = 0
@@ -148,6 +164,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       if abs(dY) < 5 {
         return
       }
+      _pinchRecognizer.dropTouches()
       _reportedY = point.y
       let deltaY = dY > 0 ? -1 : 1
       let deltaX = 0 // hterm supports only deltaY for now
@@ -196,7 +213,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     case .began:
       _scrollView.panGestureRecognizer.dropTouches()
       recognizer.view?.superview?.dropSuperViewTouches()
-      debugPrint("start");
+      debugPrint("start", point);
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y), 1);", completionHandler: nil)
     case .changed:
       debugPrint("changed");
@@ -206,6 +223,17 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       debugPrint("ended");
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
     default: break
+    }
+  }
+  
+  @objc func _onPinch(_ recognizer: UIPinchGestureRecognizer) {
+    debugPrint("pinching", recognizer.scale)
+    switch recognizer.state {
+    case .changed:
+      _2fPanRecognizer.dropTouches()
+      _2fLongPressRecognizer.dropTouches()
+    default:
+      break
     }
   }
   
