@@ -40,7 +40,7 @@ protocol WKWebViewGesturesInteractionDelegate: NSObjectProtocol {
 class UIScrollViewWithoutHitTest: UIScrollView {
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     if let result = super.hitTest(point, with: event),
-      result !== self {
+    result !== self || point.x > self.bounds.size.width - 24 {
       return result
     }
     return nil
@@ -271,12 +271,21 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
     
     switch op {
     case "resize":
-      _scrollView.contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
+      let contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
+      if contentSize == _scrollView.contentSize {
+        return
+      }
+      _scrollView.contentSize = contentSize
     case "scrollTo":
       let animated = msg["animated"] as? Bool == true
       let x: CGFloat = msg["x"] as? CGFloat ?? 0
       let y: CGFloat = msg["y"] as? CGFloat ?? 0
-      _scrollView.setContentOffset(CGPoint(x: x, y: y), animated: animated)
+      let offset = CGPoint(x: x, y: y)
+      if (offset == _scrollView.contentOffset) {
+        return
+      }
+      // TODO: debounce?
+      _scrollView.setContentOffset(offset, animated: animated)
     default: break
     }
   }
