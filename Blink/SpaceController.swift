@@ -577,7 +577,7 @@ extension SpaceController {
     let app = UIApplication.shared
     let sessions = Array(app.openSessions).filter({$0.scene?.activationState == .foregroundActive})
       .sorted(by: {(a, b) in
-      a.persistentIdentifier > b.persistentIdentifier
+      a.persistentIdentifier < b.persistentIdentifier
     })
 
     guard
