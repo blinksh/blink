@@ -33,139 +33,6 @@
 import Foundation
 import MBProgressHUD
 
-enum SpaceSection {
-  case main
-}
-
-/**
- Our custom DataSource, bc DiffableDataSource doesn't work well with drag and drop for now
-*/
-class SpaceDataSource: NSObject, UICollectionViewDataSource {
-  
-  typealias CellBuilder = (_ collectionView: UICollectionView, _ indexPath: IndexPath, _ key: UUID) -> UICollectionViewCell?
-  
-  private var _workingData: [UUID] = []
-  private var _uiData: [UUID] = []
-  var cellBuilder: CellBuilder?
-  
-  func setInitialData(data: [UUID]) {
-    _uiData = data
-    _workingData = data
-  }
-  
-  var isUIEmpty: Bool {
-    _uiData.isEmpty
-  }
-  
-  func uiIndexOf(key: UUID) -> Int? {
-    _uiData.firstIndex(of: key)
-  }
-  
-  var uiData:[UUID] { _uiData }
-  
-  func keyFor(indexPath: IndexPath) -> UUID? {
-    if _uiData.startIndex >= indexPath.row && _uiData.endIndex < indexPath.row {
-      return _uiData[indexPath.row]
-    }
-    return nil
-  }
-  
-  var isEmpty: Bool {
-    _workingData.isEmpty
-  }
-  
-  func insert(items: [UUID], after: UUID?) {
-    if let after = after, let idx = _workingData.firstIndex(of: after) {
-      _workingData.insert(contentsOf: items, at: idx)
-    } else {
-      _workingData.append(contentsOf: items)
-    }
-  }
-  
-  func delete(items: [UUID]) {
-    _workingData.removeAll { (key) -> Bool in
-      items.firstIndex(of: key) != nil
-    }
-  }
-  
-  func indexPath(for key: UUID?) -> IndexPath? {
-    if let idx = index(for: key) {
-      return IndexPath(row: idx, section: 0)
-    }
-    return nil
-  }
-  
-  func index(for key: UUID?) -> Int? {
-    if let key = key {
-      return _uiData.firstIndex(of: key)
-    }
-    return nil
-  }
-  
-  func apply(collectionView: UICollectionView) {
-    let diff = _workingData.difference(from: _uiData)
-    if diff.isEmpty {
-      return
-    }
-    
-    let diffWithMoves = diff.inferringMoves()
-    
-    collectionView.performBatchUpdates({
-      var inserts: [IndexPath] = []
-      var deletes: [IndexPath] = []
-      var reloads: [IndexPath] = []
-      for change in diffWithMoves {
-        switch change {
-        case .insert(offset: let row, element: _, associatedWith: let associatedRow):
-          if let destRow = associatedRow {
-            if row == destRow {
-              reloads.append(IndexPath(row: row, section: 0))
-            } else {
-              collectionView.moveItem(at: IndexPath(row: row, section: 0), to: IndexPath(row: destRow, section: 0))
-            }
-          } else {
-            inserts.append(IndexPath(row: row, section: 0))
-          }
-        case .remove(offset: let row, element: _, associatedWith: let targetIndex):
-          if targetIndex == nil {
-            deletes.append(IndexPath(row: row, section: 0))
-          }
-        }
-      }
-      
-      collectionView.insertItems(at: inserts)
-      collectionView.deleteItems(at: deletes)
-      collectionView.reloadItems(at: reloads)
-      self._uiData = self._workingData
-    }) { (done) in
-      
-    }
-  }
-  
-  var count: Int {
-    _uiData.count
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-    if section == 0 {
-      return _uiData.count
-    }
-    return 0
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-    let key = _uiData[indexPath.row]
-    guard
-      let builder = cellBuilder,
-      let cell = builder(collectionView, indexPath, key)
-    else {
-      return UICollectionViewCell()
-    }
-    
-    return cell
-  }
-}
-
 class SpaceController: UICollectionViewController {
   
   struct UIState: UserActivityCodable {
@@ -244,7 +111,6 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewDidLoad() {
-    debugPrint("viewDidLoad")
     super.viewDidLoad()
   
     collectionView.allowsMultipleSelection = false
@@ -260,7 +126,6 @@ class SpaceController: UICollectionViewController {
     collectionView.alwaysBounceHorizontal = true
     collectionView.dropDelegate = self
     collectionView.dataSource = _dataSource
-    
     
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
     
@@ -286,8 +151,15 @@ class SpaceController: UICollectionViewController {
       
       let section = NSCollectionLayoutSection(group: group)
       section.interGroupSpacing = 0
+      
       let contentInsets = env.container.effectiveContentInsets
-      section.contentInsets = NSDirectionalEdgeInsets(top: -contentInsets.top, leading: -contentInsets.leading, bottom: -contentInsets.bottom, trailing: -contentInsets.trailing)
+      
+      section.contentInsets = NSDirectionalEdgeInsets(
+        top: -contentInsets.top,
+        leading: -contentInsets.leading,
+        bottom: -contentInsets.bottom,
+        trailing: -contentInsets.trailing
+      )
       
       return section
     }, configuration: configuration)
@@ -338,9 +210,7 @@ class SpaceController: UICollectionViewController {
     else {
       return
     }
-    let size = collectionView.bounds.size
-    collectionView.contentSize = CGSize(width: CGFloat(_dataSource.count) * size.width, height: size.height)
-    collectionView.contentOffset = CGPoint(x: CGFloat(idx) * size.width, y: 0)
+    collectionView.repage(for: view.bounds.size, page: idx, totalPages: _dataSource.count)
   }
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
@@ -366,17 +236,12 @@ class SpaceController: UICollectionViewController {
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
     super.viewWillTransition(to: size, with: coordinator)
 
-    if let scrollView = collectionView{
+    if let scrollView = collectionView {
       let page = Int(scrollView.contentOffset.x / (view.bounds.width))
-      let newOffset = CGPoint(x: CGFloat(page) * (size.width), y: 0)
-      let newContentSize = CGSize(width: (size.width) * CGFloat(_dataSource.count), height: size.height)
-      let newFrame = CGRect(origin: .zero, size: size)
+      let totalPages = _dataSource.count
 
       coordinator.animateAlongsideTransition(in: view, animation: { (t) in
-        scrollView.frame = newFrame
-        scrollView.contentSize = newContentSize
-        let offset = CGPoint(x: newOffset.x, y: newOffset.y)
-        scrollView.contentOffset = offset
+        scrollView.repage(for: size, page: page, totalPages: totalPages)
       }) { (ctx) in
       }
     }
@@ -592,27 +457,6 @@ extension SpaceController: UIStateRestorable {
     }
   }
 }
-
-//extension SpaceController: UIPageViewControllerDelegate {
-//  public func pageViewController(
-//    _ pageViewController: UIPageViewController,
-//    didFinishAnimating finished: Bool,
-//    previousViewControllers: [UIViewController],
-//    transitionCompleted completed: Bool) {
-//    guard completed else {
-//      return
-//    }
-//
-//    guard let termController = pageViewController.viewControllers?.first as? TermController
-//    else {
-//      return
-//    }
-//    _currentKey = termController.meta.key
-//    _displayHUD()
-//    _attachInputToCurrentTerm()
-//  }
-//}
-
 
 extension SpaceController: TouchOverlayDelegate {
   public func touchOverlay(_ overlay: TouchOverlay!, onOneFingerTap recognizer: UITapGestureRecognizer!) {
@@ -853,14 +697,6 @@ extension SpaceController: CommandsHUDViewDelegate {
   @objc func spaceController() -> SpaceController? {
     return self
   }
-}
-
-extension SpaceController: UICollectionViewDelegateFlowLayout{
-  func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize{
-    self.view.bounds.size
-  }
-  
-  
 }
 
 extension SpaceController: UICollectionViewDropDelegate {
