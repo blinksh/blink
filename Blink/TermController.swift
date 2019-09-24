@@ -87,7 +87,6 @@ class TermController: UIViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    debugPrint("term viewWillTransition", coordinator.isAnimated)
     if !coordinator.isAnimated {
       return
     }
@@ -196,10 +195,6 @@ class TermController: UIViewController {
     NotificationCenter.default.removeObserver(self)
     _session?.delegate = nil
     _session = nil
-//    _termDevice.attachView(nil)
-//    _session?.device = nil
-//    _session?.stream = nil
-//    _session = nil
   }
   
 }
@@ -222,7 +217,6 @@ extension TermController: SessionDelegate {
 
 extension TermController: TermDeviceDelegate {
   public func deviceIsReady() {
-    debugPrint("term deviceIsRead", _meta.key)
     startSession()
   }
   
