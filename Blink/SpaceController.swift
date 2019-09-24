@@ -65,9 +65,11 @@ class SpaceController: UICollectionViewController {
     debugPrint("willDisplay", indexPath)
   }
   
+  var _isTransitioning: Bool = false
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     debugPrint("didEndDisplaying", indexPath)
     guard
+      _isTransitioning == false,
       let cell = collectionView.visibleCells.first as? TermCell,
       let term = cell.term,
       _currentKey != term.meta.key,
@@ -185,10 +187,6 @@ class SpaceController: UICollectionViewController {
       return termCell;
     }
     
-//    _touchOverlay.frame = view.bounds
-//    view.addSubview(_touchOverlay)
-//    _touchOverlay.touchDelegate = self
-    
     _commandsHUD.delegate = self
     _registerForNotifications()
     _setupKBCommands()
@@ -215,7 +213,6 @@ class SpaceController: UICollectionViewController {
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
     collectionView.isScrollEnabled = false
-//    currentTerm()?.termDevice.view?.dropTouches()
   }
   
   public override func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
@@ -234,15 +231,17 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    _isTransitioning = true
     super.viewWillTransition(to: size, with: coordinator)
 
     if let scrollView = collectionView {
-      let page = Int(scrollView.contentOffset.x / (view.bounds.width))
+      let page = _dataSource.index(for: _currentKey)
       let totalPages = _dataSource.count
 
       coordinator.animateAlongsideTransition(in: view, animation: { (t) in
-        scrollView.repage(for: size, page: page, totalPages: totalPages)
+        scrollView.repage(for: size, page: page, totalPages: totalPages, animated: false)
       }) { (ctx) in
+        self._isTransitioning = false
       }
     }
     
