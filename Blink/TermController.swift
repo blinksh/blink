@@ -90,7 +90,7 @@ class TermController: UIViewController {
     if !coordinator.isAnimated {
       return
     }
-    
+
     super.viewWillTransition(to: size, with: coordinator)
   }
   
@@ -165,12 +165,6 @@ class TermController: UIViewController {
   
   @objc public func isRunningCmd() -> Bool {
     return _session?.isRunningCmd() ?? false
-  }
-  
-  @objc public func canRestoreUserActivityState(
-    _ activity: NSUserActivity) -> Bool
-  {
-    return _session?.isRunningCmd() == false || activity.title == activityKey
   }
   
   @objc public func scaleWithPich(_ pinch: UIPinchGestureRecognizer) {

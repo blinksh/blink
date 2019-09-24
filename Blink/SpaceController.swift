@@ -234,6 +234,8 @@ class SpaceController: UICollectionViewController {
     _isTransitioning = true
     super.viewWillTransition(to: size, with: coordinator)
 
+    collectionView.panGestureRecognizer.dropTouches()
+    
     if let scrollView = collectionView {
       let page = _dataSource.index(for: _currentKey)
       let totalPages = _dataSource.count
