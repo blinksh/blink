@@ -325,7 +325,22 @@ class SpaceController: UICollectionViewController {
     
     if _dataSource.isEmpty {
       _dataSource.setInitialData(data: [UUID()])
+      return
     }
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated);
+    
+    guard
+      let idx = _dataSource.index(for: _currentKey),
+      let collectionView = collectionView
+    else {
+      return
+    }
+    let size = collectionView.bounds.size
+    collectionView.contentSize = CGSize(width: CGFloat(_dataSource.count) * size.width, height: size.height)
+    collectionView.contentOffset = CGPoint(x: CGFloat(idx) * size.width, y: 0)
   }
   
   public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
