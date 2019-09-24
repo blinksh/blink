@@ -187,14 +187,7 @@ class SpaceController: UICollectionViewController {
   private let _dataSource = SpaceDataSource()
   
   init() {
-    let layout = UICollectionViewFlowLayout()
-    layout.scrollDirection = .horizontal
-    layout.minimumLineSpacing = 0
-    layout.minimumInteritemSpacing = 0
-    layout.sectionInset = .zero
-    layout.sectionInsetReference = .fromContentInset
-    
-    super.init(collectionViewLayout: layout)
+    super.init(collectionViewLayout: UICollectionViewFlowLayout())
   }
   
   required init?(coder: NSCoder) {
@@ -207,18 +200,17 @@ class SpaceController: UICollectionViewController {
   
   override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
     debugPrint("didEndDisplaying", indexPath)
-    if let cell = collectionView.visibleCells.first as? TermCell,
-      let term = cell.term {
-      if (_currentKey != term.meta.key) {
-        _currentKey = term.meta.key
-        _attachInputToCurrentTerm()
-      }
-//      term.termDevice.attachInput(SmarterTermInput.shared)
-//      term.termDevice.focus()
+    guard
+      let cell = collectionView.visibleCells.first as? TermCell,
+      let term = cell.term,
+      _currentKey != term.meta.key,
+      SmarterTermInput.shared.isFirstResponder
+    else {
+      return
     }
+    _currentKey = term.meta.key
+    _attachInputToCurrentTerm()
   }
-  
-  
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -271,8 +263,35 @@ class SpaceController: UICollectionViewController {
     
     
     collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
-    let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout
-    layout?.itemSize = view.bounds.size
+    
+    let configuration = UICollectionViewCompositionalLayoutConfiguration()
+    configuration.interSectionSpacing = 0
+    configuration.scrollDirection = .horizontal
+    
+    let layout = UICollectionViewCompositionalLayout(sectionProvider: { [weak collectionView] (_, env) -> NSCollectionLayoutSection? in
+      guard let collectionView = collectionView
+      else {
+          return nil
+      }
+      
+      let bounds = collectionView.bounds
+      
+      let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(bounds.size.width), heightDimension: .absolute(bounds.size.height))
+      let item = NSCollectionLayoutItem(layoutSize: itemSize)
+      item.contentInsets = .zero
+      
+      let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(bounds.size.width), heightDimension: .absolute(bounds.size.height))
+      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+      group.interItemSpacing = .fixed(0);
+      
+      let section = NSCollectionLayoutSection(group: group)
+      section.interGroupSpacing = 0
+      let contentInsets = env.container.effectiveContentInsets
+      section.contentInsets = NSDirectionalEdgeInsets(top: -contentInsets.top, leading: -contentInsets.leading, bottom: -contentInsets.bottom, trailing: -contentInsets.trailing)
+      
+      return section
+    }, configuration: configuration)
+    collectionView.setCollectionViewLayout(layout, animated: false)
     
     _dataSource.cellBuilder = { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
       debugPrint("cellForIndexPathh", indexPath, key)
@@ -330,62 +349,22 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    debugPrint("viewWillTransition", coordinator.isAnimated)
-        
     super.viewWillTransition(to: size, with: coordinator)
-    
-    
-    if let scrollView = collectionView, let layout = self.collectionViewLayout as? UICollectionViewFlowLayout {
+
+    if let scrollView = collectionView{
       let page = Int(scrollView.contentOffset.x / (view.bounds.width))
       let newOffset = CGPoint(x: CGFloat(page) * (size.width), y: 0)
       let newContentSize = CGSize(width: (size.width) * CGFloat(_dataSource.count), height: size.height)
       let newFrame = CGRect(origin: .zero, size: size)
-      let ctx1 = UICollectionViewFlowLayoutInvalidationContext()
-      ctx1.invalidateFlowLayoutAttributes = true
 
-      coordinator.animateAlongsideTransition(in: nil, animation: { (t) in
+      coordinator.animateAlongsideTransition(in: view, animation: { (t) in
         scrollView.frame = newFrame
         scrollView.contentSize = newContentSize
         let offset = CGPoint(x: newOffset.x, y: newOffset.y)
         scrollView.contentOffset = offset
-//        let layout2 = UICollectionViewFlowLayout()
-//        layout2.scrollDirection = .horizontal
-//        layout2.minimumLineSpacing = 10
-//        layout2.minimumInteritemSpacing = 10
-//        layout2.sectionInset = .zero
-        layout.itemSize = size
-//        self.collectionView.performBatchUpdates({
-        self.collectionView.setCollectionViewLayout(layout, animated: coordinator.isAnimated)
-//        }, completion: nil)
-//        layout.invalidateLayout(with: ctx1)
       }) { (ctx) in
-        
-//        layout.itemSize = size
-//        if !coordinator.isAnimated {
-//          scrollView.setContentOffset(newOffset, animated: true)
-//        }
       }
     }
-    
-//    // Voodoo thing to state on same scroll offset
-//    if let cell = collectionView.visibleCells.first,
-//      let scrollView = cell.superview as? UIScrollView {
-//      let page = Int(scrollView.contentOffset.x / (view.bounds.width + 10))
-//      let newOffset = CGPoint(x: CGFloat(page) * (size.width + 10), y: 0)
-//      let newContentSize = CGSize(width: (size.width + 10) * CGFloat(self._termsSnapshot.numberOfItems(inSection: .main)), height: size.height)
-//
-//      coordinator.animateAlongsideTransition(in: view, animation: { (t) in
-//        scrollView.frame = CGRect(origin:.zero, size: size)
-//        scrollView.contentSize = newContentSize
-//        let offset = CGPoint(x: newOffset.x + (coordinator.isAnimated ? 0 : 0.5), y: newOffset.y)
-//        scrollView.contentOffset = offset
-//      }) { (ctx) in
-//        if !coordinator.isAnimated {
-//          scrollView.setContentOffset(newOffset, animated: true)
-//        }
-//      }
-//    }
-    
     
     if view.window?.isKeyWindow == true {
       DispatchQueue.main.async {
