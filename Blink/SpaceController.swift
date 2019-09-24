@@ -575,11 +575,11 @@ extension SpaceController {
   
   @objc func _focusOtherScreenAction() {
     let app = UIApplication.shared
-    let sessions = Array(app.openSessions)
+    let sessions = Array(app.openSessions).filter({$0.scene?.activationState == .foregroundActive})
       .sorted(by: {(a, b) in
       a.persistentIdentifier > b.persistentIdentifier
     })
-//    view.window?.windowScene?.session.persistentIdentifier
+
     guard
       sessions.count > 1,
       let session = view.window?.windowScene?.session,
