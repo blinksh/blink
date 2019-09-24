@@ -37,6 +37,9 @@ enum SpaceSection {
   case main
 }
 
+/**
+ Our custom DataSource, bc DiffableDataSource doesn't work well with drag and drop for now
+*/
 class SpaceDataSource: NSObject, UICollectionViewDataSource {
   
   typealias CellBuilder = (_ collectionView: UICollectionView, _ indexPath: IndexPath, _ key: UUID) -> UICollectionViewCell?
