@@ -34,9 +34,9 @@ import UIKit
 
 extension UIScrollView {
 
-  func repage(for newSize: CGSize, page: Int, totalPages: Int) {
+  func repage(for newSize: CGSize, page: Int?, totalPages: Int, animated: Bool = false) {
     self.frame = CGRect(origin: .zero, size: newSize)
     self.contentSize = CGSize(width: (newSize.width) * CGFloat(totalPages), height: newSize.height)
-    self.contentOffset = CGPoint(x: CGFloat(page) * (newSize.width), y: 0)
+    self.setContentOffset(CGPoint(x: CGFloat(page ?? 0) * (newSize.width), y: 0), animated: animated)
   }
 }

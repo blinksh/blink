@@ -33,10 +33,6 @@
 import UIKit
 import WebKit
 
-protocol WKWebViewGesturesInteractionDelegate: NSObjectProtocol {
-  
-}
-
 class UIScrollViewWithoutHitTest: UIScrollView {
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     if let result = super.hitTest(point, with: event),
@@ -52,7 +48,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
  
  - 1 finger tap - reports click
  - 2 finger pan - reports mouse wheel
- - 2 finger long press and 1 finger pan reports mouse move
  */
 
 @objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
@@ -63,6 +58,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _2fPanRecognizer = UIPanGestureRecognizer()
   private var _2fLongPressRecognizer = UILongPressGestureRecognizer()
   private var _1fTapRecognizer = UITapGestureRecognizer()
+  private var _2fTapRecognizer = UITapGestureRecognizer()
   private var _1fPanRecognizer = UIPanGestureRecognizer()
   private var _pinchRecognizer = UIPinchGestureRecognizer()
   
@@ -72,6 +68,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _1fTapRecognizer,
 //      _2fLongPressRecognizer,
 //      _1fPanRecognizer,
+      _2fTapRecognizer,
       _pinchRecognizer,
       _scrollView.panGestureRecognizer
     ]
@@ -118,8 +115,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _scrollView.delaysContentTouches = false
     _scrollView.delegate = self
     
-    
-    
     _2fPanRecognizer.minimumNumberOfTouches = 2
     _2fPanRecognizer.maximumNumberOfTouches = 2
     _2fPanRecognizer.delegate = self
@@ -129,6 +124,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _1fTapRecognizer.numberOfTouchesRequired = 1
     _1fTapRecognizer.delegate = self
     _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
+    
+    _2fTapRecognizer.numberOfTapsRequired = 1
+    _2fTapRecognizer.numberOfTouchesRequired = 2
+    _2fTapRecognizer.delegate = self
+    _2fTapRecognizer.addTarget(self, action: #selector(_on2fTap(_:)))
     
     _1fPanRecognizer.minimumNumberOfTouches = 1
     _1fPanRecognizer.maximumNumberOfTouches = 3
@@ -143,7 +143,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     
     _pinchRecognizer.delegate = self
     _pinchRecognizer.addTarget(self, action: #selector(_onPinch(_:)))
-    
   }
   
   private var _reportedY:CGFloat = 0
@@ -164,6 +163,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       if abs(dY) < 5 {
         return
       }
+      _1fTapRecognizer.dropTouches()
       _pinchRecognizer.dropTouches()
       _reportedY = point.y
       let deltaY = dY > 0 ? -1 : 1
@@ -185,7 +185,23 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y));", completionHandler: nil)
     default: break
     }
+    
+    if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
+      target.perform(#selector(focusOnShellAction), with: self)
+    }
   }
+  
+  @objc func _on2fTap(_ recognizer: UITapGestureRecognizer) {
+    switch recognizer.state {
+    case .recognized:
+      if let target = _wkWebView?.target(forAction: #selector(newShellAction), withSender: self) as? UIResponder {
+        target.perform(#selector(newShellAction), with: self)
+      }
+    default: break
+    }
+  }
+  
+
   
   private var _is2fLongPressing = false
   
@@ -227,14 +243,32 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   }
   
   @objc func _onPinch(_ recognizer: UIPinchGestureRecognizer) {
-    debugPrint("pinching", recognizer.scale)
-    switch recognizer.state {
-    case .changed:
+    if  recognizer.state == .possible {
+      return
+    }
+    
+    let dScale = 1.0 - recognizer.scale;
+    if abs(dScale) > 0.05 {
+      _2fTapRecognizer.dropTouches()
       _2fPanRecognizer.dropTouches()
       _2fLongPressRecognizer.dropTouches()
-    default:
-      break
+       
+      if let target = _wkWebView?.target(forAction: #selector(scaleWithPich(_:)), withSender: recognizer) as? UIResponder {
+        target.perform(#selector(scaleWithPich(_:)), with: recognizer)
+      }
     }
+  }
+  
+  @objc func scaleWithPich(_ pinch: UIPinchGestureRecognizer) {
+    
+  }
+  
+  @objc func newShellAction() {
+    
+  }
+  
+  @objc func focusOnShellAction() {
+    
   }
   
 }

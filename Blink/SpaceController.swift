@@ -311,16 +311,26 @@ class SpaceController: UICollectionViewController {
     _setupKBCommands()
   }
   
-  func _createShell(animated: Bool)
-  {
+  func _createShell(animated: Bool) {
+    
+    if collectionView.isDragging || collectionView.isDecelerating {
+      return
+    }
+    
     let term: TermController = SessionRegistry.shared[UUID()]
     term.delegate = self
     
     _dataSource.insert(items: [term.meta.key], after: _currentKey)
-    _currentKey = term.meta.key
-    _attachInputToCurrentTerm()
     
-    _dataSource.apply(collectionView: collectionView)
+    let ds = _dataSource
+    
+    if let collectionView = collectionView {
+      _dataSource.apply(collectionView: collectionView) {
+        let page = ds.index(for: term.meta.key)
+        let totalPages = ds.count
+        collectionView.repage(for: collectionView.bounds.size, page: page, totalPages: totalPages, animated: animated)
+      }
+    }
   }
   
   func _closeCurrentSpace() {
@@ -342,7 +352,6 @@ class SpaceController: UICollectionViewController {
     if _dataSource.isEmpty {
       _currentKey = nil
       _dataSource.insert(items: [UUID()], after: nil)
-      return
     }
 
     _dataSource.apply(collectionView: collectionView)
@@ -554,6 +563,15 @@ extension SpaceController {
       // Misc
       _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
     ]
+  }
+  
+  @objc func focusOnShellAction() {
+    if collectionView.isDragging || collectionView.isDecelerating {
+      return
+    }
+    
+    SmarterTermInput.shared.reset()
+    _focusOnShell()
   }
   
   @objc func newShellAction() {

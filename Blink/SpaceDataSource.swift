@@ -59,7 +59,7 @@ class SpaceDataSource: NSObject, UICollectionViewDataSource {
   var uiData:[UUID] { _uiData }
   
   func keyFor(indexPath: IndexPath) -> UUID? {
-    if _uiData.startIndex >= indexPath.row && _uiData.endIndex < indexPath.row {
+    if _uiData.startIndex <= indexPath.row && indexPath.row < _uiData.endIndex {
       return _uiData[indexPath.row]
     }
     return nil
@@ -70,7 +70,7 @@ class SpaceDataSource: NSObject, UICollectionViewDataSource {
   }
   
   func insert(items: [UUID], after: UUID?) {
-    if let after = after, let idx = _workingData.firstIndex(of: after) {
+    if let after = after, let idx = _workingData.firstIndex(of: after)?.advanced(by: 1) {
       _workingData.insert(contentsOf: items, at: idx)
     } else {
       _workingData.append(contentsOf: items)
@@ -97,9 +97,10 @@ class SpaceDataSource: NSObject, UICollectionViewDataSource {
     return nil
   }
   
-  func apply(collectionView: UICollectionView) {
+  func apply(collectionView: UICollectionView, callback: (() -> ())? = nil) {
     let diff = _workingData.difference(from: _uiData)
     if diff.isEmpty {
+      callback?()
       return
     }
     
@@ -133,7 +134,7 @@ class SpaceDataSource: NSObject, UICollectionViewDataSource {
       collectionView.reloadItems(at: reloads)
       self._uiData = self._workingData
     }) { (done) in
-      
+      callback?()
     }
   }
   
