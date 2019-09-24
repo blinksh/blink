@@ -42,8 +42,6 @@ class SpaceController: UICollectionViewController {
     
     static var activityType: String { "space.ctrl.ui.state" }
   }
-
-  private lazy var _touchOverlay = TouchOverlay(frame: .zero)
   
   private var _currentKey: UUID? = nil
   
@@ -87,15 +85,6 @@ class SpaceController: UICollectionViewController {
     guard let window = view.window
     else {
       return
-    }
-    
-    if window.screen === UIScreen.main {
-      var insets = UIEdgeInsets.zero
-      insets.bottom = LayoutManager.mainWindowKBBottomInset()
-      // TODO: Bottom insets
-      _touchOverlay.frame = view.bounds.inset(by: insets)
-    } else {
-      _touchOverlay.frame = view.bounds
     }
     
     _commandsHUD.setNeedsLayout()
@@ -399,7 +388,7 @@ class SpaceController: UICollectionViewController {
       view.window?.backgroundColor = bgColor
     }
     
-    let hud = MBProgressHUD.showAdded(to: _touchOverlay, animated: _hud == nil)
+    let hud = MBProgressHUD.showAdded(to: view, animated: _hud == nil)
     
     hud.mode = .customView
     hud.bezelView.color = .darkGray
@@ -464,40 +453,6 @@ extension SpaceController: UIStateRestorable {
       }
       
       uiState.keys.forEach { registry.remove(forKey: $0) }
-    }
-  }
-}
-
-extension SpaceController: TouchOverlayDelegate {
-  public func touchOverlay(_ overlay: TouchOverlay!, onOneFingerTap recognizer: UITapGestureRecognizer!) {
-    guard let term = currentTerm() else {
-      return
-    }
-    SmarterTermInput.shared.reset()
-    let point = recognizer.location(in: term.view)
-    _focusOnShell()
-    term.termDevice.view.reportTouch(in: point)
-  }
-  
-  public func touchOverlay(_ overlay: TouchOverlay!, onTwoFingerTap recognizer: UITapGestureRecognizer!) {
-    _createShell(animated: true)
-  }
-  
-  public func touchOverlay(_ overlay: TouchOverlay!, onPinch recognizer: UIPinchGestureRecognizer!) {
-    currentTerm()?.scaleWithPich(recognizer)
-  }
-}
-
-extension SpaceController: TermControlDelegate {
-  func terminalHangup(control: TermController) {
-    if currentTerm() == control {
-      _closeCurrentSpace()
-    }
-  }
-  
-  func terminalDidResize(control: TermController) {
-    if currentTerm() == control {
-      _displayHUD()
     }
   }
 }
@@ -757,4 +712,18 @@ extension SpaceController: UICollectionViewDropDelegate {
   }
   
   
+}
+
+extension SpaceController: TermControlDelegate {
+  func terminalHangup(control: TermController) {
+    if currentTerm() == control {
+      _closeCurrentSpace()
+    }
+  }
+
+  func terminalDidResize(control: TermController) {
+    if currentTerm() == control {
+      _displayHUD()
+    }
+  }
 }

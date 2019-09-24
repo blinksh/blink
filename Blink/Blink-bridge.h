@@ -39,7 +39,6 @@
 #import "BKUserConfigurationManager.h"
 #import "Session.h"
 #import "TermInput.h"
-#import "TouchOverlay.h"
 #import "MCPSession.h"
 #import "TermDevice.h"
 
