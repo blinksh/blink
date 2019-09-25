@@ -1,11 +1,11 @@
-osx_image: xcode10.2
+osx_image: xcode11
 language: objective-c
 
 branches:
   except:
-  - libssh
+    - libssh
 
 before_script:
-- "./get_frameworks.sh"
+  - "./get_frameworks.sh"
 script:
-- "set -o pipefail && xcodebuild -project Blink.xcodeproj -scheme Blink -sdk iphoneos -configuration Debug clean build CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO | tee build.log | xcpretty"
+  - "set -o pipefail && xcodebuild -project Blink.xcodeproj -scheme Blink -sdk iphoneos -configuration Debug clean build CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO | tee build.log | xcpretty"
