@@ -625,6 +625,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)dealloc {
   [self terminate];
+  for (id<UIInteraction> interaction in _webView.interactions) {
+    [_webView removeInteraction:interaction];
+  }
   [_layoutDebounceTimer invalidate];
   _layoutDebounceTimer = nil;
 }

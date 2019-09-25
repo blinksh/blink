@@ -32,6 +32,21 @@
 
 import Foundation
 
+class BlinkWindow: UIWindow {
+  override func becomeKey() {
+    super.becomeKey()
+  }
+  
+  override func resignKey() {
+    super.resignKey()
+  }
+  
+  override func sendEvent(_ event: UIEvent) {
+    super.sendEvent(event)
+//    debugPrint(event)
+  }
+}
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
   
@@ -45,7 +60,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     _tuneOverscanIfNeeded(session: session)
-    self.window = UIWindow(windowScene: windowScene)
+    self.window = BlinkWindow(windowScene: windowScene)
     let spaceCntrl = SpaceController()
     spaceCntrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     window?.rootViewController = spaceCntrl
@@ -74,9 +89,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    SmarterTermInput.shared.refreshInputViews()
+//    SmarterTermInput.shared.refreshInputViews()
     _spaceController?.currentTerm()?.resumeIfNeeded()
     _spaceController?.currentTerm()?.view?.setNeedsLayout()
+  }
+  
+  func sceneWillResignActive(_ scene: UIScene) {
+    debugPrint("sceneWillResignActive")
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {

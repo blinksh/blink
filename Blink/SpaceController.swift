@@ -33,51 +33,32 @@
 import Foundation
 import MBProgressHUD
 
-class SpaceController: UICollectionViewController {
+public class SpaceController: UIViewController {
+  
+  weak var _nextSpaceCtrl: SpaceController? = nil
   
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
-    var bgColor:CodableColor? = nil
+    var bgColor: CodableColor? = nil
     
     static var activityType: String { "space.ctrl.ui.state" }
   }
+
+  private lazy var _viewportsController = UIPageViewController(
+    transitionStyle: .scroll,
+    navigationOrientation: .horizontal,
+    options: [.spineLocation: UIPageViewController.SpineLocation.mid]
+  )
   
+  private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   
+  private var _overlay = UIView()
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
-  private let _dataSource = SpaceDataSource()
-  
-  init() {
-    super.init(collectionViewLayout: UICollectionViewFlowLayout())
-  }
-  
-  required init?(coder: NSCoder) {
-    fatalError("init(coder:) has not been implemented")
-  }
-
-  override func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    debugPrint("willDisplay", indexPath)
-  }
-  
-  var _isTransitioning: Bool = false
-  override func collectionView(_ collectionView: UICollectionView, didEndDisplaying cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
-    debugPrint("didEndDisplaying", indexPath)
-    guard
-      _isTransitioning == false,
-      let cell = collectionView.visibleCells.first as? TermCell,
-      let term = cell.term,
-      _currentKey != term.meta.key,
-      SmarterTermInput.shared.isFirstResponder
-    else {
-      return
-    }
-    _currentKey = term.meta.key
-    _attachInputToCurrentTerm()
-  }
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -85,6 +66,15 @@ class SpaceController: UICollectionViewController {
     guard let window = view.window
     else {
       return
+    }
+    
+    if window.screen === UIScreen.main {
+      var insets = UIEdgeInsets.zero
+      insets.bottom = LayoutManager.mainWindowKBBottomInset()
+      // TODO: Bottom insets
+      _overlay.frame = view.bounds.inset(by: insets)
+    } else {
+      _overlay.frame = view.bounds
     }
     
     _commandsHUD.setNeedsLayout()
@@ -103,78 +93,26 @@ class SpaceController: UICollectionViewController {
   
   public override func viewDidLoad() {
     super.viewDidLoad()
+    
+    view.isOpaque = true
   
-    collectionView.allowsMultipleSelection = false
-    collectionView.showsVerticalScrollIndicator = false
-    collectionView.showsHorizontalScrollIndicator = false
-
-    collectionView.minimumZoomScale = 0.1
-    collectionView.maximumZoomScale = 5
-    collectionView.keyboardDismissMode = .interactive
-    collectionView.isDirectionalLockEnabled = true
-    collectionView.contentInsetAdjustmentBehavior = .never
-    collectionView.isPagingEnabled = true
-    collectionView.alwaysBounceHorizontal = true
-    collectionView.dropDelegate = self
-    collectionView.dataSource = _dataSource
+    _viewportsController.view.isOpaque = true
+    _viewportsController.dataSource = self
+    _viewportsController.delegate = self
     
-    collectionView.register(TermCell.self, forCellWithReuseIdentifier: TermCell.identifier)
+    addChild(_viewportsController)
     
-    let configuration = UICollectionViewCompositionalLayoutConfiguration()
-    configuration.interSectionSpacing = 0
-    configuration.scrollDirection = .horizontal
-    
-    let layout = UICollectionViewCompositionalLayout(sectionProvider: { [weak collectionView] (_, env) -> NSCollectionLayoutSection? in
-      guard let collectionView = collectionView
-      else {
-          return nil
-      }
-      
-      let bounds = collectionView.bounds
-      
-      let itemSize = NSCollectionLayoutSize(widthDimension: .absolute(bounds.size.width), heightDimension: .absolute(bounds.size.height))
-      let item = NSCollectionLayoutItem(layoutSize: itemSize)
-      item.contentInsets = .zero
-      
-      let groupSize = NSCollectionLayoutSize(widthDimension: .absolute(bounds.size.width), heightDimension: .absolute(bounds.size.height))
-      let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
-      group.interItemSpacing = .fixed(0);
-      
-      let section = NSCollectionLayoutSection(group: group)
-      section.interGroupSpacing = 0
-      
-      let contentInsets = env.container.effectiveContentInsets
-      
-      section.contentInsets = NSDirectionalEdgeInsets(
-        top: -contentInsets.top,
-        leading: -contentInsets.leading,
-        bottom: -contentInsets.bottom,
-        trailing: -contentInsets.trailing
-      )
-      
-      return section
-    }, configuration: configuration)
-    collectionView.setCollectionViewLayout(layout, animated: false)
-    
-    _dataSource.cellBuilder = { [weak self] (collectionView, indexPath, key) -> UICollectionViewCell? in
-      debugPrint("cellForIndexPathh", indexPath, key)
-      guard
-        let self = self,
-        let termCell = collectionView.dequeueReusableCell(withReuseIdentifier: TermCell.identifier, for: indexPath) as? TermCell
-      else {
-        return nil
-      }
-      
-      
-      termCell.backgroundColor = self.view.backgroundColor
-      let term: TermController = SessionRegistry.shared[key]
-      term.delegate = self
-      self.addChild(term)
-      termCell.term = term
-      term.didMove(toParent: self)
-      
-      return termCell;
+    if let v = _viewportsController.view {
+      v.autoresizingMask = [.flexibleWidth, .flexibleHeight]
+      v.layoutMargins = .zero
+      v.frame = view.bounds
+      view.addSubview(v)
     }
+    
+    _viewportsController.didMove(toParent: self)
+    
+    _overlay.isUserInteractionEnabled = false
+    view.addSubview(_overlay)
     
     _commandsHUD.delegate = self
     _registerForNotifications()
@@ -182,34 +120,20 @@ class SpaceController: UICollectionViewController {
     
     _commandsHUD.delegate = self
     
-    if _dataSource.isEmpty {
-      _dataSource.setInitialData(data: [UUID()])
-      return
+    if _viewportsKeys.isEmpty {
+      _createShell(userActivity: nil, animated: false)
+    } else if let key = _currentKey {
+      let term: TermController = SessionRegistry.shared[key]
+      term.delegate = self
+      term.bgColor = view.backgroundColor ?? .black
+      _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
+        if SmarterTermInput.shared.device == nil {
+          DispatchQueue.main.async {
+            self._attachInputToCurrentTerm()
+          }
+        }
+      }
     }
-  }
-  
-  override func viewWillAppear(_ animated: Bool) {
-    super.viewWillAppear(animated);
-    
-    guard
-      let idx = _dataSource.index(for: _currentKey),
-      let collectionView = collectionView
-    else {
-      return
-    }
-    collectionView.repage(for: view.bounds.size, page: idx, totalPages: _dataSource.count)
-  }
-  
-  public override func scrollViewWillBeginZooming(_ scrollView: UIScrollView, with view: UIView?) {
-    collectionView.isScrollEnabled = false
-  }
-  
-  public override func scrollViewDidEndZooming(_ scrollView: UIScrollView, with view: UIView?, atScale scale: CGFloat) {
-    collectionView.isScrollEnabled = true
-  }
-  
-  override func scrollViewWillBeginDragging(_ scrollView: UIScrollView) {
-    currentTerm()?.termDevice.view?.dropTouches()
   }
   
   let _commandsHUD = CommandsHUGView(frame: .zero)
@@ -220,22 +144,7 @@ class SpaceController: UICollectionViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    _isTransitioning = true
     super.viewWillTransition(to: size, with: coordinator)
-
-    collectionView.panGestureRecognizer.dropTouches()
-    
-    if let scrollView = collectionView {
-      let page = _dataSource.index(for: _currentKey)
-      let totalPages = _dataSource.count
-
-      coordinator.animateAlongsideTransition(in: view, animation: { (t) in
-        scrollView.repage(for: size, page: page, totalPages: totalPages, animated: false)
-      }) { (ctx) in
-        self._isTransitioning = false
-      }
-    }
-    
     if view.window?.isKeyWindow == true {
       DispatchQueue.main.async {
         SmarterTermInput.shared.reloadInputViews()
@@ -288,7 +197,6 @@ class SpaceController: UICollectionViewController {
     }
   }
   
-  
   @objc func _keyboardFuncTriggerChanged(_ notification: NSNotification) {
     guard
       let userInfo = notification.userInfo,
@@ -301,24 +209,33 @@ class SpaceController: UICollectionViewController {
     _setupKBCommands()
   }
   
-  func _createShell(animated: Bool) {
+  func _createShell(
+    userActivity: NSUserActivity?,
+    animated: Bool,
+    completion: ((Bool) -> Void)? = nil)
+  {
+    let term = TermController()
+    term.delegate = self
+    term.userActivity = userActivity
+    term.bgColor = view.backgroundColor ?? .black
     
-    if collectionView.isDragging || collectionView.isDecelerating {
-      return
+    if let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
+      _viewportsKeys.insert(term.meta.key, at: idx)
+    } else {
+      _viewportsKeys.insert(term.meta.key, at: _viewportsKeys.count)
     }
     
-    let term: TermController = SessionRegistry.shared[UUID()]
-    term.delegate = self
+    SessionRegistry.shared.track(session: term)
     
-    _dataSource.insert(items: [term.meta.key], after: _currentKey)
-    
-    let ds = _dataSource
-    
-    if let collectionView = collectionView {
-      _dataSource.apply(collectionView: collectionView) {
-        let page = ds.index(for: term.meta.key)
-        let totalPages = ds.count
-        collectionView.repage(for: collectionView.bounds.size, page: page, totalPages: totalPages, animated: animated)
+    self._currentKey = term.meta.key
+    _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
+      DispatchQueue.main.async {
+        self._displayHUD()
+        self._attachInputToCurrentTerm()
+        if let completion = completion {
+          completion(didComplete)
+        }
       }
     }
   }
@@ -328,33 +245,47 @@ class SpaceController: UICollectionViewController {
     _removeCurrentSpace()
   }
   
-  
   private func _removeCurrentSpace() {
     guard
-      let currentKey = _currentKey
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)
     else {
       return
     }
     currentTerm()?.delegate = nil
     SessionRegistry.shared.remove(forKey: currentKey)
-    _dataSource.delete(items: [currentKey])
-    
-    if _dataSource.isEmpty {
-      _currentKey = nil
-      _dataSource.insert(items: [UUID()], after: nil)
+    _viewportsKeys.remove(at: idx)
+    if _viewportsKeys.isEmpty {
+      _createShell(userActivity: nil, animated: true)
+      return
     }
 
-    _dataSource.apply(collectionView: collectionView)
+    let direction: UIPageViewController.NavigationDirection
+    let term: TermController
+    
+    if idx < _viewportsKeys.endIndex {
+      direction = .forward
+      term = SessionRegistry.shared[_viewportsKeys[idx]]
+    } else {
+      direction = .reverse
+      term = SessionRegistry.shared[_viewportsKeys[idx - 1]]
+    }
+    term.bgColor = view.backgroundColor ?? .black
+    
+    self._currentKey = term.meta.key
+    
+    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
+    }
   }
   
   @objc func _focusOnShell() {
-    if let idx = collectionView.indexPathsForVisibleItems.first,
-      let key = _dataSource.keyFor(indexPath: idx) {
-      _currentKey = key
-    }
     _attachInputToCurrentTerm()
     if !SmarterTermInput.shared.isFirstResponder {
       _ = SmarterTermInput.shared.becomeFirstResponder()
+    } else {
+      SmarterTermInput.shared.refreshInputViews()
     }
   }
   
@@ -385,10 +316,12 @@ class SpaceController: UICollectionViewController {
     let params = term.sessionParams
     
     if let bgColor = term.view.backgroundColor, bgColor != .clear {
+      view.backgroundColor = bgColor
+      _viewportsController.view.backgroundColor = bgColor
       view.window?.backgroundColor = bgColor
     }
     
-    let hud = MBProgressHUD.showAdded(to: view, animated: _hud == nil)
+    let hud = MBProgressHUD.showAdded(to: _overlay, animated: _hud == nil)
     
     hud.mode = .customView
     hud.bezelView.color = .darkGray
@@ -398,15 +331,15 @@ class SpaceController: UICollectionViewController {
     
     let pages = UIPageControl()
     pages.currentPageIndicatorTintColor = .cyan
-    pages.numberOfPages = _dataSource.count
-    let pageNum = _dataSource.uiIndexOf(key: term.meta.key)
+    pages.numberOfPages = _viewportsKeys.count
+    let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound
     
     hud.customView = pages
     
     let title = term.title?.isEmpty == true ? nil : term.title
     
-    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_dataSource.uiData.count)] \(title ?? "blink")"
+    var sceneTitle = "[\(pageNum == nil ? 1 : pageNum! + 1) of \(_viewportsKeys.count)] \(title ?? "blink")"
     
     if params.rows == 0 && params.cols == 0 {
       hud.label.numberOfLines = 1
@@ -429,15 +362,18 @@ class SpaceController: UICollectionViewController {
 
 extension SpaceController: UIStateRestorable {
   func restore(withState state: UIState) {
-    _dataSource.setInitialData(data: state.keys)
+    _viewportsKeys = state.keys
     _currentKey = state.currentKey
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
+    
+//    view.setNeedsLayout()
+//    view.layoutIfNeeded()
   }
   
   func dumpUIState() -> UIState {
-    UIState(keys: _dataSource.uiData,
+    UIState(keys: _viewportsKeys,
             currentKey: _currentKey,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )
@@ -445,14 +381,97 @@ extension SpaceController: UIStateRestorable {
   
   @objc static func onDidDiscardSceneSessions(_ sessions: Set<UISceneSession>) {
     let registry = SessionRegistry.shared
-    for session in sessions {
+    sessions.forEach { session in
       guard
-        let uiState = UIState(userActivity: session.stateRestorationActivity)
+        let uiState = SpaceController.UIState(userActivity: session.stateRestorationActivity)
       else {
-        continue
+        return
       }
       
       uiState.keys.forEach { registry.remove(forKey: $0) }
+    }
+  }
+}
+
+extension SpaceController: UIPageViewControllerDelegate {
+  public func pageViewController(
+    _ pageViewController: UIPageViewController,
+    didFinishAnimating finished: Bool,
+    previousViewControllers: [UIViewController],
+    transitionCompleted completed: Bool) {
+    guard completed else {
+      return
+    }
+    
+    guard let termController = pageViewController.viewControllers?.first as? TermController
+    else {
+      return
+    }
+    _currentKey = termController.meta.key
+    _displayHUD()
+    _attachInputToCurrentTerm()
+  }
+}
+
+extension SpaceController: UIPageViewControllerDataSource {
+  private func _controller(controller: UIViewController, advancedBy: Int) -> UIViewController? {
+    guard let ctrl = controller as? TermController else {
+      return nil
+    }
+    let key = ctrl.meta.key
+    guard
+      let idx = _viewportsKeys.firstIndex(of: key)?.advanced(by: advancedBy),
+      idx >= 0 && idx < _viewportsKeys.endIndex
+    else {
+      return nil
+    }
+    
+    let newKey = _viewportsKeys[idx]
+    let newCtrl: TermController = SessionRegistry.shared[newKey]
+    newCtrl.delegate = self
+    newCtrl.bgColor = view.backgroundColor ?? .black
+    return newCtrl
+  }
+  
+  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
+    _controller(controller: viewController, advancedBy: -1)
+  }
+  
+  public func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
+    _controller(controller: viewController, advancedBy: 1)
+  }
+  
+}
+
+//extension SpaceController: ControlPanelDelegate {
+//  @objc func controlPanelOnClose() {
+//    _closeCurrentSpace()
+//  }
+//
+//  @objc func controlPanelOnPaste() {
+//    _attachInputToCurrentTerm()
+//    SmarterTermInput.shared.yank(self);
+//  }
+//
+//  @objc func currentTerm() -> TermController! {
+//    if let currentKey = _currentKey {
+//      return SessionRegistry.shared[currentKey]
+//    }
+//    return nil
+//  }
+//}
+
+
+extension SpaceController: TermControlDelegate {
+  func terminalHangup(control: TermController) {
+    if currentTerm() == control {
+      _closeCurrentSpace()
+    }
+  }
+  
+  func terminalDidResize(control: TermController) {
+    if currentTerm() == control {
+      _displayHUD()
     }
   }
 }
@@ -522,16 +541,12 @@ extension SpaceController {
   }
   
   @objc func focusOnShellAction() {
-    if collectionView.isDragging || collectionView.isDecelerating {
-      return
-    }
-    
     SmarterTermInput.shared.reset()
     _focusOnShell()
   }
   
   @objc func newShellAction() {
-    _createShell(animated: true)
+    _createShell(userActivity: nil, animated: true)
   }
   
   @objc func closeShellAction() {
@@ -539,24 +554,29 @@ extension SpaceController {
   }
   
   private func _moveToShell(idx: Int) {
-    let viewPorts = _dataSource.uiData
     guard
-      idx >= viewPorts.startIndex,
-      idx < viewPorts.endIndex
+      idx >= _viewportsKeys.startIndex,
+      idx < _viewportsKeys.endIndex,
+      let currentKey = _currentKey,
+      let currentIdx = _viewportsKeys.firstIndex(of: currentKey)
     else {
       return
     }
-    
-    let id = viewPorts[idx]
-    
-    if let path = _dataSource.indexPath(for: id) {
-      collectionView.scrollToItem(at: path, at: .left, animated: true)
+    let key = _viewportsKeys[idx]
+    let term: TermController = SessionRegistry.shared[key]
+    let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
+        
+    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
+      self._currentKey = term.meta.key
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
     }
   }
   
   private func _advanceShell(by: Int) {
     guard
-      let idx = _dataSource.index(for: _currentKey)?.advanced(by: by)
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
     else {
       return
     }
@@ -572,27 +592,26 @@ extension SpaceController {
     _advanceShell(by: -1)
   }
   
-  
   @objc func _focusOtherScreenAction() {
     let app = UIApplication.shared
     let sessions = Array(app.openSessions).filter({$0.scene?.activationState == .foregroundActive})
       .sorted(by: {(a, b) in
-      a.persistentIdentifier < b.persistentIdentifier
-    })
-
+        a.persistentIdentifier < b.persistentIdentifier
+      })
+    
     guard
       sessions.count > 1,
       let session = view.window?.windowScene?.session,
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
-    else  {
-      return
+      else  {
+        return
     }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
       nextSession = sessions[idx]
     } else {
-     nextSession = sessions[0]
+      nextSession = sessions[0]
     }
     
     if
@@ -601,11 +620,11 @@ extension SpaceController {
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
       let spaceCtrl = window.rootViewController as? SpaceController {
-        if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
-          spaceCtrl._focusOnShell()
-        } else {
-          window.makeKeyAndVisible()
-        }
+      if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
+        spaceCtrl._focusOnShell()
+      } else {
+        window.makeKeyAndVisible()
+      }
     } else {
       app.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
     }
@@ -670,60 +689,5 @@ extension SpaceController: CommandsHUDViewDelegate {
   
   @objc func spaceController() -> SpaceController? {
     return self
-  }
-}
-
-extension SpaceController: UICollectionViewDropDelegate {
-  
-  func collectionView(_ collectionView: UICollectionView, dropSessionDidEnter session: UIDropSession) {
-//    collectionView.transform = CGAffineTransform(scaleX: 0.6, y: 0.6)
-//    collectionView.isPagingEnabled = false
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, dropSessionDidExit session: UIDropSession) {
-//    collectionView.transform = CGAffineTransform.identity
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, dropSessionDidEnd session: UIDropSession) {
-//    collectionView.transform = CGAffineTransform.identity
-//    collectionView.isPagingEnabled = true
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, performDropWith coordinator: UICollectionViewDropCoordinator) {
-    
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, canHandle session: UIDropSession) -> Bool {
-    return true
-  }
-  
-  
-  func collectionView(_ collectionView: UICollectionView, dropSessionDidUpdate session: UIDropSession, withDestinationIndexPath destinationIndexPath: IndexPath?) -> UICollectionViewDropProposal {
-//    collectionView.
-    
-    return UICollectionViewDropProposal(operation: .copy, intent: .insertAtDestinationIndexPath)
-  }
-  
-  func collectionView(_ collectionView: UICollectionView, dropPreviewParametersForItemAt indexPath: IndexPath) -> UIDragPreviewParameters? {
-//    let cell = collectionView.cellForItem(at: indexPath) as! TermCell
-    let previewParameters = UIDragPreviewParameters()
-//    previewParameters.visiblePath = UIBezierPath(rect: cell.clippingRectForPhoto)
-    return previewParameters
-  }
-  
-  
-}
-
-extension SpaceController: TermControlDelegate {
-  func terminalHangup(control: TermController) {
-    if currentTerm() == control {
-      _closeCurrentSpace()
-    }
-  }
-
-  func terminalDidResize(control: TermController) {
-    if currentTerm() == control {
-      _displayHUD()
-    }
   }
 }

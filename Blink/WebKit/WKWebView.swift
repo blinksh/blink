@@ -52,7 +52,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 
 @objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
   var view: UIView? = nil
-  private var _wkWebView: WKWebView? = nil
+  private weak var _wkWebView: WKWebView? = nil
   private var _scrollView = UIScrollViewWithoutHitTest()
   private var _jsScrollerPath: String
   private var _2fPanRecognizer = UIPanGestureRecognizer()
@@ -75,22 +75,18 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     return recognizers
   }
   
-  func willMove(to view: UIView?) {
-    if let view = view {
-      _scrollView.frame = view.bounds
-    } else {
-      _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: "wkScroller")
-    }
+  deinit {
+    
   }
   
-  func didMove(to view: UIView?) {
+  func willMove(to view: UIView?) {
     if let webView = view as? WKWebView {
       webView.scrollView.delaysContentTouches = false;
       webView.scrollView.canCancelContentTouches = false;
       webView.scrollView.isScrollEnabled = false;
       webView.scrollView.panGestureRecognizer.isEnabled = false;
       
-      
+      _scrollView.frame = webView.bounds
       webView.addSubview(_scrollView)
       webView.configuration.userContentController.add(self, name: "wkScroller")
       
@@ -101,7 +97,18 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _wkWebView = webView
     } else {
       _scrollView.removeFromSuperview()
+      _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: "wkScroller")
+      
+      for r in allRecognizers {
+        _wkWebView?.addGestureRecognizer(r)
+      }
+      
+      _wkWebView = nil
     }
+  }
+  
+  func didMove(to view: UIView?) {
+    self.view = view
   }
   
   @objc init(jsScrollerPath: String) {
@@ -154,6 +161,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     case .began:
       _scrollView.panGestureRecognizer.dropTouches()
       _2fLongPressRecognizer.dropTouches()
+      recognizer.view?.superview?.dropSuperViewTouches()
       
       _scrollView.isScrollEnabled = false
       _scrollView.showsVerticalScrollIndicator = false
@@ -163,6 +171,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       if abs(dY) < 5 {
         return
       }
+      _scrollView.panGestureRecognizer.dropTouches()
       _1fTapRecognizer.dropTouches()
       _pinchRecognizer.dropTouches()
       _reportedY = point.y
@@ -249,6 +258,8 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     
     let dScale = 1.0 - recognizer.scale;
     if abs(dScale) > 0.05 {
+      recognizer.view?.superview?.dropSuperViewTouches()
+      _scrollView.panGestureRecognizer.dropTouches()
       _2fTapRecognizer.dropTouches()
       _2fPanRecognizer.dropTouches()
       _2fLongPressRecognizer.dropTouches()
@@ -289,8 +300,8 @@ extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
 
 extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
-    let point = scrollView.contentOffset
-    _wkWebView?.evaluateJavaScript("\(_jsScrollerPath).reportScroll(\(point.x), \(point.y));", completionHandler: nil)
+    let offset = scrollView.contentOffset
+    _wkWebView?.evaluateJavaScript("\(_jsScrollerPath).reportScroll(\(offset.x), \(offset.y));", completionHandler: nil)
   }
 }
 
@@ -306,10 +317,10 @@ extension WKWebViewGesturesInteraction: WKScriptMessageHandler {
     switch op {
     case "resize":
       let contentSize = NSCoder.cgSize(for: msg["contentSize"] as? String ?? "")
-      if contentSize == _scrollView.contentSize {
-        return
-      }
       _scrollView.contentSize = contentSize
+      let offset = CGPoint(x: 0, y: max(contentSize.height - _scrollView.bounds.height, 0));
+      _scrollView.contentOffset = offset
+      
     case "scrollTo":
       let animated = msg["animated"] as? Bool == true
       let x: CGFloat = msg["x"] as? CGFloat ?? 0

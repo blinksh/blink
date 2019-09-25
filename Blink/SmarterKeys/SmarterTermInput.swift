@@ -244,9 +244,16 @@ class SmarterTermInput: TermInput {
   
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
-    device?.blur()
-    _kbView.isHidden = true
+    if res {
+      device?.blur()
+      _kbView.isHidden = true
+    }
     return res
+  }
+  
+  override var canResignFirstResponder: Bool {
+//    return !_kbView.traits.isHKBAttached
+    return window?.windowScene?.activationState == .foregroundActive
   }
   
   override func insertText(_ text: String) {
@@ -308,6 +315,7 @@ class SmarterTermInput: TermInput {
   }
   
   func _setupWithKBNotification(notification: NSNotification) {
+    debugPrint(notification)
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
