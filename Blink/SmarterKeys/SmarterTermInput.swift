@@ -315,7 +315,7 @@ class SmarterTermInput: TermInput {
   }
   
   func _setupWithKBNotification(notification: NSNotification) {
-    debugPrint(notification)
+    
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,

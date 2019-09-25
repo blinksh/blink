@@ -495,7 +495,7 @@ extension SpaceController {
   // simple helper
   private func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
     return UIKeyCommand(
-      __title: title,
+      title: title,
       image: nil,
       action: action,
       input: input,
