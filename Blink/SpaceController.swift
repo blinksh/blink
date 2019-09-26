@@ -670,6 +670,10 @@ extension SpaceController {
   }
   
   @objc func _showConfigAction() {
+    if view.window?.windowScene?.session.role == .windowExternalDisplay {
+      return
+    }
+    
     DispatchQueue.main.async {
       let storyboard = UIStoryboard(name: "Settings", bundle: nil)
       let vc = storyboard.instantiateViewController(identifier: "NavSettingsController")

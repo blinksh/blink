@@ -113,8 +113,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   [self _addWebView];
   _coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
-//  [self addSubview:_coverView];
-//  _coverView.backgroundColor = [UIColor redColor];
+  [self addSubview:_coverView];
+  _coverView.backgroundColor = [UIColor blackColor];
   
 
   return self;
@@ -126,7 +126,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
-//  _coverView.backgroundColor = backgroundColor;
+  _coverView.backgroundColor = backgroundColor;
 }
 
 - (void)layoutSubviews {
@@ -361,13 +361,21 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 //    for (id interaction in _webView.subviews.firstObject.subviews.firstObject.interactions) {
 //      [_webView.subviews.firstObject.subviews.firstObject removeInteraction:interaction];
 //    }
+//    dispatch_async(dispatch_get_main_queue(), ^{
     
-    [UIView animateWithDuration:0.5 delay:0 usingSpringWithDamping:0 initialSpringVelocity:0 options:kNilOptions animations:^{
-      _coverView.alpha = 0;
-    } completion:^(BOOL finished) {
+    [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
       [_coverView removeFromSuperview];
       _coverView = nil;
     }];
+//      _coverView.alpha = 1;
+//      [UIView animateWithDuration:0.5 delay:100 usingSpringWithDamping:0 initialSpringVelocity:0 options:kNilOptions animations:^{
+//        _coverView.alpha = 0;
+//      } completion:^(BOOL finished) {
+//        [_coverView removeFromSuperview];
+//        _coverView = nil;
+//      }];
+//    });
+    
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
