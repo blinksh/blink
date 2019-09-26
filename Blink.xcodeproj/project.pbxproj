@@ -141,6 +141,7 @@
 		D239710720A07B9100881637 /* util.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FA20A07B9100881637 /* util.cxx */; };
 		D239710820A07B9100881637 /* windows.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FB20A07B9100881637 /* windows.cxx */; };
 		D239710920A07B9100881637 /* wcwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970FE20A07B9100881637 /* wcwidth.cpp */; };
+		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D0FAD2008DAEB00B33A9F /* TermInput.m in Sources */ = {isa = PBXBuildFile; fileRef = D23D0FAC2008DAEB00B33A9F /* TermInput.m */; };
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
@@ -570,6 +571,7 @@
 		D23970FC20A07B9100881637 /* utfstring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utfstring.hxx; sourceTree = "<group>"; };
 		D23970FD20A07B9100881637 /* conversion.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = conversion.hxx; sourceTree = "<group>"; };
 		D23970FE20A07B9100881637 /* wcwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wcwidth.cpp; sourceTree = "<group>"; };
+		D23A7B24233C934900B3B66D /* UIColor+isLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+isLight.swift"; sourceTree = "<group>"; };
 		D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKXCallBackUrlConfigurationViewController.h; sourceTree = "<group>"; };
 		D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKXCallBackUrlConfigurationViewController.m; sourceTree = "<group>"; };
 		D23D0FAB2008DAEB00B33A9F /* TermInput.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermInput.h; sourceTree = "<group>"; };
@@ -1432,6 +1434,7 @@
 				D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */,
 				D2CB353A23339D5C00088765 /* UIView+Touches.swift */,
 				D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */,
+				D23A7B24233C934900B3B66D /* UIColor+isLight.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -1905,6 +1908,7 @@
 				D296199F214F995D0070935A /* ge25519.c in Sources */,
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
+				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,

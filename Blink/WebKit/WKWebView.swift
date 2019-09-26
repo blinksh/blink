@@ -62,6 +62,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _1fPanRecognizer = UIPanGestureRecognizer()
   private var _pinchRecognizer = UIPinchGestureRecognizer()
   
+  @objc var indicatorStyle: UIScrollView.IndicatorStyle {
+    get { _scrollView.indicatorStyle }
+    set { _scrollView.indicatorStyle = newValue }
+  }
+  
   var allRecognizers:[UIGestureRecognizer] {
     let recognizers = [
       _2fPanRecognizer,
@@ -85,6 +90,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       webView.scrollView.canCancelContentTouches = false;
       webView.scrollView.isScrollEnabled = false;
       webView.scrollView.panGestureRecognizer.isEnabled = false;
+      
       
       _scrollView.frame = webView.bounds
       webView.addSubview(_scrollView)
@@ -291,7 +297,6 @@ extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
   
   func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
     if (_1fPanRecognizer == gestureRecognizer) {
-      debugPrint("shoud begin", _is2fLongPressing)
       return _is2fLongPressing
     }
     return true
