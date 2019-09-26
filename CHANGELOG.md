@@ -1,3 +1,15 @@
+# Version 13.0
+
+* Fixed extanl monitor support
+* 3 finger control panel
+* iPhone 11 models support
+* Dark theme support
+* New Smarter keys
+* Multiple windows support
+* 2 finger mouse wheel terminal reports (tmux, emacs, vim)
+* Native scroll
+* Updated FiraCode 2.0
+
 # Version 12.9
 
 ## Changes in Build 108
