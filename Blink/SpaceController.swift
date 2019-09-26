@@ -40,7 +40,7 @@ public class SpaceController: UIViewController {
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
-    var bgColor:CodableColor? = nil
+    var bgColor: CodableColor? = nil
     
     static var activityType: String { "space.ctrl.ui.state" }
   }
@@ -50,13 +50,13 @@ public class SpaceController: UIViewController {
     navigationOrientation: .horizontal,
     options: [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
-  private lazy var _touchOverlay = TouchOverlay(frame: .zero)
   
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
   
+  private var _overlay = UIView()
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
   
@@ -72,9 +72,9 @@ public class SpaceController: UIViewController {
       var insets = UIEdgeInsets.zero
       insets.bottom = LayoutManager.mainWindowKBBottomInset()
       // TODO: Bottom insets
-      _touchOverlay.frame = view.bounds.inset(by: insets)
+      _overlay.frame = view.bounds.inset(by: insets)
     } else {
-      _touchOverlay.frame = view.bounds
+      _overlay.frame = view.bounds
     }
     
     _commandsHUD.setNeedsLayout()
@@ -111,11 +111,8 @@ public class SpaceController: UIViewController {
     
     _viewportsController.didMove(toParent: self)
     
-    _touchOverlay.frame = view.bounds
-    view.addSubview(_touchOverlay)
-    _touchOverlay.touchDelegate = self
-    _touchOverlay.attach(_viewportsController)
-    
+    _overlay.isUserInteractionEnabled = false
+    view.addSubview(_overlay)
     
     _commandsHUD.delegate = self
     _registerForNotifications()
@@ -134,7 +131,7 @@ public class SpaceController: UIViewController {
           DispatchQueue.main.async {
             self._attachInputToCurrentTerm()
           }
-        }   
+        }
       }
     }
   }
@@ -287,6 +284,8 @@ public class SpaceController: UIViewController {
     _attachInputToCurrentTerm()
     if !SmarterTermInput.shared.isFirstResponder {
       _ = SmarterTermInput.shared.becomeFirstResponder()
+    } else {
+      SmarterTermInput.shared.refreshInputViews()
     }
   }
   
@@ -322,7 +321,7 @@ public class SpaceController: UIViewController {
       view.window?.backgroundColor = bgColor
     }
     
-    let hud = MBProgressHUD.showAdded(to: _touchOverlay, animated: _hud == nil)
+    let hud = MBProgressHUD.showAdded(to: _overlay, animated: _hud == nil)
     
     hud.mode = .customView
     hud.bezelView.color = .darkGray
@@ -429,6 +428,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     
     let newKey = _viewportsKeys[idx]
     let newCtrl: TermController = SessionRegistry.shared[newKey]
+    newCtrl.delegate = self
     newCtrl.bgColor = view.backgroundColor ?? .black
     return newCtrl
   }
@@ -461,25 +461,6 @@ extension SpaceController: UIPageViewControllerDataSource {
 //  }
 //}
 
-extension SpaceController: TouchOverlayDelegate {
-  public func touchOverlay(_ overlay: TouchOverlay!, onOneFingerTap recognizer: UITapGestureRecognizer!) {
-    guard let term = currentTerm() else {
-      return
-    }
-    SmarterTermInput.shared.reset()
-    let point = recognizer.location(in: term.view)
-    _focusOnShell()
-    term.termDevice.view.reportTouch(in: point)
-  }
-  
-  public func touchOverlay(_ overlay: TouchOverlay!, onTwoFingerTap recognizer: UITapGestureRecognizer!) {
-    _createShell(userActivity: nil, animated: true)
-  }
-  
-  public func touchOverlay(_ overlay: TouchOverlay!, onPinch recognizer: UIPinchGestureRecognizer!) {
-    currentTerm()?.scaleWithPich(recognizer)
-  }
-}
 
 extension SpaceController: TermControlDelegate {
   func terminalHangup(control: TermController) {
@@ -514,7 +495,7 @@ extension SpaceController {
   // simple helper
   private func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
     return UIKeyCommand(
-      __title: title,
+      title: title,
       image: nil,
       action: action,
       input: input,
@@ -557,6 +538,11 @@ extension SpaceController {
       // Misc
       _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
     ]
+  }
+  
+  @objc func focusOnShellAction() {
+    SmarterTermInput.shared.reset()
+    _focusOnShell()
   }
   
   @objc func newShellAction() {
@@ -606,27 +592,26 @@ extension SpaceController {
     _advanceShell(by: -1)
   }
   
-  
   @objc func _focusOtherScreenAction() {
     let app = UIApplication.shared
-    let sessions = Array(app.openSessions)
+    let sessions = Array(app.openSessions).filter({$0.scene?.activationState == .foregroundActive})
       .sorted(by: {(a, b) in
-      a.persistentIdentifier > b.persistentIdentifier
-    })
-//    view.window?.windowScene?.session.persistentIdentifier
+        a.persistentIdentifier < b.persistentIdentifier
+      })
+    
     guard
       sessions.count > 1,
       let session = view.window?.windowScene?.session,
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
-    else  {
-      return
+      else  {
+        return
     }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
       nextSession = sessions[idx]
     } else {
-     nextSession = sessions[0]
+      nextSession = sessions[0]
     }
     
     if
@@ -635,11 +620,11 @@ extension SpaceController {
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
       let spaceCtrl = window.rootViewController as? SpaceController {
-        if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
-          spaceCtrl._focusOnShell()
-        } else {
-          window.makeKeyAndVisible()
-        }
+      if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
+        spaceCtrl._focusOnShell()
+      } else {
+        window.makeKeyAndVisible()
+      }
     } else {
       app.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
     }
@@ -685,6 +670,10 @@ extension SpaceController {
   }
   
   @objc func _showConfigAction() {
+    if view.window?.windowScene?.session.role == .windowExternalDisplay {
+      return
+    }
+    
     DispatchQueue.main.async {
       let storyboard = UIStoryboard(name: "Settings", bundle: nil)
       let vc = storyboard.instantiateViewController(identifier: "NavSettingsController")

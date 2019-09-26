@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,23 +29,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
-@class TouchOverlay;
+import UIKit
 
-@protocol TouchOverlayDelegate
+extension UIScrollView {
 
-- (void)touchOverlay:(TouchOverlay *)overlay onOneFingerTap:(UITapGestureRecognizer *)recognizer;
-- (void)touchOverlay:(TouchOverlay *)overlay onTwoFingerTap:(UITapGestureRecognizer *)recognizer;
-- (void)touchOverlay:(TouchOverlay *)overlay onPinch:(UIPinchGestureRecognizer *)recognizer;
-
-@end
-
-@interface TouchOverlay : UIScrollView
-
-@property (weak) id<TouchOverlayDelegate> touchDelegate;
-@property (readonly) UITapGestureRecognizer *oneFingerTapGestureRecognizer;
-
-- (void)attachPageViewController:(UIPageViewController *)ctrl;
-
-@end
+  func repage(for newSize: CGSize, page: Int?, totalPages: Int, animated: Bool = false) {
+    self.frame = CGRect(origin: .zero, size: newSize)
+    self.contentSize = CGSize(width: (newSize.width) * CGFloat(totalPages), height: newSize.height)
+    let offset = CGPoint(x: CGFloat(page ?? 0) * (newSize.width), y: 0)
+    if animated {
+      self.setContentOffset(offset, animated: animated)
+    } else {
+      self.contentOffset = offset
+    }
+  }
+}

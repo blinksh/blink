@@ -80,12 +80,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 @end
 
-
 @interface TermView () <WKScriptMessageHandler>
 @end
 
 @implementation TermView {
   WKWebView *_webView;
+  WKWebViewGesturesInteraction *_gestureInteraction;
   
   BOOL _focused;
   BOOL _jsIsBusy;
@@ -94,6 +94,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   CGRect _currentBounds;
   UIEdgeInsets _currentAdditionalInsets;
   NSTimer *_layoutDebounceTimer;
+  
+  UIView *_coverView;
 }
 
 
@@ -111,19 +113,28 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _jsBuffer = [[NSMutableString alloc] init];
 
   [self _addWebView];
-  self.opaque = YES;
-  _webView.opaque = NO;
+  _coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
+  [self addSubview:_coverView];
+  _coverView.backgroundColor = [UIColor blackColor];
+  
 
   return self;
 }
 
 - (void)setBackgroundColor:(UIColor *)backgroundColor {
+  if (!backgroundColor) {
+    return;
+  }
   [super setBackgroundColor:backgroundColor];
   _webView.backgroundColor = backgroundColor;
+  _coverView.backgroundColor = backgroundColor;
 }
 
 - (void)layoutSubviews {
   [super layoutSubviews];
+  
+  _coverView.frame = self.bounds;
+  [self bringSubviewToFront:_coverView];
   
   [_layoutDebounceTimer invalidate];
   
@@ -137,7 +148,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   
   __weak typeof(self) weakSelf = self;
-  _layoutDebounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
+  _layoutDebounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.2 repeats:NO block:^(NSTimer * _Nonnull timer) {
     [weakSelf _actualLayoutSubviews];
   }];
 }
@@ -147,6 +158,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   if (!CGRectEqualToRect(_webView.frame, webViewFrame)) {
     _webView.frame = webViewFrame;
+//    _scroller.frame = webViewFrame;
   }
 
   _currentBounds = self.bounds;
@@ -177,13 +189,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
-  _webView.scrollView.delaysContentTouches = NO;
-  _webView.scrollView.canCancelContentTouches = NO;
-  _webView.scrollView.scrollEnabled = NO;
-  _webView.scrollView.panGestureRecognizer.enabled = NO;
+   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
+  [_webView addInteraction:_gestureInteraction];
   
   [self addSubview:_webView];
-  [self setNeedsLayout];
 }
 
 - (NSString *)title {
@@ -350,6 +359,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewWinSizeChanged:__winSizeFromJSON(data)];
   } else if ([operation isEqualToString:@"terminalReady"]) {
     [self _onTerminalReady:data];
+//    for (id interaction in _webView.subviews.firstObject.subviews.firstObject.interactions) {
+//      [_webView.subviews.firstObject.subviews.firstObject removeInteraction:interaction];
+//    }
+//    dispatch_async(dispatch_get_main_queue(), ^{
+    
+    [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
+      [_coverView removeFromSuperview];
+      _coverView = nil;
+    }];
+    
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
@@ -365,15 +384,17 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   NSArray *bgColor = data[@"bgColor"];
   if (bgColor && bgColor.count == 3) {
-    self.backgroundColor = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
+    UIColor *color = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
                                            green:[bgColor[1] floatValue] / 255.0f
                                             blue:[bgColor[2] floatValue] / 255.0f
                                            alpha:1];
+    self.backgroundColor = color;
+    _gestureInteraction.indicatorStyle = color.isLight ? UIScrollViewIndicatorStyleBlack : UIScrollViewIndicatorStyleWhite;
+  } else {
+    _gestureInteraction.indicatorStyle = UIScrollViewIndicatorStyleDefault;
   }
   
   [_device viewWinSizeChanged:__winSizeFromJSON(data[@"size"])];
-  
-  self.alpha = 1;
 
   _isReady = YES;
   [_device viewIsReady];
@@ -607,6 +628,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)dealloc {
   [self terminate];
+  [_webView removeInteraction:_gestureInteraction];
+  _gestureInteraction = nil;
   [_layoutDebounceTimer invalidate];
   _layoutDebounceTimer = nil;
 }

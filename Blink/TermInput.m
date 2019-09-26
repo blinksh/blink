@@ -754,6 +754,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
+  if (self.window.windowScene.activationState != UISceneActivationStateForegroundActive ) {
+    return NO;
+  }
+  
   if ([sender isKindOfClass:[UIMenuController class]]) {
     TermView *deviceView = _device.view;
     // The menu can only perform paste methods

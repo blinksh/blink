@@ -30,16 +30,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import UIKit
 
-#import "BKDefaults.h"
-#import "LayoutManager.h"
-#import "BKTouchIDAuthManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "TermInput.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-
-#endif /* Blink_bridge_h */
+extension UIColor {
+  @objc var isLight: Bool {
+    var white: CGFloat = 0
+    getWhite(&white, alpha: nil)
+    return white > 0.5
+  }
+}

@@ -55,7 +55,7 @@ NSTimer *__debounceTimer = nil;
   __mainWindowKBBottomInset = bottomInset;
   [__debounceTimer invalidate];
   
-  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.3 repeats:NO block:^(NSTimer * _Nonnull timer) {
+  __debounceTimer = [NSTimer scheduledTimerWithTimeInterval:0.6 repeats:NO block:^(NSTimer * _Nonnull timer) {
     [NSNotificationCenter.defaultCenter postNotificationName:LayoutManagerBottomInsetDidUpdate object:nil];
   }];
 }

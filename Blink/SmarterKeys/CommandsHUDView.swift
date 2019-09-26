@@ -214,7 +214,7 @@ class CommandsHUGView: UIView {
     
     let origin = CGPoint(
       x: 0,
-      y: supView.bounds.height - LayoutManager.mainWindowKBBottomInset() - size.height - 24
+      y: supView.bounds.height - LayoutManager.mainWindowKBBottomInset() - size.height - 31
     )
     
     let f = CGRect(origin: origin, size: size)

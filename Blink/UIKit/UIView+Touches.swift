@@ -30,16 +30,31 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import UIKit
 
-#import "BKDefaults.h"
-#import "LayoutManager.h"
-#import "BKTouchIDAuthManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "TermInput.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-
-#endif /* Blink_bridge_h */
+extension UIView {
+  func dropSuperViewTouches() {
+    if let superview = superview,
+      let window = window,
+      superview != window {
+      if let recognizers = gestureRecognizers {
+        for r in recognizers {
+          r.dropTouches()
+        }
+      }
+      superview.dropSuperViewTouches()
+    }
+  }
+  
+  func dropTouches() {
+    if let recognizers = gestureRecognizers {
+      for r in recognizers {
+        r.dropTouches()
+      }
+    }
+    
+    for view in subviews {
+      view.dropTouches()
+    }
+  }
+}

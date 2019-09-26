@@ -86,6 +86,14 @@ class TermController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    if !coordinator.isAnimated {
+      return
+    }
+
+    super.viewWillTransition(to: size, with: coordinator)
+  }
+  
   public override func loadView() {
     super.loadView()
     _termDevice.delegate = self
@@ -159,12 +167,6 @@ class TermController: UIViewController {
     return _session?.isRunningCmd() ?? false
   }
   
-  @objc public func canRestoreUserActivityState(
-    _ activity: NSUserActivity) -> Bool
-  {
-    return _session?.isRunningCmd() == false || activity.title == activityKey
-  }
-  
   @objc public func scaleWithPich(_ pinch: UIPinchGestureRecognizer) {
     switch pinch.state {
     case .began: fallthrough
@@ -187,10 +189,6 @@ class TermController: UIViewController {
     NotificationCenter.default.removeObserver(self)
     _session?.delegate = nil
     _session = nil
-//    _termDevice.attachView(nil)
-//    _session?.device = nil
-//    _session?.stream = nil
-//    _session = nil
   }
   
 }
