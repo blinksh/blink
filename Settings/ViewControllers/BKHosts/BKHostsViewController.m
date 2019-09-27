@@ -69,13 +69,13 @@
 
   if (pk.iCloudConflictDetected == [NSNumber numberWithBool:YES]) {
     if ((pk.iCloudConflictDetected.boolValue && pk.iCloudConflictCopy)) {
-      cell.textLabel.textColor = [UIColor redColor];
+      cell.textLabel.textColor = [UIColor systemRedColor];
     } else {
-      cell.textLabel.textColor = [UIColor blackColor];
+      cell.textLabel.textColor = [UIColor labelColor];
       [BKHosts markHost:pk.host forRecord:[BKHosts recordFromHost:pk] withConflict:NO];
     }
   } else {
-    cell.textLabel.textColor = [UIColor blackColor];
+    cell.textLabel.textColor = [UIColor labelColor];
   }
   // Configure the cell...
   cell.textLabel.text = pk.host;
