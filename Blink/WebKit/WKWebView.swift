@@ -48,6 +48,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
  
  - 1 finger tap - reports click
  - 2 finger pan - reports mouse wheel
+ - 3 pinch - zoom
  */
 
 @objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
@@ -56,10 +57,8 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _scrollView = UIScrollViewWithoutHitTest()
   private var _jsScrollerPath: String
   private var _2fPanRecognizer = UIPanGestureRecognizer()
-  private var _2fLongPressRecognizer = UILongPressGestureRecognizer()
   private var _1fTapRecognizer = UITapGestureRecognizer()
   private var _2fTapRecognizer = UITapGestureRecognizer()
-  private var _1fPanRecognizer = UIPanGestureRecognizer()
   private var _pinchRecognizer = UIPinchGestureRecognizer()
   private var _3fTapRecognizer = UITapGestureRecognizer()
   
@@ -72,8 +71,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let recognizers = [
       _2fPanRecognizer,
       _1fTapRecognizer,
-//      _2fLongPressRecognizer,
-//      _1fPanRecognizer,
       _2fTapRecognizer,
       _3fTapRecognizer,
       _pinchRecognizer,
@@ -150,15 +147,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fTapRecognizer.delegate = self
     _2fTapRecognizer.addTarget(self, action: #selector(_on2fTap(_:)))
     
-    _1fPanRecognizer.minimumNumberOfTouches = 1
-    _1fPanRecognizer.maximumNumberOfTouches = 3
-    _1fPanRecognizer.delegate = self
-    _1fPanRecognizer.addTarget(self, action: #selector(_on1fPan(_:)))
-    
-    _2fLongPressRecognizer.numberOfTouchesRequired = 2
-    _2fLongPressRecognizer.numberOfTapsRequired = 0
-    _2fLongPressRecognizer.delegate = self
-    _2fLongPressRecognizer.addTarget(self, action: #selector(_on2fLongPress(_:)))
     
     
     
@@ -174,7 +162,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     switch recognizer.state {
     case .began:
       _scrollView.panGestureRecognizer.dropTouches()
-      _2fLongPressRecognizer.dropTouches()
       recognizer.view?.superview?.dropSuperViewTouches()
       
       _scrollView.isScrollEnabled = false
@@ -276,7 +263,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _scrollView.panGestureRecognizer.dropTouches()
       _2fTapRecognizer.dropTouches()
       _2fPanRecognizer.dropTouches()
-      _2fLongPressRecognizer.dropTouches()
        
       if let target = _wkWebView?.target(forAction: #selector(scaleWithPich(_:)), withSender: recognizer) as? UIResponder {
         target.perform(#selector(scaleWithPich(_:)), with: recognizer)
@@ -300,13 +286,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 
 extension WKWebViewGesturesInteraction: UIGestureRecognizerDelegate {
   func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldRecognizeSimultaneouslyWith otherGestureRecognizer: UIGestureRecognizer) -> Bool {
-    return true
-  }
-  
-  func gestureRecognizerShouldBegin(_ gestureRecognizer: UIGestureRecognizer) -> Bool {
-    if (_1fPanRecognizer == gestureRecognizer) {
-      return _is2fLongPressing
-    }
     return true
   }
 }
