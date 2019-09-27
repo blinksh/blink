@@ -54,13 +54,14 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 @objc class WKWebViewGesturesInteraction: NSObject, UIInteraction {
   var view: UIView? = nil
   private weak var _wkWebView: WKWebView? = nil
-  private var _scrollView = UIScrollViewWithoutHitTest()
-  private var _jsScrollerPath: String
-  private var _2fPanRecognizer = UIPanGestureRecognizer()
-  private var _1fTapRecognizer = UITapGestureRecognizer()
-  private var _2fTapRecognizer = UITapGestureRecognizer()
-  private var _pinchRecognizer = UIPinchGestureRecognizer()
-  private var _3fTapRecognizer = UITapGestureRecognizer()
+  private let _scrollView = UIScrollViewWithoutHitTest()
+  private let _jsScrollerPath: String
+  private let _2fPanRecognizer = UIPanGestureRecognizer()
+  private let _1fTapRecognizer = UITapGestureRecognizer()
+  private let _2fTapRecognizer = UITapGestureRecognizer()
+  private let _pinchRecognizer = UIPinchGestureRecognizer()
+  private let _3fTapRecognizer = UITapGestureRecognizer()
+  private let _longPressRecognizer = UILongPressGestureRecognizer()
   
   @objc var indicatorStyle: UIScrollView.IndicatorStyle {
     get { _scrollView.indicatorStyle }
@@ -74,6 +75,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _2fTapRecognizer,
       _3fTapRecognizer,
       _pinchRecognizer,
+      _longPressRecognizer,
       _scrollView.panGestureRecognizer
     ]
     return recognizers
@@ -136,11 +138,14 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _3fTapRecognizer.numberOfTouchesRequired = 3
     _3fTapRecognizer.delegate = self
     
+    _longPressRecognizer.delegate = self
+    
     _1fTapRecognizer.numberOfTapsRequired = 1
     _1fTapRecognizer.numberOfTouchesRequired = 1
     _1fTapRecognizer.delegate = self
     _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
     _1fTapRecognizer.require(toFail: _3fTapRecognizer)
+    _1fTapRecognizer.require(toFail: _longPressRecognizer)
     
     _2fTapRecognizer.numberOfTapsRequired = 1
     _2fTapRecognizer.numberOfTouchesRequired = 2
