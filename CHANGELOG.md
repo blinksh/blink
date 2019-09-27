@@ -1,5 +1,12 @@
 # Version 13.0
 
+## Changes in Build 138
+
+* Fixed dark theme for hosts
+* Fixed selection
+* Autorepeat for arrow keys, esc, tab on software kb
+* Updated help for new gestures
+
 * Fixed extanl monitor support
 * 3 finger control panel
 * iPhone 11 models support
