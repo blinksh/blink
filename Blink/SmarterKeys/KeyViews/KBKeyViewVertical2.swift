@@ -149,7 +149,7 @@ class KBKeyViewVertical2: KBKeyView {
     _progress = dy / completeDY
     
     if _progress > 0.15 {
-      keyDelegate.keyViewAskedToCancecScroll(keyView: self)
+      keyDelegate.keyViewAskedToCancelScroll(keyView: self)
     }
 
     CATransaction.begin()

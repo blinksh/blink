@@ -41,6 +41,11 @@ class KBView: UIView {
   private let _scrollViewRightBorder = UIView()
   private let _indicatorLeft = UIView()
   private let _indicatorRight = UIView()
+  private var _timer: Timer? = nil
+  private var _repeatingKeyView: KBKeyView? = nil
+  
+  var repeatingSequence: String? = nil
+  
   var safeBarWidth: CGFloat = 0
   var kbDevice: KBDevice = .detect() {
     didSet {
@@ -272,6 +277,36 @@ class KBView: UIView {
     }
     _untrackedModifiersSet = _onModifiersSet
   }
+  
+  func _startTimer(with view: KBKeyView) {
+    _repeatingKeyView = view
+    _timer?.invalidate()
+    keyViewTriggered(keyView: view, value: view.currentValue)
+    weak var weakSelf = self
+    _timer = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
+      weakSelf?._continueTimer(interval: 0.1)
+    }
+  }
+  
+  func _continueTimer(interval: TimeInterval) {
+    let repeatingKeyView = _repeatingKeyView
+    _timer?.invalidate()
+    _timer = Timer.scheduledTimer(withTimeInterval: interval, repeats: true) { _ in
+      guard let view = repeatingKeyView
+      else {
+        return
+      }
+      
+      view.key.sound.playIfPossible()
+      view.keyDelegate.keyViewTriggered(keyView: view, value: view.currentValue)
+    }
+  }
+  
+  func stopRepeats() {
+    _timer?.invalidate()
+    _timer = nil
+    _repeatingKeyView = nil
+  }
 }
 
 extension KBView: UIScrollViewDelegate {
@@ -281,20 +316,28 @@ extension KBView: UIScrollViewDelegate {
 }
 
 extension KBView: KBKeyViewDelegate {
-  func keyViewAskedToCancecScroll(keyView: KBKeyView) {
+  
+  func keyViewAskedToCancelScroll(keyView: KBKeyView) {
     _scrollView.panGestureRecognizer.dropTouches()
   }
   
   func keyViewOn(keyView: KBKeyView, value: KBKeyValue) {
+    stopRepeats()
+    
     _toggleModifier(kbKeyValue: value, value: true)
     if value.isModifier {
       _onModifiersSet.insert(keyView)
     }
+    if (keyView.shouldAutoRepeat) {
+      _startTimer(with: keyView)
+    }
   }
+  
   
   func keyViewOff(keyView: KBKeyView, value: KBKeyValue) {
     _toggleModifier(kbKeyValue: value, value: false)
     _onModifiersSet.remove(keyView)
+    stopRepeats()
   }
   
   func keyViewCanGoOff(keyView: KBKeyView, value: KBKeyValue) -> Bool {
@@ -329,9 +372,14 @@ extension KBView: KBKeyViewDelegate {
     if value.isModifier {
       return
     }
+    if keyView !== _repeatingKeyView {
+      stopRepeats()
+    }
 
     if let sequence = value.sequence {
+      repeatingSequence = sequence
       keyInput?.insertText(sequence)
+      repeatingSequence = nil
     }
     
     turnOffUntracked()
@@ -340,6 +388,9 @@ extension KBView: KBKeyViewDelegate {
   func keyViewCancelled(keyView: KBKeyView) {
     _untrackedModifiersSet.remove(keyView)
     _onModifiersSet.remove(keyView)
+    if keyView === _repeatingKeyView {
+      stopRepeats()
+    }
   }
   
   func keyViewTouchesBegin(keyView: KBKeyView, touches: Set<UITouch>) {

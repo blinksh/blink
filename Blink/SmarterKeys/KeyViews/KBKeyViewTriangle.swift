@@ -175,7 +175,7 @@ class KBKeyViewTriangle: KBKeyView {
     
     debugPrint(_progressV)
     if _progressV > 0.03 {
-      keyDelegate.keyViewAskedToCancecScroll(keyView: self)
+      keyDelegate.keyViewAskedToCancelScroll(keyView: self)
     }
 
     CATransaction.begin()

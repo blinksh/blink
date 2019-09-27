@@ -70,10 +70,6 @@ class KBKeyViewSymbol: KBKeyView {
       self.backgroundColor = .white
       _imageView.tintColor = UIColor.darkText
     }
-    
-    if key.shape.primaryValue == .esc {
-      keyDelegate.keyViewTriggered(keyView: self, value: key.shape.primaryValue)
-    }
   }
   
   override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -91,10 +87,18 @@ class KBKeyViewSymbol: KBKeyView {
       return
     }
     
-    if key.shape.primaryValue != .esc {
+    if !shouldAutoRepeat {
       keyDelegate.keyViewTriggered(keyView: self, value: key.shape.primaryValue)
     }
     super.touchesEnded(touches, with: event)
+  }
+  
+  override var shouldAutoRepeat: Bool {
+    switch key.shape.primaryValue {
+    case .esc, .left, .right, .up, .down, .tab:
+      return true
+    default: return super.shouldAutoRepeat
+    }
   }
   
   override func turnOff() {

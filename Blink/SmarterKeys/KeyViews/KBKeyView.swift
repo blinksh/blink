@@ -32,7 +32,7 @@
 import UIKit
 
 protocol KBKeyViewDelegate: class {
-  func keyViewAskedToCancecScroll(keyView: KBKeyView)
+  func keyViewAskedToCancelScroll(keyView: KBKeyView)
   
   func keyViewOn(keyView: KBKeyView, value: KBKeyValue)
   func keyViewOff(keyView: KBKeyView, value: KBKeyValue)
@@ -47,6 +47,9 @@ protocol KBKeyViewDelegate: class {
 class KBKeyView: UIView {
   let key: KBKey
   private(set) var trackingTouch: UITouch? = nil
+  
+  open var shouldAutoRepeat: Bool { false }
+  
   var isTracking: Bool {
     if let touch = trackingTouch {
       return touch.phase != .ended && touch.phase != .cancelled

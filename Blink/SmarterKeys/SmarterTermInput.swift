@@ -257,6 +257,10 @@ class SmarterTermInput: TermInput {
   }
   
   override func insertText(_ text: String) {
+    if text != _kbView.repeatingSequence {
+      _kbView.stopRepeats()
+    }
+    
     let traits = _kbView.traits
     if traits.contains(.cmdOn) && text.count == 1 {
       var flags = traits.modifierFlags
