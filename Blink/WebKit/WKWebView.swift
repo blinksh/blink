@@ -61,6 +61,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private var _2fTapRecognizer = UITapGestureRecognizer()
   private var _1fPanRecognizer = UIPanGestureRecognizer()
   private var _pinchRecognizer = UIPinchGestureRecognizer()
+  private var _3fTapRecognizer = UITapGestureRecognizer()
   
   @objc var indicatorStyle: UIScrollView.IndicatorStyle {
     get { _scrollView.indicatorStyle }
@@ -74,6 +75,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
 //      _2fLongPressRecognizer,
 //      _1fPanRecognizer,
       _2fTapRecognizer,
+      _3fTapRecognizer,
       _pinchRecognizer,
       _scrollView.panGestureRecognizer
     ]
@@ -133,10 +135,15 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fPanRecognizer.delegate = self
     _2fPanRecognizer.addTarget(self, action: #selector(_on2fPan(_:)))
     
+    _3fTapRecognizer.numberOfTapsRequired = 1
+    _3fTapRecognizer.numberOfTouchesRequired = 3
+    _3fTapRecognizer.delegate = self
+    
     _1fTapRecognizer.numberOfTapsRequired = 1
     _1fTapRecognizer.numberOfTouchesRequired = 1
     _1fTapRecognizer.delegate = self
     _1fTapRecognizer.addTarget(self, action: #selector(_on1fTap(_:)))
+    _1fTapRecognizer.require(toFail: _3fTapRecognizer)
     
     _2fTapRecognizer.numberOfTapsRequired = 1
     _2fTapRecognizer.numberOfTouchesRequired = 2
@@ -152,6 +159,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fLongPressRecognizer.numberOfTapsRequired = 0
     _2fLongPressRecognizer.delegate = self
     _2fLongPressRecognizer.addTarget(self, action: #selector(_on2fLongPress(_:)))
+    
     
     
     _pinchRecognizer.delegate = self
