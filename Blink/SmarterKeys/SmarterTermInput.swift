@@ -252,9 +252,10 @@ class SmarterTermInput: TermInput {
   }
   
   override var canResignFirstResponder: Bool {
+    return true
 //    return !_kbView.traits.isHKBAttached
-    let state = window?.windowScene?.activationState
-    return state == .foregroundActive || state == .foregroundInactive
+//    let state = window?.windowScene?.activationState
+//    return state == .foregroundActive || state == .foregroundInactive
   }
   
   override func insertText(_ text: String) {
