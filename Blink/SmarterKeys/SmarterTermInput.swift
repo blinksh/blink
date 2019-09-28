@@ -253,10 +253,15 @@ class SmarterTermInput: TermInput {
   
   override var canResignFirstResponder: Bool {
 //    return !_kbView.traits.isHKBAttached
-    return window?.windowScene?.activationState == .foregroundActive
+    let state = window?.windowScene?.activationState
+    return state == .foregroundActive || state == .foregroundInactive
   }
   
   override func insertText(_ text: String) {
+    defer {
+      _kbView.turnOffUntracked()
+    }
+    
     if text != _kbView.repeatingSequence {
       _kbView.stopRepeats()
     }
@@ -282,7 +287,6 @@ class SmarterTermInput: TermInput {
         default: super.insertText(text);
         }
       }
-      _kbView.turnOffUntracked()
     } else if traits.contains([.altOn, .ctrlOn]) {
       escCtrlSeq(withInput:text)
     } else if traits.contains(.altOn) {
@@ -330,8 +334,15 @@ class SmarterTermInput: TermInput {
     }
     
     var traits       = _kbView.traits
+    let mainScreen   = UIScreen.main
+    let screenHeight = mainScreen.bounds.height
     let isIPad       = traitCollection.userInterfaceIdiom == .pad
-    let isOnScreenKB = kbFrameEnd.size.height > 140
+    var isOnScreenKB = kbFrameEnd.size.height > 140
+    // External screen kb workaround
+    if isOnScreenKB && isIPad && device.view?.window?.screen !== mainScreen {
+       isOnScreenKB = kbFrameEnd.origin.y < screenHeight - 140
+    }
+    
     let isFloatingKB = isIPad && kbFrameEnd.origin.x > 0 && kbFrameEnd.origin.y > 0
     
     defer {

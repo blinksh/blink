@@ -175,25 +175,27 @@ public class SpaceController: UIViewController {
   }
   
   @objc func _didBecomeKeyWindow() {
-    guard let window = view.window else {
+    guard
+      let window = view.window,
+      window.isKeyWindow
+    else {
       currentDevice?.blur()
       return
     }
     
-    if window.isKeyWindow {
-      if SmarterTermInput.shared.superview !== self.view
-        && window.screen === UIScreen.main {
-          view.addSubview(SmarterTermInput.shared)
-        }
-      _focusOnShell()
-      DispatchQueue.main.async {
-        if let win = self.view.window?.windowScene?.windows.last, win !== self.view.window,
-          self._commandsHUD.superview == nil {
-          self._commandsHUD.attachToWindow(inputWindow: win)
-        }
+    if SmarterTermInput.shared.superview !== view,
+      window.screen === UIScreen.main {
+      view.addSubview(SmarterTermInput.shared)
+    }
+    _focusOnShell()
+    DispatchQueue.main.async {
+      if let win = self.view.window?.windowScene?.windows.last,
+        win !== self.view.window,
+        win.screen === UIScreen.main,
+        self._commandsHUD.superview == nil
+      {
+        self._commandsHUD.attachToWindow(inputWindow: win)
       }
-    } else {
-      currentDevice?.blur()
     }
   }
   
@@ -282,10 +284,15 @@ public class SpaceController: UIViewController {
   
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
-    if !SmarterTermInput.shared.isFirstResponder {
-      _ = SmarterTermInput.shared.becomeFirstResponder()
+    let input = SmarterTermInput.shared
+    if !input.isFirstResponder {
+      _ = input.becomeFirstResponder()
     } else {
-      SmarterTermInput.shared.refreshInputViews()
+      input.refreshInputViews()
+    }
+    // We should make input window key window
+    if input.window?.isKeyWindow == false {
+      input.window?.makeKeyAndVisible()
     }
   }
   
@@ -443,25 +450,6 @@ extension SpaceController: UIPageViewControllerDataSource {
   
 }
 
-//extension SpaceController: ControlPanelDelegate {
-//  @objc func controlPanelOnClose() {
-//    _closeCurrentSpace()
-//  }
-//
-//  @objc func controlPanelOnPaste() {
-//    _attachInputToCurrentTerm()
-//    SmarterTermInput.shared.yank(self);
-//  }
-//
-//  @objc func currentTerm() -> TermController! {
-//    if let currentKey = _currentKey {
-//      return SessionRegistry.shared[currentKey]
-//    }
-//    return nil
-//  }
-//}
-
-
 extension SpaceController: TermControlDelegate {
   func terminalHangup(control: TermController) {
     if currentTerm() == control {
@@ -594,17 +582,17 @@ extension SpaceController {
   
   @objc func _focusOtherScreenAction() {
     let app = UIApplication.shared
-    let sessions = Array(app.openSessions).filter({$0.scene?.activationState == .foregroundActive})
-      .sorted(by: {(a, b) in
-        a.persistentIdentifier < b.persistentIdentifier
-      })
+    let sessions = Array(app.openSessions)
+      .filter({ $0.scene?.activationState == .foregroundActive || $0.scene?.activationState == .foregroundInactive })
+      .sorted(by: { $0.persistentIdentifier < $1.persistentIdentifier })
     
     guard
       sessions.count > 1,
       let session = view.window?.windowScene?.session,
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
-      else  {
-        return
+    else  {
+      _ = SmarterTermInput.shared.resignFirstResponder()
+      return
     }
     
     let nextSession: UISceneSession

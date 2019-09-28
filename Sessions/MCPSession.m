@@ -266,16 +266,19 @@
     return [_childSession handleControl:control];
   }
   
-  if (_currentCmd && ([control isEqualToString:@"c"] || [control isEqualToString:@"d"])) {
-    if ([_device rawMode]) {
-      return NO;
-    }
-    if (_sshClients.count > 0) {
-      for (WeakSSHClient *client in _sshClients) {
-        [client.value kill];
+  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+    if (_currentCmd) {
+      if ([_device rawMode]) {
+        return NO;
       }
-    } else {
-      ios_kill();
+      if (_sshClients.count > 0) {
+        for (WeakSSHClient *client in _sshClients) {
+          [client.value kill];
+        }
+      } else {
+        ios_kill();
+      }
+      return YES;
     }
     return YES;
   }
