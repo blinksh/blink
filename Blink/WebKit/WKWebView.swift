@@ -151,9 +151,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fTapRecognizer.numberOfTouchesRequired = 2
     _2fTapRecognizer.delegate = self
     _2fTapRecognizer.addTarget(self, action: #selector(_on2fTap(_:)))
-    
-    
-    
+    _2fTapRecognizer.require(toFail: _2fPanRecognizer)
     
     _pinchRecognizer.delegate = self
     _pinchRecognizer.addTarget(self, action: #selector(_onPinch(_:)))
@@ -216,42 +214,17 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
   }
   
-
-  
-  private var _is2fLongPressing = false
-  
-  @objc func _on2fLongPress(_ recognizer: UILongPressGestureRecognizer) {
-    switch recognizer.state {
-    case .began:
-      debugPrint("2f start");
-      _scrollView.isScrollEnabled = false
-      recognizer.view?.superview?.dropSuperViewTouches()
-      _2fPanRecognizer.dropTouches()
-      _is2fLongPressing = true
-    case .ended: fallthrough
-    case .failed: fallthrough
-    case .cancelled:
-      debugPrint("2f end");
-      _is2fLongPressing = false
-      _scrollView.isScrollEnabled = true
-    default: break
-    }
-  }
-  
   @objc func _on1fPan(_ recognizer: UIPanGestureRecognizer) {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .began:
       _scrollView.panGestureRecognizer.dropTouches()
       recognizer.view?.superview?.dropSuperViewTouches()
-      debugPrint("start", point);
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y), 1);", completionHandler: nil)
     case .changed:
-      debugPrint("changed");
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousemove\", \(point.x), \(point.y), 1);", completionHandler: nil)
     case .ended: fallthrough
     case .cancelled:
-      debugPrint("ended");
       _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y), 1);", completionHandler: nil)
     default: break
     }
