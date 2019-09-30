@@ -70,8 +70,7 @@ class CommandsHUGView: UIView {
   }
   
   var colors: Colors {
-    let style = BKDefaults.keyboardStyle()
-    switch style {
+    switch BKDefaults.keyboardStyle() {
     case .dark: return .dark
     case .light: return .light
     default:

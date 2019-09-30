@@ -35,8 +35,6 @@ import MBProgressHUD
 
 public class SpaceController: UIViewController {
   
-  weak var _nextSpaceCtrl: SpaceController? = nil
-  
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
     var currentKey: UUID? = nil
@@ -297,8 +295,10 @@ public class SpaceController: UIViewController {
   }
   
   func _attachInputToCurrentTerm() {
-    currentDevice?.attachInput(SmarterTermInput.shared)
-    currentDevice?.focus()
+    if let device = currentDevice {
+      device.attachInput(SmarterTermInput.shared)
+      device.focus()
+    }
   }
   
   var currentDevice: TermDevice? {
@@ -374,9 +374,6 @@ extension SpaceController: UIStateRestorable {
     if let bgColor = UIColor(codableColor: state.bgColor) {
       view.backgroundColor = bgColor
     }
-    
-//    view.setNeedsLayout()
-//    view.layoutIfNeeded()
   }
   
   func dumpUIState() -> UIState {

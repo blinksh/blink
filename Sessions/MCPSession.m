@@ -231,7 +231,6 @@
 - (void)kill
 {
   [_repl forceExit];
-//  ios_switchSession((void *)_sessionNum);
   
   if (_sshClients.count > 0) {
     for (WeakSSHClient *client in _sshClients) {
