@@ -236,10 +236,12 @@ class SmarterTermInput: TermInput {
       return
     }
 
-    let v = inputAccessoryView
+    // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
+    let v = self.inputAccessoryView
     inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     reloadInputViews()
     inputAccessoryView = v
+    reloadInputViews()
   }
   
   override func resignFirstResponder() -> Bool {
@@ -252,10 +254,7 @@ class SmarterTermInput: TermInput {
   }
   
   override var canResignFirstResponder: Bool {
-    return true
-//    return !_kbView.traits.isHKBAttached
-//    let state = window?.windowScene?.activationState
-//    return state == .foregroundActive || state == .foregroundInactive
+    window?.windowScene?.activationState == .foregroundActive
   }
   
   override func insertText(_ text: String) {
