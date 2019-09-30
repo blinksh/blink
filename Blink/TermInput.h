@@ -53,6 +53,9 @@
 
 @interface UndoManager: NSUndoManager
 @property (weak) id<UndoManagerDelegate> undoManagerDelegate;
+
+- (void)skipNext;
+
 @end
 
 @interface TermInput : UITextView

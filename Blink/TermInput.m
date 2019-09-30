@@ -193,15 +193,17 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 @end
 
 
-@implementation UndoManager
-- (BOOL)canRedo
-{
-  return YES;
+@implementation UndoManager {
+  NSTimeInterval _startSkip;
 }
 
-- (BOOL)canUndo
-{
-  return YES;
+
+- (BOOL)canRedo {
+  return [self _canOperate];
+}
+
+- (BOOL)canUndo {
+  return [self _canOperate];
 }
 
 -(void)undo
@@ -212,6 +214,14 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 - (void)redo
 {
   [_undoManagerDelegate redoWithManager:self];
+}
+
+- (void)skipNext {
+  _startSkip = [NSDate timeIntervalSinceReferenceDate];
+}
+
+- (BOOL)_canOperate {
+  return [NSDate timeIntervalSinceReferenceDate] - _startSkip > 0.5;
 }
 
 @end
@@ -327,9 +337,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   return YES;
 }
 
-- (NSUndoManager *)undoManager
-{
-  return _cmdModifierSequence ? _undoManager : [super undoManager];
+- (NSUndoManager *)undoManager {
+  return _undoManager;
 }
 
 - (UIKeyboardAppearance)_keyboardAppearance
@@ -748,9 +757,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
   [_device.view cleanSelection];
 }
 
-//- (UIEditingInteractionConfiguration)editingInteractionConfiguration {
-//  return UIEditingInteractionConfigurationNone;
-//}
+- (UIEditingInteractionConfiguration)editingInteractionConfiguration {
+  [_undoManager skipNext];
+  return UIEditingInteractionConfigurationDefault;
+}
 
 - (BOOL)canPerformAction:(SEL)action withSender:(id)sender
 {
@@ -771,6 +781,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     }
     
     return NO;
+  } else if ([sender isEqual:@"UIEditingInteraction"]) {
+    return action != @selector(cut:);
   }
   
 //  UIApplicationState appState = [[UIApplication sharedApplication] applicationState];
