@@ -243,7 +243,9 @@ class SmarterTermInput: TermInput {
     inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     reloadInputViews()
     inputAccessoryView = v
-    reloadInputViews()
+    if !_hideSmartKeysWithHKB {
+      reloadInputViews()
+    }
   }
   
   override func resignFirstResponder() -> Bool {
@@ -256,7 +258,8 @@ class SmarterTermInput: TermInput {
   }
   
   override var canResignFirstResponder: Bool {
-    window?.windowScene?.activationState == .foregroundActive
+    let state = window?.windowScene?.activationState
+    return state == .foregroundActive || state == .foregroundInactive
   }
   
   override func insertText(_ text: String) {
