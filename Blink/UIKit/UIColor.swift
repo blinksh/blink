@@ -30,17 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import UIKit
 
-#import "BKDefaults.h"
-#import "DeviceInfo.h"
-#import "LayoutManager.h"
-#import "BKTouchIDAuthManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "TermInput.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-
-#endif /* Blink_bridge_h */
+extension UIColor {
+  @objc class var blinkTint: UIColor {
+    UIColor.init(displayP3Red: 10.0/255.0, green: 224.0/255.0, blue: 240.0/255.0, alpha: 1)
+  }
+}

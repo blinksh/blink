@@ -132,6 +132,10 @@ void __setupProcessEnv() {
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
   [self _loadProfileVars];
+  
+    [[UIView appearance] setTintColor:[UIColor blinkTint]];
+//  [[UIView appearance] setTintColor:[UIColor colorWithRed:10.0/255.0f green:224.0/255.0f blue:240.0f/255.0 alpha:1]];
+//  [[UIView appearance] setTintColor:[UIColor cyanColor]];
   return YES;
 }
 

@@ -75,6 +75,8 @@ class SmarterTermInput: TermInput {
     
     super.init(frame: frame, textContainer: textContainer)
     
+    self.tintColor = .cyan
+    
     if traitCollection.userInterfaceIdiom == .pad {
       setupAssistantItem()
     } else {

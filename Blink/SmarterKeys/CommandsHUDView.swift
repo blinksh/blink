@@ -78,6 +78,9 @@ class CommandsHUGView: UIView {
     }
   }
   
+  private var _lockControl = CommandControl(title: "Lock", symbol: "lock.slash", accessibilityLabel: "Lock layout")
+  private var _layoutControl = CommandControl(title: "Fit")
+  
   private var _controls: [CommandControl] = []
   
   override init(frame: CGRect) {
@@ -86,14 +89,21 @@ class CommandsHUGView: UIView {
     _shadowEffectView.backgroundColor = UIColor.separator
     let effect = UIBlurEffect(style: .systemMaterial)
     _visualEffect2 = UIVisualEffectView(effect: effect)
-
+    
     super.init(frame: frame)
     alpha = 0
     _controls = [
-      CommandControl(title: "Fit", target: self, action: #selector(_changeLayout)),
-      CommandControl(title: "Close", target: self, action: #selector(_closeShell)),
-      CommandControl(title: "Create", target: self, action: #selector(_newShell)),
+      _lockControl.with(target: self, action: #selector(_changeLayoutLock)),
+      CommandControl(title: "Close", symbol: "xmark.rectangle", accessibilityLabel: "Close shell")
+        .with(target: self, action: #selector(_closeShell)),
+      CreateShellCommandControl()
+        .with(target: self, action: #selector(_newShell)),
     ]
+    
+    if DeviceInfo.shared().hasCorners {
+      _layoutControl.canBeIcon = false
+      _controls.insert(_layoutControl.with(target: self, action: #selector(_changeLayout)), at: 0)
+    }
     
     let vibrancy = UIVibrancyEffect(blurEffect: effect, style: .separator)
     
@@ -103,16 +113,9 @@ class CommandsHUGView: UIView {
     
     let v = UIVisualEffectView(effect: vibrancy)
     _visualEffect2.contentView.addSubview(v)
-    
-    let sep = UIView(frame: CGRect(x: 67.5, y: 0, width: 1, height: 37))
-    sep.backgroundColor = UIColor(red: 0.24, green: 0.24, blue: 0.26, alpha: 0.1)
-    sep.backgroundColor = .red
-    
-    v.contentView.addSubview(sep)
-    
+
     _style();
   }
-  
   
   func _style() {
     let cols = colors
@@ -139,8 +142,32 @@ class CommandsHUGView: UIView {
     fatalError("init(coder:) has not been implemented")
   }
   
+  @objc func _changeLayoutLock() {
+    guard let params = delegate?.currentTerm()?.sessionParams
+    else {
+      return
+    }
+    if params.layoutLocked {
+      delegate?.spaceController()?.currentTerm()?.unlockLayout()
+    } else {
+      delegate?.spaceController()?.currentTerm()?.lockLayout()
+    }
+    updateHUD()
+  }
+  
   @objc func _changeLayout() {
+    guard let term = delegate?.currentTerm()
+    else {
+      return
+    }
     
+    let params = term.sessionParams
+    params.layoutMode = _nextLayoutMode(mode: BKLayoutMode(rawValue: params.layoutMode)).rawValue
+    if (params.layoutLocked) {
+      term.unlockLayout()
+    }
+    term.view?.setNeedsLayout()
+    updateHUD()
   }
   
   @objc func _newShell() {
@@ -149,6 +176,41 @@ class CommandsHUGView: UIView {
   
   @objc func _closeShell() {
     delegate?.spaceController()?.closeShellAction()
+  }
+  
+  func updateHUD() {
+    guard let params = delegate?.currentTerm()?.sessionParams
+    else {
+      return
+    }
+    
+    if params.layoutLocked {
+      _lockControl.setTitle(title: "Unlock", accessibilityLabel: "Unlock layout")
+      _lockControl.setSymbol(symbol: "lock.slash")
+    } else {
+      _lockControl.setTitle(title: "Lock", accessibilityLabel: "Lock layout")
+      _lockControl.setSymbol(symbol: "lock")
+    }
+    
+    let modeName = LayoutManager.layoutMode(toString: BKLayoutMode(rawValue: params.layoutMode) ?? .default);
+    
+    _layoutControl.setTitle(title: modeName, accessibilityLabel: modeName)
+  }
+  
+  func _nextLayoutMode(mode: BKLayoutMode?) -> BKLayoutMode {
+    switch (mode) {
+    case nil: fallthrough
+    case .default:
+      return .safeFit;
+    case .safeFit:
+      return .fill;
+    case .fill:
+      return .cover;
+    case .cover:
+      return .safeFit;
+    @unknown default:
+      return .safeFit
+    }
   }
   
   func attachToWindow(inputWindow: UIWindow?) {
@@ -192,16 +254,25 @@ class CommandsHUGView: UIView {
   override func layoutSubviews() {
     super.layoutSubviews()
     
-    guard let supView = superview
+    guard let supView = superview,
+      let spaceWidth = delegate?.spaceController()?.view?.bounds.size.width
     else {
       return
     }
     
     
     var x: CGFloat = 0
+    var width: CGFloat = 87.5
+    var displayAsIcons = false
+    if traitCollection.userInterfaceIdiom != .pad || spaceWidth < 400 {
+//      width = 60
+      width = 70
+      displayAsIcons = true
+    }
     for vc in _controls {
+      vc.displayAsIcon = displayAsIcons
       vc.label.sizeToFit()
-      vc.frame = CGRect(x: x, y: 0, width: 87.5, height: 37)
+      vc.frame = CGRect(x: x, y: 0, width: width, height: 37)
       x = vc.frame.maxX
       x += 0.5
     }
@@ -225,8 +296,6 @@ class CommandsHUGView: UIView {
     _contentView.frame = self.bounds
     _visualEffect2.frame = self.bounds
     
-    if let width = delegate?.spaceController()?.view?.bounds.size.width {
-      self.center = CGPoint(x: width * 0.5, y: self.center.y)
-    }
+    self.center = CGPoint(x: spaceWidth * 0.5, y: self.center.y)
   }
 }

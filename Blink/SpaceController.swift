@@ -337,7 +337,7 @@ public class SpaceController: UIViewController {
     hud.alpha = 0.6
     
     let pages = UIPageControl()
-    pages.currentPageIndicatorTintColor = .cyan
+    pages.currentPageIndicatorTintColor = .blinkTint
     pages.numberOfPages = _viewportsKeys.count
     let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound
@@ -363,6 +363,7 @@ public class SpaceController: UIViewController {
     hud.hide(animated: true, afterDelay: 1)
     
     view.window?.windowScene?.title = sceneTitle
+    self._commandsHUD.updateHUD()
   }
   
 }
