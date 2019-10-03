@@ -57,6 +57,7 @@ public class SpaceController: UIViewController {
   private var _overlay = UIView()
   private var _kbdCommands:[UIKeyCommand] = []
   private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
+  private var _spaceControllerAnimating: Bool = false
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -244,7 +245,7 @@ public class SpaceController: UIViewController {
     _removeCurrentSpace()
   }
   
-  private func _removeCurrentSpace() {
+  private func _removeCurrentSpace(attachInput: Bool = true) {
     guard
       let currentKey = _currentKey,
       let idx = _viewportsKeys.firstIndex(of: currentKey)
@@ -273,9 +274,13 @@ public class SpaceController: UIViewController {
     
     self._currentKey = term.meta.key
     
+    _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
       self._displayHUD()
-      self._attachInputToCurrentTerm()
+      if attachInput {
+        self._attachInputToCurrentTerm()
+      }
+      self._spaceControllerAnimating = false
     }
   }
   
@@ -573,7 +578,8 @@ extension SpaceController {
       sessions.count > 1,
       let session = view.window?.windowScene?.session,
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1),
-      let term = currentTerm()
+      let term = currentTerm(),
+      _spaceControllerAnimating == false
     else  {
         return
     }
@@ -589,12 +595,13 @@ extension SpaceController {
       let nextScene = nextSession.scene as? UIWindowScene,
       let delegate = nextScene.delegate as? SceneDelegate,
       let nextWindow = delegate.window,
-      let nextSpaceCtrl = nextWindow.rootViewController as? SpaceController
+      let nextSpaceCtrl = nextWindow.rootViewController as? SpaceController,
+      nextSpaceCtrl._spaceControllerAnimating == false
     else {
       return
     }
     
-    _removeCurrentSpace()
+    _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
   }
 
@@ -675,6 +682,7 @@ extension SpaceController {
     
     _moveToShell(key: key, animated: animated)
   }
+
   
   private func _moveToShell(key: UUID, animated: Bool = true) {
     guard
@@ -687,11 +695,13 @@ extension SpaceController {
     
     let term: TermController = SessionRegistry.shared[key]
     let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
-        
+
+    _spaceControllerAnimating = true
     _viewportsController.setViewControllers([term], direction: direction, animated: animated) { (didComplete) in
       self._currentKey = term.meta.key
       self._displayHUD()
       self._attachInputToCurrentTerm()
+      self._spaceControllerAnimating = false
     }
   }
   
