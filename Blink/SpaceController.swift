@@ -518,8 +518,8 @@ extension SpaceController {
       _cmd("Zoom Reset", #selector(_resetFontSizeAction),    "=",  modifierFlags),
       
       // Screens
-      _cmd("Focus Other Screen",         #selector(_focusOtherScreenAction),  "o", modifierFlags),
-      _cmd("Move shell to other Screen", #selector(_moveToOtherScreenAction), "o", prevNextShellModifierFlags),
+      _cmd("Focus Other Window",         #selector(_focusOtherWindowAction),  "o", modifierFlags),
+      _cmd("Move shell to other Window", #selector(_moveToOtherWindowAction), "o", prevNextShellModifierFlags),
       
       // Misc
       _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
@@ -578,11 +578,14 @@ extension SpaceController {
     _advanceShell(by: -1)
   }
   
-  @objc func _focusOtherScreenAction() {
-    let app = UIApplication.shared
-    let sessions = Array(app.openSessions)
+  func _activeSessions() -> [UISceneSession] {
+    Array(UIApplication.shared.openSessions)
       .filter({ $0.scene?.activationState == .foregroundActive || $0.scene?.activationState == .foregroundInactive })
       .sorted(by: { $0.persistentIdentifier < $1.persistentIdentifier })
+  }
+  
+  @objc func _focusOtherWindowAction() {
+    let sessions = _activeSessions()
     
     guard
       sessions.count > 1,
@@ -602,7 +605,6 @@ extension SpaceController {
     
     if
       let scene = nextSession.scene as? UIWindowScene,
-      scene.activationState == .foregroundActive || scene.activationState == .foregroundInactive,
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
       let spaceCtrl = window.rootViewController as? SpaceController {
@@ -612,12 +614,47 @@ extension SpaceController {
         window.makeKeyAndVisible()
       }
     } else {
-      app.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
+      UIApplication.shared.requestSceneSessionActivation(nextSession, userActivity: nil, options: nil, errorHandler: nil)
     }
   }
   
-  @objc func _moveToOtherScreenAction() {
+  @objc func _moveToOtherWindowAction() {
+    let sessions = _activeSessions()
     
+    guard
+      sessions.count > 1,
+      let session = view.window?.windowScene?.session,
+      let idx = sessions.firstIndex(of: session)?.advanced(by: 1),
+      let term = currentTerm()
+    else  {
+        return
+    }
+    
+    let nextSession: UISceneSession
+    if idx < sessions.endIndex {
+      nextSession = sessions[idx]
+    } else {
+      nextSession = sessions[0]
+    }
+    
+    guard
+      let nextScene = nextSession.scene as? UIWindowScene,
+      let delegate = nextScene.delegate as? SceneDelegate,
+      let nextWindow = delegate.window,
+      let nextSpaceCtrl = nextWindow.rootViewController as? SpaceController
+    else {
+      return
+    }
+    
+    _removeCurrentSpace()
+    nextSpaceCtrl._addTerm(term: term)
+  }
+  
+  func _addTerm(term: TermController) {
+    _viewportsKeys.append(term.meta.key)
+    term.delegate = self
+    SessionRegistry.shared.track(session: term)
+    _moveToShell(idx: _viewportsKeys.count - 1)
   }
   
   @objc func _newWindowAction() {
