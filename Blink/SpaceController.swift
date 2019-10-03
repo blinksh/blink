@@ -69,7 +69,6 @@ public class SpaceController: UIViewController {
     if window.screen === UIScreen.main {
       var insets = UIEdgeInsets.zero
       insets.bottom = LayoutManager.mainWindowKBBottomInset()
-      // TODO: Bottom insets
       _overlay.frame = view.bounds.inset(by: insets)
     } else {
       _overlay.frame = view.bounds
@@ -305,14 +304,6 @@ public class SpaceController: UIViewController {
     currentTerm()?.termDevice
   }
   
-  @objc public func moveAllShellsFromSpaceController(_ spaceController: SpaceController) {
-    
-  }
-  
-  @objc public func moveCurrentShellFromSpaceController(_ spaceController: SpaceController) {
-    
-  }
-  
   func _displayHUD() {
     _hud?.hide(animated: false)
     
@@ -426,7 +417,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     let key = ctrl.meta.key
     guard
       let idx = _viewportsKeys.firstIndex(of: key)?.advanced(by: advancedBy),
-      idx >= 0 && idx < _viewportsKeys.endIndex
+      _viewportsKeys.indices.contains(idx)
     else {
       return nil
     }
@@ -539,50 +530,7 @@ extension SpaceController {
     _closeCurrentSpace()
   }
   
-  private func _moveToShell(idx: Int) {
-    guard
-      idx >= _viewportsKeys.startIndex,
-      idx < _viewportsKeys.endIndex,
-      let currentKey = _currentKey,
-      let currentIdx = _viewportsKeys.firstIndex(of: currentKey)
-    else {
-      return
-    }
-    let key = _viewportsKeys[idx]
-    let term: TermController = SessionRegistry.shared[key]
-    let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
-        
-    _viewportsController.setViewControllers([term], direction: direction, animated: true) { (didComplete) in
-      self._currentKey = term.meta.key
-      self._displayHUD()
-      self._attachInputToCurrentTerm()
-    }
-  }
   
-  private func _advanceShell(by: Int) {
-    guard
-      let currentKey = _currentKey,
-      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
-    else {
-      return
-    }
-        
-    _moveToShell(idx: idx)
-  }
-  
-  @objc private func _nextShellAction() {
-    _advanceShell(by: 1)
-  }
-  
-  @objc private func _prevShellAction() {
-    _advanceShell(by: -1)
-  }
-  
-  func _activeSessions() -> [UISceneSession] {
-    Array(UIApplication.shared.openSessions)
-      .filter({ $0.scene?.activationState == .foregroundActive || $0.scene?.activationState == .foregroundInactive })
-      .sorted(by: { $0.persistentIdentifier < $1.persistentIdentifier })
-  }
   
   @objc func _focusOtherWindowAction() {
     let sessions = _activeSessions()
@@ -649,12 +597,19 @@ extension SpaceController {
     _removeCurrentSpace()
     nextSpaceCtrl._addTerm(term: term)
   }
+
+  @objc private func _nextShellAction() {
+    _advanceShell(by: 1)
+  }
   
-  func _addTerm(term: TermController) {
-    _viewportsKeys.append(term.meta.key)
-    term.delegate = self
-    SessionRegistry.shared.track(session: term)
-    _moveToShell(idx: _viewportsKeys.count - 1)
+  @objc private func _prevShellAction() {
+    _advanceShell(by: -1)
+  }
+  
+  func _activeSessions() -> [UISceneSession] {
+    Array(UIApplication.shared.openSessions)
+      .filter({ $0.scene?.activationState == .foregroundActive || $0.scene?.activationState == .foregroundInactive })
+      .sorted(by: { $0.persistentIdentifier < $1.persistentIdentifier })
   }
   
   @objc func _newWindowAction() {
@@ -702,6 +657,53 @@ extension SpaceController {
       let vc = storyboard.instantiateViewController(identifier: "NavSettingsController")
       self.present(vc, animated: true, completion: nil)
     }
+  }
+  
+  func _addTerm(term: TermController, animated: Bool = true) {
+    SessionRegistry.shared.track(session: term)
+    term.delegate = self
+    _viewportsKeys.append(term.meta.key)
+    _moveToShell(key: term.meta.key, animated: animated)
+  }
+  
+  private func _moveToShell(idx: Int, animated: Bool = true) {
+    guard _viewportsKeys.indices.contains(idx) else {
+      return
+    }
+
+    let key = _viewportsKeys[idx]
+    
+    _moveToShell(key: key, animated: animated)
+  }
+  
+  private func _moveToShell(key: UUID, animated: Bool = true) {
+    guard
+      let currentKey = _currentKey,
+      let currentIdx = _viewportsKeys.firstIndex(of: currentKey),
+      let idx = _viewportsKeys.firstIndex(of: key)
+    else {
+      return
+    }
+    
+    let term: TermController = SessionRegistry.shared[key]
+    let direction: UIPageViewController.NavigationDirection = currentIdx < idx ? .forward : .reverse
+        
+    _viewportsController.setViewControllers([term], direction: direction, animated: animated) { (didComplete) in
+      self._currentKey = term.meta.key
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
+    }
+  }
+  
+  private func _advanceShell(by: Int, animated: Bool = true) {
+    guard
+      let currentKey = _currentKey,
+      let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by)
+    else {
+      return
+    }
+        
+    _moveToShell(idx: idx, animated: animated)
   }
   
 }
