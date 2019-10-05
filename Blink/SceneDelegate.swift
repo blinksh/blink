@@ -59,33 +59,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
-    _tuneOverscanIfNeeded(session: session)
     self.window = BlinkWindow(windowScene: windowScene)
     let spaceCntrl = SpaceController()
     spaceCntrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     window?.rootViewController = spaceCntrl
     window?.makeKeyAndVisible()
-  }
-  
-  private func _tuneOverscanIfNeeded(session: UISceneSession) {
-    guard
-      UIScreen.screens.count > 1,
-      let screen = UIScreen.screens.last,
-      session.role == .windowExternalDisplay
-    else {
-      return
-    }
-    
-    switch BKDefaults.overscanCompensation() {
-     case .BKBKOverscanCompensationNone:
-       screen.overscanCompensation = .none
-     case .BKBKOverscanCompensationScale:
-       screen.overscanCompensation = .scale;
-     case .BKBKOverscanCompensationInsetBounds:
-       screen.overscanCompensation = .insetBounds;
-     default:
-       break
-    }
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {

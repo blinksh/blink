@@ -98,6 +98,10 @@ void __setupProcessEnv() {
   [nc addObserver:self
            selector:@selector(_onSceneWillEnterForeground:)
                name:UISceneWillEnterForegroundNotification object:self];
+  [nc addObserver:self
+         selector: @selector(_onScreenConnect)
+             name:UIScreenDidConnectNotification object:nil];
+
   return YES;
 }
 
@@ -307,6 +311,10 @@ void __setupProcessEnv() {
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
   [self _cancelApplicationSuspend];
+}
+
+- (void)_onScreenConnect {
+  [BKDefaults applyExternalScreenCompensation:BKDefaults.overscanCompensation];
 }
 
 @end

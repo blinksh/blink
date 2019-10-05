@@ -136,4 +136,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setLayoutMode:(BKLayoutMode)mode;
 + (void)setOversanCompensation:(BKOverscanCompensation)value;
 + (void)setKeyboardStyle:(BKKeyboardStyle)value;
+
+
++ (void)applyExternalScreenCompensation:(BKOverscanCompensation)value;
 @end

@@ -401,4 +401,26 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   return defaults.xCallBackURLKey;
 }
 
++ (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {
+  if (UIScreen.screens.count <= 1) {
+    return;
+  }
+  
+  UIScreen *screen = UIScreen.screens.lastObject;
+  
+  switch (value) {
+    case BKBKOverscanCompensationNone:
+      screen.overscanCompensation = UIScreenOverscanCompensationNone;
+      break;
+    case BKBKOverscanCompensationScale:
+      screen.overscanCompensation = UIScreenOverscanCompensationScale;
+      break;
+    case BKBKOverscanCompensationInsetBounds:
+      screen.overscanCompensation = UIScreenOverscanCompensationInsetBounds;
+      break;
+    default:
+      break;
+  }
+}
+
 @end

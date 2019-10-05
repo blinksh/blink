@@ -554,7 +554,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   _overscanCompensationValue = [self _overscanCompensationFromIndex:sender.selectedSegmentIndex];
   
-//  [ScreenController applyOverscanOptionToScreen:[UIScreen.screens lastObject] value:_overscanCompensationValue];
+  [BKDefaults applyExternalScreenCompensation:_overscanCompensationValue];
 }
 
 
