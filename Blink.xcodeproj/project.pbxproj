@@ -1583,10 +1583,9 @@
 			};
 			buildConfigurationList = EA0BA1861C0CC57B00719C1A /* Build configuration list for PBXProject "Blink" */;
 			compatibilityVersion = "Xcode 3.2";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
-				English,
 				en,
 				Base,
 				de,

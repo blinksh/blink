@@ -333,7 +333,7 @@ public class SpaceController: UIViewController {
     hud.alpha = 0.6
     
     let pages = UIPageControl()
-    pages.currentPageIndicatorTintColor = .blinkTint
+    pages.currentPageIndicatorTintColor = .blinkHudDot
     pages.numberOfPages = _viewportsKeys.count
     let pageNum = _viewportsKeys.firstIndex(of: term.meta.key)
     pages.currentPage = pageNum ?? NSNotFound

@@ -34,6 +34,11 @@ import UIKit
 
 extension UIColor {
   @objc class var blinkTint: UIColor {
+    return UIColor(named: "BlinkColor") ??
+    UIColor.init(displayP3Red: 10.0/255.0, green: 224.0/255.0, blue: 240.0/255.0, alpha: 1)
+  }
+  
+  @objc class var blinkHudDot: UIColor {
     UIColor.init(displayP3Red: 10.0/255.0, green: 224.0/255.0, blue: 240.0/255.0, alpha: 1)
   }
 }
