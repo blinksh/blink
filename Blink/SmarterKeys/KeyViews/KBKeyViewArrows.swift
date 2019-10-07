@@ -153,10 +153,10 @@ class KBKeyViewArrows: KBKeyView {
     if _repeating {
       var speed = 0.1
       if abs(delta.x) > keyBounds.width * 0.9 || abs(delta.y) > keyBounds.height * 3  {
-        speed = 0.05
+        speed = 0.08
       }
       if abs(delta.x) > keyBounds.width * 2 || abs(delta.y) > keyBounds.height * 4  {
-        speed = 0.024
+        speed = 0.05
       }
       if speed !=  _repeatingSpeed {
         _continueTimer(interval: speed)
