@@ -45,6 +45,7 @@
 - (void)registerSSHClient:(SSHClient *)sshClient;
 - (void)unregisterSSHClient:(SSHClient *)sshClient;
 
+- (void)enqueueCommand:(NSString *)cmd;
 - (bool)isRunningCmd;
 
 - (void)updateAllowedPaths;

@@ -291,6 +291,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
+- (void)processKB:(NSString *)str {
+  [self _evalJSScript: term_processKB(str)];
+}
+
 // Write data to terminal control
 - (void)write:(NSString *)data
 {
@@ -377,6 +381,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewShowAlert:data[@"title"] andMessage:data[@"message"]];
   } else if ([operation isEqualToString:@"sendString"]) {
     [_device viewSendString:data[@"string"]];
+  } else if ([operation isEqualToString:@"line"]) {
+    [_device viewSubmitLine:data[@"text"]];
   }
 }
 

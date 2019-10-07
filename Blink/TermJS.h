@@ -176,6 +176,10 @@ NSString *term_setAutoCarriageReturn(BOOL state)
   return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@);", state ? @"true" : @"false"];
 }
 
+NSString *term_processKB(NSString *str) {
+  return  [NSString stringWithFormat:@"term_processKB(%@[0])", _encodeString(str)];
+}
+
 NSString *term_restore() {
   return @"term_restore()";
 }

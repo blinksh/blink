@@ -60,6 +60,14 @@ function term_setupDefaults() {
   term_set('allow-images-inline', true); // need to make it work
 }
 
+var _kb;
+
+function term_processKB(str) {
+  if (_kb && str) {
+    _kb.processInput(str);
+  }
+}
+
 function term_setup() {
   t = new hterm.Terminal('blink');
 
@@ -77,6 +85,8 @@ function term_setup() {
     document.body.style.backgroundColor =
       t.scrollPort_.screen_.style.backgroundColor;
     var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
+    
+    _kb = new TermPrompt("", t);
     _postMessage('terminalReady', {size, bgColor});
 
     t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507

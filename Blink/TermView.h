@@ -49,6 +49,7 @@
 - (void)viewSendString:(NSString *)data;
 - (void)viewCopyString:(NSString *)text;
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
+- (void)viewSubmitLine:(NSString *)line;
 
 @end
 
@@ -76,6 +77,7 @@
 - (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)write:(NSString *)data;
+- (void)processKB:(NSString *)str;
 - (void)setCursorBlink:(BOOL)state;
 - (void)setBoldAsBright:(BOOL)state;
 - (void)setBoldEnabled:(NSUInteger)state;

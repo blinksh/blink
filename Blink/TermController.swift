@@ -210,6 +210,10 @@ extension TermController: SessionDelegate {
 }
 
 extension TermController: TermDeviceDelegate {
+  func runCommand(_ cmd: String!) {
+    
+  }
+  
   public func deviceIsReady() {
     startSession()
   }
@@ -238,6 +242,10 @@ extension TermController: TermDeviceDelegate {
   
   public func viewController() -> UIViewController! {
     return self
+  }
+  
+  public func lineSubmitted(_ line: String!) {
+    _session?.enqueueCommand(line)
   }
 }
 

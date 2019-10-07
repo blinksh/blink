@@ -197,6 +197,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 - (void)write:(NSString *)input
 {
+  if (!_rawMode) {
+    [self.view processKB:input];
+    return;
+  }
   NSUInteger len = [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
   write(_pinput[1], input.UTF8String, len);
   if (_echoMode) {
@@ -352,9 +356,17 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   [_delegate deviceSizeChanged];
 }
 
+- (void)onSubmit:(NSString *)line {
+  [_delegate lineSubmitted:line];
+}
+
 - (void)viewSendString:(NSString *)data
 {
   [self write:data];
+}
+
+- (void)viewSubmitLine:(NSString *)line {
+  [_delegate lineSubmitted:line];
 }
 
 - (void)viewCopyString:(NSString *)text

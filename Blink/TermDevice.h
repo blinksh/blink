@@ -41,6 +41,7 @@
 - (void)deviceSizeChanged;
 - (void)viewFontSizeChanged:(NSInteger)size;
 - (BOOL)handleControl:(NSString *)control;
+- (void)lineSubmitted:(NSString *)line;
 - (void)deviceFocused;
 - (UIViewController *)viewController;
 
@@ -62,6 +63,8 @@
 
 - (void)attachInput:(TermInput *)termInput;
 - (void)attachView:(TermView *)termView;
+
+- (void)onSubmit:(NSString *)line;
 
 - (void)focus;
 - (void)blur;

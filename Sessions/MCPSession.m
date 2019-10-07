@@ -62,6 +62,7 @@
   Session *_childSession;
   NSString *_currentCmd;
   NSMutableArray<WeakSSHClient *> *_sshClients;
+  dispatch_queue_t _cmdQueue;
 }
 
 @dynamic sessionParams;
@@ -70,20 +71,72 @@
   if (self = [super initWithDevice:device andParams:params]) {
     _sshClients = [[NSMutableArray alloc] init];
     _sessionUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    _cmdQueue = dispatch_queue_create("mcp.command.queue", DISPATCH_QUEUE_SERIAL);
   }
   
   return self;
 }
 
-- (int)main:(int)argc argv:(char **)argv
-{
+- (void)executeWithArgs:(NSString *)args {
+
+}
+
+- (void)enqueueCommand:(NSString *)cmd {
+  if (_currentCmd) {
+    [_device writeIn:cmd];
+    return;
+  }
+  dispatch_async(_cmdQueue, ^{
+//    [_device writeIn:@"\n"];
+    [self _runCommand:cmd];
+  });
+}
+
+- (BOOL)_runCommand:(NSString *)cmdline {
   [self setActiveSession];
   ios_setMiniRoot([BlinkPaths documents]);
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   ios_setContext((__bridge void*)self);
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
+
   
+  NSArray *arr = [cmdline componentsSeparatedByString:@" "];
+  NSString *cmd = arr[0];
+  
+  if ([cmd isEqualToString:@"exit"]) {
+    return NO;
+  } else if ([cmd isEqualToString:@"mosh"]) {
+    [self _runMoshWithArgs:cmdline];
+    if (self.sessionParams.hasEncodedState) {
+      return NO;
+    }
+  } else if ([cmd isEqualToString:@"ssh2"]) {
+    [self _runSSHWithArgs:cmdline];
+  } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
+    [self _runSSHCopyIDWithArgs:cmdline];
+  } else {
+    [self.delegate indexCommand:cmdline];
+    _currentCmd = cmdline;
+    thread_stdout = nil;
+    thread_stdin = nil;
+    thread_stderr = nil;
+    
+    // Re-evalute column number before each command
+    setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
+    ios_system(cmdline.UTF8String);
+    _currentCmd = nil;
+    _sshClients = [[NSMutableArray alloc] init];
+  }
+  
+  [_device setRawMode:NO];
+  
+  return YES;
+}
+
+- (int)main:(int)argc argv:(char **)argv
+{
+    
   // We are restoring mosh session if possible first.
   if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
     _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
@@ -93,41 +146,6 @@
       return 0;
     }
   }
-  
-  // Running repl loop
-  _repl = [[Repl alloc] initWithDevice:_device andStream: _stream];
-  [_repl loopWithCallback:^BOOL(NSString *cmdline) {
-  
-    NSArray *arr = [cmdline componentsSeparatedByString:@" "];
-    NSString *cmd = arr[0];
-    
-    if ([cmd isEqualToString:@"exit"]) {
-      return NO;
-    } else if ([cmd isEqualToString:@"mosh"]) {
-      [self _runMoshWithArgs:cmdline];
-      if (self.sessionParams.hasEncodedState) {
-        return NO;
-      }
-    } else if ([cmd isEqualToString:@"ssh2"]) {
-      [self _runSSHWithArgs:cmdline];
-    } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-      [self _runSSHCopyIDWithArgs:cmdline];
-    } else {
-      [self.delegate indexCommand:cmdline];
-      _currentCmd = cmdline;
-      thread_stdout = nil;
-      thread_stdin = nil;
-      thread_stderr = nil;
-      
-      // Re-evalute column number before each command
-      setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
-      ios_system(cmdline.UTF8String);
-      _currentCmd = nil;
-      _sshClients = [[NSMutableArray alloc] init];
-    }
-    
-    return YES;
-  }];
   
   return 0;
 }
@@ -278,6 +296,11 @@
         ios_kill();
       }
       return YES;
+    } else {
+      if ([_device rawMode]) {
+        return YES;
+      }
+      return NO;
     }
     return YES;
   }
