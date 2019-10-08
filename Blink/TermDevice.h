@@ -71,6 +71,7 @@
 
 - (void)write:(NSString *)input;
 - (void)writeIn:(NSString *)input;
+- (void)writeInDirectly:(NSString *)input;
 - (void)writeOut:(NSString *)output;
 - (void)writeOutLn:(NSString *)output;
 - (void)close;

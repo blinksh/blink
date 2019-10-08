@@ -63,6 +63,7 @@
   NSString *_currentCmd;
   NSMutableArray<WeakSSHClient *> *_sshClients;
   dispatch_queue_t _cmdQueue;
+  TermStream *_cmdStream;
 }
 
 @dynamic sessionParams;
@@ -82,8 +83,8 @@
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
-  if (_currentCmd) {
-    [_device writeIn:cmd];
+  if (_cmdStream) {
+    [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
     return;
   }
   dispatch_async(_cmdQueue, ^{
@@ -93,20 +94,22 @@
 }
 
 - (BOOL)_runCommand:(NSString *)cmdline {
-  [self setActiveSession];
-  ios_setMiniRoot([BlinkPaths documents]);
-  ios_setStreams(_stream.in, _stream.out, _stream.err);
-  ios_setContext((__bridge void*)self);
-  [self updateAllowedPaths];
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
-
-  
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
   NSString *cmd = arr[0];
   
   if ([cmd isEqualToString:@"exit"]) {
     return NO;
-  } else if ([cmd isEqualToString:@"mosh"]) {
+  }
+  
+  [self setActiveSession];
+  ios_setMiniRoot([BlinkPaths documents]);
+  
+  ios_setContext((__bridge void*)self);
+  
+  [self updateAllowedPaths];
+  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
+  
+  if ([cmd isEqualToString:@"mosh"]) {
     [self _runMoshWithArgs:cmdline];
     if (self.sessionParams.hasEncodedState) {
       return NO;
@@ -117,15 +120,22 @@
     [self _runSSHCopyIDWithArgs:cmdline];
   } else {
     [self.delegate indexCommand:cmdline];
+    
     _currentCmd = cmdline;
     thread_stdout = nil;
     thread_stdin = nil;
     thread_stderr = nil;
     
-    // Re-evalute column number before each command
-    setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
+    _cmdStream = [_device.stream duplicate];
+    ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
+    
+    setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
+    setenv("LINES", [@(_device->win.ws_row) stringValue].UTF8String, 1);
+    
     ios_system(cmdline.UTF8String);
     _currentCmd = nil;
+    [_cmdStream close];
+    _cmdStream = nil;
     _sshClients = [[NSMutableArray alloc] init];
   }
   
@@ -293,6 +303,10 @@
           [client.value kill];
         }
       } else {
+        if ([control isEqualToString:@"d"]) {
+          [_cmdStream closeIn];
+          return NO;
+        }
         ios_kill();
       }
       return YES;

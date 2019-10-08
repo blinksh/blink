@@ -161,7 +161,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   ViewStream *_outStream;
   ViewStream *_errStream;
-  KBProcessor *_kbProcessor;
 }
 
 - (id)init
@@ -201,6 +200,11 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
     [self.view processKB:input];
     return;
   }
+  [self writeInDirectly: input];
+}
+
+- (void)writeInDirectly:(NSString *)input
+{
   NSUInteger len = [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
   write(_pinput[1], input.UTF8String, len);
   if (_echoMode) {

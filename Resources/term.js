@@ -117,6 +117,9 @@ function term_init() {
 
 function term_write(data) {
   t.interpret(data);
+  if (_kb) {
+    _kb.resetStartCol()
+  }
 }
 
 function term_paste(str) {
