@@ -96,6 +96,7 @@
 - (void)decreaseFontSize;
 - (void)resetFontSize;
 - (void)writeB64:(NSData *)data;
+- (void)displayInput:(NSString *)input;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;

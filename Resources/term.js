@@ -60,13 +60,20 @@ function term_setupDefaults() {
   term_set('allow-images-inline', true); // need to make it work
 }
 
-var _kb;
+var _kb = new TermPrompt("")
 
 function term_processKB(str) {
-  if (_kb && str) {
+  if (str) {
     _kb.processInput(str);
   }
 }
+
+function term_displayInput(str) {
+  if (str) {
+    window.KeystrokeVisualizer.processInput(str);
+  }
+}
+
 
 function term_setup() {
   t = new hterm.Terminal('blink');
@@ -76,6 +83,7 @@ function term_setup() {
 
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', {cols, rows});
+      _kb.resize();
     };
 
     var size = {
@@ -91,6 +99,7 @@ function term_setup() {
 
     t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507
     t.uninstallKeyboard();
+    window.KeystrokeVisualizer.enable();
   };
 
   t.decorate(document.getElementById('terminal'));
@@ -117,9 +126,7 @@ function term_init() {
 
 function term_write(data) {
   t.interpret(data);
-  if (_kb) {
-    _kb.resetStartCol()
-  }
+  _kb.reset()
 }
 
 function term_paste(str) {

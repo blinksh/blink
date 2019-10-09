@@ -295,6 +295,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self _evalJSScript: term_processKB(str)];
 }
 
+- (void)displayInput:(NSString *)input {
+  [self _evalJSScript: term_displayInput(input)];
+}
+
 // Write data to terminal control
 - (void)write:(NSString *)data
 {
