@@ -79,6 +79,7 @@ function term_setup() {
   t = new hterm.Terminal('blink');
 
   t.onTerminalReady = function() {
+    term_setAutoCarriageReturn(true);
     t.setCursorVisible(true);
 
     t.io.onTerminalResize = function(cols, rows) {
@@ -232,13 +233,18 @@ function _setTermCoordinates(event, x, y) {
     parseInt(
       (y - t.scrollPort_.visibleRowTopMargin) /
         t.scrollPort_.characterSize.height,
-    ) + 1;
-  event.terminalColumn = parseInt(x / t.scrollPort_.characterSize.width) + 1;
+    );
+  event.terminalColumn = parseInt(x / t.scrollPort_.characterSize.width);
 }
 
-function term_reportTapInPoint(x, y) {
-  term_reportMouseEvent('mousedown', x, y, 1);
-  term_reportMouseEvent('mouseup', x, y, 1);
+function term_reportMouseClick(x, y, buttons) {
+  var event = new MouseEvent(name, {buttons});
+  _setTermCoordinates(event, x, y);
+  if (!_kb.processMouseClick(event)) {
+    term_reportMouseEvent('mousedown', x, y, 1);
+    term_reportMouseEvent('mouseup', x, y, 1);
+  }
+  term_displayInput("👆");
 }
 
 function term_reportMouseEvent(name, x, y, buttons) {
