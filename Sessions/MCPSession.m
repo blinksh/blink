@@ -325,9 +325,9 @@
   FILE * savedStdOut = stdout;
   FILE * savedStdErr = stderr;
   FILE * savedStdIn = stdin;
-  stdout = _stream.out;
-  stderr = _stream.err;
-  stdin = _stream.in;
+  stdout = _cmdStream.out;
+  stderr = _cmdStream.err;
+  stdin = _cmdStream.in;
   ios_switchSession(_sessionUUID.UTF8String);
   stdout = savedStdOut;
   stderr = savedStdErr;

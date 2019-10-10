@@ -95,7 +95,7 @@ function term_setup() {
       t.scrollPort_.screen_.style.backgroundColor;
     var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
     
-    _kb = new TermPrompt("", t);
+    _kb = new TermPrompt("blink> ", t);
     _postMessage('terminalReady', {size, bgColor});
 
     t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507
