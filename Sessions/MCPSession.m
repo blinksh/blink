@@ -79,7 +79,7 @@
 }
 
 - (void)executeWithArgs:(NSString *)args {
-
+  [_device prompt:@"blink> " secure:NO];
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
@@ -96,14 +96,20 @@
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
   NSString *cmd = arr[0];
   
-  if ([cmd isEqualToString:@"exit"]) {
-    return NO;
-  }
-  
   [self setActiveSession];
   ios_setMiniRoot([BlinkPaths documents]);
   
   ios_setContext((__bridge void*)self);
+  
+  thread_stdout = nil;
+  thread_stdin = nil;
+  thread_stderr = nil;
+  
+  ios_setStreams(_stream.in, _stream.out, _stream.err);
+  
+  if ([cmd isEqualToString:@"exit"]) {
+    return NO;
+  }
   
   [self updateAllowedPaths];
   [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
@@ -130,7 +136,7 @@
     
     setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
     setenv("LINES", [@(_device->win.ws_row) stringValue].UTF8String, 1);
-    
+
     ios_system(cmdline.UTF8String);
     _currentCmd = nil;
     [_cmdStream close];
@@ -138,7 +144,7 @@
     _sshClients = [[NSMutableArray alloc] init];
   }
   
-  [_device setRawMode:NO];
+  [_device prompt:@"blink> " secure:NO];
   
   return YES;
 }

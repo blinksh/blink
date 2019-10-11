@@ -65,6 +65,7 @@
 - (void)attachView:(TermView *)termView;
 
 - (void)onSubmit:(NSString *)line;
+- (void)prompt:(NSString *)prompt secure:(BOOL)secure;
 
 - (void)focus;
 - (void)blur;

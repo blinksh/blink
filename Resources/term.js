@@ -60,11 +60,9 @@ function term_setupDefaults() {
   term_set('allow-images-inline', true); // need to make it work
 }
 
-var _kb = new TermPrompt("")
-
 function term_processKB(str) {
   if (str) {
-    _kb.processInput(str);
+    t.prompt.processInput(str);
   }
 }
 
@@ -84,7 +82,7 @@ function term_setup() {
 
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', {cols, rows});
-      _kb.resize();
+      t.prompt.resize();
     };
 
     var size = {
@@ -95,7 +93,6 @@ function term_setup() {
       t.scrollPort_.screen_.style.backgroundColor;
     var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
     
-    _kb = new TermPrompt("blink> ", t);
     _postMessage('terminalReady', {size, bgColor});
 
     t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507
@@ -127,7 +124,6 @@ function term_init() {
 
 function term_write(data) {
   t.interpret(data);
-  _kb.reset()
 }
 
 function term_paste(str) {
@@ -240,7 +236,7 @@ function _setTermCoordinates(event, x, y) {
 function term_reportMouseClick(x, y, buttons) {
   var event = new MouseEvent(name, {buttons});
   _setTermCoordinates(event, x, y);
-  if (!_kb.processMouseClick(event)) {
+  if (!t.prompt.processMouseClick(event)) {
     term_reportMouseEvent('mousedown', x, y, 1);
     term_reportMouseEvent('mouseup', x, y, 1);
   }

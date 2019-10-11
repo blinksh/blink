@@ -264,6 +264,12 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   _rawMode = rawMode;
 }
 
+- (void)prompt:(NSString *)prompt secure:(BOOL)secure {
+//  [self setRawMode:FALSE];
+  _rawMode = NO;
+  fprintf(_stream.out, "\x1b]1337;BlinkPrompt=1\x07");
+}
+
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
 {
   _secureTextEntry = secureTextEntry;
