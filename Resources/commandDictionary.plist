@@ -93,6 +93,13 @@
 		<string>n</string>
 		<string>no</string>
 	</array>
+  <key>ed</key>
+  <array>
+    <string>text.framework/text</string>
+    <string>ed_main</string>
+    <string>p:sx</string>
+    <string>file</string>
+  </array>
 	<key>egrep</key>
 	<array>
 		<string>text.framework/text</string>

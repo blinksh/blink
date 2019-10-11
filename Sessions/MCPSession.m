@@ -84,7 +84,7 @@
 
 - (void)enqueueCommand:(NSString *)cmd {
   if (_cmdStream) {
-    [_device writeInDirectly:[NSString stringWithFormat: @"%@\r\n", cmd]];
+    [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
     return;
   }
   dispatch_async(_cmdQueue, ^{
