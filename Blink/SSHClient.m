@@ -237,7 +237,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
   BOOL rawMode = _device.rawMode;
-  [_device setRawMode:NO];
+//  [_device setRawMode:NO];
   
   if (name.length > 0) {
     name = [name stringByAppendingString:@"\n"];
@@ -250,34 +250,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
   
-  BOOL echoMode = _device.echoMode;
   for (int i = 0; i < prompts.count; i++) {
     BOOL echo = [prompts[i][1] boolValue];
-    _device.echoMode = echo;
     NSString *prompt = prompts[i][0];
-    // write prompt directly to device stream?...
-    fwrite(prompt.UTF8String, [prompt lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
-    
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read = getline(&line, &len, _device.stream.in);
-    
-    if (read == -1) {
+    NSString *result = [_device readline:prompt secure:!echo];
+    if (result) {
+      [answers addObject:result];
+    } else {
       [self _log_verbose:@"Can't read input"];
     }
-    
-    if (line) {
-      NSString * lineStr = [@(line) stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-      [answers addObject:lineStr];
-      free(line);
-    }
-    fwrite("\n", 1, 1, _device.stream.out);
-    //    fclose(fp);
   }
-  [_device setEchoMode:echoMode];
   [_device setRawMode:rawMode];
-  
-  
   return answers;
 }
 

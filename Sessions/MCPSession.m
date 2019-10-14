@@ -309,6 +309,7 @@
         }
       } else {
         if ([control isEqualToString:@"d"]) {
+          [_device closeReadline];
           [_cmdStream closeIn];
           return NO;
         }

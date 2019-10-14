@@ -161,6 +161,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   ViewStream *_outStream;
   ViewStream *_errStream;
+  
+  dispatch_semaphore_t _readlineSema;
+  NSString *_readlineResult;
 }
 
 - (id)init
@@ -207,12 +210,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 {
   NSUInteger len = [input lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
   write(_pinput[1], input.UTF8String, len);
-  if (_echoMode) {
-    if ([input isEqualToString:@"\n"] || [input isEqualToString:@"\r"]) {
-      return;
-    }
-    write(_poutput[1], input.UTF8String, len);
-  }
 }
 
 - (void)writeIn:(NSString *)input
@@ -265,9 +262,28 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 }
 
 - (void)prompt:(NSString *)prompt secure:(BOOL)secure {
-//  [self setRawMode:FALSE];
+  _readlineResult = nil;
+  _readlineSema = nil;
   _rawMode = NO;
   fprintf(_stream.out, "\x1b]1337;BlinkPrompt=1\x07");
+}
+
+- (NSString *)readline:(NSString *)prompt secure:(BOOL)secure {
+  [self prompt:prompt secure:secure];
+  _readlineSema = dispatch_semaphore_create(0);
+  dispatch_semaphore_wait(_readlineSema, DISPATCH_TIME_FOREVER);
+  _readlineSema = nil;
+  NSString *line = _readlineResult;
+  _readlineResult = nil;
+  return line;
+}
+
+- (void)closeReadline {
+  if (_readlineSema) {
+    _readlineResult = nil;
+    dispatch_semaphore_signal(_readlineSema);
+    _readlineSema = nil;
+  }
 }
 
 - (void)setSecureTextEntry:(BOOL)secureTextEntry
@@ -367,6 +383,12 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 }
 
 - (void)onSubmit:(NSString *)line {
+  if (_readlineSema) {
+    _readlineResult = line;
+    dispatch_semaphore_signal(_readlineSema);
+    _readlineSema = nil;
+    return;
+  }
   [_delegate lineSubmitted:line];
 }
 
@@ -376,7 +398,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 }
 
 - (void)viewSubmitLine:(NSString *)line {
-  [_delegate lineSubmitted:line];
+  [self onSubmit:line];
 }
 
 - (void)viewCopyString:(NSString *)text

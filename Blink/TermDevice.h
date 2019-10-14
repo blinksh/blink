@@ -56,7 +56,6 @@
 @property (readonly) TermInput *input;
 @property id<TermDeviceDelegate> delegate;
 @property (nonatomic) BOOL rawMode;
-@property (nonatomic) BOOL echoMode;
 @property (nonatomic) BOOL secureTextEntry;
 @property (nonatomic) NSInteger rows;
 @property (nonatomic) NSInteger cols;
@@ -66,6 +65,8 @@
 
 - (void)onSubmit:(NSString *)line;
 - (void)prompt:(NSString *)prompt secure:(BOOL)secure;
+- (NSString *)readline:(NSString *)prompt secure:(BOOL)secure;
+- (void)closeReadline;
 
 - (void)focus;
 - (void)blur;
