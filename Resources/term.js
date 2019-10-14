@@ -67,6 +67,7 @@ function term_processKB(str) {
 }
 
 function term_displayInput(str) {
+  t.accessibilityReader_.hasUserGesture = true;
   if (str) {
     window.KeystrokeVisualizer.processInput(str);
   }
@@ -79,7 +80,8 @@ function term_setup() {
   t.onTerminalReady = function() {
     term_setAutoCarriageReturn(true);
     t.setCursorVisible(true);
-
+    t.setAccessibilityEnabled(true);
+    
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', {cols, rows});
       t.prompt.resize();

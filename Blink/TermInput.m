@@ -320,8 +320,8 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 }
 
 - (void)deviceWrite:(NSString *) input {
-  [_device write:input];
-  [_device.view displayInput:input];
+  [_device.view displayInput: input];
+  [_device write: input];
 }
 
 - (void)textStorage:(NSTextStorage *)textStorage
