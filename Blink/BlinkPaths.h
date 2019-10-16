@@ -51,6 +51,7 @@
 + (NSString *)blinkProfileFile;
 
 + (NSString *) historyFile;
++ (NSURL *)historyURL;
 + (NSString *) knownHostsFile;
 + (NSString *) defaultsFile;
 

@@ -261,15 +261,26 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   _rawMode = rawMode;
 }
 
-- (void)prompt:(NSString *)prompt secure:(BOOL)secure {
+- (void)prompt:(NSString *)prompt secure:(BOOL)secure shell:(BOOL)shell {
   _readlineResult = nil;
   _readlineSema = nil;
   _rawMode = NO;
-  fprintf(_stream.out, "\x1b]1337;BlinkPrompt=1\x07");
+  
+  
+  NSDictionary *dict = @{
+    @"prompt": prompt ?: @"",
+    @"secure": @(secure),
+    @"sh": @(shell)
+  };
+  
+  NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:nil];
+  NSString *cmd = [NSString stringWithFormat: @"\x1b]1337;BlinkPrompt=%@\x07", [data base64EncodedStringWithOptions:kNilOptions]];
+  
+  fprintf(_stream.out, cmd.UTF8String);
 }
 
 - (NSString *)readline:(NSString *)prompt secure:(BOOL)secure {
-  [self prompt:prompt secure:secure];
+  [self prompt:prompt secure:secure shell:NO];
   _readlineSema = dispatch_semaphore_create(0);
   dispatch_semaphore_wait(_readlineSema, DISPATCH_TIME_FOREVER);
   _readlineSema = nil;

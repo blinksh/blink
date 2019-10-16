@@ -79,7 +79,7 @@
 }
 
 - (void)executeWithArgs:(NSString *)args {
-  [_device prompt:@"blink> " secure:NO];
+  [_device prompt:@"blink> " secure:NO shell:YES];
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
@@ -144,7 +144,7 @@
     _sshClients = [[NSMutableArray alloc] init];
   }
   
-  [_device prompt:@"blink> " secure:NO];
+  [_device prompt:@"blink> " secure:NO shell:YES];
   
   return YES;
 }

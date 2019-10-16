@@ -64,7 +64,7 @@
 - (void)attachView:(TermView *)termView;
 
 - (void)onSubmit:(NSString *)line;
-- (void)prompt:(NSString *)prompt secure:(BOOL)secure;
+- (void)prompt:(NSString *)prompt secure:(BOOL)secure shell:(BOOL)shell;
 - (NSString *)readline:(NSString *)prompt secure:(BOOL)secure;
 - (void)closeReadline;
 

@@ -235,7 +235,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
     
     let dScale = 1.0 - recognizer.scale;
-    if abs(dScale) > 0.05 {
+    if abs(dScale) > 0.06 {
       recognizer.view?.superview?.dropSuperViewTouches()
       _scrollView.panGestureRecognizer.dropTouches()
       _2fTapRecognizer.dropTouches()

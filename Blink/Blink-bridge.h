@@ -34,6 +34,7 @@
 #define Blink_bridge_h
 
 #import "BKDefaults.h"
+#import "BlinkPaths.h"
 #import "DeviceInfo.h"
 #import "LayoutManager.h"
 #import "BKTouchIDAuthManager.h"
