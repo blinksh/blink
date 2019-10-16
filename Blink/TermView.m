@@ -367,16 +367,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewWinSizeChanged:__winSizeFromJSON(data)];
   } else if ([operation isEqualToString:@"terminalReady"]) {
     [self _onTerminalReady:data];
-//    for (id interaction in _webView.subviews.firstObject.subviews.firstObject.interactions) {
-//      [_webView.subviews.firstObject.subviews.firstObject removeInteraction:interaction];
-//    }
-//    dispatch_async(dispatch_get_main_queue(), ^{
-    
-    [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
-      [_coverView removeFromSuperview];
-      _coverView = nil;
-    }];
-    
   } else if ([operation isEqualToString:@"fontSizeChanged"]) {
     [_device viewFontSizeChanged:[data[@"size"] integerValue]];
   } else if ([operation isEqualToString:@"copy"]) {
@@ -387,6 +377,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewSendString:data[@"string"]];
   } else if ([operation isEqualToString:@"line"]) {
     [_device viewSubmitLine:data[@"text"]];
+  } else if ([operation isEqualToString:@"api"]) {
+    [_device viewAPICall:data[@"name"] andJSONRequest:data[@"request"]];
   }
 }
 
@@ -414,6 +406,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else {
     [self blur];
   }
+  
+  [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
+    [_coverView removeFromSuperview];
+    _coverView = nil;
+  }];
 }
   
 - (NSString *)_menuTitleFromNSURL:(NSURL *)url
@@ -495,6 +492,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity
 {
   [_webView evaluateJavaScript:term_modifySelection(direction, granularity) completionHandler:nil];
+}
+
+- (void)apiResponse:(NSString *)name response:(NSString *)response {
+  [_webView evaluateJavaScript:term_apiResponse(name, response) completionHandler:nil];
 }
 
 - (NSURL *)_detectLinkInSelection:(NSDictionary *)data

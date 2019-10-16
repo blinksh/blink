@@ -34,6 +34,7 @@ import Foundation
 import SwiftUI
 import Combine
 
+private let _historyQueue = DispatchQueue(label: "history.queue")
 
 struct History {
   
@@ -51,53 +52,88 @@ struct History {
   
   struct SearchRequest: Codable {
     let id: Int
-    let pattern: String = ""
-    let cursor: Int = -1
-    let before: Int = 0
-    let after: Int = 0
+    let pattern: String
+    let cursor: Int
+    let before: Int
+    let after: Int
   }
 
   private static var _lastCommand: String = "";
-  static private var _content: String? = nil
+  static private var _lines: [String]? = nil
+  static private let linesLimit = 5000
   
   static func appendIfNeeded(command: String) {
-    if _lastCommand == command  {
-      return
+    _historyQueue.async {
+      if _lastCommand == command || command.isEmpty {
+        return
+      }
+
+      var lines = _getLines()
+      lines.append(command)
+      _lastCommand = command
+      
+      if lines.count > linesLimit {
+        lines.remove(at: 0)
+      }
+      
+      _saveLines(lines)
     }
   }
   
-  private static func _getContent() -> String {
-    if let content = _content {
+  private static func _saveLines(_ lines: [String]) {
+    var allLines = lines.joined(separator: "\n")
+    allLines.append("\n")
+    
+    guard
+      let historyFile = BlinkPaths.historyFile(),
+      let _ = try? allLines.write(toFile: historyFile, atomically: true, encoding: .utf8)
+    else {
+      return
+    }
+  
+    _lines = lines
+  }
+  
+  private static func _getLines() -> [String] {
+    if let lines = _lines {
       // Keep history for more time
-      return content;
+      return lines;
     }
     
     guard
       let historyFile = BlinkPaths.historyFile(),
       let str = try? String(contentsOfFile: historyFile, encoding: .utf8)
     else {
-      return ""
+      return []
     }
     
-    // start timer
-    _content = str
-    return str
-  }
-  
-  static func _filter(text: String, pattern: String) -> (total: Int, lines: [Line]) {
-    var lines: [Line] = [];
-    var num = 0
-    let all = pattern.isEmpty
-    text.enumerateLines { line, _ in
-      num += 1
-      if all {
-        lines.append(Line(num: num, val: line, rel: 0))
-      } else if let range = line.range(of: pattern, options: [], range: nil, locale: nil) {
-        let rel = line.distance(from: line.startIndex, to: range.lowerBound)
-        lines.append(Line(num: num, val: line, rel: rel))
+    var result: [String] = []
+    
+    str.enumerateLines { line, _ in
+      if !line.isEmpty {
+        result.append(line)
       }
     }
-    return (total: num, lines: lines.sorted { return $0.rel < $1.rel })
+    
+    _lines = result
+    return result
+  }
+  
+  static func _filter(lines: [String], pattern: String) -> (total: Int, lines: [Line]) {
+    var result: [Line] = [];
+    var num = 0
+    let all = pattern.isEmpty
+    for line in lines {
+      num += 1
+      if all {
+        result.append(Line(num: num, val: line, rel: 0))
+      } else if let range = line.range(of: pattern, options: [], range: nil, locale: nil) {
+        let rel = line.distance(from: line.startIndex, to: range.lowerBound)
+        result.append(Line(num: num, val: line, rel: rel))
+      }
+    }
+    
+    return (total: num, lines: result.sorted { return $0.rel < $1.rel })
   }
   
   static func _slice(lines: [Line], with request: SearchRequest) -> [Line] {
@@ -120,13 +156,13 @@ struct History {
   
   static func _search(_ request: SearchRequest) -> SearchResponse {
     
-    let (total, lines) = _filter(text: _getContent(), pattern: request.pattern)
+    let (total, lines) = _filter(lines: _getLines(), pattern: request.pattern)
     let slice = _slice(lines: lines, with: request)
     
     return SearchResponse(requestId: request.id, lines: slice, total: total)
   }
   
-  static func searchJSON(json: String) -> String? {
+  static func _searchAPI(json: String) -> String? {
     let dec = JSONDecoder()
     guard
       let requestData = json.data(using: .utf8),
@@ -141,5 +177,21 @@ struct History {
       return String(data: responseData, encoding: .utf8)
     }
     return nil
+  }
+  
+
+  static func searchAPI(json: String) -> AnyPublisher<String, Never> {
+    Just(json)
+      .subscribe(on: _historyQueue)
+      .map(History._searchAPI)
+      .compactMap({ $0 })
+      .eraseToAnyPublisher()
+  }
+}
+
+
+@objc class HistoryObj: NSObject {
+  @objc static func appendIfNeeded(command: String) {
+    History.appendIfNeeded(command: command + "") // mosh overwrites internals of the string!
   }
 }

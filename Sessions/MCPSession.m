@@ -93,6 +93,9 @@
 }
 
 - (BOOL)_runCommand:(NSString *)cmdline {
+  
+  [HistoryObj appendIfNeededWithCommand:cmdline];
+  
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
   NSString *cmd = arr[0];
   

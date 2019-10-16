@@ -124,6 +124,51 @@ function term_init() {
   }
 }
 
+var _requestId = 0;
+var _requestsMap = {};
+
+class ApiRequest {
+  constructor(name, request) {
+    this.id = _requestId++;
+    request.id = this.id;
+    var self = this;
+    this.promise = new Promise(function(resolve, reject) {
+        self.resolve = resolve;
+        self.reject = reject;
+    });
+    _requestsMap[this.id] = self
+    _postMessage("api", {name, request: JSON.stringify(request)} );
+    
+    this.then = this.promise.then.bind(this.promise);
+    this.catch = this.promise.catch.bind(this.promise);
+  }
+  
+  cancel() {
+    this.resolve(null);
+    delete _requestsMap[this.id];
+  }
+}
+
+function term_apiRequest(name, request) {
+  console.log(request);
+  return new ApiRequest(name, request)
+}
+
+function term_apiResponse(name, response) {
+  var res = JSON.parse(response);
+  var req = _requestsMap[res.requestId];
+  if (!req) {
+    return;
+  }
+  console.log(res.lines);
+  delete _requestsMap[req.id];
+  req.resolve(res)
+}
+
+
+window.term_apiRequest = term_apiRequest;
+window.term_apiResponse = term_apiResponse;
+
 function term_write(data) {
   t.interpret(data);
 }

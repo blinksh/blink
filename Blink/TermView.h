@@ -50,6 +50,7 @@
 - (void)viewCopyString:(NSString *)text;
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
 - (void)viewSubmitLine:(NSString *)line;
+- (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request;
 
 @end
 
@@ -97,6 +98,7 @@
 - (void)resetFontSize;
 - (void)writeB64:(NSData *)data;
 - (void)displayInput:(NSString *)input;
+- (void)apiResponse:(NSString *)name response:(NSString *)response;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;

@@ -43,6 +43,7 @@
 - (BOOL)handleControl:(NSString *)control;
 - (void)lineSubmitted:(NSString *)line;
 - (void)deviceFocused;
+- (void)apiCall:(NSString *)api andRequest:(NSString *)request;
 - (UIViewController *)viewController;
 
 @end

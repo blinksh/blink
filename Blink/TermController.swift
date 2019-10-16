@@ -32,6 +32,7 @@
 
 import Foundation
 import UIKit
+import Combine
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
   // May be do it optional
@@ -49,6 +50,7 @@ class TermController: UIViewController {
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
+  private var _bag = Array<AnyCancellable>()
   private var _termView = TermView(frame: .zero)
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
@@ -210,8 +212,17 @@ extension TermController: SessionDelegate {
 }
 
 extension TermController: TermDeviceDelegate {
-  func runCommand(_ cmd: String!) {
-    
+  
+  func apiCall(_ api: String!, andRequest request: String!) {
+    weak var termView = _termView
+    switch api {
+    case "history.search":
+      History.searchAPI(json: request)
+        .receive(on: RunLoop.main)
+        .sink { termView?.apiResponse(api, response: $0) }
+        .store(in: &_bag)
+    default: break;
+    }
   }
   
   public func deviceIsReady() {
@@ -323,3 +334,4 @@ extension TermController: SuspendableSession {
     archiver.encode(_sessionParams, forKey: _decodableKey)
   }
 }
+

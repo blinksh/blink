@@ -270,7 +270,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   NSDictionary *dict = @{
     @"prompt": prompt ?: @"",
     @"secure": @(secure),
-    @"sh": @(shell)
+    @"shell": @(shell)
   };
   
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:nil];
@@ -370,6 +370,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 
 #pragma mark - TermViewDeviceProtocol
+
+- (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request {
+  [_delegate apiCall:api andRequest:request];
+}
 
 - (void)viewIsReady
 {

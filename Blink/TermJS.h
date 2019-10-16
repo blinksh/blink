@@ -122,12 +122,12 @@ NSString *term_getCurrentSelection()
 
 NSString *term_setCursorBlink(BOOL state)
 {
-  return [NSString stringWithFormat:@"term_set('cursor-blink', %@)", state ? @"true" : @"false"];
+  return [NSString stringWithFormat:@"term_set('cursor-blink', %@);", state ? @"true" : @"false"];
 }
 
 NSString *term_setBoldAsBright(BOOL state)
 {
-  return [NSString stringWithFormat:@"term_set('enable-bold-as-bright', %@)", state ? @"true" : @"false"];
+  return [NSString stringWithFormat:@"term_set('enable-bold-as-bright', %@);", state ? @"true" : @"false"];
 }
 
 NSString *term_setBoldEnabled(NSUInteger state)
@@ -138,7 +138,7 @@ NSString *term_setBoldEnabled(NSUInteger state)
   } else if (state == 2) {
     stateStr = @"false";
   }
-  return [NSString stringWithFormat:@"term_set('enable-bold', %@)", stateStr];
+  return [NSString stringWithFormat:@"term_set('enable-bold', %@);", stateStr];
 }
 
 NSString *term_setFontFamily(NSString *family, NSString * fontSizeDetectionMethod)
@@ -158,12 +158,12 @@ NSString *term_cleanSelection()
 
 NSString *term_modifySelection(NSString *direction, NSString *granularity)
 {
-  return [NSString stringWithFormat:@"term_modifySelection(%@[0], %@[0])", _encodeString(direction), _encodeString(granularity)];
+  return [NSString stringWithFormat:@"term_modifySelection(%@[0], %@[0]);", _encodeString(direction), _encodeString(granularity)];
 }
 
 NSString *term_setIme(NSString *imeText)
 {
-  return [NSString stringWithFormat:@"term_setIme(%@[0])", _encodeString(imeText)];
+  return [NSString stringWithFormat:@"term_setIme(%@[0]);", _encodeString(imeText)];
 }
 
 NSString *term_modifySideSelection()
@@ -171,22 +171,21 @@ NSString *term_modifySideSelection()
   return @"term_modifySideSelection();";
 }
 
-NSString *term_setAutoCarriageReturn(BOOL state)
-{
-  return [NSString stringWithFormat:@"term_setAutoCarriageReturn(%@);", state ? @"true" : @"false"];
-}
-
 NSString *term_processKB(NSString *str) {
-  return  [NSString stringWithFormat:@"term_processKB(%@[0])", _encodeString(str)];
+  return  [NSString stringWithFormat:@"term_processKB(%@[0]);", _encodeString(str)];
 }
 
 NSString *term_displayInput(NSString *str) {
-  return  [NSString stringWithFormat:@"term_displayInput(%@[0])", _encodeString(str)];
+  return  [NSString stringWithFormat:@"term_displayInput(%@[0]);", _encodeString(str)];
+}
+
+NSString *term_apiResponse(NSString *name, NSString *response) {
+  return  [NSString stringWithFormat:@"term_apiResponse(%@[0], %@[0]);", _encodeString(name), _encodeString(response)];
 }
 
 
 NSString *term_restore() {
-  return @"term_restore()";
+  return @"term_restore();";
 }
 
 
