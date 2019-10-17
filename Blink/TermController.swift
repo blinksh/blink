@@ -217,10 +217,9 @@ extension TermController: TermDeviceDelegate {
     weak var termView = _termView
     switch api {
     case "history.search":
-      History.searchAPI(json: request)
+      _ = History.searchAPI(json: request)
         .receive(on: RunLoop.main)
         .sink { termView?.apiResponse(api, response: $0) }
-        .store(in: &_bag)
     default: break;
     }
   }

@@ -68,7 +68,7 @@ function term_processKB(str) {
 
 function term_displayInput(str) {
   t.accessibilityReader_.hasUserGesture = true;
-  if (str) {
+  if (str && !t.prompt._secure) {
     window.KeystrokeVisualizer.processInput(str);
   }
 }
@@ -299,7 +299,9 @@ function term_reportMouseEvent(name, x, y, buttons) {
 function term_reportWheelEvent(name, x, y, deltaX, deltaY) {
   var event = new WheelEvent(name, {deltaX, deltaY});
   _setTermCoordinates(event, x, y);
-  t.onMouse(event);
+  if (!t.prompt.processMouseScroll(event)) {
+    t.onMouse(event);
+  }
 }
 
 function term_setWidth(cols) {

@@ -47,6 +47,7 @@ struct History {
   struct SearchResponse: Codable {
     let requestId: Int
     let lines: [Line]
+    let found: Int
     let total: Int
   }
   
@@ -69,8 +70,13 @@ struct History {
       }
 
       var lines = _getLines()
-      lines.append(command)
       _lastCommand = command
+      
+      if lines.last == command {
+        return;
+      }
+      
+      lines.append(command)
       
       if lines.count > linesLimit {
         lines.remove(at: 0)
@@ -133,7 +139,7 @@ struct History {
       }
     }
     
-    return (total: num, lines: result.sorted { return $0.rel < $1.rel })
+    return (total: num, lines: result.sorted { return $0.rel > $1.rel })
   }
   
   static func _slice(lines: [Line], with request: SearchRequest) -> [Line] {
@@ -159,7 +165,7 @@ struct History {
     let (total, lines) = _filter(lines: _getLines(), pattern: request.pattern)
     let slice = _slice(lines: lines, with: request)
     
-    return SearchResponse(requestId: request.id, lines: slice, total: total)
+    return SearchResponse(requestId: request.id, lines: slice, found: lines.count, total: total)
   }
   
   static func _searchAPI(json: String) -> String? {
