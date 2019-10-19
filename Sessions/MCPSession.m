@@ -64,6 +64,7 @@
   NSMutableArray<WeakSSHClient *> *_sshClients;
   dispatch_queue_t _cmdQueue;
   TermStream *_cmdStream;
+  NSString *_currentCmdLine;
 }
 
 @dynamic sessionParams;
@@ -79,7 +80,29 @@
 }
 
 - (void)executeWithArgs:(NSString *)args {
-  [_device prompt:@"blink> " secure:NO shell:YES];
+  dispatch_async(_cmdQueue, ^{
+    [self setActiveSession];
+    ios_setMiniRoot([BlinkPaths documents]);
+    
+    ios_setContext((__bridge void*)self);
+    
+    thread_stdout = nil;
+    thread_stdin = nil;
+    thread_stderr = nil;
+    
+    ios_setStreams(_stream.in, _stream.out, _stream.err);
+    
+    // We are restoring mosh session if possible first.
+    if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+      _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+      [_childSession executeAttachedWithArgs:@""];
+      _childSession = nil;
+      if (self.sessionParams.hasEncodedState) {
+        return;
+      }
+    }
+    [_device prompt:@"blink> " secure:NO shell:YES];
+  });
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
@@ -88,7 +111,9 @@
     return;
   }
   dispatch_async(_cmdQueue, ^{
+    self->_currentCmdLine = cmd;
     [self _runCommand:cmd];
+    self->_currentCmdLine = nil;
   });
 }
 
@@ -154,17 +179,6 @@
 
 - (int)main:(int)argc argv:(char **)argv
 {
-    
-  // We are restoring mosh session if possible first.
-  if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
-    _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
-    [_childSession executeAttachedWithArgs:@""];
-    _childSession = nil;
-    if (self.sessionParams.hasEncodedState) {
-      return 0;
-    }
-  }
-  
   return 0;
 }
 
@@ -187,7 +201,7 @@
 }
 
 - (bool)isRunningCmd {
-  return _childSession != nil || _currentCmd != nil;
+  return _childSession != nil || _currentCmd != nil || _currentCmdLine != nil;
 }
 
 - (NSArray<NSString *> *)_symlinksInHomeDirectory

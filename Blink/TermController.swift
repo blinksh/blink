@@ -128,6 +128,11 @@ class TermController: UIViewController {
     view.setNeedsLayout()
   }
   
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated);
+    resumeIfNeeded()
+  }
+  
   public override func viewWillLayoutSubviews() {
     super.viewWillLayoutSubviews()
     
@@ -296,24 +301,14 @@ extension TermController: SuspendableSession {
     }
     
     _sessionParams = params
-    
-    guard
-      _sessionParams.hasEncodedState(),
-      _session == nil // will be created on startSession
-    else {
-      return
+    _session?.sessionParams = params
+   
+    if _sessionParams.hasEncodedState() {
+      _session?.execute(withArgs: "")
     }
-    
-    let input = _termDevice.input
-    _termDevice = TermDevice()
-    _termDevice.cols = params.cols
-    _termDevice.rows = params.rows
-    _termDevice.delegate = self
-    _termDevice.attachView(_termView)
-    _termDevice.attachInput(input)
-    
-    if _termView.isReady {
-      startSession()
+
+    if view.bounds.size != _sessionParams.viewSize {
+      _session?.sigwinch()
     }
   }
   

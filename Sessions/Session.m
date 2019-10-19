@@ -137,10 +137,17 @@ int makeargs(const char *command, char ***aa)
 
 @end
 
+void run_cleanup(void *sessionData) {
+  Session *session = CFBridgingRelease(sessionData);
+  [session main_cleanup];
+}
+
 void *run_session(void *sessionData)
 {
-  Session *session = CFBridgingRelease(sessionData);
+  pthread_cleanup_push(run_cleanup, sessionData);
+  Session *session = (__bridge Session *)sessionData;
   [session _run];
+  pthread_cleanup_pop(true);
   return NULL;
 }
 
@@ -148,12 +155,15 @@ void *run_session(void *sessionData)
   pthread_attr_t _attr;
   bool _attached;
   NSString *_args;
+  char **_argv;
 }
 
 - (void)_run {
-  char **argv;
-  int argc = makeargs(_args.UTF8String, &argv);
-  [self main:argc argv:argv];
+  int argc = makeargs(_args.UTF8String, &_argv);
+  [self main:argc argv:_argv];
+}
+
+- (void)main_cleanup {
   [_stream close];
   dispatch_sync(dispatch_get_main_queue(), ^{
     [_delegate sessionFinished];
@@ -161,7 +171,8 @@ void *run_session(void *sessionData)
   _stream = nil;
   _device = nil;
   _delegate = nil;
-  free(argv);
+  free(_argv);
+  _argv = NULL;
 }
 
 - (id)initWithDevice:(TermDevice *)device andParams:(SessionParams *)params
@@ -186,6 +197,7 @@ void *run_session(void *sessionData)
   pthread_attr_init(&_attr);
   pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_DETACHED);
   pthread_create(&_tid, &_attr, run_session, (void *)selfRef);
+  pthread_attr_destroy(&_attr);
 }
 
 - (void)executeAttachedWithArgs:(NSString *)argstr
@@ -194,8 +206,10 @@ void *run_session(void *sessionData)
   _args = argstr;
 
   CFTypeRef selfRef = CFBridgingRetain(self);
+  pthread_attr_setdetachstate(&_attr, PTHREAD_CREATE_JOINABLE);
   pthread_create(&_tid, NULL, run_session, (void *)selfRef);
   pthread_join(_tid, NULL);
+  pthread_attr_destroy(&_attr);
 }
 
 - (int)main:(int)argc argv:(char **)argv {

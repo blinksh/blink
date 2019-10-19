@@ -84,6 +84,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   int _debug;
 //  NSLock * _lock;
   dispatch_semaphore_t _sema;
+  CFTypeRef _selfRef;
 }
 
 @dynamic sessionParams;
@@ -254,9 +255,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
   [self.sessionParams cleanEncodedState];
   
+  _selfRef = CFBridgingRetain(self);
   mosh_main(
             _stream.in, _stream.out, &_device->win,
-            &__state_callback, (__bridge void *) self,
+            &__state_callback, (void *)_selfRef,
             [self.sessionParams.ip UTF8String],
             [self.sessionParams.port UTF8String],
             [self.sessionParams.key UTF8String],
@@ -270,6 +272,14 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   fprintf(_stream.out, "\nMosh session finished!\n");
   
   return 0;
+}
+
+- (void)main_cleanup {
+  if (_selfRef) {
+    CFBridgingRelease(_selfRef);
+    _selfRef = NULL;
+  }
+  [super main_cleanup];
 }
 
 - (void)processMoshSettings:(BKHosts *)host
@@ -485,10 +495,17 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)onStateEncoded: (NSData *) encodedState
 {
+  NSLog(@"encodedState: %@", encodedState);
   self.sessionParams.encodedState = encodedState;
   NSLog(@"signalling");
   dispatch_semaphore_signal(_sema);
+  
   NSLog(@"signalled");
+}
+
+- (void)dealloc
+{
+  NSLog(@"deallocating mosh");
 }
 
 @end
