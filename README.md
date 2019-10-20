@@ -17,7 +17,7 @@ For more information, please visit [Blink Shell](http://blink.sh).
 
 # Additions: 
 
-This fork also contains a set of shell utilities, so you can add / remove files, list them, etc.
+Blink also contains a set of shell utilities, so you can add / remove files, list them, etc.
 
 Specifically, the commands available (as of now) are:
 
