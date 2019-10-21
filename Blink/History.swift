@@ -186,7 +186,7 @@ struct History {
   }
   
 
-  static func searchAPI(json: String) -> AnyPublisher<String, Never> {
+  static func searchAPI(session: MCPSession, json: String) -> AnyPublisher<String, Never> {
     Just(json)
       .subscribe(on: _historyQueue)
       .map(History._searchAPI)

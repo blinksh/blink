@@ -64,7 +64,7 @@ enum BKMoshPrediction {
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPort:(NSString *)moshPort startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd;
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
-+ (NSMutableArray *)all;
++ (NSMutableArray<BKHosts *> *)all;
 + (NSInteger)count;
 + (NSString *)predictionStringForRawValue:(int)rawValue;
 + (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString;

@@ -31,11 +31,69 @@
 
 
 import Foundation
+import Combine
+import ios_system
+
+private let _completionQueue = DispatchQueue(label: "completion.queue")
 
 struct Completions {
   
-  func _commands() -> [String: String] {
-    [
+  struct ForRequest: Codable {
+    let id: Int
+    let input: String
+  }
+  
+  struct ForResponse: Codable {
+    let requestId: Int
+    let input: String
+    let result: [String]
+    let kind: String
+  }
+  
+  enum Kind: String {
+    case command
+    case file
+    case directory
+    case host
+    case blinkHost
+    case blinkGeo
+    case no
+  }
+  
+  static func cleanCaches() {
+    __allCommandsCache = nil
+    __commandHintsCache = nil
+  }
+  
+  static var __allCommandsCache: Array<String>? = nil
+  
+  static func _allCommands() -> [String] {
+    
+    if let cache = __allCommandsCache {
+      return cache
+    }
+    
+    var result:Array<String> = []
+    if let commands = commandsAsArray() as? [String] {
+      result.append(contentsOf: commands)
+    }
+    result.append(contentsOf: ["mosh", "exit", "ssh-copy-id"])
+    
+    let set = Set<String>(result)
+    result = Array(set)
+    result = result.sorted()
+    __allCommandsCache = result
+    
+    return result
+  }
+  
+  static var __commandHintsCache: [String: String]? = nil
+  
+  static func _commandHints() -> [String: String] {
+    if let cache = __commandHintsCache {
+      return cache
+    }
+    let result = [
       "awk": "Select particular records in a file and perform operations upon them.",
       "cat": "Concatenate and print files.",
       "cd":  "Change directory.",
@@ -112,9 +170,183 @@ struct Completions {
       "open": "open url of file (Experimental). 📤",
       "link-files": "link folders from Files.app (Experimental)."
     ]
+    
+    __commandHintsCache = result
+    return result
+  }
+    
+  private static func _completionKind(_ cmd: String) -> Kind {
+    switch cmd {
+    case "": return .command
+    case "ssh", "ssh2", "mosh": return .blinkHost
+    case "ping": return .host
+    case "ls": return .directory
+    case "file": return .file
+    case "geo": return .blinkGeo
+    case "help", "exit", "whoami", "config", "clear", "history", "link-files":
+      return .no
+    default:
+      return Kind(rawValue: operatesOn(cmd) ?? "") ?? .no
+    }
   }
 
-  func complete(str: String) {
+  static func _for(str: String) -> (kind: Kind, result: [String]) {
+    let input = _lastCommand(str)
     
+    let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
+    var kind: Kind = .command
+    if parts.count <= 1 {
+      return (kind: kind, result: _complete(kind: kind, input: str))
+    }
+    
+    let cmd = String(parts[0])
+    kind = _completionKind(cmd)
+    
+    return (
+      kind: kind,
+      result: _complete(kind: kind, input: String(parts[1])).map( { cmd + " " + input.prefix + $0 } )
+    )
+  }
+  
+  static func _for(request: ForRequest) -> ForResponse {
+    let res = _for(str: request.input)
+    return ForResponse(
+      requestId: request.id,
+      input: request.input,
+      result: res.result,
+      kind: res.kind.rawValue)
+  }
+  
+  static func _forAPI(session: MCPSession, json: String) -> String? {
+    let dec = JSONDecoder()
+    guard
+      let requestData = json.data(using: .utf8),
+      let request = try? dec.decode(ForRequest.self, from: requestData)
+    else {
+      return nil
+    }
+
+    session.setActiveSession()
+    let response = _for(request: request)
+    let enc = JSONEncoder()
+    if let responseData = try? enc.encode(response) {
+      return String(data: responseData, encoding: .utf8)
+    }
+    return nil
+  }
+
+
+  static func forAPI(session: MCPSession, json: String) -> AnyPublisher<String, Never> {
+    Just(json)
+      .subscribe(on: _completionQueue)
+      .map( { _forAPI(session:session, json:$0) } )
+      .compactMap({ $0 })
+      .eraseToAnyPublisher()
+  }
+  
+  static func _complete(kind: Kind, input: String) -> [String] {
+    var src: [String] = []
+    
+    switch kind {
+    case .command: src = _allCommands()
+    case .file: src = _allPaths(prefix: input, skipFiles: false);
+    case .directory: src = _allPaths(prefix: input, skipFiles: true);
+    case .host: src = _allBlinkHosts();
+    case .blinkHost: src = _allBlinkHosts();
+    case .blinkGeo: src = ["track", "lock", "stop", "current", "authorize", "last"]
+    default: break
+    }
+    
+    return src.filter( {$0.hasPrefix(input)} ).sorted()
+  }
+  
+  private static func _allBlinkHosts() -> [String] {
+    let hosts: Set<String> = Set(
+      (BKHosts.all() ?? [])
+        .compactMap({$0 as? BKHosts})
+        .compactMap({$0.host})
+    )
+    
+    return Array(hosts)
+  }
+  
+  private static func _allPaths(prefix: String, skipFiles: Bool) -> [String] {
+    let arg = prefix as NSString
+    var dir: String
+    var isDir: ObjCBool = false
+    let fm = FileManager.default
+    var result: [String] = []
+  
+    if fm.fileExists(atPath: arg as String, isDirectory: &isDir) && isDir.boolValue {
+      if arg.lastPathComponent == "." && arg != "." {
+        dir = arg.deletingLastPathComponent
+      } else {
+        dir = arg as String
+      }
+    } else {
+      dir = arg.deletingLastPathComponent
+      if dir.isEmpty {
+        dir = "."
+      }
+    }
+    dir = (dir as NSString).expandingTildeInPath
+
+    guard fm.fileExists(atPath: dir, isDirectory: &isDir) && isDir.boolValue
+    else {
+      return result
+    }
+    
+    let filesAndFolders = (try? fm.contentsOfDirectory(atPath: dir)) ?? []
+    
+    let deeper = dir != "."
+    let nsDir = dir as NSString
+    for fileOrFolder in filesAndFolders {
+      let folder = deeper ? nsDir.appendingPathComponent(fileOrFolder) : fileOrFolder
+      if fm.fileExists(atPath: folder, isDirectory: &isDir) {
+        if skipFiles && !isDir.boolValue {
+          continue
+        }
+        result.append(folder)
+      }
+    }
+    return result;
+  }
+  
+  // If we got `cat nice.txt | grep n ` it will return `grep n `
+  private static func _lastCommand(_ str: String) -> (prefix: String, idx: Int, value: String) {
+    var buf = Array(str)
+    var len = buf.count
+    var bp = 0;
+    var i = 0;
+    while i < len {
+      defer { i += 1 }
+      
+      let ch = buf[i]
+      
+      let quotes = "\"'"
+      
+      for quote in quotes {
+        if ch == quote {
+          i += 1
+          while i < len && buf[i] != quote {
+            i += 1
+          }
+        }
+      }
+      
+      if ch == "|" {
+        bp = i
+      }
+    }
+    
+    while bp < len {
+      if buf[bp] == " " || buf[bp] == "|" {
+        bp += 1
+      } else {
+        break
+      }
+    }
+    
+    return (prefix: String(buf.prefix(bp)), idx: bp, value: String(buf.suffix(from: bp)))
   }
 }

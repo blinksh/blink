@@ -83,7 +83,8 @@
   dispatch_async(_cmdQueue, ^{
     [self setActiveSession];
     ios_setMiniRoot([BlinkPaths documents]);
-    
+    [self updateAllowedPaths];
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
     ios_setContext((__bridge void*)self);
     
     thread_stdout = nil;
@@ -125,7 +126,6 @@
   NSString *cmd = arr[0];
   
   [self setActiveSession];
-  ios_setMiniRoot([BlinkPaths documents]);
   
   ios_setContext((__bridge void*)self);
   
@@ -139,8 +139,7 @@
     return NO;
   }
   
-  [self updateAllowedPaths];
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
+  
   
   if ([cmd isEqualToString:@"mosh"]) {
     [self _runMoshWithArgs:cmdline];
