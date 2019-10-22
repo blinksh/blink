@@ -216,21 +216,24 @@ extension TermController: SessionDelegate {
   }
 }
 
+let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
+  "history.search": History.searchAPI,
+  "completion.for": Complete.forAPI
+]
+
 extension TermController: TermDeviceDelegate {
   
   func apiCall(_ api: String!, andRequest request: String!) {
-    guard let session = _session else {
+    guard
+      let api = api,
+      let session = _session,
+      let call = _apiRoutes[api]
+    else {
       return
-    }
-    
-    var call: (MCPSession, String) -> AnyPublisher<String, Never>
-    switch api {
-    case "history.search": call = History.searchAPI
-    case "completion.for": call = Completions.forAPI
-    default: return;
     }
 
     weak var termView = _termView
+
     _ = call(session, request)
       .receive(on: RunLoop.main)
       .sink { termView?.apiResponse(api, response: $0) }

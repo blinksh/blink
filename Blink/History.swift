@@ -46,6 +46,7 @@ struct History {
   
   struct SearchResponse: Codable {
     let requestId: Int
+    let pattern: String
     let lines: [Line]
     let found: Int
     let total: Int
@@ -165,7 +166,7 @@ struct History {
     let (total, lines) = _filter(lines: _getLines(), pattern: request.pattern)
     let slice = _slice(lines: lines, with: request)
     
-    return SearchResponse(requestId: request.id, lines: slice, found: lines.count, total: total)
+    return SearchResponse(requestId: request.id, pattern: request.pattern, lines: slice, found: lines.count, total: total)
   }
   
   static func _searchAPI(json: String) -> String? {

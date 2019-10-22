@@ -36,7 +36,7 @@ import ios_system
 
 private let _completionQueue = DispatchQueue(label: "completion.queue")
 
-struct Completions {
+struct Complete {
   
   struct ForRequest: Codable {
     let id: Int
@@ -47,6 +47,7 @@ struct Completions {
     let requestId: Int
     let input: String
     let result: [String]
+    let hint: String
     let kind: String
   }
   
@@ -189,22 +190,49 @@ struct Completions {
       return Kind(rawValue: operatesOn(cmd) ?? "") ?? .no
     }
   }
+  
+  static func _hint(kind: Kind, candidates: [String]) -> String {
+    guard let first = candidates.first else {
+      return ""
+    }
+    var result = "";
+    switch kind {
+    case .command:
+      if let hint = _commandHints()[first] {
+        result = "\(first) - \(hint)"
+      }
+    default:
+      result = candidates.prefix(5).joined(separator: ", ")
+    }
+    
+    return result;
+  }
 
-  static func _for(str: String) -> (kind: Kind, result: [String]) {
+  static func _for(str: String) -> (kind: Kind, result: [String], hint: String) {
     let input = _lastCommand(str)
+    var result:[String] = []
     
     let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
+    debugPrint(input.value, parts)
+    
     var kind: Kind = .command
+    var hint: String = ""
     if parts.count <= 1 {
-      return (kind: kind, result: _complete(kind: kind, input: str))
+      result = _complete(kind: kind, input: input.value)
+      hint = _hint(kind: kind, candidates: result)
+      return (kind: kind, result: result.map { input.prefix + $0 }, hint: hint.isEmpty ? "" : input.prefix + hint)
     }
     
     let cmd = String(parts[0])
     kind = _completionKind(cmd)
+    result = _complete(kind: kind, input: String(parts[1]))
+    hint = _hint(kind: kind, candidates: result)
     
+    let cmdPrefix = input.prefix + cmd + " "
     return (
       kind: kind,
-      result: _complete(kind: kind, input: String(parts[1])).map( { cmd + " " + input.prefix + $0 } )
+      result: result.map( { cmdPrefix + $0 } ),
+      hint: hint.isEmpty ? "" : cmdPrefix + hint
     )
   }
   
@@ -214,6 +242,7 @@ struct Completions {
       requestId: request.id,
       input: request.input,
       result: res.result,
+      hint: res.hint,
       kind: res.kind.rawValue)
   }
   
