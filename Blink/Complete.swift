@@ -40,6 +40,7 @@ struct Complete {
   
   struct ForRequest: Codable {
     let id: Int
+    let cursor: Int
     let input: String
   }
   
@@ -208,12 +209,11 @@ struct Complete {
     return result;
   }
 
-  static func _for(str: String) -> (kind: Kind, result: [String], hint: String) {
+  static func _for(cursor: Int, str: String) -> (kind: Kind, result: [String], hint: String) {
     let input = _lastCommand(str)
     var result:[String] = []
     
     let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
-    debugPrint(input.value, parts)
     
     var kind: Kind = .command
     var hint: String = ""
@@ -237,7 +237,7 @@ struct Complete {
   }
   
   static func _for(request: ForRequest) -> ForResponse {
-    let res = _for(str: request.input)
+    let res = _for(cursor: request.cursor, str: request.input)
     return ForResponse(
       requestId: request.id,
       input: request.input,
@@ -341,7 +341,8 @@ struct Complete {
     return result;
   }
   
-  // If we got `cat nice.txt | grep n ` it will return `grep n `
+  
+
   private static func _lastCommand(_ str: String) -> (prefix: String, idx: Int, value: String) {
     var buf = Array(str)
     var len = buf.count

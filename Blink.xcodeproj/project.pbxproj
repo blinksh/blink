@@ -107,6 +107,10 @@
 		D2071B83215101DC000156D7 /* blink-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B82215101DC000156D7 /* blink-compat.c */; };
 		D2071B86215135A9000156D7 /* openssl-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B84215135A9000156D7 /* openssl-compat.c */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
+		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
+		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
+		D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
+		D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
 		D215AC30233521B600E164C3 /* WKWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D215AC2F233521B600E164C3 /* WKWebView.swift */; };
 		D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2179F2C2136A5DC00B0850A /* GeoManager.m */; };
 		D2179F2F2136DBC600B0850A /* geo.m in Sources */ = {isa = PBXBuildFile; fileRef = D2179F2E2136DBC600B0850A /* geo.m */; };
@@ -521,6 +525,8 @@
 		D2071B84215135A9000156D7 /* openssl-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "openssl-compat.c"; sourceTree = "<group>"; };
 		D2071B87215135EF000156D7 /* openssl-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "openssl-compat.h"; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
+		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
+		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
 		D215AC2F233521B600E164C3 /* WKWebView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WKWebView.swift; sourceTree = "<group>"; };
 		D215E59B2010C77E00D893EB /* TermJS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermJS.h; sourceTree = "<group>"; };
 		D2179F2B2136A5DC00B0850A /* GeoManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GeoManager.h; sourceTree = "<group>"; };
@@ -812,6 +818,7 @@
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
 				D2BC514C2355C3AE0034FDD4 /* History.swift */,
 				D25D580F2358897B00D1BCAE /* Complete.swift */,
+				D20CBA592360324100D93301 /* CompleteUtils.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1349,6 +1356,7 @@
 			children = (
 				D265FBBE2317DD3C0017EAC4 /* Info.plist */,
 				D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */,
+				D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */,
 				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
 			);
 			path = BlinkTests;
@@ -1754,8 +1762,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
 				D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */,
+				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
+				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1920,6 +1931,7 @@
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
