@@ -128,7 +128,7 @@ struct Complete {
       "history": "Use -c option to clear history. 🙈 ",
       "host": "DNS lookup utility.", // fish
       "link": "Make links.", // fish
-      "ln": "", // TODO
+//      "ln": "", // TODO
       "ls": "List files and directories",
       "md5": "Calculate a message-digest fingerprint (checksum) for a file.", // fish
       "mkdir": "Make directories.", // fish
@@ -162,7 +162,7 @@ struct Complete {
       "telnet": "User interface to the TELNET protocol.", // fish
       "theme": "Choose a theme 💅",
       "touch": "Change file access and modification times.", // fish
-      "tr": "", // TODO
+//      "tr": "", // TODO
       "uname": "Print operating system name.", // fish
       "uncompress": "Expand data.",
       "uniq": "Report or filter out repeated lines in a file.", // fish
