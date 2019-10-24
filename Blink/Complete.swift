@@ -210,30 +210,44 @@ struct Complete {
   }
 
   static func _for(cursor: Int, str: String) -> (kind: Kind, result: [String], hint: String) {
-    let input = _lastCommand(str)
-    var result:[String] = []
-    
-    let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
-    
-    var kind: Kind = .command
-    var hint: String = ""
-    if parts.count <= 1 {
-      result = _complete(kind: kind, input: input.value)
-      hint = _hint(kind: kind, candidates: result)
-      return (kind: kind, result: result.map { input.prefix + $0 }, hint: hint.isEmpty ? "" : input.prefix + hint)
-    }
-    
-    let cmd = String(parts[0])
-    kind = _completionKind(cmd)
-    result = _complete(kind: kind, input: String(parts[1]))
-    hint = _hint(kind: kind, candidates: result)
-    
-    let cmdPrefix = input.prefix + cmd + " "
-    return (
-      kind: kind,
-      result: result.map( { cmdPrefix + $0 } ),
-      hint: hint.isEmpty ? "" : cmdPrefix + hint
-    )
+        return (
+          kind: .command,
+          result: [],
+          hint: ""
+        )
+
+//    let token = CompleteUtils.completeToken(str, cursor: cursor)
+//
+//    guard let cmd = token.cmd else {
+//      let commands = _complete(kind: .command, input: token.query)
+//      let filtered = commands.filter({$0.hasPrefix(token.query)})
+//      let hint = _hint(kind: .command, candidates: filtered)
+//
+//    }
+//    let input = _lastCommand(str)
+//    var result:[String] = []
+//
+//    let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
+//
+//    var kind: Kind = .command
+//    var hint: String = ""
+//    if parts.count <= 1 {
+//      result = _complete(kind: kind, input: input.value)
+//      hint = _hint(kind: kind, candidates: result)
+//      return (kind: kind, result: result.map { input.prefix + $0 }, hint: hint.isEmpty ? "" : input.prefix + hint)
+//    }
+//
+//    let cmd = String(parts[0])
+//    kind = _completionKind(cmd)
+//    result = _complete(kind: kind, input: String(parts[1]))
+//    hint = _hint(kind: kind, candidates: result)
+//
+//    let cmdPrefix = input.prefix + cmd + " "
+//    return (
+//      kind: kind,
+//      result: result.map( { cmdPrefix + $0 } ),
+//      hint: hint.isEmpty ? "" : cmdPrefix + hint
+//    )
   }
   
   static func _for(request: ForRequest) -> ForResponse {

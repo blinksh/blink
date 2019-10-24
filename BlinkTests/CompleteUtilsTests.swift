@@ -36,9 +36,21 @@ extension String {
   func token(cursor: Int) -> CompleteToken {
     CompleteUtils.completeToken(self, cursor: cursor)
   }
+  
+  func encodeShell(quote: String.Element? = nil) -> String {
+    CompleteUtils.encode(str: self, quote: quote)
+  }
 }
 
 class CompletionTests: XCTestCase {
+  
+  func testEncode() {
+    assert("".encodeShell(quote: nil) == "")
+    assert(" ".encodeShell(quote: nil) == "\\ ")
+    assert("''".encodeShell(quote: .init("'")) == "'\\'\\''")
+    assert("''".encodeShell(quote: .init("\"")) == "\"''\"")
+    assert("|".encodeShell(quote: .init("\"")) == "\"\\|\"")
+  }
   
   func testInvalidInput() {
     for token in [
@@ -51,6 +63,8 @@ class CompletionTests: XCTestCase {
       assert(token.prefix == "")
       assert(token.query == "")
       assert(token.isRedirect == false)
+      assert(token.jsPos == 0)
+      assert(token.jsLen == 0)
     }
   }
   
@@ -62,6 +76,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 3)
     
     token = "ssh -v".token(cursor: 1)
     assert(token.value == "ssh")
@@ -70,6 +86,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "s")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 3)
     
     token = "ssh -v".token(cursor: 2)
     assert(token.value == "ssh")
@@ -78,6 +96,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "ss")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 3)
     
     token = "ssh -v".token(cursor: 3)
     assert(token.value == "ssh")
@@ -86,6 +106,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "ssh")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 3)
     
     token = "ssh -v".token(cursor: 4)
     assert(token.value == "ssh -v")
@@ -94,6 +116,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 2)
     
     token = "ssh -v".token(cursor: 5)
     assert(token.value == "ssh -v")
@@ -102,6 +126,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "-")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 2)
     
     
     token = "ssh -v host".token(cursor: 4)
@@ -111,6 +137,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 2)
     
     token = "ssh -v host".token(cursor: 5)
     assert(token.value == "ssh -v")
@@ -119,6 +147,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "-")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 2)
     
     token = "ssh -v host".token(cursor: 6)
     assert(token.value == "ssh -v")
@@ -127,6 +157,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "-v")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 2)
     
     token = "ssh -v host".token(cursor: 7)
     assert(token.value == "ssh -v host")
@@ -135,6 +167,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 7)
+    assert(token.jsLen == 4)
     
     token = "ssh -v host".token(cursor: 8)
     assert(token.value == "ssh -v host")
@@ -143,6 +177,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "h")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 7)
+    assert(token.jsLen == 4)
   }
   
   func testPipe() {
@@ -154,6 +190,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 12)
+    assert(token.jsLen == 0)
     
     token = "ssh -v host |".token(cursor: 13)
     assert(token.value == "")
@@ -162,6 +200,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 13)
+    assert(token.jsLen == 0)
 
     token = "ssh -v host |".token(cursor: 1)
     assert(token.value == "ssh")
@@ -170,6 +210,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "s")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 3)
     
     token = "ssh -v host | grep foo | cat foo".token(cursor: 30)
     assert(token.value == "cat foo")
@@ -178,6 +220,18 @@ class CompletionTests: XCTestCase {
     assert(token.query == "f")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 29)
+    assert(token.jsLen == 3)
+    
+    token = "ssh -v host | grep foo | cat foo".token(cursor: 7)
+    assert(token.value == "ssh -v host")
+    assert(token.prefix == "ssh -v ")
+    assert(token.cmd == "ssh")
+    assert(token.query == "")
+    assert(token.quote == nil)
+    assert(token.isRedirect == false)
+    assert(token.jsPos == 7)
+    assert(token.jsLen == 4)
   }
   
   func testEscapes() {
@@ -188,6 +242,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "c")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 0)
+    assert(token.jsLen == 2)
     
     token = "cd hello\\ world".token(cursor: 4)
     assert(token.value == "cd hello\\ world")
@@ -196,6 +252,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "h")
     assert(token.quote == nil)
     assert(token.isRedirect == false)
+    assert(token.jsPos == 3)
+    assert(token.jsLen == 12)
     
     token = "cd \"hello\\\" world".token(cursor: 4)
     assert(token.value == "cd \"hello\\\" world")
@@ -220,6 +278,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "")
     assert(token.quote == Character("\""))
     assert(token.isRedirect == false)
+    assert(token.jsPos == 3)
+    assert(token.jsLen == 14)
     
     // `echo "he\"llo, " world |`
     // `[    |    ^    ]        `
@@ -230,6 +290,8 @@ class CompletionTests: XCTestCase {
     assert(token.query == "he\"") // he"
     assert(token.quote == Character("\""))
     assert(token.isRedirect == false)
+    assert(token.jsPos == 5)
+    assert(token.jsLen == 11)
   }
   
   func testRedirect() {

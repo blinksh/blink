@@ -33,7 +33,6 @@
 import Foundation
 
 struct CompleteToken {
-  var range: Range<String.Index>
   var value: String = ""
   
   
@@ -46,13 +45,33 @@ struct CompleteToken {
   
   // if cmd is detected
   var cmd: String? = nil
+  
+  var jsPos: Int = 0
+  var jsLen: Int = 0
 }
 
 struct CompleteUtils {
   
+  static func encode(str: String, quote: String.Element? = nil) -> String {
+    var result = str
+    result = result.replacingOccurrences(of: "\\", with: "\\\\")
+    result = result.replacingOccurrences(of: "|", with: "\\|")
+    
+    guard let quote = quote else {
+      result = result.replacingOccurrences(of: " ", with: "\\ ")
+      return result
+    }
+    
+    let q = String(quote)
+    
+    result = result.replacingOccurrences(of: q, with: "\\" + q)
+    result = "\(q)\(result)\(q)"
+    return result
+  }
+  
   static func completeToken(_ input: String, cursor: Int) -> CompleteToken {
     if input.isEmpty {
-      return CompleteToken(range: input.startIndex..<input.endIndex)
+      return CompleteToken()
     }
     
     var buf = Array(input)
@@ -227,8 +246,11 @@ struct CompleteUtils {
       }
     }
     
+    let jsPos = input.index(input.startIndex, offsetBy: pos).utf16Offset(in: input)
+    let jsEnd = input.index(input.startIndex, offsetBy: end).utf16Offset(in: input)
+    
+    
     return CompleteToken(
-      range: range,
       value: String(input[range]),
       
       quote: qch,
@@ -237,7 +259,10 @@ struct CompleteUtils {
       prefix: prefix,
       query: query,
       
-      cmd: cmd
+      cmd: cmd,
+    
+      jsPos: jsPos,
+      jsLen: jsEnd - jsPos
     )
   }
 
