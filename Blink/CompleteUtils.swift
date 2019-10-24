@@ -46,8 +46,10 @@ struct CompleteToken {
   // if cmd is detected
   var cmd: String? = nil
   
+  var jsStart: Int = 0
   var jsPos: Int = 0
   var jsLen: Int = 0
+  var canShowHint: Bool = false
 }
 
 struct CompleteUtils {
@@ -99,8 +101,9 @@ struct CompleteUtils {
         bs = 0
       }
       
-      if ch.isWhitespace {
+      if ch.isWhitespace && bs % 2 == 0 {
         pos = i
+        continue
       }
       
       if ch == "|" && bs % 2 == 0 {
@@ -196,6 +199,7 @@ struct CompleteUtils {
     
     let range = input.index(input.startIndex, offsetBy: start)..<input.index(input.startIndex, offsetBy: end)
     
+    var canShowHint = range.upperBound == input.endIndex
 //    if pos >= len {
 //      pos = len - 1
 //    }
@@ -236,7 +240,7 @@ struct CompleteUtils {
       }
     }
 
-    if pos == start || pos >= len {
+    if pos == start || pos > len {
       cmd = nil
       prefix = ""
     } else {
@@ -246,6 +250,7 @@ struct CompleteUtils {
       }
     }
     
+    let jsStart = input.index(input.startIndex, offsetBy: start).utf16Offset(in: input)
     let jsPos = input.index(input.startIndex, offsetBy: pos).utf16Offset(in: input)
     let jsEnd = input.index(input.startIndex, offsetBy: end).utf16Offset(in: input)
     
@@ -261,8 +266,10 @@ struct CompleteUtils {
       
       cmd: cmd,
     
+      jsStart: jsStart,
       jsPos: jsPos,
-      jsLen: jsEnd - jsPos
+      jsLen: jsEnd - jsPos,
+      canShowHint: canShowHint
     )
   }
 

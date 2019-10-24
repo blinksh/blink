@@ -69,7 +69,18 @@ class CompletionTests: XCTestCase {
   }
   
   func testSimpleCmd() {
-    var token = "ssh ".token(cursor: 0)
+    var token = "mosh ".token(cursor: 5)
+    
+    assert(token.value == "mosh ")
+    assert(token.prefix == "mosh ")
+    assert(token.cmd == "mosh")
+    assert(token.query == "")
+    assert(token.quote == nil)
+    assert(token.isRedirect == false)
+    assert(token.jsPos == 5)
+    assert(token.jsLen == 0)
+    
+    token = "ssh ".token(cursor: 0)
     assert(token.value == "ssh")
     assert(token.prefix == "")
     assert(token.cmd == nil)
@@ -235,7 +246,17 @@ class CompletionTests: XCTestCase {
   }
   
   func testEscapes() {
-    var token = "cd hello\\ world".token(cursor: 1)
+    var token = "cat foo\\ ".token(cursor: 9)
+    assert(token.value == "cat foo\\ ")
+    assert(token.prefix == "cat ")
+    assert(token.cmd == "cat")
+    assert(token.query == "foo ")
+    assert(token.quote == nil)
+    assert(token.isRedirect == false)
+    assert(token.jsPos == 4)
+    assert(token.jsLen == 5)
+    
+    token = "cd hello\\ world".token(cursor: 1)
     assert(token.value == "cd")
     assert(token.prefix == "")
     assert(token.cmd == nil)

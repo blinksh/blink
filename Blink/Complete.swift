@@ -42,14 +42,18 @@ struct Complete {
     let id: Int
     let cursor: Int
     let input: String
+    let n: Int
   }
   
   struct ForResponse: Codable {
     let requestId: Int
     let input: String
-    let result: [String]
+    let result: String
     let hint: String
     let kind: String
+    let start: Int
+    let pos: Int
+    let len: Int
   }
   
   enum Kind: String {
@@ -201,6 +205,8 @@ struct Complete {
     case .command:
       if let hint = _commandHints()[first] {
         result = "\(first) - \(hint)"
+      } else {
+        result = first
       }
     default:
       result = candidates.prefix(5).joined(separator: ", ")
@@ -208,56 +214,77 @@ struct Complete {
     
     return result;
   }
+  
+  static func _loopIndex(arr: [String], n: Int) -> String {
+    let count = arr.count
+    if count == 0 {
+      return ""
+    }
+    if n >= 0 {
+      return arr[n % count]
+    }
+    
+    return arr[count - 1 - (abs(n) % count)]
+  }
+ 
+  static func _for(cursor: Int, str: String, n: Int) -> (kind: Kind, start: Int, pos: Int, len: Int, result: String, hint: String) {
 
-  static func _for(cursor: Int, str: String) -> (kind: Kind, result: [String], hint: String) {
-        return (
-          kind: .command,
-          result: [],
-          hint: ""
-        )
+    let token = CompleteUtils.completeToken(str, cursor: cursor)
 
-//    let token = CompleteUtils.completeToken(str, cursor: cursor)
-//
-//    guard let cmd = token.cmd else {
-//      let commands = _complete(kind: .command, input: token.query)
-//      let filtered = commands.filter({$0.hasPrefix(token.query)})
-//      let hint = _hint(kind: .command, candidates: filtered)
-//
-//    }
-//    let input = _lastCommand(str)
-//    var result:[String] = []
-//
-//    let parts = input.value.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: false)
-//
-//    var kind: Kind = .command
-//    var hint: String = ""
-//    if parts.count <= 1 {
-//      result = _complete(kind: kind, input: input.value)
-//      hint = _hint(kind: kind, candidates: result)
-//      return (kind: kind, result: result.map { input.prefix + $0 }, hint: hint.isEmpty ? "" : input.prefix + hint)
-//    }
-//
-//    let cmd = String(parts[0])
-//    kind = _completionKind(cmd)
-//    result = _complete(kind: kind, input: String(parts[1]))
-//    hint = _hint(kind: kind, candidates: result)
-//
-//    let cmdPrefix = input.prefix + cmd + " "
-//    return (
-//      kind: kind,
-//      result: result.map( { cmdPrefix + $0 } ),
-//      hint: hint.isEmpty ? "" : cmdPrefix + hint
-//    )
+    guard let cmd = token.cmd else {
+      let kind: Kind = token.isRedirect ? .file : .command
+      let commands = _complete(kind: kind, input: token.query)
+      let filtered = commands.filter({$0.hasPrefix(token.query)}).sorted().map { CompleteUtils.encode(str: $0, quote: token.quote) }
+      let hint = token.canShowHint ? _hint(kind: kind, candidates: filtered) : ""
+      
+      return (
+        kind: .command,
+        start: token.jsStart,
+        pos: token.jsPos,
+        len: token.jsLen,
+        result: _loopIndex(arr: filtered, n: n),
+        hint: hint
+      )
+    }
+    
+    if token.query.first == "-" {
+      let opts = getoptString(cmd) ?? ""
+      return (
+        kind: .no,
+        start: token.jsStart,
+        pos: token.jsPos,
+        len: token.jsLen,
+        result: "",
+        hint: (!token.canShowHint || opts.isEmpty) ? "" : "\(token.value) [\(opts)]"
+      )
+    }
+    
+    let kind = _completionKind(cmd)
+    let result = _complete(kind: kind, input: token.query).sorted().map { CompleteUtils.encode(str: $0, quote: token.quote) }
+    let hint = !token.canShowHint ? "" : _hint(kind: kind, candidates: Array(result.prefix(5)))
+    
+    return (
+      kind: kind,
+      start: token.jsStart,
+      pos: token.jsPos,
+      len: token.jsLen,
+      result: _loopIndex(arr: result, n: n),
+      hint: hint.isEmpty ? "" : token.prefix + hint
+    )
   }
   
   static func _for(request: ForRequest) -> ForResponse {
-    let res = _for(cursor: request.cursor, str: request.input)
+    let res = _for(cursor: request.cursor, str: request.input, n: request.n)
     return ForResponse(
       requestId: request.id,
       input: request.input,
       result: res.result,
       hint: res.hint,
-      kind: res.kind.rawValue)
+      kind: res.kind.rawValue,
+      start: res.start,
+      pos: res.pos,
+      len: res.len
+    )
   }
   
   static func _forAPI(session: MCPSession, json: String) -> String? {
@@ -354,43 +381,5 @@ struct Complete {
     }
     return result;
   }
-  
-  
 
-  private static func _lastCommand(_ str: String) -> (prefix: String, idx: Int, value: String) {
-    var buf = Array(str)
-    var len = buf.count
-    var bp = 0;
-    var i = 0;
-    while i < len {
-      defer { i += 1 }
-      
-      let ch = buf[i]
-      
-      let quotes = "\"'"
-      
-      for quote in quotes {
-        if ch == quote {
-          i += 1
-          while i < len && buf[i] != quote {
-            i += 1
-          }
-        }
-      }
-      
-      if ch == "|" {
-        bp = i
-      }
-    }
-    
-    while bp < len {
-      if buf[bp] == " " || buf[bp] == "|" {
-        bp += 1
-      } else {
-        break
-      }
-    }
-    
-    return (prefix: String(buf.prefix(bp)), idx: bp, value: String(buf.suffix(from: bp)))
-  }
 }
