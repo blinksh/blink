@@ -341,7 +341,14 @@ struct Complete {
   }
   
   private static func _allPaths(prefix: String, skipFiles: Bool) -> [String] {
-    let arg = prefix as NSString
+    var pref = prefix
+    let home = BlinkPaths.documents()!
+    var cleanup = false
+    if pref.hasPrefix("~") {
+      pref = pref.replacingOccurrences(of: "~", with: home)
+      cleanup = true
+    }
+    let arg = pref as NSString
     var dir: String
     var isDir: ObjCBool = false
     let fm = FileManager.default
@@ -376,7 +383,11 @@ struct Complete {
         if skipFiles && !isDir.boolValue {
           continue
         }
-        result.append(folder)
+        if (cleanup) {
+          result.append(folder.replacingOccurrences(of: home, with: "~"))
+        } else {
+          result.append(folder)
+        }
       }
     }
     return result;
