@@ -164,6 +164,7 @@
 		D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D2496F3F20038B3300E75FE9 /* hterm_all.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F3B20038B3300E75FE9 /* hterm_all.min.js */; };
 		D2496F412003941B00E75FE9 /* term.js in Resources */ = {isa = PBXBuildFile; fileRef = D2496F402003941B00E75FE9 /* term.js */; };
+		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
@@ -227,17 +228,6 @@
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
 		D2AC6749220303D900177BC5 /* openurl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AC6742220303D900177BC5 /* openurl.m */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
-		D2AE2FD42362E9CE0008F32D /* escape.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F820A07B9100881637 /* escape.cxx */; };
-		D2AE2FD52362E9CE0008F32D /* prompt.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970E820A07B9100881637 /* prompt.cxx */; };
-		D2AE2FD62362E9CE0008F32D /* inputbuffer.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F220A07B9100881637 /* inputbuffer.cxx */; };
-		D2AE2FD72362E9CE0008F32D /* replxx.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970ED20A07B9100881637 /* replxx.cxx */; };
-		D2AE2FD82362E9CE0008F32D /* windows.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FB20A07B9100881637 /* windows.cxx */; };
-		D2AE2FD92362E9CE0008F32D /* conversion.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970EC20A07B9100881637 /* conversion.cxx */; };
-		D2AE2FDA2362E9CE0008F32D /* ConvertUTF.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970EF20A07B9100881637 /* ConvertUTF.cpp */; };
-		D2AE2FDB2362E9CE0008F32D /* history.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F320A07B9100881637 /* history.cxx */; };
-		D2AE2FDC2362E9CE0008F32D /* io.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970F120A07B9100881637 /* io.cxx */; };
-		D2AE2FDD2362E9CE0008F32D /* util.cxx in Sources */ = {isa = PBXBuildFile; fileRef = D23970FA20A07B9100881637 /* util.cxx */; };
-		D2AE2FDE2362E9CE0008F32D /* wcwidth.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D23970FE20A07B9100881637 /* wcwidth.cpp */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
@@ -553,32 +543,6 @@
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
 		D235579622CE07D20094AADB /* Blink-bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Blink-bridge.h"; sourceTree = "<group>"; };
 		D23742C921106ADF00366359 /* bench.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = bench.m; sourceTree = "<group>"; };
-		D23970E420A07B8300881637 /* replxx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = replxx.h; sourceTree = "<group>"; };
-		D23970E520A07B8300881637 /* replxx.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx.hxx; sourceTree = "<group>"; };
-		D23970E720A07B9100881637 /* escape.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = escape.hxx; sourceTree = "<group>"; };
-		D23970E820A07B9100881637 /* prompt.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = prompt.cxx; sourceTree = "<group>"; };
-		D23970E920A07B9100881637 /* replxx_impl.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = replxx_impl.hxx; sourceTree = "<group>"; };
-		D23970EA20A07B9100881637 /* util.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = util.hxx; sourceTree = "<group>"; };
-		D23970EB20A07B9100881637 /* windows.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = windows.hxx; sourceTree = "<group>"; };
-		D23970EC20A07B9100881637 /* conversion.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = conversion.cxx; sourceTree = "<group>"; };
-		D23970ED20A07B9100881637 /* replxx.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = replxx.cxx; sourceTree = "<group>"; };
-		D23970EE20A07B9100881637 /* keycodes.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = keycodes.hxx; sourceTree = "<group>"; };
-		D23970EF20A07B9100881637 /* ConvertUTF.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvertUTF.cpp; sourceTree = "<group>"; };
-		D23970F020A07B9100881637 /* history.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = history.hxx; sourceTree = "<group>"; };
-		D23970F120A07B9100881637 /* io.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = io.cxx; sourceTree = "<group>"; };
-		D23970F220A07B9100881637 /* inputbuffer.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = inputbuffer.cxx; sourceTree = "<group>"; };
-		D23970F320A07B9100881637 /* history.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = history.cxx; sourceTree = "<group>"; };
-		D23970F420A07B9100881637 /* io.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = io.hxx; sourceTree = "<group>"; };
-		D23970F520A07B9100881637 /* inputbuffer.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = inputbuffer.hxx; sourceTree = "<group>"; };
-		D23970F620A07B9100881637 /* ConvertUTF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvertUTF.h; sourceTree = "<group>"; };
-		D23970F720A07B9100881637 /* killring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = killring.hxx; sourceTree = "<group>"; };
-		D23970F820A07B9100881637 /* escape.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = escape.cxx; sourceTree = "<group>"; };
-		D23970F920A07B9100881637 /* prompt.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = prompt.hxx; sourceTree = "<group>"; };
-		D23970FA20A07B9100881637 /* util.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = util.cxx; sourceTree = "<group>"; };
-		D23970FB20A07B9100881637 /* windows.cxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = windows.cxx; sourceTree = "<group>"; };
-		D23970FC20A07B9100881637 /* utfstring.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = utfstring.hxx; sourceTree = "<group>"; };
-		D23970FD20A07B9100881637 /* conversion.hxx */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = conversion.hxx; sourceTree = "<group>"; };
-		D23970FE20A07B9100881637 /* wcwidth.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wcwidth.cpp; sourceTree = "<group>"; };
 		D23A7B24233C934900B3B66D /* UIColor+isLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+isLight.swift"; sourceTree = "<group>"; };
 		D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKXCallBackUrlConfigurationViewController.h; sourceTree = "<group>"; };
 		D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKXCallBackUrlConfigurationViewController.m; sourceTree = "<group>"; };
@@ -612,6 +576,7 @@
 		D248E67D22DE14100057FE67 /* SessionParams.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParams.swift; sourceTree = "<group>"; };
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
+		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D263488A20BEBF5800A8E89F /* libsshpp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libsshpp.hpp; sourceTree = "<group>"; };
 		D263488B20BEBF5800A8E89F /* legacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = legacy.h; sourceTree = "<group>"; };
@@ -772,7 +737,6 @@
 				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D2F330C520A6C8E20074ADD7 /* Commands */,
-				D23970DC20A07B5800881637 /* replxx */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
 				0716B5291CFFAB9300268B5B /* AppDelegate.h */,
@@ -814,6 +778,7 @@
 				D2BC514C2355C3AE0034FDD4 /* History.swift */,
 				D25D580F2358897B00D1BCAE /* Complete.swift */,
 				D20CBA592360324100D93301 /* CompleteUtils.swift */,
+				D2499BEB2362EFD40009C701 /* cpp.cpp */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1244,55 +1209,6 @@
 				D2334D1521495DAE00D26AC3 /* host2ip.h */,
 			);
 			path = udptunnel;
-			sourceTree = "<group>";
-		};
-		D23970DC20A07B5800881637 /* replxx */ = {
-			isa = PBXGroup;
-			children = (
-				D23970E620A07B9100881637 /* src */,
-				D23970E320A07B8300881637 /* include */,
-			);
-			path = replxx;
-			sourceTree = "<group>";
-		};
-		D23970E320A07B8300881637 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				D23970E420A07B8300881637 /* replxx.h */,
-				D23970E520A07B8300881637 /* replxx.hxx */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		D23970E620A07B9100881637 /* src */ = {
-			isa = PBXGroup;
-			children = (
-				D23970E720A07B9100881637 /* escape.hxx */,
-				D23970F820A07B9100881637 /* escape.cxx */,
-				D23970F920A07B9100881637 /* prompt.hxx */,
-				D23970E820A07B9100881637 /* prompt.cxx */,
-				D23970F520A07B9100881637 /* inputbuffer.hxx */,
-				D23970F220A07B9100881637 /* inputbuffer.cxx */,
-				D23970E920A07B9100881637 /* replxx_impl.hxx */,
-				D23970ED20A07B9100881637 /* replxx.cxx */,
-				D23970EB20A07B9100881637 /* windows.hxx */,
-				D23970FB20A07B9100881637 /* windows.cxx */,
-				D23970FD20A07B9100881637 /* conversion.hxx */,
-				D23970EC20A07B9100881637 /* conversion.cxx */,
-				D23970F620A07B9100881637 /* ConvertUTF.h */,
-				D23970EF20A07B9100881637 /* ConvertUTF.cpp */,
-				D23970F020A07B9100881637 /* history.hxx */,
-				D23970F320A07B9100881637 /* history.cxx */,
-				D23970F420A07B9100881637 /* io.hxx */,
-				D23970F120A07B9100881637 /* io.cxx */,
-				D23970EA20A07B9100881637 /* util.hxx */,
-				D23970FA20A07B9100881637 /* util.cxx */,
-				D23970EE20A07B9100881637 /* keycodes.hxx */,
-				D23970F720A07B9100881637 /* killring.hxx */,
-				D23970FC20A07B9100881637 /* utfstring.hxx */,
-				D23970FE20A07B9100881637 /* wcwidth.cpp */,
-			);
-			path = src;
 			sourceTree = "<group>";
 		};
 		D241CB93230406E2003D64A5 /* SmarterKeys */ = {
@@ -1779,7 +1695,6 @@
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
-				D2AE2FD92362E9CE0008F32D /* conversion.cxx in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
@@ -1797,8 +1712,6 @@
 				D2961970214F89360070935A /* ssh-agent.m in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
-				D2AE2FD82362E9CE0008F32D /* windows.cxx in Sources */,
-				D2AE2FDE2362E9CE0008F32D /* wcwidth.cpp in Sources */,
 				B7703BCF1E29233600B698DD /* BKKeyboardShortcutsViewController.m in Sources */,
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
 				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
@@ -1806,7 +1719,6 @@
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D296198D214F96D50070935A /* digest-openssl.c in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
-				D2AE2FDC2362E9CE0008F32D /* io.cxx in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				07AA065D1E08B6EB008310B7 /* UserDefaultsPasscodeRepository.swift in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -1844,16 +1756,13 @@
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
-				D2AE2FD72362E9CE0008F32D /* replxx.cxx in Sources */,
 				D29619A0214F995D0070935A /* fe25519.c in Sources */,
 				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
-				D2AE2FDB2362E9CE0008F32D /* history.cxx in Sources */,
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
-				D2AE2FD52362E9CE0008F32D /* prompt.cxx in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */,
@@ -1866,7 +1775,6 @@
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				07AA064C1E08B12E008310B7 /* ChangePasscodeState.swift in Sources */,
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
-				D2AE2FDD2362E9CE0008F32D /* util.cxx in Sources */,
 				07AA06561E08B12E008310B7 /* PasscodeRepositoryType.swift in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
@@ -1885,7 +1793,6 @@
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
-				D2AE2FD62362E9CE0008F32D /* inputbuffer.cxx in Sources */,
 				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
@@ -1910,7 +1817,6 @@
 				07AA064D1E08B12E008310B7 /* ConfirmPasscodeState.swift in Sources */,
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
-				D2AE2FD42362E9CE0008F32D /* escape.cxx in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
@@ -1923,8 +1829,8 @@
 				D296199F214F995D0070935A /* ge25519.c in Sources */,
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
-				D2AE2FDA2362E9CE0008F32D /* ConvertUTF.cpp in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
