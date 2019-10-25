@@ -150,7 +150,6 @@ class ApiRequest {
 }
 
 function term_apiRequest(name, request) {
-  console.log(request);
   return new ApiRequest(name, request)
 }
 
@@ -160,7 +159,6 @@ function term_apiResponse(name, response) {
   if (!req) {
     return;
   }
-  console.log(res.lines);
   delete _requestsMap[req.id];
   req.resolve(res)
 }
