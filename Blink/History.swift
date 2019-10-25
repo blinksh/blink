@@ -101,6 +101,12 @@ struct History {
     _lines = lines
   }
   
+  static func clear() {
+    _historyQueue.async {
+      self._saveLines([])
+    }
+  }
+  
   private static func _getLines() -> [String] {
     if let lines = _lines {
       // Keep history for more time
@@ -200,5 +206,9 @@ struct History {
 @objc class HistoryObj: NSObject {
   @objc static func appendIfNeeded(command: String) {
     History.appendIfNeeded(command: command + "") // mosh overwrites internals of the string!
+  }
+  
+  @objc static func clear() {
+    History.clear()
   }
 }

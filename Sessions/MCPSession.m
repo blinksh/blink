@@ -270,7 +270,6 @@
 
 - (void)sigwinch
 {
-  [_repl sigwinch];
   [_childSession sigwinch];
   for (WeakSSHClient *client in _sshClients) {
     [client.value sigwinch];
@@ -279,8 +278,6 @@
 
 - (void)kill
 {
-  [_repl forceExit];
-  
   if (_sshClients.count > 0) {
     for (WeakSSHClient *client in _sshClients) {
       [client.value kill];

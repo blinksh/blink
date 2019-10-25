@@ -34,6 +34,8 @@
 
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
+#include <Blink-Swift.h>
+#include "MCPSession.h"
 
 NSString *__shortVersionString()
 {
@@ -48,9 +50,23 @@ NSString *__shortVersionString()
           appDisplayName, majorVersion, minorVersion, compileDate];
 }
 
+void __print_commands() {
+  MCPSession *session = (__bridge MCPSession *)thread_context;
+  if (!session) {
+    return;
+  }
+
+  NSString *formattedCommands = [CompleteClass formattedCommandsWithWidth: session.device.cols];
+  puts(formattedCommands.UTF8String);
+}
+
 
 int help_main(int argc, char *argv[]) {
   
+  if (argc == 2 && [@"list-commands" isEqual: @(argv[1])]) {
+    __print_commands();
+    return 0;
+  }
   NSString *help = [@[
     @"",
     __shortVersionString(),

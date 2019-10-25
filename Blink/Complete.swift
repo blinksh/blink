@@ -398,3 +398,25 @@ struct Complete {
   }
 
 }
+
+@objc class CompleteClass: NSObject {
+  @objc static func formattedCommands(width: Int) -> String {
+    let commands = Complete._allCommands().sorted()
+    let count = commands.count
+    guard let maxStr = commands.max(by: {$0.count < $1.count}) else {
+      return ""
+    }
+    
+    let columns = max(width / (maxStr.count + 2), 1)
+    
+    var lines:[String] = []
+    for i in stride(from: 0, to: count, by: columns) {
+      var line = ""
+      for cmd in commands[i..<min(i + columns, count)] {
+        line += cmd.padding(toLength: maxStr.count + 2, withPad: " ", startingAt: 0)
+      }
+      lines.append(line)
+    }
+    return lines.joined(separator: "\n")
+  }
+}

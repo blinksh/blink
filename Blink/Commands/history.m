@@ -30,9 +30,48 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
+#include "BlinkPaths.h"
 #include "ios_system/ios_system.h"
+#include "ios_error.h"
 #include "MCPSession.h"
+#include <Blink-Swift.h>
 
 int history_main(int argc, char *argv[]) {
-  return [[(__bridge MCPSession *)thread_context repl] history_main:argc argv:argv];
+  NSString *args = @"";
+  if (argc == 2) {
+    args = [NSString stringWithUTF8String:argv[1]];
+  }
+  NSInteger number = [args integerValue];
+  if (number != 0) {
+    NSString *history = [NSString stringWithContentsOfFile:[BlinkPaths historyFile]
+                                                  encoding:NSUTF8StringEncoding error:nil];
+    NSArray *lines = [history componentsSeparatedByString:@"\n"];
+    if (!lines) {
+      return 1;
+    }
+    lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
+    
+    NSInteger len = lines.count;
+    NSInteger start = 0;
+    if (number > 0) {
+      len = MIN(len, number);
+    } else {
+      start = MAX(len + number , 0);
+    }
+    
+    for (NSInteger i = start; i < len; i++) {
+      puts([NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String);
+    }
+  } else if ([args isEqualToString:@"-c"]) {
+    [HistoryObj clear];
+  } else {
+    NSString *usage = [@[
+                         @"history usage:",
+                         @"history <number> - Show history (can be negative)",
+                         @"history -c       - Clear history",
+                         @""
+                         ] componentsJoinedByString:@"\n"];
+    puts(usage.UTF8String);
+  }
+  return 1;
 }
