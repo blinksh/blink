@@ -325,13 +325,21 @@ struct Complete {
     case .command: src = _allCommands()
     case .file: src = _allPaths(prefix: input, skipFiles: false);
     case .directory: src = _allPaths(prefix: input, skipFiles: true);
-    case .host: src = _allBlinkHosts();
+    case .host: src = _allHosts();
     case .blinkHost: src = _allBlinkHosts();
     case .blinkGeo: src = ["track", "lock", "stop", "current", "authorize", "last"]
     default: break
     }
     
     return src.filter( {$0.hasPrefix(input)} ).sorted()
+  }
+  
+  private static func _allHosts() -> [String] {
+    let blinkHosts = _allBlinkHosts()
+    let knownHosts = _allKnownHosts()
+    
+    let set = Set(blinkHosts).union(knownHosts)
+    return Array(set).sorted()
   }
   
   private static func _allBlinkHosts() -> [String] {
@@ -341,24 +349,25 @@ struct Complete {
         .compactMap({$0.host})
     )
     
-    /*
-     -(NSArray<NSString *> *)_allKnownHosts
-     {
-       NSString * str = [NSString stringWithContentsOfFile:[BlinkPaths knownHostsFile] encoding:NSUTF8StringEncoding error:nil];
-       NSArray<NSString *> * lines = [str componentsSeparatedByString:@"\n"];
-       NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
-       for (NSString *line in lines) {
-         NSArray<NSString *> * comps = [line componentsSeparatedByString:@" "];
-         if ([comps firstObject].length > 0 ) {
-           [hostsSet addObject:comps.firstObject];
-         }
-       }
-       return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
-     }
-
-     */
-    
     return Array(hosts)
+  }
+  
+  private static func _allKnownHosts() -> [String] {
+    guard let hostsFile = try? String(contentsOfFile: BlinkPaths.knownHostsFile(), encoding: .utf8)
+    else {
+      return []
+    }
+    
+    var hosts = Set<String>()
+    
+    hostsFile.enumerateLines { (line, finish) in
+      if let host = line.split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true).first,
+        !host.isEmpty {
+        hosts.insert(String(host))
+      }
+    }
+    
+    return Array(hosts).sorted()
   }
   
   private static func _allPaths(prefix: String, skipFiles: Bool) -> [String] {
