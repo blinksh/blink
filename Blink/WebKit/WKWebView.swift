@@ -194,8 +194,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
-      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mousedown\", \(point.x), \(point.y));", completionHandler: nil)
-      _wkWebView?.evaluateJavaScript("term_reportMouseEvent(\"mouseup\", \(point.x), \(point.y));", completionHandler: nil)
+      _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1);", completionHandler: nil)
     default: break
     }
     
@@ -236,7 +235,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     }
     
     let dScale = 1.0 - recognizer.scale;
-    if abs(dScale) > 0.05 {
+    if abs(dScale) > 0.06 {
       recognizer.view?.superview?.dropSuperViewTouches()
       _scrollView.panGestureRecognizer.dropTouches()
       _2fTapRecognizer.dropTouches()

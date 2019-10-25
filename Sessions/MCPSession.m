@@ -62,6 +62,9 @@
   Session *_childSession;
   NSString *_currentCmd;
   NSMutableArray<WeakSSHClient *> *_sshClients;
+  dispatch_queue_t _cmdQueue;
+  TermStream *_cmdStream;
+  NSString *_currentCmdLine;
 }
 
 @dynamic sessionParams;
@@ -70,65 +73,111 @@
   if (self = [super initWithDevice:device andParams:params]) {
     _sshClients = [[NSMutableArray alloc] init];
     _sessionUUID = [[NSProcessInfo processInfo] globallyUniqueString];
+    _cmdQueue = dispatch_queue_create("mcp.command.queue", DISPATCH_QUEUE_SERIAL);
   }
   
   return self;
 }
 
-- (int)main:(int)argc argv:(char **)argv
-{
-  [self setActiveSession];
-  ios_setMiniRoot([BlinkPaths documents]);
-  ios_setStreams(_stream.in, _stream.out, _stream.err);
-  ios_setContext((__bridge void*)self);
-  [self updateAllowedPaths];
-  [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
-  
-  // We are restoring mosh session if possible first.
-  if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
-    _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
-    [_childSession executeAttachedWithArgs:@""];
-    _childSession = nil;
-    if (self.sessionParams.hasEncodedState) {
-      return 0;
+- (void)executeWithArgs:(NSString *)args {
+  dispatch_async(_cmdQueue, ^{
+    [self setActiveSession];
+    ios_setMiniRoot([BlinkPaths documents]);
+    [self updateAllowedPaths];
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
+    ios_setContext((__bridge void*)self);
+    
+    thread_stdout = nil;
+    thread_stdin = nil;
+    thread_stderr = nil;
+    
+    ios_setStreams(_stream.in, _stream.out, _stream.err);
+    
+    // We are restoring mosh session if possible first.
+    if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
+      _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+      [_childSession executeAttachedWithArgs:@""];
+      _childSession = nil;
+      if (self.sessionParams.hasEncodedState) {
+        return;
+      }
     }
+    [_device prompt:@"blink> " secure:NO shell:YES];
+  });
+}
+
+- (void)enqueueCommand:(NSString *)cmd {
+  if (_cmdStream) {
+    [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
+    return;
+  }
+  dispatch_async(_cmdQueue, ^{
+    self->_currentCmdLine = cmd;
+    [self _runCommand:cmd];
+    self->_currentCmdLine = nil;
+  });
+}
+
+- (BOOL)_runCommand:(NSString *)cmdline {
+  
+  [HistoryObj appendIfNeededWithCommand:cmdline];
+  
+  NSArray *arr = [cmdline componentsSeparatedByString:@" "];
+  NSString *cmd = arr[0];
+  
+  [self setActiveSession];
+  
+  ios_setContext((__bridge void*)self);
+  
+  thread_stdout = nil;
+  thread_stdin = nil;
+  thread_stderr = nil;
+  
+  ios_setStreams(_stream.in, _stream.out, _stream.err);
+  
+  if ([cmd isEqualToString:@"exit"]) {
+    return NO;
   }
   
-  // Running repl loop
-  _repl = [[Repl alloc] initWithDevice:_device andStream: _stream];
-  [_repl loopWithCallback:^BOOL(NSString *cmdline) {
   
-    NSArray *arr = [cmdline componentsSeparatedByString:@" "];
-    NSString *cmd = arr[0];
-    
-    if ([cmd isEqualToString:@"exit"]) {
+  
+  if ([cmd isEqualToString:@"mosh"]) {
+    [self _runMoshWithArgs:cmdline];
+    if (self.sessionParams.hasEncodedState) {
       return NO;
-    } else if ([cmd isEqualToString:@"mosh"]) {
-      [self _runMoshWithArgs:cmdline];
-      if (self.sessionParams.hasEncodedState) {
-        return NO;
-      }
-    } else if ([cmd isEqualToString:@"ssh2"]) {
-      [self _runSSHWithArgs:cmdline];
-    } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
-      [self _runSSHCopyIDWithArgs:cmdline];
-    } else {
-      [self.delegate indexCommand:cmdline];
-      _currentCmd = cmdline;
-      thread_stdout = nil;
-      thread_stdin = nil;
-      thread_stderr = nil;
-      
-      // Re-evalute column number before each command
-      setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1); // force rewrite of value
-      ios_system(cmdline.UTF8String);
-      _currentCmd = nil;
-      _sshClients = [[NSMutableArray alloc] init];
     }
+  } else if ([cmd isEqualToString:@"ssh2"]) {
+    [self _runSSHWithArgs:cmdline];
+  } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
+    [self _runSSHCopyIDWithArgs:cmdline];
+  } else {
+    [self.delegate indexCommand:cmdline];
     
-    return YES;
-  }];
+    _currentCmd = cmdline;
+    thread_stdout = nil;
+    thread_stdin = nil;
+    thread_stderr = nil;
+    
+    _cmdStream = [_device.stream duplicate];
+    ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
+    
+    setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
+    setenv("LINES", [@(_device->win.ws_row) stringValue].UTF8String, 1);
+
+    ios_system(cmdline.UTF8String);
+    _currentCmd = nil;
+    [_cmdStream close];
+    _cmdStream = nil;
+    _sshClients = [[NSMutableArray alloc] init];
+  }
   
+  [_device prompt:@"blink> " secure:NO shell:YES];
+  
+  return YES;
+}
+
+- (int)main:(int)argc argv:(char **)argv
+{
   return 0;
 }
 
@@ -151,7 +200,7 @@
 }
 
 - (bool)isRunningCmd {
-  return _childSession != nil || _currentCmd != nil;
+  return _childSession != nil || _currentCmd != nil || _currentCmdLine != nil;
 }
 
 - (NSArray<NSString *> *)_symlinksInHomeDirectory
@@ -275,9 +324,19 @@
           [client.value kill];
         }
       } else {
+        if ([control isEqualToString:@"d"]) {
+          [_device closeReadline];
+          [_cmdStream closeIn];
+          return NO;
+        }
         ios_kill();
       }
       return YES;
+    } else {
+      if ([_device rawMode]) {
+        return YES;
+      }
+      return NO;
     }
     return YES;
   }
@@ -289,9 +348,9 @@
   FILE * savedStdOut = stdout;
   FILE * savedStdErr = stderr;
   FILE * savedStdIn = stdin;
-  stdout = _stream.out;
-  stderr = _stream.err;
-  stdin = _stream.in;
+  stdout = _cmdStream.out;
+  stderr = _cmdStream.err;
+  stdin = _cmdStream.in;
   ios_switchSession(_sessionUUID.UTF8String);
   stdout = savedStdOut;
   stderr = savedStdErr;

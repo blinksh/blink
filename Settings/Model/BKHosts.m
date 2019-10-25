@@ -133,7 +133,7 @@ static UICKeyChainStore *__get_keychain() {
   return nil;
 }
 
-+ (NSMutableArray *)all
++ (NSMutableArray<BKHosts *> *)all
 {
   return Hosts;
 }

@@ -34,7 +34,6 @@
 
 @class TermDevice;
 @class UndoManager;
-@class KBProcessor;
 
 @interface CC : NSObject
 

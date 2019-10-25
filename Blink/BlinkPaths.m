@@ -150,6 +150,11 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self blink] stringByAppendingPathComponent:@"history.txt"];
 }
 
++ (NSURL *)historyURL
+{
+  return [NSURL fileURLWithPath:[self historyFile]];
+}
+
 + (NSString *)knownHostsFile
 {
   return [[self ssh] stringByAppendingPathComponent:@"known_hosts"];

@@ -195,23 +195,14 @@ int say_main(int argc, char *argv[]) {
   }
   
   MCPSession *session = (__bridge MCPSession *)thread_context;
-  
-  BOOL echoMode = session.device.echoMode;
-  [session.device setEchoMode:YES];
-  
   for (;;) {
-    char * line = NULL;
-    size_t len = 0;
-    
-    ssize_t read = getline(&line, &len, session.device.stream.in);
-    if (read <= 0) {
+    NSString *line = [session.device readline:@"" secure: NO];
+    if (!line) {
+      puts("");
       break;
     }
-    puts("");
-    _sayText(@(line), rate, speechVoice);
+    _sayText(line, rate, speechVoice);
   }
-  
-  [session.device setEchoMode:echoMode];
   
   return 0;
 }

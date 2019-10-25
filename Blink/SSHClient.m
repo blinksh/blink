@@ -237,7 +237,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
 
 - (NSArray<NSString *>*)_getAnswersWithName:(NSString *)name instruction: (NSString *)instruction andPrompts:(NSArray *)prompts {
   BOOL rawMode = _device.rawMode;
-  [_device setRawMode:NO];
+//  [_device setRawMode:NO];
   
   if (name.length > 0) {
     name = [name stringByAppendingString:@"\n"];
@@ -250,34 +250,17 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
   }
   NSMutableArray<NSString *> *answers = [[NSMutableArray alloc] init];
   
-  BOOL echoMode = _device.echoMode;
   for (int i = 0; i < prompts.count; i++) {
     BOOL echo = [prompts[i][1] boolValue];
-    _device.echoMode = echo;
     NSString *prompt = prompts[i][0];
-    // write prompt directly to device stream?...
-    fwrite(prompt.UTF8String, [prompt lengthOfBytesUsingEncoding:NSUTF8StringEncoding], 1, _device.stream.out);
-    
-    char * line = NULL;
-    size_t len = 0;
-    ssize_t read = getline(&line, &len, _device.stream.in);
-    
-    if (read == -1) {
+    NSString *result = [_device readline:prompt secure:!echo];
+    if (result) {
+      [answers addObject:result];
+    } else {
       [self _log_verbose:@"Can't read input"];
     }
-    
-    if (line) {
-      NSString * lineStr = [@(line) stringByReplacingOccurrencesOfString:@"\n" withString:@""];
-      [answers addObject:lineStr];
-      free(line);
-    }
-    fwrite("\n", 1, 1, _device.stream.out);
-    //    fclose(fp);
   }
-  [_device setEchoMode:echoMode];
   [_device setRawMode:rawMode];
-  
-  
   return answers;
 }
 
@@ -659,7 +642,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     
     if (!password) {
       const int NO_ECHO = NO;
-      NSArray *prompts = @[@[@"Password:", @(NO_ECHO)]];
+      NSArray *prompts = @[@[@"Password: ", @(NO_ECHO)]];
       password = [[self _getAnswersWithName:NULL instruction:NULL andPrompts:prompts] firstObject];
     }
     
@@ -720,7 +703,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
         
         NSArray * answers = nil;
         
-        if (password && nprompts == 1 && [@"Password:" isEqual: [[prompts firstObject] firstObject]]) {
+        if (password && nprompts == 1 && [@"Password: " isEqual: [[prompts firstObject] firstObject]]) {
           answers = @[password];
         } else {
           answers = [self _getAnswersWithName:name instruction:instruction andPrompts:prompts];
@@ -851,7 +834,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       NSNumber * doEcho = @(YES);
       NSString *answer = [[[self _getAnswersWithName:@""
                                          instruction:@"The server is unknown."
-                                          andPrompts:@[@[@"Do you trust the host key? (yes/no):", doEcho]]] firstObject] lowercaseString];
+                                          andPrompts:@[@[@"Do you trust the host key? (yes/no): ", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         
@@ -861,7 +844,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       
       answer = [[[self _getAnswersWithName:@""
                                instruction:@"This new key will be written on disk for further usage."
-                                andPrompts:@[@[@"Do you agree? (yes/no):", doEcho]]] firstObject] lowercaseString];
+                                andPrompts:@[@[@"Do you agree? (yes/no): ", doEcho]]] firstObject] lowercaseString];
       
       if ([answer isEqual:@"yes"] || [answer isEqual:@"y"]) {
         if (ssh_write_knownhost(_session) < 0) {

@@ -33,8 +33,7 @@
 
 @implementation TermStream
 
-- (void)close
-{
+- (void)close {
   if (_in) {
     fclose(_in);
     _in = NULL;
@@ -46,6 +45,14 @@
   if (_err) {
     fclose(_err);
     _err = NULL;
+  }
+}
+
+- (void)closeIn {
+  if (_in) {
+    fflush(_in);
+    fclose(_in);
+    _in = NULL;
   }
 }
 

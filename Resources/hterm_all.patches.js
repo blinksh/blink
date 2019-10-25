@@ -23,13 +23,6 @@ hterm.Terminal.prototype.overlaySize = function() {};
 
 hterm.Terminal.prototype.onMouse_ = function() {};
 
-var _assertiveAnnounce = hterm.AccessibilityReader.prototype.assertiveAnnounce;
-hterm.AccessibilityReader.prototype.assertiveAnnounce = function(e) {
-  if (e) {
-    _assertiveAnnounce.call(this, e);
-  }
-}
-
 hterm.Terminal.prototype.setCursorVisible = function(state) {
   this.options_.cursorVisible = state;
 

@@ -38,6 +38,7 @@
 @property FILE *err;
 
 - (void)close;
+- (void)closeIn;
 
 - (instancetype)duplicate;
 

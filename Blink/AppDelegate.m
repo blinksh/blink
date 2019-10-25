@@ -94,10 +94,13 @@ void __setupProcessEnv() {
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
          selector:@selector(_onSceneDidEnterBackground:)
-             name:UISceneDidEnterBackgroundNotification object:self];
+             name:UISceneDidEnterBackgroundNotification object:nil];
   [nc addObserver:self
            selector:@selector(_onSceneWillEnterForeground:)
-               name:UISceneWillEnterForegroundNotification object:self];
+               name:UISceneWillEnterForegroundNotification object:nil];
+  [nc addObserver:self
+         selector:@selector(_onSceneDidActiveNotification:)
+             name:UISceneDidActivateNotification object:nil];
   [nc addObserver:self
          selector: @selector(_onScreenConnect)
              name:UIScreenDidConnectNotification object:nil];
@@ -310,6 +313,10 @@ void __setupProcessEnv() {
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  [self _cancelApplicationSuspend];
+}
+
+- (void)_onSceneDidActiveNotification:(NSNotification *)notification {
   [self _cancelApplicationSuspend];
 }
 

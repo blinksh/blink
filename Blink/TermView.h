@@ -49,6 +49,8 @@
 - (void)viewSendString:(NSString *)data;
 - (void)viewCopyString:(NSString *)text;
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
+- (void)viewSubmitLine:(NSString *)line;
+- (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request;
 
 @end
 
@@ -76,6 +78,7 @@
 - (void)setWidth:(NSInteger)count;
 - (void)setFontSize:(NSNumber *)newSize;
 - (void)write:(NSString *)data;
+- (void)processKB:(NSString *)str;
 - (void)setCursorBlink:(BOOL)state;
 - (void)setBoldAsBright:(BOOL)state;
 - (void)setBoldEnabled:(NSUInteger)state;
@@ -94,6 +97,8 @@
 - (void)decreaseFontSize;
 - (void)resetFontSize;
 - (void)writeB64:(NSData *)data;
+- (void)displayInput:(NSString *)input;
+- (void)apiResponse:(NSString *)name response:(NSString *)response;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;

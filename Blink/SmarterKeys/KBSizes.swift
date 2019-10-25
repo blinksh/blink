@@ -141,7 +141,7 @@ extension KBSizes {
   }
   
   static var landscape_iPhone_6_5: Self {
-    Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 40, wide: 62.5)))
+    Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 45, wide: 66.5)))
   }
   
   // MARK: Landscape iPad Sizes

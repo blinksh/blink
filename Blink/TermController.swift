@@ -32,6 +32,7 @@
 
 import Foundation
 import UIKit
+import Combine
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
   // May be do it optional
@@ -49,6 +50,7 @@ class TermController: UIViewController {
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
+  private var _bag = Array<AnyCancellable>()
   private var _termView = TermView(frame: .zero)
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
@@ -124,6 +126,11 @@ class TermController: UIViewController {
     }
     
     view.setNeedsLayout()
+  }
+  
+  override func viewWillAppear(_ animated: Bool) {
+    super.viewWillAppear(animated);
+    resumeIfNeeded()
   }
   
   public override func viewWillLayoutSubviews() {
@@ -209,7 +216,29 @@ extension TermController: SessionDelegate {
   }
 }
 
+let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
+  "history.search": History.searchAPI,
+  "completion.for": Complete.forAPI
+]
+
 extension TermController: TermDeviceDelegate {
+  
+  func apiCall(_ api: String!, andRequest request: String!) {
+    guard
+      let api = api,
+      let session = _session,
+      let call = _apiRoutes[api]
+    else {
+      return
+    }
+
+    weak var termView = _termView
+
+    _ = call(session, request)
+      .receive(on: RunLoop.main)
+      .sink { termView?.apiResponse(api, response: $0) }
+  }
+  
   public func deviceIsReady() {
     startSession()
   }
@@ -238,6 +267,10 @@ extension TermController: TermDeviceDelegate {
   
   public func viewController() -> UIViewController! {
     return self
+  }
+  
+  public func lineSubmitted(_ line: String!) {
+    _session?.enqueueCommand(line)
   }
 }
 
@@ -278,24 +311,14 @@ extension TermController: SuspendableSession {
     }
     
     _sessionParams = params
-    
-    guard
-      _sessionParams.hasEncodedState(),
-      _session == nil // will be created on startSession
-    else {
-      return
+    _session?.sessionParams = params
+   
+    if _sessionParams.hasEncodedState() {
+      _session?.execute(withArgs: "")
     }
-    
-    let input = _termDevice.input
-    _termDevice = TermDevice()
-    _termDevice.cols = params.cols
-    _termDevice.rows = params.rows
-    _termDevice.delegate = self
-    _termDevice.attachView(_termView)
-    _termDevice.attachInput(input)
-    
-    if _termView.isReady {
-      startSession()
+
+    if view.bounds.size != _sessionParams.viewSize {
+      _session?.sigwinch()
     }
   }
   
@@ -315,3 +338,4 @@ extension TermController: SuspendableSession {
     archiver.encode(_sessionParams, forKey: _decodableKey)
   }
 }
+
