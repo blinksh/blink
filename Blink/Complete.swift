@@ -228,6 +228,10 @@ struct Complete {
   }
  
   static func _for(cursor: Int, str: String, n: Int) -> (kind: Kind, start: Int, pos: Int, len: Int, result: String, hint: String) {
+    
+    if str.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+      return ( kind: .no, start: 0, pos: 0, len: 0, result: "", hint: "")
+    }
 
     let token = CompleteUtils.completeToken(str, cursor: cursor)
 
