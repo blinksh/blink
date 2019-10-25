@@ -341,6 +341,23 @@ struct Complete {
         .compactMap({$0.host})
     )
     
+    /*
+     -(NSArray<NSString *> *)_allKnownHosts
+     {
+       NSString * str = [NSString stringWithContentsOfFile:[BlinkPaths knownHostsFile] encoding:NSUTF8StringEncoding error:nil];
+       NSArray<NSString *> * lines = [str componentsSeparatedByString:@"\n"];
+       NSMutableSet *hostsSet = [[NSMutableSet alloc] init];
+       for (NSString *line in lines) {
+         NSArray<NSString *> * comps = [line componentsSeparatedByString:@" "];
+         if ([comps firstObject].length > 0 ) {
+           [hostsSet addObject:comps.firstObject];
+         }
+       }
+       return [hostsSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+     }
+
+     */
+    
     return Array(hosts)
   }
   
