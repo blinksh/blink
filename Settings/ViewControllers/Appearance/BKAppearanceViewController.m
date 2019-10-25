@@ -45,6 +45,7 @@
 #define LAYOUT_MODE_TAG 2008
 #define OVERSCAN_COMPENSATION_TAG 2009
 #define KEYBOARDSTYLE_TAG 2010
+#define KEYCASTS_TAG 2011
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -83,6 +84,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   
   UISwitch *_alternateAppIconSwitch;
   BOOL _alternateAppIconValue;
+  
+  UISwitch *_keyCastsSwitch;
+  BOOL _keyCastsValue;
   
   UISegmentedControl *_defaultLayoutModeSegmentedControl;
   BKLayoutMode _defaultLayoutModeValue;
@@ -140,6 +144,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _defaultLayoutModeValue = BKDefaults.layoutMode;
   _overscanCompensationValue = BKDefaults.overscanCompensation;
   _keyboardStyleValue = BKDefaults.keyboardStyle;
+  _keyCastsValue = [BKDefaults isKeyCastsOn];
 }
 
 - (void)saveDefaultValues
@@ -163,6 +168,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [BKDefaults setLayoutMode:_defaultLayoutModeValue];
   [BKDefaults setOversanCompensation:_overscanCompensationValue];
   [BKDefaults setKeyboardStyle:_keyboardStyleValue];
+  [BKDefaults setKeycasts:_keyCastsValue];
 
   [BKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
@@ -186,7 +192,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (section == BKAppearance_Fonts) {
     return [[BKFont all] count] + 1;
   } else if (section == BKAppearance_KeyboardAppearance) {
-    return 1;
+    return 2;
   } else if (section == BKAppearance_AppIcon) {
     return 1;
   } else if (section == BKAppearance_Layout) {
@@ -251,7 +257,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       cellIdentifier = @"cursorBlinkCell";
     }
   } else if (section == BKAppearance_KeyboardAppearance) {
-    cellIdentifier = @"keyboardStyleCell";
+    if (indexPath.row == 0) {
+      cellIdentifier = @"keyboardStyleCell";
+    } else {
+      cellIdentifier = @"keycastsCell";
+    }
   } else if (section == BKAppearance_AppIcon) {
     cellIdentifier = @"alternateAppIconCell";
   } else if (section == BKAppearance_Layout) {
@@ -327,6 +337,9 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
     _keyboardStyleSegmentedControl = [cell viewWithTag:KEYBOARDSTYLE_TAG];
     _keyboardStyleSegmentedControl.selectedSegmentIndex = [self _keyboardStyleToIndex: _keyboardStyleValue];
+  } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 1) {
+    _keyCastsSwitch = [cell viewWithTag:KEYCASTS_TAG];
+    _keyCastsSwitch.on = _keyCastsValue;
   } else if (indexPath.section == BKAppearance_AppIcon && indexPath.row == 0) {
     _alternateAppIconSwitch = [cell viewWithTag:APP_ICON_ALTERNATE_TAG];
     _alternateAppIconSwitch.on = _alternateAppIconValue;
@@ -566,6 +579,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     appIcon = @"DarkAppIcon";
   }
   [[UIApplication sharedApplication] setAlternateIconName:appIcon completionHandler:nil];
+}
+
+- (IBAction)keycastsSwitchChanged:(id)sender
+{
+  _keyCastsValue = _keyCastsSwitch.on;
 }
 
 #pragma mark - TermViewDeviceProtocol

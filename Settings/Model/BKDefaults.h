@@ -84,6 +84,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic) BOOL boldAsBright;
 @property (nonatomic) BKKeyboardStyle keyboardStyle;
 @property (nonatomic) BOOL alternateAppIcon;
+@property (nonatomic) BOOL keycasts;
 @property (nonatomic) BKLayoutMode layoutMode;
 @property (nonatomic) BKOverscanCompensation overscanCompensation;
 @property (nonatomic) BOOL xCallBackURLEnabled;
@@ -102,6 +103,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setBoldAsBright:(BOOL)state;
 + (void)setEnableBold:(NSUInteger)state;
 + (void)setAlternateAppIcon:(BOOL)state;
++ (void)setKeycasts:(BOOL)state;
 + (void)setXCallBackURLEnabled:(BOOL)state;
 + (void)setXCallBackURLKey:(NSString *)key;
 + (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
@@ -126,6 +128,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (NSUInteger)enableBold;
 + (BOOL)isBoldAsBright;
 + (BOOL)isAlternateAppIcon;
++ (BOOL)isKeyCastsOn;
 + (BOOL)isXCallBackURLEnabled;
 + (NSString *)xCallBackURLKey;
 + (void)setDefaultUserName:(NSString*)name;

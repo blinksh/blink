@@ -175,8 +175,8 @@ NSString *term_processKB(NSString *str) {
   return  [NSString stringWithFormat:@"term_processKB(%@[0]);", _encodeString(str)];
 }
 
-NSString *term_displayInput(NSString *str) {
-  return  [NSString stringWithFormat:@"term_displayInput(%@[0]);", _encodeString(str)];
+NSString *term_displayInput(NSString *str, BOOL display) {
+  return  [NSString stringWithFormat:@"term_displayInput(%@[0], %@);", _encodeString(str), display ? @"true" : @"false"];
 }
 
 NSString *term_apiResponse(NSString *name, NSString *response) {

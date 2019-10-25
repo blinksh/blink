@@ -74,6 +74,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
   _keyboardStyle = (BKKeyboardStyle)[coder decodeIntegerForKey:@"keyboardStyle"];
+  _keycasts = [coder decodeBoolForKey:@"keycasts"];
   _alternateAppIcon = [coder decodeBoolForKey:@"alternateAppIcon"];
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
   _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
@@ -100,6 +101,7 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
   [encoder encodeInteger: _keyboardStyle forKey:@"keyboardStyle"];
+  [encoder encodeBool: _keycasts forKey:@"keycasts"];
   [encoder encodeBool:_alternateAppIcon forKey:@"alternateAppIcon"];
   [encoder encodeInteger:_layoutMode forKey:@"layoutMode"];
   [encoder encodeInteger:_overscanCompensation forKey:@"overscanCompensation"];
@@ -228,6 +230,10 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (void)setAlternateAppIcon:(BOOL)state
 {
   defaults.alternateAppIcon = state;
+}
+
++ (void)setKeycasts:(BOOL)state {
+  defaults.keycasts = state;
 }
 
 + (void)setEnableBold:(NSUInteger)state
@@ -370,6 +376,11 @@ NSString const *BKKeyboardFuncShortcutTriggers = @"Shortcuts";
 + (BOOL)isAlternateAppIcon
 {
   return defaults.alternateAppIcon;
+}
+
++ (BOOL)isKeyCastsOn
+{
+  return defaults.keycasts;
 }
 
 + (NSString*)defaultUserName

@@ -296,7 +296,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)displayInput:(NSString *)input {
-  [self _evalJSScript: term_displayInput(input)];
+  [self _evalJSScript: term_displayInput(input, BKDefaults.isKeyCastsOn)];
 }
 
 // Write data to terminal control

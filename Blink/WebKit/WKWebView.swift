@@ -194,7 +194,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
-      _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1);", completionHandler: nil)
+      _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
     default: break
     }
     

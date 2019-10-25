@@ -66,8 +66,11 @@ function term_processKB(str) {
   }
 }
 
-function term_displayInput(str) {
+function term_displayInput(str, display) {
   t.accessibilityReader_.hasUserGesture = true;
+  if (!display) {
+    return;
+  }
   if (str && !t.prompt._secure) {
     window.KeystrokeVisualizer.processInput(str);
   }
@@ -278,14 +281,17 @@ function _setTermCoordinates(event, x, y) {
   event.terminalColumn = parseInt(x / t.scrollPort_.characterSize.width);
 }
 
-function term_reportMouseClick(x, y, buttons) {
+function term_reportMouseClick(x, y, buttons, display) {
   var event = new MouseEvent(name, {buttons});
   _setTermCoordinates(event, x, y);
   if (!t.prompt.processMouseClick(event)) {
     term_reportMouseEvent('mousedown', x, y, 1);
     term_reportMouseEvent('mouseup', x, y, 1);
   }
-  term_displayInput("👆");
+                                  
+  if (display) {
+     term_displayInput("👆", display);
+  }
 }
 
 function term_reportMouseEvent(name, x, y, buttons) {
