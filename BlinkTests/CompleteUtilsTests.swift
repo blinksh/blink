@@ -246,8 +246,8 @@ class CompletionTests: XCTestCase {
   }
   
   func testEscapes() {
-    var token = "cat foo\\ ".token(cursor: 9)
-    assert(token.value == "cat foo\\ ")
+    var token = #"cat foo\ "#.token(cursor: 9)
+    assert(token.value == #"cat foo\ "#)
     assert(token.prefix == "cat ")
     assert(token.cmd == "cat")
     assert(token.query == "foo ")
@@ -256,7 +256,7 @@ class CompletionTests: XCTestCase {
     assert(token.jsPos == 4)
     assert(token.jsLen == 5)
     
-    token = "cd hello\\ world".token(cursor: 1)
+    token = #"cd hello\ world"#.token(cursor: 1)
     assert(token.value == "cd")
     assert(token.prefix == "")
     assert(token.cmd == nil)
@@ -266,8 +266,8 @@ class CompletionTests: XCTestCase {
     assert(token.jsPos == 0)
     assert(token.jsLen == 2)
     
-    token = "cd hello\\ world".token(cursor: 4)
-    assert(token.value == "cd hello\\ world")
+    token = #"cd hello\ world"#.token(cursor: 4)
+    assert(token.value == #"cd hello\ world"#)
     assert(token.prefix == "cd ")
     assert(token.cmd == "cd")
     assert(token.query == "h")
@@ -276,24 +276,24 @@ class CompletionTests: XCTestCase {
     assert(token.jsPos == 3)
     assert(token.jsLen == 12)
     
-    token = "cd \"hello\\\" world".token(cursor: 4)
-    assert(token.value == "cd \"hello\\\" world")
+    token = #"cd "hello\" world"#.token(cursor: 4)
+    assert(token.value == #"cd "hello\" world"#)
     assert(token.prefix == "cd ")
     assert(token.cmd == "cd")
     assert(token.query == "")
     assert(token.quote == Character("\""))
     assert(token.isRedirect == false)
     
-    token = "cd \"hello\\\" world".token(cursor: 5)
-    assert(token.value == "cd \"hello\\\" world")
+    token = #"cd "hello\" world"#.token(cursor: 5)
+    assert(token.value == #"cd "hello\" world"#)
     assert(token.prefix == "cd ")
     assert(token.cmd == "cd")
     assert(token.query == "h")
     assert(token.quote == Character("\""))
     assert(token.isRedirect == false)
     
-    token = "cd \"hello world |".token(cursor: 4)
-    assert(token.value == "cd \"hello world |")
+    token = #"cd "hello world |"#.token(cursor: 4)
+    assert(token.value == #"cd "hello world |"#)
     assert(token.prefix == "cd ")
     assert(token.cmd == "cd")
     assert(token.query == "")
@@ -304,11 +304,11 @@ class CompletionTests: XCTestCase {
     
     // `echo "he\"llo, " world |`
     // `[    |    ^    ]        `
-    token = "echo \"he\\\"llo, \" world |".token(cursor: 10)
-    assert(token.value == "echo \"he\\\"llo, \"")
+    token = #"echo "he\"llo, " world |"#.token(cursor: 10)
+    assert(token.value == #"echo "he\"llo, ""#)
     assert(token.prefix == "echo ")
     assert(token.cmd == "echo")
-    assert(token.query == "he\"") // he"
+    assert(token.query == #"he""#) // he"
     assert(token.quote == Character("\""))
     assert(token.isRedirect == false)
     assert(token.jsPos == 5)
