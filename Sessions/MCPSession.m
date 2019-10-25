@@ -136,10 +136,12 @@
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   
   if ([cmd isEqualToString:@"exit"]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self.delegate sessionFinished];
+    });
+    
     return NO;
   }
-  
-  
   
   if ([cmd isEqualToString:@"mosh"]) {
     [self _runMoshWithArgs:cmdline];
