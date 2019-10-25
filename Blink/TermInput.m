@@ -149,11 +149,11 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
     return @"\x1B";
   } else if ([c isEqual:@"\n"]) {
     // See raw mode: http://man7.org/linux/man-pages/man3/termios.3.html
-    if (raw) {
+//    if (raw) {
       // INLCR  Translate NL to CR on input
       return @"\r";
-    }
-    return c;
+//    }
+//    return c;
   }
   
   if (m) {
