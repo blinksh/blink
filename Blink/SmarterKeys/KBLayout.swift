@@ -79,12 +79,12 @@ extension KBLayout {
       .vertical2(";", ":",  traits: .default - .cmdOff),
       .vertical2("&", "'",  traits: .default - .cmdOff),
       
-      .vertical2(.f(value: 1), .f(value: 7),  traits: .default + .hkb - .cmdOff),
-      .vertical2(.f(value: 2), .f(value: 8),  traits: .default + .hkb - .cmdOff),
-      .vertical2(.f(value: 3), .f(value: 9),  traits: .default + .hkb - .cmdOff),
-      .vertical2(.f(value: 4), .f(value: 10),  traits: .default + .hkb - .cmdOff),
-      .vertical2(.f(value: 5), .f(value: 11),  traits: .default + .hkb - .cmdOff),
-      .vertical2(.f(value: 6), .f(value: 12),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(1), .f(7),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(2), .f(8),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(3), .f(9),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(4), .f(10),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(5), .f(11),  traits: .default + .hkb - .cmdOff),
+      .vertical2(.f(6), .f(12),  traits: .default + .hkb - .cmdOff),
       //
       .flexKey(.esc,  traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
     ],
@@ -159,13 +159,12 @@ extension KBLayout {
      .key(.tab,  traits: .default - .cmdOn),
      ] + _iPad_9_7_middle(lang: lang) + [
      //
-     .vertical2("F1", "F8",   traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F2", "F9",   traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F3", "F10",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F4", "F11",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F5", "F12",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F6", "F13",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-     .vertical2("F7", "F14",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(1), .f(7),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(2), .f(8),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(3), .f(9),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(4), .f(10), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(5), .f(11), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+     .vertical2(.f(6), .f(12), traits: .default - .cmdOff + .hkb + .suggestionsOn),
       //
      .flexKey(.esc,  traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
    ], [
@@ -243,13 +242,12 @@ extension KBLayout {
       .key(.tab,  traits: .default - .cmdOn),
       ] + _iPad_10_5_middle(lang: lang) + [
       //
-      .vertical2("F1", "F8",   traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F2", "F9",   traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F3", "F10",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F4", "F11",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F5", "F12",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F6", "F13",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F7", "F14",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(1), .f(7),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(2), .f(8),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(3), .f(9),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(4), .f(10), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(5), .f(11), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(6), .f(12), traits: .default - .cmdOff + .hkb + .suggestionsOn),
        //
       .flexKey(    .esc     ,  traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
     ], [
@@ -323,12 +321,12 @@ extension KBLayout {
       .arrows(traits: .default - .cmdOff),
     ], _iPad_11_middle(lang: lang) + [
       //
-      .vertical2("F1", "F7",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F2", "F8",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F3", "F9",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F4", "F10", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F5", "F11", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F6", "F12", traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(1), .f(7),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(2), .f(8),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(3), .f(9),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(4), .f(10), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(5), .f(11), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(6), .f(12), traits: .default - .cmdOff + .hkb + .suggestionsOn),
       //
       .flexKey(.esc, traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
     ], [
@@ -404,13 +402,12 @@ extension KBLayout {
       .wideKey(.alt,  traits: .defaultSuggestionsOnly),
     ], _iPad_12_9_middle(lang: lang) + [
       // -
-      .vertical2("F1", "F8",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F2", "F9",  traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F3", "F10", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F4", "F11", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F5", "F12", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F6", "F13", traits: .default - .cmdOff + .hkb + .suggestionsOn),
-      .vertical2("F7", "F14", traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(1), .f(7),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(2), .f(8),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(3), .f(9),  traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(4), .f(10), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(5), .f(11), traits: .default - .cmdOff + .hkb + .suggestionsOn),
+      .vertical2(.f(6), .f(12), traits: .default - .cmdOff + .hkb + .suggestionsOn),
       // -
       .flexKey(.esc,  traits: .default - .cmdOn - .skb + .hkb + .suggestionsOn),
     ], [

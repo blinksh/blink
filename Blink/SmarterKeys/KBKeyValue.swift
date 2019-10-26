@@ -47,7 +47,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     }
     
     if let value: Int8 = try container.decodeIfPresent(Int8.self, forKey: .f) {
-      self = .f(value: value)
+      self = .f(value)
       return
     }
     
@@ -81,7 +81,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
   case copy
   case paste
   case text(value: String)
-  case f(value: Int8)
+  case f(Int8)
   
   var id: String {
     switch self {
@@ -136,6 +136,7 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     case .up: return UIKeyCommand.inputUpArrow
     case .down: return UIKeyCommand.inputDownArrow
     case .tab: return "\t"
+    case .f(let num): return _fkey(num)
     default: return nil
     }
   }
@@ -181,4 +182,28 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
     }
   }
   
+  func _fkey(_ num: Int8) -> String {
+    let SS3 = _esc("O")
+    let CGI = _esc("[")
+    switch num {
+    case 1: return "\(SS3)P"
+    case 2: return "\(SS3)Q"
+    case 3: return "\(SS3)R"
+    case 4: return "\(SS3)S"
+    case 5: return "\(CGI)15~"
+    case 6...8: return "\(CGI)1\(num + 1)~"
+    case 9...10: return "\(CGI)2\(num - 9)~"
+    case 11...12: return "\(CGI)2\(num - 8)~"
+    default: return ""
+    }
+  }
+  
+  func _esc(_ c: String?) -> String {
+    let esc = "\u{001B}"
+    guard let c = c, !c.isEmpty, c != UIKeyCommand.inputEscape else {
+      return esc
+    }
+    
+    return "\(esc)\(c.prefix(1))"
+  }
 }

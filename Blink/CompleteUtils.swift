@@ -199,7 +199,7 @@ struct CompleteUtils {
     
     let range = input.index(input.startIndex, offsetBy: start)..<input.index(input.startIndex, offsetBy: end)
     
-    var canShowHint = range.upperBound == input.endIndex
+    let canShowHint = range.upperBound == input.endIndex
 //    if pos >= len {
 //      pos = len - 1
 //    }
