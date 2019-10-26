@@ -68,6 +68,9 @@
 - (void)openLink:(id)sender;
 - (void)yank:(id)sender;
 - (void)pasteSelection:(id)sender;
+- (void)fkeySeq:(UIKeyCommand *)cmd;
+- (void)arrowSeq:(UIKeyCommand *)cmd;
+- (void)cursorSeq:(UIKeyCommand *)cmd;
 
 - (void)reset;
 

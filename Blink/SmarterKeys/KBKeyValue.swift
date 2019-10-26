@@ -208,6 +208,6 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
       return esc + esc
     }
     
-    return "\(esc)\(c.prefix(1))"
+    return esc + c
   }
 }
