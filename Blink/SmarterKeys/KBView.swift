@@ -104,9 +104,6 @@ class KBView: UIView {
     addSubview(_scrollViewLeftBorder)
     addSubview(_scrollViewRightBorder)
     
-//    _scrollViewLeftBorder.backgroundColor = UIColor.gray.withAlphaComponent(0.45)
-//    _scrollViewRightBorder.backgroundColor = UIColor.gray.withAlphaComponent(0.45)
-    
     if traitCollection.userInterfaceStyle == .light {
       _scrollViewLeftBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.15)
       _scrollViewRightBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.15)
@@ -114,11 +111,6 @@ class KBView: UIView {
       _scrollViewLeftBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.45)
       _scrollViewRightBorder.backgroundColor = UIColor.separator.withAlphaComponent(0.45)
     }
-//    _scrollViewLeftBorder.backgroundColor = UIColor.tertiarySystemBackground.withAlphaComponent(0.5)
-//    _scrollViewRightBorder.backgroundColor = UIColor.tertiarySystemBackground.withAlphaComponent(0.5)
-    
-//    addSubview(_indicatorLeft)
-//    addSubview(_indicatorRight)
     
     _indicatorLeft.backgroundColor = UIColor.blue.withAlphaComponent(0.45)
     _indicatorRight.backgroundColor = UIColor.orange.withAlphaComponent(0.45)
@@ -237,16 +229,12 @@ class KBView: UIView {
     _scrollView.contentSize = CGSize(width: x, height: height)
     _scrollView.isHidden = strictSpace
     
-//    var borderFrame = CGRect(x: middleLeft - 1, y: 7, width: 1, height: height - 15)
     var borderFrame = CGRect(x: middleLeft - 1, y: 9, width: 1, height: height - 19)
     _scrollViewLeftBorder.frame = borderFrame
     borderFrame.origin.x = middleRight - 1
     _scrollViewRightBorder.frame = borderFrame
     
     _updateScrollViewBorders()
-    
-//    _indicatorLeft.frame = CGRect(x: 0, y: 0, width: safeBarWidth, height:55)
-//    _indicatorRight.frame = CGRect(x: frame.width - safeBarWidth, y: 0 , width: safeBarWidth, height:55)
   }
   
   func _updateScrollViewBorders() {

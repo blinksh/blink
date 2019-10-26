@@ -200,8 +200,12 @@ enum KBKeyValue: Hashable, Identifiable, Codable {
   
   func _esc(_ c: String?) -> String {
     let esc = "\u{001B}"
-    guard let c = c, !c.isEmpty, c != UIKeyCommand.inputEscape else {
+    guard let c = c, !c.isEmpty else {
       return esc
+    }
+    
+    if c == UIKeyCommand.inputEscape {
+      return esc + esc
     }
     
     return "\(esc)\(c.prefix(1))"
