@@ -61,16 +61,25 @@ function term_setupDefaults() {
 }
 
 function term_processKB(str) {
+  if (!t.prompt) {
+    return;
+  }
   if (str) {
     t.prompt.processInput(str);
   }
 }
 
 function term_displayInput(str, display) {
+  if (!t || !t.accessibilityReader_) {
+    return;
+  }
+  
   t.accessibilityReader_.hasUserGesture = true;
+  
   if (!display) {
     return;
   }
+  
   if (str && !t.prompt._secure) {
     window.KeystrokeVisualizer.processInput(str);
   }
@@ -282,6 +291,10 @@ function _setTermCoordinates(event, x, y) {
 }
 
 function term_reportMouseClick(x, y, buttons, display) {
+  if (!t.prompt) {
+    return;
+  }
+
   var event = new MouseEvent(name, {buttons});
   _setTermCoordinates(event, x, y);
   if (!t.prompt.processMouseClick(event)) {
@@ -295,12 +308,20 @@ function term_reportMouseClick(x, y, buttons, display) {
 }
 
 function term_reportMouseEvent(name, x, y, buttons) {
+  if (!t.prompt) {
+    return;
+  }
+
   var event = new MouseEvent(name, {buttons});
   _setTermCoordinates(event, x, y);
   t.onMouse(event);
 }
 
 function term_reportWheelEvent(name, x, y, deltaX, deltaY) {
+  if (!t.prompt) {
+    return;
+  }
+
   var event = new WheelEvent(name, {deltaX, deltaY});
   _setTermCoordinates(event, x, y);
   if (!t.prompt.processMouseScroll(event)) {
