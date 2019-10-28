@@ -282,12 +282,11 @@ function term_blur() {
 
 function _setTermCoordinates(event, x, y) {
   // One based row/column stored on the mouse event.
-  event.terminalRow =
-    parseInt(
-      (y - t.scrollPort_.visibleRowTopMargin) /
-        t.scrollPort_.characterSize.height,
-    );
-  event.terminalColumn = parseInt(x / t.scrollPort_.characterSize.width);
+  var ty = (y / t.scrollPort_.characterSize.height | 0) + 1;
+  var tx = (x / t.scrollPort_.characterSize.width | 0) + 1;
+//  console.log(`x:${x},y: ${y}, col:${tx}, row:${ty}`);
+  event.terminalRow = ty;
+  event.terminalColumn = tx;
 }
 
 function term_reportMouseClick(x, y, buttons, display) {

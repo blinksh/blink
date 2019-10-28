@@ -310,6 +310,9 @@
 - (BOOL)handleControl:(NSString *)control
 {
   if (_childSession) {
+    if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+      [_device closeReadline];
+    }
     return [_childSession handleControl:control];
   }
   

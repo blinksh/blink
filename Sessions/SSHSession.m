@@ -138,28 +138,19 @@ static void kbd_callback(const char *name, int name_len,
   }
   
   for (int i = 0; i < num_prompts; i++) {
-    fwrite(prompts[i].text, 1, prompts[i].length, termout);
-    responses[i].length = (int)[s promptUser:&responses[i].text];
-    fprintf(termout, "\n");
+    LIBSSH2_USERAUTH_KBDINT_PROMPT prompt = prompts[i];
+    
+    NSString *text = [NSString stringWithCString:prompt.text length:prompt.length];
+    NSLog(@"prompt: %@", text);
+    NSString *response = [s.device readline:text secure:!prompt.echo];
+    if (!response) {
+      fprintf(termout, "\n");
+      return;
+    }
+    responses[i].text = strdup(response.UTF8String);
+    responses[i].length = (int)[response lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
   }
 } /* kbd_callback */
-
-- (ssize_t)promptUser:(char **)resp
-{
-  //char *line=NULL;
-  size_t size = 0;
-  ssize_t sz = 0;
-
-  FILE *termin = _device.stream.in;
-  if ((sz = getdelim(resp, &size, '\n', termin)) == -1) {
-    return -1;
-  } else {
-    if ((*resp)[sz - 1] == '\n') {
-      (*resp)[--sz] = '\0';
-    }
-    return sz;
-  }
-}
 
 - (int)main:(int)argc argv:(char **)argv
 {
@@ -518,14 +509,17 @@ static void kbd_callback(const char *name, int name_len,
   int retries = 3;
   char *errmsg;
   
+  NSString *pass = nil;
   do {
     int rc;
     if (!password) {
-      fprintf(_device.stream.out, "%s@%s's password: ", user, _options.hostname);
-      [_device setSecureTextEntry:YES];
-      [self promptUser:&password];
-      fprintf(_device.stream.out, "\n");
-      [_device setSecureTextEntry:NO];
+      NSString *prompt = [NSString stringWithFormat:@"%s@%s's password: ", user, _options.hostname];
+      pass = [_device readline:prompt secure:YES];
+      if (!pass) {
+        fprintf(_device.stream.out, "\n");
+        return 0;
+      }
+      password = pass.UTF8String;
     }
     
     if (strlen(password) != 0) {
@@ -551,10 +545,10 @@ static void kbd_callback(const char *name, int name_len,
   int rc;
   
   [self debugMsg:@"Attempting interactive authentication."];
-  [_device setSecureTextEntry:YES];
+//  [_device setSecureTextEntry:YES];
   while ((rc = libssh2_userauth_keyboard_interactive(_session, user, &kbd_callback)) == LIBSSH2_ERROR_EAGAIN)
   ;
-  [_device setSecureTextEntry:NO];
+//  [_device setSecureTextEntry:NO];
   
   if (rc == 0) {
     [self debugMsg:@"Authentication succeeded."];
@@ -579,21 +573,24 @@ static void kbd_callback(const char *name, int name_len,
       return 0;
     }
     
-    char *passphrase = NULL;
+//    char *passphrase = NULL;
+    NSString *passphrase = nil;
 
     // Request passphrase from user
     if ([pk isEncrypted]) {
-      [_device setSecureTextEntry:YES];
-      fprintf(_device.stream.out, "Enter your passphrase for key '%s':", [pk.ID UTF8String]);
-      [self promptUser:&passphrase];
-      fprintf(_device.stream.out, "\r\n");
-      [_device setSecureTextEntry:NO];
+//      [_device setSecureTextEntry:YES];
+      NSString *prompt = [NSString stringWithFormat:@"Enter your passphrase for key '%@':", pk.ID];
+      passphrase = [_device readline:prompt secure:YES];
+//      [_device setSecureTextEntry:NO];
+      if (!passphrase) {
+        return 0;
+      }
     }
     
     while ((rc = libssh2_userauth_publickey_frommemory(_session, user, strlen(user),
                                                        pub, strlen(pub), // or sizeof_publickey methods
                                                        priv, strlen(priv),
-                                                       passphrase)) == LIBSSH2_ERROR_EAGAIN)
+                                                       passphrase.UTF8String)) == LIBSSH2_ERROR_EAGAIN)
     ;
     if (rc == 0) {
       [self debugMsg:@"Authentication succeeded."];
@@ -878,43 +875,25 @@ void trace(void* ptr, const char *mess, size_t size) {
 
 - (int)confirm:(const char *)prompt
 {
-  const char *msg, *again = "Please type 'yes' or 'no': ";
-  char buffer[BUFSIZ] = "";
-  int len = 0;
-  int ret = -1;
+  NSString *again = @"Please type 'yes' or 'no': ";
+  NSString *msg = @(prompt);
   
-  for (msg = prompt;; msg = again) {
-    fprintf(_stream.err, "%s", msg);
-    len = 0;
-    do {
-      char c;
-      ssize_t n;
-
-      if ((n = read(fileno(_device.stream.in), &c, 1)) <= 0) {
-	break;
-      }
-      
-      if (c == '\n' || c == '\r') {
-        fprintf(_stream.err, "\n");
-        break;
-      }
-      fprintf(_stream.err, "%c", c);
-      buffer[len++] = c;
-      buffer[len] = '\0';
-    } while (BUFSIZ - 1 - len > 0);
-    
-    if ((buffer[0] == '\0') || (buffer[0] == '\n') || strncasecmp(buffer, "no", 2) == 0) {
-      ret = 0;
-    }
-    if (strncasecmp(buffer, "yes", 3) == 0) {
-      ret = 1;
+  for (;; msg = again) {
+    NSString *answer = [_device readline:msg secure:NO];
+    if (!answer) {
+      break;
     }
     
-    if (ret != -1) {
-      return ret;
+    if ([[answer lowercaseString] isEqualToString:@"yes"]) {
+      return 1;
+    }
+    
+    if ([[answer lowercaseString] isEqualToString:@"no"]) {
+      return 0;
     }
   }
   
+
   return 0;
 }
 
