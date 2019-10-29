@@ -92,26 +92,32 @@ function term_setup() {
   t.onTerminalReady = function() {
     term_setAutoCarriageReturn(true);
     t.setCursorVisible(true);
-    t.setAccessibilityEnabled(true);
     
     t.io.onTerminalResize = function(cols, rows) {
       _postMessage('sigwinch', {cols, rows});
-      t.prompt.resize();
+      if (t.prompt) {
+        t.prompt.resize();
+      }
     };
 
     var size = {
       cols: t.screenSize.width,
       rows: t.screenSize.height,
     };
+    
     document.body.style.backgroundColor =
       t.scrollPort_.screen_.style.backgroundColor;
     var bgColor = _colorComponents(t.scrollPort_.screen_.style.backgroundColor);
     
-    _postMessage('terminalReady', {size, bgColor});
-
     t.keyboard.characterEncoding = 'raw'; // we are UTF8. Fix for #507
     t.uninstallKeyboard();
-    window.KeystrokeVisualizer.enable();
+    
+    _postMessage('terminalReady', {size, bgColor});
+
+    if (window.KeystrokeVisualizer) {
+      window.KeystrokeVisualizer.enable();
+    }
+    t.setAccessibilityEnabled(true);
   };
 
   t.decorate(document.getElementById('terminal'));
