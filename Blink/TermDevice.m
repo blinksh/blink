@@ -333,7 +333,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   win.ws_col = cols;
 }
 
-- (void)attachInput:(TermInput *)termInput
+- (void)attachInput:(UIResponder<TermInput> *)termInput
 {
   _input = termInput;
   if (!_input) {

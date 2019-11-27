@@ -31,7 +31,7 @@
 
 import UIKit
 
-class SmarterTermInput: TermInput {
+class SmarterTermInput: TermInputOld {
   
   private var _kbView: KBView
   private var _langCharsMap: [String: String]

@@ -57,7 +57,29 @@
 
 @end
 
-@interface TermInput : UITextView
+@protocol TermInput <NSObject>
+
+@property (weak) TermDevice *device;
+@property BOOL secureTextEntry;
+
+- (void)deviceWrite:(NSString *)input;
+- (void)insertText:(NSString *)text;
+
+- (void)fkeySeq:(UIKeyCommand *)cmd;
+- (void)arrowSeq:(UIKeyCommand *)cmd;
+- (void)cursorSeq:(UIKeyCommand *)cmd;
+
+- (void)reset;
+
+- (void)escCtrlSeqWithInput:(NSString *)input;
+- (void)escSeqWithInput:(NSString *)input;
+- (void)ctrlSeqWithInput:(NSString *)input;
+
+
+
+@end
+
+@interface TermInputOld : UITextView<TermInput>
 
 @property BOOL softwareKB;
 

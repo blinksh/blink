@@ -230,10 +230,10 @@ NSString *const TermViewAutoRepeateSeq = @"autoRepeatSeq:";
 
 @end
 
-@interface TermInput () <UndoManagerDelegate, UITextViewDelegate, NSTextStorageDelegate>
+@interface TermInputOld () <UndoManagerDelegate, UITextViewDelegate, NSTextStorageDelegate>
 @end
 
-@implementation TermInput {
+@implementation TermInputOld {
 
   NSMutableDictionary *_controlKeys;
   NSMutableDictionary *_controlKeysWithoutAutoRepeat;
