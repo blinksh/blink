@@ -116,7 +116,7 @@ export default class KeyMap {
       e.shift = false;
       return resolve(action, e, k);
     }
-    const bs = (a: KeyActionType, b: KeyActionType) => b
+    const bs = (a: KeyActionType, b: KeyActionType) => a
     const alt = (a: KeyActionType, b: KeyActionType) => (e: KeyDownType, k: KeyDefType) => {
       let action = e.alt ? a : b;
       return resolve(action, e, k);

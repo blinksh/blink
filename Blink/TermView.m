@@ -61,6 +61,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return NO;
 }
 
+//- (BOOL)canBecomeFirstResponder {
+//  return NO;
+//}
+
 - (void)_keyboardDidChangeFrame:(id)sender
 {
 }

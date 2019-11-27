@@ -35,6 +35,7 @@
 #import "BKUserConfigurationManager.h"
 #import "BKiCloudConfigurationViewController.h"
 #import "BKiCloudSyncHandler.h"
+#import "Blink-Swift.h"
 
 
 @interface BKSettingsViewController ()
@@ -102,4 +103,16 @@
 - (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
 {
 }
+
+- (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
+  return YES;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+  if (indexPath.section == 1 && indexPath.row == 1) {
+    UIViewController *vc = [KBSettingsViewController createWithNav:self.navigationController];
+    [self.navigationController pushViewController:vc animated:YES];
+  }
+}
+
 @end

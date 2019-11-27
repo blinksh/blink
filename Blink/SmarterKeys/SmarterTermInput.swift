@@ -232,11 +232,12 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     _kbView.isHidden = false
     refreshInputViews()
-    if _kbView.traits.isFloatingKB {
-      DispatchQueue.main.async {
-        self.reloadInputViews()
-      }
-    }
+    // TODO: fix
+//    if _kbView.traits.isFloatingKB {
+//      DispatchQueue.main.async {
+//        self.reloadInputViews()
+//      }
+//    }
     return res
   }
   
@@ -246,13 +247,13 @@ class SmarterTermInput: KBWebView {
     }
 
     // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
-    let v = self.inputAccessoryView
+//    let v = self.inputAccessoryView
 //    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-    reloadInputViews()
+//    reloadInputViews()
 //    inputAccessoryView = v
-    if !_hideSmartKeysWithHKB {
-      reloadInputViews()
-    }
+//    if !_hideSmartKeysWithHKB {
+//      reloadInputViews()
+//    }
   }
   
   override func resignFirstResponder() -> Bool {

@@ -83,4 +83,6 @@ class KBConfig: ObservableObject, Codable {
     
     self.init(capsLock: capsLock, shift: shift, control: control, option: option, command: command)
   }
+  
+  
 }

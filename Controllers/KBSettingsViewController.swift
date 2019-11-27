@@ -30,47 +30,16 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+import SwiftUI
 import UIKit
 
-class KBWebView: KBWebViewBase {
-  
-  var loaded = false
-  
-  func configure(_ kbConfig: KBConfig) {
+@objc class KBSettingsViewController: NSObject {
+  @objc static func createWith(nav: UINavigationController?) -> UIViewController {
     guard
-      let data = try? JSONEncoder().encode(kbConfig),
-      let json = String(data: data, encoding: .utf8)
+      let nav = nav
     else {
-      debugPrint("Can't encode kbConfig")
-      return
+      return UIHostingController(rootView: KBConfigView(config: KBConfig()) )
     }
-
-    report("config", arg: json as NSString)
-  }
-  
-  
-  override func ready() {
-    configure(KBConfig())
-  }
-  
-  func loadKB() {
-    let bundle = Bundle.init(for: KBWebView.self)
-    guard
-      let path = bundle.path(forResource: "kb", ofType: "html")
-    else {
-      return
-    }
-    let url = URL(fileURLWithPath: path)
-    loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
-  }
-  
-  
-  
-  override func didMoveToSuperview() {
-    super.didMoveToSuperview()
-    if window != nil && !loaded {
-      loaded = true
-      loadKB()
-    }
+    return UIHostingController(rootView: NavView(navController: nav)  { KBConfigView(config: KBConfig())} )
   }
 }
