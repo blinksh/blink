@@ -33,11 +33,13 @@
 import Combine
 
 class KBConfig: ObservableObject, Codable {
-  let capsLock: KeyConfig
-  let shift:    KeyConfigPair
-  let control:  KeyConfigPair
-  let option:   KeyConfigPair
-  let command:  KeyConfigPair
+  var capsLock: KeyConfig
+  var shift:    KeyConfigPair
+  var control:  KeyConfigPair
+  var option:   KeyConfigPair
+  var command:  KeyConfigPair
+  
+  private var _cancellable = Set<AnyCancellable>()
   
   init(
     capsLock: KeyConfig     = .capsLock,
@@ -51,6 +53,12 @@ class KBConfig: ObservableObject, Codable {
     self.control  = control
     self.option   = option
     self.command  = command
+
+    capsLock.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    shift.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    control.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    option.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    command.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
   
   // - MARK: Codable

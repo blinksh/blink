@@ -36,21 +36,60 @@ class KBWebView: KBWebViewBase {
   
   var loaded = false
   
-  func configure(_ kbConfig: KBConfig) {
+  private func _configure(_ data: Data?) {
     guard
-      let data = try? JSONEncoder().encode(kbConfig),
+      let data = data,
       let json = String(data: data, encoding: .utf8)
     else {
-      debugPrint("Can't encode kbConfig")
+      if
+        let data = try? JSONEncoder().encode(KBConfig()),
+        let json = String(data: data, encoding: .utf8) {
+        report("config", arg: json as NSString)
+      }
+      
       return
     }
 
     report("config", arg: json as NSString)
   }
   
+  private func _loadKBConfigData() -> Data? {
+    guard
+      let url = BlinkPaths.blinkKBConfigURL(),
+      let data = try? Data(contentsOf: url)
+    else {
+      return nil
+    }
+    return data
+  }
+  
+  func loadConfig() -> KBConfig {
+    guard
+      let data = _loadKBConfigData(),
+      let cfg = try? JSONDecoder().decode(KBConfig.self, from: data)
+    else {
+      return KBConfig()
+    }
+    return cfg;
+  }
+  
+  func saveAndApply(config: KBConfig) {
+    let encoder = JSONEncoder()
+    encoder.outputFormatting = .prettyPrinted
+    guard
+      let url = BlinkPaths.blinkKBConfigURL(),
+      let data = try? encoder.encode(config)
+    else {
+      return
+    }
+    
+    try? data.write(to: url, options: .atomicWrite)
+    _configure(data)
+  }
+  
   
   override func ready() {
-    configure(KBConfig())
+    _configure(_loadKBConfigData())
   }
   
   func loadKB() {
@@ -63,8 +102,6 @@ class KBWebView: KBWebViewBase {
     let url = URL(fileURLWithPath: path)
     loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
   }
-  
-  
   
   override func didMoveToSuperview() {
     super.didMoveToSuperview()

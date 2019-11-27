@@ -36,6 +36,8 @@ class KeyConfigPair: ObservableObject, Codable {
   let left: KeyConfig
   let right: KeyConfig
   
+  var _cancellable = Set<AnyCancellable>()
+  
   @Published var bothAsLeft: Bool {
     didSet {
       if bothAsLeft {
@@ -50,6 +52,9 @@ class KeyConfigPair: ObservableObject, Codable {
     self.left = left
     self.right = right
     self.bothAsLeft = bothAsLeft
+    
+    left.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    right.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
   
   var fullName: String { left.fullName }

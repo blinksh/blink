@@ -35,11 +35,12 @@ import UIKit
 
 @objc class KBSettingsViewController: NSObject {
   @objc static func createWith(nav: UINavigationController?) -> UIViewController {
+    let rootView = KBConfigView(config: SmarterTermInput.shared.loadConfig())
     guard
       let nav = nav
     else {
-      return UIHostingController(rootView: KBConfigView(config: KBConfig()) )
+      return UIHostingController(rootView: rootView)
     }
-    return UIHostingController(rootView: NavView(navController: nav)  { KBConfigView(config: KBConfig())} )
+    return UIHostingController(rootView: NavView(navController: nav)  { rootView } )
   }
 }

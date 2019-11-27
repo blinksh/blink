@@ -129,6 +129,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self blink] stringByAppendingPathComponent:@"keys"];
 }
 
++ (NSURL *)blinkKBConfigURL
+{
+  return [[self blinkURL] URLByAppendingPathComponent:@"kb.json"];
+}
+
+
 + (NSString *)blinkHostsFile
 {
   return [[self blink] stringByAppendingPathComponent:@"hosts"];

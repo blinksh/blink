@@ -62,6 +62,11 @@ struct KBConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Keyboard")
+    .onReceive(config.objectWillChange) { _ in
+      DispatchQueue.main.async {
+        SmarterTermInput.shared.saveAndApply(config: self.config)
+      }
+    }
   }
 }
 
