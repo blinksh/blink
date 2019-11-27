@@ -44,5 +44,6 @@
 #import "TermInput.h"
 #import "MCPSession.h"
 #import "TermDevice.h"
+#import "KBWebViewBase.h"
 
 #endif /* Blink_bridge_h */
