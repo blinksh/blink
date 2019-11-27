@@ -73,7 +73,7 @@ type KeyConfig = {
   up: KeyAction,
   down: KeyAction,
   mod: KeyModifier,
-  skipAccents: boolean,
+  ignoreAccents: boolean,
 };
 
 type KeyConfigPair = {
@@ -101,7 +101,12 @@ function _op(op: string, args: {}) {
 }
 
 function _removeAccents(str: string): string {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let res = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  let tmp = res.replace(/^[\u02c6\u00a8\u00b4\u02dc\u0060]/, '');
+  if (tmp) {
+    res = tmp;
+  }
+  return res;
 }
 
 function _blockEvent(e: UIEvent | null) {
@@ -166,6 +171,11 @@ export default class Keyboard implements IKeyboard {
 
   _metaSendsEscape = true;
   _altSendsWhat: 'escape' | '8-bit' = 'escape';
+
+  _ignoreAccents = {
+    AltLeft: true,
+    AltRight: true,
+  };
 
   _modsMap: {[index: string]: string} = {
     ShiftLeft: 'Shift',
@@ -244,9 +254,10 @@ export default class Keyboard implements IKeyboard {
   _voiceString: string | null = '';
 
   _updateUIKitModsIfNeeded = (e: KeyboardEvent) => {
+    let code = e.code;
     if (this._capsLockRemapped) {
       let mods: number;
-      if (e.type == 'keyup' && e.code == 'CapsLock') {
+      if (e.type == 'keyup' && code == 'CapsLock') {
         mods = 0;
       } else {
         mods = toUIKitFlags(e);
@@ -254,11 +265,14 @@ export default class Keyboard implements IKeyboard {
       _op('mods', {mods: mods});
     }
 
-    if (e.key == 'Alt1') {
-      if (e.type == 'keydown') {
-        _op('guard-ime-on', {});
-      } else {
-        _op('guard-ime-off', {});
+    if (code == 'AltLeft' || code == 'AltRight') {
+      if (this._ignoreAccents[code]) {
+        if (e.type == 'keydown') {
+          _op('guard-ime-on', {});
+        } else {
+          _op('guard-ime-off', {});
+        }
+        _blockEvent(e);
       }
     }
   };
@@ -619,6 +633,10 @@ export default class Keyboard implements IKeyboard {
     if (up) {
       this._upMap[code.id] = up;
     }
+
+    if (code.code == 'AltRight' || code.code == 'AltLeft') {
+      this._ignoreAccents[code.code] = key.ignoreAccents;
+    }
   };
 
   _reset() {
@@ -631,6 +649,10 @@ export default class Keyboard implements IKeyboard {
       Alt: new Set(),
       Meta: new Set(),
       Control: new Set(),
+    };
+    this._ignoreAccents = {
+      AltLeft: true,
+      AltRight: true,
     };
   }
 

@@ -44,6 +44,7 @@ class KeyConfigPair: ObservableObject, Codable {
         right.up = left.up
         right.mod = left.mod
         right.down = left.down
+        right.ignoreAccents = left.ignoreAccents
       }
     }
   }
@@ -52,6 +53,13 @@ class KeyConfigPair: ObservableObject, Codable {
     self.left = left
     self.right = right
     self.bothAsLeft = bothAsLeft
+    
+    if bothAsLeft {
+      right.up = left.up
+      right.mod = left.mod
+      right.down = left.down
+      right.ignoreAccents = left.ignoreAccents
+    }
     
     left.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     right.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)

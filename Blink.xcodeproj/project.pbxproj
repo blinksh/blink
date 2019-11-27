@@ -1433,8 +1433,8 @@
 				D2C243FB238E44AB0082C69C /* KeyConfigPair.swift */,
 				D2C243FC238E44AB0082C69C /* KeyAction.swift */,
 				D2C243FD238E44AB0082C69C /* KeyCode.swift */,
-				D2C243FE238E44AB0082C69C /* KBConfig.swift */,
 				D2C243FF238E44AB0082C69C /* KeyConfig.swift */,
+				D2C243FE238E44AB0082C69C /* KBConfig.swift */,
 			);
 			name = Model;
 			path = KB/Native/Model;

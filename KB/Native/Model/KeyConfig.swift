@@ -38,19 +38,19 @@ class KeyConfig: ObservableObject, Codable {
   @Published var up: KeyAction
   @Published var down: KeyAction
   @Published var mod: KeyModifier
-  @Published var skipAccents: Bool
+  @Published var ignoreAccents: Bool
   
   init(code: KeyCode,
        up: KeyAction,
        down: KeyAction,
        mod: KeyModifier,
-       skipAccents: Bool = true
+       ignoreAccents: Bool = true
   ) {
-    self.code        = code
-    self.up          = up
-    self.down        = down
-    self.mod         = mod
-    self.skipAccents = skipAccents
+    self.code          = code
+    self.up            = up
+    self.down          = down
+    self.mod           = mod
+    self.ignoreAccents = ignoreAccents
   }
   
   func pair(right: KeyConfig) -> KeyConfigPair {
@@ -65,7 +65,7 @@ class KeyConfig: ObservableObject, Codable {
         up: up,
         down: down,
         mod: mod,
-        skipAccents: skipAccents
+        ignoreAccents: ignoreAccents
       )
     )
   }
@@ -104,26 +104,26 @@ class KeyConfig: ObservableObject, Codable {
     case up
     case down
     case mod
-    case skipAccents
+    case ignoreAccents
   }
   
   public func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
-    try c.encode(code,        forKey: .code)
-    try c.encode(up,          forKey: .up)
-    try c.encode(mod,         forKey: .mod)
-    try c.encode(down,        forKey: .down)
-    try c.encode(skipAccents, forKey: .skipAccents)
+    try c.encode(code,          forKey: .code)
+    try c.encode(up,            forKey: .up)
+    try c.encode(mod,           forKey: .mod)
+    try c.encode(down,          forKey: .down)
+    try c.encode(ignoreAccents, forKey: .ignoreAccents)
   }
   
   required convenience init(from decoder: Decoder) throws {
     let c = try decoder.container(keyedBy: Keys.self)
-    let code        = try c.decode(KeyCode.self,     forKey: .code)
-    let up          = try c.decode(KeyAction.self,   forKey: .up)
-    let down        = try c.decode(KeyAction.self,   forKey: .down)
-    let mod         = try c.decode(KeyModifier.self, forKey: .mod)
-    let skipAccents = try c.decode(Bool.self,        forKey: .skipAccents)
-    self.init(code: code, up: up, down: down, mod: mod, skipAccents: skipAccents)
+    let code          = try c.decode(KeyCode.self,     forKey: .code)
+    let up            = try c.decode(KeyAction.self,   forKey: .up)
+    let down          = try c.decode(KeyAction.self,   forKey: .down)
+    let mod           = try c.decode(KeyModifier.self, forKey: .mod)
+    let ignoreAccents = try c.decode(Bool.self,        forKey: .ignoreAccents)
+    self.init(code: code, up: up, down: down, mod: mod, ignoreAccents: ignoreAccents)
   }
 
 }

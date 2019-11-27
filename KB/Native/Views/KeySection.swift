@@ -48,7 +48,7 @@ struct KeySection: View {
         KeyActionPicker(action: self.$key.up).navigationBarTitle("Up Action")
       }
       if key.code.hasAccents {
-        Toggle(isOn: self.$key.skipAccents, label: { Text("Skip Accents") })
+        Toggle(isOn: self.$key.ignoreAccents, label: { Text("Ignore Accents") })
       }
     }
   }
