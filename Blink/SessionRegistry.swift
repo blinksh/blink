@@ -243,7 +243,7 @@ extension SuspendableSession {
       let data = try Data(contentsOf: sessionURL)
       return data
     } catch let e {
-      debugPrint(e)
+//      debugPrint(e)
       return nil
     }
   }

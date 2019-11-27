@@ -607,7 +607,7 @@ export default class Keyboard implements IKeyboard {
     }
     let mod = _mod(key.mod);
     if (mod) {
-      this._modsMap[code.key] = mod;
+      this._modsMap[code.code] = mod;
       if (mod == 'Alt') {
         this._altSendsWhat = key.mod == 'Escape' ? 'escape' : '8-bit';
       }

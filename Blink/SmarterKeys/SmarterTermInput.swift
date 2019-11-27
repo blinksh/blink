@@ -31,7 +31,7 @@
 
 import UIKit
 
-class SmarterTermInput: TermInputOld {
+class SmarterTermInput: KBWebView {
   
   private var _kbView: KBView
   private var _langCharsMap: [String: String]
@@ -39,7 +39,9 @@ class SmarterTermInput: TermInputOld {
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   
-  override init(frame: CGRect, textContainer: NSTextContainer?) {
+  var device: TermDevice? = nil
+  
+  override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     _kbView = KBView()
     
     _langCharsMap = [
@@ -73,7 +75,7 @@ class SmarterTermInput: TermInputOld {
       // More?
     ]
     
-    super.init(frame: frame, textContainer: textContainer)
+    super.init(frame: frame, configuration: configuration)
     
     self.tintColor = .cyan
     
@@ -83,7 +85,7 @@ class SmarterTermInput: TermInputOld {
       setupAccessoryView()
     }
     
-    _kbView.keyInput = self
+//    _kbView.keyInput = self
     _kbView.lang = textInputMode?.primaryLanguage ?? ""
     
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
@@ -130,7 +132,7 @@ class SmarterTermInput: TermInputOld {
     fatalError("init(coder:) has not been implemented")
   }
   
-  override var softwareKB: Bool {
+  var softwareKB: Bool {
     get { !_kbView.traits.isHKBAttached }
     set { _kbView.traits.isHKBAttached = !newValue }
   }
@@ -176,6 +178,11 @@ class SmarterTermInput: TermInputOld {
     }
   }
   
+  override func onOut(_ data: String) {
+    device?.view.displayInput(data)
+    device?.write(data)
+  }
+  
   func _matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
     
@@ -195,19 +202,24 @@ class SmarterTermInput: TermInputOld {
     return result
   }
   
-  override func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
-    super.setMarkedText(markedText, selectedRange: selectedRange)
-    if let text = markedText {
-      _kbView.traits.isIME = !text.isEmpty
-    } else {
-      _kbView.traits.isIME = false
-    }
+  func reset() {
+    
   }
   
-  override func unmarkText() {
-    super.unmarkText()
-    _kbView.traits.isIME = false
-  }
+  // TODO: IME
+//  override func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
+//    super.setMarkedText(markedText, selectedRange: selectedRange)
+//    if let text = markedText {
+//      _kbView.traits.isIME = !text.isEmpty
+//    } else {
+//      _kbView.traits.isIME = false
+//    }
+//  }
+//
+//  override func unmarkText() {
+//    super.unmarkText()
+//    _kbView.traits.isIME = false
+//  }
   
   @objc func _inputModeChanged() {
     DispatchQueue.main.async {
@@ -235,9 +247,9 @@ class SmarterTermInput: TermInputOld {
 
     // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
     let v = self.inputAccessoryView
-    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
+//    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
     reloadInputViews()
-    inputAccessoryView = v
+//    inputAccessoryView = v
     if !_hideSmartKeysWithHKB {
       reloadInputViews()
     }
@@ -257,54 +269,54 @@ class SmarterTermInput: TermInputOld {
     return state == .foregroundActive || state == .foregroundInactive
   }
   
-  override func insertText(_ text: String) {
-    defer {
-      _kbView.turnOffUntracked()
-    }
-    
-    if text != _kbView.repeatingSequence {
-      _kbView.stopRepeats()
-    }
-    
-    let traits = _kbView.traits
-    if traits.contains(.cmdOn) && text.count == 1 {
-      var flags = traits.modifierFlags
-      var input = text.lowercased()
-      if input != text {
-        flags.insert(.shift)
-      }
-      input = _langCharsMap[input] ?? input
-      
-      if let (cmd, res) = _matchCommand(input: input, flags: flags),
-        let action = cmd.action  {
-        res.perform(action, with: cmd)
-      } else {
-        switch(input) {
-        case "c": copy(self)
-        case "x": cut(self)
-        case "z": flags.contains(.shift) ? undoManager?.undo() : undoManager?.redo()
-        case "v": paste(self)
-        default: super.insertText(text);
-        }
-      }
-    } else if traits.contains([.altOn, .ctrlOn]) {
-      escCtrlSeq(withInput:text)
-    } else if traits.contains(.altOn) {
-      escSeq(withInput: text)
-    } else if traits.contains(.ctrlOn) {
-      ctrlSeq(withInput: text)
-    } else {
-      super.insertText(text)
-    }
-  }
+//  override func insertText(_ text: String) {
+//    defer {
+//      _kbView.turnOffUntracked()
+//    }
+//
+//    if text != _kbView.repeatingSequence {
+//      _kbView.stopRepeats()
+//    }
+//
+//    let traits = _kbView.traits
+//    if traits.contains(.cmdOn) && text.count == 1 {
+//      var flags = traits.modifierFlags
+//      var input = text.lowercased()
+//      if input != text {
+//        flags.insert(.shift)
+//      }
+//      input = _langCharsMap[input] ?? input
+//
+//      if let (cmd, res) = _matchCommand(input: input, flags: flags),
+//        let action = cmd.action  {
+//        res.perform(action, with: cmd)
+//      } else {
+//        switch(input) {
+//        case "c": copy(self)
+//        case "x": cut(self)
+//        case "z": flags.contains(.shift) ? undoManager?.undo() : undoManager?.redo()
+//        case "v": paste(self)
+//        default: super.insertText(text);
+//        }
+//      }
+//    } else if traits.contains([.altOn, .ctrlOn]) {
+//      escCtrlSeq(withInput:text)
+//    } else if traits.contains(.altOn) {
+//      escSeq(withInput: text)
+//    } else if traits.contains(.ctrlOn) {
+//      ctrlSeq(withInput: text)
+//    } else {
+//      super.insertText(text)
+//    }
+//  }
   
-  override func deviceWrite(_ input: String!) {
-    super.deviceWrite(input)
-    _kbView.turnOffUntracked()
+  func deviceWrite(_ input: String!) {
+//    super.deviceWrite(input)
+//    _kbView.turnOffUntracked()
   }
   
   func _removeSmartKeys() {
-    inputAccessoryView = nil
+//    inputAccessoryView = nil
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
   }
@@ -312,7 +324,7 @@ class SmarterTermInput: TermInputOld {
   func setupAccessoryView() {
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
-    inputAccessoryView = KBAccessoryView(kbView: kbView)
+//    inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
   func setupAssistantItem() {
@@ -339,7 +351,7 @@ class SmarterTermInput: TermInputOld {
     let isIPad       = traitCollection.userInterfaceIdiom == .pad
     var isOnScreenKB = kbFrameEnd.size.height > 140
     // External screen kb workaround
-    if isOnScreenKB && isIPad && device.view?.window?.screen !== mainScreen {
+    if isOnScreenKB && isIPad && device?.view?.window?.screen !== mainScreen {
        isOnScreenKB = kbFrameEnd.origin.y < screenHeight - 140
     }
     
@@ -459,3 +471,44 @@ class SmarterTermInput: TermInputOld {
   @objc static let shared = SmarterTermInput()
 }
 
+
+extension SmarterTermInput: TermInput {
+  var secureTextEntry: Bool {
+    get {
+      false
+    }
+    set(secureTextEntry) {
+      
+    }
+  }
+  
+  func insertText(_ text: String!) {
+    
+  }
+  
+  func fkeySeq(_ cmd: UIKeyCommand!) {
+    
+  }
+  
+  func arrowSeq(_ cmd: UIKeyCommand!) {
+    
+  }
+  
+  func cursorSeq(_ cmd: UIKeyCommand!) {
+    
+  }
+  
+  func escCtrlSeq(withInput input: String!) {
+    
+  }
+  
+  func escSeq(withInput input: String!) {
+    
+  }
+  
+  func ctrlSeq(withInput input: String!) {
+    
+  }
+  
+  
+}

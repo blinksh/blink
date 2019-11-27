@@ -54,14 +54,14 @@
 
 @property (readonly) TermStream *stream;
 @property (readonly) TermView *view;
-@property (readonly) UIResponder<TermInput> *input;
+@property (readonly) UIView<TermInput> *input;
 @property id<TermDeviceDelegate> delegate;
 @property (nonatomic) BOOL rawMode;
 @property (nonatomic) BOOL secureTextEntry;
 @property (nonatomic) NSInteger rows;
 @property (nonatomic) NSInteger cols;
 
-- (void)attachInput:(UIResponder<TermInput> *)termInput;
+- (void)attachInput:(UIView<TermInput> *)termInput;
 - (void)attachView:(TermView *)termView;
 
 - (void)onSubmit:(NSString *)line;
