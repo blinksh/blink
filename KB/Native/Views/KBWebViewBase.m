@@ -168,7 +168,7 @@
   return _keyCommands;
 }
 
-- (void)_onIME:(NSString *)event data:(NSString *)data {
+- (void)onIME:(NSString *)event data:(NSString *)data {
   
 }
 
@@ -226,9 +226,9 @@
     }
     [self _rebuildKeyCommands];
   } else if ([@"ime" isEqual:op]) {
-    NSString *event = body[@"event"];
+    NSString *event = body[@"type"];
     NSString *data = body[@"data"];
-    [self _onIME:event data: data];
+    [self onIME:event data: data];
   } else if ([@"guard-ime-on" isEqual:op]) {
     if (_activeIMEGuardCommands == nil) {
       _activeIMEGuardCommands = _imeGuardCommands;

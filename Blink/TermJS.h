@@ -163,7 +163,8 @@ NSString *term_modifySelection(NSString *direction, NSString *granularity)
 
 NSString *term_setIme(NSString *imeText)
 {
-  return [NSString stringWithFormat:@"term_setIme(%@[0]);", _encodeString(imeText)];
+  NSString *str = _encodeString(imeText);
+  return [NSString stringWithFormat:@"term_setIme(%@[0]);", str];
 }
 
 NSString *term_modifySideSelection()

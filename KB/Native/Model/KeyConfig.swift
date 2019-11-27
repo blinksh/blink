@@ -94,7 +94,7 @@ class KeyConfig: ObservableObject, Codable {
   }
   
   static var capsLock: KeyConfig {
-    KeyConfig(code: .capsLock, up: .none, down: .escape, mod: .none)
+    KeyConfig(code: .capsLock, up: .none, down: .none, mod: .none)
   }
   
   // - MARK: Codable

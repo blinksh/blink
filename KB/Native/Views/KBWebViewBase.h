@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)report:(NSString *)cmd arg:(NSObject *)arg;
 - (void)ready;
 - (void)onOut:(NSString *)data;
+- (void)onIME:(NSString *)event data:(NSString *)data;
 
 @end
 

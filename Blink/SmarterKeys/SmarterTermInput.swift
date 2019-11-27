@@ -256,6 +256,40 @@ class SmarterTermInput: KBWebView {
 //    }
   }
   
+  override func onIME(_ event: String, data: String) {
+    if event == "compositionstart" && data.isEmpty {
+    } else if event == "compositionend" {
+      device?.view?.setIme("", completionHandler: nil)
+    } else {
+      device?.view?.setIme(data) {  (data, error) in
+        guard
+          error == nil,
+          let resp = data as? [String: Any],
+          let markedRect = resp["markedRect"] as? String
+        else {
+          return
+        }
+        var rect = NSCoder.cgRect(for: markedRect)
+        let suggestionsHeight: CGFloat = 44
+        let maxY = rect.maxY
+        let minY = rect.minY
+        if maxY - suggestionsHeight < 0 {
+          rect.origin.y = maxY
+        } else {
+          rect.origin.y = minY
+        }
+        
+        debugPrint(rect)
+        rect.size.height = 0
+        rect.size.width = 0
+        
+        if let r = self.device?.view?.convert(rect, to: self.superview) {
+          self.frame = r
+        }
+      }
+    }
+  }
+  
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
     if res {
