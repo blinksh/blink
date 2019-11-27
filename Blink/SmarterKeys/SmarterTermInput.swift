@@ -101,11 +101,6 @@ class SmarterTermInput: TermInputOld {
       selector: #selector(_keyboardWillChangeFrame(notification:)),
       name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     
-//    nc.addObserver(
-//    self,
-//    selector: #selector(_keyboardDidChangeFrame(notification:)),
-//    name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
-    
     nc.addObserver(
       self,
       selector: #selector(_keyboardWillHideNotification(notification:)),
