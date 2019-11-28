@@ -19,7 +19,7 @@ type KeyCode = {
   id: string,
 };
 
-type KeyAction = '' | 'escape' | 'ctrl+space' | 'tab';
+type KeyAction = '' | 'escape' | 'tab';
 
 function _action(action: KeyAction) {
   switch (action) {
@@ -29,8 +29,6 @@ function _action(action: KeyAction) {
         code: '[ESC]',
         key: '[ESC]',
       };
-    case 'ctrl+space':
-      return null;
     case 'tab':
       return {
         keyCode: 9,
@@ -73,6 +71,7 @@ type KBConfig = {
   command: KeyConfigPair,
 };
 
+// We track key by keyCode, code, location and key
 function _keyId(e: KeyboardEvent): string {
   return `${e.keyCode}:${e.code}:${e.location}:${e.key}`;
 }
@@ -161,11 +160,6 @@ export default class Keyboard implements IKeyboard {
     AltRight: true,
   };
 
-  _metaEscape = {
-    MetaLeft: true,
-    MetaRight: true,
-  };
-
   _modsMap: {[index: string]: KeyModifier} = {
     ShiftLeft: 'Shift',
     ShiftRight: 'Shift',
@@ -189,6 +183,10 @@ export default class Keyboard implements IKeyboard {
   };
 
   _up: Set<String> = new Set();
+  _down: Set<String> = new Set();
+
+  // Reports every key down
+  _captureMode = false;
 
   constructor() {
     let input = this.element;
@@ -293,6 +291,14 @@ export default class Keyboard implements IKeyboard {
     }
 
     let keyId = _keyId(event);
+    this._down.add(keyId);
+
+    if (this._captureMode) {
+      this._capture();
+      _blockEvent(e);
+      return;
+    }
+
     let downOverride = this._downMap[keyId];
     let mod = this._mod(this._modsMap[event.code]);
 
@@ -336,6 +342,7 @@ export default class Keyboard implements IKeyboard {
     this._lastKeyDownEvent = null;
 
     let keyId = _keyId(e);
+    this._down.delete(keyId);
     let mod = this._mod(this._modsMap[e.code]);
     if (mod) {
       this._mods[mod].delete(keyId);
@@ -400,9 +407,7 @@ export default class Keyboard implements IKeyboard {
       return action;
     }
 
-    let isPrintable = !/^\[\w+\]$/.test(keyDef.keyCap);
-
-    var action: KeyActionType;
+    let action: KeyActionType;
 
     if (ctrl) {
       action = getAction('ctrl');
@@ -428,9 +433,13 @@ export default class Keyboard implements IKeyboard {
       if (action === PASS) {
         return;
       }
-      if (!isPrintable) {
+
+      let nonPrintable = /^\[\w+\]$/.test(keyDef.keyCap);
+
+      if (nonPrintable) {
         return;
       }
+      // TODO: may be remove accents only after options key is pressed.
       let out = _removeAccents(key);
       if (this._capsLockRemapped || this._shiftRemapped) {
         this._output(shift ? out.toUpperCase() : out.toLowerCase());
@@ -478,9 +487,9 @@ export default class Keyboard implements IKeyboard {
     shift = keyDown.shift;
 
     if (
+      (alt || ctrl || shift || meta) &&
       typeof action == 'string' &&
-      action.substr(0, 2) == '\x1b[' &&
-      (alt || ctrl || shift || meta)
+      action.substr(0, 2) == '\x1b['
     ) {
       // The action is an escape sequence that and it was triggered in the
       // presence of a keyboard modifier, we may need to alter the action to
@@ -568,6 +577,7 @@ export default class Keyboard implements IKeyboard {
     let mod = this._modsMap['CapsLock'];
 
     if (down) {
+      this._down.add(_capsLockID);
       let override = this._downMap[_capsLockID];
       if (override && !(mod && this._mods[mod].has(_capsLockID))) {
         this._handleKeyDownKey(override, null);
@@ -581,6 +591,7 @@ export default class Keyboard implements IKeyboard {
       }
       return;
     }
+    this._down.delete(_capsLockID);
     mod && this._mods[mod].delete(_capsLockID);
     let upOverride = this._upMap[_capsLockID];
     if (upOverride && this._up.has(_capsLockID)) {
@@ -590,6 +601,14 @@ export default class Keyboard implements IKeyboard {
 
   // Keyboard language change
   _handleLang(lang: string) {
+    this._down.clear();
+    this._up.clear();
+    this._mods = {
+      Shift: new Set(),
+      Alt: new Set(),
+      Meta: new Set(),
+      Control: new Set(),
+    };
     this.element.value = ' ';
     this._lang = lang;
   }
@@ -609,6 +628,8 @@ export default class Keyboard implements IKeyboard {
     let keyCode = _keyToCodeMap[char || ''] || 0;
     this._handleKeyDown(keyCode, null);
   }
+
+  _capture = () => _op('capture', {keyIds: this._down.values});
 
   _configKey = (key: KeyConfig) => {
     let code = key.code;
@@ -635,6 +656,7 @@ export default class Keyboard implements IKeyboard {
     this._downMap = {};
     this._upMap = {};
     this._up.clear();
+    this._down.clear();
     this._mods = {
       Shift: new Set(),
       Alt: new Set(),
@@ -660,6 +682,8 @@ export default class Keyboard implements IKeyboard {
     this._configKey(cfg.shift.right);
   };
 
+  _toggleCaptureMode = (val: any) => (this._captureMode = !!val);
+
   onKB = (cmd: string, arg: any) => {
     switch (cmd) {
       case 'mods-down':
@@ -676,6 +700,9 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'guard-down':
         this._handleGuard(false, arg);
+        break;
+      case 'capture':
+        this._toggleCaptureMode(arg);
         break;
       case 'focus':
         this.focus(arg);
