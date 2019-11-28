@@ -51,23 +51,6 @@ type KeyModifier =
   | 'Meta'
   | 'Meta-Escape';
 
-function _mod(mod: KeyModifier): 'Alt' | 'Meta' | 'Control' | 'Shift' | null {
-  switch (mod) {
-    case 'Escape':
-    case '8-bit':
-      return 'Alt';
-    case 'Shift':
-      return 'Shift';
-    case 'Control':
-      return 'Control';
-    case 'Meta':
-    case 'Meta-Escape':
-      return 'Meta';
-    default:
-      return null;
-  }
-}
-
 type KeyConfig = {
   code: KeyCode,
   up: KeyAction,
@@ -168,8 +151,9 @@ export default class Keyboard implements IKeyboard {
 
   _lastKeyDownEvent: KeyboardEvent | null = null;
   _capsLockRemapped = false;
+  _shiftRemapped = false;
 
-  _metaSendsEscape = true;
+  _metaSendsEscape: boolean = true;
   _altSendsWhat: 'escape' | '8-bit' = 'escape';
 
   _ignoreAccents = {
@@ -177,37 +161,25 @@ export default class Keyboard implements IKeyboard {
     AltRight: true,
   };
 
-  _modsMap: {[index: string]: string} = {
+  _metaEscape = {
+    MetaLeft: true,
+    MetaRight: true,
+  };
+
+  _modsMap: {[index: string]: KeyModifier} = {
     ShiftLeft: 'Shift',
     ShiftRight: 'Shift',
-    AltLeft: 'Alt',
-    AltRight: 'Alt',
+    AltLeft: 'Escape',
+    AltRight: 'Escape',
     MetaLeft: 'Meta',
     MetaRight: 'Meta',
     ControlLeft: 'Control',
     ControlRight: 'Control',
-    CapsLock: 'Control',
+    CapsLock: '',
   };
 
-  _downMap: {[index: string]: KeyInfoType} = {
-    '0:Unidentified:0:§': {
-      keyCode: 27,
-      code: '[ESC]',
-      key: '[ESC]',
-    },
-    '0:Unidentified:0:±': {
-      keyCode: 0,
-      code: 'Unidentified',
-      key: '§',
-    },
-  };
-  _upMap: {[index: string]: KeyInfoType} = {
-    '20:CapsLock:0:CapsLock': {
-      keyCode: 27,
-      code: '[ESC]',
-      key: '[ESC]',
-    },
-  };
+  _downMap: {[index: string]: KeyInfoType} = {};
+  _upMap: {[index: string]: KeyInfoType} = {};
 
   _mods: {[index: string]: Set<String>} = {
     Shift: new Set(),
@@ -249,6 +221,8 @@ export default class Keyboard implements IKeyboard {
       this._modsMap['CapsLock'] != null ||
       this._downMap[_capsLockID] != null ||
       this._upMap[_capsLockID] != null;
+    this._shiftRemapped =
+      this._modsMap['Shift'] != null || this._modsMap['Shift'] !== 'Shift';
   }
 
   _voiceString: string | null = '';
@@ -277,6 +251,29 @@ export default class Keyboard implements IKeyboard {
     }
   };
 
+  _mod(mod: KeyModifier): 'Alt' | 'Meta' | 'Control' | 'Shift' | null {
+    switch (mod) {
+      case 'Escape':
+        this._altSendsWhat = 'escape';
+        return 'Alt';
+      case '8-bit':
+        this._altSendsWhat = '8-bit';
+        return 'Alt';
+      case 'Shift':
+        return 'Shift';
+      case 'Control':
+        return 'Control';
+      case 'Meta':
+        this._metaSendsEscape = false;
+        return 'Meta';
+      case 'Meta-Escape':
+        this._metaSendsEscape = true;
+        return 'Meta';
+      default:
+        return null;
+    }
+  }
+
   _onKeyDown = (e: KeyboardEvent) => {
     if (e.isComposing) {
       this._lastKeyDownEvent = null;
@@ -297,7 +294,7 @@ export default class Keyboard implements IKeyboard {
 
     let keyId = _keyId(event);
     let downOverride = this._downMap[keyId];
-    let mod = this._modsMap[event.code];
+    let mod = this._mod(this._modsMap[event.code]);
 
     let handled = false;
     if (downOverride) {
@@ -339,7 +336,7 @@ export default class Keyboard implements IKeyboard {
     this._lastKeyDownEvent = null;
 
     let keyId = _keyId(e);
-    let mod = this._modsMap[e.code];
+    let mod = this._mod(this._modsMap[e.code]);
     if (mod) {
       this._mods[mod].delete(keyId);
     }
@@ -435,7 +432,7 @@ export default class Keyboard implements IKeyboard {
         return;
       }
       let out = _removeAccents(key);
-      if (this._capsLockRemapped) {
+      if (this._capsLockRemapped || this._shiftRemapped) {
         this._output(shift ? out.toUpperCase() : out.toLowerCase());
       } else {
         this._output(out);
@@ -619,15 +616,9 @@ export default class Keyboard implements IKeyboard {
     if (down) {
       this._upMap[code.id] = down;
     }
-    let mod = _mod(key.mod);
+    let mod = this._mod(key.mod);
     if (mod) {
-      this._modsMap[code.code] = mod;
-      if (mod == 'Alt') {
-        this._altSendsWhat = key.mod == 'Escape' ? 'escape' : '8-bit';
-      }
-      if (mod == 'Meta') {
-        this._metaSendsEscape = key.mod == 'Meta-Escape';
-      }
+      this._modsMap[code.code] = key.mod;
     }
     let up = _action(key.up);
     if (up) {

@@ -256,6 +256,7 @@
 		D2C24428238E44CD0082C69C /* kb.js in Resources */ = {isa = PBXBuildFile; fileRef = D2C24426238E44CC0082C69C /* kb.js */; };
 		D2C24429238E44CD0082C69C /* kb.html in Resources */ = {isa = PBXBuildFile; fileRef = D2C24427238E44CC0082C69C /* kb.html */; };
 		D2C2442F238E62A70082C69C /* KBSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */; };
+		D2C24431238FDA310082C69C /* KeyModifierView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24430238FDA310082C69C /* KeyModifierView.swift */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
@@ -717,6 +718,7 @@
 		D2C24426238E44CC0082C69C /* kb.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = kb.js; path = KB/JS/dist/kb.js; sourceTree = SOURCE_ROOT; };
 		D2C24427238E44CC0082C69C /* kb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = kb.html; path = KB/JS/dist/kb.html; sourceTree = SOURCE_ROOT; };
 		D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSettingsViewController.swift; sourceTree = "<group>"; };
+		D2C24430238FDA310082C69C /* KeyModifierView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyModifierView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
@@ -1453,6 +1455,7 @@
 				D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */,
 				D2C2440E238E44AB0082C69C /* KBWebView.swift */,
 				D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */,
+				D2C24430238FDA310082C69C /* KeyModifierView.swift */,
 			);
 			name = Views;
 			path = KB/Native/Views;
@@ -1874,6 +1877,7 @@
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
 				D29619AE214FB5EA0070935A /* ssh-rsa.c in Sources */,
+				D2C24431238FDA310082C69C /* KeyModifierView.swift in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2961983214F968A0070935A /* cipher.c in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
