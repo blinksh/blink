@@ -32,48 +32,15 @@
 
 import SwiftUI
 
-private func _row(_ key: KeyConfig) -> some View {
-  DefaultRow(title: key.fullName, description: key.description) {
-    KeyConfigView(key: key)
-  }
-}
-
-private func _pairRow(_ pair: KeyConfigPair) -> some View {
-  DefaultRow(title: pair.fullName, description: pair.description) {
-    KeyConfigPairView(pair: pair)
-  }
-}
-
-struct KBConfigView: View {
-  @ObservedObject var config: KBConfig
+enum KeyBindingAction: Codable {
+  case ouput(hex: String)
+  case command
   
-  var body: some View {
-    List() {
-      Section(header: Text("Terminal")) {
-        _row(config.capsLock)
-        _pairRow(config.shift)
-        _pairRow(config.control)
-        _pairRow(config.option)
-        _pairRow(config.command)
-      }
-      Section(header: Text("Blink")) {
-        DefaultRow(title: "Bindings") {
-          BindingsConfigView(config: self.config)
-        }
-      }
-    }
-    .listStyle(GroupedListStyle())
-    .navigationBarTitle("Keyboard")
-    .onReceive(config.objectWillChange) { _ in
-      DispatchQueue.main.async {
-        SmarterTermInput.shared.saveAndApply(config: self.config)
-      }
-    }
+  func encode(to encoder: Encoder) throws {
+    
   }
-}
-
-struct KBSettings_Previews: PreviewProvider {
-  static var previews: some View {
-    KBConfigView(config: KBConfig())
+  
+  init(from decoder: Decoder) throws {
+    self = Self.command
   }
 }

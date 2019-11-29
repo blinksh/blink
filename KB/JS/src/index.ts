@@ -12,12 +12,11 @@ function install() {
 
 install();
 
-
 declare global {
-    interface Window {
-      _onKB: (cmd: string, arg: string) => any;
-      _kb: Keyboard;
-    }
+  interface Window {
+    _onKB: (cmd: string, arg: string) => any;
+    _kb: Keyboard;
+  }
 }
 
 

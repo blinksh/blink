@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ready;
 - (void)onOut:(NSString *)data;
 - (void)onIME:(NSString *)event data:(NSString *)data;
+- (void)onCapture:(NSArray<NSString *> *)keys;
 
 @end
 

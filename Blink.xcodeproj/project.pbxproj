@@ -257,6 +257,9 @@
 		D2C24429238E44CD0082C69C /* kb.html in Resources */ = {isa = PBXBuildFile; fileRef = D2C24427238E44CC0082C69C /* kb.html */; };
 		D2C2442F238E62A70082C69C /* KBSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */; };
 		D2C24431238FDA310082C69C /* KeyModifierView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24430238FDA310082C69C /* KeyModifierView.swift */; };
+		D2C244332390FB830082C69C /* KeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244322390FB830082C69C /* KeyBinding.swift */; };
+		D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244342390FEEF0082C69C /* KeyBindingAction.swift */; };
+		D2C24437239104250082C69C /* BindingsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* BindingsConfigView.swift */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
@@ -719,6 +722,9 @@
 		D2C24427238E44CC0082C69C /* kb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = kb.html; path = KB/JS/dist/kb.html; sourceTree = SOURCE_ROOT; };
 		D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSettingsViewController.swift; sourceTree = "<group>"; };
 		D2C24430238FDA310082C69C /* KeyModifierView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyModifierView.swift; sourceTree = "<group>"; };
+		D2C244322390FB830082C69C /* KeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBinding.swift; sourceTree = "<group>"; };
+		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
+		D2C24436239104250082C69C /* BindingsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingsConfigView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
@@ -1436,6 +1442,8 @@
 				D2C243FC238E44AB0082C69C /* KeyAction.swift */,
 				D2C243FD238E44AB0082C69C /* KeyCode.swift */,
 				D2C243FF238E44AB0082C69C /* KeyConfig.swift */,
+				D2C244322390FB830082C69C /* KeyBinding.swift */,
+				D2C244342390FEEF0082C69C /* KeyBindingAction.swift */,
 				D2C243FE238E44AB0082C69C /* KBConfig.swift */,
 			);
 			name = Model;
@@ -1456,6 +1464,7 @@
 				D2C2440E238E44AB0082C69C /* KBWebView.swift */,
 				D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */,
 				D2C24430238FDA310082C69C /* KeyModifierView.swift */,
+				D2C24436239104250082C69C /* BindingsConfigView.swift */,
 			);
 			name = Views;
 			path = KB/Native/Views;
@@ -1850,6 +1859,7 @@
 				D29619AF214FB5EA0070935A /* ssh-ecdsa.c in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				07AA06551E08B12E008310B7 /* PasscodeLockType.swift in Sources */,
+				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
@@ -1925,6 +1935,7 @@
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
+				D2C24437239104250082C69C /* BindingsConfigView.swift in Sources */,
 				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
@@ -1975,6 +1986,7 @@
 				C989E54D1D6CC488003E0079 /* BKKeyboardModifierViewController.m in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
+				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				B7B3FC401DF5E99200B3D37C /* BKTouchIDAuthManager.m in Sources */,
 				D29619A4214F99A30070935A /* rsa.c in Sources */,

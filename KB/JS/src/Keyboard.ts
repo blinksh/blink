@@ -6,6 +6,7 @@ import KeyMap, {
   KeyDownType,
 } from './KeyMap';
 import toUIKitFlags from './UIKeyModifierFlags';
+import Bindings, {BindingAction} from './Bindings';
 
 const CANCEL = KBActions.CANCEL;
 const DEFAULT = KBActions.DEFAULT;
@@ -69,11 +70,21 @@ type KBConfig = {
   control: KeyConfigPair,
   option: KeyConfigPair,
   command: KeyConfigPair,
+
+  bindings: {[index: string]: BindingAction},
 };
+
+const _capsLockID = '20:0:capslock';
 
 // We track key by keyCode, code, location and key
 function _keyId(e: KeyboardEvent): string {
-  return `${e.keyCode}:${e.code}:${e.location}:${e.key}`;
+  let keyCode = e.keyCode == 229 ? 0 : e.keyCode;
+  let loc = e.location;
+  if (keyCode) {
+    return `${keyCode}:${loc}`;
+  }
+  let key = (e.key || '').toLowerCase();
+  return `${keyCode}:${key}`;
 }
 
 function _op(op: string, args: {}) {
@@ -140,12 +151,12 @@ function _patchKeyDown(
   return keyDown;
 }
 
-const _capsLockID = '20:CapsLock:0:CapsLock';
-
 export default class Keyboard implements IKeyboard {
   element = document.createElement('input');
 
   _keyMap = new KeyMap(this);
+  _bindings = new Bindings();
+
   _lang: string = 'en';
 
   _lastKeyDownEvent: KeyboardEvent | null = null;
@@ -182,8 +193,10 @@ export default class Keyboard implements IKeyboard {
     Control: new Set(),
   };
 
-  _up: Set<String> = new Set();
-  _down: Set<String> = new Set();
+  _up: Set<string> = new Set();
+
+  // custom shortcuts tracker
+  _down: Set<string> = new Set();
 
   // Reports every key down
   _captureMode = false;
@@ -296,6 +309,13 @@ export default class Keyboard implements IKeyboard {
     if (this._captureMode) {
       this._capture();
       _blockEvent(e);
+      return;
+    }
+
+    // @ts-ignore
+    let binding = this._bindings.match(this._down.values);
+    if (binding) {
+      this._execBinding(binding);
       return;
     }
 
@@ -712,4 +732,12 @@ export default class Keyboard implements IKeyboard {
         break;
     }
   };
+
+  _execBinding(action: BindingAction) {
+    switch (action.type) {
+      case 'output':
+        this._output(action.value);
+        break;
+    }
+  }
 }

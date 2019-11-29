@@ -38,6 +38,8 @@ class KBConfig: ObservableObject, Codable {
   var control:  KeyConfigPair
   var option:   KeyConfigPair
   var command:  KeyConfigPair
+
+  var customBindings: [KeyBinding] = []
   
   private var _cancellable = Set<AnyCancellable>()
   

@@ -39,10 +39,9 @@ struct KeyActionPicker: View {
   var body: some View {
     List {
       Section {
-        _action(title: "None",       value: .none)
-        _action(title: "Escape",     value: .escape)
-        _action(title: "Tab",        value: .tab)
-        _action(title: "Ctrl Space", value: .ctrlSpace)
+        _action(title: "None",   value: .none)
+        _action(title: "Escape", value: .escape)
+        _action(title: "Tab",    value: .tab)
       }
     }.listStyle(GroupedListStyle())
   }
@@ -61,6 +60,6 @@ struct KeyActionPicker: View {
 
 struct KeyActionPicker_Previews: PreviewProvider {
   static var previews: some View {
-    KeyActionPicker(action: .constant(KeyAction.ctrlSpace))
+    KeyActionPicker(action: .constant(KeyAction.tab))
   }
 }

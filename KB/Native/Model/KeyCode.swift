@@ -30,7 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-enum KeyCode: String, Codable {
+enum KeyCode: String, Codable, CaseIterable, Identifiable {
+  
   case escape       = "Escape"
   case capsLock     = "CapsLock"
   case shiftLeft    = "ShiftLeft"
@@ -87,6 +88,27 @@ enum KeyCode: String, Codable {
     }
   }
   
+  var symbol: String {
+    switch self {
+    case .escape: return "⎋"
+    case .capsLock: return "⇪"
+    case .shiftLeft, .shiftRight: return "⇧"
+    case .controlLeft, .controlRight: return "⌃"
+    case .optionLeft, .optionRight: return "⌥"
+    case .commandLeft, .commandRight: return "⌘"
+    }
+  }
+  
+  func symbol(loc: Int8) -> String {
+    let sym = symbol
+    if loc == 1 {
+      return "L\(sym)"
+    } else if loc == 2 {
+      return "R\(sym)"
+    }
+    return sym
+  }
+  
   var location: Int {
     switch self {
     case .escape,
@@ -97,13 +119,24 @@ enum KeyCode: String, Codable {
          .commandLeft: return 1
     case .shiftRight,
          .controlRight,
-         .optionRight,
-         .commandRight: return 2
+         .optionRight: return 2
+    case .commandRight: return 0
     }
   }
+
+  var id: String {
+    "\(keyCode):\(location):\(key.uppercased())"
+  }
+  
+  init?(keyID: String) {
+    for v in Self.allCases {
+      if v.id == keyID {
+        self = v
+        return
+      }
+    }
     
-  var keyId: String {
-    "\(keyCode):\(code):\(location):\(key)"
+    return nil
   }
   
   // - MARK: Codable
@@ -117,10 +150,10 @@ enum KeyCode: String, Codable {
   
   public func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
-    try c.encode(keyCode,  forKey: .keyCode)
-    try c.encode(code,  forKey: .code)
-    try c.encode(key,   forKey: .key)
-    try c.encode(keyId, forKey: .id)
+    try c.encode(keyCode, forKey: .keyCode)
+    try c.encode(code,    forKey: .code)
+    try c.encode(key,     forKey: .key)
+    try c.encode(id,      forKey: .id)
   }
   
   init(from decoder: Decoder) throws {

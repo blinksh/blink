@@ -32,48 +32,35 @@
 
 import SwiftUI
 
-private func _row(_ key: KeyConfig) -> some View {
-  DefaultRow(title: key.fullName, description: key.description) {
-    KeyConfigView(key: key)
-  }
-}
-
-private func _pairRow(_ pair: KeyConfigPair) -> some View {
-  DefaultRow(title: pair.fullName, description: pair.description) {
-    KeyConfigPairView(pair: pair)
-  }
-}
-
-struct KBConfigView: View {
+struct BindingsConfigView: View {
   @ObservedObject var config: KBConfig
+  @ObservedObject var copy = KeyBinding.cmdC
+  @ObservedObject var paste = KeyBinding.cmdV
   
   var body: some View {
-    List() {
-      Section(header: Text("Terminal")) {
-        _row(config.capsLock)
-        _pairRow(config.shift)
-        _pairRow(config.control)
-        _pairRow(config.option)
-        _pairRow(config.command)
+    List {
+      HStack {
+        Text("Copy")
+        Spacer()
+        Text(copy.getTokens().map { $0.label }.joined(separator: "")).foregroundColor(.secondary)
+        Chevron()
       }
-      Section(header: Text("Blink")) {
-        DefaultRow(title: "Bindings") {
-          BindingsConfigView(config: self.config)
-        }
+      HStack {
+        Text("Paste")
+        Spacer()
+        Text(paste.getTokens().map { $0.label }.joined(separator: "")).foregroundColor(.secondary)
+        Chevron()
       }
+      
     }
     .listStyle(GroupedListStyle())
-    .navigationBarTitle("Keyboard")
-    .onReceive(config.objectWillChange) { _ in
-      DispatchQueue.main.async {
-        SmarterTermInput.shared.saveAndApply(config: self.config)
-      }
-    }
+    .navigationBarTitle("Bindings")
+    .navigationBarItems(trailing: EditButton())
   }
 }
 
-struct KBSettings_Previews: PreviewProvider {
+struct BindingsConfigView_Previews: PreviewProvider {
   static var previews: some View {
-    KBConfigView(config: KBConfig())
+    BindingsConfigView(config: KBConfig())
   }
 }

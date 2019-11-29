@@ -137,6 +137,14 @@
   return res;
 }
 
+- (void)setCaptureMode:(BOOL)value {
+  [self report:@"capture" arg: value ? @"true" : @"false"];
+}
+
+- (void)onCapture:(NSArray<NSString *> *)keys {
+  
+}
+
 - (BOOL)canResignFirstResponder {
   return YES;
 }
@@ -245,6 +253,9 @@
     [self _onVoice:event data: data];
   } else if([@"ready" isEqual: op]) {
     [self ready];
+  } else if([@"capture" isEqual: op]) {
+    NSArray<NSString *> *keys = body[@"keys"];
+    [self onCapture:keys];
   }
 }
 

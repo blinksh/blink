@@ -33,14 +33,12 @@
 enum KeyAction: String, Codable {
   case none       = ""
   case escape     = "escape"
-  case ctrlSpace  = "ctrl+space"
   case tab        = "tab"
   
   var description: String {
     switch self {
     case .none:      return ""
     case .escape:    return "⎋"
-    case .ctrlSpace: return "⌃␣"
     case .tab:       return "⇥"
     }
   }
