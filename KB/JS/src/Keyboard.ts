@@ -74,17 +74,18 @@ type KBConfig = {
   bindings: {[index: string]: BindingAction},
 };
 
-const _capsLockID = '20:0:capslock';
+const _capsLockID = '20:0';
 
 // We track key by keyCode, code, location and key
 function _keyId(e: KeyboardEvent): string {
   let keyCode = e.keyCode == 229 ? 0 : e.keyCode;
   let loc = e.location;
   if (keyCode) {
+    // we can identitfy with pair keyCode and loc
     return `${keyCode}:${loc}`;
   }
   let key = (e.key || '').toLowerCase();
-  return `${keyCode}:${key}`;
+  return `${keyCode}:${loc}:${key}`;
 }
 
 function _op(op: string, args: {}) {
@@ -303,14 +304,17 @@ export default class Keyboard implements IKeyboard {
       this._lastKeyDownEvent = e;
     }
 
-    let keyId = _keyId(event);
-    this._down.add(keyId);
-
     if (this._captureMode) {
+      let keyId = _keyId + '-' + event.key;
+      this._down.add(keyId);
       this._capture();
+      this._updateUIKitModsIfNeeded(event);
       _blockEvent(e);
       return;
     }
+
+    let keyId = _keyId(event);
+    this._down.add(keyId);
 
     // @ts-ignore
     let binding = this._bindings.match(this._down.values);
@@ -360,6 +364,15 @@ export default class Keyboard implements IKeyboard {
 
   _onKeyUp = (e: KeyboardEvent) => {
     this._lastKeyDownEvent = null;
+
+    if (this._captureMode) {
+      let keyId = _keyId + '-' + e.key;
+      this._down.delete(keyId);
+      this._capture();
+      this._updateUIKitModsIfNeeded(e);
+      _blockEvent(e);
+      return;
+    }
 
     let keyId = _keyId(e);
     this._down.delete(keyId);
@@ -594,6 +607,16 @@ export default class Keyboard implements IKeyboard {
   };
 
   _handleCapsLockDown(down: boolean) {
+    if (this._captureMode) {
+      if (down) {
+        this._down.delete(_capsLockID + '-capslock');
+      } else {
+        this._down.add(_capsLockID + '-capslock');
+      }
+      this._capture();
+      return;
+    }
+
     let mod = this._modsMap['CapsLock'];
 
     if (down) {
@@ -642,10 +665,26 @@ export default class Keyboard implements IKeyboard {
 
   _handleGuard(up: boolean, char: string) {
     this.element.value = ' ';
+    let keyCode = _keyToCodeMap[char || ''] || 0;
+    let keyId = `${keyCode}:0`;
+    if (this._captureMode) {
+      keyId += '-' + char;
+    }
+    if (up) {
+      this._down.delete(keyId);
+    } else {
+      this._down.add(keyId);
+    }
+
+    if (this._captureMode) {
+      this._capture();
+      return;
+    }
+
     if (up) {
       return;
     }
-    let keyCode = _keyToCodeMap[char || ''] || 0;
+
     this._handleKeyDown(keyCode, null);
   }
 

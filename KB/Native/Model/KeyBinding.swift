@@ -92,7 +92,7 @@ class KeyBinding: ObservableObject, Codable {
         }
         token.text = code.id
       } else {
-        token.text = String(s.split(separator: ":").last ?? "?")
+        token.text = String(s.split(separator: "-").last?.uppercased() ?? "?")
       }
       tokens.append(token)
     }
@@ -179,7 +179,7 @@ class KeyBinding: ObservableObject, Codable {
   static var cmdC: KeyBinding {
     let capturedKeys: [String] = [
       KeyCode.commandLeft.id,
-      "67:0:C"
+      "67:0-c"
     ]
     
     return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)
@@ -188,7 +188,7 @@ class KeyBinding: ObservableObject, Codable {
   static var cmdV: KeyBinding {
     let capturedKeys: [String] = [
       KeyCode.commandLeft.id,
-      "68:0:V"
+      "68:0-v"
     ]
     
     return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)

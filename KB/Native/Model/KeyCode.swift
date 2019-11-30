@@ -125,7 +125,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   }
 
   var id: String {
-    "\(keyCode):\(location):\(key.uppercased())"
+    "\(keyCode):\(location)"
   }
   
   init?(keyID: String) {

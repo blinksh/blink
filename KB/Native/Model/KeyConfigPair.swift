@@ -41,10 +41,7 @@ class KeyConfigPair: ObservableObject, Codable {
   @Published var bothAsLeft: Bool {
     didSet {
       if bothAsLeft {
-        right.up = left.up
-        right.mod = left.mod
-        right.down = left.down
-        right.ignoreAccents = left.ignoreAccents
+        _copyLeftToRight()
       }
     }
   }
@@ -55,10 +52,7 @@ class KeyConfigPair: ObservableObject, Codable {
     self.bothAsLeft = bothAsLeft
     
     if bothAsLeft {
-      right.up = left.up
-      right.mod = left.mod
-      right.down = left.down
-      right.ignoreAccents = left.ignoreAccents
+      _copyLeftToRight()
     }
     
     left.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
@@ -75,6 +69,13 @@ class KeyConfigPair: ObservableObject, Codable {
     }
     
     return "\(leftDesc); \(rightDesc)"
+  }
+  
+  private func _copyLeftToRight() {
+    right.up = left.up
+    right.mod = left.mod
+    right.down = left.down
+    right.ignoreAccents = left.ignoreAccents
   }
   
   // - MARK: shortcuts
@@ -104,6 +105,11 @@ class KeyConfigPair: ObservableObject, Codable {
   }
   
   public func encode(to encoder: Encoder) throws {
+    var right = self.right
+    if bothAsLeft {
+      right = KeyConfig(code: right.code, up: left.up, down: left.down, mod: left.mod)
+    }
+    
     var c = encoder.container(keyedBy: Keys.self)
     try c.encode(left,       forKey: .left)
     try c.encode(right,      forKey: .right)
