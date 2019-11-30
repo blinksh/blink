@@ -32,6 +32,7 @@
 
 enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
+  case tab          = "Tab"
   case escape       = "Escape"
   case capsLock     = "CapsLock"
   case shiftLeft    = "ShiftLeft"
@@ -54,6 +55,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var fullName: String {
     switch self {
+    case .tab: return "⇥ Tab"
     case .escape: return "⎋ Escape"
     case .capsLock: return "⇪ CapsLock"
     case .shiftLeft, .shiftRight: return "⇧ Shift"
@@ -65,8 +67,16 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var code: String { rawValue }
   
+  var single: Bool {
+    switch self {
+    case .tab, .escape, .capsLock: return true
+    default: return false
+    }
+  }
+  
   var key: String {
     switch self {
+    case .tab: return "Tab"
     case .escape: return "Escape"
     case .capsLock: return "CapsLock"
     case .shiftLeft, .shiftRight: return "Shift"
@@ -78,6 +88,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var keyCode: Int {
     switch self {
+    case .tab: return 9
     case .escape: return 27
     case .capsLock: return 20
     case .shiftLeft, .shiftRight: return 16
@@ -90,6 +101,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var symbol: String {
     switch self {
+    case .tab: return "⇥"
     case .escape: return "⎋"
     case .capsLock: return "⇪"
     case .shiftLeft, .shiftRight: return "⇧"
@@ -111,7 +123,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var location: Int {
     switch self {
-    case .escape,
+    case .tab,
+         .escape,
          .capsLock: return 0
     case .shiftLeft,
          .controlLeft,
@@ -124,9 +137,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     }
   }
 
-  var id: String {
-    "\(keyCode):\(location)"
-  }
+  var id: String { "\(keyCode):\(location)" }
   
   init?(keyID: String) {
     for v in Self.allCases {

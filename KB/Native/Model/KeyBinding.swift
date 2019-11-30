@@ -45,6 +45,10 @@ struct KeyToken: Identifiable {
     return text
   }
   
+  var single: Bool {
+    keyCode?.single == true
+  }
+  
   var id: String { text }
 }
 
@@ -92,12 +96,19 @@ class KeyBinding: ObservableObject, Codable {
         }
         token.text = code.id
       } else {
-        token.text = String(s.split(separator: "-").last?.uppercased() ?? "?")
+        token.text = _keyName(s: s)
       }
       tokens.append(token)
     }
     
     return tokens.sorted()
+  }
+  
+  func _keyName(s: String) -> String {
+    var key = String(s.split(separator: "-").last ?? "?")
+    key = key.replacingOccurrences(of: "Digit", with: "")
+    key = key.replacingOccurrences(of: "Key", with: "")
+    return key
   }
   
   func cycle(token: KeyToken) {
@@ -179,7 +190,7 @@ class KeyBinding: ObservableObject, Codable {
   static var cmdC: KeyBinding {
     let capturedKeys: [String] = [
       KeyCode.commandLeft.id,
-      "67:0-c"
+      "67:0-KeyC"
     ]
     
     return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)
@@ -188,7 +199,7 @@ class KeyBinding: ObservableObject, Codable {
   static var cmdV: KeyBinding {
     let capturedKeys: [String] = [
       KeyCode.commandLeft.id,
-      "68:0-v"
+      "68:0-KeyV"
     ]
     
     return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)

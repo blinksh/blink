@@ -36,10 +36,10 @@ export const KBActions = {
   STRIP,
 };
 
-export const ESC = '\x1b'; // Escape
-export const CSI = '\x1b['; // Command Start Inidicator
-export const SS3 = '\x1bO'; // Single-Shift Three
-export const DEL = '\x7f'; // Delete
+const ESC = '\x1b'; // Escape
+const CSI = '\x1b['; // Command Start Inidicator
+const SS3 = '\x1bO'; // Single-Shift Three
+const DEL = '\x7f'; // Delete
 
 const ctl = (ch: string) => String.fromCharCode(ch.charCodeAt(0) - 64);
 
@@ -122,7 +122,7 @@ export default class KeyMap {
       return resolve(action, e, k);
     }
     const ak = (a: KeyActionType, b: KeyActionType) => a;
-    const ac = (a: KeyActionType, b: KeyActionType) => a;
+    const ac = (a: KeyActionType, b: KeyActionType) => b;
 
     const add = (def: KeyDefType) => this.addKeyDef(def.keyCode, def);
 
@@ -167,7 +167,6 @@ export default class KeyMap {
     add({ keyCode: 8,    keyCap: '[BKSP]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
     
     // third row
-    // TODO: check ctrl-tab
     add({ keyCode: 9,   keyCap: '[TAB]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,     alt: PASS,    meta: DEFAULT });
     add({ keyCode: 81,  keyCap: 'qQ',    normal: DEFAULT,             ctrl: ctl('Q'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 87,  keyCap: 'wW',    normal: DEFAULT,             ctrl: ctl('W'),  alt: DEFAULT, meta: DEFAULT });
@@ -233,8 +232,8 @@ export default class KeyMap {
     add({ keyCode: 34, keyCap: '[PGDOWN]', normal: CSI + '6~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     // arrow keys
-    add({ keyCode: 38, keyCap: '[UP]',    normal: ac(CSI + 'A', SS3 + 'OA'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 40, keyCap: '[DOWN]',  normal: ac(CSI + 'B', SS3 + 'OB'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 38, keyCap: '[UP]',    normal: ac(CSI + 'A', SS3 + 'A'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 40, keyCap: '[DOWN]',  normal: ac(CSI + 'B', SS3 + 'B'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 39, keyCap: '[RIGHT]', normal: ac(CSI + 'C', SS3 + 'C'),  ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 37, keyCap: '[LEFT]',  normal: ac(CSI + 'D', SS3 + 'D'),  ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 

@@ -305,7 +305,7 @@ export default class Keyboard implements IKeyboard {
     }
 
     if (this._captureMode) {
-      let keyId = _keyId + '-' + event.key;
+      let keyId = _keyId + '-' + event.code;
       this._down.add(keyId);
       this._capture();
       this._updateUIKitModsIfNeeded(event);
@@ -366,7 +366,7 @@ export default class Keyboard implements IKeyboard {
     this._lastKeyDownEvent = null;
 
     if (this._captureMode) {
-      let keyId = _keyId + '-' + e.key;
+      let keyId = _keyId + '-' + e.code;
       this._down.delete(keyId);
       this._capture();
       this._updateUIKitModsIfNeeded(e);
@@ -668,7 +668,7 @@ export default class Keyboard implements IKeyboard {
     let keyCode = _keyToCodeMap[char || ''] || 0;
     let keyId = `${keyCode}:0`;
     if (this._captureMode) {
-      keyId += '-' + char;
+      keyId += '-Key' + char.toUpperCase();
     }
     if (up) {
       this._down.delete(keyId);
