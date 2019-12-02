@@ -76,7 +76,6 @@
       migratedStopOnEveryIssue = "YES"
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES"
-      viewDebuggingEnabled = "No"
       queueDebuggingEnabled = "No"
       memoryGraphOnResourceException = "Yes">
       <BuildableProductRunnable

@@ -145,7 +145,7 @@ public class SpaceController: UIViewController {
     super.viewWillTransition(to: size, with: coordinator)
     if view.window?.isKeyWindow == true {
       DispatchQueue.main.async {
-        SmarterTermInput.shared.reloadInputViews()
+        SmarterTermInput.shared.contentView()?.reloadInputViews()
       }
     }
   }
@@ -287,11 +287,12 @@ public class SpaceController: UIViewController {
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
     let input = SmarterTermInput.shared
-    if !input.isFirstResponder {
-      _ = input.becomeFirstResponder()
-    } else {
-      input.refreshInputViews()
-    }
+    _ = input.realBecomeFirstResponder()
+//    if !input.isRealFirstResponder {
+//      input.realBecomeFirstResponder()
+//    } else {
+//      input.refreshInputViews()
+//    }
     // We should make input window key window
     if input.window?.isKeyWindow == false {
       input.window?.makeKeyAndVisible()

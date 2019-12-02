@@ -77,7 +77,8 @@
     _jsPath = @"_onKB";
     _interopName = @"_kb";
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
-    
+    self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
+//    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
     NSMutableArray *imeGuards = [[NSMutableArray alloc] init];
     
     // do we need guard - ` ?
@@ -98,6 +99,14 @@
      object:nil];
   }
   return self;
+}
+
+//- (BOOL)_requiresKeyboardWhenFirstResponder {
+//  return YES;
+//}
+
+- (BOOL)_becomeFirstResponderWhenPossible {
+  return YES;
 }
 
 - (void)dealloc {
@@ -125,6 +134,9 @@
   [self report:@"guard-down" arg:[NSString stringWithFormat:@"\"%@\"", cmd.input]];
 }
 
+- (id)_inputDelegate { return self; }
+- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info { return 1; }
+
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
   [self report:@"focus" arg:res ? @"true" : @"false"];
@@ -133,7 +145,8 @@
 
 - (BOOL)resignFirstResponder {
   BOOL res = [super resignFirstResponder];
-  [self report:@"focus" arg: res ? @"false" : @"true"];
+  // leave textfield focused
+  // [self report:@"focus" arg: res ? @"false" : @"true"];
   return res;
 }
 
@@ -143,14 +156,6 @@
 
 - (void)onCapture:(NSArray<NSString *> *)keys {
   
-}
-
-- (BOOL)canResignFirstResponder {
-  return YES;
-}
-
-- (BOOL)canBecomeFirstResponder {
-  return YES;
 }
 
 - (void)report:(NSString *)cmd arg:(NSObject *)arg {
@@ -202,7 +207,20 @@
 }
 
 - (void)ready {
+  [self removeAssistantsFromView];
+}
+
+- (void)removeAssistantsFromView {
+  [self _removeAssistantsFromView:self];
+}
+
+- (void)_removeAssistantsFromView:(UIView *)view {
+  view.inputAssistantItem.trailingBarButtonGroups = @[];
+  view.inputAssistantItem.leadingBarButtonGroups = @[];
   
+  for (UIView * v in view.subviews) {
+    [self _removeAssistantsFromView:v];
+  }
 }
 
 

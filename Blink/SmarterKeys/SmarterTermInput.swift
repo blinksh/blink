@@ -34,46 +34,15 @@ import UIKit
 class SmarterTermInput: KBWebView {
   
   private var _kbView: KBView
-  private var _langCharsMap: [String: String]
   private var kbView: KBView { _kbView }
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
+  private var _inputAccessoryView: UIView? = nil
   
   var device: TermDevice? = nil
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     _kbView = KBView()
-    
-    _langCharsMap = [
-      // Russian
-      "й": "q",
-      "ц": "w",
-      "у": "e",
-      "к": "r",
-      "е": "t",
-      "н": "y",
-      "г": "u",
-      "ш": "i",
-      "щ": "o",
-      "з": "p",
-      "ф": "a",
-      "ы": "s",
-      "в": "d",
-      "а": "f",
-      "п": "g",
-      "р": "h",
-      "о": "j",
-      "л": "k",
-      "д": "l",
-      "я": "z",
-      "ч": "x",
-      "с": "c",
-      "м": "v",
-      "и": "b",
-      "т": "n",
-      "ь": "m",
-      // More?
-    ]
     
     super.init(frame: frame, configuration: configuration)
     
@@ -227,18 +196,35 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  override func becomeFirstResponder() -> Bool {
-    let res = super.becomeFirstResponder()
+//  override func becomeFirstResponder() -> Bool {
+//    let res = super.becomeFirstResponder()
+//    device?.focus()
+//    _kbView.isHidden = false
+//    refreshInputViews()
+//    // TODO: fix
+////    if _kbView.traits.isFloatingKB {
+////      DispatchQueue.main.async {
+////        self.reloadInputViews()
+////      }
+////    }
+//    return res
+//  }
+  
+  func contentView() -> UIView? {
+    scrollView.subviews.first
+  }
+  
+  func realBecomeFirstResponder() -> Bool {
+    let res = contentView()?.becomeFirstResponder()
+
     device?.focus()
     _kbView.isHidden = false
     refreshInputViews()
-    // TODO: fix
-//    if _kbView.traits.isFloatingKB {
-//      DispatchQueue.main.async {
-//        self.reloadInputViews()
-//      }
-//    }
-    return res
+    return res == true
+  }
+  
+  var isRealFirstResponder: Bool {
+    contentView()?.isFirstResponder == true
   }
   
   func refreshInputViews() {
@@ -246,6 +232,19 @@ class SmarterTermInput: KBWebView {
       return
     }
 
+    contentView()?.inputAssistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
+    contentView()?.reloadInputViews()
+    if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
+      _removeSmartKeys()
+      contentView()?.reloadInputViews()
+    }
+    
+//    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
+//    contentView()?.reloadInputViews()
+//    if !_hideSmartKeysWithHKB {
+//      contentView()?.reloadInputViews()
+//    }
+    
     // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
 //    let v = self.inputAccessoryView
 //    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
@@ -290,19 +289,21 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  override func resignFirstResponder() -> Bool {
-    let res = super.resignFirstResponder()
-    if res {
-      device?.blur()
-      _kbView.isHidden = true
-    }
-    return res
-  }
+  override var canBecomeFirstResponder: Bool { true }
   
-  override var canResignFirstResponder: Bool {
-    let state = window?.windowScene?.activationState
-    return state == .foregroundActive || state == .foregroundInactive
-  }
+//  override func resignFirstResponder() -> Bool {
+//    let res = super.resignFirstResponder()
+//    if res {
+//      device?.blur()
+//      _kbView.isHidden = true
+//    }
+//    return res
+//  }
+  
+//  override var canResignFirstResponder: Bool {
+//    let state = window?.windowScene?.activationState
+//    return state == .foregroundActive || state == .foregroundInactive
+//  }
   
 //  override func insertText(_ text: String) {
 //    defer {
@@ -351,22 +352,31 @@ class SmarterTermInput: KBWebView {
   }
   
   func _removeSmartKeys() {
-//    inputAccessoryView = nil
-    inputAssistantItem.leadingBarButtonGroups = []
-    inputAssistantItem.trailingBarButtonGroups = []
+    _inputAccessoryView = nil
+    self.removeAssistantsFromView()
+//    realInputAssistantItem?.leadingBarButtonGroups = []
+//    realInputAssistantItem?.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
-    inputAssistantItem.leadingBarButtonGroups = []
-    inputAssistantItem.trailingBarButtonGroups = []
-//    inputAccessoryView = KBAccessoryView(kbView: kbView)
+    realInputAssistantItem?.leadingBarButtonGroups = []
+    realInputAssistantItem?.trailingBarButtonGroups = []
+    _inputAccessoryView = KBAccessoryView(kbView: kbView)
+  }
+  
+  override var inputAccessoryView: UIView? {
+    _inputAccessoryView
   }
   
   func setupAssistantItem() {
     let proxy = KBProxy(kbView: kbView)
     let item = UIBarButtonItem(customView: proxy)
-    inputAssistantItem.leadingBarButtonGroups = []
-    inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+    realInputAssistantItem?.leadingBarButtonGroups = []
+    realInputAssistantItem?.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+  }
+  
+  var realInputAssistantItem: UITextInputAssistantItem? {
+    self.scrollView.subviews.first?.inputAssistantItem
   }
   
   func _setupWithKBNotification(notification: NSNotification) {
@@ -436,8 +446,8 @@ class SmarterTermInput: KBWebView {
     }
     
     DispatchQueue.main.async {
-      self.inputAccessoryView?.invalidateIntrinsicContentSize()
-      self.reloadInputViews()
+//      self.contentView()?.inputAccessoryView?.invalidateIntrinsicContentSize()
+//      self.contentView()?.reloadInputViews()
     }
   }
   
@@ -487,14 +497,14 @@ class SmarterTermInput: KBWebView {
         _kbView.traits.isPortrait = true
         setupAccessoryView()
         DispatchQueue.main.async {
-          self.reloadInputViews()
+          self.contentView()?.reloadInputViews()
         }
       } else if _kbView.traits.isFloatingKB && !isFloating && !_kbView.traits.isHKBAttached {
         _kbView.kbDevice = .detect()
         _removeSmartKeys()
         setupAssistantItem()
         DispatchQueue.main.async {
-          self.reloadInputViews()
+          self.contentView()?.reloadInputViews()
         }
       }
       _kbView.traits.isFloatingKB = isFloating

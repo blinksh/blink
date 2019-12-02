@@ -89,6 +89,7 @@ class KBWebView: KBWebViewBase {
   
   
   override func ready() {
+    super.ready()
     _configure(_loadKBConfigData())
   }
   

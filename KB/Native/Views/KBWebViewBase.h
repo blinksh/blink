@@ -36,6 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KBWebViewBase : WKWebView
 
+- (void)removeAssistantsFromView;
 - (void)report:(NSString *)cmd arg:(NSObject *)arg;
 - (void)ready;
 - (void)onOut:(NSString *)data;
