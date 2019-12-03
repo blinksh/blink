@@ -50,17 +50,6 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
   }
 }
 
-struct BindingConfigView: View {
-  var title: String
-  var binding: KeyBinding
-  
-  var body: some View {
-    EmptyView()
-    .navigationBarTitle(title)
-  }
-}
-
-
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
   
@@ -83,10 +72,7 @@ struct KBConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Keyboard")
-    .navigationBarItems(trailing: Button(action: {
-      SmarterTermInput.shared.saveAndApply(config: self.config)
-    }, label: {Text("Save")}))
-    .onReceive(config.objectWillChange) { _ in
+    .onReceive(self.config.objectWillChange) { _ in
       DispatchQueue.main.async {
         SmarterTermInput.shared.saveAndApply(config: self.config)
       }

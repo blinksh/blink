@@ -32,35 +32,54 @@
 
 import SwiftUI
 
-struct BindingsConfigView: View {
-  @ObservedObject var config: KBConfig
-  @ObservedObject var copy = KeyBinding.clipboardCopy
-  @ObservedObject var paste = KeyBinding.clipboardPaste
-  
-  var body: some View {
-    List {
-      HStack {
-        Text("Copy")
-        Spacer()
-        Text(copy.keysDescription()).foregroundColor(.secondary)
-        Chevron()
-      }
-      HStack {
-        Text("Paste")
-        Spacer()
-        Text(paste.keysDescription()).foregroundColor(.secondary)
-        Chevron()
-      }
-      
+private func _bindingRowValue(_ binding: KeyBinding, keyCode: KeyCode) -> some View {
+  if binding.keys.contains(keyCode.id) {
+    if keyCode.single {
+      return AnyView(Checkmark())
+    } else {
+      return AnyView(Text(binding.modifierText(keyCode: keyCode)))
     }
-    .listStyle(GroupedListStyle())
-    .navigationBarTitle("Bindings")
-    .navigationBarItems(trailing: EditButton())
+  } else {
+    return AnyView(EmptyView())
   }
 }
 
-struct BindingsConfigView_Previews: PreviewProvider {
-  static var previews: some View {
-    BindingsConfigView(config: KBConfig())
+private func _bindingRow(_ binding: KeyBinding, keyCode: KeyCode) -> some View {
+  HStack {
+    Text(keyCode.fullName)
+    Spacer()
+    Button(
+      action: {
+        binding.cycle(keyCode: keyCode)
+      },
+      label: {
+        _bindingRowValue(binding, keyCode: keyCode)
+      }
+    )
   }
+}
+
+
+struct BindingConfigView: View {
+  var title: String
+  @ObservedObject var binding: KeyBinding
+  
+  var body: some View {
+    List {
+      _bindingRow(binding, keyCode: KeyCode.capsLock)
+      _bindingRow(binding, keyCode: KeyCode.shiftLeft)
+      _bindingRow(binding, keyCode: KeyCode.controlLeft)
+      _bindingRow(binding, keyCode: KeyCode.optionLeft)
+      _bindingRow(binding, keyCode: KeyCode.commandLeft)
+    }
+    .listStyle(GroupedListStyle())
+    .navigationBarTitle(title)
+  }
+}
+
+
+struct BindingConfigView_Previews: PreviewProvider {
+    static var previews: some View {
+      BindingConfigView(title: "Functional Keys", binding: .clipboardCopy)
+    }
 }

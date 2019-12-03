@@ -33,36 +33,42 @@
 import Combine
 
 class KBConfig: ObservableObject, Codable {
-  var capsLock: KeyConfig
-  var shift:    KeyConfigPair
-  var control:  KeyConfigPair
-  var option:   KeyConfigPair
-  var command:  KeyConfigPair
+  @Published var capsLock: KeyConfig
+  @Published var shift:    KeyConfigPair
+  @Published var control:  KeyConfigPair
+  @Published var option:   KeyConfigPair
+  @Published var command:  KeyConfigPair
 
-  var fnBinding: KeyBinding = KeyBinding(keys: [KeyCode.commandLeft.id], shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .none)
-  var cursorBinding: KeyBinding = KeyBinding(keys: [KeyCode.commandLeft.id], shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .none)
-  var customBindings: [KeyBinding] = []
+  @Published var fnBinding: KeyBinding
+  @Published var cursorBinding: KeyBinding
+  @Published var customBindings: [KeyBinding] = [.clipboardCopy, .clipboardPaste]
   
   private var _cancellable = Set<AnyCancellable>()
   
   init(
-    capsLock: KeyConfig     = .capsLock,
-    shift:    KeyConfigPair = .shift,
-    control:  KeyConfigPair = .control,
-    option:   KeyConfigPair = .option,
-    command:  KeyConfigPair = .command
+    capsLock:      KeyConfig     = .capsLock,
+    shift:         KeyConfigPair = .shift,
+    control:       KeyConfigPair = .control,
+    option:        KeyConfigPair = .option,
+    command:       KeyConfigPair = .command,
+    fnBinding:     KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id]),
+    cursorBinding: KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id])
   ) {
-    self.capsLock = capsLock
-    self.shift    = shift
-    self.control  = control
-    self.option   = option
-    self.command  = command
+    self.capsLock      = capsLock
+    self.shift         = shift
+    self.control       = control
+    self.option        = option
+    self.command       = command
+    self.fnBinding     = fnBinding
+    self.cursorBinding = cursorBinding
 
     capsLock.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     shift.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     control.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     option.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     command.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    fnBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
   
   // - MARK: Codable
@@ -73,28 +79,42 @@ class KBConfig: ObservableObject, Codable {
     case control
     case option
     case command
+    case fn
+    case cursor
   }
   
   public func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
-    try c.encode(capsLock, forKey: .capsLock)
-    try c.encode(shift,    forKey: .shift)
-    try c.encode(control,  forKey: .control)
-    try c.encode(option,   forKey: .option)
-    try c.encode(command,  forKey: .command)
+    try c.encode(capsLock,      forKey: .capsLock)
+    try c.encode(shift,         forKey: .shift)
+    try c.encode(control,       forKey: .control)
+    try c.encode(option,        forKey: .option)
+    try c.encode(command,       forKey: .command)
+    try c.encode(command,       forKey: .command)
+    try c.encode(fnBinding,     forKey: .fn)
+    try c.encode(cursorBinding, forKey: .cursor)
   }
   
   required convenience init(from decoder: Decoder) throws {
     let c = try decoder.container(keyedBy: Keys.self)
     
-    let capsLock = try c.decode(KeyConfig.self,     forKey: .capsLock)
-    let shift    = try c.decode(KeyConfigPair.self, forKey: .shift)
-    let control  = try c.decode(KeyConfigPair.self, forKey: .control)
-    let option   = try c.decode(KeyConfigPair.self, forKey: .option)
-    let command  = try c.decode(KeyConfigPair.self, forKey: .command)
+    let capsLock      = try c.decode(KeyConfig.self,     forKey: .capsLock)
+    let shift         = try c.decode(KeyConfigPair.self, forKey: .shift)
+    let control       = try c.decode(KeyConfigPair.self, forKey: .control)
+    let option        = try c.decode(KeyConfigPair.self, forKey: .option)
+    let command       = try c.decode(KeyConfigPair.self, forKey: .command)
+    let fnBinding     = try c.decode(KeyBinding.self,    forKey: .fn)
+    let cursorBinding = try c.decode(KeyBinding.self,    forKey: .cursor)
     
-    self.init(capsLock: capsLock, shift: shift, control: control, option: option, command: command)
+    self.init(
+      capsLock: capsLock,
+      shift: shift,
+      control: control,
+      option: option,
+      command: command,
+      fnBinding: fnBinding,
+      cursorBinding: cursorBinding
+    )
   }
-  
   
 }

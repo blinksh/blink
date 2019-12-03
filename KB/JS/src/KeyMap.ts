@@ -162,7 +162,7 @@ export default class KeyMap {
     add({ keyCode: 56,   keyCap: '8*',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
     add({ keyCode: 57,   keyCap: '9(',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
     add({ keyCode: 48,   keyCap: '0)',     normal: DEFAULT,       ctrl: onZoom,                 alt: onAltNum, meta: onZoom });
-    add({ keyCode: 189,  keyCap: '-_',     normal: DEFAULT,       ctrl: onZoom,                 alt: DEFAULT,  meta: onZoom });
+    add({ keyCode: 189,  keyCap: '-_',     normal: DEFAULT,       ctrl: sh(onZoom, ctl('_')),   alt: DEFAULT,  meta: onZoom });
     add({ keyCode: 187,  keyCap: '=+',     normal: DEFAULT,       ctrl: onZoom,                 alt: DEFAULT,  meta: onZoom });
     add({ keyCode: 8,    keyCap: '[BKSP]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
     

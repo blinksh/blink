@@ -33,8 +33,8 @@
 import Combine
 
 class KeyConfigPair: ObservableObject, Codable {
-  let left: KeyConfig
-  let right: KeyConfig
+  @Published var left: KeyConfig
+  @Published var right: KeyConfig
   
   var _cancellable = Set<AnyCancellable>()
   

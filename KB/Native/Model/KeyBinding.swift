@@ -67,13 +67,13 @@ extension KeyToken: Comparable {
 }
 
 class KeyBinding: ObservableObject, Codable {
-  var keys: Array<String> = []
+  @Published var keys: Array<String> = []
   @Published var shiftLoc: Int8 = 0
   @Published var controlLoc: Int8 = 0
   @Published var optionLoc: Int8 = 0
   @Published var commandLoc: Int8 = 0
   
-  @Published var action: KeyBindingAction = .command(.tabNew)
+  @Published var action: KeyBindingAction = .none
   
   func getTokens() -> [KeyToken] {
     var tokens: [KeyToken] = []
@@ -129,6 +129,61 @@ class KeyBinding: ObservableObject, Codable {
     }
   }
   
+  
+  func cycle(keyCode: KeyCode) {
+    guard let idx = keys.firstIndex(of: keyCode.id)
+    else {
+      keys.append(keyCode.id)
+      if keys.count > 2 {
+        keys.removeFirst()
+      }
+      return
+    }
+  
+    var loc: Int8
+    switch keyCode {
+      case .shiftLeft, .shiftRight:
+        shiftLoc = (shiftLoc + 1) % 3
+        loc = shiftLoc
+      case .controlLeft, .controlRight:
+        controlLoc = (controlLoc + 1) % 3
+        loc = controlLoc
+      case .optionLeft, .optionRight:
+        optionLoc = (optionLoc + 1) % 3
+        loc = optionLoc
+      case .commandLeft, .commandRight:
+        commandLoc = (commandLoc + 1) % 3
+        loc = commandLoc
+      default:
+        loc = 0
+    }
+    
+    if loc == 0 {
+      keys.remove(at:idx)
+    }
+  }
+  
+  func modifierText(keyCode: KeyCode) -> String {
+    var loc: Int8 = 0
+    switch keyCode {
+      case .shiftLeft, .shiftRight:
+        loc = shiftLoc
+      case .controlLeft, .controlRight:
+        loc = controlLoc
+      case .optionLeft, .optionRight:
+        loc = optionLoc
+      case .commandLeft, .commandRight:
+        loc = commandLoc
+      default: break
+    }
+    if loc == 1 {
+      return "Left"
+    } else if loc == 2 {
+      return "Right"
+    }
+    return "Any"
+  }
+  
   func keysDescription(_ last: String = "") -> String {
     let res = getTokens().map { $0.label }.joined(separator: "")
     if res.isEmpty {
@@ -141,11 +196,11 @@ class KeyBinding: ObservableObject, Codable {
   
   init(
     keys: [String],
-    shiftLoc: Int8,
-    controlLoc: Int8,
-    optionLoc: Int8,
-    commandLoc: Int8,
-    action: KeyBindingAction
+    action: KeyBindingAction = .none,
+    shiftLoc: Int8 = 0,
+    controlLoc: Int8 = 0,
+    optionLoc: Int8 = 0,
+    commandLoc: Int8 = 0
   ) {
     self.keys = keys
     self.shiftLoc = shiftLoc
@@ -161,55 +216,55 @@ class KeyBinding: ObservableObject, Codable {
     case controlLoc
     case optionLoc
     case commandLoc
-    case action
+    case action 
   }
   
   public func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
     
     try c.encode(keys,         forKey: .keys)
+    try c.encode(action,       forKey: .action)
     try c.encode(shiftLoc,     forKey: .shiftLoc)
     try c.encode(controlLoc,   forKey: .controlLoc)
     try c.encode(optionLoc,    forKey: .optionLoc)
     try c.encode(commandLoc,   forKey: .commandLoc)
-    try c.encode(action,       forKey: .action)
   }
   
   required convenience init(from decoder: Decoder) throws {
     let c = try decoder.container(keyedBy: Keys.self)
     
     let keys        = try c.decode(Array<String>.self, forKey: .keys)
+    let action      = try c.decode(KeyBindingAction.self, forKey: .action)
     let shiftLoc    = try c.decode(Int8.self, forKey: .shiftLoc)
     let controlLoc  = try c.decode(Int8.self, forKey: .controlLoc)
     let optionLoc   = try c.decode(Int8.self, forKey: .optionLoc)
     let commandLoc  = try c.decode(Int8.self, forKey: .commandLoc)
-    let action      = try c.decode(KeyBindingAction.self, forKey: .action)
     
     self.init(
       keys: keys,
+      action: action,
       shiftLoc: shiftLoc,
       controlLoc: controlLoc,
       optionLoc: optionLoc,
-      commandLoc: commandLoc,
-      action: action
+      commandLoc: commandLoc
     )
   }
   
-  static var cmdC: KeyBinding {
+  static var clipboardCopy: KeyBinding {
     let keys: [String] = [
       KeyCode.commandLeft.id,
       "67:0-KeyC"
     ]
     
-    return KeyBinding(keys: keys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command(.clipboardCopy))
+    return KeyBinding(keys: keys, action: .command(.clipboardCopy))
   }
   
-  static var cmdV: KeyBinding {
+  static var clipboardPaste: KeyBinding {
     let keys: [String] = [
       KeyCode.commandLeft.id,
       "68:0-KeyV"
     ]
     
-    return KeyBinding(keys: keys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command(.clipboardPaste))
+    return KeyBinding(keys: keys, action: .command(.clipboardPaste))
   }
 }
