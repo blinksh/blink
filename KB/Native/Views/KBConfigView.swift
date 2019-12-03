@@ -44,6 +44,23 @@ private func _pairRow(_ pair: KeyConfigPair) -> some View {
   }
 }
 
+private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> some View {
+  DefaultRow(title: title, description: binding.keysDescription(last)) {
+    BindingConfigView(title: title, binding: binding)
+  }
+}
+
+struct BindingConfigView: View {
+  var title: String
+  var binding: KeyBinding
+  
+  var body: some View {
+    EmptyView()
+    .navigationBarTitle(title)
+  }
+}
+
+
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
   
@@ -55,6 +72,8 @@ struct KBConfigView: View {
         _pairRow(config.control)
         _pairRow(config.option)
         _pairRow(config.command)
+        _bindingRow(config.fnBinding,     title: "Functional Keys", last: "[0-9]")
+        _bindingRow(config.cursorBinding, title: "Cursor Keys",     last: "[Arrow]")
       }
       Section(header: Text("Blink")) {
         DefaultRow(title: "Bindings") {
@@ -64,6 +83,9 @@ struct KBConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Keyboard")
+    .navigationBarItems(trailing: Button(action: {
+      SmarterTermInput.shared.saveAndApply(config: self.config)
+    }, label: {Text("Save")}))
     .onReceive(config.objectWillChange) { _ in
       DispatchQueue.main.async {
         SmarterTermInput.shared.saveAndApply(config: self.config)

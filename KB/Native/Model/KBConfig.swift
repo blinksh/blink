@@ -39,6 +39,8 @@ class KBConfig: ObservableObject, Codable {
   var option:   KeyConfigPair
   var command:  KeyConfigPair
 
+  var fnBinding: KeyBinding = KeyBinding(keys: [KeyCode.commandLeft.id], shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .none)
+  var cursorBinding: KeyBinding = KeyBinding(keys: [KeyCode.commandLeft.id], shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .none)
   var customBindings: [KeyBinding] = []
   
   private var _cancellable = Set<AnyCancellable>()

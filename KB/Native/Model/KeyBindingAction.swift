@@ -32,15 +32,34 @@
 
 import SwiftUI
 
+enum Command: String, Codable {
+  case windowNew
+  case windowClose
+  case windowFocusOther
+  case tabNew
+  case tabClose
+  case tabNext
+  case tabPrev
+  case tabMoveToOtherWindow
+  case zoomIn
+  case zoomOut
+  case zoomReset
+  case clipboardCopy
+  case clipboardPaste
+  case configShow
+}
+
 enum KeyBindingAction: Codable {
-  case ouput(hex: String)
-  case command
-  
+  case hex(String)
+  case key(KeyCode)
+  case command(Command)
+  case none
+    
   func encode(to encoder: Encoder) throws {
     
   }
   
   init(from decoder: Decoder) throws {
-    self = Self.command
+    self = Self.command(.tabNew)
   }
 }

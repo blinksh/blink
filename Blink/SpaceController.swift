@@ -536,8 +536,6 @@ extension SpaceController {
     _closeCurrentSpace()
   }
   
-  
-  
   @objc func _focusOtherWindowAction() {
     let sessions = _activeSessions()
     

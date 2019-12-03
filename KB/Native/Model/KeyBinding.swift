@@ -67,17 +67,17 @@ extension KeyToken: Comparable {
 }
 
 class KeyBinding: ObservableObject, Codable {
-  var capturedKeys: Array<String> = []
+  var keys: Array<String> = []
   @Published var shiftLoc: Int8 = 0
   @Published var controlLoc: Int8 = 0
   @Published var optionLoc: Int8 = 0
   @Published var commandLoc: Int8 = 0
   
-  @Published var action: KeyBindingAction = .command
+  @Published var action: KeyBindingAction = .command(.tabNew)
   
   func getTokens() -> [KeyToken] {
     var tokens: [KeyToken] = []
-    for s in capturedKeys {
+    for s in keys {
       var token = KeyToken()
       
       if let code = KeyCode(keyID: s) {
@@ -129,17 +129,25 @@ class KeyBinding: ObservableObject, Codable {
     }
   }
   
+  func keysDescription(_ last: String = "") -> String {
+    let res = getTokens().map { $0.label }.joined(separator: "")
+    if res.isEmpty {
+      return res
+    }
+    return res + last
+  }
+  
   // - MARK: Codable
   
   init(
-    capturedKeys: [String],
+    keys: [String],
     shiftLoc: Int8,
     controlLoc: Int8,
     optionLoc: Int8,
     commandLoc: Int8,
     action: KeyBindingAction
   ) {
-    self.capturedKeys = capturedKeys
+    self.keys = keys
     self.shiftLoc = shiftLoc
     self.controlLoc = controlLoc
     self.optionLoc = optionLoc
@@ -148,7 +156,7 @@ class KeyBinding: ObservableObject, Codable {
   }
   
   enum Keys: CodingKey {
-    case capturedKeys
+    case keys
     case shiftLoc
     case controlLoc
     case optionLoc
@@ -159,7 +167,7 @@ class KeyBinding: ObservableObject, Codable {
   public func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
     
-    try c.encode(capturedKeys, forKey: .capturedKeys)
+    try c.encode(keys,         forKey: .keys)
     try c.encode(shiftLoc,     forKey: .shiftLoc)
     try c.encode(controlLoc,   forKey: .controlLoc)
     try c.encode(optionLoc,    forKey: .optionLoc)
@@ -170,15 +178,15 @@ class KeyBinding: ObservableObject, Codable {
   required convenience init(from decoder: Decoder) throws {
     let c = try decoder.container(keyedBy: Keys.self)
     
-    let capturedKyes = try c.decode(Array<String>.self, forKey: .capturedKeys)
-    let shiftLoc     = try c.decode(Int8.self, forKey: .shiftLoc)
-    let controlLoc   = try c.decode(Int8.self, forKey: .controlLoc)
-    let optionLoc    = try c.decode(Int8.self, forKey: .optionLoc)
-    let commandLoc   = try c.decode(Int8.self, forKey: .commandLoc)
-    let action       = try c.decode(KeyBindingAction.self, forKey: .action)
+    let keys        = try c.decode(Array<String>.self, forKey: .keys)
+    let shiftLoc    = try c.decode(Int8.self, forKey: .shiftLoc)
+    let controlLoc  = try c.decode(Int8.self, forKey: .controlLoc)
+    let optionLoc   = try c.decode(Int8.self, forKey: .optionLoc)
+    let commandLoc  = try c.decode(Int8.self, forKey: .commandLoc)
+    let action      = try c.decode(KeyBindingAction.self, forKey: .action)
     
     self.init(
-      capturedKeys: capturedKyes,
+      keys: keys,
       shiftLoc: shiftLoc,
       controlLoc: controlLoc,
       optionLoc: optionLoc,
@@ -188,20 +196,20 @@ class KeyBinding: ObservableObject, Codable {
   }
   
   static var cmdC: KeyBinding {
-    let capturedKeys: [String] = [
+    let keys: [String] = [
       KeyCode.commandLeft.id,
       "67:0-KeyC"
     ]
     
-    return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)
+    return KeyBinding(keys: keys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command(.clipboardCopy))
   }
   
   static var cmdV: KeyBinding {
-    let capturedKeys: [String] = [
+    let keys: [String] = [
       KeyCode.commandLeft.id,
       "68:0-KeyV"
     ]
     
-    return KeyBinding(capturedKeys: capturedKeys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command)
+    return KeyBinding(keys: keys, shiftLoc: 0, controlLoc: 0, optionLoc: 0, commandLoc: 0, action: .command(.clipboardPaste))
   }
 }

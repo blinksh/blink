@@ -43,6 +43,22 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case optionRight  = "AltRight"
   case commandLeft  = "MetaLeft"
   case commandRight = "MetaRight"
+  case f1 = "F1"
+  case f2 = "F2"
+  case f3 = "F3"
+  case f4 = "F4"
+  case f5 = "F5"
+  case f6 = "F6"
+  case f7 = "F7"
+  case f8 = "F8"
+  case f9 = "F9"
+  case f10 = "F10"
+  case f11 = "F11"
+  case f12 = "F12"
+  case pageDown = "PageDown"
+  case pageUp   = "PageUp"
+  case home     = "Home"
+  case end      = "End"
   
   var isOption: Bool {
     switch self {
@@ -62,6 +78,11 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .controlLeft, .controlRight: return "⌃ Control"
     case .optionLeft, .optionRight: return "⌥ Option"
     case .commandLeft, .commandRight: return "⌘ Command"
+    case .pageUp: return "⇞ PageUp"
+    case .pageDown: return "⇟ PageDown"
+    case .home: return "↖︎ Home"
+    case .end: return "↘︎ End"
+    default: return rawValue
     }
   }
   
@@ -69,8 +90,16 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var single: Bool {
     switch self {
-    case .tab, .escape, .capsLock: return true
-    default: return false
+    case .shiftLeft,
+         .shiftRight,
+         .controlLeft,
+         .controlRight,
+         .optionLeft,
+         .optionRight,
+         .commandLeft,
+         .commandRight:
+      return false
+    default: return true
     }
   }
   
@@ -83,6 +112,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .controlLeft, .controlRight: return "Control"
     case .optionLeft, .optionRight: return "Alt"
     case .commandLeft, .commandRight: return "Meta"
+    default: return rawValue
     }
   }
   
@@ -96,6 +126,22 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .optionLeft, .optionRight: return 18
     case .commandLeft: return 91
     case .commandRight: return 93
+    case .f1: return 112
+    case .f2: return 113
+    case .f3: return 114
+    case .f4: return 115
+    case .f5: return 116
+    case .f6: return 117
+    case .f7: return 118
+    case .f8: return 119
+    case .f9: return 120
+    case .f10: return 121
+    case .f11: return 122
+    case .f12: return 123
+    case .home: return 36
+    case .pageUp: return 33
+    case .pageDown: return 34
+    case .end: return 35
     }
   }
   
@@ -108,6 +154,11 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .controlLeft, .controlRight: return "⌃"
     case .optionLeft, .optionRight: return "⌥"
     case .commandLeft, .commandRight: return "⌘"
+    case .pageUp: return "⇞"
+    case .pageDown: return "⇟"
+    case .home: return "↖︎"
+    case .end: return "↘︎"
+    default: return rawValue
     }
   }
   
@@ -134,6 +185,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
          .controlRight,
          .optionRight: return 2
     case .commandRight: return 0
+    default: return 0
     }
   }
 

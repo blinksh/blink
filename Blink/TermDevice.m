@@ -276,7 +276,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   NSData *data = [NSJSONSerialization dataWithJSONObject:dict options:kNilOptions error:nil];
   NSString *cmd = [NSString stringWithFormat: @"\x1b]1337;BlinkPrompt=%@\x07", [data base64EncodedStringWithOptions:kNilOptions]];
   
-  fprintf(_stream.out, cmd.UTF8String);
+  fprintf(_stream.out, "%s", cmd.UTF8String);
 }
 
 - (NSString *)readline:(NSString *)prompt secure:(BOOL)secure {

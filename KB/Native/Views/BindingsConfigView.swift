@@ -42,13 +42,13 @@ struct BindingsConfigView: View {
       HStack {
         Text("Copy")
         Spacer()
-        Text(copy.getTokens().map { $0.label }.joined(separator: "")).foregroundColor(.secondary)
+        Text(copy.keysDescription()).foregroundColor(.secondary)
         Chevron()
       }
       HStack {
         Text("Paste")
         Spacer()
-        Text(paste.getTokens().map { $0.label }.joined(separator: "")).foregroundColor(.secondary)
+        Text(paste.keysDescription()).foregroundColor(.secondary)
         Chevron()
       }
       

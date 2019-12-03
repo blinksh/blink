@@ -100,11 +100,7 @@ class SmarterTermInput: KBWebView {
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
-  
-  var softwareKB: Bool {
-    get { !_kbView.traits.isHKBAttached }
-    set { _kbView.traits.isHKBAttached = !newValue }
-  }
+
   
   @objc func _updateSettings() {
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
@@ -291,14 +287,14 @@ class SmarterTermInput: KBWebView {
   
   override var canBecomeFirstResponder: Bool { true }
   
-//  override func resignFirstResponder() -> Bool {
-//    let res = super.resignFirstResponder()
-//    if res {
-//      device?.blur()
-//      _kbView.isHidden = true
-//    }
-//    return res
-//  }
+  override func resignFirstResponder() -> Bool {
+    let res = super.resignFirstResponder()
+    if res {
+      device?.blur()
+      _kbView.isHidden = true
+    }
+    return res
+  }
   
 //  override var canResignFirstResponder: Bool {
 //    let state = window?.windowScene?.activationState
