@@ -145,6 +145,15 @@ class SmarterTermInput: KBWebView {
   
   override func onOut(_ data: String) {
     device?.view.displayInput(data)
+    
+    let ctrlC = "\u{0003}"
+    let ctrlD = "\u{0004}"
+    
+    if data == ctrlC || data == ctrlD {
+      if device?.delegate?.handleControl(data) == true {
+        return
+      }
+    }
     device?.write(data)
   }
   

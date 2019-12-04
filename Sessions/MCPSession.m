@@ -309,14 +309,17 @@
 
 - (BOOL)handleControl:(NSString *)control
 {
+  NSString *ctrlC = @"\x03";
+  NSString *ctrlD = @"\x04";
+  
   if (_childSession) {
-    if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+    if ([control isEqualToString:ctrlC] || [control isEqualToString:ctrlD]) {
       [_device closeReadline];
     }
     return [_childSession handleControl:control];
   }
   
-  if ([control isEqualToString:@"c"] || [control isEqualToString:@"d"]) {
+  if ([control isEqualToString:ctrlC] || [control isEqualToString:ctrlD]) {
     if (_currentCmd) {
       if ([_device rawMode]) {
         return NO;
@@ -326,7 +329,7 @@
           [client.value kill];
         }
       } else {
-        if ([control isEqualToString:@"d"]) {
+        if ([control isEqualToString:ctrlD]) {
           [_device closeReadline];
           [_cmdStream closeIn];
           return NO;
