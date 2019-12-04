@@ -36,6 +36,26 @@ export const KBActions = {
   STRIP,
 };
 
+type OpType =
+  | 'out'
+  | 'selection'
+  | 'ime'
+  | 'mods'
+  | 'ready'
+  | 'command'
+  | 'capture'
+  | 'guard-ime-on'
+  | 'guard-ime-off'
+  | 'zoom-in'
+  | 'zoom-out'
+  | 'zoom-reset';
+
+export function op(op: OpType, args: {}) {
+  let message = {...args, op};
+  // @ts-ignore
+  window.webkit.messageHandlers._kb.postMessage(message);
+}
+
 const ESC = '\x1b'; // Escape
 const CSI = '\x1b['; // Command Start Inidicator
 const SS3 = '\x1bO'; // Single-Shift Three
@@ -62,7 +82,9 @@ const _unknownKeyDef: KeyDefType = {
   meta: PASS,
 };
 
-export interface IKeyboard {}
+export interface IKeyboard {
+  hasSelection: boolean;
+}
 
 export default class KeyMap {
   _defs: {[index: number]: KeyDefType | undefined} = {};
@@ -124,6 +146,12 @@ export default class KeyMap {
     const ak = (a: KeyActionType, b: KeyActionType) => a;
     const ac = (a: KeyActionType, b: KeyActionType) => b;
 
+    // if in selection mode, that handle with this._onSel
+    const sl = (a: KeyActionType) => (e: KeyDownType, k: KeyDefType) => {
+      let action = this._keyboard.hasSelection ? this._onSel : a
+      return resolve(action, e, k);
+    }
+
     const add = (def: KeyDefType) => this.addKeyDef(def.keyCode, def);
 
 
@@ -131,7 +159,7 @@ export default class KeyMap {
     add(_unknownKeyDef)
 
     // first row
-    add({ keyCode: 27,  keyCap: '[ESC]',  normal: ESC,                       ctrl: DEFAULT, alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 27,  keyCap: '[ESC]',  normal: sl(ESC),                   ctrl: DEFAULT, alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 112, keyCap: '[F1]',   normal: mod(SS3 + 'P', CSI + 'P'), ctrl: DEFAULT, alt: CSI + '23~', meta: DEFAULT });
     add({ keyCode: 113, keyCap: '[F2]',   normal: mod(SS3 + 'Q', CSI + 'Q'), ctrl: DEFAULT, alt: CSI + '24~', meta: DEFAULT });
     add({ keyCode: 114, keyCap: '[F3]',   normal: mod(SS3 + 'R', CSI + 'R'), ctrl: DEFAULT, alt: CSI + '25~', meta: DEFAULT });
@@ -169,15 +197,15 @@ export default class KeyMap {
     // third row
     add({ keyCode: 9,   keyCap: '[TAB]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,     alt: PASS,    meta: DEFAULT });
     add({ keyCode: 81,  keyCap: 'qQ',    normal: DEFAULT,             ctrl: ctl('Q'),  alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 87,  keyCap: 'wW',    normal: DEFAULT,             ctrl: ctl('W'),  alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 87,  keyCap: 'wW',    normal: sl(DEFAULT),         ctrl: ctl('W'),  alt: sl(DEFAULT), meta: DEFAULT });
     add({ keyCode: 69,  keyCap: 'eE',    normal: DEFAULT,             ctrl: ctl('E'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 82,  keyCap: 'rR',    normal: DEFAULT,             ctrl: ctl('R'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 84,  keyCap: 'tT',    normal: DEFAULT,             ctrl: ctl('T'),  alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 89,  keyCap: 'yY',    normal: DEFAULT,             ctrl: ctl('Y'),  alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 89,  keyCap: 'yY',    normal: sl(DEFAULT),         ctrl: ctl('Y'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 85,  keyCap: 'uU',    normal: DEFAULT,             ctrl: ctl('U'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 73,  keyCap: 'iI',    normal: DEFAULT,             ctrl: ctl('I'),  alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 79,  keyCap: 'oO',    normal: DEFAULT,             ctrl: ctl('O'),  alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 80,  keyCap: 'pP',    normal: DEFAULT,             ctrl: ctl('P'),  alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 79,  keyCap: 'oO',    normal: sl(DEFAULT),         ctrl: ctl('O'),  alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 80,  keyCap: 'pP',    normal: sl(DEFAULT),         ctrl: sl(ctl('P')),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 219, keyCap: '[{',    normal: DEFAULT,             ctrl: ctl('['),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 221, keyCap: ']}',    normal: DEFAULT,             ctrl: ctl(']'),  alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 220, keyCap: '\\|',   normal: DEFAULT,             ctrl: ctl('\\'), alt: DEFAULT, meta: DEFAULT });
@@ -187,12 +215,12 @@ export default class KeyMap {
     add({ keyCode: 65,  keyCap: 'aA',      normal: DEFAULT, ctrl: ctl('A'), alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 83,  keyCap: 'sS',      normal: DEFAULT, ctrl: ctl('S'), alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 68,  keyCap: 'dD',      normal: DEFAULT, ctrl: ctl('D'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 70,  keyCap: 'fF',      normal: DEFAULT, ctrl: ctl('F'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 70,  keyCap: 'fF',      normal: DEFAULT, ctrl: sl(ctl('F')), alt: sl(DEFAULT), meta: DEFAULT });
     add({ keyCode: 71,  keyCap: 'gG',      normal: DEFAULT, ctrl: ctl('G'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 72,  keyCap: 'hH',      normal: DEFAULT, ctrl: ctl('H'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 74,  keyCap: 'jJ',      normal: DEFAULT, ctrl: ctl('J'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 75,  keyCap: 'kK',      normal: DEFAULT, ctrl: ctl('K'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 76,  keyCap: 'lL',      normal: DEFAULT, ctrl: ctl('L'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 72,  keyCap: 'hH',      normal: sl(DEFAULT), ctrl: ctl('H'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 74,  keyCap: 'jJ',      normal: sl(DEFAULT), ctrl: ctl('J'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 75,  keyCap: 'kK',      normal: sl(DEFAULT), ctrl: ctl('K'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 76,  keyCap: 'lL',      normal: sl(DEFAULT), ctrl: ctl('L'), alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 186, keyCap: ';:',      normal: DEFAULT, ctrl: STRIP,    alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 222, keyCap: '\'"',     normal: DEFAULT, ctrl: STRIP,    alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 13,  keyCap: '[ENTER]', normal: '\r',    ctrl: DEFAULT,  alt: DEFAULT, meta: DEFAULT });
@@ -200,11 +228,11 @@ export default class KeyMap {
     // fifth row
     add({ keyCode: 16,  keyCap: '[SHIFT]', normal: PASS,    ctrl: PASS,                   alt: PASS,    meta: DEFAULT });
     add({ keyCode: 90,  keyCap: 'zZ',      normal: DEFAULT, ctrl: ctl('Z'),               alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 88,  keyCap: 'xX',      normal: DEFAULT, ctrl: ctl('X'),               alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 88,  keyCap: 'xX',      normal: sl(DEFAULT), ctrl: ctl('X'),               alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 67,  keyCap: 'cC',      normal: DEFAULT, ctrl: ctl('C'),               alt: DEFAULT, meta: PASS });
     add({ keyCode: 86,  keyCap: 'vV',      normal: DEFAULT, ctrl: ctl('V'),               alt: DEFAULT, meta: PASS });
-    add({ keyCode: 66,  keyCap: 'bB',      normal: DEFAULT, ctrl: ctl('B'),               alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 78,  keyCap: 'nN',      normal: DEFAULT, ctrl: ctl('N'),               alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 66,  keyCap: 'bB',      normal: sl(DEFAULT), ctrl: sl(ctl('B')),       alt: sl(DEFAULT), meta: DEFAULT });
+    add({ keyCode: 78,  keyCap: 'nN',      normal: DEFAULT, ctrl: sl(ctl('N')),           alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 77,  keyCap: 'mM',      normal: DEFAULT, ctrl: ctl('M'),               alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 188, keyCap: ',<',      normal: DEFAULT, ctrl: alt(STRIP, PASS),       alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 190, keyCap: '.>',      normal: DEFAULT, ctrl: alt(STRIP, PASS),       alt: DEFAULT, meta: DEFAULT });
@@ -232,10 +260,10 @@ export default class KeyMap {
     add({ keyCode: 34, keyCap: '[PGDOWN]', normal: CSI + '6~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     // arrow keys
-    add({ keyCode: 38, keyCap: '[UP]',    normal: ac(CSI + 'A', SS3 + 'A'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 40, keyCap: '[DOWN]',  normal: ac(CSI + 'B', SS3 + 'B'), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 39, keyCap: '[RIGHT]', normal: ac(CSI + 'C', SS3 + 'C'),  ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 37, keyCap: '[LEFT]',  normal: ac(CSI + 'D', SS3 + 'D'),  ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 38, keyCap: '[UP]',    normal: sl(ac(CSI + 'A', SS3 + 'A')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 40, keyCap: '[DOWN]',  normal: sl(ac(CSI + 'B', SS3 + 'B')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 39, keyCap: '[RIGHT]', normal: sl(ac(CSI + 'C', SS3 + 'C')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 37, keyCap: '[LEFT]',  normal: sl(ac(CSI + 'D', SS3 + 'D')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     add({ keyCode: 144, keyCap: '[NUMLOCK]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
 
@@ -277,5 +305,57 @@ export default class KeyMap {
 
   _onAltNum: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => DEFAULT;
   _onMetaNum: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => DEFAULT;
-  _onZoom: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => DEFAULT;
+  _onZoom: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
+    return CANCEL;
+  };
+
+  _onSel: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
+    if (def.keyCap == '[LEFT]' || def.keyCap == 'hH') {
+      let gran = e.shift ? 'word' : 'character';
+      op('selection', {dir: 'left', gran});
+    } else if (def.keyCap == '[RIGHT]' || def.keyCap == 'lL') {
+      let gran = e.shift ? 'word' : 'character';
+      op('selection', {dir: 'right', gran});
+    } else if (def.keyCap == '[UP]' || def.keyCap == 'kK') {
+      op('selection', {dir: 'left', gran: 'line'});
+    } else if (def.keyCap == '[DOWN]' || def.keyCap == 'jJ') {
+      op('selection', {dir: 'right', gran: 'line'});
+    } else if (def.keyCap == 'oO' || def.keyCap == 'xX') {
+      op('selection', {command: 'change'});
+    } else if (def.keyCap == 'nN' && e.ctrl) {
+      op('selection', {dir: 'right', gran: 'line'});
+    } else if (def.keyCap == 'pP') {
+      if (e.ctrl) {
+        op('selection', {dir: 'left', gran: 'line'});
+      } else if (!e.shift && !e.alt && !e.meta) {
+        op('selection', {command: 'paste'});
+      }
+    } else if (def.keyCap == 'bB') {
+      if (e.ctrl) {
+        op('selection', {dir: 'left', gran: 'character'});
+      } else if (e.alt) {
+        op('selection', {dir: 'left', gran: 'word'});
+      } else {
+        // ???
+        op('selection', {dir: 'left', gran: 'word'});
+      }
+    } else if (def.keyCap == 'wW') {
+      if (e.alt) {
+        op('selection', {command: 'copy'});
+      } else {
+        op('selection', {dir: 'right', gran: 'word'});
+      }
+    } else if (def.keyCap == 'fF') {
+      if (e.ctrl) {
+        op('selection', {dir: 'right', gran: 'character'});
+      } else if (e.alt) {
+        op('selection', {dir: 'right', gran: 'word'});
+      }
+    } else if (def.keyCap == 'yY') {
+      op('selection', {command: 'copy'});
+    } else if (def.keyCap == '[ESC]') {
+      op('selection', {command: 'cancel'});
+    }
+    return CANCEL;
+  };
 }

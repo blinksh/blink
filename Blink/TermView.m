@@ -458,6 +458,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _selectedText = data[@"text"];
   _hasSelection = _selectedText.length > 0;
   
+  [_device viewSelectionChanged];
+  
   if (!_hasSelection) {
     return;
   }

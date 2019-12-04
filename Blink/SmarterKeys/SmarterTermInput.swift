@@ -509,6 +509,23 @@ class SmarterTermInput: KBWebView {
     LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }
   
+  override func onSelection(_ args: [AnyHashable : Any]) {
+    if let dir = args["dir"] as? String, let gran = args["gran"] as? String {
+      device?.view?.modifySelection(inDirection: dir, granularity: gran)
+    } else if let op = args["command"] as? String {
+      switch op {
+      case "change":
+        device?.view?.modifySideOfSelection()
+      case "copy":
+        device?.view?.copy(self)
+      case "paste":
+        device?.view?.pasteSelection(self)
+      case "cancel": fallthrough
+      default:  device?.view?.cleanSelection()
+      }
+    }
+  }
+  
   @objc static let shared = SmarterTermInput()
 }
 

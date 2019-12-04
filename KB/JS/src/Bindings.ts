@@ -1,12 +1,7 @@
 export type BindingAction =
   | {
-      type: 'output',
+      type: 'hex',
       value: string,
-      repeat: boolean,
-    }
-  | {
-      type: 'state',
-      state: string,
     }
   | {
       type: 'press',
@@ -16,11 +11,14 @@ export type BindingAction =
         code: string,
         id: string,
       },
+      shift: boolean,
+      alt: boolean,
+      ctrl: boolean,
+      meta: boolean,
     }
   | {
-      type: 'op',
-      op: string,
-      repeat: boolean,
+      type: 'command',
+      value: string,
     }
   | {
       type: 'none',
@@ -127,6 +125,10 @@ export default class Bindings {
       binding.action = {
         type: 'press',
         key: fn,
+        alt: false,
+        shift: false,
+        ctrl: false,
+        meta: false,
       };
       this._expandBinding(binding);
     }
@@ -176,6 +178,10 @@ export default class Bindings {
       binding.action = {
         type: 'press',
         key: cur,
+        alt: false,
+        shift: false,
+        ctrl: false,
+        meta: false,
       };
       this._expandBinding(binding);
     }

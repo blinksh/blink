@@ -113,6 +113,10 @@
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
+- (void)setHasSelection:(BOOL)value {
+  [self report:@"selection" arg:value ? @"true" : @"false"];
+}
+
 - (void)_inputChanged:(NSNotification *)notification {
   [self report:@"lang" arg:[NSString stringWithFormat:@"\"%@\"", self.textInputMode.primaryLanguage]];
 }
@@ -155,6 +159,10 @@
 }
 
 - (void)onCapture:(NSArray<NSString *> *)keys {
+  
+}
+
+- (void)onSelection:(NSDictionary *)args {
   
 }
 
@@ -271,6 +279,8 @@
     [self _onVoice:event data: data];
   } else if([@"ready" isEqual: op]) {
     [self ready];
+  } else if ([@"selection" isEqual:op]) {
+    [self onSelection:body];
   } else if([@"capture" isEqual: op]) {
     NSArray<NSString *> *keys = body[@"keys"];
     [self onCapture:keys];

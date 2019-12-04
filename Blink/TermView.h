@@ -51,6 +51,7 @@
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
 - (void)viewSubmitLine:(NSString *)line;
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request;
+- (void)viewSelectionChanged;
 
 @end
 

@@ -68,6 +68,7 @@
 - (void)fkeySeq:(UIKeyCommand *)cmd;
 - (void)arrowSeq:(UIKeyCommand *)cmd;
 - (void)cursorSeq:(UIKeyCommand *)cmd;
+- (void)setHasSelection:(BOOL)value;
 
 - (void)reset;
 

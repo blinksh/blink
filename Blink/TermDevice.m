@@ -346,6 +346,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   }
   
   _input.device = self;
+  [_input setHasSelection:_view.hasSelection];
   if (_secureTextEntry != _input.secureTextEntry) {
     _input.secureTextEntry = _secureTextEntry;
     [_input reset];
@@ -419,6 +420,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 - (void)viewCopyString:(NSString *)text
 {
   [[UIPasteboard generalPasteboard] setString:text];
+}
+
+- (void)viewSelectionChanged {
+  [_input setHasSelection:_view.hasSelection];
 }
 
 - (BOOL)handleControl:(NSString *)control

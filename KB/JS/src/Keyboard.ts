@@ -4,6 +4,7 @@ import KeyMap, {
   KeyActionType,
   KeyInfoType,
   KeyDownType,
+  op,
 } from './KeyMap';
 import toUIKitFlags from './UIKeyModifierFlags';
 import Bindings, {BindingAction, KeyBinding} from './Bindings';
@@ -21,6 +22,15 @@ type KeyCode = {
 };
 
 type KeyAction = '' | 'escape' | 'tab';
+
+function hex_to_ascii(hex: string): string {
+  let str = '';
+  let len = hex.length;
+  for (let n = 0; n < len; n += 2) {
+    str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+  }
+  return str;
+}
 
 function _action(action: KeyAction) {
   switch (action) {
@@ -103,12 +113,6 @@ function _keyId(e: KeyboardEvent): string {
   return `${keyCode}:${loc}:${key}`;
 }
 
-function _op(op: string, args: {}) {
-  let message = {...args, op};
-  // @ts-ignore
-  window.webkit.messageHandlers._kb.postMessage(message);
-}
-
 function _removeAccents(str: string): string {
   let res = str.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
   let tmp = res.replace(/^[\u02c6\u00a8\u00b4\u02dc\u0060]/, '');
@@ -174,6 +178,8 @@ export default class Keyboard implements IKeyboard {
   _bindings = new Bindings();
 
   _lang: string = 'en';
+
+  hasSelection: boolean = false;
 
   _lastKeyDownEvent: KeyboardEvent | null = null;
   _capsLockRemapped = false;
@@ -263,15 +269,15 @@ export default class Keyboard implements IKeyboard {
       } else {
         mods = toUIKitFlags(e);
       }
-      _op('mods', {mods: mods});
+      op('mods', {mods: mods});
     }
 
     if (code == 'AltLeft' || code == 'AltRight') {
       if (this._ignoreAccents[code]) {
         if (e.type == 'keydown') {
-          _op('guard-ime-on', {});
+          op('guard-ime-on', {});
         } else {
-          _op('guard-ime-off', {});
+          op('guard-ime-off', {});
         }
         _blockEvent(e);
       }
@@ -472,7 +478,10 @@ export default class Keyboard implements IKeyboard {
       action = getAction('normal');
     }
 
-    if (action === PASS || (action === DEFAULT && !(ctrl || alt || meta))) {
+    if (
+      !this.hasSelection &&
+      (action === PASS || (action === DEFAULT && !(ctrl || alt || meta)))
+    ) {
       // If this key is supposed to be handled by the browser, or it is an
       // unmodified key with the default action, then exit this event handler.
       // If it's an unmodified key, it'll be handled in onKeyPress where we
@@ -518,7 +527,7 @@ export default class Keyboard implements IKeyboard {
 
     _blockEvent(e);
 
-    if (action === CANCEL) {
+    if (action === CANCEL || this.hasSelection) {
       return;
     }
 
@@ -613,13 +622,13 @@ export default class Keyboard implements IKeyboard {
   }
 
   ready() {
-    _op('ready', {});
+    op('ready', {});
   }
 
   _onIME = (e: CompositionEvent) => {
     let type = e.type;
     let data = e.data || '';
-    _op('ime', {type, data});
+    op('ime', {type, data});
 
     if (type == 'compositionend') {
       this._output(data);
@@ -679,7 +688,7 @@ export default class Keyboard implements IKeyboard {
   _output = (data: string | null) => {
     this._up.clear();
     if (data) {
-      _op('out', {data});
+      op('out', {data});
     }
   };
 
@@ -708,7 +717,7 @@ export default class Keyboard implements IKeyboard {
     this._handleKeyDown(keyCode, null);
   }
 
-  _capture = () => _op('capture', {keyIds: this._down.values});
+  _capture = () => op('capture', {keyIds: this._down.values});
 
   _configKey = (key: KeyConfig) => {
     let code = key.code;
@@ -731,6 +740,7 @@ export default class Keyboard implements IKeyboard {
   };
 
   _reset() {
+    this.hasSelection = false;
     this._modsMap = {};
     this._downMap = {};
     this._upMap = {};
@@ -785,6 +795,9 @@ export default class Keyboard implements IKeyboard {
       case 'guard-down':
         this._handleGuard(false, arg);
         break;
+      case 'selection':
+        this.hasSelection = arg;
+        break;
       case 'capture':
         this._toggleCaptureMode(arg);
         break;
@@ -799,8 +812,11 @@ export default class Keyboard implements IKeyboard {
 
   _execBinding(action: BindingAction, e: KeyboardEvent) {
     switch (action.type) {
-      case 'output':
-        this._output(action.value);
+      case 'hex':
+        this._output(hex_to_ascii(action.value));
+        break;
+      case 'command':
+        op('command', {command: action.value});
         break;
       case 'press':
         let keyInfo = action.key;
@@ -811,6 +827,18 @@ export default class Keyboard implements IKeyboard {
           Meta: new Set(),
           Control: new Set(),
         };
+        if (action.shift) {
+          this._mods.Shift.add('shift');
+        }
+        if (action.ctrl) {
+          this._mods.Control.add('ctrl');
+        }
+        if (action.alt) {
+          this._mods.Alt.add('alt');
+        }
+        if (action.meta) {
+          this._mods.Meta.add('meta');
+        }
         this._handleKeyDownKey(keyInfo, e);
         this._mods = mods;
         break;
