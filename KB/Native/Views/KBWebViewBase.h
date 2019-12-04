@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface KBWebViewBase : WKWebView
 
 - (void)onSelection:(NSDictionary *)args;
+- (void)onCommand:(NSString *)command;
 - (void)setHasSelection:(BOOL)value;
 - (void)removeAssistantsFromView;
 - (void)report:(NSString *)cmd arg:(NSObject *)arg;

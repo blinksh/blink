@@ -201,6 +201,10 @@
   
 }
 
+- (void)onCommand:(NSString *)command {
+  
+}
+
 - (void)_rebuildKeyCommands {
   NSMutableArray *cmds = [[NSMutableArray alloc] init];
   if (_activeModsCommand) {
@@ -277,8 +281,10 @@
     NSString *event = body[@"event"];
     NSString *data = body[@"data"];
     [self _onVoice:event data: data];
-  } else if([@"ready" isEqual: op]) {
+  } else if ([@"ready" isEqual: op]) {
     [self ready];
+  } else if ([@"command" isEqual:op]) {
+    [self onCommand: body[@"command"]];
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
   } else if([@"capture" isEqual: op]) {
