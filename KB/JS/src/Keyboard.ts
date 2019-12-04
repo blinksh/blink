@@ -6,7 +6,7 @@ import KeyMap, {
   KeyDownType,
 } from './KeyMap';
 import toUIKitFlags from './UIKeyModifierFlags';
-import Bindings, {BindingAction} from './Bindings';
+import Bindings, {BindingAction, KeyBinding} from './Bindings';
 
 const CANCEL = KBActions.CANCEL;
 const DEFAULT = KBActions.DEFAULT;
@@ -70,9 +70,24 @@ type KBConfig = {
   control: KeyConfigPair,
   option: KeyConfigPair,
   command: KeyConfigPair,
+  fn: KeyBinding,
+  cursor: KeyBinding,
 
   bindings: {[index: string]: BindingAction},
 };
+
+const _holders = new Set([
+  '20:0',
+  '16:1',
+  '16:2',
+  '17:1',
+  '17:2',
+  '18:1',
+  '18:2',
+  '91:1',
+  '91:2',
+  '93:0',
+]);
 
 const _capsLockID = '20:0';
 
@@ -315,11 +330,15 @@ export default class Keyboard implements IKeyboard {
 
     let keyId = _keyId(event);
     this._down.add(keyId);
+    console.log('down', this._down);
 
-    // @ts-ignore
-    let binding = this._bindings.match(this._down.values);
+    let binding = this._bindings.match(Array.from(this._down));
+    if (!_holders.has(keyId)) {
+      this._down.delete(keyId);
+    }
     if (binding) {
-      this._execBinding(binding);
+      this._execBinding(binding, e);
+      _blockEvent(e);
       return;
     }
 
@@ -366,7 +385,7 @@ export default class Keyboard implements IKeyboard {
     this._lastKeyDownEvent = null;
 
     if (this._captureMode) {
-      let keyId = _keyId + '-' + e.code;
+      let keyId = _keyId(e) + '-' + e.code;
       this._down.delete(keyId);
       this._capture();
       this._updateUIKitModsIfNeeded(e);
@@ -376,6 +395,7 @@ export default class Keyboard implements IKeyboard {
 
     let keyId = _keyId(e);
     this._down.delete(keyId);
+    console.log('up', keyId, this._down);
     let mod = this._mod(this._modsMap[e.code]);
     if (mod) {
       this._mods[mod].delete(keyId);
@@ -730,6 +750,8 @@ export default class Keyboard implements IKeyboard {
 
   _config = (cfg: KBConfig) => {
     this._reset();
+    this._bindings.reset();
+
     this._configKey(cfg.capsLock);
     this._configKey(cfg.command.left);
     this._configKey(cfg.command.right);
@@ -739,6 +761,9 @@ export default class Keyboard implements IKeyboard {
     this._configKey(cfg.option.right);
     this._configKey(cfg.shift.left);
     this._configKey(cfg.shift.right);
+
+    this._bindings.expandFn(cfg.fn);
+    this._bindings.expandCursor(cfg.cursor);
   };
 
   _toggleCaptureMode = (val: any) => (this._captureMode = !!val);
@@ -772,10 +797,22 @@ export default class Keyboard implements IKeyboard {
     }
   };
 
-  _execBinding(action: BindingAction) {
+  _execBinding(action: BindingAction, e: KeyboardEvent) {
     switch (action.type) {
       case 'output':
         this._output(action.value);
+        break;
+      case 'press':
+        let keyInfo = action.key;
+        let mods = this._mods;
+        this._mods = {
+          Shift: new Set(),
+          Alt: new Set(),
+          Meta: new Set(),
+          Control: new Set(),
+        };
+        this._handleKeyDownKey(keyInfo, e);
+        this._mods = mods;
         break;
     }
   }

@@ -26,7 +26,7 @@ export type BindingAction =
       type: 'none',
     };
 
-type KeyBinding = {
+export type KeyBinding = {
   keys: Array<string>,
   shiftLoc: number,
   controlLoc: number,
@@ -46,14 +46,15 @@ export default class Bindings {
   }
 
   match(keyIds: Array<string>): BindingAction | null {
-    let keysPath = Array(keyIds)
-      .sort()
-      .join(':');
+    let keysPath = keyIds.sort().join(':');
     let action = this._map[keysPath];
     return action;
   }
 
   expandFn = (binding: KeyBinding) => {
+    if (binding.keys.length == 0) {
+      return;
+    }
     let fns = [
       {
         keyCode: 121,
@@ -132,6 +133,9 @@ export default class Bindings {
   };
 
   expandCursor = (binding: KeyBinding) => {
+    if (binding.keys.length == 0) {
+      return;
+    }
     let cursor = [
       {
         keyCode: 36,
@@ -206,7 +210,7 @@ export default class Bindings {
       loc: binding.commandLoc,
     };
 
-    var doubleKeys = [shift, control, option, command].filter(k => k.loc !== 1);
+    var doubleKeys = [shift, control, option, command];
 
     for (let k of doubleKeys) {
       var i = res.length - 1;
@@ -214,12 +218,20 @@ export default class Bindings {
         var row = res[i];
         let idx = row.indexOf(k.idLeft);
         if (idx < 0) {
+          idx = row.indexOf(k.idRight);
+        }
+        if (idx < 0) {
+          continue;
+        }
+        if (k.loc == 1) {
+          row[idx] = k.idLeft;
           continue;
         }
         if (k.loc == 2) {
           row[idx] = k.idRight;
           continue;
         }
+        row[idx] = k.idLeft;
         let right = row.slice();
         right[idx] = k.idRight;
         res.push(right);
@@ -227,7 +239,7 @@ export default class Bindings {
     }
 
     for (let row of res) {
-      var r = row.sort().join(':');
+      let r = row.sort().join(':');
       this._map[r] = binding.action;
     }
   };

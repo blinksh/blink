@@ -164,7 +164,7 @@ class KeyBinding: ObservableObject, Codable {
   }
   
   func modifierText(keyCode: KeyCode) -> String {
-    var loc: Int8 = 0
+    let loc: Int8
     switch keyCode {
       case .shiftLeft, .shiftRight:
         loc = shiftLoc
@@ -174,7 +174,8 @@ class KeyBinding: ObservableObject, Codable {
         loc = optionLoc
       case .commandLeft, .commandRight:
         loc = commandLoc
-      default: break
+      default:
+        loc = 0
     }
     if loc == 1 {
       return "Left"

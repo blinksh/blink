@@ -56,7 +56,7 @@ public class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _kbdCommands:[UIKeyCommand] = []
-  private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
+//  private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
   private var _spaceControllerAnimating: Bool = false
   
   public override func viewDidLayoutSubviews() {

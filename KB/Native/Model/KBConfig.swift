@@ -90,7 +90,6 @@ class KBConfig: ObservableObject, Codable {
     try c.encode(control,       forKey: .control)
     try c.encode(option,        forKey: .option)
     try c.encode(command,       forKey: .command)
-    try c.encode(command,       forKey: .command)
     try c.encode(fnBinding,     forKey: .fn)
     try c.encode(cursorBinding, forKey: .cursor)
   }
