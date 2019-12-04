@@ -212,10 +212,10 @@ export default class KeyMap {
 
     // sixth row
     add({ keyCode: 17, keyCap: '[CTRL]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 18, keyCap: '[ALT]',   normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 91, keyCap: '[LAPL]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 18, keyCap: '[OPT]',   normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 91, keyCap: '[LCMD]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
     add({ keyCode: 32, keyCap: ' ',       normal: DEFAULT, ctrl: ctl('@'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 93, keyCap: '[RAPL]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 93, keyCap: '[RCMD]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
 
     // these things.
     
