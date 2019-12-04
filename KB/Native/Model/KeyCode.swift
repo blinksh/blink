@@ -33,6 +33,7 @@
 enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   case tab          = "Tab"
+  case space        = "Space"
   case escape       = "Escape"
   case capsLock     = "CapsLock"
   case shiftLeft    = "ShiftLeft"
@@ -72,6 +73,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   var fullName: String {
     switch self {
     case .tab: return "⇥ Tab"
+    case .space: return "␣ Space"
     case .escape: return "⎋ Escape"
     case .capsLock: return "⇪ CapsLock"
     case .shiftLeft, .shiftRight: return "⇧ Shift"
@@ -106,6 +108,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   var key: String {
     switch self {
     case .tab: return "Tab"
+    case .space: return "Space"
     case .escape: return "Escape"
     case .capsLock: return "CapsLock"
     case .shiftLeft, .shiftRight: return "Shift"
@@ -119,6 +122,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   var keyCode: Int {
     switch self {
     case .tab: return 9
+    case .space: return 32
     case .escape: return 27
     case .capsLock: return 20
     case .shiftLeft, .shiftRight: return 16
@@ -148,6 +152,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   var symbol: String {
     switch self {
     case .tab: return "⇥"
+    case .space: return "␣"
     case .escape: return "⎋"
     case .capsLock: return "⇪"
     case .shiftLeft, .shiftRight: return "⇧"
