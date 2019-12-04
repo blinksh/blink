@@ -184,6 +184,7 @@ export default class Keyboard implements IKeyboard {
   _lastKeyDownEvent: KeyboardEvent | null = null;
   _capsLockRemapped = false;
   _shiftRemapped = false;
+  _removeAccents = false;
 
   _metaSendsEscape: boolean = true;
   _altSendsWhat: 'escape' | '8-bit' = 'escape';
@@ -499,10 +500,12 @@ export default class Keyboard implements IKeyboard {
       let nonPrintable = /^\[\w+\]$/.test(keyDef.keyCap);
 
       if (nonPrintable) {
+        this._removeAccents = false;
         return;
       }
       // TODO: may be remove accents only after options key is pressed.
-      let out = _removeAccents(key);
+      let out = this._removeAccents ? _removeAccents(key) : key;
+      this._removeAccents = false;
       if (this._capsLockRemapped || this._shiftRemapped) {
         this._output(shift ? out.toUpperCase() : out.toLowerCase());
       } else {
@@ -512,6 +515,7 @@ export default class Keyboard implements IKeyboard {
       _blockEvent(e);
       return;
     }
+    this._removeAccents = false;
 
     if (action === STRIP) {
       alt = ctrl = false;
@@ -711,6 +715,7 @@ export default class Keyboard implements IKeyboard {
     }
 
     if (up) {
+      this._removeAccents = true;
       return;
     }
 
@@ -741,6 +746,7 @@ export default class Keyboard implements IKeyboard {
 
   _reset() {
     this.hasSelection = false;
+    this._removeAccents = false;
     this._modsMap = {};
     this._downMap = {};
     this._upMap = {};
