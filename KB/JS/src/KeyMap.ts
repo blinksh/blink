@@ -11,6 +11,7 @@ export type KeyInfoType = {
   key: string,
   code: string,
   keyCode: number,
+  src?: string
 };
 
 export type KeyDownType = KeyInfoType & {

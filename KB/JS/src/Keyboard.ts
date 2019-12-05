@@ -6,7 +6,7 @@ import KeyMap, {
   KeyDownType,
   op,
 } from './KeyMap';
-import toUIKitFlags from './UIKeyModifierFlags';
+import {toUIKitFlags, UIKitFlagsToObject} from './UIKeyModifierFlags';
 import Bindings, {BindingAction, KeyBinding} from './Bindings';
 
 const CANCEL = KBActions.CANCEL;
@@ -493,13 +493,13 @@ export default class Keyboard implements IKeyboard {
       // The browser won't know we're trying to ignore the modifiers and might
       // perform some default action.
       //  return;
-      if (action === PASS) {
+      if (action === PASS && !keyInfo.src) {
         return;
       }
 
       let nonPrintable = /^\[\w+\]$/.test(keyDef.keyCap);
 
-      if (nonPrintable) {
+      if (nonPrintable && !keyInfo.src) {
         this._removeAccents = false;
         return;
       }
@@ -784,6 +784,44 @@ export default class Keyboard implements IKeyboard {
 
   _toggleCaptureMode = (val: any) => (this._captureMode = !!val);
 
+  _onToolbarMods = (val: number) => {
+    let flags = UIKitFlagsToObject(val)
+    if (flags.alt) {
+      this._mods.Alt.add('alt')
+    } else {
+      this._mods.Alt.delete('alt') 
+    }
+
+    if (flags.ctrl) {
+      this._mods.Control.add('ctrl')
+    } else {
+      this._mods.Control.delete('ctrl') 
+    }
+
+    if (flags.shift) {
+      this._mods.Shift.add('shift')
+    } else {
+      this._mods.Shift.delete('shift') 
+    }
+
+    if (flags.meta) {
+      this._mods.Meta.add('meta')
+    } else {
+      this._mods.Meta.delete('meta') 
+    }
+  };
+
+  _onToolbarPress = (keyId: string) => {
+    let parts = keyId.split(/:/g)
+    let keyInfo: KeyInfoType = {
+      keyCode: parseInt(parts[0], 10),
+      key: parts[2] || '',
+      code: '',
+      src: 'toolbar'
+    }
+    this._handleKeyDownKey(keyInfo, null);
+  };
+
   onKB = (cmd: string, arg: any) => {
     switch (cmd) {
       case 'mods-down':
@@ -806,6 +844,12 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'capture':
         this._toggleCaptureMode(arg);
+        break;
+      case 'toolbar-mods':
+        this._onToolbarMods(arg);
+        break;
+      case 'toolbar-press':
+        this._onToolbarPress(arg);
         break;
       case 'focus':
         this.focus(arg);

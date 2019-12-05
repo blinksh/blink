@@ -5,7 +5,7 @@ const UIKeyModifierAlternate = 1 << 19;
 const UIKeyModifierCommand = 1 << 20;
 const UIKeyModifierNumericPad = 1 << 21;
 
-export default function toUIKitFlags(e: KeyboardEvent, capsKey = true): number {
+export function toUIKitFlags(e: KeyboardEvent, capsKey = true): number {
   let res = 0;
   if (e.shiftKey) {
     res |= UIKeyModifierShift;
@@ -23,4 +23,16 @@ export default function toUIKitFlags(e: KeyboardEvent, capsKey = true): number {
     res |= UIKeyModifierAlphaShift;
   }
   return res;
+}
+
+export function UIKitFlagsToObject(
+  flags: number,
+): {shift: boolean, alt: boolean, ctrl: boolean, meta: boolean} {
+
+  var shift = (flags & UIKeyModifierShift) == UIKeyModifierShift
+  var alt = (flags & UIKeyModifierAlternate) == UIKeyModifierAlternate
+  var ctrl = (flags & UIKeyModifierControl) == UIKeyModifierControl
+  var meta = (flags & UIKeyModifierCommand) == UIKeyModifierCommand
+
+  return {shift, alt, ctrl, meta}
 }
