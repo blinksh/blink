@@ -60,6 +60,15 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case pageUp   = "PageUp"
   case home     = "Home"
   case end      = "End"
+  case left     = "ArrowLeft"
+  case right    = "ArrowRight"
+  case up       = "ArrowUp"
+  case down     = "ArrowDown"
+  case backslash    = "Backslash"
+  case bracketRight = "BracketRight"
+  case bracketLeft  = "BracketLeft"
+  case backquote    = "Backquote"
+  case unidentified = "Unidentified"
   
   var isOption: Bool {
     switch self {
@@ -84,6 +93,15 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .pageDown: return "⇟ PageDown"
     case .home: return "↖︎ Home"
     case .end: return "↘︎ End"
+    case .left: return "← Left"
+    case .right: return "→ Right"
+    case .up: return "↑ Up"
+    case .down: return "↓ Up"
+    case .backslash: return "\\"
+    case .bracketRight: return "]"
+    case .bracketLeft: return "["
+    case .backquote: return "`"
+    case .unidentified: return "?"
     default: return rawValue
     }
   }
@@ -121,6 +139,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var keyCode: Int {
     switch self {
+    case .unidentified: return 0
     case .tab: return 9
     case .space: return 32
     case .escape: return 27
@@ -146,6 +165,14 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .pageUp: return 33
     case .pageDown: return 34
     case .end: return 35
+    case .left: return 37
+    case .right: return 39
+    case .up: return 38
+    case .down: return 40
+    case .backslash: return 220
+    case .bracketRight: return 221
+    case .bracketLeft: return 219
+    case .backquote:  return 192
     }
   }
   
@@ -163,6 +190,15 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .pageDown: return "⇟"
     case .home: return "↖︎"
     case .end: return "↘︎"
+    case .left: return "←"
+    case .right: return "→"
+    case .up: return "↑"
+    case .down: return "↓"
+    case .backslash: return "\\"
+    case .bracketRight: return "]"
+    case .bracketLeft: return "["
+    case .backquote: return "`"
+    case .unidentified: return ""
     default: return rawValue
     }
   }

@@ -155,6 +155,7 @@ class SmarterTermInput: KBWebView {
       }
     }
     device?.write(data)
+    _kbView.turnOffUntracked()
   }
   
   func _matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
