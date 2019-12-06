@@ -59,7 +59,7 @@ class KBView: UIView {
   private var _onModifiersSet: Set<KBKeyView> = []
   private var _untrackedModifiersSet: Set<KBKeyView> = []
   
-  weak var keyInput: TermInput? = nil
+  weak var keyInput: SmarterTermInput? = nil
   
   var lang: String = "" {
     didSet {
@@ -354,6 +354,12 @@ extension KBView: KBKeyViewDelegate {
       traits.toggle(value, on: .ctrlOn , off: .ctrlOff)
     default: break
     }
+    
+    _reportModifiers()
+  }
+  
+  func _reportModifiers() {
+    keyInput?.reportToolbarModifierFlags(traits.modifierFlags)
   }
   
   func keyViewTriggered(keyView: KBKeyView, value: KBKeyValue) {
@@ -363,29 +369,35 @@ extension KBView: KBKeyViewDelegate {
     if keyView !== _repeatingKeyView {
       stopRepeats()
     }
+    
+    let keyCode = value.keyCode
+    var keyId = keyCode.id
+    keyId += ":\(value.text)"
+    
+    keyInput?.reportKeyPress(keyId)
 
-    switch value {
-    case .f(let num):
-      var flags = traits.modifierFlags
-      flags.remove(.command)
-      let cmd = UIKeyCommand(input: "\(num)", modifierFlags: flags, action: #selector(TermInput.fkeySeq(_:)))
-      keyInput?.fkeySeq(cmd)
-    case .up, .left, .right, .down:
-      var flags = traits.modifierFlags
-      if let _ = flags.remove(.command) {
-        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.cursorSeq(_:)))
-        keyInput?.cursorSeq(cmd)
-      } else {
-        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.arrowSeq(_:)))
-        keyInput?.arrowSeq(cmd)
-      }
-    default:
-      if let sequence = value.sequence {
-        repeatingSequence = sequence
-        keyInput?.insertText(sequence)
-        repeatingSequence = nil
-      }
-    }
+//    switch value {
+//    case .f(let num):
+//      var flags = traits.modifierFlags
+//      flags.remove(.command)
+//      let cmd = UIKeyCommand(input: "\(num)", modifierFlags: flags, action: #selector(TermInput.fkeySeq(_:)))
+//      keyInput?.fkeySeq(cmd)
+//    case .up, .left, .right, .down:
+//      var flags = traits.modifierFlags
+//      if let _ = flags.remove(.command) {
+//        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.cursorSeq(_:)))
+//        keyInput?.cursorSeq(cmd)
+//      } else {
+//        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.arrowSeq(_:)))
+//        keyInput?.arrowSeq(cmd)
+//      }
+//    default:
+//      if let sequence = value.sequence {
+//        repeatingSequence = sequence
+//        keyInput?.insertText(sequence)
+//        repeatingSequence = nil
+//      }
+//    }
     
     
     turnOffUntracked()

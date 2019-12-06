@@ -54,7 +54,7 @@ class SmarterTermInput: KBWebView {
       setupAccessoryView()
     }
     
-//    _kbView.keyInput = self
+    _kbView.keyInput = self
     _kbView.lang = textInputMode?.primaryLanguage ?? ""
     
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(

@@ -129,6 +129,15 @@
   [self report:@"mods-up" arg:@(cmd.modifierFlags)];
 }
 
+- (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags {
+  [self report:@"toolbar-mods" arg:@(flags)];
+}
+
+- (void)reportKeyPress:(NSString *)keyId {
+  NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+  [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"%@\"", kid]];
+}
+
 // Not sure we need up
 - (void)_imeGuardUp:(KeyCommand *)cmd {
   [self report:@"guard-up" arg:[NSString stringWithFormat:@"\"%@\"", cmd.input]];
