@@ -55,6 +55,11 @@ struct KBConfigView: View {
   
   var body: some View {
     List() {
+      Section(header: Text("Blink")) {
+        DefaultRow(title: "Bindings") {
+          BindingsConfigView(config: self.config)
+        }
+      }
       Section(header: Text("Terminal")) {
         _row(config.capsLock)
         _pairRow(config.shift)
@@ -63,11 +68,6 @@ struct KBConfigView: View {
         _pairRow(config.command)
         _bindingRow(config.fnBinding,     title: "Functional Keys", last: "[0-9]")
         _bindingRow(config.cursorBinding, title: "Cursor Keys",     last: "[Arrow]")
-      }
-      Section(header: Text("Blink")) {
-        DefaultRow(title: "Bindings") {
-          BindingsConfigView(config: self.config)
-        }
       }
     }
     .listStyle(GroupedListStyle())
