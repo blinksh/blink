@@ -104,9 +104,24 @@ void __setupProcessEnv() {
   [nc addObserver:self
          selector: @selector(_onScreenConnect)
              name:UIScreenDidConnectNotification object:nil];
+  
+//  [nc addObserver:self selector:@selector(_logEvent:) name:nil object:nil];
+//  [nc addObserver:self selector:@selector(_active) name:@"UITextInputResponderDidChangeNotification" object:nil];
 
+  [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
   return YES;
 }
+
+//- (void)_active {
+//  [[SmarterTermInput shared] realBecomeFirstResponder];
+//}
+//- (void)_logEvent:(NSNotification *)n {
+//  NSLog(@"event, %@, %@", n.name, n.userInfo);
+//  if ([n.name isEqualToString:@"UIApplicationSystemNavigationActionChangedNotification"]) {
+//    [[SmarterTermInput shared] realBecomeFirstResponder];
+//  }
+//
+//}
 
 - (void)_loadProfileVars {
   NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceCharacterSet];
@@ -250,7 +265,6 @@ void __setupProcessEnv() {
   
   _suspendTaskId = UIBackgroundTaskInvalid;
 }
-
 
 #pragma mark - LSSupportsOpeningDocumentsInPlace
 

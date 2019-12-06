@@ -32,7 +32,6 @@
 
 #import "KBWebViewBase.h"
 
-
 @interface KeyCommand: UIKeyCommand
 @end
 
@@ -103,6 +102,10 @@
 
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
 //  return YES;
+//}
+//
+//- (BOOL)_requiresKeyboardResetOnReload {
+//  return NO;
 //}
 
 - (BOOL)_becomeFirstResponderWhenPossible {

@@ -172,6 +172,10 @@ public class SpaceController: UIViewController {
                    object: nil)
   }
   
+//  public override func resignFirstResponder() -> Bool {
+//    return super.resignFirstResponder()
+//  }
+  
   @objc func _didBecomeKeyWindow() {
     guard
       let window = view.window,

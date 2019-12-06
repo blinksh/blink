@@ -229,7 +229,7 @@ class SmarterTermInput: KBWebView {
     scrollView.subviews.first
   }
   
-  func realBecomeFirstResponder() -> Bool {
+  @objc func realBecomeFirstResponder() -> Bool {
     let res = contentView()?.becomeFirstResponder()
 
     device?.focus()
@@ -402,6 +402,9 @@ class SmarterTermInput: KBWebView {
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
       isLocal // we reconfigure kb only for local notifications
     else {
+      if notification.userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool == false {
+        self.device?.view?.blur()
+      }
       return
     }
     
