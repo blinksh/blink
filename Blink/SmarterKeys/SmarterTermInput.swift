@@ -234,6 +234,7 @@ class SmarterTermInput: KBWebView {
 
     device?.focus()
     _kbView.isHidden = false
+    _kbView.invalidateIntrinsicContentSize()
     refreshInputViews()
     return res == true
   }
@@ -311,6 +312,8 @@ class SmarterTermInput: KBWebView {
     if res {
       device?.blur()
       _kbView.isHidden = true
+      _inputAccessoryView?.isHidden = true
+      reloadInputViews()
     }
     return res
   }
@@ -367,7 +370,7 @@ class SmarterTermInput: KBWebView {
   }
   
   func _removeSmartKeys() {
-    _inputAccessoryView = nil
+    _inputAccessoryView = UIView(frame: .zero)
     self.removeAssistantsFromView()
 //    realInputAssistantItem?.leadingBarButtonGroups = []
 //    realInputAssistantItem?.trailingBarButtonGroups = []
@@ -412,7 +415,7 @@ class SmarterTermInput: KBWebView {
     let mainScreen   = UIScreen.main
     let screenHeight = mainScreen.bounds.height
     let isIPad       = traitCollection.userInterfaceIdiom == .pad
-    var isOnScreenKB = kbFrameEnd.size.height > 140
+    var isOnScreenKB = kbFrameEnd.size.height > 110
     // External screen kb workaround
     if isOnScreenKB && isIPad && device?.view?.window?.screen !== mainScreen {
        isOnScreenKB = kbFrameEnd.origin.y < screenHeight - 140

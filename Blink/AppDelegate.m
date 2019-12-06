@@ -106,7 +106,7 @@ void __setupProcessEnv() {
              name:UIScreenDidConnectNotification object:nil];
   
 //  [nc addObserver:self selector:@selector(_logEvent:) name:nil object:nil];
-//  [nc addObserver:self selector:@selector(_active) name:@"UITextInputResponderDidChangeNotification" object:nil];
+//  [nc addObserver:self selector:@selector(_active) name:@"UIApplicationSystemNavigationActionChangedNotification" object:nil];
 
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
   return YES;
