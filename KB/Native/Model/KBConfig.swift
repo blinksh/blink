@@ -41,7 +41,7 @@ class KBConfig: ObservableObject, Codable {
 
   @Published var fnBinding: KeyBinding
   @Published var cursorBinding: KeyBinding
-  @Published var customBindings: [KeyBinding] = [.clipboardCopy, .clipboardPaste]
+  @Published var shortcuts: [KeyShortcut] = KeyShortcut.defaultList
   
   private var _cancellable = Set<AnyCancellable>()
   

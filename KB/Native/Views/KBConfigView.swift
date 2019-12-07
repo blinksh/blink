@@ -54,10 +54,10 @@ struct KBConfigView: View {
   @ObservedObject var config: KBConfig
   
   var body: some View {
-    List() {
+    List {
       Section(header: Text("Blink")) {
-        DefaultRow(title: "Bindings") {
-          BindingsConfigView(config: self.config)
+        DefaultRow(title: "Shortcuts") {
+          ShortcutsConfigView(config: self.config)
         }
       }
       Section(header: Text("Terminal")) {

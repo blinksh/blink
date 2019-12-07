@@ -68,6 +68,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case bracketRight = "BracketRight"
   case bracketLeft  = "BracketLeft"
   case backquote    = "Backquote"
+  case delete       = "Backspace"
+  case `return`     = "Enter"
   case unidentified = "Unidentified"
   
   var isOption: Bool {
@@ -101,6 +103,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .bracketRight: return "]"
     case .bracketLeft: return "["
     case .backquote: return "`"
+    case .delete: return "⌫ Delete"
+    case .return: return "↩︎ Return"
     case .unidentified: return "?"
     default: return rawValue
     }
@@ -133,6 +137,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .controlLeft, .controlRight: return "Control"
     case .optionLeft, .optionRight: return "Alt"
     case .commandLeft, .commandRight: return "Meta"
+    case .delete: return "Backspace"
     default: return rawValue
     }
   }
@@ -173,6 +178,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .bracketRight: return 221
     case .bracketLeft: return 219
     case .backquote:  return 192
+    case .delete: return 8
+    case .return: return 13
     }
   }
   
@@ -198,6 +205,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .bracketRight: return "]"
     case .bracketLeft: return "["
     case .backquote: return "`"
+    case .delete: return "⌫"
+    case .return: return "↩︎"
     case .unidentified: return ""
     default: return rawValue
     }

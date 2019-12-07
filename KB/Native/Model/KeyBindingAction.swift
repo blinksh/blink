@@ -32,7 +32,7 @@
 
 import SwiftUI
 
-enum Command: String, Codable {
+enum Command: String, Codable, CaseIterable {
   case windowNew
   case windowClose
   case windowFocusOther
@@ -60,25 +60,90 @@ enum Command: String, Codable {
   case clipboardPaste
   case configShow
   
-  var description: String {
+  var title: String {
     switch self {
-    case .windowNew:        return "New Window"
-    case .windowClose:      return "Close Window"
-    case .windowFocusOther: return "Focus on other Window"
-    case .tabNew:           return "New tab"
-    case .tabClose:         return "Close tab"
-    case .tabNext:          return "Next tab"
-    case .tabPrev:          return "Prev tab"
-    default: return self.rawValue
+    case .windowNew:            return "New Window"
+    case .windowClose:          return "Close Window"
+    case .windowFocusOther:     return "Focus on other Window"
+    case .tabNew:               return "New tab"
+    case .tabClose:             return "Close tab"
+    case .tabNext:              return "Next tab"
+    case .tabPrev:              return "Previous tab"
+    case .tab1:                 return "Switch to tab 1"
+    case .tab2:                 return "Switch to tab 2"
+    case .tab3:                 return "Switch to tab 3"
+    case .tab4:                 return "Switch to tab 4"
+    case .tab5:                 return "Switch to tab 5"
+    case .tab6:                 return "Switch to tab 6"
+    case .tab7:                 return "Switch to tab 7"
+    case .tab8:                 return "Switch to tab 8"
+    case .tab9:                 return "Switch to tab 9"
+    case .tab10:                return "Switch to tab 10"
+    case .tab11:                return "Switch to tab 11"
+    case .tab12:                return "Switch to tab 12"
+    case .tabMoveToOtherWindow: return "Move tab to other Window"
+    case .zoomIn:               return "Zoom In"
+    case .zoomOut:              return "Zoom Out"
+    case .zoomReset:            return "Zoom Reset"
+    case .clipboardCopy:        return "Copy"
+    case .clipboardPaste:       return "Paste"
+    case .configShow:           return "Show Config"
     }
   }
 }
 
-enum KeyBindingAction: Codable {
+enum KeyBindingAction: Codable, Identifiable {
   case hex(String)
   case press(KeyCode, shift: Bool, ctrl: Bool, alt: Bool, meta: Bool)
   case command(Command)
   case none
+  
+  var id: String {
+    switch self {
+    case .hex(let str): return "hex-\(str)"
+    case .press(let keyCode, let shift, let ctrl, let alt, let meta): return "press-\(keyCode.id)-\(shift)-\(ctrl)-\(alt)-\(meta)"
+    case .command(let cmd): return "cmd-\(cmd)"
+    case .none: return "none"
+    }
+  }
+  
+  static var pressList: [KeyBindingAction] {
+    [
+      KeyBindingAction.press(.escape, shift: false, ctrl: false, alt: false, meta: false),
+      KeyBindingAction.press(.space, shift: false, ctrl: true, alt: false, meta: false),
+      KeyBindingAction.press(.f11, shift: false, ctrl: false, alt: false, meta: false),
+      KeyBindingAction.press(.f12, shift: false, ctrl: false, alt: false, meta: false),
+    ]
+  }
+  
+  static var commandList: [KeyBindingAction] {
+    Command.allCases.map({KeyBindingAction.command($0) })
+  }
+  
+  var title: String {
+    switch self {
+    case .hex(let str): return "Hex: (\(str))"
+    case .press(let keyCode, let shift, let ctrl, let alt, let meta):
+      var sym = ""
+      if (shift) {
+        sym += KeyCode.shiftLeft.symbol
+      }
+      if (ctrl) {
+        sym += KeyCode.controlLeft.symbol
+      }
+      if (alt) {
+        sym += KeyCode.optionLeft.symbol
+      }
+      if (meta) {
+        sym += KeyCode.commandLeft.symbol
+      }
+      sym += keyCode.symbol
+
+      return "Press \(sym)"
+    case .command(let cmd): return cmd.title
+    case .none: return "none"
+    }
+  }
   
   // - MARK: Codable
   
