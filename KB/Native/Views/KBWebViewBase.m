@@ -90,12 +90,6 @@
     
     _activeIMEGuardCommands = nil;
     _imeGuardCommands = [imeGuards copy];
-    
-    [NSNotificationCenter.defaultCenter
-     addObserver:self
-     selector:@selector(_inputChanged:)
-     name:UITextInputCurrentInputModeDidChangeNotification
-     object:nil];
   }
   return self;
 }
@@ -120,8 +114,8 @@
   [self report:@"selection" arg:value ? @"true" : @"false"];
 }
 
-- (void)_inputChanged:(NSNotification *)notification {
-  [self report:@"lang" arg:[NSString stringWithFormat:@"\"%@\"", self.textInputMode.primaryLanguage]];
+- (void)reportLang:(NSString *) lang {
+  [self report:@"lang" arg:[NSString stringWithFormat:@"\"%@\"", lang]];
 }
 
 - (void)_keyDown:(KeyCommand *)cmd {
@@ -130,6 +124,10 @@
 
 - (void)_keyUp:(KeyCommand *)cmd {
   [self report:@"mods-up" arg:@(cmd.modifierFlags)];
+}
+
+- (void)reportStateReset {
+  [self report:@"state-reset" arg: @""];
 }
 
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags {

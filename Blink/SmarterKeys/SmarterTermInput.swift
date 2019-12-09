@@ -147,6 +147,7 @@ class SmarterTermInput: KBWebView {
   }
   
   @objc func _onBlinkInputCommand(_ cmd: BlinkCommand) {
+    SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {
     case .command(let cmd):
       _onCommand(cmd)
@@ -164,10 +165,8 @@ class SmarterTermInput: KBWebView {
   
   func _onCommand(_ cmd: Command) {
     switch cmd {
-    case .clipboardCopy:
-      device?.view?.copy(self)
-    case .clipboardPaste:
-      device?.view?.paste(self)
+    case .clipboardCopy: copy(self)
+    case .clipboardPaste: paste(self)
     case .zoomIn:
       device?.view?.increaseFontSize()
     case .zoomOut:
@@ -259,24 +258,11 @@ class SmarterTermInput: KBWebView {
     
   }
   
-  // TODO: IME
-//  override func setMarkedText(_ markedText: String?, selectedRange: NSRange) {
-//    super.setMarkedText(markedText, selectedRange: selectedRange)
-//    if let text = markedText {
-//      _kbView.traits.isIME = !text.isEmpty
-//    } else {
-//      _kbView.traits.isIME = false
-//    }
-//  }
-//
-//  override func unmarkText() {
-//    super.unmarkText()
-//    _kbView.traits.isIME = false
-//  }
-  
   @objc func _inputModeChanged() {
     DispatchQueue.main.async {
-      self._kbView.lang = self.textInputMode?.primaryLanguage ?? ""
+      let lang = self.textInputMode?.primaryLanguage ?? ""
+      self._kbView.lang = lang
+      self.reportLang(lang)
     }
   }
   
@@ -343,8 +329,10 @@ class SmarterTermInput: KBWebView {
   override func onIME(_ event: String, data: String) {
     if event == "compositionstart" && data.isEmpty {
     } else if event == "compositionend" {
+      _kbView.traits.isIME = false
       device?.view?.setIme("", completionHandler: nil)
     } else {
+      _kbView.traits.isIME = true
       device?.view?.setIme(data) {  (data, error) in
         guard
           error == nil,
@@ -603,17 +591,22 @@ class SmarterTermInput: KBWebView {
     LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }
   
+  override func copy(_ sender: Any?) {
+    device?.view?.copy(sender)
+  }
+  
+  override func paste(_ sender: Any?) {
+    device?.view?.paste(sender)
+  }
+  
   override func onSelection(_ args: [AnyHashable : Any]) {
     if let dir = args["dir"] as? String, let gran = args["gran"] as? String {
       device?.view?.modifySelection(inDirection: dir, granularity: gran)
     } else if let op = args["command"] as? String {
       switch op {
-      case "change":
-        device?.view?.modifySideOfSelection()
-      case "copy":
-        device?.view?.copy(self)
-      case "paste":
-        device?.view?.pasteSelection(self)
+      case "change": device?.view?.modifySideOfSelection()
+      case "copy": copy(self)
+      case "paste": device?.view?.pasteSelection(self)
       case "cancel": fallthrough
       default:  device?.view?.cleanSelection()
       }

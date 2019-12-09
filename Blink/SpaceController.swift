@@ -514,6 +514,7 @@ extension SpaceController {
  */
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
+    SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {
     case .command(let c):
       _onCommand(c)

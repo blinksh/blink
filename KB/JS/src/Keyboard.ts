@@ -680,6 +680,18 @@ export default class Keyboard implements IKeyboard {
 
   // Keyboard language change
   _handleLang(lang: string) {
+    this._lang = lang;
+    this._stateReset();
+  }
+
+  _output = (data: string | null) => {
+    this._up.clear();
+    if (data) {
+      op('out', {data});
+    }
+  };
+
+  _stateReset = () => {
     this._down.clear();
     this._up.clear();
     this._mods = {
@@ -689,14 +701,6 @@ export default class Keyboard implements IKeyboard {
       Control: new Set(),
     };
     this.element.value = ' ';
-    this._lang = lang;
-  }
-
-  _output = (data: string | null) => {
-    this._up.clear();
-    if (data) {
-      op('out', {data});
-    }
   };
 
   _handleGuard(up: boolean, char: string) {
@@ -853,6 +857,9 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'toolbar-press':
         this._onToolbarPress(arg);
+        break;
+      case 'state-reset':
+        this._stateReset();
         break;
       case 'focus':
         this.focus(arg);

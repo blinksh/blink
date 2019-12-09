@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KBWebViewBase : WKWebView
 
+- (void)reportStateReset;
+- (void)reportLang:(NSString *) lang;
 - (void)reportKeyPress:(NSString *)keyId;
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags;
 - (void)onSelection:(NSDictionary *)args;
