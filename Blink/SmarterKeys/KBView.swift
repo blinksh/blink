@@ -368,24 +368,26 @@ extension KBView: KBKeyViewDelegate {
       stopRepeats()
     }
     
+    defer { turnOffUntracked() }
+    
     let keyCode = value.keyCode
     var keyId = keyCode.id
     keyId += ":\(value.text)"
     
     var flags = traits.modifierFlags
+    
+    if let input = value.input,
+      let (cmd, responder) = keyInput?.matchCommand(input: input, flags: flags),
+      let action = cmd.action  {
+      responder.perform(action, with: cmd)
+      return
+    }
 
-    switch value {
-    case .f:
+    if case .f = value {
       flags.remove(.command)
-      keyInput?.reportKeyPress(flags, keyId: keyId)
-    case .up, .left, .right, .down:
-      keyInput?.reportKeyPress(flags, keyId: keyId)
-    default:
-      keyInput?.reportKeyPress(flags, keyId: keyId)
     }
     
-    
-    turnOffUntracked()
+    keyInput?.reportKeyPress(flags, keyId: keyId)
   }
   
   func keyViewCancelled(keyView: KBKeyView) {

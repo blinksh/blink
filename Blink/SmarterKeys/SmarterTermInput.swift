@@ -201,7 +201,7 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  func _matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
+  func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
     
     var iterator: UIResponder? = self
