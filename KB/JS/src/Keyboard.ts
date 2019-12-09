@@ -915,6 +915,17 @@ export default class Keyboard implements IKeyboard {
       code: '',
       src: 'toolbar',
     };
+    if (!e) {
+      let keyId = keyInfo.keyCode + ":" + parts[2]
+      this._down.add(keyId)
+      let binding = this._bindings.match(this._downKeysIds());
+      this._down.delete(keyId)
+      if (binding) {
+        this._execBinding(binding, null);
+        this._mods = savedMods;
+        return;
+      } 
+    }
     this._handleKeyDownKey(keyInfo, e);
     this._mods = savedMods;
   };
@@ -960,7 +971,7 @@ export default class Keyboard implements IKeyboard {
     }
   };
 
-  _execBinding(action: BindingAction, e: KeyboardEvent) {
+  _execBinding(action: BindingAction, e: KeyboardEvent | null) {
     switch (action.type) {
       case 'hex':
         this._output(hex_to_ascii(action.value));

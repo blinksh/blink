@@ -347,6 +347,7 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   
   _input.device = self;
   [_input setHasSelection:_view.hasSelection];
+  
   if (_secureTextEntry != _input.secureTextEntry) {
     _input.secureTextEntry = _secureTextEntry;
     [_input reset];

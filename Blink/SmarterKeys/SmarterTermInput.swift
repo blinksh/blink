@@ -44,7 +44,11 @@ class SmarterTermInput: KBWebView {
   private var _inputAccessoryView: UIView? = nil
   var blinkKeyCommands: [BlinkCommand] = []
   
-  var device: TermDevice? = nil
+  var device: TermDevice? = nil {
+    didSet {
+      reportStateReset()
+    }
+  }
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     _kbView = KBView()
