@@ -84,6 +84,7 @@ type KBConfig = {
   cursor: KeyBinding,
 
   bindings: {[index: string]: BindingAction},
+  shortcuts: Array<{action: BindingAction, input: string, modifiers: number}>,
 };
 
 const _holders = new Set([
@@ -99,6 +100,10 @@ const _holders = new Set([
   '93:0',
 ]);
 
+const _leftShift = '16:1';
+const _leftControl = '17:1';
+const _leftOption = '18:1';
+const _leftCommand = '91:1';
 const _capsLockID = '20:0';
 
 // We track key by keyCode, code, location and key
@@ -129,6 +134,7 @@ function _blockEvent(e: UIEvent | null) {
   }
 }
 
+/*
 const _keyToCodeMap: {[index: string]: number} = {
   KeyC: 67,
   c: 67,
@@ -146,10 +152,18 @@ const _keyToCodeMap: {[index: string]: number} = {
   u: 85,
   KeyE: 69,
   e: 69,
+  KeyV: 86,
+  v: 86,
+  KeyW: 87,
+  w: 87,
+  KeyQ: 81,
+  q: 81,
 };
+*/
 
 function _patchKeyDown(
   keyDown: KeyDownType,
+  keyMap: KeyMap,
   e: KeyboardEvent | null,
 ): KeyDownType {
   if (!e) {
@@ -164,7 +178,7 @@ function _patchKeyDown(
       (e.keyCode == 13 && e.code == 'KeyM') ||
       (e.keyCode == 27 && e.code == 'BracketLeft')
     ) {
-      keyDown.keyCode = _keyToCodeMap[e.code] || keyDown.keyCode;
+      keyDown.keyCode = keyMap.keyCode(e.code) || keyDown.keyCode; //_keyToCodeMap[e.code] || keyDown.keyCode;
     }
   }
 
@@ -311,6 +325,23 @@ export default class Keyboard implements IKeyboard {
     }
   }
 
+  _downKeysIds = () => {
+    let res = Array.from(this._down);
+    if (this._mods.Meta.has('tb-meta') && res.indexOf(_leftCommand) == -1) {
+      res.push(_leftCommand);
+    }
+    if (this._mods.Control.has('tb-ctrl') && res.indexOf(_leftControl) == -1) {
+      res.push(_leftControl);
+    }
+    if (this._mods.Alt.has('tb-alt') && res.indexOf(_leftOption) == -1) {
+      res.push(_leftOption);
+    }
+    if (this._mods.Shift.has('tb-shift') && res.indexOf(_leftShift) == -1) {
+      res.push(_leftShift);
+    }
+    return res;
+  };
+
   _onKeyDown = (e: KeyboardEvent) => {
     if (e.isComposing) {
       this._lastKeyDownEvent = null;
@@ -342,7 +373,7 @@ export default class Keyboard implements IKeyboard {
     this._down.add(keyId);
     console.log('down', this._down);
 
-    let binding = this._bindings.match(Array.from(this._down));
+    let binding = this._bindings.match(this._downKeysIds());
     if (!_holders.has(keyId)) {
       this._down.delete(keyId);
     }
@@ -448,6 +479,7 @@ export default class Keyboard implements IKeyboard {
 
     let keyDown = _patchKeyDown(
       {key, code, keyCode, alt, ctrl, meta, shift},
+      this._keyMap,
       e,
     );
 
@@ -705,7 +737,7 @@ export default class Keyboard implements IKeyboard {
 
   _handleGuard(up: boolean, char: string) {
     this.element.value = ' ';
-    let keyCode = _keyToCodeMap[char || ''] || 0;
+    let keyCode = this._keyMap.keyCode(char);
     let keyId = `${keyCode}:0`;
     if (this._captureMode) {
       keyId += '-Key' + char.toUpperCase();
@@ -787,34 +819,70 @@ export default class Keyboard implements IKeyboard {
 
     this._bindings.expandFn(cfg.fn);
     this._bindings.expandCursor(cfg.cursor);
+
+    for (let shortcut of cfg.shortcuts) {
+      let binding: KeyBinding = {
+        keys: this._keysFromShortcut(shortcut.input, shortcut.modifiers),
+        action: shortcut.action,
+        shiftLoc: 0,
+        controlLoc: 0,
+        optionLoc: 0,
+        commandLoc: 0,
+      };
+      this._bindings.expandBinding(binding);
+    }
   };
+
+  _keysFromShortcut(input: string, mods: number): Array<string> {
+    var res: Array<string> = [];
+    let m = UIKitFlagsToObject(mods);
+    if (m.shift) {
+      res.push(_leftShift);
+    }
+    if (m.alt) {
+      res.push(_leftOption);
+    }
+    if (m.ctrl) {
+      res.push(_leftControl);
+    }
+    if (m.meta) {
+      res.push(_leftCommand);
+    }
+    let code = this._keyMap.keyCode(input);
+    if (code) {
+      res.push(code + ':0');
+    } else {
+      res.push('0:0-' + input);
+    }
+    return res;
+  }
 
   _toggleCaptureMode = (val: any) => (this._captureMode = !!val);
 
   _onToolbarMods = (val: number) => {
     let flags = UIKitFlagsToObject(val);
     if (flags.alt) {
-      this._mods.Alt.add('alt');
+      this._mods.Alt.add('tb-alt');
     } else {
-      this._mods.Alt.delete('alt');
+      this._mods.Alt.delete('tb-alt');
     }
 
     if (flags.ctrl) {
-      this._mods.Control.add('ctrl');
+      this._mods.Control.add('tb-ctrl');
     } else {
-      this._mods.Control.delete('ctrl');
+      this._mods.Control.delete('tb-ctrl');
     }
 
     if (flags.shift) {
-      this._mods.Shift.add('shift');
+      this._mods.Shift.add('tb-shift');
     } else {
-      this._mods.Shift.delete('shift');
+      this._mods.Shift.delete('tb-shift');
     }
 
     if (flags.meta) {
-      this._mods.Meta.add('meta');
+      this._mods.Meta.add('tb-meta');
     } else {
-      this._mods.Meta.delete('meta');
+      this._mods.Meta.delete('tb-meta');
     }
   };
 
@@ -829,16 +897,16 @@ export default class Keyboard implements IKeyboard {
     };
     let mods = UIKitFlagsToObject(parseInt(parts[0], 10));
     if (mods.shift) {
-      this._mods.Shift.add('shift');
+      this._mods.Shift.add('tb-shift');
     }
     if (mods.ctrl) {
-      this._mods.Control.add('ctrl');
+      this._mods.Control.add('tb-ctrl');
     }
     if (mods.alt) {
-      this._mods.Alt.add('alt');
+      this._mods.Alt.add('tb-alt');
     }
     if (mods.meta) {
-      this._mods.Meta.add('meta');
+      this._mods.Meta.add('tb-meta');
     }
 
     let keyInfo: KeyInfoType = {

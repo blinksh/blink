@@ -11,7 +11,7 @@ export type KeyInfoType = {
   key: string,
   code: string,
   keyCode: number,
-  src?: string
+  src?: string,
 };
 
 export type KeyDownType = KeyInfoType & {
@@ -76,7 +76,7 @@ type KeyDefType = {
 
 const _unknownKeyDef: KeyDefType = {
   keyCode: 0,
-  keyCap: '[UNKNOWN]',
+  keyCap: '[Unidentified]',
   normal: PASS,
   ctrl: PASS,
   alt: PASS,
@@ -89,6 +89,7 @@ export interface IKeyboard {
 
 export default class KeyMap {
   _defs: {[index: number]: KeyDefType | undefined} = {};
+  _reverseDefs: {[index: string]: KeyDefType | undefined} = {};
   _keyboard: IKeyboard;
 
   constructor(keyboard: IKeyboard) {
@@ -117,6 +118,21 @@ export default class KeyMap {
     }
 
     this._defs[keyCode] = def;
+
+    //def.keyCap[0]
+    let nonPrintable = /^\[\w+\]$/.test(def.keyCap);
+    if (nonPrintable) {
+      let key = def.keyCap.replace(/\W/g, '');
+      this._reverseDefs[key] = def;
+    } else {
+      var letter = def.keyCap[0];
+      this._reverseDefs[letter] = def;
+      if (/0-9/.test(letter)) {
+        this._reverseDefs['Digit' + letter] = def;
+      } else if (/a-z/.test(letter)) {
+        this._reverseDefs['Key' + letter.toUpperCase()] = def;
+      }
+    }
   }
 
   // prettier-ignore
@@ -160,19 +176,19 @@ export default class KeyMap {
     add(_unknownKeyDef)
 
     // first row
-    add({ keyCode: 27,  keyCap: '[ESC]',  normal: sl(ESC),                   ctrl: DEFAULT, alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 112, keyCap: '[F1]',   normal: mod(SS3 + 'P', CSI + 'P'), ctrl: DEFAULT, alt: CSI + '23~', meta: DEFAULT });
-    add({ keyCode: 113, keyCap: '[F2]',   normal: mod(SS3 + 'Q', CSI + 'Q'), ctrl: DEFAULT, alt: CSI + '24~', meta: DEFAULT });
-    add({ keyCode: 114, keyCap: '[F3]',   normal: mod(SS3 + 'R', CSI + 'R'), ctrl: DEFAULT, alt: CSI + '25~', meta: DEFAULT });
-    add({ keyCode: 115, keyCap: '[F4]',   normal: mod(SS3 + 'S', CSI + 'S'), ctrl: DEFAULT, alt: CSI + '26~', meta: DEFAULT });
-    add({ keyCode: 116, keyCap: '[F5]',   normal: CSI + '15~',               ctrl: DEFAULT, alt: CSI + '28~', meta: DEFAULT });
-    add({ keyCode: 117, keyCap: '[F6]',   normal: CSI + '17~',               ctrl: DEFAULT, alt: CSI + '29~', meta: DEFAULT });
-    add({ keyCode: 118, keyCap: '[F7]',   normal: CSI + '18~',               ctrl: DEFAULT, alt: CSI + '31~', meta: DEFAULT });
-    add({ keyCode: 119, keyCap: '[F8]',   normal: CSI + '19~',               ctrl: DEFAULT, alt: CSI + '32~', meta: DEFAULT });
-    add({ keyCode: 120, keyCap: '[F9]',   normal: CSI + '20~',               ctrl: DEFAULT, alt: CSI + '33~', meta: DEFAULT });
-    add({ keyCode: 121, keyCap: '[F10]',  normal: CSI + '21~',               ctrl: DEFAULT, alt: CSI + '34~', meta: DEFAULT });
-    add({ keyCode: 122, keyCap: '[F11]',  normal: CSI + '23~',               ctrl: DEFAULT, alt: CSI + '42~', meta: DEFAULT });
-    add({ keyCode: 123, keyCap: '[F12]',  normal: CSI + '24~',               ctrl: DEFAULT, alt: CSI + '43~', meta: DEFAULT });
+    add({ keyCode: 27,  keyCap: '[Escape]', normal: sl(ESC),                   ctrl: DEFAULT, alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 112, keyCap: '[F1]',     normal: mod(SS3 + 'P', CSI + 'P'), ctrl: DEFAULT, alt: CSI + '23~', meta: DEFAULT });
+    add({ keyCode: 113, keyCap: '[F2]',     normal: mod(SS3 + 'Q', CSI + 'Q'), ctrl: DEFAULT, alt: CSI + '24~', meta: DEFAULT });
+    add({ keyCode: 114, keyCap: '[F3]',     normal: mod(SS3 + 'R', CSI + 'R'), ctrl: DEFAULT, alt: CSI + '25~', meta: DEFAULT });
+    add({ keyCode: 115, keyCap: '[F4]',     normal: mod(SS3 + 'S', CSI + 'S'), ctrl: DEFAULT, alt: CSI + '26~', meta: DEFAULT });
+    add({ keyCode: 116, keyCap: '[F5]',     normal: CSI + '15~',               ctrl: DEFAULT, alt: CSI + '28~', meta: DEFAULT });
+    add({ keyCode: 117, keyCap: '[F6]',     normal: CSI + '17~',               ctrl: DEFAULT, alt: CSI + '29~', meta: DEFAULT });
+    add({ keyCode: 118, keyCap: '[F7]',     normal: CSI + '18~',               ctrl: DEFAULT, alt: CSI + '31~', meta: DEFAULT });
+    add({ keyCode: 119, keyCap: '[F8]',     normal: CSI + '19~',               ctrl: DEFAULT, alt: CSI + '32~', meta: DEFAULT });
+    add({ keyCode: 120, keyCap: '[F9]',     normal: CSI + '20~',               ctrl: DEFAULT, alt: CSI + '33~', meta: DEFAULT });
+    add({ keyCode: 121, keyCap: '[F10]',    normal: CSI + '21~',               ctrl: DEFAULT, alt: CSI + '34~', meta: DEFAULT });
+    add({ keyCode: 122, keyCap: '[F11]',    normal: CSI + '23~',               ctrl: DEFAULT, alt: CSI + '42~', meta: DEFAULT });
+    add({ keyCode: 123, keyCap: '[F12]',    normal: CSI + '24~',               ctrl: DEFAULT, alt: CSI + '43~', meta: DEFAULT });
 
     const onCtrlNum = this._onCtrlNum
     const onAltNum = this._onAltNum
@@ -180,23 +196,23 @@ export default class KeyMap {
     const onZoom = this._onZoom
     
     // second row
-    add({ keyCode: 192,  keyCap: '`~',     normal: DEFAULT,       ctrl: sh(ctl('@'), ctl('^')), alt: DEFAULT,  meta: PASS });
-    add({ keyCode: 49,   keyCap: '1!',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 50,   keyCap: '2@',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 51,   keyCap: '3#',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 52,   keyCap: '4$',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 53,   keyCap: '5%',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 54,   keyCap: '6^',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 55,   keyCap: '7&',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 56,   keyCap: '8*',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 57,   keyCap: '9(',     normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 48,   keyCap: '0)',     normal: DEFAULT,       ctrl: onZoom,                 alt: onAltNum, meta: onZoom });
-    add({ keyCode: 189,  keyCap: '-_',     normal: DEFAULT,       ctrl: sh(onZoom, ctl('_')),   alt: DEFAULT,  meta: onZoom });
-    add({ keyCode: 187,  keyCap: '=+',     normal: DEFAULT,       ctrl: onZoom,                 alt: DEFAULT,  meta: onZoom });
-    add({ keyCode: 8,    keyCap: '[BKSP]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
+    add({ keyCode: 192,  keyCap: '`~',          normal: DEFAULT,       ctrl: sh(ctl('@'), ctl('^')), alt: DEFAULT,  meta: PASS });
+    add({ keyCode: 49,   keyCap: '1!',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 50,   keyCap: '2@',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 51,   keyCap: '3#',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 52,   keyCap: '4$',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 53,   keyCap: '5%',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 54,   keyCap: '6^',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 55,   keyCap: '7&',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 56,   keyCap: '8*',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 57,   keyCap: '9(',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
+    add({ keyCode: 48,   keyCap: '0)',          normal: DEFAULT,       ctrl: onZoom,                 alt: onAltNum, meta: onZoom });
+    add({ keyCode: 189,  keyCap: '-_',          normal: DEFAULT,       ctrl: sh(onZoom, ctl('_')),   alt: DEFAULT,  meta: onZoom });
+    add({ keyCode: 187,  keyCap: '=+',          normal: DEFAULT,       ctrl: onZoom,                 alt: DEFAULT,  meta: onZoom });
+    add({ keyCode: 8,    keyCap: '[Backspace]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
     
     // third row
-    add({ keyCode: 9,   keyCap: '[TAB]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,        alt: PASS,        meta: DEFAULT });
+    add({ keyCode: 9,   keyCap: '[Tab]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,        alt: PASS,        meta: DEFAULT });
     add({ keyCode: 81,  keyCap: 'qQ',    normal: DEFAULT,             ctrl: ctl('Q'),     alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 87,  keyCap: 'wW',    normal: sl(DEFAULT),         ctrl: ctl('W'),     alt: sl(DEFAULT), meta: DEFAULT });
     add({ keyCode: 69,  keyCap: 'eE',    normal: DEFAULT,             ctrl: ctl('E'),     alt: DEFAULT,     meta: DEFAULT });
@@ -212,22 +228,22 @@ export default class KeyMap {
     add({ keyCode: 220, keyCap: '\\|',   normal: DEFAULT,             ctrl: ctl('\\'),    alt: DEFAULT,     meta: DEFAULT });
 
     // fourth row
-    add({ keyCode: 20,  keyCap: '[CAPS]',  normal: PASS,        ctrl: PASS,         alt: PASS,        meta: DEFAULT });
-    add({ keyCode: 65,  keyCap: 'aA',      normal: DEFAULT,     ctrl: ctl('A'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 83,  keyCap: 'sS',      normal: DEFAULT,     ctrl: ctl('S'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 68,  keyCap: 'dD',      normal: DEFAULT,     ctrl: ctl('D'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 70,  keyCap: 'fF',      normal: DEFAULT,     ctrl: sl(ctl('F')), alt: sl(DEFAULT), meta: DEFAULT });
-    add({ keyCode: 71,  keyCap: 'gG',      normal: DEFAULT,     ctrl: ctl('G'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 72,  keyCap: 'hH',      normal: sl(DEFAULT), ctrl: ctl('H'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 74,  keyCap: 'jJ',      normal: sl(DEFAULT), ctrl: ctl('J'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 75,  keyCap: 'kK',      normal: sl(DEFAULT), ctrl: ctl('K'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 76,  keyCap: 'lL',      normal: sl(DEFAULT), ctrl: ctl('L'),     alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 186, keyCap: ';:',      normal: DEFAULT,     ctrl: STRIP,        alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 222, keyCap: '\'"',     normal: DEFAULT,     ctrl: STRIP,        alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 13,  keyCap: '[ENTER]', normal: '\r',        ctrl: DEFAULT,      alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 20,  keyCap: '[CapsLock]', normal: PASS,        ctrl: PASS,         alt: PASS,        meta: DEFAULT });
+    add({ keyCode: 65,  keyCap: 'aA',         normal: DEFAULT,     ctrl: ctl('A'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 83,  keyCap: 'sS',         normal: DEFAULT,     ctrl: ctl('S'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 68,  keyCap: 'dD',         normal: DEFAULT,     ctrl: ctl('D'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 70,  keyCap: 'fF',         normal: DEFAULT,     ctrl: sl(ctl('F')), alt: sl(DEFAULT), meta: DEFAULT });
+    add({ keyCode: 71,  keyCap: 'gG',         normal: DEFAULT,     ctrl: ctl('G'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 72,  keyCap: 'hH',         normal: sl(DEFAULT), ctrl: ctl('H'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 74,  keyCap: 'jJ',         normal: sl(DEFAULT), ctrl: ctl('J'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 75,  keyCap: 'kK',         normal: sl(DEFAULT), ctrl: ctl('K'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 76,  keyCap: 'lL',         normal: sl(DEFAULT), ctrl: ctl('L'),     alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 186, keyCap: ';:',         normal: DEFAULT,     ctrl: STRIP,        alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 222, keyCap: '\'"',        normal: DEFAULT,     ctrl: STRIP,        alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 13,  keyCap: '[Enter]',    normal: '\r',        ctrl: DEFAULT,      alt: DEFAULT,     meta: DEFAULT });
 
     // fifth row
-    add({ keyCode: 16,  keyCap: '[SHIFT]', normal: PASS,        ctrl: PASS,                   alt: PASS,        meta: DEFAULT });
+    add({ keyCode: 16,  keyCap: '[Shift]', normal: PASS,        ctrl: PASS,                   alt: PASS,        meta: DEFAULT });
     add({ keyCode: 90,  keyCap: 'zZ',      normal: DEFAULT,     ctrl: ctl('Z'),               alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 88,  keyCap: 'xX',      normal: sl(DEFAULT), ctrl: ctl('X'),               alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 67,  keyCap: 'cC',      normal: DEFAULT,     ctrl: ctl('C'),               alt: DEFAULT,     meta: PASS });
@@ -240,11 +256,11 @@ export default class KeyMap {
     add({ keyCode: 191, keyCap: '/?',      normal: DEFAULT,     ctrl: sh(ctl('_'), ctl('?')), alt: DEFAULT,     meta: DEFAULT });
 
     // sixth row
-    add({ keyCode: 17, keyCap: '[CTRL]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 18, keyCap: '[OPT]',   normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 91, keyCap: '[LCMD]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 17, keyCap: '[Control]', normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 18, keyCap: '[Alt]',   normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 91, keyCap: '[Meta]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
     add({ keyCode: 32, keyCap: ' ',       normal: DEFAULT, ctrl: ctl('@'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 93, keyCap: '[RCMD]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 93, keyCap: '[Meta]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
 
     // these things.
     
@@ -261,10 +277,10 @@ export default class KeyMap {
     add({ keyCode: 34, keyCap: '[PGDOWN]', normal: CSI + '6~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     // arrow keys
-    add({ keyCode: 38, keyCap: '[UP]',    normal: sl(ac(CSI + 'A', SS3 + 'A')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 40, keyCap: '[DOWN]',  normal: sl(ac(CSI + 'B', SS3 + 'B')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 39, keyCap: '[RIGHT]', normal: sl(ac(CSI + 'C', SS3 + 'C')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 37, keyCap: '[LEFT]',  normal: sl(ac(CSI + 'D', SS3 + 'D')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 38, keyCap: '[ArrowUp]',    normal: sl(ac(CSI + 'A', SS3 + 'A')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 40, keyCap: '[ArrowDown]',  normal: sl(ac(CSI + 'B', SS3 + 'B')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 39, keyCap: '[ArrowRight]', normal: sl(ac(CSI + 'C', SS3 + 'C')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 37, keyCap: '[ArrowLeft]',  normal: sl(ac(CSI + 'D', SS3 + 'D')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     add({ keyCode: 144, keyCap: '[NUMLOCK]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
 
@@ -286,6 +302,20 @@ export default class KeyMap {
     add({ keyCode: 106, keyCap: '[KP*]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 111, keyCap: '[KP/]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 110, keyCap: '[KP.]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+
+    this._reverseDefs['BracketLeft'] = this._defs[229];
+    this._reverseDefs['BracketRight'] = this._defs[221];
+    this._reverseDefs['Space'] = this._defs[32];
+    this._reverseDefs['Backqoute'] = this._defs[192];
+    this._reverseDefs['Slash'] = this._defs[191];
+  }
+
+  keyCode(ch: string): number {
+    let def = this._reverseDefs[ch];
+    if (def) {
+      return def.keyCode;
+    }
+    return 0;
   }
 
   // prettier-ignore
@@ -311,15 +341,15 @@ export default class KeyMap {
   };
 
   _onSel: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
-    if (def.keyCap == '[LEFT]' || def.keyCap == 'hH') {
+    if (def.keyCap == '[ArrowLeft]' || def.keyCap == 'hH') {
       let gran = e.shift ? 'word' : 'character';
       op('selection', {dir: 'left', gran});
-    } else if (def.keyCap == '[RIGHT]' || def.keyCap == 'lL') {
+    } else if (def.keyCap == '[ArrowRight]' || def.keyCap == 'lL') {
       let gran = e.shift ? 'word' : 'character';
       op('selection', {dir: 'right', gran});
-    } else if (def.keyCap == '[UP]' || def.keyCap == 'kK') {
+    } else if (def.keyCap == '[ArrowUp]' || def.keyCap == 'kK') {
       op('selection', {dir: 'left', gran: 'line'});
-    } else if (def.keyCap == '[DOWN]' || def.keyCap == 'jJ') {
+    } else if (def.keyCap == '[ArrowDown]' || def.keyCap == 'jJ') {
       op('selection', {dir: 'right', gran: 'line'});
     } else if (def.keyCap == 'oO' || def.keyCap == 'xX') {
       op('selection', {command: 'change'});
@@ -354,7 +384,7 @@ export default class KeyMap {
       }
     } else if (def.keyCap == 'yY') {
       op('selection', {command: 'copy'});
-    } else if (def.keyCap == '[ESC]') {
+    } else if (def.keyCap == '[Escape]') {
       op('selection', {command: 'cancel'});
     }
     return CANCEL;

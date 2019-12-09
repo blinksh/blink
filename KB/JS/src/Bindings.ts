@@ -124,7 +124,7 @@ export default class Bindings {
         key: fn,
         mods: 0,
       };
-      this._expandBinding(binding);
+      this.expandBinding(binding);
     }
   };
 
@@ -174,11 +174,11 @@ export default class Bindings {
         key: cur,
         mods: 0,
       };
-      this._expandBinding(binding);
+      this.expandBinding(binding);
     }
   };
 
-  _expandBinding = (binding: KeyBinding) => {
+  expandBinding = (binding: KeyBinding) => {
     var keys = binding.keys.map(k => k.split('-')[0]);
     if (keys.length == 0) {
       return;

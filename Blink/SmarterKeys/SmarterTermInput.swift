@@ -187,6 +187,20 @@ class SmarterTermInput: KBWebView {
     _kbView.turnOffUntracked()
   }
   
+  override func onCommand(_ command: String) {
+    _kbView.turnOffUntracked()
+    if let cmd = Command(rawValue: command) {
+      var n = next
+      while let r = n {
+        if let sc = r as? SpaceController {
+          sc._onCommand(cmd)
+          return
+        }
+        n = r.next
+      }
+    }
+  }
+  
   func _matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
     

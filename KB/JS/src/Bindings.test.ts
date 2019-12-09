@@ -16,12 +16,12 @@ const command = {
   idRight: '93:0',
 };
 
-test('_expandBinding empty', () => {
+test('expandBinding empty', () => {
   let bindings = new Bindings();
 
   expect(bindings._map).toEqual({});
 
-  bindings._expandBinding({
+  bindings.expandBinding({
     keys: [],
     shiftLoc: 0,
     controlLoc: 0,
@@ -33,10 +33,10 @@ test('_expandBinding empty', () => {
   expect(bindings._map).toEqual({});
 });
 
-test('_expandBinding simple', () => {
+test('expandBinding simple', () => {
   let bindings = new Bindings();
 
-  bindings._expandBinding({
+  bindings.expandBinding({
     keys: [shift.idLeft, 'r'],
     shiftLoc: 0,
     controlLoc: 0,
@@ -51,10 +51,10 @@ test('_expandBinding simple', () => {
   });
 });
 
-test('_expandBinding double', () => {
+test('expandBinding double', () => {
   let bindings = new Bindings();
 
-  bindings._expandBinding({
+  bindings.expandBinding({
     keys: [shift.idLeft, control.idLeft, 'r'],
     shiftLoc: 0,
     controlLoc: 0,

@@ -372,28 +372,17 @@ extension KBView: KBKeyViewDelegate {
     var keyId = keyCode.id
     keyId += ":\(value.text)"
     
-    keyInput?.reportKeyPress([], keyId: keyId)
+    var flags = traits.modifierFlags
 
-//    switch value {
-//    case .f(let num):
-//      var flags = traits.modifierFlags
-//      flags.remove(.command)
-//      let cmd = UIKeyCommand(input: "\(num)", modifierFlags: flags, action: #selector(TermInput.fkeySeq(_:)))
-//      keyInput?.fkeySeq(cmd)
-//    case .up, .left, .right, .down:
-//      var flags = traits.modifierFlags
-//      if let _ = flags.remove(.command) {
-//        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.cursorSeq(_:)))
-//        keyInput?.cursorSeq(cmd)
-//      } else {
-//        let cmd = UIKeyCommand(input: value.sequence!, modifierFlags: flags, action: #selector(TermInput.arrowSeq(_:)))
-//        keyInput?.arrowSeq(cmd)
-//      }
-//    default:
-////      if let sequence = value.sequence {
-//      keyInput?.reportKeyPress(keyId)
-////      }
-//    }
+    switch value {
+    case .f:
+      flags.remove(.command)
+      keyInput?.reportKeyPress(flags, keyId: keyId)
+    case .up, .left, .right, .down:
+      keyInput?.reportKeyPress(flags, keyId: keyId)
+    default:
+      keyInput?.reportKeyPress(flags, keyId: keyId)
+    }
     
     
     turnOffUntracked()

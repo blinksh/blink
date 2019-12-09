@@ -201,9 +201,6 @@ class TermController: UIViewController {
 }
 
 extension TermController: SessionDelegate {
-  public func indexCommand(_ cmdLine: String!) {
-    // TODO:
-  }
   
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {

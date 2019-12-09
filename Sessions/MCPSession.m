@@ -153,7 +153,6 @@
   } else if ([cmd isEqualToString:@"ssh-copy-id"]) {
     [self _runSSHCopyIDWithArgs:cmdline];
   } else {
-    [self.delegate indexCommand:cmdline];
     
     _currentCmd = cmdline;
     thread_stdout = nil;
@@ -252,7 +251,6 @@
 
 - (void)_runMoshWithArgs:(NSString *)args
 {
-  [self.delegate indexCommand:args];
   self.sessionParams.childSessionParams = [[MoshParams alloc] init];
   self.sessionParams.childSessionType = @"mosh";
   _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
@@ -263,7 +261,6 @@
 - (void)_runSSHWithArgs:(NSString *)args
 {
   self.sessionParams.childSessionParams = nil;
-  [self.delegate indexCommand:args];
   _childSession = [[SSHSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
   self.sessionParams.childSessionType = @"ssh";
   [_childSession executeAttachedWithArgs:args];
