@@ -258,7 +258,6 @@
 		D2C24428238E44CD0082C69C /* kb.js in Resources */ = {isa = PBXBuildFile; fileRef = D2C24426238E44CC0082C69C /* kb.js */; };
 		D2C24429238E44CD0082C69C /* kb.html in Resources */ = {isa = PBXBuildFile; fileRef = D2C24427238E44CC0082C69C /* kb.html */; };
 		D2C2442F238E62A70082C69C /* KBSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */; };
-		D2C24431238FDA310082C69C /* KeyModifierView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24430238FDA310082C69C /* KeyModifierView.swift */; };
 		D2C244332390FB830082C69C /* KeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244322390FB830082C69C /* KeyBinding.swift */; };
 		D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244342390FEEF0082C69C /* KeyBindingAction.swift */; };
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
@@ -726,7 +725,6 @@
 		D2C24426238E44CC0082C69C /* kb.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = kb.js; path = KB/JS/dist/kb.js; sourceTree = SOURCE_ROOT; };
 		D2C24427238E44CC0082C69C /* kb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = kb.html; path = KB/JS/dist/kb.html; sourceTree = SOURCE_ROOT; };
 		D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSettingsViewController.swift; sourceTree = "<group>"; };
-		D2C24430238FDA310082C69C /* KeyModifierView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyModifierView.swift; sourceTree = "<group>"; };
 		D2C244322390FB830082C69C /* KeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBinding.swift; sourceTree = "<group>"; };
 		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
@@ -1470,7 +1468,6 @@
 				D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */,
 				D2C2440E238E44AB0082C69C /* KBWebView.swift */,
 				D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */,
-				D2C24430238FDA310082C69C /* KeyModifierView.swift */,
 				D2C24436239104250082C69C /* ShortcutsConfigView.swift */,
 				D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */,
 				D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */,
@@ -1898,7 +1895,6 @@
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
 				D29619AE214FB5EA0070935A /* ssh-rsa.c in Sources */,
-				D2C24431238FDA310082C69C /* KeyModifierView.swift in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2961983214F968A0070935A /* cipher.c in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,

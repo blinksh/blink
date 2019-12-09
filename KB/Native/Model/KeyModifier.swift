@@ -37,7 +37,6 @@ enum KeyModifier: String, Codable {
   case shift      = "Shift"
   case control    = "Control"
   case meta       = "Meta"
-  case metaEscape = "Meta-Escape"
   
   var description: String {
     switch self {
@@ -47,7 +46,6 @@ enum KeyModifier: String, Codable {
     case .shift:      return "Shift"
     case .control:    return "Control"
     case .meta:       return "Meta"
-    case .metaEscape: return "Meta Escape"
     }
   }
   

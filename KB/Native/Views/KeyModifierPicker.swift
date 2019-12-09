@@ -45,7 +45,6 @@ struct KeyModifierPicker: View {
         _mod(title: "Control",     value: .control)
         _mod(title: "Shift",       value: .shift)
         _mod(title: "Meta",        value: .meta)
-        _mod(title: "Meta Escape", value: .metaEscape)
       }
     }
     .listStyle(GroupedListStyle())
