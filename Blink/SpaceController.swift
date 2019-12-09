@@ -460,7 +460,15 @@ extension SpaceController {
 // MARK: Commands
 
 extension SpaceController {
-  public override var keyCommands: [UIKeyCommand]? { SmarterTermInput.shared.blinkKeyCommands }
+  public override var keyCommands: [UIKeyCommand]? {
+    guard
+       view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+    else {
+      return []
+    }
+    return SmarterTermInput.shared.blinkKeyCommands
+    
+  }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
     SmarterTermInput.shared.reportStateReset()
@@ -476,6 +484,11 @@ extension SpaceController {
   }
   
   func _onCommand(_ cmd: Command) {
+    guard
+      view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+    else {
+      return
+    }
     switch cmd {
     case .configShow: break
     case .tab1: _moveToShell(idx: 1)
