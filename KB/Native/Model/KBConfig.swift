@@ -72,11 +72,12 @@ class KBConfig: ObservableObject, Codable {
     command.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     fnBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
+    cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
   
-//  func touch() {
-//    objectWillChange.send()
-//  }
+  func touch() {
+    objectWillChange.send()
+  }
 //
 //  func touch<Value>(binding: Binding<Value>) -> Binding<Value> {
 //    let publisher = objectWillChange

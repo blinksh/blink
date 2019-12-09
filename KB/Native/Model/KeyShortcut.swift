@@ -32,6 +32,28 @@
 
 import SwiftUI
 
+extension UIKeyModifierFlags {
+  func toSymbols() -> String {
+    var res = ""
+    if contains(.control) {
+      res += KeyCode.controlLeft.symbol
+    }
+    if contains(.alternate) {
+      res += KeyCode.optionLeft.symbol
+    }
+    if contains(.shift) {
+      res += KeyCode.shiftLeft.symbol
+    }
+    if contains(.command) {
+      res += KeyCode.commandLeft.symbol
+    }
+    if contains(.alphaShift) {
+      res += KeyCode.capsLock.symbol
+    }
+    return res
+  }
+}
+
 class KeyShortcut: ObservableObject, Codable, Identifiable {
   @Published var action: KeyBindingAction = .none
   @Published var modifiers: UIKeyModifierFlags = []
@@ -41,23 +63,8 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
   
   var title: String { action.title }
   var description: String {
-    var res = ""
-    if modifiers.contains(.control) {
-      res += KeyCode.controlLeft.symbol
-    }
-    if modifiers.contains(.alternate) {
-      res += KeyCode.optionLeft.symbol
-    }
-    if modifiers.contains(.shift) {
-      res += KeyCode.shiftLeft.symbol
-    }
-    if modifiers.contains(.command) {
-      res += KeyCode.commandLeft.symbol
-    }
-    if modifiers.contains(.alphaShift) {
-      res += KeyCode.capsLock.symbol
-    }
     
+    var res = modifiers.toSymbols()
     
     switch input {
     case UIKeyCommand.inputRightArrow:

@@ -71,6 +71,7 @@ struct ActionsList: View {
 }
 
 struct ShortcutConfigView: View {
+  @EnvironmentObject var nav: Nav
   @ObservedObject var config: KBConfig
   @ObservedObject var shortcut: KeyShortcut
   
@@ -87,6 +88,16 @@ struct ShortcutConfigView: View {
         }
       }
     }
+    .navigationBarItems(trailing:
+      Button(
+        action: {
+          self.config.shortcuts.removeAll(where: { $0 === self.shortcut })
+          self.nav.navController.popViewController(animated: true)
+          self.config.touch()
+        },
+        label: { Text("Delete") }
+      )
+    )
     .listStyle(GroupedListStyle())
     .background(KeyCaptureView(shortcut: shortcut))
     .onReceive(shortcut.objectWillChange, perform: config.objectWillChange.send)
@@ -94,6 +105,7 @@ struct ShortcutConfigView: View {
 }
 
 struct ShortcutsConfigView: View {
+  @EnvironmentObject var nav: Nav
   @ObservedObject var config: KBConfig
   
   var body: some View {
@@ -109,7 +121,18 @@ struct ShortcutsConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Shortcuts")
-    .navigationBarItems(trailing: EditButton())
+    .navigationBarItems(trailing: Button(
+      action: {
+        let nav = self.nav
+        let shortcut = KeyShortcut(action: .none, modifiers: [], input: "")
+        self.config.shortcuts.append(shortcut)
+        self.config.touch()
+        let rootView = ShortcutConfigView(config: self.config, shortcut: shortcut).environmentObject(nav)
+        let vc = UIHostingController(rootView: rootView)
+        nav.navController.pushViewController(vc, animated: true)
+      },
+      label: { Text("Add") }
+    ))
   }
 }
 

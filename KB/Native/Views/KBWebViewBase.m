@@ -134,9 +134,9 @@
   [self report:@"toolbar-mods" arg:@(flags)];
 }
 
-- (void)reportKeyPress:(NSString *)keyId {
+- (void)reportKeyPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
   NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-  [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"%@\"", kid]];
+  [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"mods:%@\"", kid]];
 }
 
 // Not sure we need up

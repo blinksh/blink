@@ -11,10 +11,7 @@ export type BindingAction =
         code: string,
         id: string,
       },
-      shift: boolean,
-      alt: boolean,
-      ctrl: boolean,
-      meta: boolean,
+      mods: number,
     }
   | {
       type: 'command',
@@ -125,10 +122,7 @@ export default class Bindings {
       binding.action = {
         type: 'press',
         key: fn,
-        alt: false,
-        shift: false,
-        ctrl: false,
-        meta: false,
+        mods: 0,
       };
       this._expandBinding(binding);
     }
@@ -178,10 +172,7 @@ export default class Bindings {
       binding.action = {
         type: 'press',
         key: cur,
-        alt: false,
-        shift: false,
-        ctrl: false,
-        meta: false,
+        mods: 0,
       };
       this._expandBinding(binding);
     }

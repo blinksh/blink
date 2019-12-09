@@ -94,14 +94,14 @@ enum Command: String, Codable, CaseIterable {
 
 enum KeyBindingAction: Codable, Identifiable {
   case hex(String)
-  case press(KeyCode, shift: Bool, ctrl: Bool, alt: Bool, meta: Bool)
+  case press(KeyCode, mods: Int)
   case command(Command)
   case none
   
   var id: String {
     switch self {
     case .hex(let str): return "hex-\(str)"
-    case .press(let keyCode, let shift, let ctrl, let alt, let meta): return "press-\(keyCode.id)-\(shift)-\(ctrl)-\(alt)-\(meta)"
+    case .press(let keyCode, let mods): return "press-\(keyCode.id)-\(mods)"
     case .command(let cmd): return "cmd-\(cmd)"
     case .none: return "none"
     }
@@ -109,10 +109,10 @@ enum KeyBindingAction: Codable, Identifiable {
   
   static var pressList: [KeyBindingAction] {
     [
-      KeyBindingAction.press(.escape, shift: false, ctrl: false, alt: false, meta: false),
-      KeyBindingAction.press(.space, shift: false, ctrl: true, alt: false, meta: false),
-      KeyBindingAction.press(.f11, shift: false, ctrl: false, alt: false, meta: false),
-      KeyBindingAction.press(.f12, shift: false, ctrl: false, alt: false, meta: false),
+      KeyBindingAction.press(.escape, mods: UIKeyModifierFlags([]).rawValue),
+      KeyBindingAction.press(.space, mods: UIKeyModifierFlags([.control]).rawValue),
+      KeyBindingAction.press(.f11, mods: UIKeyModifierFlags([]).rawValue),
+      KeyBindingAction.press(.f12, mods: UIKeyModifierFlags([]).rawValue),
     ]
   }
   
@@ -123,22 +123,9 @@ enum KeyBindingAction: Codable, Identifiable {
   var title: String {
     switch self {
     case .hex(let str): return "Hex: (\(str))"
-    case .press(let keyCode, let shift, let ctrl, let alt, let meta):
-      var sym = ""
-      if (shift) {
-        sym += KeyCode.shiftLeft.symbol
-      }
-      if (ctrl) {
-        sym += KeyCode.controlLeft.symbol
-      }
-      if (alt) {
-        sym += KeyCode.optionLeft.symbol
-      }
-      if (meta) {
-        sym += KeyCode.commandLeft.symbol
-      }
+    case .press(let keyCode, let mods):
+      var sym = UIKeyModifierFlags(rawValue: mods).toSymbols()
       sym += keyCode.symbol
-
       return "Press \(sym)"
     case .command(let cmd): return cmd.title
     case .none: return "none"
@@ -153,12 +140,9 @@ enum KeyBindingAction: Codable, Identifiable {
     case value
     case key
     case press
+    case mods
     case command
     case none
-    case alt
-    case ctrl
-    case meta
-    case shift
   }
     
   func encode(to encoder: Encoder) throws {
@@ -167,13 +151,10 @@ enum KeyBindingAction: Codable, Identifiable {
     case .hex(let str):
       try c.encode(Keys.hex.stringValue, forKey: .type)
       try c.encode(str, forKey: .value)
-    case .press(let keyCode, shift: let shift, ctrl: let ctrl, alt: let alt, meta: let meta):
+    case .press(let keyCode, let mods):
       try c.encode(Keys.press.stringValue, forKey: .type)
       try c.encode(keyCode, forKey: .key)
-      try c.encode(shift,   forKey: .shift)
-      try c.encode(ctrl,    forKey: .ctrl)
-      try c.encode(alt,     forKey: .alt)
-      try c.encode(meta,    forKey: .meta)
+      try c.encode(mods,    forKey: .mods)
     case .command(let cmd):
       try c.encode(Keys.command.stringValue, forKey: .type)
       try c.encode(cmd, forKey: .value)
@@ -193,11 +174,8 @@ enum KeyBindingAction: Codable, Identifiable {
       self = .hex(hex)
     case .press:
       let keyCode = try c.decode(KeyCode.self, forKey: .key)
-      let shift   = try c.decode(Bool.self, forKey: .shift)
-      let ctrl    = try c.decode(Bool.self, forKey: .ctrl)
-      let alt     = try c.decode(Bool.self, forKey: .alt)
-      let meta    = try c.decode(Bool.self, forKey: .meta)
-      self = .press(keyCode, shift: shift, ctrl: ctrl, alt: alt, meta: meta)
+      let mods    = try c.decode(Int.self,     forKey: .mods)
+      self = .press(keyCode, mods: mods)
     case .command:
       let cmd = try c.decode(Command.self, forKey: .value)
       self = .command(cmd)

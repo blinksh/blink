@@ -465,6 +465,9 @@ extension SpaceController {
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
     SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {
+    case .press(let keyCode, mods: let mods):
+      SmarterTermInput.shared.reportKeyPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
+      break;
     case .command(let c):
       _onCommand(c)
     default:

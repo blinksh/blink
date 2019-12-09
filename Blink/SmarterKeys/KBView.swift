@@ -372,7 +372,7 @@ extension KBView: KBKeyViewDelegate {
     var keyId = keyCode.id
     keyId += ":\(value.text)"
     
-    keyInput?.reportKeyPress(keyId)
+    keyInput?.reportKeyPress([], keyId: keyId)
 
 //    switch value {
 //    case .f(let num):

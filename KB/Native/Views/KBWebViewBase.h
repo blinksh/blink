@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reportStateReset;
 - (void)reportLang:(NSString *) lang;
-- (void)reportKeyPress:(NSString *)keyId;
+- (void)reportKeyPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags;
 - (void)onSelection:(NSDictionary *)args;
 - (void)onCommand:(NSString *)command;
