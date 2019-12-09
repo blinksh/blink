@@ -460,9 +460,7 @@ extension SpaceController {
 // MARK: Commands
 
 extension SpaceController {
-  public override var keyCommands: [UIKeyCommand]? {
-    return SmarterTermInput.shared.keyCommands
-  }
+  public override var keyCommands: [UIKeyCommand]? { SmarterTermInput.shared.blinkKeyCommands }
   
   // simple helper
   private func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
@@ -546,8 +544,11 @@ extension SpaceController {
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
     case .windowNew: _newWindowAction()
-    default:
-      break;
+    case .clipboardCopy: SmarterTermInput.shared.copy(self)
+    case .clipboardPaste: SmarterTermInput.shared.paste(self)
+    case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
+    case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
+    case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()
     }
   }
   

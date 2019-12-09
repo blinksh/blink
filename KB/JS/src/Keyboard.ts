@@ -735,7 +735,7 @@ export default class Keyboard implements IKeyboard {
     let code = key.code;
     let down = _action(key.down);
     if (down) {
-      this._upMap[code.id] = down;
+      this._downMap[code.id] = down;
     }
     let mod = this._mod(key.mod);
     if (mod) {

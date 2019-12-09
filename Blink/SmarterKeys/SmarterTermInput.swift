@@ -42,7 +42,7 @@ class SmarterTermInput: KBWebView {
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   private var _inputAccessoryView: UIView? = nil
-  private var _keyCommands: [BlinkCommand] = []
+  var blinkKeyCommands: [BlinkCommand] = []
   
   var device: TermDevice? = nil
   
@@ -116,11 +116,11 @@ class SmarterTermInput: KBWebView {
   }
   
   override func configure(_ cfg: KBConfig, data: Data) {
-    _keyCommands = cfg.shortcuts.map { shortcut in
+    blinkKeyCommands = cfg.shortcuts.map { shortcut in
       let cmd = BlinkCommand(
         title: shortcut.title,
         image: nil,
-        action: _canHandleAction(shortcut.action) ? #selector(_onBlinkInputCommand(_:)) : #selector(_onBlinkCommand(_:)),
+        action: #selector(SpaceController._onBlinkCommand(_:)),
         input: shortcut.input,
         modifierFlags: shortcut.modifiers,
         propertyList: nil
@@ -128,56 +128,8 @@ class SmarterTermInput: KBWebView {
       cmd.bindingAction = shortcut.action
       return cmd
     }
+    super.configure(cfg, data: data)
   }
-  
-  func _canHandleAction(_ action: KeyBindingAction) -> Bool {
-    switch action {
-    case .command(let cmd):
-      switch cmd {
-      case .clipboardPaste, .clipboardCopy, .zoomReset, .zoomIn, .zoomOut: return true
-      default: return false
-      }
-    case .hex: return true
-    case .none: return true
-    case .press: return true
-    }
-  }
-  
-  @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
-  }
-  
-  @objc func _onBlinkInputCommand(_ cmd: BlinkCommand) {
-    SmarterTermInput.shared.reportStateReset()
-    switch cmd.bindingAction {
-    case .command(let cmd):
-      _onCommand(cmd)
-    default:
-      break
-    }
-  }
-  
-  override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
-    if action == #selector(_onBlinkCommand(_:)) {
-      return false
-    }
-    return super.canPerformAction(action, withSender: sender)
-  }
-  
-  func _onCommand(_ cmd: Command) {
-    switch cmd {
-    case .clipboardCopy: copy(self)
-    case .clipboardPaste: paste(self)
-    case .zoomIn:
-      device?.view?.increaseFontSize()
-    case .zoomOut:
-      device?.view?.decreaseFontSize()
-    case .zoomReset:
-      device?.view?.resetFontSize()
-    default: break
-    }
-  }
-  
-  override var keyCommands: [UIKeyCommand]? { _keyCommands }
 
   @objc func _updateSettings() {
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
@@ -421,11 +373,6 @@ class SmarterTermInput: KBWebView {
 //    }
 //  }
   
-  func deviceWrite(_ input: String!) {
-//    super.deviceWrite(input)
-//    _kbView.turnOffUntracked()
-  }
-  
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)
     self.removeAssistantsFromView()
@@ -626,34 +573,5 @@ extension SmarterTermInput: TermInput {
       
     }
   }
-  
-  func insertText(_ text: String!) {
-    
-  }
-  
-  func fkeySeq(_ cmd: UIKeyCommand!) {
-    
-  }
-  
-  func arrowSeq(_ cmd: UIKeyCommand!) {
-    
-  }
-  
-  func cursorSeq(_ cmd: UIKeyCommand!) {
-    
-  }
-  
-  func escCtrlSeq(withInput input: String!) {
-    
-  }
-  
-  func escSeq(withInput input: String!) {
-    
-  }
-  
-  func ctrlSeq(withInput input: String!) {
-    
-  }
-  
   
 }
