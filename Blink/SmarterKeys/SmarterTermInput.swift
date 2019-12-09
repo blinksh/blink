@@ -115,7 +115,7 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  override func configure(_ cfg: KBConfig, data: Data) {
+  override func configure(_ cfg: KBConfig) {
     blinkKeyCommands = cfg.shortcuts.map { shortcut in
       let cmd = BlinkCommand(
         title: shortcut.title,
@@ -128,7 +128,7 @@ class SmarterTermInput: KBWebView {
       cmd.bindingAction = shortcut.action
       return cmd
     }
-    super.configure(cfg, data: data)
+    super.configure(cfg)
   }
 
   @objc func _updateSettings() {

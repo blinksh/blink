@@ -462,55 +462,6 @@ extension SpaceController {
 extension SpaceController {
   public override var keyCommands: [UIKeyCommand]? { SmarterTermInput.shared.blinkKeyCommands }
   
-  // simple helper
-  private func _cmd(_ title: String, _ action: Selector, _ input: String, _ flags: UIKeyModifierFlags) -> UIKeyCommand {
-    return UIKeyCommand(
-      title: title,
-      image: nil,
-      action: action,
-      input: input,
-      modifierFlags: flags,
-      propertyList: nil
-    )
-  }
-  /*
-  private func _setupKBCommands2() {
-    let modifierFlags = BKUserConfigurationManager.shortCutModifierFlags()
-    let prevNextShellModifierFlags = BKUserConfigurationManager.shortCutModifierFlagsForNextPrevShell()
-    
-    let right = UIKeyCommand.inputRightArrow
-    let left = UIKeyCommand.inputLeftArrow
-    
-    _kbdCommands = [
-      _cmd("New Window",     #selector(_newWindowAction),   "t", prevNextShellModifierFlags),
-      _cmd("Close Window",   #selector(_closeWindowAction), "w", prevNextShellModifierFlags),
-    
-      _cmd("New Shell",      #selector(newShellAction),   "t", modifierFlags),
-      _cmd("Close Shell",    #selector(closeShellAction), "w", modifierFlags),
-      
-      _cmd("Next Shell",     #selector(_nextShellAction), "]", prevNextShellModifierFlags),
-      _cmd("Previous Shell", #selector(_prevShellAction), "[", prevNextShellModifierFlags),
-    
-      // Alternative key commands for keyboard layouts having problems to access
-      // some of the default ones (e.g. the German keyboard layout)
-      _cmd("Next Shell",     #selector(_nextShellAction),  right, prevNextShellModifierFlags),
-      _cmd("Previous Shell", #selector(_prevShellAction),  left,  prevNextShellModifierFlags),
-      
-      // Font size
-      _cmd("Zoom In",    #selector(_increaseFontSizeAction), "+",  modifierFlags),
-      _cmd("Zoom Out",   #selector(_decreaseFontSizeAction), "-",  modifierFlags),
-      _cmd("Zoom Reset", #selector(_resetFontSizeAction),    "=",  modifierFlags),
-      
-      // Screens
-      _cmd("Focus Other Window",         #selector(_focusOtherWindowAction),  "o", modifierFlags),
-      _cmd("Move shell to other Window", #selector(_moveToOtherWindowAction), "o", prevNextShellModifierFlags),
-      
-      // Misc
-      _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
-    ]
-  }
- */
-  
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
     SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {

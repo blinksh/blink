@@ -93,7 +93,7 @@ class KeyConfigPair: ObservableObject, Codable {
   }
   
   static var command: KeyConfigPair {
-    KeyConfig(code: .commandLeft, up: .none, down: .none, mod: .none).pair(code: .commandRight)
+    KeyConfig(code: .commandLeft, up: .none, down: .none, mod: .meta).pair(code: .commandRight)
   }
   
   // - MARK: Codable
