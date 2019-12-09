@@ -31,6 +31,7 @@
 
 
 import SwiftUI
+import Combine
 
 private func _row(_ key: KeyConfig) -> some View {
   DefaultRow(title: key.fullName, description: key.description) {
@@ -72,10 +73,8 @@ struct KBConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Keyboard")
-    .onReceive(self.config.objectWillChange) { _ in
-      DispatchQueue.main.async {
-        SmarterTermInput.shared.saveAndApply(config: self.config)
-      }
+    .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
+      SmarterTermInput.shared.saveAndApply(config: self.config)
     }
   }
 }

@@ -36,13 +36,12 @@ class KBWebView: KBWebViewBase {
   
   var loaded = false
   
-  private func _configure(_ data: Data?) {
+  func configure(_ cfg: KBConfig, data: Data) {
     guard
-      let data = data,
       let json = String(data: data, encoding: .utf8)
     else {
       if
-        let data = try? JSONEncoder().encode(KBConfig()),
+        let data = try? JSONEncoder().encode(cfg),
         let json = String(data: data, encoding: .utf8) {
         report("config", arg: json as NSString)
       }
@@ -84,13 +83,19 @@ class KBWebView: KBWebViewBase {
     }
     
     try? data.write(to: url, options: .atomicWrite)
-    _configure(data)
+    configure(config, data: data)
   }
   
   
   override func ready() {
     super.ready()
-    _configure(_loadKBConfigData())
+    guard
+      let data = _loadKBConfigData(),
+      let cfg = try? JSONDecoder().decode(KBConfig.self, from: data)
+    else {
+        return
+    }
+    configure(cfg, data: data)
   }
   
   func loadKB() {

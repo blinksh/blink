@@ -31,6 +31,10 @@
 
 import UIKit
 
+class BlinkCommand: UIKeyCommand {
+  var bindingAction: KeyBindingAction = .none
+}
+
 class SmarterTermInput: KBWebView {
   
   private var _kbView: KBView
@@ -38,6 +42,7 @@ class SmarterTermInput: KBWebView {
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   private var _inputAccessoryView: UIView? = nil
+  private var _keyCommands: [BlinkCommand] = []
   
   var device: TermDevice? = nil
   
@@ -109,8 +114,72 @@ class SmarterTermInput: KBWebView {
       setupAccessoryView()
     }
   }
-
   
+  override func configure(_ cfg: KBConfig, data: Data) {
+    _keyCommands = cfg.shortcuts.map { shortcut in
+      let cmd = BlinkCommand(
+        title: shortcut.title,
+        image: nil,
+        action: _canHandleAction(shortcut.action) ? #selector(_onBlinkInputCommand(_:)) : #selector(_onBlinkCommand(_:)),
+        input: shortcut.input,
+        modifierFlags: shortcut.modifiers,
+        propertyList: nil
+      )
+      cmd.bindingAction = shortcut.action
+      return cmd
+    }
+  }
+  
+  func _canHandleAction(_ action: KeyBindingAction) -> Bool {
+    switch action {
+    case .command(let cmd):
+      switch cmd {
+      case .clipboardPaste, .clipboardCopy, .zoomReset, .zoomIn, .zoomOut: return true
+      default: return false
+      }
+    case .hex: return true
+    case .none: return true
+    case .press: return true
+    }
+  }
+  
+  @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
+  }
+  
+  @objc func _onBlinkInputCommand(_ cmd: BlinkCommand) {
+    switch cmd.bindingAction {
+    case .command(let cmd):
+      _onCommand(cmd)
+    default:
+      break
+    }
+  }
+  
+  override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    if action == #selector(_onBlinkCommand(_:)) {
+      return false
+    }
+    return super.canPerformAction(action, withSender: sender)
+  }
+  
+  func _onCommand(_ cmd: Command) {
+    switch cmd {
+    case .clipboardCopy:
+      device?.view?.copy(self)
+    case .clipboardPaste:
+      device?.view?.paste(self)
+    case .zoomIn:
+      device?.view?.increaseFontSize()
+    case .zoomOut:
+      device?.view?.decreaseFontSize()
+    case .zoomReset:
+      device?.view?.resetFontSize()
+    default: break
+    }
+  }
+  
+  override var keyCommands: [UIKeyCommand]? { _keyCommands }
+
   @objc func _updateSettings() {
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
     forKey: BKUserConfigMuteSmartKeysPlaySound)

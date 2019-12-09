@@ -44,8 +44,6 @@ class KBView: UIView {
   private var _timer: Timer? = nil
   private var _repeatingKeyView: KBKeyView? = nil
   
-  var repeatingSequence: String? = nil
-  
   var safeBarWidth: CGFloat = 0
   var kbDevice: KBDevice = .detect() {
     didSet {
@@ -392,11 +390,9 @@ extension KBView: KBKeyViewDelegate {
 //        keyInput?.arrowSeq(cmd)
 //      }
 //    default:
-//      if let sequence = value.sequence {
-//        repeatingSequence = sequence
-//        keyInput?.insertText(sequence)
-//        repeatingSequence = nil
-//      }
+////      if let sequence = value.sequence {
+//      keyInput?.reportKeyPress(keyId)
+////      }
 //    }
     
     

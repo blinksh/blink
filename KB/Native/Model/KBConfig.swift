@@ -31,6 +31,7 @@
 
 
 import Combine
+import SwiftUI
 
 class KBConfig: ObservableObject, Codable {
   @Published var capsLock: KeyConfig
@@ -52,7 +53,8 @@ class KBConfig: ObservableObject, Codable {
     option:        KeyConfigPair = .option,
     command:       KeyConfigPair = .command,
     fnBinding:     KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id]),
-    cursorBinding: KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id])
+    cursorBinding: KeyBinding    = KeyBinding(keys: [KeyCode.commandLeft.id]),
+    shortcuts:     [KeyShortcut] = KeyShortcut.defaultList
   ) {
     self.capsLock      = capsLock
     self.shift         = shift
@@ -61,6 +63,7 @@ class KBConfig: ObservableObject, Codable {
     self.command       = command
     self.fnBinding     = fnBinding
     self.cursorBinding = cursorBinding
+    self.shortcuts     = shortcuts
 
     capsLock.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     shift.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
@@ -70,6 +73,21 @@ class KBConfig: ObservableObject, Codable {
     fnBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
+  
+//  func touch() {
+//    objectWillChange.send()
+//  }
+//
+//  func touch<Value>(binding: Binding<Value>) -> Binding<Value> {
+//    let publisher = objectWillChange
+//    return Binding(
+//      get: { binding.wrappedValue },
+//      set: {
+//        binding.wrappedValue = $0
+//        publisher.send()
+//      }
+//    )
+//  }
   
   // - MARK: Codable
   
@@ -81,6 +99,7 @@ class KBConfig: ObservableObject, Codable {
     case command
     case fn
     case cursor
+    case shortcuts
   }
   
   public func encode(to encoder: Encoder) throws {
@@ -92,6 +111,7 @@ class KBConfig: ObservableObject, Codable {
     try c.encode(command,       forKey: .command)
     try c.encode(fnBinding,     forKey: .fn)
     try c.encode(cursorBinding, forKey: .cursor)
+    try c.encode(shortcuts,     forKey: .shortcuts)
   }
   
   required convenience init(from decoder: Decoder) throws {
@@ -104,6 +124,7 @@ class KBConfig: ObservableObject, Codable {
     let command       = try c.decode(KeyConfigPair.self, forKey: .command)
     let fnBinding     = try c.decode(KeyBinding.self,    forKey: .fn)
     let cursorBinding = try c.decode(KeyBinding.self,    forKey: .cursor)
+    let shortcuts     = try c.decode([KeyShortcut].self, forKey: .shortcuts)
     
     self.init(
       capsLock: capsLock,
@@ -112,7 +133,8 @@ class KBConfig: ObservableObject, Codable {
       option: option,
       command: command,
       fnBinding: fnBinding,
-      cursorBinding: cursorBinding
+      cursorBinding: cursorBinding,
+      shortcuts: shortcuts
     )
   }
   

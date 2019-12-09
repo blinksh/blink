@@ -71,6 +71,7 @@ struct ActionsList: View {
 }
 
 struct ShortcutConfigView: View {
+  @ObservedObject var config: KBConfig
   @ObservedObject var shortcut: KeyShortcut
   
   var body: some View {
@@ -88,6 +89,7 @@ struct ShortcutConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .background(KeyCaptureView(shortcut: shortcut))
+    .onReceive(shortcut.objectWillChange, perform: config.objectWillChange.send)
   }
 }
 
@@ -98,7 +100,7 @@ struct ShortcutsConfigView: View {
     List {
       ForEach(config.shortcuts, id: \.id) { shortcut in
         DefaultRow(title: shortcut.title, description: shortcut.description) {
-          ShortcutConfigView(shortcut: shortcut)
+          ShortcutConfigView(config: self.config, shortcut: shortcut)
         }
       }
       .onDelete { offsets in

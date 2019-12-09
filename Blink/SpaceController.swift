@@ -55,8 +55,6 @@ public class SpaceController: UIViewController {
   private var _hud: MBProgressHUD? = nil
   
   private var _overlay = UIView()
-  private var _kbdCommands:[UIKeyCommand] = []
-//  private var _kbdCommandsWithoutDiscoverability: [UIKeyCommand] = []
   private var _spaceControllerAnimating: Bool = false
   
   public override func viewDidLayoutSubviews() {
@@ -114,7 +112,6 @@ public class SpaceController: UIViewController {
     
     _commandsHUD.delegate = self
     _registerForNotifications()
-    _setupKBCommands()
     
     _commandsHUD.delegate = self
     
@@ -199,18 +196,6 @@ public class SpaceController: UIViewController {
         self._commandsHUD.attachToWindow(inputWindow: win)
       }
     }
-  }
-  
-  @objc func _keyboardFuncTriggerChanged(_ notification: NSNotification) {
-    guard
-      let userInfo = notification.userInfo,
-      let action = userInfo["func"] as? String,
-      action == BKKeyboardFuncCursorTriggers
-    else {
-      return
-    }
-    
-    _setupKBCommands()
   }
   
   func _createShell(
@@ -476,7 +461,7 @@ extension SpaceController {
 
 extension SpaceController {
   public override var keyCommands: [UIKeyCommand]? {
-    return _kbdCommands
+    return SmarterTermInput.shared.keyCommands
   }
   
   // simple helper
@@ -490,8 +475,8 @@ extension SpaceController {
       propertyList: nil
     )
   }
-  
-  private func _setupKBCommands() {
+  /*
+  private func _setupKBCommands2() {
     let modifierFlags = BKUserConfigurationManager.shortCutModifierFlags()
     let prevNextShellModifierFlags = BKUserConfigurationManager.shortCutModifierFlagsForNextPrevShell()
     
@@ -525,6 +510,44 @@ extension SpaceController {
       // Misc
       _cmd("Show Config",    #selector(_showConfigAction), ",", modifierFlags),
     ]
+  }
+ */
+  
+  @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
+    switch cmd.bindingAction {
+    case .command(let c):
+      _onCommand(c)
+    default:
+      break;
+    }
+  }
+  
+  func _onCommand(_ cmd: Command) {
+    switch cmd {
+    case .configShow: break
+    case .tab1: _moveToShell(idx: 1)
+    case .tab2: _moveToShell(idx: 2)
+    case .tab3: _moveToShell(idx: 3)
+    case .tab4: _moveToShell(idx: 4)
+    case .tab5: _moveToShell(idx: 5)
+    case .tab6: _moveToShell(idx: 6)
+    case .tab7: _moveToShell(idx: 7)
+    case .tab8: _moveToShell(idx: 8)
+    case .tab9: _moveToShell(idx: 9)
+    case .tab10: _moveToShell(idx: 10)
+    case .tab11: _moveToShell(idx: 11)
+    case .tab12: _moveToShell(idx: 12)
+    case .tabClose: closeShellAction()
+    case .tabMoveToOtherWindow: _moveToOtherWindowAction()
+    case .tabNew: newShellAction()
+    case .tabNext: _nextShellAction()
+    case .tabPrev: _prevShellAction()
+    case .windowClose: _closeWindowAction()
+    case .windowFocusOther: _focusOtherWindowAction()
+    case .windowNew: _newWindowAction()
+    default:
+      break;
+    }
   }
   
   @objc func focusOnShellAction() {
