@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
-		0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0728A1D91E0AE80400ABD31B /* SmartKeysController.m */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
 		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
@@ -18,11 +17,6 @@
 		0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
-		073D26BC1DC4137000965AB2 /* SKButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B21DC4137000965AB2 /* SKButton.m */; };
-		073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B41DC4137000965AB2 /* SKModifierButton.m */; };
-		073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26B61DC4137000965AB2 /* SKNonModifierButton.m */; };
-		073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */ = {isa = PBXBuildFile; fileRef = 073D26B91DC4137000965AB2 /* SmartKeys.xib */; };
-		073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */ = {isa = PBXBuildFile; fileRef = 073D26BB1DC4137000965AB2 /* SmartKeysView.m */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
@@ -383,8 +377,6 @@
 		0716B52A1CFFAB9300268B5B /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0716B53C1CFFAB9300268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0728A1D81E0AE80400ABD31B /* SmartKeysController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysController.h; sourceTree = "<group>"; };
-		0728A1D91E0AE80400ABD31B /* SmartKeysController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysController.m; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
 		0732F05F1D062BB300AB5438 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
@@ -393,15 +385,6 @@
 		0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UICKeyChainStore.xcodeproj; path = UICKeyChainStore/Lib/UICKeyChainStore.xcodeproj; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
-		073D26B11DC4137000965AB2 /* SKButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKButton.h; sourceTree = "<group>"; };
-		073D26B21DC4137000965AB2 /* SKButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKButton.m; sourceTree = "<group>"; };
-		073D26B31DC4137000965AB2 /* SKModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKModifierButton.h; sourceTree = "<group>"; };
-		073D26B41DC4137000965AB2 /* SKModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKModifierButton.m; sourceTree = "<group>"; };
-		073D26B51DC4137000965AB2 /* SKNonModifierButton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SKNonModifierButton.h; sourceTree = "<group>"; };
-		073D26B61DC4137000965AB2 /* SKNonModifierButton.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SKNonModifierButton.m; sourceTree = "<group>"; };
-		073D26B91DC4137000965AB2 /* SmartKeys.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = SmartKeys.xib; sourceTree = "<group>"; };
-		073D26BA1DC4137000965AB2 /* SmartKeysView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SmartKeysView.h; sourceTree = "<group>"; };
-		073D26BB1DC4137000965AB2 /* SmartKeysView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SmartKeysView.m; sourceTree = "<group>"; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
@@ -777,7 +760,6 @@
 				D265FBC7231904B50017EAC4 /* Foundation */,
 				D2A52225231304A90010AC04 /* UIKit */,
 				D241CB93230406E2003D64A5 /* SmarterKeys */,
-				073D26AE1DC4137000965AB2 /* SmartKeys */,
 				D2A0C63E20AAD98D001CF38F /* ios_error.h */,
 				D2F330C520A6C8E20074ADD7 /* Commands */,
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
@@ -917,40 +899,6 @@
 				0747D63E2018182D00CF8F0C /* TestHost.app */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		073D26AE1DC4137000965AB2 /* SmartKeys */ = {
-			isa = PBXGroup;
-			children = (
-				0728A1D81E0AE80400ABD31B /* SmartKeysController.h */,
-				0728A1D91E0AE80400ABD31B /* SmartKeysController.m */,
-				073D26AF1DC4137000965AB2 /* CustomViews */,
-				073D26B91DC4137000965AB2 /* SmartKeys.xib */,
-				073D26BA1DC4137000965AB2 /* SmartKeysView.h */,
-				073D26BB1DC4137000965AB2 /* SmartKeysView.m */,
-			);
-			path = SmartKeys;
-			sourceTree = "<group>";
-		};
-		073D26AF1DC4137000965AB2 /* CustomViews */ = {
-			isa = PBXGroup;
-			children = (
-				073D26B01DC4137000965AB2 /* Button */,
-			);
-			path = CustomViews;
-			sourceTree = "<group>";
-		};
-		073D26B01DC4137000965AB2 /* Button */ = {
-			isa = PBXGroup;
-			children = (
-				073D26B11DC4137000965AB2 /* SKButton.h */,
-				073D26B21DC4137000965AB2 /* SKButton.m */,
-				073D26B31DC4137000965AB2 /* SKModifierButton.h */,
-				073D26B41DC4137000965AB2 /* SKModifierButton.m */,
-				073D26B51DC4137000965AB2 /* SKNonModifierButton.h */,
-				073D26B61DC4137000965AB2 /* SKNonModifierButton.m */,
-			);
-			path = Button;
 			sourceTree = "<group>";
 		};
 		07AA06321E08B12E008310B7 /* PasscodeLock */ = {
@@ -1726,7 +1674,6 @@
 				D21A3FDE21943BE200269705 /* dark-app-ipad-76pt.png in Resources */,
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
-				073D26C01DC4137000965AB2 /* SmartKeys.xib in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
 				D2C24428238E44CD0082C69C /* kb.js in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
@@ -1788,7 +1735,6 @@
 				D2961989214F96A10070935A /* chacha.c in Sources */,
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				07AA064F1E08B12E008310B7 /* PasscodeLock.swift in Sources */,
-				073D26C11DC4137000965AB2 /* SmartKeysView.m in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
@@ -1812,7 +1758,6 @@
 				D296199E214F995D0070935A /* sc25519.c in Sources */,
 				D2961970214F89360070935A /* ssh-agent.m in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
-				073D26BE1DC4137000965AB2 /* SKNonModifierButton.m in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				07AA06541E08B12E008310B7 /* PasscodeLockStateType.swift in Sources */,
 				07AA064E1E08B12E008310B7 /* EnterPasscodeState.swift in Sources */,
@@ -1866,7 +1811,6 @@
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,
 				D29619A0214F995D0070935A /* fe25519.c in Sources */,
-				073D26BD1DC4137000965AB2 /* SKModifierButton.m in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				07AA06511E08B12E008310B7 /* PasscodeLockPresenter.swift in Sources */,
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
@@ -1904,7 +1848,6 @@
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				07AA064A1E08B12E008310B7 /* Functions.swift in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
-				0728A1DA1E0AE80400ABD31B /* SmartKeysController.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
 				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
@@ -1925,7 +1868,6 @@
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
 				B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */,
-				073D26BC1DC4137000965AB2 /* SKButton.m in Sources */,
 				D2C24421238E44AB0082C69C /* KeyConfigView.swift in Sources */,
 				D241CBE123040734003D64A5 /* KBKeyViewTriangle.swift in Sources */,
 				D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */,
