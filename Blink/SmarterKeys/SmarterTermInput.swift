@@ -120,6 +120,7 @@ class SmarterTermInput: KBWebView {
     } else {
       setupAccessoryView()
     }
+    reportLang(_kbView.lang)
   }
   
   override func configure(_ cfg: KBConfig) {
@@ -193,18 +194,20 @@ class SmarterTermInput: KBWebView {
   }
   
   override func onOut(_ data: String) {
+    defer {
+      _kbView.turnOffUntracked()
+    }
+    
     device?.view.displayInput(data)
     
     let ctrlC = "\u{0003}"
     let ctrlD = "\u{0004}"
     
-    if data == ctrlC || data == ctrlD {
-      if device?.delegate?.handleControl(data) == true {
-        return
-      }
+    if data == ctrlC || data == ctrlD,
+      device?.delegate?.handleControl(data) == true {
+      return
     }
     device?.write(data)
-    _kbView.turnOffUntracked()
   }
   
   override func onCommand(_ command: String) {
@@ -420,9 +423,7 @@ class SmarterTermInput: KBWebView {
     _inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
-  override var inputAccessoryView: UIView? {
-    _inputAccessoryView
-  }
+  override var inputAccessoryView: UIView? { _inputAccessoryView }
   
   func setupAssistantItem() {
     let proxy = KBProxy(kbView: kbView)

@@ -85,8 +85,6 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
-+ (NSDictionary *)keyboardMapping;
-+ (NSDictionary *)keyboardFuncTriggers;
 + (BOOL)isCursorBlink;
 + (NSUInteger)enableBold;
 + (BOOL)isBoldAsBright;

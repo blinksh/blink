@@ -37,17 +37,6 @@
 
 BKDefaults *defaults;
 
-//NSString const *BKKeyboardModifierCtrl = @"⌃ Ctrl";
-//NSString const *BKKeyboardModifierAlt  = @"⌥ Alt";
-//NSString const *BKKeyboardModifierCmd  = @"⌘ Cmd";
-//NSString const *BKKeyboardModifierCaps = @"⇪ CapsLock";
-//NSString const *BKKeyboardModifierShift = @"⇧ Shift";
-//
-//NSString const *BKKeyboardSeqNone = @"None";
-//NSString const *BKKeyboardSeqCtrl = @"Ctrl";
-//NSString const *BKKeyboardSeqEsc  = @"Esc";
-//NSString const *BKKeyboardSeqMeta = @"Meta";
-
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 @implementation BKDefaults

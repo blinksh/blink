@@ -31,7 +31,6 @@
 
 
 import Combine
-import SwiftUI
 
 class KBConfig: ObservableObject, Codable {
   @Published var capsLock: KeyConfig
@@ -78,17 +77,6 @@ class KBConfig: ObservableObject, Codable {
   func touch() {
     objectWillChange.send()
   }
-//
-//  func touch<Value>(binding: Binding<Value>) -> Binding<Value> {
-//    let publisher = objectWillChange
-//    return Binding(
-//      get: { binding.wrappedValue },
-//      set: {
-//        binding.wrappedValue = $0
-//        publisher.send()
-//      }
-//    )
-//  }
   
   // - MARK: Codable
   
