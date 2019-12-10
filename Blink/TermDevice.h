@@ -32,8 +32,20 @@
 #import <Foundation/Foundation.h>
 #import "TermStream.h"
 #import "TermView.h"
-#import "TermInput.h"
 #include <sys/ioctl.h>
+
+@class TermDevice;
+
+@protocol TermInput <NSObject>
+
+@property (weak) TermDevice *device;
+@property BOOL secureTextEntry;
+
+- (void)setHasSelection:(BOOL)value;
+- (void)reset;
+
+@end
+
 
 @protocol TermDeviceDelegate
 

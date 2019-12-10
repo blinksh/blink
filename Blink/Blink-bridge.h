@@ -41,7 +41,6 @@
 #import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
 #import "Session.h"
-#import "TermInput.h"
 #import "MCPSession.h"
 #import "TermDevice.h"
 #import "KBWebViewBase.h"
