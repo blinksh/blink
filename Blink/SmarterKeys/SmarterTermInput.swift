@@ -57,6 +57,8 @@ class SmarterTermInput: KBWebView {
     
     self.tintColor = .cyan
     
+    _setKBStyle()
+    
     if traitCollection.userInterfaceIdiom == .pad {
       setupAssistantItem()
     } else {
@@ -103,6 +105,7 @@ class SmarterTermInput: KBWebView {
     
     
     nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
+    nc.addObserver(self, selector: #selector(_setKBStyle), name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
 
   }
   
@@ -134,8 +137,21 @@ class SmarterTermInput: KBWebView {
     }
     super.configure(cfg)
   }
+  
+  @objc private func _setKBStyle() {
+    let style = BKDefaults.keyboardStyle();
+    switch style {
+    case .light:
+      self.overrideUserInterfaceStyle = .light
+    case .dark:
+      self.overrideUserInterfaceStyle = .dark
+    default:
+      self.overrideUserInterfaceStyle = .unspecified
+    }
+  }
 
-  @objc func _updateSettings() {
+  @objc private func _updateSettings() {
+    
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
     forKey: BKUserConfigMuteSmartKeysPlaySound)
     

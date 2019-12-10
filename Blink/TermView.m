@@ -32,7 +32,6 @@
 #import "TermView.h"
 #import "TermDevice.h"
 #import "BKDefaults.h"
-#import "BKSettingsNotifications.h"
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"

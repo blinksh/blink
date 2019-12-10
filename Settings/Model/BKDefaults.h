@@ -31,20 +31,7 @@
 
 #import <Foundation/Foundation.h>
 
-extern NSString const *BKKeyboardModifierCtrl;
-extern NSString const *BKKeyboardModifierAlt;
-extern NSString const *BKKeyboardModifierCmd;
-extern NSString const *BKKeyboardModifierCaps;
-extern NSString const *BKKeyboardModifierShift;
-
-extern NSString const *BKKeyboardSeqNone;
-extern NSString const *BKKeyboardSeqCtrl;
-extern NSString const *BKKeyboardSeqEsc;
-extern NSString const *BKKeyboardSeqMeta;
-
-extern NSString const *BKKeyboardFuncFTriggers;
-extern NSString const *BKKeyboardFuncCursorTriggers;
-extern NSString const *BKKeyboardFuncShortcutTriggers;
+extern NSString *const BKAppearanceChanged;
 
 typedef NS_ENUM(NSInteger, BKLayoutMode) {
   BKLayoutModeDefault = 0,

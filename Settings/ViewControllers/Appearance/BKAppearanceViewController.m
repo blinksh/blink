@@ -57,8 +57,6 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     BKAppearance_Layout,
 };
 
-NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
-
 @interface BKAppearanceViewController () <TermViewDeviceProtocol>
 
 @property (nonatomic, strong) NSIndexPath *selectedFontIndexPath;

@@ -501,7 +501,6 @@
 		C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyDetailsViewController.m; sourceTree = "<group>"; };
 		C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyViewController.h; sourceTree = "<group>"; };
 		C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyViewController.m; sourceTree = "<group>"; };
-		C9AFB5E11D7108B800B6EE39 /* BKSettingsNotifications.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsNotifications.h; sourceTree = "<group>"; };
 		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		C9B2E0071D6B612300B89F69 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
 		C9B2E0081D6B612300B89F69 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
@@ -1138,7 +1137,6 @@
 		C9B2E0031D6B612300B89F69 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
-				C9AFB5E11D7108B800B6EE39 /* BKSettingsNotifications.h */,
 				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
 				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
 				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
