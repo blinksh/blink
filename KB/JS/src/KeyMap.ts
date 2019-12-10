@@ -245,9 +245,9 @@ export default class KeyMap {
     // fifth row
     add({ keyCode: 16,  keyCap: '[Shift]', normal: PASS,        ctrl: PASS,                   alt: PASS,        meta: DEFAULT });
     add({ keyCode: 90,  keyCap: 'zZ',      normal: DEFAULT,     ctrl: ctl('Z'),               alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 88,  keyCap: 'xX',      normal: sl(DEFAULT), ctrl: ctl('X'),               alt: DEFAULT,     meta: DEFAULT });
-    add({ keyCode: 67,  keyCap: 'cC',      normal: DEFAULT,     ctrl: ctl('C'),               alt: DEFAULT,     meta: PASS });
-    add({ keyCode: 86,  keyCap: 'vV',      normal: DEFAULT,     ctrl: ctl('V'),               alt: DEFAULT,     meta: PASS });
+    add({ keyCode: 88,  keyCap: 'xX',      normal: sl(DEFAULT), ctrl: sl(ctl('X')),           alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 67,  keyCap: 'cC',      normal: DEFAULT,     ctrl: ctl('C'),               alt: DEFAULT,     meta: DEFAULT });
+    add({ keyCode: 86,  keyCap: 'vV',      normal: DEFAULT,     ctrl: ctl('V'),               alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 66,  keyCap: 'bB',      normal: sl(DEFAULT), ctrl: sl(ctl('B')),           alt: sl(DEFAULT), meta: DEFAULT });
     add({ keyCode: 78,  keyCap: 'nN',      normal: DEFAULT,     ctrl: sl(ctl('N')),           alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 77,  keyCap: 'mM',      normal: DEFAULT,     ctrl: ctl('M'),               alt: DEFAULT,     meta: DEFAULT });
@@ -257,10 +257,10 @@ export default class KeyMap {
 
     // sixth row
     add({ keyCode: 17, keyCap: '[Control]', normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 18, keyCap: '[Alt]',   normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 91, keyCap: '[Meta]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
-    add({ keyCode: 32, keyCap: ' ',       normal: DEFAULT, ctrl: ctl('@'), alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 93, keyCap: '[Meta]',  normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 18, keyCap: '[Alt]',     normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 91, keyCap: '[Meta]',    normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
+    add({ keyCode: 32, keyCap: ' ',         normal: DEFAULT, ctrl: ctl('@'), alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 93, keyCap: '[Meta]',    normal: PASS,    ctrl: PASS,     alt: PASS,    meta: PASS });
 
     // these things.
     
