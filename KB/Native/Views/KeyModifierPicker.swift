@@ -34,30 +34,30 @@ import SwiftUI
 
 struct KeyModifierPicker: View {
   @Binding var modifier: KeyModifier
-  @State private var updatedAt = Date()
+  @State private var _updatedAt = Date()
   
   var body: some View {
     List {
       Section {
-        _mod(title: "Default",     value: .none)
-        _mod(title: "Escape",      value: .escape)
-        _mod(title: "8-bit",       value: .bit8)
-        _mod(title: "Control",     value: .control)
-        _mod(title: "Shift",       value: .shift)
-        _mod(title: "Meta",        value: .meta)
+        _mod(.none, title: "Default")
+        _mod(.escape)
+        _mod(.bit8)
+        _mod(.control)
+        _mod(.shift)
+        _mod(.meta)
       }
     }
     .listStyle(GroupedListStyle())
   }
   
-  private func _mod(title: String, value: KeyModifier) -> some View {
+  private func _mod(_ value: KeyModifier, title: String? = nil) -> some View {
     HStack {
-      Text(title)
+      Text(title ?? value.description)
       Spacer()
       Checkmark(checked: modifier == value)
     }.overlay(Button(action: {
       self.modifier = value
-      self.updatedAt = Date()
+      self._updatedAt = Date()
     }, label: { EmptyView() }))
   }
 }

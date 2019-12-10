@@ -49,9 +49,3 @@ struct KeyConfigPairView: View {
     .navigationBarTitle(pair.fullName)
   }
 }
-
-struct KeyConfigPairView_Previews: PreviewProvider {
-  static var previews: some View {
-    KeyConfigPairView(pair: KeyConfigPair.shift)
-  }
-}

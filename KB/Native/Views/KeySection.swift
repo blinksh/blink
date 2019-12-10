@@ -53,10 +53,3 @@ struct KeySection: View {
     }
   }
 }
-
-
-struct KeySection_Previews: PreviewProvider {
-  static var previews: some View {
-    KeySection(title: "Test", key: KeyConfig.capsLock)
-  }
-}

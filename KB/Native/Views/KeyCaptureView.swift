@@ -114,9 +114,3 @@ struct KeyCaptureView: UIViewControllerRepresentable {
     
   }
 }
-
-struct KeyCaptureView_Previews: PreviewProvider {
-    static var previews: some View {
-      KeyCaptureView(shortcut: .init(.clipboardCopy, [], ""))
-    }
-}

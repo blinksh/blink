@@ -1372,14 +1372,14 @@
 			isa = PBXGroup;
 			children = (
 				D2C24405238E44AB0082C69C /* General */,
-				D2C24401238E44AB0082C69C /* KBConfigView.swift */,
 				D2C24402238E44AB0082C69C /* KBWebViewBase.h */,
 				D2C2440F238E44AB0082C69C /* KBWebViewBase.m */,
-				D2C24403238E44AB0082C69C /* KeyConfigPairView.swift */,
+				D2C2440E238E44AB0082C69C /* KBWebView.swift */,
+				D2C24401238E44AB0082C69C /* KBConfigView.swift */,
 				D2C24404238E44AB0082C69C /* KeySection.swift */,
 				D2C2440C238E44AB0082C69C /* KeyConfigView.swift */,
+				D2C24403238E44AB0082C69C /* KeyConfigPairView.swift */,
 				D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */,
-				D2C2440E238E44AB0082C69C /* KBWebView.swift */,
 				D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */,
 				D2C24436239104250082C69C /* ShortcutsConfigView.swift */,
 				D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */,

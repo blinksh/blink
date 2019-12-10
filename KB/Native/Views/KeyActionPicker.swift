@@ -34,7 +34,7 @@ import SwiftUI
 
 struct KeyActionPicker: View {
   @Binding var action: KeyAction
-  @State private var updatedAt = Date()
+  @State private var _updatedAt = Date()
   
   var body: some View {
     List {
@@ -53,7 +53,7 @@ struct KeyActionPicker: View {
       Checkmark(checked: action == value)
     }.overlay(Button(action: {
       self.action = value
-      self.updatedAt = Date()
+      self._updatedAt = Date()
     }, label: { EmptyView() } ))
   }
 }

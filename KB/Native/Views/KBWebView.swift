@@ -34,7 +34,7 @@ import UIKit
 
 class KBWebView: KBWebViewBase {
   
-  var loaded = false
+  private var _loaded = false
   
   func configure(_ cfg: KBConfig) {
     guard
@@ -86,7 +86,7 @@ class KBWebView: KBWebViewBase {
     configure(loadConfig())
   }
   
-  func loadKB() {
+  private func _loadKB() {
     let bundle = Bundle.init(for: KBWebView.self)
     guard
       let path = bundle.path(forResource: "kb", ofType: "html")
@@ -99,9 +99,9 @@ class KBWebView: KBWebViewBase {
   
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
-    if window != nil && !loaded {
-      loaded = true
-      loadKB()
+    if window != nil && !_loaded {
+      _loaded = true
+      _loadKB()
     }
   }
 }
