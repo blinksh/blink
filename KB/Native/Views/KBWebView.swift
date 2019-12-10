@@ -97,6 +97,10 @@ class KBWebView: KBWebViewBase {
     loadFileURL(url, allowingReadAccessTo: url.deletingLastPathComponent())
   }
   
+  public override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    UIEditingInteractionConfiguration.default
+  }
+  
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     if window != nil && !_loaded {

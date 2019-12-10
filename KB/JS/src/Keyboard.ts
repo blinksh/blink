@@ -134,33 +134,6 @@ function _blockEvent(e: UIEvent | null) {
   }
 }
 
-/*
-const _keyToCodeMap: {[index: string]: number} = {
-  KeyC: 67,
-  c: 67,
-  KeyI: 73,
-  i: 73,
-  KeyH: 72,
-  h: 72,
-  KeyM: 77,
-  m: 77,
-  BracketLeft: 219,
-  '[': 77,
-  KeyN: 78,
-  n: 78,
-  KeyU: 85,
-  u: 85,
-  KeyE: 69,
-  e: 69,
-  KeyV: 86,
-  v: 86,
-  KeyW: 87,
-  w: 87,
-  KeyQ: 81,
-  q: 81,
-};
-*/
-
 function _patchKeyDown(
   keyDown: KeyDownType,
   keyMap: KeyMap,
@@ -371,7 +344,6 @@ export default class Keyboard implements IKeyboard {
 
     let keyId = _keyId(event);
     this._down.add(keyId);
-    console.log('down', this._down);
 
     let binding = this._bindings.match(this._downKeysIds());
     if (!_holders.has(keyId)) {
@@ -436,7 +408,6 @@ export default class Keyboard implements IKeyboard {
 
     let keyId = _keyId(e);
     this._down.delete(keyId);
-    console.log('up', keyId, this._down);
     let mod = this._mod(this._modsMap[e.code]);
     if (mod) {
       this._mods[mod].delete(keyId);
@@ -718,6 +689,9 @@ export default class Keyboard implements IKeyboard {
 
   _output = (data: string | null) => {
     this._up.clear();
+    this.element.value = ' ';
+    this.element.selectionStart = 1;
+    this.element.selectionEnd = 1;
     if (data) {
       op('out', {data});
     }
@@ -733,6 +707,8 @@ export default class Keyboard implements IKeyboard {
       Control: new Set(),
     };
     this.element.value = ' ';
+    this.element.selectionStart = 1;
+    this.element.selectionEnd = 1;
   };
 
   _handleGuard(up: boolean, char: string) {
@@ -916,15 +892,15 @@ export default class Keyboard implements IKeyboard {
       src: 'toolbar',
     };
     if (!e) {
-      let keyId = keyInfo.keyCode + ":" + parts[2]
-      this._down.add(keyId)
+      let keyId = keyInfo.keyCode + ':' + parts[2];
+      this._down.add(keyId);
       let binding = this._bindings.match(this._downKeysIds());
-      this._down.delete(keyId)
+      this._down.delete(keyId);
       if (binding) {
         this._execBinding(binding, null);
         this._mods = savedMods;
         return;
-      } 
+      }
     }
     this._handleKeyDownKey(keyInfo, e);
     this._mods = savedMods;

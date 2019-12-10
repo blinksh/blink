@@ -50,6 +50,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)onIME:(NSString *)event data:(NSString *)data;
 - (void)onCapture:(NSArray<NSString *> *)keys;
 
+- (void)_keyboardDidChangeFrame:(NSNotification *)notification;
+- (void)_keyboardWillChangeFrame:(NSNotification *)notification;
+- (void)_keyboardWillShow:(NSNotification *)notification;
+- (void)_keyboardWillHide:(NSNotification *)notification;
+- (void)_keyboardDidHide:(NSNotification *)notification;
+- (void)_keyboardDidShow:(NSNotification *)notification;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

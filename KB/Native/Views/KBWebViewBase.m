@@ -106,6 +106,33 @@
   return YES;
 }
 
+- (void)_keyboardDidChangeFrame:(NSNotification *)notification
+{
+}
+
+- (void)_keyboardWillChangeFrame:(NSNotification *)notification
+{
+}
+
+- (void)_keyboardWillShow:(NSNotification *)notification
+{
+}
+
+- (void)_keyboardWillHide:(NSNotification *)notification
+{
+}
+
+- (void)_keyboardDidHide:(NSNotification *)notification
+{
+}
+
+- (void)_keyboardDidShow:(NSNotification *)notification
+{
+}
+
+
+
+
 - (void)dealloc {
   [NSNotificationCenter.defaultCenter removeObserver:self];
 }

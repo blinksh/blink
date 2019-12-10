@@ -68,6 +68,7 @@ class SmarterTermInput: KBWebView {
     _kbView.keyInput = self
     _kbView.lang = textInputMode?.primaryLanguage ?? ""
     
+    
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(
       forKey: BKUserConfigMuteSmartKeysPlaySound)
     
@@ -77,36 +78,9 @@ class SmarterTermInput: KBWebView {
       self,
       selector: #selector(_inputModeChanged),
       name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_keyboardWillChangeFrame(notification:)),
-      name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_keyboardWillHideNotification(notification:)),
-      name: UIResponder.keyboardWillHideNotification, object: nil)
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_keyboardDidHideNotification(notification:)),
-      name: UIResponder.keyboardDidHideNotification, object: nil)
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_keyboardWillShowNotification),
-      name: UIResponder.keyboardWillShowNotification, object: nil)
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_keyboardDidShowNotification),
-      name: UIResponder.keyboardDidShowNotification, object: nil)
-    
-    
+
     nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
     nc.addObserver(self, selector: #selector(_setKBStyle), name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
-
   }
   
   required init?(coder: NSCoder) {
@@ -115,12 +89,15 @@ class SmarterTermInput: KBWebView {
   
   override func ready() {
     super.ready()
+    reportLang(_kbView.lang)
+    
     if traitCollection.userInterfaceIdiom == .pad {
       setupAssistantItem()
     } else {
       setupAccessoryView()
     }
-    reportLang(_kbView.lang)
+    
+    reloadInputViews()
   }
   
   override func configure(_ cfg: KBConfig) {
@@ -226,9 +203,9 @@ class SmarterTermInput: KBWebView {
   
   func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
-    
+
     var iterator: UIResponder? = self
-    
+
     while let responder = iterator {
       if let cmd = responder.keyCommands?.first(
         where: { $0.input == input && $0.modifierFlags == flags}),
@@ -239,7 +216,7 @@ class SmarterTermInput: KBWebView {
       }
       iterator = responder.next
     }
-    
+
     return result
   }
   
@@ -254,20 +231,6 @@ class SmarterTermInput: KBWebView {
       self.reportLang(lang)
     }
   }
-  
-//  override func becomeFirstResponder() -> Bool {
-//    let res = super.becomeFirstResponder()
-//    device?.focus()
-//    _kbView.isHidden = false
-//    refreshInputViews()
-//    // TODO: fix
-////    if _kbView.traits.isFloatingKB {
-////      DispatchQueue.main.async {
-////        self.reloadInputViews()
-////      }
-////    }
-//    return res
-//  }
   
   func contentView() -> UIView? {
     scrollView.subviews.first
@@ -340,7 +303,6 @@ class SmarterTermInput: KBWebView {
           rect.origin.y = minY
         }
         
-        debugPrint(rect)
         rect.size.height = 0
         rect.size.width = 0
         
@@ -364,57 +326,11 @@ class SmarterTermInput: KBWebView {
     return res
   }
   
-//  override var canResignFirstResponder: Bool {
-//    let state = window?.windowScene?.activationState
-//    return state == .foregroundActive || state == .foregroundInactive
-//  }
-  
-//  override func insertText(_ text: String) {
-//    defer {
-//      _kbView.turnOffUntracked()
-//    }
-//
-//    if text != _kbView.repeatingSequence {
-//      _kbView.stopRepeats()
-//    }
-//
-//    let traits = _kbView.traits
-//    if traits.contains(.cmdOn) && text.count == 1 {
-//      var flags = traits.modifierFlags
-//      var input = text.lowercased()
-//      if input != text {
-//        flags.insert(.shift)
-//      }
-//      input = _langCharsMap[input] ?? input
-//
-//      if let (cmd, res) = _matchCommand(input: input, flags: flags),
-//        let action = cmd.action  {
-//        res.perform(action, with: cmd)
-//      } else {
-//        switch(input) {
-//        case "c": copy(self)
-//        case "x": cut(self)
-//        case "z": flags.contains(.shift) ? undoManager?.undo() : undoManager?.redo()
-//        case "v": paste(self)
-//        default: super.insertText(text);
-//        }
-//      }
-//    } else if traits.contains([.altOn, .ctrlOn]) {
-//      escCtrlSeq(withInput:text)
-//    } else if traits.contains(.altOn) {
-//      escSeq(withInput: text)
-//    } else if traits.contains(.ctrlOn) {
-//      ctrlSeq(withInput: text)
-//    } else {
-//      super.insertText(text)
-//    }
-//  }
-  
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)
     self.removeAssistantsFromView()
-//    realInputAssistantItem?.leadingBarButtonGroups = []
-//    realInputAssistantItem?.trailingBarButtonGroups = []
+    realInputAssistantItem?.leadingBarButtonGroups = []
+    realInputAssistantItem?.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
@@ -423,7 +339,9 @@ class SmarterTermInput: KBWebView {
     _inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
-  override var inputAccessoryView: UIView? { _inputAccessoryView }
+  override var inputAccessoryView: UIView? {
+    return _inputAccessoryView
+  }
   
   func setupAssistantItem() {
     let proxy = KBProxy(kbView: kbView)
@@ -433,11 +351,11 @@ class SmarterTermInput: KBWebView {
   }
   
   var realInputAssistantItem: UITextInputAssistantItem? {
-    self.scrollView.subviews.first?.inputAssistantItem
+    scrollView.subviews.first?.inputAssistantItem
   }
   
-  func _setupWithKBNotification(notification: NSNotification) {
-    
+  func _setupWithKBNotification(notification: Notification) {
+    debugPrint(notification)
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
@@ -506,27 +424,17 @@ class SmarterTermInput: KBWebView {
     }
     
     DispatchQueue.main.async {
+      self.refreshInputViews()
 //      self.contentView()?.inputAccessoryView?.invalidateIntrinsicContentSize()
 //      self.contentView()?.reloadInputViews()
     }
   }
-  
-  @objc func _keyboardWillShowNotification(notification: NSNotification) {
-    _setupWithKBNotification(notification: notification)
-  }
-  
-  @objc func _keyboardWillHideNotification(notification: NSNotification) {
-    _setupWithKBNotification(notification: notification)
-  }
-  
-  @objc func _keyboardDidHideNotification(notification: NSNotification) {
-  }
 
-  @objc func _keyboardDidShowNotification(notification: NSNotification) {
-    _keyboardWillChangeFrame(notification: notification)
+  override func _keyboardDidChangeFrame(_ notification: Notification) {
+    
   }
   
-  @objc func _keyboardWillChangeFrame(notification: NSNotification) {
+  override func _keyboardWillChangeFrame(_ notification: Notification) {
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
@@ -573,6 +481,23 @@ class SmarterTermInput: KBWebView {
     LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }
   
+  override func _keyboardWillShow(_ notification: Notification) {
+    _setupWithKBNotification(notification: notification)
+  }
+  
+  override func _keyboardWillHide(_ notification: Notification) {
+//    _setupWithKBNotification(notification: notification)
+  }
+  
+  override func _keyboardDidHide(_ notification: Notification) {
+    
+  }
+  
+  override func _keyboardDidShow(_ notification: Notification) {
+    _kbView.invalidateIntrinsicContentSize()
+    _keyboardWillChangeFrame(notification)
+  }
+
   override func copy(_ sender: Any?) {
     device?.view?.copy(sender)
   }

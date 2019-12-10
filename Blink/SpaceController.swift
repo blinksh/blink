@@ -169,10 +169,6 @@ public class SpaceController: UIViewController {
                    object: nil)
   }
   
-//  public override func resignFirstResponder() -> Bool {
-//    return super.resignFirstResponder()
-//  }
-  
   @objc func _didBecomeKeyWindow() {
     guard
       let window = view.window,
@@ -277,11 +273,6 @@ public class SpaceController: UIViewController {
     _attachInputToCurrentTerm()
     let input = SmarterTermInput.shared
     _ = input.realBecomeFirstResponder()
-//    if !input.isRealFirstResponder {
-//      input.realBecomeFirstResponder()
-//    } else {
-//      input.refreshInputViews()
-//    }
     // We should make input window key window
     if input.window?.isKeyWindow == false {
       input.window?.makeKeyAndVisible()
