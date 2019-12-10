@@ -71,32 +71,6 @@ NSString *const BKUserConfigChangedNotification = @"BKUserConfigChangedNotificat
 }
 
 
-+ (UIKeyModifierFlags)shortCutModifierFlags{
-  NSDictionary *bkModifierMaps = @{
-                                   BKKeyboardModifierCtrl : [NSNumber numberWithInt:UIKeyModifierControl],
-                                   BKKeyboardModifierAlt : [NSNumber numberWithInt:UIKeyModifierAlternate],
-                                   BKKeyboardModifierCmd : [NSNumber numberWithInt:UIKeyModifierCommand],
-                                   BKKeyboardModifierCaps : [NSNumber numberWithInt:UIKeyModifierAlphaShift],
-                                   BKKeyboardModifierShift : [NSNumber numberWithInt:UIKeyModifierShift]
-                                   };
-  if([[BKDefaults keyboardFuncTriggers]objectForKey:@"Shortcuts"])
-  {
-    NSArray *shortCutTriggers = [[BKDefaults keyboardFuncTriggers]objectForKey:@"Shortcuts"];
-    UIKeyModifierFlags modifiers = 0;
-    for (NSString *trigger in shortCutTriggers) {
-      NSNumber *modifier = bkModifierMaps[trigger];
-      modifiers = modifiers | modifier.intValue;
-    }
-    return  modifiers;
-  }
-  return UIKeyModifierCommand;
-}
-
-+ (UIKeyModifierFlags)shortCutModifierFlagsForNextPrevShell
-{
-  return [self shortCutModifierFlags] | UIKeyModifierShift;
-}
-
 + (NSString *)UIKeyModifiersToString:(UIKeyModifierFlags) flags
 {
   NSMutableArray *components = [[NSMutableArray alloc] init];

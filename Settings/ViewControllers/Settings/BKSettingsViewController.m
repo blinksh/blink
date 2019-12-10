@@ -49,20 +49,13 @@
 
 @implementation BKSettingsViewController
 {
-  NSArray *_kbCommands;
+  
 }
 
 - (void)viewDidLoad
 {
   [super viewDidLoad];
   
-  UIKeyModifierFlags modifierFlags = [BKUserConfigurationManager shortCutModifierFlags];
-  
-  _kbCommands = @[
-                  [UIKeyCommand keyCommandWithInput: @"w" modifierFlags: modifierFlags
-                                             action: @selector(_closeConfig:)
-                               discoverabilityTitle: @"Close Settings"]
-                  ];
   
   // Uncomment the following line to preserve selection between presentations.
   // self.clearsSelectionOnViewWillAppear = NO;
@@ -77,10 +70,6 @@
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-- (NSArray<UIKeyCommand *> *)keyCommands
-{
-  return _kbCommands;
-}
 
 - (BOOL)canBecomeFirstResponder
 {
