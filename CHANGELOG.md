@@ -1,3 +1,16 @@
+# Version 13.1
+
+This is a very important release with just a single change. We had to rewrite all our legendary keyboard code so that features like caps as control could continue working on iOS 13. If you use a keyboard in a different language, specially with accents and special characters, we need your help more than ever. Here is what’s new:
+
+* Caps as Control or escape is back!
+* You can now also define what individual modifier keys do on presses. Want to press Caps and send escape? No problem!
+* You can separate left and right modifiers. And even define key ups and downs.
+* Shortcuts can now also be configured and redefined.
+* You can now also assign a different key to Escape.
+* You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence within Blink.
+* Accents are now considered too for specific sequences so if you have an international keyboard like French, Danish, etc... let us know how things are looking like.
+
+
 # Version 13.0
 
 ## Changes in Build 138
