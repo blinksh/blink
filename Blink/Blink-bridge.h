@@ -44,5 +44,6 @@
 #import "MCPSession.h"
 #import "TermDevice.h"
 #import "KBWebViewBase.h"
+#import "openurl.h"
 
 #endif /* Blink_bridge_h */

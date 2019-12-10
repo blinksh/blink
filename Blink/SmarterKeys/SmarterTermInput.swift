@@ -278,6 +278,38 @@ class SmarterTermInput: KBWebView {
 //    }
   }
   
+  @objc func copyLink(_ sender: Any) {
+    guard let url = device?.view?.detectedLink else {
+      return
+    }
+    UIPasteboard.general.url = url
+    device?.view?.cleanSelection()
+  }
+  
+  @objc func openLink(_ sender: Any) {
+    guard let url = device?.view?.detectedLink else {
+      return
+    }
+    device?.view?.cleanSelection()
+    
+    blink_openurl(url)
+  }
+  
+  override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    switch action {
+    case #selector(UIResponder.paste(_:)):
+      return true
+    case #selector(UIResponder.copy(_:)),
+         #selector(TermView.pasteSelection(_:)):
+      return device?.view?.hasSelection == true
+    case #selector(Self.copyLink(_:)),
+         #selector(Self.openLink(_:)):
+      return device?.view?.detectedLink != nil
+    default:
+      return super.canPerformAction(action, withSender: sender)
+    }
+  }
+  
   override func onIME(_ event: String, data: String) {
     if event == "compositionstart" && data.isEmpty {
     } else if event == "compositionend" {

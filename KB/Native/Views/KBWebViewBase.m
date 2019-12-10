@@ -213,8 +213,8 @@
       @selector(toggleItalics:) == action ||
       @selector(cut:) == action ||
       @selector(toggleFontPanel:) == action ||
-//      @selector(paste:) == action ||
-//      @selector(copy:) == action ||
+      @selector(select:) == action ||
+      @selector(selectAll:) == action ||
       @selector(toggleUnderline:) == action) {
     return NO;
   }

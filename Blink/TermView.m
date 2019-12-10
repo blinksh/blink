@@ -485,8 +485,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   CGRect rect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
-  [menu setTargetRect:rect inView:self];
-  [menu setMenuVisible:YES animated:NO];
+  [menu showMenuFromView:self rect:rect];
 }
 
 - (void)modifySideOfSelection
@@ -558,7 +557,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   [_webView copy:sender];
   UIMenuController * menu = [UIMenuController sharedMenuController];
-  [menu setMenuVisible:NO animated:YES];
+  [menu hideMenuFromView:self];
 }
 
 - (void)paste:(id)sender
