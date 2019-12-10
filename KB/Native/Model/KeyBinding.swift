@@ -250,22 +250,4 @@ class KeyBinding: ObservableObject, Codable {
       commandLoc: commandLoc
     )
   }
-  
-  static var clipboardCopy: KeyBinding {
-    let keys: [String] = [
-      KeyCode.commandLeft.id,
-      "67:0-KeyC"
-    ]
-    
-    return KeyBinding(keys: keys, action: .command(.clipboardCopy))
-  }
-  
-  static var clipboardPaste: KeyBinding {
-    let keys: [String] = [
-      KeyCode.commandLeft.id,
-      "68:0-KeyV"
-    ]
-    
-    return KeyBinding(keys: keys, action: .command(.clipboardPaste))
-  }
 }

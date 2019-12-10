@@ -61,9 +61,3 @@ struct KeyModifierPicker: View {
     }, label: { EmptyView() }))
   }
 }
-
-struct KeyModifierPicker_Previews: PreviewProvider {
-  static var previews: some View {
-    KeyModifierPicker(modifier: .constant(KeyModifier.bit8))
-  }
-}

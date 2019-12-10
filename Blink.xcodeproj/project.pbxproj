@@ -1355,8 +1355,8 @@
 			isa = PBXGroup;
 			children = (
 				D2C243FA238E44AB0082C69C /* KeyModifier.swift */,
-				D2C243FB238E44AB0082C69C /* KeyConfigPair.swift */,
 				D2C243FC238E44AB0082C69C /* KeyAction.swift */,
+				D2C243FB238E44AB0082C69C /* KeyConfigPair.swift */,
 				D2C243FD238E44AB0082C69C /* KeyCode.swift */,
 				D2C243FF238E44AB0082C69C /* KeyConfig.swift */,
 				D2C244322390FB830082C69C /* KeyBinding.swift */,

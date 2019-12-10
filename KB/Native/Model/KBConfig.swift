@@ -39,9 +39,10 @@ class KBConfig: ObservableObject, Codable {
   @Published var option:   KeyConfigPair
   @Published var command:  KeyConfigPair
 
-  @Published var fnBinding: KeyBinding
+  @Published var fnBinding:     KeyBinding
   @Published var cursorBinding: KeyBinding
-  @Published var shortcuts: [KeyShortcut] = KeyShortcut.defaultList
+
+  @Published var shortcuts:     [KeyShortcut]
   
   private var _cancellable = Set<AnyCancellable>()
   

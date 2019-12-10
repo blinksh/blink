@@ -31,7 +31,6 @@
 
 
 import Combine
-import Foundation
 
 class KeyConfig: ObservableObject, Codable {
   let code: KeyCode

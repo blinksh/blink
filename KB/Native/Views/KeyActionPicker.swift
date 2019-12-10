@@ -57,9 +57,3 @@ struct KeyActionPicker: View {
     }, label: { EmptyView() } ))
   }
 }
-
-struct KeyActionPicker_Previews: PreviewProvider {
-  static var previews: some View {
-    KeyActionPicker(action: .constant(KeyAction.tab))
-  }
-}

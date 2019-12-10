@@ -76,10 +76,3 @@ struct BindingConfigView: View {
     .navigationBarTitle(title)
   }
 }
-
-
-struct BindingConfigView_Previews: PreviewProvider {
-    static var previews: some View {
-      BindingConfigView(title: "Functional Keys", binding: .clipboardCopy)
-    }
-}

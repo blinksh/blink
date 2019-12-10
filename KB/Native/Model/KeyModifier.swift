@@ -38,15 +38,5 @@ enum KeyModifier: String, Codable {
   case control    = "Control"
   case meta       = "Meta"
   
-  var description: String {
-    switch self {
-    case .none:       return ""
-    case .escape:     return "Escape"
-    case .bit8:       return "8-bit"
-    case .shift:      return "Shift"
-    case .control:    return "Control"
-    case .meta:       return "Meta"
-    }
-  }
-  
+  var description: String { rawValue }
 }

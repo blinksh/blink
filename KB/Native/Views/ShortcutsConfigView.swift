@@ -135,9 +135,3 @@ struct ShortcutsConfigView: View {
     ))
   }
 }
-
-struct BindingsConfigView_Previews: PreviewProvider {
-  static var previews: some View {
-    ShortcutsConfigView(config: KBConfig())
-  }
-}
