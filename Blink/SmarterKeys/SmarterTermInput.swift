@@ -243,7 +243,20 @@ class SmarterTermInput: KBWebView {
     _kbView.isHidden = false
     _kbView.invalidateIntrinsicContentSize()
     refreshInputViews()
+    
+    _disableTextSelectionView()
     return res == true
+  }
+  
+  private func _disableTextSelectionView() {
+    let subviews = scrollView.subviews
+    guard
+      subviews.count > 2,
+      let v = subviews[1].subviews.first
+    else {
+      return
+    }
+    NotificationCenter.default.removeObserver(v)
   }
   
   var isRealFirstResponder: Bool {
