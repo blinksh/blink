@@ -55,6 +55,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //    SmarterTermInput.shared.refreshInputViews()
     _spaceController?.currentTerm()?.resumeIfNeeded()
     _spaceController?.currentTerm()?.view?.setNeedsLayout()
+    let input = SmarterTermInput.shared
+    if
+      _spaceController?.currentTerm()?.termDevice.view?.isFocused() == false,
+      !input.isRealFirstResponder,
+      input.window == self.window {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if !SmarterTermInput.shared.isRealFirstResponder && scene.activationState == .foregroundActive {
+          self._spaceController?.focusOnShellAction()
+        }
+      }
+    }
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {

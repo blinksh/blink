@@ -272,7 +272,7 @@ public class SpaceController: UIViewController {
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
     let input = SmarterTermInput.shared
-    _ = input.realBecomeFirstResponder()
+    _ = input.becomeFirstResponder()
     // We should make input window key window
     if input.window?.isKeyWindow == false {
       input.window?.makeKeyAndVisible()
@@ -531,7 +531,11 @@ extension SpaceController {
       let session = view.window?.windowScene?.session,
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
     else  {
-      _ = SmarterTermInput.shared.resignFirstResponder()
+      if currentTerm()?.termDevice.view?.isFocused() == true {
+        _ = SmarterTermInput.shared.resignFirstResponder()
+      } else {
+        _focusOnShell()
+      }
       return
     }
     

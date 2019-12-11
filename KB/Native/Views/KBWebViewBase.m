@@ -90,6 +90,7 @@
     
     _activeIMEGuardCommands = nil;
     _imeGuardCommands = [imeGuards copy];
+    [self removeAssistantsFromView];
   }
   return self;
 }
@@ -97,14 +98,14 @@
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
 //  return YES;
 //}
-//
+
 //- (BOOL)_requiresKeyboardResetOnReload {
 //  return NO;
 //}
 
-- (BOOL)_becomeFirstResponderWhenPossible {
-  return YES;
-}
+//- (BOOL)_becomeFirstResponderWhenPossible {
+//  return YES;
+//}
 
 - (void)_keyboardDidChangeFrame:(NSNotification *)notification
 {

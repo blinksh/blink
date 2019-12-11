@@ -236,8 +236,18 @@ class SmarterTermInput: KBWebView {
     scrollView.subviews.first
   }
   
-  @objc func realBecomeFirstResponder() -> Bool {
-    let res = contentView()?.becomeFirstResponder()
+  override var inputAssistantItem: UITextInputAssistantItem {
+    let item = super.inputAssistantItem
+    if item.trailingBarButtonGroups.count > 1 {
+      item.leadingBarButtonGroups = []
+      item.trailingBarButtonGroups = [item.trailingBarButtonGroups[0]]
+    }
+    return item
+  }
+  
+  override func becomeFirstResponder() -> Bool {
+
+    let res = super.becomeFirstResponder()//contentView()?.becomeFirstResponder()
 
     device?.focus()
     _kbView.isHidden = false
@@ -265,30 +275,16 @@ class SmarterTermInput: KBWebView {
   
   func refreshInputViews() {
     if traitCollection.userInterfaceIdiom != .pad {
-      return
+    return;
     }
 
+    // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
     contentView()?.inputAssistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
-    contentView()?.reloadInputViews()
+    reloadInputViews()
     if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
       _removeSmartKeys()
-      contentView()?.reloadInputViews()
+      reloadInputViews()
     }
-    
-//    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
-//    contentView()?.reloadInputViews()
-//    if !_hideSmartKeysWithHKB {
-//      contentView()?.reloadInputViews()
-//    }
-    
-    // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
-//    let v = self.inputAccessoryView
-//    inputAccessoryView = UIView(frame: CGRect(x: 0, y: 0, width: 0, height: 0))
-//    reloadInputViews()
-//    inputAccessoryView = v
-//    if !_hideSmartKeysWithHKB {
-//      reloadInputViews()
-//    }
   }
   
   @objc func copyLink(_ sender: Any) {
@@ -382,13 +378,13 @@ class SmarterTermInput: KBWebView {
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)
     self.removeAssistantsFromView()
-    realInputAssistantItem?.leadingBarButtonGroups = []
-    realInputAssistantItem?.trailingBarButtonGroups = []
+    inputAssistantItem.leadingBarButtonGroups = []
+    inputAssistantItem.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
-    realInputAssistantItem?.leadingBarButtonGroups = []
-    realInputAssistantItem?.trailingBarButtonGroups = []
+    inputAssistantItem.leadingBarButtonGroups = []
+    inputAssistantItem.trailingBarButtonGroups = []
     _inputAccessoryView = KBAccessoryView(kbView: kbView)
   }
   
@@ -399,12 +395,8 @@ class SmarterTermInput: KBWebView {
   func setupAssistantItem() {
     let proxy = KBProxy(kbView: kbView)
     let item = UIBarButtonItem(customView: proxy)
-    realInputAssistantItem?.leadingBarButtonGroups = []
-    realInputAssistantItem?.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
-  }
-  
-  var realInputAssistantItem: UITextInputAssistantItem? {
-    scrollView.subviews.first?.inputAssistantItem
+    inputAssistantItem.leadingBarButtonGroups = []
+    inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
   func _setupWithKBNotification(notification: Notification) {

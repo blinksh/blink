@@ -89,6 +89,7 @@
 - (void)terminate;
 - (void)reset;
 - (void)restore;
+- (BOOL)isFocused;
 
 - (void)blur;
 - (void)focus;

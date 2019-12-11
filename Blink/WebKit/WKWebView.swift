@@ -63,6 +63,8 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _3fTapRecognizer = UITapGestureRecognizer()
   private let _longPressRecognizer = UILongPressGestureRecognizer()
   
+  @objc var focused: Bool = false;
+  
   @objc var indicatorStyle: UIScrollView.IndicatorStyle {
     get { _scrollView.indicatorStyle }
     set { _scrollView.indicatorStyle = newValue }
@@ -194,13 +196,16 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
-      _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
+      if focused {
+        _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
+      }
+      if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
+        target.perform(#selector(focusOnShellAction), with: self)
+      }
     default: break
     }
     
-    if let target = _wkWebView?.target(forAction: #selector(focusOnShellAction), withSender: self) as? UIResponder {
-      target.perform(#selector(focusOnShellAction), with: self)
-    }
+    
   }
   
   @objc func _on2fTap(_ recognizer: UITapGestureRecognizer) {
