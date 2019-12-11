@@ -308,6 +308,10 @@ class SmarterTermInput: KBWebView {
     blink_openurl(url)
   }
   
+  @objc func pasteSelection(_ sender: Any) {
+    device?.view?.pasteSelection(sender)
+  }
+  
   override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
     switch action {
     case #selector(UIResponder.paste(_:)):
