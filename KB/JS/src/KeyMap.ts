@@ -129,7 +129,7 @@ export default class KeyMap {
       this._reverseDefs[letter] = def;
       if (/0-9/.test(letter)) {
         this._reverseDefs['Digit' + letter] = def;
-      } else if (/a-z/.test(letter)) {
+      } else if (/[a-z]/.test(letter)) {
         this._reverseDefs['Key' + letter.toUpperCase()] = def;
       }
     }
