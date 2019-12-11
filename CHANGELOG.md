@@ -10,7 +10,7 @@ This is a very important release with just a single change. We had to rewrite al
 * You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence within Blink.
 * Accents are now considered too for specific sequences so if you have an international keyboard like French, Danish, etc... let us know how things are looking like.
 
-## Changes in Build 176
+## Changes in Build 177
 
 * Bring back 3f menu
 * Selection doesn't resign software KB
