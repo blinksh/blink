@@ -109,6 +109,7 @@ enum KeyBindingAction: Codable, Identifiable {
   
   static var pressList: [KeyBindingAction] {
     [
+      KeyBindingAction.press(.backquote, mods: UIKeyModifierFlags([]).rawValue),
       KeyBindingAction.press(.escape, mods: UIKeyModifierFlags([]).rawValue),
       KeyBindingAction.press(.space, mods: UIKeyModifierFlags([.control]).rawValue),
       KeyBindingAction.press(.f11, mods: UIKeyModifierFlags([]).rawValue),

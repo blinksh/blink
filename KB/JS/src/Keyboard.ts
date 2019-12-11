@@ -862,7 +862,7 @@ export default class Keyboard implements IKeyboard {
     }
   };
 
-  _execPress = (str: string, e: KeyboardEvent | null) => {
+  _execPress = (str: string, e: KeyboardEvent | null, skipBinding: boolean) => {
     let parts = str.split(/:/g);
     let savedMods = this._mods;
     this._mods = {
@@ -871,7 +871,8 @@ export default class Keyboard implements IKeyboard {
       Meta: new Set(),
       Control: new Set(),
     };
-    let mods = UIKitFlagsToObject(parseInt(parts[0], 10));
+    let modFlags = parseInt(parts[0], 10);
+    let mods = UIKitFlagsToObject(modFlags);
     if (mods.shift) {
       this._mods.Shift.add('tb-shift');
     }
@@ -885,13 +886,15 @@ export default class Keyboard implements IKeyboard {
       this._mods.Meta.add('tb-meta');
     }
 
+    let keyCode = parseInt(parts[1], 10);
+
     let keyInfo: KeyInfoType = {
-      keyCode: parseInt(parts[1], 10),
-      key: parts[3] || '',
+      keyCode,
+      key: parts[3] || this._keyMap.key(keyCode) || '',
       code: '',
       src: 'toolbar',
     };
-    if (!e) {
+    if (!skipBinding && modFlags > 0) {
       let keyId = keyInfo.keyCode + ':' + parts[2];
       this._down.add(keyId);
       let binding = this._bindings.match(this._downKeysIds());
@@ -904,6 +907,7 @@ export default class Keyboard implements IKeyboard {
     }
     this._handleKeyDownKey(keyInfo, e);
     this._mods = savedMods;
+    this._removeAccents = true;
   };
 
   onKB = (cmd: string, arg: any) => {
@@ -933,7 +937,10 @@ export default class Keyboard implements IKeyboard {
         this._onToolbarMods(arg);
         break;
       case 'toolbar-press':
-        this._execPress(arg, null);
+        this._execPress(arg, null, false);
+        break;
+      case 'press':
+        this._execPress(arg, null, true);
         break;
       case 'state-reset':
         this._stateReset();
@@ -956,7 +963,7 @@ export default class Keyboard implements IKeyboard {
         op('command', {command: action.value});
         break;
       case 'press':
-        this._execPress(`${action.mods}:${action.key.id}`, e);
+        this._execPress(`${action.mods}:${action.key.id}`, e, true);
         break;
     }
   }

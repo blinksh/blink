@@ -327,6 +327,10 @@ class SmarterTermInput: KBWebView {
     }
   }
   
+  override func onMods() {
+    _kbView.stopRepeats()
+  }
+  
   override func onIME(_ event: String, data: String) {
     if event == "compositionstart" && data.isEmpty {
     } else if event == "compositionend" {
@@ -404,7 +408,6 @@ class SmarterTermInput: KBWebView {
   }
   
   func _setupWithKBNotification(notification: Notification) {
-    debugPrint(notification)
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,

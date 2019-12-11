@@ -38,7 +38,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reportStateReset;
 - (void)reportLang:(NSString *) lang;
-- (void)reportKeyPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
+- (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
+- (void)reportToolbarPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags;
 - (void)onSelection:(NSDictionary *)args;
 - (void)onCommand:(NSString *)command;
@@ -46,6 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)removeAssistantsFromView;
 - (void)report:(NSString *)cmd arg:(NSObject *)arg;
 - (void)ready;
+- (void)onMods;
 - (void)onOut:(NSString *)data;
 - (void)onIME:(NSString *)event data:(NSString *)data;
 - (void)onCapture:(NSArray<NSString *> *)keys;

@@ -44,6 +44,8 @@ class KBView: UIView {
   private var _timer: Timer? = nil
   private var _repeatingKeyView: KBKeyView? = nil
   
+  var repeatingSequence: String? = nil
+  
   var safeBarWidth: CGFloat = 0
   var kbDevice: KBDevice = .detect() {
     didSet {
@@ -377,6 +379,7 @@ extension KBView: KBKeyViewDelegate {
     var flags = traits.modifierFlags
     
     if let input = value.input,
+      flags.rawValue > 0,
       let (cmd, responder) = keyInput?.matchCommand(input: input, flags: flags),
       let action = cmd.action  {
       responder.perform(action, with: cmd)
@@ -387,7 +390,7 @@ extension KBView: KBKeyViewDelegate {
       flags.remove(.command)
     }
     
-    keyInput?.reportKeyPress(flags, keyId: keyId)
+    keyInput?.reportToolbarPress(flags, keyId: keyId)
   }
   
   func keyViewCancelled(keyView: KBKeyView) {

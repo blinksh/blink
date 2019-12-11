@@ -465,7 +465,7 @@ extension SpaceController {
     SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {
     case .press(let keyCode, mods: let mods):
-      SmarterTermInput.shared.reportKeyPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
+      SmarterTermInput.shared.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
       break;
     case .command(let c):
       _onCommand(c)

@@ -161,10 +161,16 @@
   [self report:@"toolbar-mods" arg:@(flags)];
 }
 
-- (void)reportKeyPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
+- (void)reportToolbarPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
   NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
   [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
 }
+
+- (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
+  NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+  [self report:@"press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
+}
+
 
 // Not sure we need up
 - (void)_imeGuardUp:(KeyCommand *)cmd {
@@ -255,6 +261,10 @@
   _keyCommands = cmds;
 }
 
+- (void)onMods {
+  
+}
+
 - (void)ready {
   [self removeAssistantsFromView];
 }
@@ -300,6 +310,7 @@
       _activeModsCommand = [self _modifiersCommand:flags];
     }
     [self _rebuildKeyCommands];
+    [self onMods];
   } else if ([@"ime" isEqual:op]) {
     NSString *event = body[@"type"];
     NSString *data = body[@"data"];

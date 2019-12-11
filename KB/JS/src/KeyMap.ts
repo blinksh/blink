@@ -318,6 +318,19 @@ export default class KeyMap {
     return 0;
   }
 
+  key(keyCode: number): string {
+    let def = this._defs[keyCode];
+    if (!def) {
+      return '';
+    }
+
+    let nonPrintable = /^\[\w+\]$/.test(def.keyCap);
+    if (nonPrintable) {
+      return def.keyCap.replace(/[\[\]]/g, '');
+    }
+    return def.keyCap[0];
+  }
+
   // prettier-ignore
   _onCtrlNum: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
     switch (def.keyCap.substr(0, 1)) {
