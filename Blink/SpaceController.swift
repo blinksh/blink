@@ -481,7 +481,7 @@ extension SpaceController {
       return
     }
     switch cmd {
-    case .configShow: break
+    case .configShow: _showConfigAction()
     case .tab1: _moveToShell(idx: 1)
     case .tab2: _moveToShell(idx: 2)
     case .tab3: _moveToShell(idx: 3)
