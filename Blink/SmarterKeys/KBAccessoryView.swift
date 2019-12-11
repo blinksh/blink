@@ -37,7 +37,9 @@ class KBAccessoryView: UIInputView {
   
   init(kbView: KBView) {
     _kbView = kbView
-    super.init(frame: CGRect(origin: .zero, size: _kbView.intrinsicContentSize), inputViewStyle: .keyboard)
+    var size = _kbView.intrinsicContentSize
+    size.width = 100
+    super.init(frame: CGRect(origin: .zero, size: size), inputViewStyle: .keyboard)
     translatesAutoresizingMaskIntoConstraints = false
     allowsSelfSizing = true
     
@@ -53,6 +55,7 @@ class KBAccessoryView: UIInputView {
     var kbFrame = bounds
     kbFrame.size.height = _kbView.intrinsicContentSize.height
     _kbView.frame = kbFrame
+//    addSubview(_kbView)
   }
   
   override var intrinsicContentSize: CGSize {
@@ -60,6 +63,7 @@ class KBAccessoryView: UIInputView {
     if _kbView.traits.isHKBAttached || _kbView.traits.isFloatingKB {
       h += safeAreaInsets.bottom
     }
+
     return CGSize(width: -1, height: h)
   }
 }

@@ -37,8 +37,7 @@ class BlinkCommand: UIKeyCommand {
 
 class SmarterTermInput: KBWebView {
   
-  private var _kbView: KBView
-  private var kbView: KBView { _kbView }
+  private var _kbView = KBView()
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(
   forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   private var _inputAccessoryView: UIView? = nil
@@ -51,8 +50,6 @@ class SmarterTermInput: KBWebView {
   }
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
-    _kbView = KBView()
-    
     super.init(frame: frame, configuration: configuration)
     
     self.tintColor = .cyan
@@ -241,6 +238,7 @@ class SmarterTermInput: KBWebView {
     if item.trailingBarButtonGroups.count > 1 {
       item.leadingBarButtonGroups = []
       item.trailingBarButtonGroups = [item.trailingBarButtonGroups[0]]
+      _kbView.setNeedsLayout()
     }
     return item
   }
@@ -275,7 +273,7 @@ class SmarterTermInput: KBWebView {
   
   func refreshInputViews() {
     if traitCollection.userInterfaceIdiom != .pad {
-    return;
+      return;
     }
 
     // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
@@ -377,15 +375,19 @@ class SmarterTermInput: KBWebView {
   
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)
-    self.removeAssistantsFromView()
-    inputAssistantItem.leadingBarButtonGroups = []
-    inputAssistantItem.trailingBarButtonGroups = []
+    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
+    contentView()?.inputAssistantItem.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
-    _inputAccessoryView = KBAccessoryView(kbView: kbView)
+    if let v = _inputAccessoryView as? KBAccessoryView {
+      v.isHidden = false
+    } else {
+      _inputAccessoryView = KBAccessoryView(kbView: _kbView)
+      
+    }
   }
   
   override var inputAccessoryView: UIView? {
@@ -393,10 +395,10 @@ class SmarterTermInput: KBWebView {
   }
   
   func setupAssistantItem() {
-    let proxy = KBProxy(kbView: kbView)
+    let proxy = KBProxy(kbView: _kbView)
     let item = UIBarButtonItem(customView: proxy)
-    inputAssistantItem.leadingBarButtonGroups = []
-    inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
+    contentView()?.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
   func _setupWithKBNotification(notification: Notification) {
@@ -469,8 +471,6 @@ class SmarterTermInput: KBWebView {
     
     DispatchQueue.main.async {
       self.refreshInputViews()
-//      self.contentView()?.inputAccessoryView?.invalidateIntrinsicContentSize()
-//      self.contentView()?.reloadInputViews()
     }
   }
 
