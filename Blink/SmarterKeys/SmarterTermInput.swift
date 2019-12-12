@@ -100,7 +100,7 @@ class SmarterTermInput: KBWebView {
   override func configure(_ cfg: KBConfig) {
     blinkKeyCommands = cfg.shortcuts.map { shortcut in
       let cmd = BlinkCommand(
-        title: shortcut.title,
+        title: shortcut.action.isCommand ? shortcut.title : "",
         image: nil,
         action: #selector(SpaceController._onBlinkCommand(_:)),
         input: shortcut.input,

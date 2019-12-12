@@ -34,6 +34,7 @@ import SwiftUI
 
 struct ActionsList: View {
   @Binding var action: KeyBindingAction
+  var commandsMode: Bool
   @State private var updatedAt = Date()
   
   var pressList = KeyBindingAction.pressList
@@ -41,16 +42,20 @@ struct ActionsList: View {
   
   var body: some View {
     List {
-      Section(header: Text("Press")) {
-        ForEach(pressList, id: \.id) { ka in
-          self._row(action: self.action, value: ka)
+      if commandsMode {
+        Section(header: Text("Commands")) {
+          ForEach(commandList, id: \.id) { ka in
+            self._row(action: self.action, value: ka)
+          }
+        }
+      } else {
+        Section(header: Text("Press")) {
+          ForEach(pressList, id: \.id) { ka in
+            self._row(action: self.action, value: ka)
+          }
         }
       }
-      Section(header: Text("Commands")) {
-        ForEach(commandList, id: \.id) { ka in
-          self._row(action: self.action, value: ka)
-        }
-      }
+      
     }
     .listStyle(GroupedListStyle())
   }
@@ -74,17 +79,21 @@ struct ShortcutConfigView: View {
   @EnvironmentObject var nav: Nav
   @ObservedObject var config: KBConfig
   @ObservedObject var shortcut: KeyShortcut
+  var commandsMode: Bool
   
   var body: some View {
     List {
-      Section(header: Text("Combination"), footer: Text("Press keys on external KB to change.")) {
+      Section(
+        header: Text("Combination"),
+        footer: Text("Press keys on external KB to change.")
+      ) {
         HStack {
           Text(shortcut.description)
         }
       }
       Section(header: Text("Action")) {
         DefaultRow(title: shortcut.action.title) {
-          ActionsList(action: self.$shortcut.action)
+          ActionsList(action: self.$shortcut.action, commandsMode: self.commandsMode)
         }
       }
     }
@@ -107,31 +116,59 @@ struct ShortcutConfigView: View {
 struct ShortcutsConfigView: View {
   @EnvironmentObject var nav: Nav
   @ObservedObject var config: KBConfig
+  var commandsMode: Bool
   
   var body: some View {
     List {
-      ForEach(config.shortcuts, id: \.id) { shortcut in
+      ForEach(_list, id: \.id) { shortcut in
         DefaultRow(title: shortcut.title, description: shortcut.description) {
-          ShortcutConfigView(config: self.config, shortcut: shortcut)
+          ShortcutConfigView(
+            config: self.config,
+            shortcut: shortcut,
+            commandsMode: self.commandsMode
+          )
         }
       }
-      .onDelete { offsets in
-        self.config.shortcuts.remove(atOffsets: offsets)
-      }
+      .onDelete(perform: _onDelete)
     }
     .listStyle(GroupedListStyle())
-    .navigationBarTitle("Shortcuts")
-    .navigationBarItems(trailing: Button(
-      action: {
-        let nav = self.nav
-        let shortcut = KeyShortcut(action: .none, modifiers: [], input: "")
-        self.config.shortcuts.append(shortcut)
-        self.config.touch()
-        let rootView = ShortcutConfigView(config: self.config, shortcut: shortcut).environmentObject(nav)
-        let vc = UIHostingController(rootView: rootView)
-        nav.navController.pushViewController(vc, animated: true)
-      },
-      label: { Text("Add") }
-    ))
+    .navigationBarItems(
+      trailing: Button(
+        action: _addAction,
+        label: { Text("Add") }
+      )
+    )
+  }
+  
+  private func _addAction() {
+    let action: KeyBindingAction = commandsMode ? KeyBindingAction.command(.clipboardCopy) : .none
+    let shortcut = KeyShortcut(action: action, modifiers: [], input: "")
+    config.shortcuts.append(shortcut)
+    config.touch()
+    let rootView = ShortcutConfigView(
+      config: config,
+      shortcut: shortcut,
+      commandsMode: commandsMode
+    ).environmentObject(nav)
+    let vc = UIHostingController(rootView: rootView)
+    nav.navController.pushViewController(vc, animated: true)
+  }
+  
+  private var _list: [KeyShortcut] {
+    config
+      .shortcuts
+      .filter({$0.action.isCommand == commandsMode})
+      .sorted(by: {$0.title < $1.title})
+  }
+  
+  private func _onDelete(offsets: IndexSet) {
+    let list = self._list
+    var toDelete: [KeyShortcut] = []
+    for idx in offsets {
+      toDelete.append(list[idx])
+    }
+    for v in toDelete {
+      self.config.shortcuts.removeAll(where: {$0 === v})
+    }
   }
 }

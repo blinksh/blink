@@ -107,18 +107,39 @@ enum KeyBindingAction: Codable, Identifiable {
     }
   }
   
+  var isCommand: Bool {
+    switch self {
+    case .command: return true
+    default: return false
+    }
+  }
+  
+  static func press(_ keyCode: KeyCode, _ mods: UIKeyModifierFlags) -> KeyBindingAction {
+    KeyBindingAction.press(keyCode, mods: mods.rawValue)
+  }
+  
   static var pressList: [KeyBindingAction] {
     [
-      KeyBindingAction.press(.backquote, mods: UIKeyModifierFlags([]).rawValue),
-      KeyBindingAction.press(.escape, mods: UIKeyModifierFlags([]).rawValue),
-      KeyBindingAction.press(.space, mods: UIKeyModifierFlags([.control]).rawValue),
-      KeyBindingAction.press(.f11, mods: UIKeyModifierFlags([]).rawValue),
-      KeyBindingAction.press(.f12, mods: UIKeyModifierFlags([]).rawValue),
+      .press(.escape,    []),
+      .press(.space,     [.control]),
+      .press(.backquote, []),
+      .press(.f1,        []),
+      .press(.f2,        []),
+      .press(.f3,        []),
+      .press(.f4,        []),
+      .press(.f5,        []),
+      .press(.f6,        []),
+      .press(.f7,        []),
+      .press(.f8,        []),
+      .press(.f9,        []),
+      .press(.f10,       []),
+      .press(.f11,       []),
+      .press(.f12,       []),
     ]
   }
   
   static var commandList: [KeyBindingAction] {
-    Command.allCases.map({KeyBindingAction.command($0) })
+    Command.allCases.map({ KeyBindingAction.command($0) })
   }
   
   var title: String {

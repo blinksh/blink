@@ -31,7 +31,6 @@
 
 
 import SwiftUI
-//import Combine
 
 private func _row(_ key: KeyConfig) -> some View {
   DefaultRow(title: key.fullName, description: key.description) {
@@ -58,7 +57,11 @@ struct KBConfigView: View {
     List {
       Section(header: Text("Blink")) {
         DefaultRow(title: "Shortcuts") {
-          ShortcutsConfigView(config: self.config)
+          ShortcutsConfigView(
+            config: self.config,
+            commandsMode: true
+          )
+          .navigationBarTitle("Shortcuts")
         }
       }
       Section(header: Text("Terminal")) {
@@ -69,6 +72,13 @@ struct KBConfigView: View {
         _pairRow(config.command)
         _bindingRow(config.fnBinding,     title: "Functional Keys", last: "[0-9]")
         _bindingRow(config.cursorBinding, title: "Cursor Keys",     last: "[Arrow]")
+        DefaultRow(title: "Custom Presses") {
+          ShortcutsConfigView(
+            config: self.config,
+            commandsMode: false
+          )
+          .navigationBarTitle("Presses")
+        }
       }
     }
     .listStyle(GroupedListStyle())

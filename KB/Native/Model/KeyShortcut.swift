@@ -62,6 +62,7 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
   var id: String { "\(action.id)-\(modifiers)-\(input)" }
   
   var title: String { action.title }
+  
   var description: String {
     
     var res = modifiers.toSymbols()
