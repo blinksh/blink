@@ -102,14 +102,6 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)initParamaters:(int)argc argv:(char **)argv
 {
-  _escapeKey = @"\x1e";
-  char *envMoshEscapeKey = getenv("MOSH_ESCAPE_KEY");
-  if (envMoshEscapeKey) {
-    NSString *newEscape = @(envMoshEscapeKey);
-    if (newEscape.length == 1) {
-      _escapeKey = newEscape;
-    }
-  }
   
   NSString *ssh, *sshPort, *sshIdentity;
   BOOL sshTTY = YES;
@@ -249,6 +241,15 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)main:(int)argc argv:(char **)argv
 {
+  _escapeKey = @"\x1e";
+  char *envMoshEscapeKey = getenv("MOSH_ESCAPE_KEY");
+  if (envMoshEscapeKey) {
+    NSString *newEscape = @(envMoshEscapeKey);
+    if (newEscape.length == 1) {
+      _escapeKey = newEscape;
+    }
+  }
+  
   NSData *encodedState = self.sessionParams.encodedState;
   if (encodedState == nil) {
     int code = [self initParamaters:argc argv:argv];
@@ -488,7 +489,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 - (void)kill
 {
   // MOSH-ESC .
-  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey, @"\x2e"]];
+  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey ?: @"\x1e", @"\x2e"]];
   pthread_kill(_tid, SIGINT);
 }
 
@@ -496,7 +497,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   _sema = dispatch_semaphore_create(0);
   // MOSH-ESC C-z
-  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey, @"\x1a"]];
+  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey ?: @"\x1e", @"\x1a"]];
   dispatch_semaphore_wait(_sema, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
 }
 
