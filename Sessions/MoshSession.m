@@ -82,7 +82,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 @implementation MoshSession {
   int _debug;
-//  NSLock * _lock;
+  NSString *_escapeKey;
   dispatch_semaphore_t _sema;
   CFTypeRef _selfRef;
 }
@@ -102,6 +102,15 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (int)initParamaters:(int)argc argv:(char **)argv
 {
+  _escapeKey = @"\x1e";
+  char *envMoshEscapeKey = getenv("MOSH_ESCAPE_KEY");
+  if (envMoshEscapeKey) {
+    NSString *newEscape = @(envMoshEscapeKey);
+    if (newEscape.length == 1) {
+      _escapeKey = newEscape;
+    }
+  }
+  
   NSString *ssh, *sshPort, *sshIdentity;
   BOOL sshTTY = YES;
   BOOL useSSH2 = NO;
@@ -478,29 +487,25 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)kill
 {
-//  char ctrl6 = '6' - 'a' + 1;
-  [_device writeIn:@"\x1e\x2e"];
-//  [_device writeIn:[NSString stringWithFormat:@"%c.", ctrl6]];
+  // MOSH-ESC .
+  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey, @"\x2e"]];
   pthread_kill(_tid, SIGINT);
 }
 
 - (void)suspend
 {
   _sema = dispatch_semaphore_create(0);
-  [_device write:@"\x1e\x1a"];
-  NSLog(@"start waiting");
+  // MOSH-ESC C-z
+  [_device write:[NSString stringWithFormat:@"%@%@", _escapeKey, @"\x1a"]];
   dispatch_semaphore_wait(_sema, dispatch_time(DISPATCH_TIME_NOW, 2 * NSEC_PER_SEC));
-  NSLog(@"finished waiting");
 }
 
 - (void)onStateEncoded: (NSData *) encodedState
 {
-  NSLog(@"encodedState: %@", encodedState);
   self.sessionParams.encodedState = encodedState;
-  NSLog(@"signalling");
-  dispatch_semaphore_signal(_sema);
-  
-  NSLog(@"signalled");
+  if (_sema) {
+    dispatch_semaphore_signal(_sema);
+  }
 }
 
 - (void)dealloc
