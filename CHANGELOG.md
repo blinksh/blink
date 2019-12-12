@@ -10,8 +10,11 @@ This is a very important release with just a single change. We had to rewrite al
 * You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence within Blink.
 * Accents are now considered too for specific sequences so if you have an international keyboard like French, Danish, etc... let us know how things are looking like.
 
-## Changes in Build 177
+## Changes in Build 179
 
+* Profile file env vars support escapes.
+* Add support for MOSH_ESCAPE_KEY. #875
+* Fix for ctrl sequences on dvorak kb
 * Bring back 3f menu
 * Selection doesn't resign software KB
 * Shortcut for config is working again
