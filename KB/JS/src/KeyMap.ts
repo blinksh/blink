@@ -107,6 +107,7 @@ export default class KeyMap {
     // any further warnings here.
     console.warn(`No definition for (keyCode ${keyCode})`);
     keyDef = _unknownKeyDef;
+
     this.addKeyDef(keyCode, keyDef);
 
     return keyDef;
@@ -303,11 +304,11 @@ export default class KeyMap {
     add({ keyCode: 111, keyCap: '[KP/]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 110, keyCap: '[KP.]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
+    this._reverseDefs['Backqoute']    = this._defs[192];
     this._reverseDefs['BracketLeft']  = this._defs[229];
     this._reverseDefs['BracketRight'] = this._defs[221];
-    this._reverseDefs['Space']        = this._defs[32];
-    this._reverseDefs['Backqoute']    = this._defs[192];
     this._reverseDefs['Slash']        = this._defs[191];
+    this._reverseDefs['Space']        = this._defs[32];
   }
 
   keyCode(ch: string): number {
@@ -354,52 +355,77 @@ export default class KeyMap {
   };
 
   _onSel: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
-    if (def.keyCap == '[ArrowLeft]' || def.keyCap == 'hH') {
+    let {
+      ArrowDown,
+      ArrowLeft,
+      ArrowRight,
+      ArrowUp,
+      Escape,
+      // -- vim
+      h,
+      j,
+      k,
+      l,
+      o,
+      // -- emacs
+      b,
+      f,
+      n,
+      p,
+      w,
+      x,
+      y,
+    } = this._reverseDefs;
+
+    const selOp = (arg: {}) => op('selection', arg);
+
+    if (def === ArrowLeft || def === h) {
       let gran = e.shift ? 'word' : 'character';
-      op('selection', {dir: 'left', gran});
-    } else if (def.keyCap == '[ArrowRight]' || def.keyCap == 'lL') {
+      selOp({dir: 'left', gran});
+    } else if (def === ArrowRight || def === l) {
       let gran = e.shift ? 'word' : 'character';
-      op('selection', {dir: 'right', gran});
-    } else if (def.keyCap == '[ArrowUp]' || def.keyCap == 'kK') {
-      op('selection', {dir: 'left', gran: 'line'});
-    } else if (def.keyCap == '[ArrowDown]' || def.keyCap == 'jJ') {
-      op('selection', {dir: 'right', gran: 'line'});
-    } else if (def.keyCap == 'oO' || def.keyCap == 'xX') {
-      op('selection', {command: 'change'});
-    } else if (def.keyCap == 'nN' && e.ctrl) {
-      op('selection', {dir: 'right', gran: 'line'});
-    } else if (def.keyCap == 'pP') {
+      selOp({dir: 'right', gran});
+    } else if (def === ArrowUp || def === k) {
+      selOp({dir: 'left', gran: 'line'});
+    } else if (def === ArrowDown || def === j) {
+      selOp({dir: 'right', gran: 'line'});
+    } else if (def === o || def === x) {
+      selOp({command: 'change'});
+    } else if (def === n && e.ctrl) {
+      selOp({dir: 'right', gran: 'line'});
+    } else if (def === p) {
       if (e.ctrl) {
-        op('selection', {dir: 'left', gran: 'line'});
+        selOp({dir: 'left', gran: 'line'});
       } else if (!e.shift && !e.alt && !e.meta) {
-        op('selection', {command: 'paste'});
+        selOp({command: 'paste'});
       }
-    } else if (def.keyCap == 'bB') {
+    } else if (def === b) {
       if (e.ctrl) {
-        op('selection', {dir: 'left', gran: 'character'});
+        selOp({dir: 'left', gran: 'character'});
       } else if (e.alt) {
-        op('selection', {dir: 'left', gran: 'word'});
+        selOp({dir: 'left', gran: 'word'});
       } else {
         // ???
-        op('selection', {dir: 'left', gran: 'word'});
+        selOp({dir: 'left', gran: 'word'});
       }
-    } else if (def.keyCap == 'wW') {
+    } else if (def === w) {
       if (e.alt) {
-        op('selection', {command: 'copy'});
+        selOp({command: 'copy'});
       } else {
-        op('selection', {dir: 'right', gran: 'word'});
+        selOp({dir: 'right', gran: 'word'});
       }
-    } else if (def.keyCap == 'fF') {
+    } else if (def === f) {
       if (e.ctrl) {
-        op('selection', {dir: 'right', gran: 'character'});
+        selOp({dir: 'right', gran: 'character'});
       } else if (e.alt) {
-        op('selection', {dir: 'right', gran: 'word'});
+        selOp({dir: 'right', gran: 'word'});
       }
-    } else if (def.keyCap == 'yY') {
-      op('selection', {command: 'copy'});
-    } else if (def.keyCap == '[Escape]') {
-      op('selection', {command: 'cancel'});
+    } else if (def === y) {
+      selOp({command: 'copy'});
+    } else if (def === Escape) {
+      selOp({command: 'cancel'});
     }
+
     return CANCEL;
   };
 }
