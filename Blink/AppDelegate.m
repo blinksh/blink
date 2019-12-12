@@ -139,7 +139,14 @@ void __setupProcessEnv() {
     [parts removeObjectAtIndex:0];
     NSString *varValue = [[parts componentsJoinedByString:@"="] stringByTrimmingCharactersInSet:whiteSpace];
     if ([varValue hasSuffix:@"\""] || [varValue hasPrefix:@"\""]) {
+      NSData *data =  [varValue dataUsingEncoding:NSUTF8StringEncoding];
       varValue = [varValue substringWithRange:NSMakeRange(1, varValue.length - 1)];
+      if (data) {
+        id value = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:nil];
+        if ([value isKindOfClass:[NSString class]]) {
+          varValue = value;
+        }
+      }
     }
     if (varValue.length == 0) {
       return;
