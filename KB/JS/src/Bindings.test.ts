@@ -1,4 +1,5 @@
 import Bindings from './Bindings';
+
 const shift = {
   idLeft: '16:1',
   idRight: '16:2',

@@ -269,12 +269,12 @@ export default class KeyMap {
     add({ keyCode: 19,  keyCap: '[BREAK]',  normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
 
     // block of six keys above the arrows
-    add({ keyCode: 45, keyCap: '[INSERT]', normal: CSI + '2~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 36, keyCap: '[HOME]',   normal: ESC + 'OH', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 33, keyCap: '[PGUP]',   normal: CSI + '5~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 46, keyCap: '[DEL]',    normal: CSI + '3~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 35, keyCap: '[END]',    normal: ESC + 'OF', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 34, keyCap: '[PGDOWN]', normal: CSI + '6~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 45, keyCap: '[Insert]',   normal: CSI + '2~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 36, keyCap: '[Home]',     normal: ESC + 'OH', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 33, keyCap: '[PageUp]',   normal: CSI + '5~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 46, keyCap: '[DEL]',      normal: CSI + '3~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 35, keyCap: '[End]',      normal: ESC + 'OF', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 34, keyCap: '[PageDown]', normal: CSI + '6~', ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     // arrow keys
     add({ keyCode: 38, keyCap: '[ArrowUp]',    normal: sl(ac(CSI + 'A', SS3 + 'A')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
@@ -303,11 +303,11 @@ export default class KeyMap {
     add({ keyCode: 111, keyCap: '[KP/]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 110, keyCap: '[KP.]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
-    this._reverseDefs['BracketLeft'] = this._defs[229];
+    this._reverseDefs['BracketLeft']  = this._defs[229];
     this._reverseDefs['BracketRight'] = this._defs[221];
-    this._reverseDefs['Space'] = this._defs[32];
-    this._reverseDefs['Backqoute'] = this._defs[192];
-    this._reverseDefs['Slash'] = this._defs[191];
+    this._reverseDefs['Space']        = this._defs[32];
+    this._reverseDefs['Backqoute']    = this._defs[192];
+    this._reverseDefs['Slash']        = this._defs[191];
   }
 
   keyCode(ch: string): number {
@@ -328,7 +328,7 @@ export default class KeyMap {
     if (nonPrintable) {
       return def.keyCap.replace(/[\[\]]/g, '');
     }
-    return def.keyCap[0];
+    return def.keyCap.substr(0, 1);
   }
 
   // prettier-ignore

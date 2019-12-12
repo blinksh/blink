@@ -143,10 +143,12 @@ function _patchKeyDown(
     return keyDown;
   }
 
+  // iOS reports incorrect keyCode for h,i,c,m and [ with Control key pressed
+  // TODO: also check other kb layouts and langs.
   if (e.ctrlKey) {
     if (
-      (e.keyCode == 9 && e.code == 'KeyI') ||
       (e.keyCode == 8 && e.code == 'KeyH') ||
+      (e.keyCode == 9 && e.code == 'KeyI') ||
       (e.keyCode == 13 && e.code == 'KeyC') ||
       (e.keyCode == 13 && e.code == 'KeyM') ||
       (e.keyCode == 27 && e.code == 'BracketLeft')
