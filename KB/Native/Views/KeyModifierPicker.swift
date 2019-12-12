@@ -40,8 +40,8 @@ struct KeyModifierPicker: View {
     List {
       Section {
         _mod(.none, title: "Default")
-        _mod(.escape)
         _mod(.bit8)
+        _mod(.escape)
         _mod(.control)
         _mod(.shift)
         _mod(.meta)

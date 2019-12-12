@@ -32,8 +32,8 @@
 
 enum KeyModifier: String, Codable {
   case none       = ""
-  case escape     = "Escape"
   case bit8       = "8-bit"
+  case escape     = "Escape"
   case shift      = "Shift"
   case control    = "Control"
   case meta       = "Meta"
