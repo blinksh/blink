@@ -286,26 +286,26 @@ export default class KeyMap {
     add({ keyCode: 39, keyCap: '[ArrowRight]', normal: sl(ac(CSI + 'C', SS3 + 'C')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 37, keyCap: '[ArrowLeft]',  normal: sl(ac(CSI + 'D', SS3 + 'D')), ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
-    add({ keyCode: 144, keyCap: '[NUMLOCK]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
+    add({ keyCode: 144, keyCap: '[NumLock]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
 
-    add({ keyCode: 12, keyCap: '[CLEAR]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
+    add({ keyCode: 12, keyCap: '[Clear]', normal: PASS, ctrl: PASS, alt: PASS, meta: PASS });
 
     // keypad with numlock
-    add({ keyCode: 96,  keyCap: '[KP0]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 97,  keyCap: '[KP1]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 98,  keyCap: '[KP2]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 99,  keyCap: '[KP3]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 100, keyCap: '[KP4]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 101, keyCap: '[KP5]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 102, keyCap: '[KP6]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 103, keyCap: '[KP7]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 104, keyCap: '[KP8]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 105, keyCap: '[KP9]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 107, keyCap: '[KP+]', normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
-    add({ keyCode: 109, keyCap: '[KP-]', normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
-    add({ keyCode: 106, keyCap: '[KP*]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 111, keyCap: '[KP/]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 110, keyCap: '[KP.]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 96,  keyCap: '[Numpad0]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 97,  keyCap: '[Numpad1]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 98,  keyCap: '[Numpad2]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 99,  keyCap: '[Numpad3]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 100, keyCap: '[Numpad4]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 101, keyCap: '[Numpad5]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 102, keyCap: '[Numpad6]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 103, keyCap: '[Numpad7]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 104, keyCap: '[Numpad8]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 105, keyCap: '[Numpad9]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 107, keyCap: '[NumpadAdd]',      normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
+    add({ keyCode: 109, keyCap: '[NumpadSubtract]', normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
+    add({ keyCode: 106, keyCap: '[NumpadMultiply]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 111, keyCap: '[NumpadDivide]',   normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 110, keyCap: '[NumpadDicimal]',  normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
 
     this._reverseDefs['Backqoute']    = this._defs[192];
     this._reverseDefs['BracketLeft']  = this._defs[229];
