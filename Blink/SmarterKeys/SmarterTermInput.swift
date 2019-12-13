@@ -124,11 +124,11 @@ class SmarterTermInput: KBWebView {
     let style = BKDefaults.keyboardStyle();
     switch style {
     case .light:
-      self.overrideUserInterfaceStyle = .light
+      overrideUserInterfaceStyle = .light
     case .dark:
-      self.overrideUserInterfaceStyle = .dark
+      overrideUserInterfaceStyle = .dark
     default:
-      self.overrideUserInterfaceStyle = .unspecified
+      overrideUserInterfaceStyle = .unspecified
     }
   }
 
@@ -283,12 +283,15 @@ class SmarterTermInput: KBWebView {
   }
   
   func refreshInputViews() {
-    if traitCollection.userInterfaceIdiom != .pad {
+    guard
+      traitCollection.userInterfaceIdiom == .pad,
+      let assistantItem = contentView()?.inputAssistantItem
+    else {
       return;
     }
 
     // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
-    contentView()?.inputAssistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
+    assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
     reloadInputViews()
     if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
       _removeSmartKeys()
@@ -343,13 +346,18 @@ class SmarterTermInput: KBWebView {
   }
   
   override func onIME(_ event: String, data: String) {
+    guard let deviceView = device?.view
+    else {
+      return
+    }
+    
     if event == "compositionstart" && data.isEmpty {
     } else if event == "compositionend" {
       _kbView.traits.isIME = false
-      device?.view?.setIme("", completionHandler: nil)
-    } else {
+      deviceView.setIme("", completionHandler: nil)
+    } else { // "compositionupdate"
       _kbView.traits.isIME = true
-      device?.view?.setIme(data) {  (data, error) in
+      deviceView.setIme(data) {  (data, error) in
         guard
           error == nil,
           let resp = data as? [String: Any],
@@ -358,9 +366,10 @@ class SmarterTermInput: KBWebView {
           return
         }
         var rect = NSCoder.cgRect(for: markedRect)
-        let suggestionsHeight: CGFloat = 44
         let maxY = rect.maxY
         let minY = rect.minY
+        let suggestionsHeight: CGFloat = 44
+        
         if maxY - suggestionsHeight < 0 {
           rect.origin.y = maxY
         } else {
@@ -370,14 +379,10 @@ class SmarterTermInput: KBWebView {
         rect.size.height = 0
         rect.size.width = 0
         
-        if let r = self.device?.view?.convert(rect, to: self.superview) {
-          self.frame = r
-        }
+        self.frame = deviceView.convert(rect, to: self.superview)
       }
     }
   }
-  
-  override var canBecomeFirstResponder: Bool { true }
   
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
