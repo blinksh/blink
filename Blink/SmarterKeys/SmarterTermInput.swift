@@ -287,7 +287,7 @@ class SmarterTermInput: KBWebView {
       return;
     }
 
-    // Double relaod inputs fixes: https://github.com/blinksh/blink/issues/803
+    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
     contentView()?.inputAssistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
     reloadInputViews()
     if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
@@ -392,8 +392,12 @@ class SmarterTermInput: KBWebView {
   
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)
-    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
-    contentView()?.inputAssistantItem.trailingBarButtonGroups = []
+    guard let item = contentView()?.inputAssistantItem
+    else {
+      return
+    }
+    item.leadingBarButtonGroups = []
+    item.trailingBarButtonGroups = []
   }
   
   func setupAccessoryView() {
@@ -403,7 +407,6 @@ class SmarterTermInput: KBWebView {
       v.isHidden = false
     } else {
       _inputAccessoryView = KBAccessoryView(kbView: _kbView)
-      
     }
   }
   
@@ -412,14 +415,15 @@ class SmarterTermInput: KBWebView {
   }
   
   func setupAssistantItem() {
-    guard let contentView = contentView()
+    guard let item = contentView()?.inputAssistantItem
     else {
       return
     }
-    let proxy = KBProxy(kbView: _kbView)
-    let item = UIBarButtonItem(customView: proxy)
-    contentView.inputAssistantItem.leadingBarButtonGroups = []
-    contentView.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+
+    let proxyItem = UIBarButtonItem(customView: KBProxy(kbView: _kbView))
+    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
+    item.leadingBarButtonGroups = []
+    item.trailingBarButtonGroups = [group]
   }
   
   func _setupWithKBNotification(notification: Notification) {
