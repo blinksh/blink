@@ -36,6 +36,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface KBWebViewBase : WKWebView
 
+@property (readonly) UIKeyModifierFlags trackingModifierFlags;
+
 - (void)reportStateReset;
 - (void)reportLang:(NSString *) lang;
 - (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;

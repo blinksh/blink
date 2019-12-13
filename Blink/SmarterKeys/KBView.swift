@@ -372,15 +372,23 @@ extension KBView: KBKeyViewDelegate {
     
     defer { turnOffUntracked() }
     
+    guard let keyInput = keyInput
+    else {
+      return
+    }
+    
     let keyCode = value.keyCode
     var keyId = keyCode.id
     keyId += ":\(value.text)"
     
     var flags = traits.modifierFlags
+    if keyInput.trackingModifierFlags.contains(.shift) {
+      flags.insert(.shift)
+    }
     
     if let input = value.input,
       flags.rawValue > 0,
-      let (cmd, responder) = keyInput?.matchCommand(input: input, flags: flags),
+      let (cmd, responder) = keyInput.matchCommand(input: input, flags: flags),
       let action = cmd.action  {
       responder.perform(action, with: cmd)
       return
@@ -390,7 +398,7 @@ extension KBView: KBKeyViewDelegate {
       flags.remove(.command)
     }
     
-    keyInput?.reportToolbarPress(flags, keyId: keyId)
+    keyInput.reportToolbarPress(flags, keyId: keyId)
   }
   
   func keyViewCancelled(keyView: KBKeyView) {

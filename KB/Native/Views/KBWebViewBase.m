@@ -304,11 +304,11 @@
     });
   } else if ([@"mods" isEqual:op]) {
     NSNumber *mods = body[@"mods"];
-    UIKeyModifierFlags flags = (UIKeyModifierFlags)mods.integerValue;
-    if (flags == 0) {
+    _trackingModifierFlags = (UIKeyModifierFlags)mods.integerValue;
+    if (_trackingModifierFlags == 0) {
       _activeModsCommand = nil;
     } else {
-      _activeModsCommand = [self _modifiersCommand:flags];
+      _activeModsCommand = [self _modifiersCommand:_trackingModifierFlags];
     }
     [self _rebuildKeyCommands];
     [self onMods];
