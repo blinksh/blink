@@ -76,8 +76,15 @@ class SmarterTermInput: KBWebView {
       selector: #selector(_inputModeChanged),
       name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
 
-    nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
-    nc.addObserver(self, selector: #selector(_setKBStyle), name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
+    nc.addObserver(
+      self,
+      selector: #selector(_updateSettings),
+      name: NSNotification.Name.BKUserConfigChanged, object: nil)
+    
+    nc.addObserver(
+      self,
+      selector: #selector(_setKBStyle),
+      name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
   }
   
   required init?(coder: NSCoder) {
@@ -176,7 +183,7 @@ class SmarterTermInput: KBWebView {
       return
     }
     
-    device.view.displayInput(data)
+    device.view?.displayInput(data)
     
     let ctrlC = "\u{0003}"
     let ctrlD = "\u{0004}"
@@ -249,7 +256,7 @@ class SmarterTermInput: KBWebView {
   
   override func becomeFirstResponder() -> Bool {
 
-    let res = super.becomeFirstResponder()//contentView()?.becomeFirstResponder()
+    let res = super.becomeFirstResponder()
 
     device?.focus()
     _kbView.isHidden = false
@@ -405,10 +412,14 @@ class SmarterTermInput: KBWebView {
   }
   
   func setupAssistantItem() {
+    guard let contentView = contentView()
+    else {
+      return
+    }
     let proxy = KBProxy(kbView: _kbView)
     let item = UIBarButtonItem(customView: proxy)
-    contentView()?.inputAssistantItem.leadingBarButtonGroups = []
-    contentView()?.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
+    contentView.inputAssistantItem.leadingBarButtonGroups = []
+    contentView.inputAssistantItem.trailingBarButtonGroups = [UIBarButtonItemGroup(barButtonItems: [item], representativeItem: nil)]
   }
   
   func _setupWithKBNotification(notification: Notification) {
