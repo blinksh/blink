@@ -100,7 +100,7 @@ class SmarterTermInput: KBWebView {
   override func configure(_ cfg: KBConfig) {
     blinkKeyCommands = cfg.shortcuts.map { shortcut in
       let cmd = BlinkCommand(
-        title: shortcut.action.isCommand ? shortcut.title : "",
+        title: shortcut.action.isCommand ? shortcut.title : "", // Show only commands in cmd help view
         image: nil,
         action: #selector(SpaceController._onBlinkCommand(_:)),
         input: shortcut.input,
@@ -172,16 +172,20 @@ class SmarterTermInput: KBWebView {
       _kbView.turnOffUntracked()
     }
     
-    device?.view.displayInput(data)
+    guard let device = device else {
+      return
+    }
+    
+    device.view.displayInput(data)
     
     let ctrlC = "\u{0003}"
     let ctrlD = "\u{0004}"
     
     if data == ctrlC || data == ctrlD,
-      device?.delegate?.handleControl(data) == true {
+      device.delegate?.handleControl(data) == true {
       return
     }
-    device?.write(data)
+    device.write(data)
   }
   
   override func onCommand(_ command: String) {
@@ -253,7 +257,7 @@ class SmarterTermInput: KBWebView {
     refreshInputViews()
     
     _disableTextSelectionView()
-    return res == true
+    return res
   }
   
   private func _disableTextSelectionView() {
@@ -286,18 +290,24 @@ class SmarterTermInput: KBWebView {
   }
   
   @objc func copyLink(_ sender: Any) {
-    guard let url = device?.view?.detectedLink else {
+    guard
+      let deviceView = device?.view,
+      let url = deviceView.detectedLink
+    else {
       return
     }
     UIPasteboard.general.url = url
-    device?.view?.cleanSelection()
+    deviceView.cleanSelection()
   }
   
   @objc func openLink(_ sender: Any) {
-    guard let url = device?.view?.detectedLink else {
+    guard
+      let deviceView = device?.view,
+      let url = deviceView.detectedLink
+    else {
       return
     }
-    device?.view?.cleanSelection()
+    deviceView.cleanSelection()
     
     blink_openurl(url)
   }
