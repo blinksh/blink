@@ -52,7 +52,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-//    SmarterTermInput.shared.refreshInputViews()
     _spaceController?.currentTerm()?.resumeIfNeeded()
     _spaceController?.currentTerm()?.view?.setNeedsLayout()
     let input = SmarterTermInput.shared

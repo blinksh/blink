@@ -32,11 +32,17 @@
 
 import UIKit
 
+class BlinkCommand: UIKeyCommand {
+  var bindingAction: KeyBindingAction = .none
+}
+
 class KBWebView: KBWebViewBase {
   
   private var _loaded = false
+  private(set) var blinkKeyCommands: [BlinkCommand] = []
   
   func configure(_ cfg: KBConfig) {
+    _buildCommands(cfg)
     guard
       let data = try? JSONEncoder().encode(cfg),
       let json = String(data: data, encoding: .utf8)
@@ -44,6 +50,55 @@ class KBWebView: KBWebViewBase {
       return
     }
     report("config", arg: json as NSString)
+  }
+  
+  func _buildCommands(_ cfg: KBConfig) {
+    blinkKeyCommands = cfg.shortcuts.map { shortcut in
+      let cmd = BlinkCommand(
+        title: shortcut.action.isCommand ? shortcut.title : "", // Show only commands in cmd help view
+        image: nil,
+        action: #selector(SpaceController._onBlinkCommand(_:)),
+        input: shortcut.input,
+        modifierFlags: shortcut.modifiers,
+        propertyList: nil
+      )
+      cmd.bindingAction = shortcut.action
+      return cmd
+    }
+  }
+  
+  func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
+    var result: (UIKeyCommand, UIResponder)? = nil
+
+    var iterator: UIResponder? = self
+
+    while let responder = iterator {
+      if let cmd = responder.keyCommands?.first(
+        where: { $0.input == input && $0.modifierFlags == flags}),
+        let action = cmd.action,
+        responder.canPerformAction(action, withSender: self)
+        {
+        result = (cmd, responder)
+      }
+      iterator = responder.next
+    }
+
+    return result
+  }
+  
+  func contentView() -> UIView? {
+    scrollView.subviews.first
+  }
+  
+  func disableTextSelectionView() {
+    let subviews = scrollView.subviews
+    guard
+      subviews.count > 2,
+      let v = subviews[1].subviews.first
+    else {
+      return
+    }
+    NotificationCenter.default.removeObserver(v)
   }
   
   private func _loadKBConfigData() -> Data? {

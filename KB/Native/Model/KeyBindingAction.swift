@@ -29,9 +29,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
-import SwiftUI
-
 enum Command: String, Codable, CaseIterable {
   case windowNew
   case windowClose
