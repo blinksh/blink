@@ -161,8 +161,11 @@ export default class KeyMap {
       let action = e.alt ? a : b;
       return resolve(action, e, k);
     }
-    const ak = (a: KeyActionType, b: KeyActionType) => a;
-    const ac = (a: KeyActionType, b: KeyActionType) => b;
+    //const ak = (a: KeyActionType, b: KeyActionType) => a;
+    const ac = (a: KeyActionType, b: KeyActionType) => (e: KeyDownType, k: KeyDefType) => {
+      let action = (e.shift || e.ctrl || e.alt || e.meta) ? a : b;
+      return resolve(action, e, k);
+    }
 
     // if in selection mode, that handle with this._onSel
     const sl = (a: KeyActionType) => (e: KeyDownType, k: KeyDefType) => {
