@@ -44,6 +44,7 @@ class SmarterTermInput: KBWebView {
   required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
+    
     super.init(frame: frame, configuration: configuration)
     
     _kbView.keyInput = self
@@ -78,6 +79,7 @@ class SmarterTermInput: KBWebView {
   }
   
   override func layoutSubviews() {
+    debugPrint("KB: layoutSubviews")
     super.layoutSubviews()
     
     guard
@@ -91,21 +93,21 @@ class SmarterTermInput: KBWebView {
   }
   
   override func ready() {
+    debugPrint("KB: ready", isFirstResponder, isRealFirstResponder)
     super.ready()
     reportLang(_kbView.lang)
     
-    if traitCollection.userInterfaceIdiom == .pad {
-      _setupAssistantItem()
-    } else {
-      _setupAccessoryView()
-    }
-    
-    reloadInputViews()
+    device?.focus()
+    _kbView.isHidden = false
+    _kbView.invalidateIntrinsicContentSize()
+    _refreshInputViews()
+    disableTextSelectionView()
   }
   
  
   // overriding chain
   override var next: UIResponder? {
+//    debugPrint("KB: next")
     guard let responder = device?.view?.superview
     else {
       return super.next
@@ -118,6 +120,7 @@ class SmarterTermInput: KBWebView {
   }
   
   @objc func _inputModeChanged() {
+    debugPrint("KB: _inputModeChanged")
     DispatchQueue.main.async {
       let lang = self.textInputMode?.primaryLanguage ?? ""
       self._kbView.lang = lang
@@ -126,36 +129,48 @@ class SmarterTermInput: KBWebView {
   }
   
   override var inputAssistantItem: UITextInputAssistantItem {
+    debugPrint("KB: inputAssistantItem", super.inputAssistantItem.trailingBarButtonGroups.count)
     let item = super.inputAssistantItem
     if item.trailingBarButtonGroups.count > 1 {
-      item.leadingBarButtonGroups = []
       item.trailingBarButtonGroups = [item.trailingBarButtonGroups[0]]
-      _kbView.setNeedsLayout()
     }
+    if item.trailingBarButtonGroups.count > 0 {
+      item.leadingBarButtonGroups = []
+    }
+    _kbView.setNeedsLayout()
     return item
   }
   
   override func becomeFirstResponder() -> Bool {
+    debugPrint("KB: becomeFirstResponder")
     let res = super.becomeFirstResponder()
+    disableTextSelectionView()
 
+    if !webViewReady {
+      return res
+    }
+    
     device?.focus()
     _kbView.isHidden = false
+    _inputAccessoryView?.isHidden = false
     _kbView.invalidateIntrinsicContentSize()
     _refreshInputViews()
-    disableTextSelectionView()
     
     return res
   }
   
   var isRealFirstResponder: Bool {
-    contentView()?.isFirstResponder == true
+    debugPrint("KB: isRealFirstResponder")
+    return contentView()?.isFirstResponder == true
   }
   
   private func _refreshInputViews() {
+    debugPrint("KB: _refreshInputViews")
     guard
       traitCollection.userInterfaceIdiom == .pad,
       let assistantItem = contentView()?.inputAssistantItem
     else {
+      contentView()?.reloadInputViews()
       return;
     }
 
@@ -164,11 +179,12 @@ class SmarterTermInput: KBWebView {
     reloadInputViews()
     if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
       _removeSmartKeys()
-      reloadInputViews()
     }
+//    reloadInputViews()
   }
   
   override func resignFirstResponder() -> Bool {
+    debugPrint("KB: resignFirstResponder")
     let res = super.resignFirstResponder()
     if res {
       device?.blur()
@@ -180,10 +196,11 @@ class SmarterTermInput: KBWebView {
   }
   
   private func _setupAccessoryView() {
+    debugPrint("KB: _setupAccessoryView")
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
-    if let v = _inputAccessoryView as? KBAccessoryView {
-      v.isHidden = false
+    if let _ = _inputAccessoryView as? KBAccessoryView {
+//      v.isHidden = false
     } else {
       _inputAccessoryView = KBAccessoryView(kbView: _kbView)
     }
@@ -194,10 +211,8 @@ class SmarterTermInput: KBWebView {
   }
   
   private func _setupAssistantItem() {
-    guard let item = contentView()?.inputAssistantItem
-    else {
-      return
-    }
+    debugPrint("KB: _setupAssistantItem")
+    let item = inputAssistantItem
 
     let proxyItem = UIBarButtonItem(customView: KBProxy(kbView: _kbView))
     let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
@@ -206,6 +221,7 @@ class SmarterTermInput: KBWebView {
   }
   
   private func _removeSmartKeys() {
+    debugPrint("KB: _removeSmartKeys")
     _inputAccessoryView = UIView(frame: .zero)
     guard let item = contentView()?.inputAssistantItem
     else {
@@ -218,6 +234,7 @@ class SmarterTermInput: KBWebView {
   // - MARK: Keyboard Frame Events
   
   private func _setupWithKBNotification(notification: Notification) {
+    debugPrint("KB: _setupWithKBNotification")
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
@@ -291,10 +308,13 @@ class SmarterTermInput: KBWebView {
   }
 
   override func _keyboardDidChangeFrame(_ notification: Notification) {
-    
+    super._keyboardDidChangeFrame(notification)
+    debugPrint("KB: _keyboardDidChangeFrame")
   }
   
   override func _keyboardWillChangeFrame(_ notification: Notification) {
+    super._keyboardWillChangeFrame(notification)
+    debugPrint("KB: _keyboardWillChangeFrame")
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
@@ -342,18 +362,24 @@ class SmarterTermInput: KBWebView {
   }
   
   override func _keyboardWillShow(_ notification: Notification) {
+    super._keyboardWillShow(notification)
+    debugPrint("KB: _keyboardWillShow")
     _setupWithKBNotification(notification: notification)
   }
   
   override func _keyboardWillHide(_ notification: Notification) {
-//    _setupWithKBNotification(notification: notification)
+    super._keyboardWillHide(notification)
+    debugPrint("KB: _keyboardWillHide")
   }
   
   override func _keyboardDidHide(_ notification: Notification) {
-    
+    super._keyboardDidHide(notification)
+    debugPrint("KB: _keyboardDidHide")
   }
   
   override func _keyboardDidShow(_ notification: Notification) {
+    super._keyboardDidShow(notification)
+    debugPrint("KB: _keyboardDidShow")
     _kbView.invalidateIntrinsicContentSize()
     _keyboardWillChangeFrame(notification)
   }
@@ -460,6 +486,7 @@ extension SmarterTermInput {
 
 extension SmarterTermInput {
   @objc private func _setupStyle() {
+      debugPrint("KB: _setupStyle")
      tintColor = .cyan
      switch BKDefaults.keyboardStyle() {
      case .light:
@@ -472,6 +499,7 @@ extension SmarterTermInput {
    }
 
    @objc private func _updateSettings() {
+    debugPrint("KB: _updateSettings")
      KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
      let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
      

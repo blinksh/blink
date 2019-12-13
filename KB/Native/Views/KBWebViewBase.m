@@ -107,29 +107,29 @@
 //  return YES;
 //}
 
-- (void)_keyboardDidChangeFrame:(NSNotification *)notification
-{
-}
-
-- (void)_keyboardWillChangeFrame:(NSNotification *)notification
-{
-}
-
-- (void)_keyboardWillShow:(NSNotification *)notification
-{
-}
-
-- (void)_keyboardWillHide:(NSNotification *)notification
-{
-}
-
-- (void)_keyboardDidHide:(NSNotification *)notification
-{
-}
-
-- (void)_keyboardDidShow:(NSNotification *)notification
-{
-}
+//- (void)_keyboardDidChangeFrame:(NSNotification *)notification
+//{
+//}
+//
+//- (void)_keyboardWillChangeFrame:(NSNotification *)notification
+//{
+//}
+//
+//- (void)_keyboardWillShow:(NSNotification *)notification
+//{
+//}
+//
+//- (void)_keyboardWillHide:(NSNotification *)notification
+//{
+//}
+//
+//- (void)_keyboardDidHide:(NSNotification *)notification
+//{
+//}
+//
+//- (void)_keyboardDidShow:(NSNotification *)notification
+//{
+//}
 
 
 
@@ -164,11 +164,13 @@
 
 - (void)reportToolbarPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
   NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+  kid = [kid stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
   [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
 }
 
 - (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
   NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
+  kid = [kid stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
   [self report:@"press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
 }
 
@@ -267,11 +269,11 @@
 }
 
 - (void)ready {
-  [self removeAssistantsFromView];
+//  [self removeAssistantsFromView];
 }
 
 - (void)removeAssistantsFromView {
-  [self _removeAssistantsFromView:self];
+//  [self _removeAssistantsFromView:self];
 }
 
 - (void)_removeAssistantsFromView:(UIView *)view {

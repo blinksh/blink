@@ -39,6 +39,7 @@ class BlinkCommand: UIKeyCommand {
 class KBWebView: KBWebViewBase {
   
   private var _loaded = false
+  private(set) var webViewReady = false
   private(set) var blinkKeyCommands: [BlinkCommand] = []
   
   func configure(_ cfg: KBConfig) {
@@ -137,6 +138,7 @@ class KBWebView: KBWebViewBase {
   
   
   override func ready() {
+    webViewReady = true
     super.ready()
     configure(loadConfig())
   }

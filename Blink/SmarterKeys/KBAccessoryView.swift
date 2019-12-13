@@ -56,6 +56,7 @@ class KBAccessoryView: UIInputView {
     kbFrame.size.height = _kbView.intrinsicContentSize.height
     _kbView.frame = kbFrame
 //    addSubview(_kbView)
+    
   }
   
   override var intrinsicContentSize: CGSize {
