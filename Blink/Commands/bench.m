@@ -58,6 +58,16 @@ const NSString *term_write_data(NSString *data) {
   return [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
 }
 
+const NSString *term_write_data_fragment(NSString *data) {
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingFragmentsAllowed error:nil];
+  
+  NSMutableData *result = [[NSMutableData alloc] initWithCapacity:jsonData.length + 11 + 2];
+  [result appendBytes:"term_write(" length:11];
+  [result appendData:jsonData];
+  [result appendBytes:");" length:2];
+  return [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
+}
+
 
 int bench_main(int argc, char *argv[]) {
   NSString *data = @"dklfajasd fkashdfk asjdflkajsdfl;kj asdkfjas;lkdf ja;lksdjf ;lkasjdf ;lkjas;dfs;d fkj alk;sdjf ;aksjdfka;lksdjf ;asjdg;ak sjdg;kajdf;ja;ld fjajdf ;lkasjdf;lkjasdkfja;lksf dj";
@@ -76,5 +86,11 @@ int bench_main(int argc, char *argv[]) {
     term_write_data(data);
   }
   puts([NSString stringWithFormat:@"term_write_data:          %@", @(-[startDate timeIntervalSinceNow])].UTF8String);
+  
+  startDate = [NSDate date];
+  for (int i = 0; i < n; i++) {
+    term_write_data_fragment(data);
+  }
+  puts([NSString stringWithFormat:@"term_write_data_fragment: %@", @(-[startDate timeIntervalSinceNow])].UTF8String);
   return 0;
 }

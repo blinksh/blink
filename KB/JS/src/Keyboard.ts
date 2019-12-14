@@ -900,15 +900,18 @@ export default class Keyboard implements IKeyboard {
     }
 
     let keyCode = parseInt(parts[1], 10);
+    let key =
+      parts[3] == '' ? ':' : parts[3] || this._keyMap.key(keyCode) || '';
 
     let keyInfo: KeyInfoType = {
       keyCode,
-      key: parts[3] || this._keyMap.key(keyCode) || '',
+      key,
       code: '',
       src: 'toolbar',
     };
     if (!skipBinding && modFlags > 0) {
-      let keyId = keyInfo.keyCode + ':' + parts[2];
+      let keyId =
+        keyInfo.keyCode + ':' + parts[2] + (keyCode == 0 ? ':' + key : '');
       this._down.add(keyId);
       let binding = this._bindings.match(this._downKeysIds());
       this._down.delete(keyId);

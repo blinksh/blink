@@ -70,6 +70,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case backquote    = "Backquote"
   case delete       = "Backspace"
   case `return`     = "Enter"
+  case semicolon    = "Semicolon"
   case unidentified = "Unidentified"
   
   var isOption: Bool {
@@ -105,6 +106,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .backquote: return "`"
     case .delete: return "⌫ Delete"
     case .return: return "↩︎ Return"
+    case .semicolon: return ";"
     case .unidentified: return "?"
     default: return rawValue
     }
@@ -180,6 +182,7 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .backquote:  return 192
     case .delete: return 8
     case .return: return 13
+    case .semicolon: return 186
     }
   }
   

@@ -32,6 +32,13 @@
 
 #import "KBWebViewBase.h"
 
+NSString *_encodeString(NSString *str);
+//{
+//  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:str options:NSJSONWritingFragmentsAllowed error:nil];
+//  return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+//}
+
+
 @interface KeyCommand: UIKeyCommand
 @end
 
@@ -163,25 +170,23 @@
 }
 
 - (void)reportToolbarPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
-  NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-  kid = [kid stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-  [self report:@"toolbar-press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
+  NSString *kid = [NSString stringWithFormat:@"%ld:%@", (long)mods, keyId];
+  [self report:@"toolbar-press" arg:_encodeString(kid)];
 }
 
 - (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId {
-  NSString *kid = [keyId stringByReplacingOccurrencesOfString:@"\"" withString:@"\\\""];
-  kid = [kid stringByReplacingOccurrencesOfString:@"\\" withString:@"\\\\"];
-  [self report:@"press" arg:[NSString stringWithFormat:@"\"%ld:%@\"", (long)mods, kid]];
+  NSString *kid = [NSString stringWithFormat:@"%ld:%@", (long)mods, keyId];
+  [self report:@"press" arg:_encodeString(kid)];
 }
 
 
 // Not sure we need up
 - (void)_imeGuardUp:(KeyCommand *)cmd {
-  [self report:@"guard-up" arg:[NSString stringWithFormat:@"\"%@\"", cmd.input]];
+  [self report:@"guard-up" arg:_encodeString(cmd.input)];
 }
 
 - (void)_imeGuardDown:(KeyCommand *)cmd {
-  [self report:@"guard-down" arg:[NSString stringWithFormat:@"\"%@\"", cmd.input]];
+  [self report:@"guard-down" arg:_encodeString(cmd.input)];
 }
 
 - (id)_inputDelegate { return self; }

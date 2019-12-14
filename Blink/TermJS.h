@@ -34,7 +34,7 @@
 
 NSString *_encodeString(NSString *str)
 {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ str ] options:0 error:nil];
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:str options:NSJSONWritingFragmentsAllowed error:nil];
   return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
@@ -44,12 +44,12 @@ NSString *term_init()
 }
 
 NSString *term_write(NSString *data) {
-  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@[ data ] options:0 error:nil];
+  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:data options:NSJSONWritingFragmentsAllowed error:nil];
   
-  NSMutableData *result = [[NSMutableData alloc] initWithCapacity:jsonData.length + 11 + 5];
+  NSMutableData *result = [[NSMutableData alloc] initWithCapacity:jsonData.length + 11 + 2];
   [result appendBytes:"term_write(" length:11];
   [result appendData:jsonData];
-  [result appendBytes:"[0]);" length:5];
+  [result appendBytes:");" length:2];
   return [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
 }
 
@@ -58,7 +58,7 @@ NSString *term_writeB64(NSData *data) {
 }
 
 NSString *term_paste(NSString *str) {
-  return [NSString stringWithFormat:@"term_paste(%@[0]);", _encodeString(str)];
+  return [NSString stringWithFormat:@"term_paste(%@);", _encodeString(str)];
 }
 
 NSString *term_clear()
@@ -143,12 +143,12 @@ NSString *term_setBoldEnabled(NSUInteger state)
 
 NSString *term_setFontFamily(NSString *family, NSString * fontSizeDetectionMethod)
 {
-  return [NSString stringWithFormat:@"term_setFontFamily(%@[0], %@[0]);", _encodeString(family), _encodeString(fontSizeDetectionMethod)];
+  return [NSString stringWithFormat:@"term_setFontFamily(%@, %@);", _encodeString(family), _encodeString(fontSizeDetectionMethod)];
 }
 
 NSString *term_appendUserCss(NSString *css)
 {
-  return [NSString stringWithFormat:@"term_appendUserCss(%@[0])", _encodeString(css)];
+  return [NSString stringWithFormat:@"term_appendUserCss(%@)", _encodeString(css)];
 }
 
 NSString *term_cleanSelection()
@@ -158,13 +158,13 @@ NSString *term_cleanSelection()
 
 NSString *term_modifySelection(NSString *direction, NSString *granularity)
 {
-  return [NSString stringWithFormat:@"term_modifySelection(%@[0], %@[0]);", _encodeString(direction), _encodeString(granularity)];
+  return [NSString stringWithFormat:@"term_modifySelection(%@, %@);", _encodeString(direction), _encodeString(granularity)];
 }
 
 NSString *term_setIme(NSString *imeText)
 {
   NSString *str = _encodeString(imeText);
-  return [NSString stringWithFormat:@"term_setIme(%@[0]);", str];
+  return [NSString stringWithFormat:@"term_setIme(%@);", str];
 }
 
 NSString *term_modifySideSelection()
@@ -173,15 +173,15 @@ NSString *term_modifySideSelection()
 }
 
 NSString *term_processKB(NSString *str) {
-  return  [NSString stringWithFormat:@"term_processKB(%@[0]);", _encodeString(str)];
+  return  [NSString stringWithFormat:@"term_processKB(%@);", _encodeString(str)];
 }
 
 NSString *term_displayInput(NSString *str, BOOL display) {
-  return  [NSString stringWithFormat:@"term_displayInput(%@[0], %@);", _encodeString(str), display ? @"true" : @"false"];
+  return  [NSString stringWithFormat:@"term_displayInput(%@, %@);", _encodeString(str), display ? @"true" : @"false"];
 }
 
 NSString *term_apiResponse(NSString *name, NSString *response) {
-  return  [NSString stringWithFormat:@"term_apiResponse(%@[0], %@[0]);", _encodeString(name), _encodeString(response)];
+  return  [NSString stringWithFormat:@"term_apiResponse(%@, %@);", _encodeString(name), _encodeString(response)];
 }
 
 
