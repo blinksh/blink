@@ -61,7 +61,7 @@ class KBAccessoryView: UIInputView {
   }
   
   override var intrinsicContentSize: CGSize {
-    var h = _kbView.intrinsicContentSize.height + safeAreaInsets.bottom
+    let h = _kbView.intrinsicContentSize.height + safeAreaInsets.bottom
     _heightContraint?.constant = h
     return CGSize(width: -1, height: h)
   }
