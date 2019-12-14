@@ -362,6 +362,16 @@ extension KBView: KBKeyViewDelegate {
     keyInput?.reportToolbarModifierFlags(traits.modifierFlags)
   }
   
+  func reset() {
+    stopRepeats()
+    turnOffUntracked()
+    traits.toggle(false, on: .cmdOn , off: .cmdOff)
+    traits.toggle(false, on: .altOn , off: .altOff)
+    traits.toggle(false, on: .escOn , off: .escOff)
+    traits.toggle(false, on: .ctrlOn , off: .ctrlOff)
+    _reportModifiers()
+  }
+  
   func keyViewTriggered(keyView: KBKeyView, value: KBKeyValue) {
     if value.isModifier {
       return
