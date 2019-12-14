@@ -79,7 +79,6 @@ class SmarterTermInput: KBWebView {
   }
   
   override func layoutSubviews() {
-    debugPrint("KB: layoutSubviews")
     super.layoutSubviews()
     
     guard
@@ -93,7 +92,6 @@ class SmarterTermInput: KBWebView {
   }
   
   override func ready() {
-    debugPrint("KB: ready", isFirstResponder, isRealFirstResponder)
     super.ready()
     reportLang(_kbView.lang)
     
@@ -107,7 +105,6 @@ class SmarterTermInput: KBWebView {
  
   // overriding chain
   override var next: UIResponder? {
-//    debugPrint("KB: next")
     guard let responder = device?.view?.superview
     else {
       return super.next
@@ -150,7 +147,7 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     _kbView.isHidden = false
     _inputAccessoryView?.isHidden = false
-    _kbView.invalidateIntrinsicContentSize()
+//    _kbView.invalidateIntrinsicContentSize()
     _refreshInputViews()
     
     return res
@@ -170,6 +167,8 @@ class SmarterTermInput: KBWebView {
       }
       contentView()?.reloadInputViews()
       _kbView.reset()
+//      _inputAccessoryView?.invalidateIntrinsicContentSize()
+      reportStateReset()
       return;
     }
 
@@ -181,6 +180,7 @@ class SmarterTermInput: KBWebView {
     }
     contentView()?.reloadInputViews()
     _kbView.reset()
+    reportStateReset()
   }
   
   override func resignFirstResponder() -> Bool {
@@ -475,7 +475,6 @@ extension SmarterTermInput {
 
 extension SmarterTermInput {
   @objc private func _setupStyle() {
-      debugPrint("KB: _setupStyle")
      tintColor = .cyan
      switch BKDefaults.keyboardStyle() {
      case .light:
@@ -488,7 +487,6 @@ extension SmarterTermInput {
    }
 
    @objc private func _updateSettings() {
-    debugPrint("KB: _updateSettings")
      KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
      let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
      
