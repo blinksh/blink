@@ -245,7 +245,11 @@ NSString *_encodeString(NSString *str);
 }
 
 - (void)_onVoice:(NSString *)event data:(NSString *)data {
-  
+  if (data.length > 0) {
+    [self onIME:@"compositionupdate" data:data];
+  } else {
+    [self onIME:@"compositionend" data:data];
+  }
 }
 
 - (void)onOut:(NSString *)data {

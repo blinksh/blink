@@ -45,6 +45,7 @@ type OpType =
   | 'ready'
   | 'command'
   | 'capture'
+  | 'voice'
   | 'guard-ime-on'
   | 'guard-ime-off'
   | 'zoom-in'

@@ -397,6 +397,7 @@ export default class Keyboard implements IKeyboard {
   _onBeforeInput = (e: InputEvent) => {
     if (this._lang == 'dictation') {
       this._voiceString = e.data;
+      op('voice', {data: e.data || ''});
       return;
     } else if (e.inputType == 'insertText') {
       this._output(e.data);
@@ -698,6 +699,9 @@ export default class Keyboard implements IKeyboard {
   _handleLang(lang: string) {
     this._lang = lang;
     this._stateReset();
+    if (lang != 'dictation') {
+      op('voice', {data: ''})
+    }
   }
 
   _output = (data: string | null) => {
