@@ -56,6 +56,7 @@ public class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
+  private var _noOpKeyCommands: [UIKeyCommand] = []
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -91,7 +92,7 @@ public class SpaceController: UIViewController {
     super.viewDidLoad()
     
     view.isOpaque = true
-  
+    
     _viewportsController.view.isOpaque = true
     _viewportsController.dataSource = self
     _viewportsController.delegate = self
@@ -223,6 +224,9 @@ public class SpaceController: UIViewController {
         }
       }
     }
+  }
+  
+  @objc func noOp(_ cmd: UIKeyCommand) {
   }
   
   func _closeCurrentSpace() {
@@ -455,13 +459,19 @@ extension SpaceController {
     guard
        view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
     else {
-      return []
+      return SmarterTermInput.shared.noOpBlinkKeyCommands
     }
     return SmarterTermInput.shared.blinkKeyCommands
     
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
+    guard
+       view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+    else {
+      return
+    }
+
     SmarterTermInput.shared.reportStateReset()
     switch cmd.bindingAction {
     case .press(let keyCode, mods: let mods):
