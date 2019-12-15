@@ -65,6 +65,24 @@ class KBConfig: ObservableObject, Codable {
     self.cursorBinding = cursorBinding
     self.shortcuts     = shortcuts
 
+    _bindNotifications()
+  }
+  
+  func reset() {
+    self.capsLock = .capsLock
+    self.shift = .shift
+    self.control = .control
+    self.option = .option
+    self.command = .command
+    self.fnBinding = KeyBinding(keys: [KeyCode.commandLeft.id])
+    self.cursorBinding = KeyBinding(keys: [KeyCode.commandLeft.id])
+    self.shortcuts = KeyShortcut.defaultList
+    
+    _bindNotifications()
+  }
+  
+  func _bindNotifications() {
+    _cancellable = Set<AnyCancellable>()
     capsLock.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     shift.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     control.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)

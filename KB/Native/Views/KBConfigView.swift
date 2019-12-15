@@ -83,6 +83,14 @@ struct KBConfigView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Keyboard")
+    .navigationBarItems(trailing:
+      Button(
+        action: {
+          self.config.reset()
+        },
+        label: { Text("Reset") }
+      )
+    )
     .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
       SmarterTermInput.shared.saveAndApply(config: self.config)
     }
