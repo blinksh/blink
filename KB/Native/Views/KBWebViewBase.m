@@ -161,8 +161,8 @@ NSString *_encodeString(NSString *str);
   [self report:@"mods-up" arg:@(cmd.modifierFlags)];
 }
 
-- (void)reportStateReset {
-  [self report:@"state-reset" arg: @""];
+- (void)reportStateReset:(BOOL)hasSelection {
+  [self report:@"state-reset" arg: hasSelection ? @"true" : @"false"];
 }
 
 - (void)reportToolbarModifierFlags:(UIKeyModifierFlags)flags {

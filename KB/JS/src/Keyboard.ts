@@ -698,7 +698,7 @@ export default class Keyboard implements IKeyboard {
   // Keyboard language change
   _handleLang(lang: string) {
     this._lang = lang;
-    this._stateReset();
+    this._stateReset(this.hasSelection);
     if (lang != 'dictation') {
       op('voice', {data: ''})
     }
@@ -714,7 +714,7 @@ export default class Keyboard implements IKeyboard {
     }
   };
 
-  _stateReset = () => {
+  _stateReset = (hasSelection: boolean) => {
     this._down.clear();
     this._up.clear();
     this._mods = {
@@ -726,6 +726,7 @@ export default class Keyboard implements IKeyboard {
     this.element.value = ' ';
     this.element.selectionStart = 1;
     this.element.selectionEnd = 1;
+    this.hasSelection = hasSelection
   };
 
   _handleGuard(up: boolean, char: string) {
@@ -963,7 +964,7 @@ export default class Keyboard implements IKeyboard {
         this._execPress(arg, null, true);
         break;
       case 'state-reset':
-        this._stateReset();
+        this._stateReset(arg);
         break;
       case 'focus':
         this.focus(arg);

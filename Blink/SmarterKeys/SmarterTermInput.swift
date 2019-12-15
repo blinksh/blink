@@ -157,6 +157,10 @@ class SmarterTermInput: KBWebView {
     return contentView()?.isFirstResponder == true
   }
   
+  func reportStateReset() {
+    reportStateReset(device?.view?.hasSelection == true)
+  }
+  
   private func _refreshInputViews() {
     guard
       traitCollection.userInterfaceIdiom == .pad,
@@ -510,13 +514,13 @@ extension SmarterTermInput {
   override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
     switch action {
     case #selector(UIResponder.paste(_:)):
-      return true
+      return sender != nil
     case #selector(UIResponder.copy(_:)),
          #selector(TermView.pasteSelection(_:)):
-      return device?.view?.hasSelection == true
+      return sender != nil && device?.view?.hasSelection == true
     case #selector(Self.copyLink(_:)),
          #selector(Self.openLink(_:)):
-      return device?.view?.detectedLink != nil
+      return sender != nil && device?.view?.detectedLink != nil
     default:
       return super.canPerformAction(action, withSender: sender)
     }

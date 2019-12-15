@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (readonly) UIKeyModifierFlags trackingModifierFlags;
 
-- (void)reportStateReset;
+- (void)reportStateReset:(BOOL)hasSelection;
 - (void)reportLang:(NSString *) lang;
 - (void)reportPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
 - (void)reportToolbarPress:(UIKeyModifierFlags)mods keyId:(NSString *)keyId;
