@@ -10,8 +10,9 @@ This is a very important release with just a single change. We had to rewrite al
 * You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence within Blink.
 * Accents are now considered too for specific sequences so if you have an international keyboard like French, Danish, etc... let us know how things are looking like.
 
-## Changes in Build 180
+## Changes in Build 182
 
+* Added reset button to kb config.
 * Fixed kb accessory view on phones.
 * Fixed arrows with modifiers. #886
 * Profile file env vars support escapes.
