@@ -158,7 +158,8 @@ class SmarterTermInput: KBWebView {
   }
   
   func reportStateReset() {
-    reportStateReset(device?.view?.hasSelection == true)
+    reportStateReset(false)
+    device?.view?.cleanSelection()
   }
   
   private func _refreshInputViews() {

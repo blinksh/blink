@@ -63,7 +63,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         if !SmarterTermInput.shared.isRealFirstResponder && scene.activationState == .foregroundActive {
           self._spaceController?.focusOnShellAction()
         }
+        
       }
+    } else {
+      SmarterTermInput.shared.reportStateReset()
     }
   }
   
