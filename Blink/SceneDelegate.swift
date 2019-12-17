@@ -32,8 +32,15 @@
 
 import Foundation
 
+class DummyVC: UIViewController {
+  override var prefersStatusBarHidden: Bool { true }
+  public override var prefersHomeIndicatorAutoHidden: Bool { true }
+}
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
+  var _ctrl = DummyVC()
+  var _spCtrl = SpaceController()
   
   func scene(
     _ scene: UIScene,
@@ -45,37 +52,51 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     self.window = UIWindow(windowScene: windowScene)
-    let spaceCntrl = SpaceController()
-    spaceCntrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
-    window?.rootViewController = spaceCntrl
+    _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
+    window?.rootViewController = _spCtrl
     window?.makeKeyAndVisible()
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    _spaceController?.currentTerm()?.resumeIfNeeded()
-    _spaceController?.currentTerm()?.view?.setNeedsLayout()
+    debugPrint("BK: sceneDidBecomeActive")
+    
+    window?.rootViewController = _spCtrl
+    _spCtrl.currentTerm()?.resumeIfNeeded()
+    _spCtrl.currentTerm()?.view?.setNeedsLayout()
+    
     let input = SmarterTermInput.shared
     if
-      _spaceController?.currentTerm()?.termDevice.view?.isFocused() == false,
+      _spCtrl.currentTerm()?.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
       input.window == self.window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if !SmarterTermInput.shared.isRealFirstResponder && scene.activationState == .foregroundActive {
-          self._spaceController?.focusOnShellAction()
+          self._spCtrl.focusOnShellAction()
         }
-        
       }
     } else {
       SmarterTermInput.shared.reportStateReset()
     }
   }
   
-  func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    _spaceController?.stateRestorationActivity()
+  func sceneWillResignActive(_ scene: UIScene) {
+    debugPrint("BK: sceneWillResignActive")
+    // Trick to reset stick cmd key. #
+    _ctrl.view.frame = _spCtrl.view.frame
+    window?.rootViewController = _ctrl
+    _ctrl.view.addSubview(_spCtrl.view)
   }
   
-  private var _spaceController: SpaceController? {
-    window?.rootViewController as? SpaceController
+  func sceneWillEnterForeground(_ scene: UIScene) {
+    debugPrint("BK: sceneWillResignActive")
+  }
+  
+  func sceneDidEnterBackground(_ scene: UIScene) {
+    debugPrint("BK: sceneDidEnterBackground")
+  }
+  
+  func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
+    _spCtrl.stateRestorationActivity()
   }
 
 }

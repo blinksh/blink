@@ -56,7 +56,6 @@ public class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
-  private var _noOpKeyCommands: [UIKeyCommand] = []
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -224,9 +223,6 @@ public class SpaceController: UIViewController {
         }
       }
     }
-  }
-  
-  @objc func noOp(_ cmd: UIKeyCommand) {
   }
   
   func _closeCurrentSpace() {
@@ -446,7 +442,6 @@ extension SpaceController: TermControlDelegate {
 // MARK: General tunning
 
 extension SpaceController {
-  public override var canBecomeFirstResponder: Bool { true }
   public override var prefersStatusBarHidden: Bool { true }
   public override var prefersHomeIndicatorAutoHidden: Bool { true }
 }
@@ -454,15 +449,10 @@ extension SpaceController {
 
 // MARK: Commands
 
+
 extension SpaceController {
   public override var keyCommands: [UIKeyCommand]? {
-    guard
-       view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
-    else {
-      return SmarterTermInput.shared.noOpBlinkKeyCommands
-    }
-    return SmarterTermInput.shared.blinkKeyCommands
-    
+    SmarterTermInput.shared.blinkKeyCommands
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
