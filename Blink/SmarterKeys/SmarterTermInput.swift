@@ -513,6 +513,7 @@ extension SmarterTermInput {
 extension SmarterTermInput {
   
   override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
+    debugPrint("BK: ", device?.view?.hasSelection == true)
     switch action {
     case #selector(UIResponder.paste(_:)):
       return sender != nil

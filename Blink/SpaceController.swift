@@ -452,7 +452,12 @@ extension SpaceController {
 
 extension SpaceController {
   public override var keyCommands: [UIKeyCommand]? {
-    SmarterTermInput.shared.blinkKeyCommands
+    guard view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+    else {
+      debugPrint("BK: keyCommands empty")
+      return []
+    }
+    return SmarterTermInput.shared.blinkKeyCommands
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {

@@ -558,9 +558,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)copy:(id)sender
 {
-  [_webView copy:sender];
+  NSString *text = _selectedText;
+  if (text) {
+    [UIPasteboard generalPasteboard].string = text;
+  }
   UIMenuController * menu = [UIMenuController sharedMenuController];
   [menu hideMenuFromView:self];
+  [self cleanSelection];
 }
 
 - (void)paste:(id)sender
