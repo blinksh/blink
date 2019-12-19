@@ -645,6 +645,10 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
       NSArray *prompts = @[@[@"Password: ", @(NO_ECHO)]];
       password = [[self _getAnswersWithName:NULL instruction:NULL andPrompts:prompts] firstObject];
     }
+  
+    if (!password) {
+      return [self _exitWithCode:SSH_ERROR];
+    }
     
     int rc = ssh_userauth_password(_session, NULL, password.UTF8String);
     

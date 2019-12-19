@@ -322,6 +322,7 @@
         return NO;
       }
       if (_sshClients.count > 0) {
+        [_device closeReadline];
         for (WeakSSHClient *client in _sshClients) {
           [client.value kill];
         }
