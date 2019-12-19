@@ -486,7 +486,7 @@ extension SpaceController {
     }
 
     switch cmd {
-    case .configShow: _showConfig()
+    case .configShow: showConfigAction()
     case .tab1: _moveToShell(idx: 0)
     case .tab2: _moveToShell(idx: 1)
     case .tab3: _moveToShell(idx: 2)
@@ -518,16 +518,16 @@ extension SpaceController {
     }
   }
   
-  func focusOnShellAction() {
+  @objc func focusOnShellAction() {
     SmarterTermInput.shared.reset()
     _focusOnShell()
   }
   
-  func newShellAction() {
+  @objc func newShellAction() {
     _createShell(userActivity: nil, animated: true)
   }
   
-  func closeShellAction() {
+  @objc func closeShellAction() {
     _closeCurrentSpace()
   }
 
@@ -632,7 +632,7 @@ extension SpaceController {
                                       errorHandler: nil)
   }
   
-  private func _showConfig() {
+  @objc func showConfigAction() {
     if view.window?.windowScene?.session.role == .windowExternalDisplay {
       return
     }
