@@ -389,7 +389,11 @@ extension SmarterTermInput {
       _kbView.turnOffUntracked()
     }
     
-    guard let device = device else {
+    guard
+      let device = device,
+      let scene = device.view.window?.windowScene,
+      scene.activationState == .foregroundActive
+    else {
       return
     }
     
@@ -407,6 +411,14 @@ extension SmarterTermInput {
   
   override func onCommand(_ command: String) {
     _kbView.turnOffUntracked()
+    guard
+      let device = device,
+      let scene = device.view.window?.windowScene,
+      scene.activationState == .foregroundActive
+    else {
+      return
+    }
+    
     if let cmd = Command(rawValue: command) {
       var n = next
       while let r = n {
