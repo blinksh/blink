@@ -355,6 +355,11 @@ class SmarterTermInput: KBWebView {
       _kbView.traits.isFloatingKB = isFloating
     }
     
+    if bottomInset == 0 && _kbView.traits.isFloatingKB,
+      let safeInsets = superview?.safeAreaInsets {
+      bottomInset = _kbView.intrinsicContentSize.height + safeInsets.bottom
+    }
+    
     LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }
   
