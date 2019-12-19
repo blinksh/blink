@@ -81,7 +81,11 @@
     _predictionDetail.text = [BKHosts predictionStringForRawValue:_bkHost.prediction.intValue];
     _moshServerField.text = _bkHost.moshServer;
     if (_bkHost.moshPort != nil) {
-      _moshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.moshPort];
+      if (_bkHost.moshPortEnd != nil) {
+        _moshPortField.text = [NSString stringWithFormat:@"%@:%@", _bkHost.moshPort, _bkHost.moshPortEnd];
+      } else {
+        _moshPortField.text = [NSString stringWithFormat:@"%@", _bkHost.moshPort];
+      }
     }
     _startUpCmdField.text = _bkHost.moshStartup;
     _proxyCmdField.text = _bkHost.proxyCmd;
@@ -169,7 +173,7 @@
                          password:_passwordField.text
                           hostKey:_hostKeyDetail.text
                        moshServer:_moshServerField.text
-                         moshPort:_moshPortField.text
+                    moshPortRange:_moshPortField.text
                        startUpCmd:_startUpCmdField.text
                        prediction:[BKHosts predictionValueForString:_predictionDetail.text]
                          proxyCmd:_proxyCmdField.text
@@ -212,9 +216,14 @@
 
 - (BOOL)textField:(UITextField *)textField shouldChangeCharactersInRange:(NSRange)range replacementString:(NSString *)string
 {
-  if (textField == _sshPortField || textField == _moshPortField) {
+  if (textField == _sshPortField) {
     NSCharacterSet *nonNumberSet = [[NSCharacterSet decimalDigitCharacterSet] invertedSet];
     return ([string stringByTrimmingCharactersInSet:nonNumberSet].length > 0) || [string isEqualToString:@""];
+  } else if (textField == _moshPortField) {
+    NSMutableCharacterSet * charSet = [[NSCharacterSet decimalDigitCharacterSet] mutableCopy];
+    [charSet addCharactersInString:@":"];
+    NSCharacterSet *nonColumNonNumberSet = [charSet invertedSet];
+    return ([string stringByTrimmingCharactersInSet:nonColumNonNumberSet].length > 0) || [string isEqualToString:@""];
   } else if (textField == _hostField || textField == _hostNameField || textField == _userField) {
     if ([string isEqualToString:@" "]) {
       return NO;
@@ -255,6 +264,14 @@
       if (_bkHost.iCloudRecordId) {
 	[[BKiCloudSyncHandler sharedHandler] deleteRecord:_bkHost.iCloudRecordId ofType:BKiCloudRecordTypeHosts];
       }
+      NSNumber *moshPort = _bkHost.moshPort;
+      NSNumber *moshPortEnd = _bkHost.moshPortEnd;
+      
+      NSString *moshPortRange = moshPort ? moshPort.stringValue : @"";
+      if (moshPort && moshPortEnd) {
+        moshPortRange = [NSString stringWithFormat:@"%@:%@", moshPortRange, moshPortEnd.stringValue];
+      }
+      
       [BKHosts saveHost:_bkHost.host
             withNewHost:_bkHost.iCloudConflictCopy.host
                hostName:_bkHost.iCloudConflictCopy.hostName
@@ -263,7 +280,7 @@
                password:_bkHost.iCloudConflictCopy.password
                 hostKey:_bkHost.iCloudConflictCopy.key
              moshServer:_bkHost.iCloudConflictCopy.moshServer
-               moshPort:_bkHost.iCloudConflictCopy.moshPort ? _bkHost.iCloudConflictCopy.moshPort.stringValue : @""
+          moshPortRange: moshPortRange
              startUpCmd:_bkHost.iCloudConflictCopy.moshStartup
              prediction:_bkHost.iCloudConflictCopy.prediction.intValue
                proxyCmd:_bkHost.iCloudConflictCopy.proxyCmd

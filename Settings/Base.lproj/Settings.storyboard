@@ -789,10 +789,10 @@
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                                     <nil key="highlightedColor"/>
                                                 </label>
-                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="UDP port" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5He-rQ-CdM">
+                                                <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="UDP PORT[:PORT2]" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="5He-rQ-CdM">
                                                     <rect key="frame" x="118" y="12" width="637" height="20"/>
                                                     <fontDescription key="fontDescription" type="system" pointSize="16"/>
-                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numberPad"/>
+                                                    <textInputTraits key="textInputTraits" autocorrectionType="no" spellCheckingType="no" keyboardType="numbersAndPunctuation"/>
                                                     <connections>
                                                         <action selector="textFieldDidChange:" destination="B0L-YN-Jg0" eventType="editingChanged" id="GeO-ls-ejT"/>
                                                         <outlet property="delegate" destination="B0L-YN-Jg0" id="dQF-Sn-Ie5"/>
@@ -2206,7 +2206,7 @@
         <image name="user" width="22" height="22"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="y9I-rB-ZKT"/>
+        <segue reference="9Nb-rb-KdA"/>
         <segue reference="dMC-e1-GtW"/>
     </inferredMetricsTieBreakers>
 </document>

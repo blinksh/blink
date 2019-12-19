@@ -48,24 +48,24 @@ static NSDictionary *predictionModeStrings = nil;
 static const char *usage_format =
 "Usage: mosh [options] [user@]host|IP [--] [command]"
 "\r\n"
-"        --server=PATH        mosh server on remote machine\r\n"
-"                             (default: mosh-server)\r\n"
-"        --predict=adaptive   local echo for slower links [default]\r\n"
-"-a      --predict=always     use local echo even on fast links\r\n"
-"-n      --predict=never      never use local echo\r\n"
+"                --server=PATH        mosh server on remote machine\r\n"
+"                                     (default: mosh-server)\r\n"
+"                --predict=adaptive   local echo for slower links [default]\r\n"
+"-a              --predict=always     use local echo even on fast links\r\n"
+"-n              --predict=never      never use local echo\r\n"
 "\r\n"
-"-k      --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
-"-p NUM  --port=NUM           server-side UDP port\r\n"
-"-P NUM                       ssh connection port\r\n"
-"-T                           do not allocate a pseudo tty on ssh connection\r\n"
-"-2                           use ssh2 command\r\n"
-"-I id                        ssh authentication identity name\r\n"
+"-k              --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
+"-p PORT[:PORT2] --port=PORT[:PORT2]  server-side UDP port (range)\r\n"
+"-P NUM                               ssh connection port\r\n"
+"-T                                   do not allocate a pseudo tty on ssh connection\r\n"
+"-2                                   use ssh2 command\r\n"
+"-I id                                ssh authentication identity name\r\n"
 //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
 //  "                                (example: \"ssh -p 2222\")\r\n"
 //  "                                (default: \"ssh\")\r\n"
 "\r\n"
-"        --verbose            verbose mode\r\n"
-"        --help               this message\r\n"
+"                --verbose            verbose mode\r\n"
+"                --help               this message\r\n"
 "\r\n";
 
 
@@ -301,7 +301,13 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   self.sessionParams.serverPath = self.sessionParams.serverPath ?: server;
   
-  self.sessionParams.port = self.sessionParams.port ?: [host.moshPort stringValue];
+  if (!self.sessionParams.port && host.moshPort) {
+    self.sessionParams.port = [host.moshPort stringValue];
+    if (host.moshPortEnd) {
+      self.sessionParams.port = [NSString stringWithFormat:@"%@:%@", host.moshPort, host.moshPortEnd];
+    }
+  }
+//  self.sessionParams.port = self.sessionParams.port ?: [host.moshPort stringValue];
   
   NSString *startupCmd = host.moshStartup.length ? host.moshStartup : nil;
   self.sessionParams.startupCmd = self.sessionParams.startupCmd ?: startupCmd;

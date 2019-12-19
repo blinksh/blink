@@ -291,6 +291,14 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   if (![updatedHost.host isEqualToString:oldHost.host]) {
     [[BKHosts all] removeObject:oldHost];
   }
+  NSNumber *moshPort = updatedHost.moshPort;
+  NSNumber *moshPortEnd = updatedHost.moshPortEnd;
+  
+  NSString *moshPortRange = moshPort ? moshPort.stringValue : @"";
+  if (moshPort && moshPortEnd) {
+    moshPortRange = [NSString stringWithFormat:@"%@:%@", moshPortRange, moshPortEnd.stringValue];
+  }
+  
   [BKHosts saveHost:host
         withNewHost:updatedHost.host
            hostName:updatedHost.hostName
@@ -299,9 +307,9 @@ static BKiCloudSyncHandler *sharedHandler = nil;
            password:updatedHost.password
             hostKey:updatedHost.key
          moshServer:updatedHost.moshServer
-           moshPort:updatedHost.moshPort ? updatedHost.moshPort.stringValue : @""
+      moshPortRange:moshPortRange
          startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue
-           proxyCmd: updatedHost.proxyCmd
+           proxyCmd:updatedHost.proxyCmd
    ];
   [BKHosts updateHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
 }
