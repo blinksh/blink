@@ -486,7 +486,7 @@ extension SpaceController {
       return
     }
     switch cmd {
-    case .configShow: _showConfigAction()
+    case .configShow: _showConfig()
     case .tab1: _moveToShell(idx: 0)
     case .tab2: _moveToShell(idx: 1)
     case .tab3: _moveToShell(idx: 2)
@@ -499,7 +499,7 @@ extension SpaceController {
     case .tab10: _moveToShell(idx: 9)
     case .tab11: _moveToShell(idx: 10)
     case .tab12: _moveToShell(idx: 11)
-    case .tabClose: closeShellAction()
+    case .tabClose: _closeCurrentSpace()
     case .tabMoveToOtherWindow: _moveToOtherWindowAction()
     case .tabNew: newShellAction()
     case .tabNext: _advanceShell(by: 1)
@@ -518,20 +518,20 @@ extension SpaceController {
     }
   }
   
-  @objc func focusOnShellAction() {
+  func focusOnShellAction() {
     SmarterTermInput.shared.reset()
     _focusOnShell()
   }
   
-  @objc func newShellAction() {
+  func newShellAction() {
     _createShell(userActivity: nil, animated: true)
   }
   
-  @objc func closeShellAction() {
+  func closeShellAction() {
     _closeCurrentSpace()
   }
-  
-  @objc func _focusOtherWindowAction() {
+
+  private func _focusOtherWindowAction() {
     let sessions = _activeSessions()
     
     guard
@@ -569,7 +569,7 @@ extension SpaceController {
     }
   }
   
-  @objc func _moveToOtherWindowAction() {
+  private func _moveToOtherWindowAction() {
     let sessions = _activeSessions()
     
     guard
@@ -632,19 +632,7 @@ extension SpaceController {
                                       errorHandler: nil)
   }
   
-  @objc func _increaseFontSizeAction() {
-    currentDevice?.view?.increaseFontSize()
-  }
-  
-  @objc func _decreaseFontSizeAction() {
-    currentDevice?.view?.decreaseFontSize()
-  }
-  
-  @objc func _resetFontSizeAction() {
-    currentDevice?.view?.resetFontSize()
-  }
-  
-  @objc func _showConfigAction() {
+  private func _showConfig() {
     if view.window?.windowScene?.session.role == .windowExternalDisplay {
       return
     }
@@ -656,7 +644,7 @@ extension SpaceController {
     }
   }
   
-  func _addTerm(term: TermController, animated: Bool = true) {
+  private func _addTerm(term: TermController, animated: Bool = true) {
     SessionRegistry.shared.track(session: term)
     term.delegate = self
     _viewportsKeys.append(term.meta.key)
