@@ -487,23 +487,24 @@ extension SpaceController {
     }
     switch cmd {
     case .configShow: _showConfigAction()
-    case .tab1: _moveToShell(idx: 1)
-    case .tab2: _moveToShell(idx: 2)
-    case .tab3: _moveToShell(idx: 3)
-    case .tab4: _moveToShell(idx: 4)
-    case .tab5: _moveToShell(idx: 5)
-    case .tab6: _moveToShell(idx: 6)
-    case .tab7: _moveToShell(idx: 7)
-    case .tab8: _moveToShell(idx: 8)
-    case .tab9: _moveToShell(idx: 9)
-    case .tab10: _moveToShell(idx: 10)
-    case .tab11: _moveToShell(idx: 11)
-    case .tab12: _moveToShell(idx: 12)
+    case .tab1: _moveToShell(idx: 0)
+    case .tab2: _moveToShell(idx: 1)
+    case .tab3: _moveToShell(idx: 2)
+    case .tab4: _moveToShell(idx: 3)
+    case .tab5: _moveToShell(idx: 4)
+    case .tab6: _moveToShell(idx: 5)
+    case .tab7: _moveToShell(idx: 6)
+    case .tab8: _moveToShell(idx: 7)
+    case .tab9: _moveToShell(idx: 8)
+    case .tab10: _moveToShell(idx: 9)
+    case .tab11: _moveToShell(idx: 10)
+    case .tab12: _moveToShell(idx: 11)
     case .tabClose: closeShellAction()
     case .tabMoveToOtherWindow: _moveToOtherWindowAction()
     case .tabNew: newShellAction()
     case .tabNext: _nextShellAction()
     case .tabPrev: _prevShellAction()
+    case .tabLast: _moveToLastShell()
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
     case .windowNew: _newWindowAction()
@@ -677,7 +678,10 @@ extension SpaceController {
     
     _moveToShell(key: key, animated: animated)
   }
-
+  
+  private func _moveToLastShell(animated: Bool = true) {
+    _moveToShell(idx: _viewportsKeys.count - 1)
+  }
   
   private func _moveToShell(key: UUID, animated: Bool = true) {
     guard

@@ -49,6 +49,7 @@ enum Command: String, Codable, CaseIterable {
   case tab10
   case tab11
   case tab12
+  case tabLast
   case tabMoveToOtherWindow
   case zoomIn
   case zoomOut
@@ -78,6 +79,7 @@ enum Command: String, Codable, CaseIterable {
     case .tab10:                return "Switch to tab 10"
     case .tab11:                return "Switch to tab 11"
     case .tab12:                return "Switch to tab 12"
+    case .tabLast:              return "Switch to last tab"
     case .tabMoveToOtherWindow: return "Move tab to other Window"
     case .zoomIn:               return "Zoom In"
     case .zoomOut:              return "Zoom Out"
