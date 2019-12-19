@@ -502,8 +502,10 @@ extension SpaceController {
     case .tabClose: closeShellAction()
     case .tabMoveToOtherWindow: _moveToOtherWindowAction()
     case .tabNew: newShellAction()
-    case .tabNext: _nextShellAction()
-    case .tabPrev: _prevShellAction()
+    case .tabNext: _advanceShell(by: 1)
+    case .tabPrev: _advanceShell(by: -1)
+    case .tabNextCycling: _advanceShellCycling(by: 1)
+    case .tabPrevCycling: _advanceShellCycling(by: -1)
     case .tabLast: _moveToLastShell()
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
@@ -599,14 +601,6 @@ extension SpaceController {
     
     _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
-  }
-
-  @objc private func _nextShellAction() {
-    _advanceShell(by: 1)
-  }
-  
-  @objc private func _prevShellAction() {
-    _advanceShell(by: -1)
   }
   
   func _activeSessions() -> [UISceneSession] {
@@ -713,6 +707,28 @@ extension SpaceController {
     }
         
     _moveToShell(idx: idx, animated: animated)
+  }
+  
+  private func _advanceShellCycling(by: Int, animated: Bool = true) {
+    guard
+      let currentKey = _currentKey,
+      _viewportsKeys.count > 1
+    else {
+      return
+    }
+    
+    if let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: by),
+      idx >= 0 && idx < _viewportsKeys.count {
+      _moveToShell(idx: idx, animated: animated)
+      return
+    }
+    
+    if by > 0 {
+      _moveToShell(idx: 0, animated: animated)
+      return
+    }
+    
+    _moveToShell(idx: _viewportsKeys.count - 1, animated: animated)
   }
   
 }

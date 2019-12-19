@@ -36,7 +36,9 @@ enum Command: String, Codable, CaseIterable {
   case tabNew
   case tabClose
   case tabNext
+  case tabNextCycling
   case tabPrev
+  case tabPrevCycling
   case tab1
   case tab2
   case tab3
@@ -66,7 +68,9 @@ enum Command: String, Codable, CaseIterable {
     case .tabNew:               return "New tab"
     case .tabClose:             return "Close tab"
     case .tabNext:              return "Next tab"
+    case .tabNextCycling:       return "Next tab (cycling)"
     case .tabPrev:              return "Previous tab"
+    case .tabPrevCycling:       return "Previous tab (cycling)"
     case .tab1:                 return "Switch to tab 1"
     case .tab2:                 return "Switch to tab 2"
     case .tab3:                 return "Switch to tab 3"
