@@ -279,7 +279,7 @@ public class SpaceController: UIViewController {
     }
   }
   
-  func _attachInputToCurrentTerm() {
+  private func _attachInputToCurrentTerm() {
     if let device = currentDevice {
       device.attachInput(SmarterTermInput.shared)
       device.focus()
@@ -290,7 +290,7 @@ public class SpaceController: UIViewController {
     currentTerm()?.termDevice
   }
   
-  func _displayHUD() {
+  private func _displayHUD() {
     _hud?.hide(animated: false)
     
     guard let term = currentTerm() else {
@@ -711,12 +711,7 @@ extension SpaceController {
       return
     }
     
-    if by > 0 {
-      _moveToShell(idx: 0, animated: animated)
-      return
-    }
-    
-    _moveToShell(idx: _viewportsKeys.count - 1, animated: animated)
+    _moveToShell(idx: by > 0 ? 0 : _viewportsKeys.count - 1, animated: animated)
   }
   
 }
