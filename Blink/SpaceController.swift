@@ -451,19 +451,20 @@ extension SpaceController {
 
 
 extension SpaceController {
+  
+  var foregroundActive: Bool {
+    view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+  }
+  
   public override var keyCommands: [UIKeyCommand]? {
-    guard view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
-    else {
-      debugPrint("BK: keyCommands empty")
+    guard foregroundActive else {
       return []
     }
     return SmarterTermInput.shared.blinkKeyCommands
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
-    guard
-       view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
-    else {
+    guard foregroundActive else {
       return
     }
 
@@ -480,11 +481,10 @@ extension SpaceController {
   }
   
   func _onCommand(_ cmd: Command) {
-    guard
-      view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
-    else {
+    guard foregroundActive else {
       return
     }
+
     switch cmd {
     case .configShow: _showConfig()
     case .tab1: _moveToShell(idx: 0)
