@@ -32,6 +32,20 @@
 
 import Combine
 
+enum KeyPress {
+  case none
+  case escape
+  case escapeOnRelease
+  
+  var usageHint: String {
+    switch self {
+    case .none: return ""
+    case .escape: return "Sends Escape on key down. Use this option if you want key to behave like missing Esc key."
+    case .escapeOnRelease: return "Send Escape on key up if no other key where pressed. Useful with modifier as Ctrl option."
+    }
+  }
+}
+
 class KeyConfig: ObservableObject, Codable {
   let code: KeyCode
   @Published var up: KeyAction
@@ -50,6 +64,29 @@ class KeyConfig: ObservableObject, Codable {
     self.down          = down
     self.mod           = mod
     self.ignoreAccents = ignoreAccents
+  }
+  
+  var press: KeyPress {
+    get {
+      if down == .escape {
+        return .escape
+      } else if up == .escape {
+        return .escapeOnRelease
+      }
+      return .none
+    }
+    set {
+      self.down = .none
+      self.up = .none
+      switch newValue {
+      case .escape:
+        self.down = .escape
+      case .escapeOnRelease:
+        self.up = .escape
+      default:
+        break
+      }
+    }
   }
   
   func pair(right: KeyConfig) -> KeyConfigPair {

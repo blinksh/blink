@@ -39,7 +39,7 @@ struct KeyConfigPairView: View {
     List {
       Toggle("Same for both sides", isOn: $pair.bothAsLeft)
       if pair.bothAsLeft {
-        KeySection(title: "Left and Right", key: pair.left)
+        KeySection(title: "", key: pair.left)
       } else {
         KeySection(title: "Left", key: pair.left)
         KeySection(title: "Right", key: pair.right)

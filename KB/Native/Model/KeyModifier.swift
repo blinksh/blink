@@ -39,4 +39,15 @@ enum KeyModifier: String, Codable {
   case meta       = "Meta"
   
   var description: String { rawValue }
+  
+  var usageHint: String {
+    switch self {
+    case .none: return ""
+    case .bit8: return "Add 128 to the unshifted character as in xterm."
+    case .escape: return "Send an ESC prefix. Modern editors referes to this as ALT."
+    case .shift: return ""
+    case .control: return "Control sequence"
+    case .meta: return "Add modifiers to control sequence"
+    }
+  }
 }
