@@ -396,13 +396,14 @@ extension SmarterTermInput {
     
     guard
       let device = device,
-      let scene = device.view.window?.windowScene,
+      let deviceView = device.view,
+      let scene = deviceView.window?.windowScene,
       scene.activationState == .foregroundActive
-      else {
+    else {
         return
     }
     
-    device.view?.displayInput(data)
+    deviceView.displayInput(data)
     
     let ctrlC = "\u{0003}"
     let ctrlD = "\u{0004}"
