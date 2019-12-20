@@ -33,6 +33,7 @@
 import Foundation
 
 class DummyVC: UIViewController {
+  override var canBecomeFirstResponder: Bool { true }
   override var prefersStatusBarHidden: Bool { true }
   public override var prefersHomeIndicatorAutoHidden: Bool { true }
 }
@@ -58,15 +59,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    debugPrint("BK: sceneDidBecomeActive")
-    
     window?.rootViewController = _spCtrl
-    _spCtrl.currentTerm()?.resumeIfNeeded()
-    _spCtrl.currentTerm()?.view?.setNeedsLayout()
+    
+    guard let term = _spCtrl.currentTerm()
+    else {
+      return
+    }
+    term.resumeIfNeeded()
+    term.view?.setNeedsLayout()
     
     let input = SmarterTermInput.shared
     if
-      _spCtrl.currentTerm()?.termDevice.view?.isFocused() == false,
+      term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
       input.window == self.window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
@@ -80,23 +84,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneWillResignActive(_ scene: UIScene) {
-    debugPrint("BK: sceneWillResignActive")
-    // Trick to reset stick cmd key. #
-    _ctrl.view.frame = _spCtrl.view.frame
-    window?.rootViewController = _ctrl
-    _ctrl.view.addSubview(_spCtrl.view)
   }
   
   func sceneWillEnterForeground(_ scene: UIScene) {
-    debugPrint("BK: sceneWillResignActive")
   }
   
   func sceneDidEnterBackground(_ scene: UIScene) {
-    debugPrint("BK: sceneDidEnterBackground")
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    _spCtrl.stateRestorationActivity()
+    // Trick to reset stick cmd key.
+    _ctrl.view.frame = _spCtrl.view.frame
+    window?.rootViewController = _ctrl
+    _ctrl.view.addSubview(_spCtrl.view)
+    return _spCtrl.stateRestorationActivity()
   }
 
 }

@@ -173,7 +173,6 @@ class KBKeyViewTriangle: KBKeyView {
     _progressH = dx / completeDX
     _progressV = dy / completeDY
     
-    debugPrint(_progressV)
     if _progressV > 0.03 {
       keyDelegate.keyViewAskedToCancelScroll(keyView: self)
     }
