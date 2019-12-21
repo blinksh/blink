@@ -57,7 +57,7 @@ struct KeySection: View {
           Text("8-bit").tag(KeyModifier.bit8)
           Text("Ctrl").tag(KeyModifier.control)
           Text("Esc").tag(KeyModifier.escape)
-          Text("Meta").tag(KeyModifier.meta)
+//          Text("Meta").tag(KeyModifier.meta)
           Text("Shift").tag(KeyModifier.shift)
         }
         .pickerStyle(SegmentedPickerStyle())
