@@ -457,10 +457,14 @@ extension SpaceController {
   }
   
   public override var keyCommands: [UIKeyCommand]? {
+    let input = SmarterTermInput.shared
     guard foregroundActive else {
-      return []
+      return input.noOpKeyCommands
     }
-    return SmarterTermInput.shared.blinkKeyCommands
+    return input.blinkKeyCommands
+  }
+  
+  @objc func _onNoOpCommand(_ cmd: BlinkCommand) {
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
