@@ -21,6 +21,7 @@ type KeyCode = {
   id: string,
 };
 
+// TODO: remove tab
 type KeyAction = '' | 'escape' | 'tab';
 
 function hex_to_ascii(hex: string): string {
@@ -144,27 +145,28 @@ function _patchKeyDown(
   }
 
   // iOS reports incorrect keyCode for h,i,c,m and [ with Control key pressed
-  // TODO: also check other kb layouts and langs.
   if (e.ctrlKey) {
     let ch = e.key.toLowerCase();
+    let kc = e.keyCode;
     if (
-      (e.keyCode == 8 && ch == 'h') ||
-      (e.keyCode == 9 && ch == 'i') ||
-      (e.keyCode == 13 && ch == 'c') ||
-      (e.keyCode == 13 && ch == 'm') ||
-      (e.keyCode == 27 && ch == '[')
+      (kc == 8 && ch == 'h') ||
+      (kc == 9 && ch == 'i') ||
+      (kc == 13 && ch == 'c') ||
+      (kc == 13 && ch == 'm') ||
+      (kc == 27 && ch == '[')
     ) {
       keyDown.keyCode = keyMap.keyCode(ch) || keyDown.keyCode;
       return keyDown;
     }
+    let c = e.code;
     if (
-      (e.keyCode == 8 && e.code == 'KeyH') ||
-      (e.keyCode == 9 && e.code == 'KeyI') ||
-      (e.keyCode == 13 && e.code == 'KeyC') ||
-      (e.keyCode == 13 && e.code == 'KeyM') ||
-      (e.keyCode == 27 && e.code == 'BracketLeft')
+      (kc == 8 && c == 'KeyH') ||
+      (kc == 9 && c == 'KeyI') ||
+      (kc == 13 && c == 'KeyC') ||
+      (kc == 13 && c == 'KeyM') ||
+      (kc == 27 && c == 'BracketLeft')
     ) {
-      keyDown.keyCode = keyMap.keyCode(e.code) || keyDown.keyCode;
+      keyDown.keyCode = keyMap.keyCode(c) || keyDown.keyCode;
     }
   }
 
