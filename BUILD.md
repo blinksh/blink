@@ -10,7 +10,7 @@ devices, you need to comply with Apple Developer Terms and Conditions,
 including obtaining a Developer License for that purpose. You will also
 need all the XCode command line developer tools and SDKs provided under
 a separate license by Apple Inc.
-- XCode > 7.3 and XCode command line tools
+- XCode > 11.0 and XCode command line tools
 - Autotools for OSX
 
 ## Cloning
@@ -25,8 +25,7 @@ to perform this operation.
 - [Libssh2 for iOS](https://github.com/carloscabanero/libssh2-for-iOS); Includes OpenSSL.
 - [Mosh for iOS](https://github.com/blinksh/build-mosh); Includes Protobuf.
 
-Please note that Blink currently only supports armv64 and x86_64 (simulator)
-platforms, so compilation for other architectures is not necessary.
+Please note that Blink currently only supports armv64, so compilation for other architectures is not necessary.
 
 ### Installation
 #### Libraries
@@ -44,15 +43,9 @@ within the same project:
 - UICKeyChainStore
 - MBProgressHUD
 
-If you would like to use HockeySDK (not required), download the latest version and drop it Frameworks.
-
 #### Resources
 Blink Shell makes use of a web terminal running from JavaScript code and linked at runtime. All the required
 resources to bundle the app, like terminal, fonts and themes, must be included under the Resources folder.
-
-Blink Shell makes use of Chromium's HTerm. To bundle it, start by cloning [Chromium's libapps](https://chromium.googlesource.com/apps/libapps/+/master/hterm), 
-and generate hterm_all.js with the bin/mkdist.sh script (their build instructions are less than clear!). 
-Drop the generated hterm_all.js file into the Resources folder.
 
 Font Style uploads requires [webfonts.js](https://github.com/typekit/webfontloader), but it isn't
 needed for Blink to work. Download the file and drop it into Resources folder.
