@@ -21,6 +21,7 @@ type KeyCode = {
   id: string,
 };
 
+// TODO: remove tab
 type KeyAction = '' | 'escape' | 'tab';
 
 function hex_to_ascii(hex: string): string {
@@ -37,14 +38,14 @@ function _action(action: KeyAction) {
     case 'escape':
       return {
         keyCode: 27,
-        code: '[ESC]',
-        key: '[ESC]',
+        code: '[Escape]',
+        key: '[Escape]',
       };
     case 'tab':
       return {
         keyCode: 9,
-        code: '[TAB]',
-        key: '[TAB]',
+        code: '[Tab]',
+        key: '[Tab]',
       };
     default:
       return null;
@@ -144,27 +145,28 @@ function _patchKeyDown(
   }
 
   // iOS reports incorrect keyCode for h,i,c,m and [ with Control key pressed
-  // TODO: also check other kb layouts and langs.
   if (e.ctrlKey) {
     let ch = e.key.toLowerCase();
+    let kc = e.keyCode;
     if (
-      (e.keyCode == 8 && ch == 'h') ||
-      (e.keyCode == 9 && ch == 'i') ||
-      (e.keyCode == 13 && ch == 'c') ||
-      (e.keyCode == 13 && ch == 'm') ||
-      (e.keyCode == 27 && ch == '[')
+      (kc == 8 && ch == 'h') ||
+      (kc == 9 && ch == 'i') ||
+      (kc == 13 && ch == 'c') ||
+      (kc == 13 && ch == 'm') ||
+      (kc == 27 && ch == '[')
     ) {
       keyDown.keyCode = keyMap.keyCode(ch) || keyDown.keyCode;
       return keyDown;
     }
+    let c = e.code;
     if (
-      (e.keyCode == 8 && e.code == 'KeyH') ||
-      (e.keyCode == 9 && e.code == 'KeyI') ||
-      (e.keyCode == 13 && e.code == 'KeyC') ||
-      (e.keyCode == 13 && e.code == 'KeyM') ||
-      (e.keyCode == 27 && e.code == 'BracketLeft')
+      (kc == 8 && c == 'KeyH') ||
+      (kc == 9 && c == 'KeyI') ||
+      (kc == 13 && c == 'KeyC') ||
+      (kc == 13 && c == 'KeyM') ||
+      (kc == 27 && c == 'BracketLeft')
     ) {
-      keyDown.keyCode = keyMap.keyCode(e.code) || keyDown.keyCode;
+      keyDown.keyCode = keyMap.keyCode(c) || keyDown.keyCode;
     }
   }
 
@@ -700,7 +702,7 @@ export default class Keyboard implements IKeyboard {
     this._lang = lang;
     this._stateReset(this.hasSelection);
     if (lang != 'dictation') {
-      op('voice', {data: ''})
+      op('voice', {data: ''});
     }
   }
 
@@ -726,7 +728,7 @@ export default class Keyboard implements IKeyboard {
     this.element.value = ' ';
     this.element.selectionStart = 1;
     this.element.selectionEnd = 1;
-    this.hasSelection = hasSelection
+    this.hasSelection = hasSelection;
   };
 
   _handleGuard(up: boolean, char: string) {
@@ -939,9 +941,6 @@ export default class Keyboard implements IKeyboard {
       case 'mods-up':
         this._handleCapsLockDown(false);
         break;
-      case 'lang':
-        this._handleLang(arg);
-        break;
       case 'guard-up':
         this._handleGuard(true, arg);
         break;
@@ -951,8 +950,8 @@ export default class Keyboard implements IKeyboard {
       case 'selection':
         this.hasSelection = arg;
         break;
-      case 'capture':
-        this._toggleCaptureMode(arg);
+      case 'lang':
+        this._handleLang(arg);
         break;
       case 'toolbar-mods':
         this._onToolbarMods(arg);
@@ -969,6 +968,9 @@ export default class Keyboard implements IKeyboard {
       case 'focus':
         this.focus(arg);
         break;
+      case 'capture':
+        this._toggleCaptureMode(arg);
+        break;
       case 'config':
         this._config(arg);
         break;
@@ -977,14 +979,14 @@ export default class Keyboard implements IKeyboard {
 
   _execBinding(action: BindingAction, e: KeyboardEvent | null) {
     switch (action.type) {
-      case 'hex':
-        this._output(hex_to_ascii(action.value));
-        break;
       case 'command':
         op('command', {command: action.value});
         break;
       case 'press':
         this._execPress(`${action.mods}:${action.key.id}`, e, true);
+        break;
+      case 'hex':
+        this._output(hex_to_ascii(action.value));
         break;
     }
   }
