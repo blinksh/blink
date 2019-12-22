@@ -31,12 +31,9 @@ export type KeyBinding = {
 };
 
 export default class Bindings {
-  // TODO: match state later
-  _stack: Array<string> = [];
   _map: {[index: string]: BindingAction} = {};
 
   reset() {
-    this._stack = [];
     this._map = {};
   }
 

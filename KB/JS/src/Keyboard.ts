@@ -37,14 +37,14 @@ function _action(action: KeyAction) {
     case 'escape':
       return {
         keyCode: 27,
-        code: '[ESC]',
-        key: '[ESC]',
+        code: '[Escape]',
+        key: '[Escape]',
       };
     case 'tab':
       return {
         keyCode: 9,
-        code: '[TAB]',
-        key: '[TAB]',
+        code: '[Tab]',
+        key: '[Tab]',
       };
     default:
       return null;
@@ -700,7 +700,7 @@ export default class Keyboard implements IKeyboard {
     this._lang = lang;
     this._stateReset(this.hasSelection);
     if (lang != 'dictation') {
-      op('voice', {data: ''})
+      op('voice', {data: ''});
     }
   }
 
@@ -726,7 +726,7 @@ export default class Keyboard implements IKeyboard {
     this.element.value = ' ';
     this.element.selectionStart = 1;
     this.element.selectionEnd = 1;
-    this.hasSelection = hasSelection
+    this.hasSelection = hasSelection;
   };
 
   _handleGuard(up: boolean, char: string) {
@@ -939,9 +939,6 @@ export default class Keyboard implements IKeyboard {
       case 'mods-up':
         this._handleCapsLockDown(false);
         break;
-      case 'lang':
-        this._handleLang(arg);
-        break;
       case 'guard-up':
         this._handleGuard(true, arg);
         break;
@@ -951,8 +948,8 @@ export default class Keyboard implements IKeyboard {
       case 'selection':
         this.hasSelection = arg;
         break;
-      case 'capture':
-        this._toggleCaptureMode(arg);
+      case 'lang':
+        this._handleLang(arg);
         break;
       case 'toolbar-mods':
         this._onToolbarMods(arg);
@@ -969,6 +966,9 @@ export default class Keyboard implements IKeyboard {
       case 'focus':
         this.focus(arg);
         break;
+      case 'capture':
+        this._toggleCaptureMode(arg);
+        break;
       case 'config':
         this._config(arg);
         break;
@@ -977,14 +977,14 @@ export default class Keyboard implements IKeyboard {
 
   _execBinding(action: BindingAction, e: KeyboardEvent | null) {
     switch (action.type) {
-      case 'hex':
-        this._output(hex_to_ascii(action.value));
-        break;
       case 'command':
         op('command', {command: action.value});
         break;
       case 'press':
         this._execPress(`${action.mods}:${action.key.id}`, e, true);
+        break;
+      case 'hex':
+        this._output(hex_to_ascii(action.value));
         break;
     }
   }
