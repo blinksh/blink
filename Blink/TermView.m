@@ -483,6 +483,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
                              [self _menuActionTitleFromNSURL:_detectedLink], urlName];
     [items addObject:[[UIMenuItem alloc] initWithTitle:actionTitle
                                                 action:@selector(openLink:)]];
+  } else {
+    [items addObject:[[UIMenuItem alloc] initWithTitle:@"Google"
+                                                action:@selector(googleSelection:)]];
+    [items addObject:[[UIMenuItem alloc] initWithTitle:@"SO"
+                                                action:@selector(soSelection:)]];
   }
 
   
@@ -545,6 +550,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)yank:(id)sender
 {
+}
+
+- (void)googleSelection:(id)sender {
+  
+}
+
+- (void)soSelection:(id)sender {
+  
 }
   
 - (void)pasteSelection:(id)sender
