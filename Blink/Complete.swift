@@ -114,6 +114,7 @@ struct Complete {
       "diff": "Compare files line by line.",
       "dig": "DNS lookup utility.",
       "du": "Disk usage",
+      "ed": "Line-oriented text editor",
       "echo": "Write arguments to the standard output.",
       "egrep": "Search for a pattern using extended regex.", // https://www.computerhope.com/unix/uegrep.htm
       "env": "Set environment and execute command, or print environment.", // fish
