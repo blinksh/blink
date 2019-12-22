@@ -329,11 +329,12 @@ export default class KeyMap {
       return '';
     }
 
-    let nonPrintable = /^\[\w+\]$/.test(def.keyCap);
+    let keyCap = def.keyCap;
+    let nonPrintable = /^\[\w+\]$/.test(keyCap);
     if (nonPrintable) {
-      return def.keyCap.replace(/[\[\]]/g, '');
+      return keyCap.substr(1, keyCap.length - 2);
     }
-    return def.keyCap.substr(0, 1);
+    return keyCap.substr(0, 1);
   }
 
   // prettier-ignore
