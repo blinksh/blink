@@ -41,11 +41,7 @@
 #include "xcall.h"
 #include "Blink-Swift.h"
 
-
 @import CloudKit;
-
-@interface AppDelegate ()
-@end
 
 @implementation AppDelegate {
   NSTimer *_suspendTimer;
@@ -161,10 +157,7 @@ void __setupProcessEnv() {
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
   [self _loadProfileVars];
-  
-    [[UIView appearance] setTintColor:[UIColor blinkTint]];
-//  [[UIView appearance] setTintColor:[UIColor colorWithRed:10.0/255.0f green:224.0/255.0f blue:240.0f/255.0 alpha:1]];
-//  [[UIView appearance] setTintColor:[UIColor cyanColor]];
+  [[UIView appearance] setTintColor:[UIColor blinkTint]];
   return YES;
 }
 
@@ -182,14 +175,8 @@ void __setupProcessEnv() {
   return YES;
 }
 
-//- (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray<id<UIUserActivityRestoring>> * _Nullable))restorationHandler {
-//    restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
-//    return YES;
-//}
-
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
-//  restorationHandler(@[[[ScreenController shared] mainScreenRootViewController]]);
   return YES;
 }
 
