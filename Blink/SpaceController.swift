@@ -53,6 +53,7 @@ public class SpaceController: UIViewController {
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
+  private let _commandsHUD = CommandsHUGView(frame: .zero)
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
@@ -132,7 +133,6 @@ public class SpaceController: UIViewController {
     }
   }
   
-  let _commandsHUD = CommandsHUGView(frame: .zero)
   
   public override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
@@ -341,7 +341,7 @@ public class SpaceController: UIViewController {
     hud.hide(animated: true, afterDelay: 1)
     
     view.window?.windowScene?.title = sceneTitle
-    self._commandsHUD.updateHUD()
+    _commandsHUD.updateHUD()
   }
   
 }
