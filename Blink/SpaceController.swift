@@ -739,7 +739,5 @@ extension SpaceController: CommandsHUDViewDelegate {
     return nil
   }
   
-  @objc func spaceController() -> SpaceController? {
-    return self
-  }
+  @objc func spaceController() -> SpaceController? { self }
 }
