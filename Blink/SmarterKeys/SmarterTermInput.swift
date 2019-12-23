@@ -558,7 +558,9 @@ extension SmarterTermInput {
     case #selector(UIResponder.paste(_:)):
       return sender != nil
     case #selector(UIResponder.copy(_:)),
-         #selector(TermView.pasteSelection(_:)):
+         #selector(TermView.pasteSelection(_:)),
+         #selector(Self.soSelection(_:)),
+         #selector(Self.googleSelection(_:)):
       return sender != nil && device?.view?.hasSelection == true
     case #selector(Self.copyLink(_:)),
          #selector(Self.openLink(_:)):
@@ -601,6 +603,30 @@ extension SmarterTermInput {
   
   @objc func pasteSelection(_ sender: Any) {
     device?.view?.pasteSelection(sender)
+  }
+  
+  @objc func googleSelection(_ sender: Any) {
+    guard
+      let deviceView = device?.view,
+      let query = deviceView.selectedText?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed),
+      let url = URL(string: "https://google.com/search?q=\(query)")
+    else {
+        return
+    }
+    
+    blink_openurl(url)
+  }
+  
+  @objc func soSelection(_ sender: Any) {
+    guard
+      let deviceView = device?.view,
+      let query = deviceView.selectedText?.addingPercentEncoding(withAllowedCharacters: CharacterSet.urlQueryAllowed),
+      let url = URL(string: "https://stackoverflow.com/search?q=\(query)")
+    else {
+        return
+    }
+    
+    blink_openurl(url)
   }
 }
 
