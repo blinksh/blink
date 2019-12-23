@@ -494,6 +494,28 @@ extension SmarterTermInput {
       }
     }
   }
+  
+  func stuckKey() -> KeyCode? {
+    let mods: UIKeyModifierFlags = [.shift, .control, .alternate, .command]
+    let stuck = mods.intersection(trackingModifierFlags)
+
+    if stuck.contains(.shift) {
+      return KeyCode.shiftLeft
+    }
+    if stuck.contains(.control) {
+      return KeyCode.controlLeft
+    }
+    
+    if stuck.contains(.alternate) {
+      return KeyCode.optionLeft
+    }
+    
+    if stuck.contains(.command) {
+      return KeyCode.commandLeft
+    }
+    
+    return nil
+  }
 }
 // - MARK: Config
 

@@ -294,6 +294,16 @@ NSString *_encodeString(NSString *str);
   }
 }
 
+- (void)setTrackingModifierFlags:(UIKeyModifierFlags)trackingModifierFlags {
+  _trackingModifierFlags = trackingModifierFlags;
+  if (_trackingModifierFlags == 0) {
+    _activeModsCommand = nil;
+  } else {
+    _activeModsCommand = [self _modifiersCommand:_trackingModifierFlags];
+  }
+  [self _rebuildKeyCommands];
+  [self onMods];
+}
 
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
@@ -315,14 +325,7 @@ NSString *_encodeString(NSString *str);
     });
   } else if ([@"mods" isEqual:op]) {
     NSNumber *mods = body[@"mods"];
-    _trackingModifierFlags = (UIKeyModifierFlags)mods.integerValue;
-    if (_trackingModifierFlags == 0) {
-      _activeModsCommand = nil;
-    } else {
-      _activeModsCommand = [self _modifiersCommand:_trackingModifierFlags];
-    }
-    [self _rebuildKeyCommands];
-    [self onMods];
+    [self setTrackingModifierFlags:(UIKeyModifierFlags)mods.integerValue];
   } else if ([@"ime" isEqual:op]) {
     NSString *event = body[@"type"];
     NSString *data = body[@"data"];

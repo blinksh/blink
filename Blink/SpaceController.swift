@@ -56,6 +56,7 @@ public class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
+  var stuckKeyCode: KeyCode? = nil
   
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
@@ -459,12 +460,20 @@ extension SpaceController {
   public override var keyCommands: [UIKeyCommand]? {
     let input = SmarterTermInput.shared
     guard foregroundActive else {
-      return input.noOpKeyCommands
+      return []
+    }
+    
+    if let keyCode = stuckKeyCode {
+      return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
+      
     }
     return input.blinkKeyCommands
   }
   
-  @objc func _onNoOpCommand(_ cmd: BlinkCommand) {
+  @objc func onStuckOpCommand() {
+    stuckKeyCode = nil
+    presentedViewController?.dismiss(animated: true)
+    _focusOnShell()
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {

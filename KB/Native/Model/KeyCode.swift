@@ -114,6 +114,17 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   
   var code: String { rawValue }
   
+  var modifierFlags: UIKeyModifierFlags {
+    switch self {
+    case .capsLock: return .alphaShift
+    case .shiftLeft, .shiftRight: return .shift
+    case .controlLeft, .controlRight: return .control
+    case .optionLeft, .optionRight: return .alternate
+    case .commandLeft, .commandRight: return .command
+    default: return []
+    }
+  }
+  
   var single: Bool {
     switch self {
     case .shiftLeft,

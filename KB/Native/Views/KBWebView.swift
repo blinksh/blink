@@ -41,7 +41,6 @@ class KBWebView: KBWebViewBase {
   private var _loaded = false
   private(set) var webViewReady = false
   private(set) var blinkKeyCommands: [BlinkCommand] = []
-  private(set) var noOpKeyCommands: [BlinkCommand] = []
   
   func configure(_ cfg: KBConfig) {
     _buildCommands(cfg)
@@ -60,19 +59,6 @@ class KBWebView: KBWebViewBase {
         title: shortcut.action.isCommand ? shortcut.title : "", // Show only commands in cmd help view
         image: nil,
         action: #selector(SpaceController._onBlinkCommand(_:)),
-        input: shortcut.input,
-        modifierFlags: shortcut.modifiers,
-        propertyList: nil
-      )
-      cmd.bindingAction = shortcut.action
-      return cmd
-    }
-    
-    noOpKeyCommands = cfg.shortcuts.map { shortcut in
-      let cmd = BlinkCommand(
-        title: shortcut.action.isCommand ? shortcut.title : "", // Show only commands in cmd help view
-        image: nil,
-        action: #selector(SpaceController._onNoOpCommand(_:)),
         input: shortcut.input,
         modifierFlags: shortcut.modifiers,
         propertyList: nil

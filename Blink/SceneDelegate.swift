@@ -31,11 +31,38 @@
 
 
 import Foundation
+import SwiftUI
 
 class DummyVC: UIViewController {
   override var canBecomeFirstResponder: Bool { true }
   override var prefersStatusBarHidden: Bool { true }
   public override var prefersHomeIndicatorAutoHidden: Bool { true }
+}
+
+struct StuckView: View {
+  private var _emojies = ["😱", "🤪", "🧐", "🥺", "🤔", "🤭", "🙈", "🙊"]
+  var keyCode: KeyCode
+  var dismissAction: () -> ()
+  
+  init(keyCode: KeyCode, dismissAction: @escaping () -> ()) {
+    self.keyCode = keyCode
+    self.dismissAction = dismissAction
+  }
+  
+  var body: some View {
+      VStack {
+        HStack {
+          Spacer()
+          Button(action: dismissAction, label: { Text("Close") })
+        }.padding()
+        Spacer()
+        Text(_emojies.randomElement() ?? "🤥").font(.system(size: 60)).padding(.bottom, 26)
+        Text("Stuck key detected.").font(.headline).padding(.bottom, 30)
+        Text("Press \(keyCode.fullName) key").font(.system(size: 30))
+        Spacer()
+        Text("Also, please file radar (TODO: link to instructions).").padding()
+      }
+  }
 }
 
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
@@ -61,8 +88,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func sceneDidBecomeActive(_ scene: UIScene) {
     debugPrint("BK:", "sceneDidBecomeActive")
-    _setDummyVC()
-    
+    window?.rootViewController = _spCtrl
     guard let term = _spCtrl.currentTerm()
     else {
       return
@@ -70,15 +96,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     term.resumeIfNeeded()
     term.view?.setNeedsLayout()
     
-    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.2) {
-      if (scene.activationState == .foregroundActive) {
-        debugPrint("BK:", "self.window?.rootViewController = self._spCtrl")
-        self.window?.rootViewController = self._spCtrl
-      }
-    }
-    
-    
     let input = SmarterTermInput.shared
+    if let key = input.stuckKey() {
+      debugPrint("BK:", "stuck!!!")
+      input.setTrackingModifierFlags([])
+      let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
+        self._spCtrl.onStuckOpCommand()
+      }))
+      ctrl.modalPresentationStyle = .formSheet
+      _spCtrl.stuckKeyCode = key
+      _spCtrl.present(ctrl, animated: false)
+      return;
+    } else {
+      _spCtrl.stuckKeyCode = nil
+    }
     if
       term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
