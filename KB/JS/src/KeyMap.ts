@@ -197,23 +197,21 @@ export default class KeyMap {
 
     const onCtrlNum = this._onCtrlNum
     const onAltNum = this._onAltNum
-    const onMetaNum = this._onMetaNum
-    const onZoom = this._onZoom
     
     // second row
-    add({ keyCode: 192,  keyCap: '`~',          normal: DEFAULT,       ctrl: sh(ctl('@'), ctl('^')), alt: DEFAULT,  meta: PASS });
-    add({ keyCode: 49,   keyCap: '1!',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 50,   keyCap: '2@',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 51,   keyCap: '3#',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 52,   keyCap: '4$',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 53,   keyCap: '5%',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 54,   keyCap: '6^',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 55,   keyCap: '7&',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 56,   keyCap: '8*',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 57,   keyCap: '9(',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: onMetaNum });
-    add({ keyCode: 48,   keyCap: '0)',          normal: DEFAULT,       ctrl: onZoom,                 alt: onAltNum, meta: onZoom });
-    add({ keyCode: 189,  keyCap: '-_',          normal: DEFAULT,       ctrl: sh(onZoom, ctl('_')),   alt: DEFAULT,  meta: onZoom });
-    add({ keyCode: 187,  keyCap: '=+',          normal: DEFAULT,       ctrl: onZoom,                 alt: DEFAULT,  meta: onZoom });
+    add({ keyCode: 192,  keyCap: '`~',          normal: DEFAULT,       ctrl: sh(ctl('@'), ctl('^')), alt: DEFAULT,  meta: DEFAULT });
+    add({ keyCode: 49,   keyCap: '1!',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 50,   keyCap: '2@',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 51,   keyCap: '3#',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 52,   keyCap: '4$',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 53,   keyCap: '5%',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 54,   keyCap: '6^',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 55,   keyCap: '7&',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 56,   keyCap: '8*',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 57,   keyCap: '9(',          normal: DEFAULT,       ctrl: onCtrlNum,              alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 48,   keyCap: '0)',          normal: DEFAULT,       ctrl: DEFAULT,                alt: onAltNum, meta: DEFAULT });
+    add({ keyCode: 189,  keyCap: '-_',          normal: DEFAULT,       ctrl: ctl('_'),               alt: DEFAULT,  meta: DEFAULT });
+    add({ keyCode: 187,  keyCap: '=+',          normal: DEFAULT,       ctrl: DEFAULT,                alt: DEFAULT,  meta: DEFAULT });
     add({ keyCode: 8,    keyCap: '[Backspace]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
     
     // third row
@@ -302,8 +300,8 @@ export default class KeyMap {
     add({ keyCode: 103, keyCap: '[Numpad7]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 104, keyCap: '[Numpad8]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 105, keyCap: '[Numpad9]',        normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
-    add({ keyCode: 107, keyCap: '[NumpadAdd]',      normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
-    add({ keyCode: 109, keyCap: '[NumpadSubtract]', normal: DEFAULT, ctrl: onZoom,  alt: DEFAULT, meta: onZoom  });
+    add({ keyCode: 107, keyCap: '[NumpadAdd]',      normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
+    add({ keyCode: 109, keyCap: '[NumpadSubtract]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 106, keyCap: '[NumpadMultiply]', normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 111, keyCap: '[NumpadDivide]',   normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
     add({ keyCode: 110, keyCap: '[NumpadDicimal]',  normal: DEFAULT, ctrl: DEFAULT, alt: DEFAULT, meta: DEFAULT });
@@ -354,10 +352,6 @@ export default class KeyMap {
   };
 
   _onAltNum: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => DEFAULT;
-  _onMetaNum: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => DEFAULT;
-  _onZoom: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
-    return CANCEL;
-  };
 
   _onSel: KeyActionFunc = (e: KeyDownType, def: KeyDefType) => {
     let {
