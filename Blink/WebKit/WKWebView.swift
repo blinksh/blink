@@ -36,7 +36,8 @@ import WebKit
 class UIScrollViewWithoutHitTest: UIScrollView {
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     if let result = super.hitTest(point, with: event),
-    result !== self || point.x > self.bounds.size.width - 24 {
+    CGFloat scrollBarWidth = 24;
+    result !== self || point.x > self.bounds.size.width - scrollBarWidth {
       return result
     }
     return nil
@@ -81,10 +82,6 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _scrollView.panGestureRecognizer
     ]
     return recognizers
-  }
-  
-  deinit {
-    
   }
   
   func willMove(to view: UIView?) {
