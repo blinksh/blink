@@ -35,9 +35,10 @@ import WebKit
 
 class UIScrollViewWithoutHitTest: UIScrollView {
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-    if let result = super.hitTest(point, with: event),
-    CGFloat scrollBarWidth = 24;
-    result !== self || point.x > self.bounds.size.width - scrollBarWidth {
+    let scrollBarWidth: CGFloat = 24
+    if
+      let result = super.hitTest(point, with: event),
+      result !== self || point.x > self.bounds.size.width - scrollBarWidth {
       return result
     }
     return nil
