@@ -383,50 +383,56 @@ export default class KeyMap {
     } = this._reverseDefs;
 
     const selOp = (arg: {}) => op('selection', arg);
+    const word = 'word';
+    const character = 'character';
+    const left = 'left';
+    const right = 'right';
+    const line = 'line';
+    const copy = {command: 'copy'};
 
     if (def === ArrowLeft || def === h) {
-      let gran = e.shift ? 'word' : 'character';
-      selOp({dir: 'left', gran});
+      let gran = e.shift ? word : character;
+      selOp({dir: left, gran});
     } else if (def === ArrowRight || def === l) {
-      let gran = e.shift ? 'word' : 'character';
-      selOp({dir: 'right', gran});
+      let gran = e.shift ? word : character;
+      selOp({dir: right, gran});
     } else if (def === ArrowUp || def === k) {
-      selOp({dir: 'left', gran: 'line'});
+      selOp({dir: left, gran: line});
     } else if (def === ArrowDown || def === j) {
-      selOp({dir: 'right', gran: 'line'});
+      selOp({dir: right, gran: line});
     } else if (def === o || def === x) {
       selOp({command: 'change'});
     } else if (def === n && e.ctrl) {
-      selOp({dir: 'right', gran: 'line'});
+      selOp({dir: right, gran: line});
     } else if (def === p) {
       if (e.ctrl) {
-        selOp({dir: 'left', gran: 'line'});
+        selOp({dir: left, gran: line});
       } else if (!e.shift && !e.alt && !e.meta) {
         selOp({command: 'paste'});
       }
     } else if (def === b) {
       if (e.ctrl) {
-        selOp({dir: 'left', gran: 'character'});
+        selOp({dir: left, gran: character});
       } else if (e.alt) {
-        selOp({dir: 'left', gran: 'word'});
+        selOp({dir: left, gran: word});
       } else {
         // ???
-        selOp({dir: 'left', gran: 'word'});
+        selOp({dir: left, gran: word});
       }
     } else if (def === w) {
       if (e.alt) {
-        selOp({command: 'copy'});
+        selOp(copy);
       } else {
-        selOp({dir: 'right', gran: 'word'});
+        selOp({dir: right, gran: word});
       }
     } else if (def === f) {
       if (e.ctrl) {
-        selOp({dir: 'right', gran: 'character'});
+        selOp({dir: right, gran: character});
       } else if (e.alt) {
-        selOp({dir: 'right', gran: 'word'});
+        selOp({dir: right, gran: word});
       }
     } else if (def === y) {
-      selOp({command: 'copy'});
+      selOp(copy);
     } else if (def === Escape) {
       selOp({command: 'cancel'});
     }
