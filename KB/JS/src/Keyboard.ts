@@ -264,8 +264,6 @@ export default class Keyboard implements IKeyboard {
       this._modsMap['Shift'] != null || this._modsMap['Shift'] !== 'Shift';
   }
 
-  _voiceString: string | null = '';
-
   _updateUIKitModsIfNeeded = (e: KeyboardEvent) => {
     let code = e.code;
     if (this._capsLockRemapped) {
@@ -398,7 +396,6 @@ export default class Keyboard implements IKeyboard {
 
   _onBeforeInput = (e: InputEvent) => {
     if (this._lang == 'dictation') {
-      this._voiceString = e.data;
       op('voice', {data: e.data || ''});
       return;
     } else if (e.inputType == 'insertText') {
