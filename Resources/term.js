@@ -222,6 +222,8 @@ function term_setIme(str) {
   ime.textContent = str;
 
   if (length === 0) {
+    ime.style.left = 'auto';
+    ime.style.right = 'auto';
     return;
   }
 
