@@ -75,7 +75,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions)
   {
-    debugPrint("BK:", "willConnnectTo")
+//    debugPrint("BK:", "willConnnectTo")
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
@@ -87,7 +87,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-    debugPrint("BK:", "sceneDidBecomeActive")
+//    debugPrint("BK:", "sceneDidBecomeActive")
     window?.rootViewController = _spCtrl
     guard let term = _spCtrl.currentTerm()
     else {
@@ -125,25 +125,25 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneWillResignActive(_ scene: UIScene) {
-    debugPrint("BK:", "sceneWillResignActive")
+//    debugPrint("BK:", "sceneWillResignActive")
   }
   
   func sceneWillEnterForeground(_ scene: UIScene) {
-    debugPrint("BK:", "sceneWillEnterForeground")
+//    debugPrint("BK:", "sceneWillEnterForeground")
   }
   
   func sceneDidEnterBackground(_ scene: UIScene) {
-    debugPrint("BK:", "sceneDidEnterBackground")
+//    debugPrint("BK:", "sceneDidEnterBackground")
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-    debugPrint("BK:", "stateRestorationActivity")
+//    debugPrint("BK:", "stateRestorationActivity")
     _setDummyVC()
     return _spCtrl.stateRestorationActivity()
   }
   
   private func _setDummyVC() {
-    debugPrint("BK:", "_setDummyVC")
+//    debugPrint("BK:", "_setDummyVC")
     // Trick to reset stick cmd key.
     _ctrl.view.frame = _spCtrl.view.frame
     window?.rootViewController = _ctrl
