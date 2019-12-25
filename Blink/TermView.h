@@ -71,6 +71,7 @@
 @property (nonatomic) BOOL layoutLocked;
 @property (nonatomic) CGRect layoutLockedFrame;
 @property (nonatomic, readonly) BOOL isReady;
+@property (nonatomic, readonly) CGRect selectionRect;
 
 - (CGRect)webViewFrame;
 - (void)loadWith:(MCPParams *)params;

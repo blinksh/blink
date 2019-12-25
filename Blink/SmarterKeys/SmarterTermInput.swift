@@ -560,7 +560,8 @@ extension SmarterTermInput {
     case #selector(UIResponder.copy(_:)),
          #selector(TermView.pasteSelection(_:)),
          #selector(Self.soSelection(_:)),
-         #selector(Self.googleSelection(_:)):
+         #selector(Self.googleSelection(_:)),
+         #selector(Self.shareSelection(_:)):
       return sender != nil && device?.view?.hasSelection == true
     case #selector(Self.copyLink(_:)),
          #selector(Self.openLink(_:)):
@@ -627,6 +628,21 @@ extension SmarterTermInput {
     }
     
     blink_openurl(url)
+  }
+  
+  @objc func shareSelection(_ sender: Any) {
+    guard
+      let vc = device?.delegate?.viewController(),
+      let deviceView = device?.view,
+      let text = deviceView.selectedText
+    else {
+        return
+    }
+    
+    let ctrl = UIActivityViewController(activityItems: [text], applicationActivities: nil)
+    ctrl.popoverPresentationController?.sourceView = deviceView
+    ctrl.popoverPresentationController?.sourceRect = deviceView.selectionRect
+    vc.present(ctrl, animated: true, completion: nil)
   }
 }
 

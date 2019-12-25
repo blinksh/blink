@@ -527,6 +527,7 @@ extension SpaceController {
     case .clipboardPaste: SmarterTermInput.shared.paste(self)
     case .selectionGoogle: SmarterTermInput.shared.googleSelection(self)
     case .selectionStackOverflow: SmarterTermInput.shared.soSelection(self)
+    case .selectionShare: SmarterTermInput.shared.shareSelection(self)
     case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
     case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
     case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()

@@ -108,7 +108,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   if (!self) {
     return self;
   }
-  
+  _selectionRect = CGRectZero;
   _layoutDebounceTimer = nil;
   _currentBounds = CGRectZero;
   _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
@@ -484,16 +484,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [items addObject:[[UIMenuItem alloc] initWithTitle:actionTitle
                                                 action:@selector(openLink:)]];
   } else {
-    [items addObject:[[UIMenuItem alloc] initWithTitle:@"Google"
+    [items addObject:[[UIMenuItem alloc] initWithTitle:@"Search"
                                                 action:@selector(googleSelection:)]];
-    [items addObject:[[UIMenuItem alloc] initWithTitle:@"SO"
-                                                action:@selector(soSelection:)]];
   }
-
+  [items addObject:[[UIMenuItem alloc] initWithTitle:@"Share"
+  action:@selector(shareSelection:)]];
   
-  CGRect rect = CGRectFromString(data[@"rect"]);
+  _selectionRect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
-  [menu showMenuFromView:self rect:rect];
+  [menu showMenuFromView:self rect:_selectionRect];
 }
 
 - (void)modifySideOfSelection

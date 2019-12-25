@@ -60,6 +60,7 @@ enum Command: String, Codable, CaseIterable {
   case clipboardPaste
   case selectionGoogle
   case selectionStackOverflow
+  case selectionShare
   case configShow
   
   var title: String {
@@ -94,6 +95,7 @@ enum Command: String, Codable, CaseIterable {
     case .clipboardPaste:         return "Paste"
     case .selectionGoogle:        return "Google Selection"
     case .selectionStackOverflow: return "StackOverflow Selection"
+    case .selectionShare:         return "Share Selection"
     case .configShow:             return "Show Config"
     }
   }
