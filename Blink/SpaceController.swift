@@ -641,6 +641,10 @@ extension SpaceController {
     else {
       return
     }
+    
+    // try to focus on other session before closing
+    _focusOtherWindowAction()
+    
     UIApplication
       .shared
       .requestSceneSessionDestruction(session,
