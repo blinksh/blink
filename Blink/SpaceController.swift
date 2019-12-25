@@ -465,7 +465,6 @@ extension SpaceController {
     
     if let keyCode = stuckKeyCode {
       return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
-      
     }
     return input.blinkKeyCommands
   }

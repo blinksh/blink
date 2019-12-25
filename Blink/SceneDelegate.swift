@@ -115,7 +115,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       !input.isRealFirstResponder,
       input.window == self.window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if !SmarterTermInput.shared.isRealFirstResponder && scene.activationState == .foregroundActive {
+        if !SmarterTermInput.shared.isRealFirstResponder,
+          scene.activationState == .foregroundActive {
+          self._spCtrl.focusOnShellAction()
+        }
+      }
+    } else if input.window == self.window {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if term.termDevice.view?.isFocused() == false,
+          scene.activationState == .foregroundActive {
           self._spCtrl.focusOnShellAction()
         }
       }
