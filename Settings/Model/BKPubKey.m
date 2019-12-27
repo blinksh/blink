@@ -43,6 +43,10 @@
 const NSString *BK_KEYTYPE_RSA = @"RSA";
 const NSString *BK_KEYTYPE_DSA = @"DSA";
 const NSString *BK_KEYTYPE_ECDSA = @"ECDSA";
+const NSString *BK_KEYTYPE_ECDSA_P256 = @"ECDSA P256";
+const NSString *BK_KEYTYPE_ECDSA_P384 = @"ECDSA P384";
+const NSString *BK_KEYTYPE_ECDSA_P521 = @"ECDSA P521";
+
 const NSString *BK_KEYTYPE_Ed25519 = @"Ed25519";
 
 struct blink_ssh_key_struct {
@@ -151,6 +155,7 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 
     sshbuf_free(b);
     ssh_key skey = ssh_key_new();
+    int bits = 0;
     struct blink_ssh_key_struct *bkey = (struct blink_ssh_key_struct *)skey;
     bkey->flags = 0x0002 | 0x0001;
     bkey->dsa = keyp->dsa;
@@ -169,7 +174,17 @@ NSString *__get_passphrase(UIViewController *ctrl) {
         bkey->type_c = ssh_key_type_to_char(bkey->type);
         break;
       case KEY_ECDSA:
-        bkey->type = SSH_KEYTYPE_ECDSA;
+        bits = sshkey_curve_nid_to_bits(keyp->ecdsa_nid);
+        if (bits == 256) {
+          bkey->type = SSH_KEYTYPE_ECDSA_P256;
+        } else if (bits == 384) {
+          bkey->type = SSH_KEYTYPE_ECDSA_P384;
+        } else if (bits == 521) {
+          bkey->type = SSH_KEYTYPE_ECDSA_P521;
+        } else {
+          bkey->type = SSH_KEYTYPE_ECDSA;
+        }
+        
         bkey->type_c = ssh_pki_key_ecdsa_name(skey);
         break;
       case KEY_ED25519:
@@ -217,6 +232,12 @@ NSString *__get_passphrase(UIViewController *ctrl) {
       return BK_KEYTYPE_RSA;
     case SSH_KEYTYPE_ECDSA:
       return BK_KEYTYPE_ECDSA;
+    case SSH_KEYTYPE_ECDSA_P256:
+      return BK_KEYTYPE_ECDSA_P256;
+    case SSH_KEYTYPE_ECDSA_P384:
+      return BK_KEYTYPE_ECDSA_P384;
+    case SSH_KEYTYPE_ECDSA_P521:
+      return BK_KEYTYPE_ECDSA_P521;
     case SSH_KEYTYPE_ED25519:
       return BK_KEYTYPE_Ed25519;
     default:
