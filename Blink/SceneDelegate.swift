@@ -60,7 +60,13 @@ struct StuckView: View {
         Text("Stuck key detected.").font(.headline).padding(.bottom, 30)
         Text("Press \(keyCode.fullName) key").font(.system(size: 30))
         Spacer()
-        Text("Also, please file radar (TODO: link to instructions).").padding()
+        HStack {
+          Text("Also, please")
+          Button(action: {
+            let url = URL(string: "https://github.com/blinksh/blink/wiki/Known-Issue:Cmd-key-stuck-while-switching-between-apps-with-Cmd-Tab")!
+            blink_openurl(url)
+          }, label:  { Text("file radar.") })
+        }.padding()
       }
   }
 }
