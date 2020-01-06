@@ -38,6 +38,9 @@
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
+#define EXTERNAL_DISPLAY_FONT_SIZE_FIELD_TAG 2021
+#define EXTERNAL_DISPLAY_FONT_SIZE_STEPPER_TAG 2022
+
 #define CURSOR_BLINK_TAG 2003
 #define BOLD_AS_BRIGHT_TAG 2004
 #define ENABLE_BOLD_TAG 2006
@@ -46,6 +49,7 @@
 #define OVERSCAN_COMPENSATION_TAG 2009
 #define KEYBOARDSTYLE_TAG 2010
 #define KEYCASTS_TAG 2011
+
 
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
@@ -63,6 +67,10 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 @property (nonatomic, strong) NSIndexPath *selectedThemeIndexPath;
 @property (weak, nonatomic) UITextField *fontSizeField;
 @property (weak, nonatomic) UIStepper *fontSizeStepper;
+
+@property (weak, nonatomic) UITextField *externalDisplayFontSizeField;
+@property (weak, nonatomic) UIStepper *externalDisplayFontSizeStepper;
+
 @property (strong, nonatomic) TermView *termView;
 
 @end
@@ -195,6 +203,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     return 1;
   } else if (section == BKAppearance_Layout) {
     return 2;
+  } else if (section == BKAppearance_FontSize) {
+    return 5;
   } else {
     return 4;
   }
@@ -248,8 +258,10 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     if (indexPath.row == 0) {
       cellIdentifier = @"fontSizeCell";
     } else if (indexPath.row == 1) {
-      cellIdentifier = @"enableBoldCell";
+      cellIdentifier = @"externalDisplayFontSizeCell";
     } else if (indexPath.row == 2) {
+      cellIdentifier = @"enableBoldCell";
+    } else if (indexPath.row == 3) {
       cellIdentifier = @"boldAsBrightCell";
     } else {
       cellIdentifier = @"cursorBlinkCell";
@@ -314,7 +326,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       [self setFontsUIForCell:cell atIndexPath:indexPath];
     }
     return cell;
-  } else if(indexPath.section == BKAppearance_FontSize && indexPath.row == 0) {
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 0) {
     _fontSizeField = [cell viewWithTag:FONT_SIZE_FIELD_TAG];
     _fontSizeStepper = [cell viewWithTag:FONT_SIZE_STEPPER_TAG];
     if ([BKDefaults selectedFontSize] != nil) {
@@ -324,12 +336,22 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       _fontSizeField.placeholder = @"";
     }
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
+    _externalDisplayFontSizeField = [cell viewWithTag:EXTERNAL_DISPLAY_FONT_SIZE_FIELD_TAG];
+    _externalDisplayFontSizeStepper = [cell viewWithTag:EXTERNAL_DISPLAY_FONT_SIZE_STEPPER_TAG];
+    NSNumber *fontSize = [BKDefaults selectedExternalDisplayFontSize];
+    if (fontSize != nil) {
+      [_externalDisplayFontSizeStepper setValue:fontSize.integerValue];
+      _externalDisplayFontSizeField.text = [NSString stringWithFormat:@"%@ px", fontSize];
+    } else {
+      _externalDisplayFontSizeField.placeholder = @"";
+    }
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 2) {
     _enableBoldSegmentedControl = [cell viewWithTag:ENABLE_BOLD_TAG];
     _enableBoldSegmentedControl.selectedSegmentIndex = _enableBoldValue;
-  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 2) {
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 3) {
     _boldAsBrightSwitch = [cell viewWithTag:BOLD_AS_BRIGHT_TAG];
     _boldAsBrightSwitch.on = _boldAsBrightValue;
-  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 3) {
+  } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 4) {
     _cursorBlinkSwitch = [cell viewWithTag:CURSOR_BLINK_TAG];
     _cursorBlinkSwitch.on = _cursorBlinkValue;
   } else if (indexPath.section == BKAppearance_KeyboardAppearance && indexPath.row == 0) {
@@ -533,9 +555,15 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 - (IBAction)stepperValueChanged:(id)sender
 {
-  NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
-  [_termView setFontSize:newSize];
-  [_termView setWidth:60];
+  if (sender == _fontSizeStepper) {
+    NSNumber *newSize = [NSNumber numberWithInteger:(int)[_fontSizeStepper value]];
+    [_termView setFontSize:newSize];
+    [_termView setWidth:60];
+  } else if (sender == _externalDisplayFontSizeStepper) {
+    NSInteger size = (NSInteger)_externalDisplayFontSizeStepper.value;
+    [BKDefaults setExternalDisplayFontSize:@(size)];
+    [_externalDisplayFontSizeField setText:[NSString stringWithFormat:@"%@ px", @(size)]];
+  }
 }
 
 - (IBAction)cursorBlinkSwitchChanged:(id)sender

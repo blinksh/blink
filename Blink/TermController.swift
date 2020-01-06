@@ -84,6 +84,13 @@ class TermController: UIViewController {
     super.init(nibName: nil, bundle: nil)
   }
   
+  convenience init(sceneRole: UISceneSession.Role? = nil) {
+    self.init(meta: nil)
+    if sceneRole == UISceneSession.Role.windowExternalDisplay {
+      _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
+    }
+  }
+  
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }

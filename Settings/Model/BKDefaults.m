@@ -48,6 +48,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _themeName = [coder decodeObjectForKey:@"themeName"];
   _fontName = [coder decodeObjectForKey:@"fontName"];
   _fontSize = [coder decodeObjectForKey:@"fontSize"];
+  _externalDisplayFontSize = [coder decodeObjectForKey:@"externalDisplayFontSize"];
   _defaultUser = [coder decodeObjectForKey:@"defaultUser"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
@@ -67,6 +68,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeObject:_themeName forKey:@"themeName"];
   [encoder encodeObject:_fontName forKey:@"fontName"];
   [encoder encodeObject:_fontSize forKey:@"fontSize"];
+  [encoder encodeObject:_externalDisplayFontSize forKey:@"externalDisplayFontSize"];
   [encoder encodeObject:_defaultUser forKey:@"defaultUser"];
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
@@ -111,6 +113,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
       [defaults setFontSize:[NSNumber numberWithInt:10]];
     }
   }
+  if (!defaults.externalDisplayFontSize) {
+    [defaults setExternalDisplayFontSize:[NSNumber numberWithInt:24]];
+  }
+  
   if(!defaults.defaultUser || ![[defaults.defaultUser stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]){
     [defaults setDefaultUser:[UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeUserName]];
   }
@@ -161,6 +167,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.fontSize = fontSize;
 }
 
++ (void)setExternalDisplayFontSize:(NSNumber *)fontSize
+{
+  defaults.externalDisplayFontSize = fontSize;
+}
+
 + (void)setDefaultUserName:(NSString*)name
 {
   defaults.defaultUser = name;
@@ -194,10 +205,17 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   return defaults.themeName;
 }
+
 + (NSNumber *)selectedFontSize
 {
   return defaults.fontSize;
 }
+
++ (NSNumber *)selectedExternalDisplayFontSize
+{
+  return defaults.externalDisplayFontSize;
+}
+
 
 + (BOOL)isCursorBlink
 {

@@ -49,6 +49,8 @@ public class SpaceController: UIViewController {
     options: [.spineLocation: UIPageViewController.SpineLocation.mid]
   )
   
+  var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
+  
   private var _viewportsKeys = [UUID]()
   private var _currentKey: UUID? = nil
   
@@ -200,7 +202,7 @@ public class SpaceController: UIViewController {
     animated: Bool,
     completion: ((Bool) -> Void)? = nil)
   {
-    let term = TermController()
+    let term = TermController(sceneRole: sceneRole)
     term.delegate = self
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black

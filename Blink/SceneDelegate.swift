@@ -86,6 +86,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
+    _spCtrl.sceneRole = session.role
+    
     self.window = UIWindow(windowScene: windowScene)
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     window?.rootViewController = _spCtrl

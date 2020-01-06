@@ -57,6 +57,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic, strong) NSString *themeName;
 @property (nonatomic, strong) NSString *fontName;
 @property (nonatomic, strong) NSNumber *fontSize;
+@property (nonatomic, strong) NSNumber *externalDisplayFontSize;
 @property (nonatomic, strong) NSString *defaultUser;
 @property (nonatomic) BOOL cursorBlink;
 @property (nonatomic) NSUInteger enableBold;
@@ -82,9 +83,11 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
 + (void)setFontSize:(NSNumber *)fontSize;
++ (void)setExternalDisplayFontSize:(NSNumber *)fontSize;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
++ (NSNumber *)selectedExternalDisplayFontSize;
 + (BOOL)isCursorBlink;
 + (NSUInteger)enableBold;
 + (BOOL)isBoldAsBright;
