@@ -102,7 +102,7 @@ enum Command: String, Codable, CaseIterable {
 }
 
 enum KeyBindingAction: Codable, Identifiable {
-  case hex(String)
+  case hex(String, comment: String?)
   case press(KeyCode, mods: Int)
   case command(Command)
   case none
@@ -148,6 +148,8 @@ enum KeyBindingAction: Codable, Identifiable {
       .press(.f10,       []),
       .press(.f11,       []),
       .press(.f12,       []),
+      .hex("3C", comment: "Press <"),
+      .hex("3E", comment: "Press >")
     ]
   }
   
@@ -157,7 +159,8 @@ enum KeyBindingAction: Codable, Identifiable {
   
   var title: String {
     switch self {
-    case .hex(let str): return "Hex: (\(str))"
+    case .hex(let str, comment: let comment):
+      return comment ?? "Hex: (\(str))"
     case .press(let keyCode, let mods):
       var sym = UIKeyModifierFlags(rawValue: mods).toSymbols()
       sym += keyCode.symbol
@@ -177,15 +180,17 @@ enum KeyBindingAction: Codable, Identifiable {
     case press
     case mods
     case command
+    case comment
     case none
   }
     
   func encode(to encoder: Encoder) throws {
     var c = encoder.container(keyedBy: Keys.self)
     switch self {
-    case .hex(let str):
+    case .hex(let str, comment: let comment):
       try c.encode(Keys.hex.stringValue, forKey: .type)
       try c.encode(str, forKey: .value)
+      try c.encodeIfPresent(comment, forKey: .comment)
     case .press(let keyCode, let mods):
       try c.encode(Keys.press.stringValue, forKey: .type)
       try c.encode(keyCode, forKey: .key)
@@ -206,7 +211,8 @@ enum KeyBindingAction: Codable, Identifiable {
     switch k {
     case .hex:
       let hex = try c.decode(String.self, forKey: .value)
-      self = .hex(hex)
+      let comment = try c.decodeIfPresent(String.self, forKey: .comment)
+      self = .hex(hex, comment: comment)
     case .press:
       let keyCode = try c.decode(KeyCode.self, forKey: .key)
       let mods    = try c.decode(Int.self,     forKey: .mods)

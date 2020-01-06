@@ -968,6 +968,9 @@ export default class Keyboard implements IKeyboard {
       case 'capture':
         this._toggleCaptureMode(arg);
         break;
+      case 'hex':
+        this._output(hex_to_ascii(arg));
+        break;
       case 'config':
         this._config(arg);
         break;

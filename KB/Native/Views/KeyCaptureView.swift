@@ -39,7 +39,7 @@ class CaptureController: UIViewController {
   private func _generateCommands() -> Array<UIKeyCommand> {
     var result:Array<UIKeyCommand> = []
     let chars = "`1234567890-=\u{8}\tqwertyuiop[]\\asdfghjkl;'\rzxcvbnm,./ "
-      + "§±^°"
+      + "§±^°‹›"
     let inputs = chars.map({String($0)}) + [
       UIKeyCommand.inputUpArrow,
       UIKeyCommand.inputDownArrow,

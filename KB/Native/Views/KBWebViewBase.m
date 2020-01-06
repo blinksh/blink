@@ -33,11 +33,6 @@
 #import "KBWebViewBase.h"
 
 NSString *_encodeString(NSString *str);
-//{
-//  NSData *jsonData = [NSJSONSerialization dataWithJSONObject:str options:NSJSONWritingFragmentsAllowed error:nil];
-//  return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-//}
-
 
 @interface KeyCommand: UIKeyCommand
 @end
@@ -179,6 +174,9 @@ NSString *_encodeString(NSString *str);
   [self report:@"press" arg:_encodeString(kid)];
 }
 
+- (void)reportHex:(NSString *)hex {
+  [self report:@"hex" arg:_encodeString(hex)];
+}
 
 // Not sure we need up
 - (void)_imeGuardUp:(KeyCommand *)cmd {
