@@ -81,7 +81,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions)
   {
-//    debugPrint("BK:", "willConnnectTo")
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
@@ -95,8 +94,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
-//    debugPrint("BK:", "sceneDidBecomeActive")
-    window?.rootViewController = _spCtrl
+    if window?.rootViewController != _spCtrl {
+      window?.rootViewController = _spCtrl
+    }
     guard let term = _spCtrl.currentTerm()
     else {
       return
@@ -159,7 +159,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   private func _setDummyVC() {
-//    debugPrint("BK:", "_setDummyVC")
+    if let _ = _spCtrl.presentedViewController {
+      return
+    }
     // Trick to reset stick cmd key.
     _ctrl.view.frame = _spCtrl.view.frame
     window?.rootViewController = _ctrl
