@@ -40,7 +40,6 @@
 
 @property (nonatomic, weak) IBOutlet UISwitch *toggleiCloudSync;
 @property (nonatomic, weak) IBOutlet UISwitch *toggleiCloudKeysSync;
-@property (nonatomic, weak) IBOutlet UISwitch *toggleAppLock;
 
 @end
 
@@ -50,12 +49,6 @@
 {
   [super viewDidLoad];
   [self setupUI];
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
 }
 
 - (void)setupUI
@@ -74,15 +67,6 @@
     [self.tableView reloadData];
   } else if (toggleSwitch == _toggleiCloudKeysSync) {
     [BKUserConfigurationManager setUserSettingsValue:_toggleiCloudKeysSync.isOn forKey:@"iCloudKeysSync"];
-  } else if (toggleSwitch == _toggleAppLock) {
-    NSString *state = nil;
-    if ([toggleSwitch isOn]) {
-      state = @"SetPasscode";
-    } else {
-      state = @"RemovePasscode";
-    }
-    PasscodeLockViewController *lockViewController = [[PasscodeLockViewController alloc] initWithStateString:state];
-    [self.navigationController pushViewController:lockViewController animated:YES];
   }
 }
 

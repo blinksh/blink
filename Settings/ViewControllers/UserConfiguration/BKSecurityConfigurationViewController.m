@@ -30,11 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKSecurityConfigurationViewController.h"
-#import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
 #import "Blink-Swift.h"
 
-@interface BKSecurityConfigurationViewController () <UINavigationControllerDelegate>
+@interface BKSecurityConfigurationViewController ()
 
 @property (nonatomic, weak) IBOutlet UISwitch *toggleAppLock;
 
@@ -42,47 +41,20 @@
 
 @implementation BKSecurityConfigurationViewController
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
   [super viewDidLoad];
-  self.navigationController.delegate = self;
-}
-
-- (void)setupUI
-{
   [_toggleAppLock setOn:[BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock]];
 }
 
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
-}
-
-- (IBAction)didToggleSwitch:(id)sender
-{
-  UISwitch *toggleSwitch = (UISwitch *)sender;
-  if (toggleSwitch == _toggleAppLock) {
-    NSString *state = nil;
-    if ([toggleSwitch isOn]) {
-      state = @"SetPasscode";
+- (IBAction)didToggleSwitch:(UISwitch *)toggleSwitch {
+  BOOL isOn = toggleSwitch.isOn;
+  [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+    if (success) {
+      [BKUserConfigurationManager setUserSettingsValue:isOn forKey:BKUserConfigAutoLock];
     } else {
-      state = @"RemovePasscode";
+      toggleSwitch.on = !isOn;
     }
-    PasscodeLockViewController *lockViewController = [[PasscodeLockViewController alloc] initWithStateString:state];
-    lockViewController.completionCallback = ^{
-      [BKUserConfigurationManager setUserSettingsValue:!_toggleAppLock.isOn forKey:BKUserConfigAutoLock];
-      [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
-      [self setupUI];
-    };
-    [self.navigationController pushViewController:lockViewController animated:YES];
-  }
-}
-
-
-- (void)navigationController:(UINavigationController *)navigationController willShowViewController:(UIViewController *)viewController animated:(BOOL)animated
-{
-  [self setupUI];
+  } reason: isOn ? @"to turn off auto lock." : @"to turn on auto lock."];
 }
 
 

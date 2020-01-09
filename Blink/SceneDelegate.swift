@@ -71,9 +71,31 @@ struct StuckView: View {
   }
 }
 
+struct LockView: View {
+  var scene: UIScene
+  
+  var body: some View {
+    VStack {
+      Image(systemName: "lock.shield.fill")
+        .font(.system(size: 70))
+        .accentColor(Color(UIColor.blinkTint))
+        .padding()
+      Text("Autolocked")
+        .font(.headline)
+        .padding()
+      
+      if scene.session.role == .windowApplication {
+        Button(action: { LocalAuth.shared.unlock(scene: self.scene) }, label: { Text("Unlock") })
+          .padding()
+      }
+    }
+  }
+}
+
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
   var _ctrl = DummyVC()
+  var _lockCtrl: UIViewController? = nil
   var _spCtrl = SpaceController()
   
   func scene(
@@ -94,29 +116,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
+    
+    if LocalAuth.shared.lockRequired {
+      if let lockCtrl = _lockCtrl {
+        if window?.rootViewController != lockCtrl {
+          window?.rootViewController = lockCtrl
+        }
+      } else {
+        let ctrl = UIHostingController(rootView: LockView(scene: scene))
+        window?.rootViewController = ctrl
+        _lockCtrl = ctrl
+        LocalAuth.shared.unlock(scene: scene)
+      }
+      return
+    } else {
+      _lockCtrl = nil
+    }
+    
     if window?.rootViewController != _spCtrl {
       window?.rootViewController = _spCtrl
     }
+    
     guard let term = _spCtrl.currentTerm()
     else {
       return
     }
+    
+    
     term.resumeIfNeeded()
     term.view?.setNeedsLayout()
+    let spCtrl = _spCtrl
     
     let input = SmarterTermInput.shared
     if let key = input.stuckKey() {
       debugPrint("BK:", "stuck!!!")
       input.setTrackingModifierFlags([])
       let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
-        self._spCtrl.onStuckOpCommand()
+        spCtrl.onStuckOpCommand()
       }))
       ctrl.modalPresentationStyle = .formSheet
-      _spCtrl.stuckKeyCode = key
-      _spCtrl.present(ctrl, animated: false)
+      spCtrl.stuckKeyCode = key
+      spCtrl.present(ctrl, animated: false)
       return;
     } else {
-      _spCtrl.stuckKeyCode = nil
+      spCtrl.stuckKeyCode = nil
     }
     if
       term.termDevice.view?.isFocused() == false,
@@ -125,14 +168,14 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if !SmarterTermInput.shared.isRealFirstResponder,
           scene.activationState == .foregroundActive {
-          self._spCtrl.focusOnShellAction()
+          spCtrl.focusOnShellAction()
         }
       }
     } else if input.window == self.window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if term.termDevice.view?.isFocused() == false,
           scene.activationState == .foregroundActive {
-          self._spCtrl.focusOnShellAction()
+          spCtrl.focusOnShellAction()
         }
       }
     } else {
@@ -140,20 +183,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
-  func sceneWillResignActive(_ scene: UIScene) {
-//    debugPrint("BK:", "sceneWillResignActive")
-  }
-  
-  func sceneWillEnterForeground(_ scene: UIScene) {
-//    debugPrint("BK:", "sceneWillEnterForeground")
-  }
-  
-  func sceneDidEnterBackground(_ scene: UIScene) {
-//    debugPrint("BK:", "sceneDidEnterBackground")
-  }
-  
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
-//    debugPrint("BK:", "stateRestorationActivity")
     _setDummyVC()
     return _spCtrl.stateRestorationActivity()
   }

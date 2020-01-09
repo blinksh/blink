@@ -38,7 +38,6 @@
 #import "BlinkPaths.h"
 #import "DeviceInfo.h"
 #import "LayoutManager.h"
-#import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
 #import "Session.h"
 #import "MCPSession.h"

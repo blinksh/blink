@@ -158,11 +158,6 @@ public class SpaceController: UIViewController {
     let nc = NotificationCenter.default
     
     nc.addObserver(self,
-                   selector: #selector(_focusOnShell),
-                   name: NSNotification.Name.BKUserAuthenticated,
-                   object: nil)
-    
-    nc.addObserver(self,
                    selector: #selector(_didBecomeKeyWindow),
                    name: UIWindow.didBecomeKeyNotification,
                    object: nil)

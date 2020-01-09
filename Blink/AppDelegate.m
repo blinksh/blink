@@ -31,7 +31,6 @@
 
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
-#import "BKTouchIDAuthManager.h"
 #import "BlinkPaths.h"
 #import "BKDefaults.h"
 #import "BKPubKey.h"
@@ -77,8 +76,6 @@ void __setupProcessEnv() {
   dispatch_async(bgQueue, ^{
     [BlinkPaths linkICloudDriveIfNeeded];
   });
-  
-  [[BKTouchIDAuthManager sharedManager] registerforDeviceLockNotif];
 
   sideLoading = false; // Turn off extra commands from iOS system
   initializeEnvironment(); // initialize environment variables for iOS system

@@ -32,6 +32,7 @@
 #import "BKPubKeyDetailsViewController.h"
 #import "UIDevice+DeviceName.h"
 #import "BKDefaults.h"
+#import "Blink-Swift.h"
 
 @interface BKPubKeyDetailsViewController () <UITextFieldDelegate>
 
@@ -47,12 +48,6 @@
 
   _name.text = _pubkey.ID;
   _comments.text = [NSString stringWithFormat:@"%@@%@", [BKDefaults defaultUserName] , [UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeDeviceName]];
-}
-
-- (void)didReceiveMemoryWarning
-{
-  [super didReceiveMemoryWarning];
-  // Dispose of any resources that can be recreated.
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -74,15 +69,6 @@
   return YES;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
 - (IBAction)copyPublicKey:(id)sender
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
@@ -91,8 +77,12 @@
 
 - (IBAction)copyPrivateKey:(id)sender
 {
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
-  [pb setString:_pubkey.privateKey];
+  [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+    if (success) {
+      UIPasteboard *pb = [UIPasteboard generalPasteboard];
+      [pb setString:_pubkey.privateKey];
+    }
+  } reason:@"to copy private key to clipboard."];
 }
 
 - (IBAction)sharePublicKey:(id)sender

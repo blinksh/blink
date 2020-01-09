@@ -35,6 +35,7 @@
 #import "BKPubKeyCreateViewController.h"
 #import "BKPubKeyDetailsViewController.h"
 #import "BKPubKeyViewController.h"
+#import "Blink-Swift.h"
 
 
 @interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate>
@@ -123,11 +124,15 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    // Remove BKPubKey
-    [BKPubKey.all removeObjectAtIndex:indexPath.row];
-    [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
-    [BKPubKey saveIDS];
-    [self.tableView reloadData];
+    [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+      if (success) {
+        // Remove BKPubKey
+        [BKPubKey.all removeObjectAtIndex:indexPath.row];
+        [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
+        [BKPubKey saveIDS];
+        [self.tableView reloadData];
+      }
+    } reason:@"to delete key."];
   }
 }
 

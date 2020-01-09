@@ -32,7 +32,6 @@
 #import "UIApplication+Version.h"
 #import "BKSettingsViewController.h"
 #import "BKDefaults.h"
-#import "BKTouchIDAuthManager.h"
 #import "BKUserConfigurationManager.h"
 #import "BKiCloudConfigurationViewController.h"
 #import "BKiCloudSyncHandler.h"
