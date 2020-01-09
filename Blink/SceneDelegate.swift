@@ -76,6 +76,7 @@ struct LockView: View {
   
   var body: some View {
     VStack {
+      Spacer()
       Image(systemName: "lock.shield.fill")
         .font(.system(size: 70))
         .accentColor(Color(UIColor.blinkTint))
@@ -83,10 +84,13 @@ struct LockView: View {
       Text("Autolocked")
         .font(.headline)
         .padding()
-      
+      Spacer()
+      Spacer()
+      Spacer()
+      Spacer()
       if scene.session.role == .windowApplication {
         Button(action: { LocalAuth.shared.unlock(scene: self.scene) }, label: { Text("Unlock") })
-          .padding()
+          .padding().padding()
       }
     }
   }
@@ -161,6 +165,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     } else {
       spCtrl.stuckKeyCode = nil
     }
+    
+    
+    guard spCtrl.presentedViewController == nil else {
+      return
+    }
+    
     if
       term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
