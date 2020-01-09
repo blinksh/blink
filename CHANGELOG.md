@@ -1,3 +1,10 @@
+# Version 13.2
+
+* New auto lock based on LocalAuthentication.framework
+* Guard private key copy/delete with LocalAuth
+* Fixed disappearing of config view:
+* New separate font size setting for external displays
+
 # Version 13.1
 
 This is a very important release with just a single change. We had to rewrite all our legendary keyboard code so that features like caps as control could continue working on iOS 13. If you use a keyboard in a different language, specially with accents and special characters, we need your help more than ever. Here is what’s new:
