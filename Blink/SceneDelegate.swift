@@ -120,36 +120,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
+    guard let window = window else {
+      return
+    }
     
     if LocalAuth.shared.lockRequired {
       if let lockCtrl = _lockCtrl {
-        if window?.rootViewController != lockCtrl {
-          window?.rootViewController = lockCtrl
+        if window.rootViewController != lockCtrl {
+          window.rootViewController = lockCtrl
         }
-      } else {
-        let ctrl = UIHostingController(rootView: LockView(scene: scene))
-        window?.rootViewController = ctrl
-        _lockCtrl = ctrl
-        LocalAuth.shared.unlock(scene: scene)
+        
+        return
       }
-      return
-    } else {
-      _lockCtrl = nil
-    }
-    
-    if window?.rootViewController != _spCtrl {
-      window?.rootViewController = _spCtrl
-    }
-    
-    guard let term = _spCtrl.currentTerm()
-    else {
+      
+      _lockCtrl = UIHostingController(rootView: LockView(scene: scene))
+      window.rootViewController = _lockCtrl
+      LocalAuth.shared.unlock(scene: scene)
+
       return
     }
+
+    _lockCtrl = nil
+    LocalAuth.shared.stopTrackTime()
     
+    let spCtrl = _spCtrl
+    
+    if window.rootViewController != spCtrl {
+      window.rootViewController = spCtrl
+    }
+    
+    guard let term = spCtrl.currentTerm() else {
+      return
+    }
     
     term.resumeIfNeeded()
     term.view?.setNeedsLayout()
-    let spCtrl = _spCtrl
     
     let input = SmarterTermInput.shared
     if let key = input.stuckKey() {
@@ -161,36 +166,41 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       ctrl.modalPresentationStyle = .formSheet
       spCtrl.stuckKeyCode = key
       spCtrl.present(ctrl, animated: false)
-      return;
-    } else {
-      spCtrl.stuckKeyCode = nil
+
+      return
     }
     
+    spCtrl.stuckKeyCode = nil
     
     guard spCtrl.presentedViewController == nil else {
       return
     }
     
-    if
-      term.termDevice.view?.isFocused() == false,
+    if term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
-      input.window == self.window {
+      input.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if !SmarterTermInput.shared.isRealFirstResponder,
-          scene.activationState == .foregroundActive {
+        if scene.activationState == .foregroundActive,
+          !input.isRealFirstResponder {
           spCtrl.focusOnShellAction()
         }
       }
-    } else if input.window == self.window {
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
-        if term.termDevice.view?.isFocused() == false,
-          scene.activationState == .foregroundActive {
-          spCtrl.focusOnShellAction()
-        }
-      }
-    } else {
-      SmarterTermInput.shared.reportStateReset()
+      
+      return
     }
+    
+    if input.window === window {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if scene.activationState == .foregroundActive,
+          term.termDevice.view?.isFocused() == false {
+          spCtrl.focusOnShellAction()
+        }
+      }
+
+      return
+    }
+    
+    SmarterTermInput.shared.reportStateReset()
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {

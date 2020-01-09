@@ -85,10 +85,14 @@ import LocalAuthentication
     
     autheticate(callback: { [weak self] (success) in
       if success {
-        self?._didEnterBackgroundAt = nil
+        self?.stopTrackTime()
         NotificationCenter.default.post(name: LocalAuth.unlockNotification, object: nil)
       }
     }, reason: "to unlock blink.")
+  }
+  
+  func stopTrackTime() {
+    _didEnterBackgroundAt = nil
   }
   
   @objc func autheticate(callback: @escaping (_ success: Bool) -> Void, reason: String = "to access sensitive data.") {
