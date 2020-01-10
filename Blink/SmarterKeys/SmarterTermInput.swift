@@ -177,7 +177,7 @@ class SmarterTermInput: KBWebView {
         return;
     }
     
-    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
+    
     assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
     reloadInputViews()
     if (_hideSmartKeysWithHKB && _kbView.traits.isHKBAttached) {
@@ -186,6 +186,8 @@ class SmarterTermInput: KBWebView {
     contentView()?.reloadInputViews()
     _kbView.reset()
     reportStateReset()
+    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
+    contentView()?.reloadInputViews()
   }
   
   override func resignFirstResponder() -> Bool {
