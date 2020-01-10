@@ -91,7 +91,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _lockCtrl = nil
     LocalAuth.shared.stopTrackTime()
     
-    // 2. Stuck Key Check
+    // 2. Set space controller back and refresh layout
     
     let spCtrl = _spCtrl
     
@@ -106,13 +106,22 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     term.resumeIfNeeded()
     term.view?.setNeedsLayout()
     
+    // We can present config or stuck view. 
+    guard spCtrl.presentedViewController == nil else {
+      return
+    }
+    
+    // 3. Stuck Key Check
+    
     let input = SmarterTermInput.shared
     if let key = input.stuckKey() {
       debugPrint("BK:", "stuck!!!")
       input.setTrackingModifierFlags([])
+      
       let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
         spCtrl.onStuckOpCommand()
       }))
+      
       ctrl.modalPresentationStyle = .formSheet
       spCtrl.stuckKeyCode = key
       spCtrl.present(ctrl, animated: false)
@@ -122,11 +131,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     spCtrl.stuckKeyCode = nil
     
-    guard spCtrl.presentedViewController == nil else {
-      return
-    }
-    
-    // 3. Focus Check
+    // 4. Focus Check
     
     if term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,

@@ -420,21 +420,25 @@ extension SmarterTermInput {
     guard
       let device = device,
       let scene = device.view.window?.windowScene,
-      scene.activationState == .foregroundActive
-      else {
+      scene.activationState == .foregroundActive,
+      let cmd = Command(rawValue: command),
+      let spCtrl = spaceController
+    else {
         return
     }
     
-    if let cmd = Command(rawValue: command) {
-      var n = next
-      while let r = n {
-        if let sc = r as? SpaceController {
-          sc._onCommand(cmd)
-          return
-        }
-        n = r.next
+    spCtrl._onCommand(cmd)
+  }
+  
+  var spaceController: SpaceController? {
+    var n = next
+    while let responder = n {
+      if let spCtrl = responder as? SpaceController {
+        return spCtrl
       }
+      n = responder.next
     }
+    return nil
   }
   
   override func onSelection(_ args: [AnyHashable : Any]) {
