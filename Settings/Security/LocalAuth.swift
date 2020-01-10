@@ -73,14 +73,7 @@ import LocalAuthentication
     return true
   }
   
-  func unlock(scene: UIScene) {
-    guard
-      _inProgress == false,
-      scene.session.role == .windowApplication
-    else {
-      return
-    }
-    
+  func unlock() {
     authenticate(
       callback: { [weak self] (success) in
         if success {

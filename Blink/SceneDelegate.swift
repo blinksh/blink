@@ -39,68 +39,11 @@ class DummyVC: UIViewController {
   public override var prefersHomeIndicatorAutoHidden: Bool { true }
 }
 
-struct StuckView: View {
-  private var _emojies = ["😱", "🤪", "🧐", "🥺", "🤔", "🤭", "🙈", "🙊"]
-  var keyCode: KeyCode
-  var dismissAction: () -> ()
-  
-  init(keyCode: KeyCode, dismissAction: @escaping () -> ()) {
-    self.keyCode = keyCode
-    self.dismissAction = dismissAction
-  }
-  
-  var body: some View {
-      VStack {
-        HStack {
-          Spacer()
-          Button(action: dismissAction, label: { Text("Close") })
-        }.padding()
-        Spacer()
-        Text(_emojies.randomElement() ?? "🤥").font(.system(size: 60)).padding(.bottom, 26)
-        Text("Stuck key detected.").font(.headline).padding(.bottom, 30)
-        Text("Press \(keyCode.fullName) key").font(.system(size: 30))
-        Spacer()
-        HStack {
-          Text("Also, please")
-          Button(action: {
-            let url = URL(string: "https://github.com/blinksh/blink/wiki/Known-Issue:Cmd-key-stuck-while-switching-between-apps-with-Cmd-Tab")!
-            blink_openurl(url)
-          }, label:  { Text("file radar.") })
-        }.padding()
-      }
-  }
-}
-
-struct LockView: View {
-  var scene: UIScene
-  
-  var body: some View {
-    VStack {
-      Spacer()
-      Image(systemName: "lock.shield.fill")
-        .font(.system(size: 70))
-        .accentColor(Color(UIColor.blinkTint))
-        .padding()
-      Text("Autolocked")
-        .font(.headline)
-        .padding()
-      Spacer()
-      Spacer()
-      Spacer()
-      Spacer()
-      if scene.session.role == .windowApplication {
-        Button(action: { LocalAuth.shared.unlock(scene: self.scene) }, label: { Text("Unlock") })
-          .padding().padding()
-      }
-    }
-  }
-}
-
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
-  var _ctrl = DummyVC()
-  var _lockCtrl: UIViewController? = nil
-  var _spCtrl = SpaceController()
+  private var _ctrl = DummyVC()
+  private var _lockCtrl: UIViewController? = nil
+  private var _spCtrl = SpaceController()
   
   func scene(
     _ scene: UIScene,
@@ -124,6 +67,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
+    // 1. Local Auth AutoLock Check
+    
     if LocalAuth.shared.lockRequired {
       if let lockCtrl = _lockCtrl {
         if window.rootViewController != lockCtrl {
@@ -133,15 +78,20 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return
       }
       
-      _lockCtrl = UIHostingController(rootView: LockView(scene: scene))
+      let unlockAction = scene.session.role == .windowApplication ? LocalAuth.shared.unlock : nil
+      
+      _lockCtrl = UIHostingController(rootView: LockView(unlockAction: unlockAction))
       window.rootViewController = _lockCtrl
-      LocalAuth.shared.unlock(scene: scene)
+      
+      unlockAction?()
 
       return
     }
 
     _lockCtrl = nil
     LocalAuth.shared.stopTrackTime()
+    
+    // 2. Stuck Key Check
     
     let spCtrl = _spCtrl
     
@@ -175,6 +125,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard spCtrl.presentedViewController == nil else {
       return
     }
+    
+    // 3. Focus Check
     
     if term.termDevice.view?.isFocused() == false,
       !input.isRealFirstResponder,
