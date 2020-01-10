@@ -48,7 +48,7 @@
 
 - (IBAction)didToggleSwitch:(UISwitch *)toggleSwitch {
   BOOL isOn = toggleSwitch.isOn;
-  [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+  [[LocalAuth shared] authenticateWithCallback:^(BOOL success) {
     if (success) {
       [BKUserConfigurationManager setUserSettingsValue:isOn forKey:BKUserConfigAutoLock];
     } else {

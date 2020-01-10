@@ -77,7 +77,7 @@
 
 - (IBAction)copyPrivateKey:(id)sender
 {
-  [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+  [[LocalAuth shared] authenticateWithCallback:^(BOOL success) {
     if (success) {
       UIPasteboard *pb = [UIPasteboard generalPasteboard];
       [pb setString:_pubkey.privateKey];

@@ -36,11 +36,9 @@ import LocalAuthentication
 
 @objc class LocalAuth: NSObject {
   
-  static var unlockNotification = Notification.Name("blink.localauth.unlock")
-  
   @objc static let shared = LocalAuth()
   
-  static var _maxInactiveInterval = TimeInterval(10 * 60)
+  private static var _maxInactiveInterval = TimeInterval(10 * 60)
   private var _didEnterBackgroundAt: Date? = nil
   private var _inProgress = false
   
@@ -77,27 +75,30 @@ import LocalAuthentication
   
   func unlock(scene: UIScene) {
     guard
-      scene.session.role == .windowApplication,
-      _inProgress == false
+      _inProgress == false,
+      scene.session.role == .windowApplication
     else {
       return
     }
     
-    autheticate(callback: { [weak self] (success) in
-      if success {
-        self?.stopTrackTime()
-        NotificationCenter.default.post(name: LocalAuth.unlockNotification, object: nil)
-      }
-    }, reason: "to unlock blink.")
+    authenticate(
+      callback: { [weak self] (success) in
+        if success {
+          self?.stopTrackTime()
+        }
+      },
+      reason: "to unlock blink."
+    )
   }
   
   func stopTrackTime() {
     _didEnterBackgroundAt = nil
   }
   
-  @objc func autheticate(callback: @escaping (_ success: Bool) -> Void, reason: String = "to access sensitive data.") {
+  @objc func authenticate(callback: @escaping (_ success: Bool) -> Void, reason: String = "to access sensitive data.") {
     if _inProgress {
       callback(false)
+      return
     }
     _inProgress = true
     

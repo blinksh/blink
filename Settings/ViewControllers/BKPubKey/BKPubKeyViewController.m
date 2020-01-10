@@ -124,7 +124,7 @@
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
   if (editingStyle == UITableViewCellEditingStyleDelete) {
-    [[LocalAuth shared] autheticateWithCallback:^(BOOL success) {
+    [[LocalAuth shared] authenticateWithCallback:^(BOOL success) {
       if (success) {
         // Remove BKPubKey
         [BKPubKey.all removeObjectAtIndex:indexPath.row];
