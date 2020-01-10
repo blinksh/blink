@@ -45,7 +45,7 @@ import LocalAuthentication
   override init() {
     super.init()
     
-    // worm up LAContext
+    // warm up LAContext
     LAContext().canEvaluatePolicy(.deviceOwnerAuthentication, error: nil)
     
     if BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock) {
