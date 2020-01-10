@@ -2,8 +2,9 @@
 
 * New auto lock based on LocalAuthentication.framework
 * Guard private key copy/delete with LocalAuth
-* Fixed disappearing of config view:
+* Fixed disappearing config view
 * New separate font size setting for external displays
+* Improved stuck key view on exteranl displays. #906
 
 # Version 13.1
 
