@@ -5,6 +5,7 @@ import KeyMap, {
   KeyInfoType,
   KeyDownType,
   op,
+  DEL,
 } from './KeyMap';
 import {toUIKitFlags, UIKitFlagsToObject} from './UIKeyModifierFlags';
 import Bindings, {BindingAction, KeyBinding} from './Bindings';
@@ -180,6 +181,7 @@ export default class Keyboard implements IKeyboard {
   _bindings = new Bindings();
 
   _lang: string = 'en';
+  _langWithDeletes = false;
 
   hasSelection: boolean = false;
 
@@ -395,12 +397,19 @@ export default class Keyboard implements IKeyboard {
   };
 
   _onBeforeInput = (e: InputEvent) => {
-    if (this._lang == 'dictation') {
+    if (this._lang === 'dictation') {
       op('voice', {data: e.data || ''});
       return;
-    } else if (e.inputType == 'insertText') {
+    }
+
+    if (e.inputType === 'insertText') {
       this._output(e.data);
     }
+
+    if (e.inputType === 'deleteContentBackward') {
+      this._output(DEL);
+    }
+
     _blockEvent(e);
   };
 
@@ -518,10 +527,15 @@ export default class Keyboard implements IKeyboard {
 
       let nonPrintable = /^\[\w+\]$/.test(keyDef.keyCap);
 
-      if (nonPrintable && !keyInfo.src) {
-        this._removeAccents = false;
+      if (nonPrintable) {
+        if (!keyInfo.src) {
+          this._removeAccents = false;
+          return;
+        }
+      } else if (this._langWithDeletes) {
         return;
       }
+
       // TODO: may be remove accents only after options key is pressed.
       let out = this._removeAccents ? _removeAccents(key) : key;
       this._removeAccents = false;
@@ -697,6 +711,7 @@ export default class Keyboard implements IKeyboard {
   // Keyboard language change
   _handleLang(lang: string) {
     this._lang = lang;
+    this._langWithDeletes = lang === 'ko-KR';
     this._stateReset(this.hasSelection);
     if (lang != 'dictation') {
       op('voice', {data: ''});

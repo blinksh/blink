@@ -93,7 +93,7 @@ class SmarterTermInput: KBWebView {
   
   override func ready() {
     super.ready()
-    reportLang(_kbView.lang)
+    _reportLang()
     
     device?.focus()
     _kbView.isHidden = false
@@ -118,10 +118,14 @@ class SmarterTermInput: KBWebView {
   
   @objc func _inputModeChanged() {
     DispatchQueue.main.async {
-      let lang = self.textInputMode?.primaryLanguage ?? ""
-      self._kbView.lang = lang
-      self.reportLang(lang)
+      self._reportLang()
     }
+  }
+  
+  private func _reportLang() {
+    let lang = self.textInputMode?.primaryLanguage ?? ""
+    _kbView.lang = lang
+    reportLang(lang)
   }
   
   override var inputAssistantItem: UITextInputAssistantItem {
@@ -383,6 +387,8 @@ class SmarterTermInput: KBWebView {
     super._keyboardDidShow(notification)
     _kbView.invalidateIntrinsicContentSize()
     _keyboardWillChangeFrame(notification)
+    
+    _reportLang()
   }
   
   @objc static let shared = SmarterTermInput()
