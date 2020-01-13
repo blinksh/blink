@@ -1,5 +1,12 @@
 # Version 13.2
 
+## Changes in Build 201
+
+* Allow to map back `§` with custom presses.
+* Basic support for Korean language. #909
+
+## Changes in Build 200
+
 * New auto lock based on LocalAuthentication.framework
 * Guard private key copy/delete with LocalAuth
 * Fixed disappearing config view
