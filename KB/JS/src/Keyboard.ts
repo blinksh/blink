@@ -1,4 +1,5 @@
 import KeyMap, {
+  CSI,
   DEL,
   IKeyboard,
   KBActions,
@@ -559,11 +560,11 @@ export default class Keyboard implements IKeyboard {
 
     // Strip the modifier that is associated with the action, since we assume that
     // modifier has already been accounted for in the action.
-    if (resolvedActionType == 'ctrl') {
+    if (resolvedActionType === 'ctrl') {
       ctrl = false;
-    } else if (resolvedActionType == 'alt') {
+    } else if (resolvedActionType === 'alt') {
       alt = false;
-    } else if (resolvedActionType == 'meta') {
+    } else if (resolvedActionType === 'meta') {
       meta = false;
     }
 
@@ -571,8 +572,8 @@ export default class Keyboard implements IKeyboard {
 
     if (
       (alt || ctrl || shift || meta) &&
-      typeof action == 'string' &&
-      action.substr(0, 2) == '\x1b['
+      typeof action === 'string' &&
+      action.substr(0, 2) === CSI
     ) {
       // The action is an escape sequence that and it was triggered in the
       // presence of a keyboard modifier, we may need to alter the action to
@@ -588,7 +589,7 @@ export default class Keyboard implements IKeyboard {
 
       if (action.length == 3) {
         // Some of the CSI sequences have zero parameters unless modified.
-        action = '\x1b[1' + mod + action.substr(2, 1);
+        action = CSI + '1' + mod + action.substr(2, 1);
       } else {
         // Others always have at least one parameter.
         action =
@@ -959,6 +960,7 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'hex':
         this._output(hex_to_ascii(action.value));
+        this._removeAccents = true;
         break;
     }
   }

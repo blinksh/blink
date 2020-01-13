@@ -59,8 +59,8 @@ export function op(op: OpType, args: {}) {
 }
 
 const ESC = '\x1b'; // Escape
-const CSI = '\x1b['; // Command Start Inidicator
 const SS3 = '\x1bO'; // Single-Shift Three
+export const CSI = '\x1b['; // Command Start Inidicator
 export const DEL = '\x7f'; // Delete
 
 const ctl = (ch: string) => String.fromCharCode(ch.charCodeAt(0) - 64);
