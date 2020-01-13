@@ -404,6 +404,12 @@ export default class Keyboard implements IKeyboard {
 
     if (e.inputType === 'insertText') {
       this._output(e.data);
+      if (this._langWithDeletes && e.data) {
+        this.element.value = e.data;
+        let len = e.data.length;
+        this.element.selectionStart = len;
+        this.element.selectionEnd = len;
+      }
     }
 
     if (e.inputType === 'deleteContentBackward') {
@@ -507,6 +513,10 @@ export default class Keyboard implements IKeyboard {
       action = getAction('normal');
     }
 
+    if (this._langWithDeletes && keyDef.keyCap === '[Backspace]') {
+      return;
+    }
+
     if (
       !this.hasSelection &&
       (action === PASS || (action === DEFAULT && !(ctrl || alt || meta)))
@@ -533,6 +543,7 @@ export default class Keyboard implements IKeyboard {
           return;
         }
       } else if (this._langWithDeletes) {
+        // We pass to browser all printables
         return;
       }
 
