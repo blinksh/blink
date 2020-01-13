@@ -58,8 +58,8 @@ export function op(op: OpType, args: {}) {
   window.webkit.messageHandlers._kb.postMessage(message);
 }
 
-const ESC = '\x1b'; // Escape
 const SS3 = '\x1bO'; // Single-Shift Three
+export const ESC = '\x1b'; // Escape
 export const CSI = '\x1b['; // Command Start Inidicator
 export const DEL = '\x7f'; // Delete
 

@@ -1,6 +1,7 @@
 import KeyMap, {
   CSI,
   DEL,
+  ESC,
   IKeyboard,
   KBActions,
   KeyActionType,
@@ -624,7 +625,7 @@ export default class Keyboard implements IKeyboard {
         (alt && this._altSendsWhat == 'escape') ||
         (meta && this._metaSendsEscape)
       ) {
-        action = '\x1b' + actionStr;
+        action = ESC + actionStr;
       }
     }
 
