@@ -542,7 +542,7 @@ export default class Keyboard implements IKeyboard {
         action = action.call(keyMap, keyDown, keyDef);
       }
 
-      if (action == DEFAULT && keyDef.keyCap.length === 2) {
+      if (action === DEFAULT && keyDef.keyCap.length === 2) {
         action = keyDef.keyCap.substr(shift ? 1 : 0, 1);
       }
     }
