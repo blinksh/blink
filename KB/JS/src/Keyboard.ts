@@ -1,11 +1,11 @@
 import KeyMap, {
+  DEL,
   IKeyboard,
   KBActions,
   KeyActionType,
-  KeyInfoType,
   KeyDownType,
+  KeyInfoType,
   op,
-  DEL,
 } from './KeyMap';
 import {toUIKitFlags, UIKitFlagsToObject} from './UIKeyModifierFlags';
 import Bindings, {BindingAction, KeyBinding} from './Bindings';
@@ -22,8 +22,7 @@ type KeyCode = {
   id: string,
 };
 
-// TODO: remove tab
-type KeyAction = '' | 'escape' | 'tab';
+type KeyAction = '' | 'escape';
 
 function hex_to_ascii(hex: string): string {
   let str = '';
@@ -35,22 +34,15 @@ function hex_to_ascii(hex: string): string {
 }
 
 function _action(action: KeyAction) {
-  switch (action) {
-    case 'escape':
-      return {
-        keyCode: 27,
-        code: '[Escape]',
-        key: '[Escape]',
-      };
-    case 'tab':
-      return {
-        keyCode: 9,
-        code: '[Tab]',
-        key: '[Tab]',
-      };
-    default:
-      return null;
+  if (action !== 'escape') {
+    return null;
   }
+
+  return {
+    keyCode: 27,
+    code: '[Escape]',
+    key: '[Escape]',
+  };
 }
 
 type KeyModifier =
@@ -149,6 +141,7 @@ function _patchKeyDown(
   if (e.ctrlKey) {
     let ch = e.key.toLowerCase();
     let kc = e.keyCode;
+
     if (
       (kc == 8 && ch == 'h') ||
       (kc == 9 && ch == 'i') ||
@@ -159,6 +152,7 @@ function _patchKeyDown(
       keyDown.keyCode = keyMap.keyCode(ch) || keyDown.keyCode;
       return keyDown;
     }
+
     let c = e.code;
     if (
       (kc == 8 && c == 'KeyH') ||
@@ -224,9 +218,6 @@ export default class Keyboard implements IKeyboard {
 
   // custom shortcuts tracker
   _down: Set<string> = new Set();
-
-  // Reports every key down
-  _captureMode = false;
 
   constructor() {
     let input = this.element;
@@ -348,15 +339,6 @@ export default class Keyboard implements IKeyboard {
       this._lastKeyDownEvent = e;
     }
 
-    if (this._captureMode) {
-      let keyId = _keyId + '-' + event.code;
-      this._down.add(keyId);
-      this._capture();
-      this._updateUIKitModsIfNeeded(event);
-      _blockEvent(e);
-      return;
-    }
-
     let keyId = _keyId(event);
     this._down.add(keyId);
 
@@ -424,15 +406,6 @@ export default class Keyboard implements IKeyboard {
 
   _onKeyUp = (e: KeyboardEvent) => {
     this._lastKeyDownEvent = null;
-
-    if (this._captureMode) {
-      let keyId = _keyId(e) + '-' + e.code;
-      this._down.delete(keyId);
-      this._capture();
-      this._updateUIKitModsIfNeeded(e);
-      _blockEvent(e);
-      return;
-    }
 
     let keyId = _keyId(e);
     this._down.delete(keyId);
@@ -684,16 +657,6 @@ export default class Keyboard implements IKeyboard {
   };
 
   _handleCapsLockDown(down: boolean) {
-    if (this._captureMode) {
-      if (down) {
-        this._down.delete(_capsLockID + '-capslock');
-      } else {
-        this._down.add(_capsLockID + '-capslock');
-      }
-      this._capture();
-      return;
-    }
-
     let mod = this._modsMap['CapsLock'];
 
     if (down) {
@@ -758,29 +721,16 @@ export default class Keyboard implements IKeyboard {
     this.element.value = ' ';
     let keyCode = this._keyMap.keyCode(char);
     let keyId = `${keyCode}:0`;
-    if (this._captureMode) {
-      keyId += '-Key' + char.toUpperCase();
-    }
+
     if (up) {
       this._down.delete(keyId);
-    } else {
-      this._down.add(keyId);
-    }
-
-    if (this._captureMode) {
-      this._capture();
-      return;
-    }
-
-    if (up) {
       this._removeAccents = true;
       return;
     }
 
+    this._down.add(keyId);
     this._handleKeyDown(keyCode, null);
   }
-
-  _capture = () => op('capture', {keyIds: this._down.values});
 
   _configKey = (key: KeyConfig) => {
     let code = key.code;
@@ -875,8 +825,6 @@ export default class Keyboard implements IKeyboard {
     }
     return res;
   }
-
-  _toggleCaptureMode = (val: any) => (this._captureMode = !!val);
 
   _onToolbarMods = (val: number) => {
     let flags = UIKitFlagsToObject(val);
@@ -990,9 +938,6 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'focus':
         this.focus(arg);
-        break;
-      case 'capture':
-        this._toggleCaptureMode(arg);
         break;
       case 'hex':
         this._output(hex_to_ascii(arg));

@@ -195,8 +195,8 @@ export default class KeyMap {
     add({ keyCode: 122, keyCap: '[F11]',    normal: CSI + '23~',               ctrl: DEFAULT, alt: CSI + '42~', meta: DEFAULT });
     add({ keyCode: 123, keyCap: '[F12]',    normal: CSI + '24~',               ctrl: DEFAULT, alt: CSI + '43~', meta: DEFAULT });
 
-    const onCtrlNum = this._onCtrlNum
-    const onAltNum = this._onAltNum
+    const onCtrlNum = this._onCtrlNum;
+    const onAltNum = this._onAltNum;
     
     // second row
     add({ keyCode: 192,  keyCap: '`~',          normal: DEFAULT,       ctrl: sh(ctl('@'), ctl('^')), alt: DEFAULT,  meta: DEFAULT });
