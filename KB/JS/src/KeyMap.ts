@@ -215,7 +215,7 @@ export default class KeyMap {
     add({ keyCode: 8,    keyCap: '[Backspace]', normal: bs(DEL, '\b'), ctrl: bs('\b', DEL),          alt: DEFAULT,  meta: DEFAULT });
     
     // third row
-    add({ keyCode: 9,   keyCap: '[Tab]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,        alt: PASS,        meta: DEFAULT });
+    add({ keyCode: 9,   keyCap: '[Tab]', normal: sh('\t', CSI + 'Z'), ctrl: STRIP,        alt: STRIP,       meta: DEFAULT });
     add({ keyCode: 81,  keyCap: 'qQ',    normal: DEFAULT,             ctrl: ctl('Q'),     alt: DEFAULT,     meta: DEFAULT });
     add({ keyCode: 87,  keyCap: 'wW',    normal: sl(DEFAULT),         ctrl: ctl('W'),     alt: sl(DEFAULT), meta: DEFAULT });
     add({ keyCode: 69,  keyCap: 'eE',    normal: DEFAULT,             ctrl: ctl('E'),     alt: DEFAULT,     meta: DEFAULT });
