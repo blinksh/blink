@@ -103,7 +103,7 @@ const _capsLockID = '20:0';
 
 // We track key by keyCode, code, location and key
 function _keyId(e: KeyboardEvent): string {
-  let keyCode = e.keyCode == 229 ? 0 : e.keyCode;
+  let keyCode = e.keyCode === 229 ? 0 : e.keyCode;
   let loc = e.location;
   if (keyCode) {
     // we can identitfy with pair keyCode and loc
@@ -144,11 +144,11 @@ function _patchKeyDown(
     let kc = e.keyCode;
 
     if (
-      (kc == 8 && ch == 'h') ||
-      (kc == 9 && ch == 'i') ||
-      (kc == 13 && ch == 'c') ||
-      (kc == 13 && ch == 'm') ||
-      (kc == 27 && ch == '[')
+      (kc === 8 && ch === 'h') ||
+      (kc === 9 && ch === 'i') ||
+      (kc === 13 && ch === 'c') ||
+      (kc === 13 && ch === 'm') ||
+      (kc === 27 && ch === '[')
     ) {
       keyDown.keyCode = keyMap.keyCode(ch) || keyDown.keyCode;
       return keyDown;
@@ -156,11 +156,11 @@ function _patchKeyDown(
 
     let c = e.code;
     if (
-      (kc == 8 && c == 'KeyH') ||
-      (kc == 9 && c == 'KeyI') ||
-      (kc == 13 && c == 'KeyC') ||
-      (kc == 13 && c == 'KeyM') ||
-      (kc == 27 && c == 'BracketLeft')
+      (kc === 8 && c === 'KeyH') ||
+      (kc === 9 && c === 'KeyI') ||
+      (kc === 13 && c === 'KeyC') ||
+      (kc === 13 && c === 'KeyM') ||
+      (kc === 27 && c === 'BracketLeft')
     ) {
       keyDown.keyCode = keyMap.keyCode(c) || keyDown.keyCode;
     }
@@ -468,7 +468,7 @@ export default class Keyboard implements IKeyboard {
         action = action.call(keyMap, keyDown, keyDef);
       }
 
-      if (action === DEFAULT && name != 'normal') {
+      if (action === DEFAULT && name !== 'normal') {
         action = getAction('normal');
       }
 
@@ -542,7 +542,7 @@ export default class Keyboard implements IKeyboard {
         action = action.call(keyMap, keyDown, keyDef);
       }
 
-      if (action == DEFAULT && keyDef.keyCap.length == 2) {
+      if (action == DEFAULT && keyDef.keyCap.length === 2) {
         action = keyDef.keyCap.substr(shift ? 1 : 0, 1);
       }
     }
@@ -553,7 +553,7 @@ export default class Keyboard implements IKeyboard {
       return;
     }
 
-    if (action !== DEFAULT && typeof action != 'string') {
+    if (action !== DEFAULT && typeof action !== 'string') {
       console.log('Invalid action: ' + JSON.stringify(action));
       return;
     }
