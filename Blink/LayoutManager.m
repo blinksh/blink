@@ -123,15 +123,15 @@ NSTimer *__debounceTimer = nil;
         break;
       }
       
-      UIDeviceOrientation orientation = UIDevice.currentDevice.orientation;
+      UIInterfaceOrientation orientation = window.windowScene.interfaceOrientation;
       
-      if (UIDeviceOrientationIsPortrait(orientation)) {
+      if (UIInterfaceOrientationIsPortrait(orientation)) {
         result.top = deviceMargins.top - 10;
         result.bottom = deviceMargins.bottom - 10;
         break;
       }
       
-      if (orientation == UIDeviceOrientationLandscapeLeft) {
+      if (orientation == UIInterfaceOrientationLandscapeRight) {
         result.left = deviceMargins.left - 4; // notch
         result.right = 10;
         result.top = 10;
@@ -139,7 +139,7 @@ NSTimer *__debounceTimer = nil;
         break;
       }
       
-      if (orientation == UIDeviceOrientationLandscapeRight) {
+      if (orientation == UIInterfaceOrientationLandscapeLeft) {
         result.right = deviceMargins.right - 4;  // notch
         result.left = 10;
         result.top = 10;
