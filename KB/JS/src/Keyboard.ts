@@ -996,6 +996,7 @@ export default class Keyboard implements IKeyboard {
         break;
       case 'hex':
         this._output(hex_to_ascii(arg));
+        this._removeAccents = true;
         break;
       case 'config':
         this._config(arg);
