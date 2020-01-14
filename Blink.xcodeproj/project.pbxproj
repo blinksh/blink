@@ -222,7 +222,6 @@
 		D2C2441F238E44AB0082C69C /* Row.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440A238E44AB0082C69C /* Row.swift */; };
 		D2C24420238E44AB0082C69C /* Chevron.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440B238E44AB0082C69C /* Chevron.swift */; };
 		D2C24421238E44AB0082C69C /* KeyConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440C238E44AB0082C69C /* KeyConfigView.swift */; };
-		D2C24422238E44AB0082C69C /* KeyActionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */; };
 		D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440E238E44AB0082C69C /* KBWebView.swift */; };
 		D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440F238E44AB0082C69C /* KBWebViewBase.m */; };
 		D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */; };
@@ -649,7 +648,6 @@
 		D2C2440A238E44AB0082C69C /* Row.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Row.swift; sourceTree = "<group>"; };
 		D2C2440B238E44AB0082C69C /* Chevron.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Chevron.swift; sourceTree = "<group>"; };
 		D2C2440C238E44AB0082C69C /* KeyConfigView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyConfigView.swift; sourceTree = "<group>"; };
-		D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyActionPicker.swift; sourceTree = "<group>"; };
 		D2C2440E238E44AB0082C69C /* KBWebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBWebView.swift; sourceTree = "<group>"; };
 		D2C2440F238E44AB0082C69C /* KBWebViewBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBWebViewBase.m; sourceTree = "<group>"; };
 		D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyModifierPicker.swift; sourceTree = "<group>"; };
@@ -1295,7 +1293,6 @@
 				D2C24404238E44AB0082C69C /* KeySection.swift */,
 				D2C2440C238E44AB0082C69C /* KeyConfigView.swift */,
 				D2C24403238E44AB0082C69C /* KeyConfigPairView.swift */,
-				D2C2440D238E44AB0082C69C /* KeyActionPicker.swift */,
 				D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */,
 				D2C24436239104250082C69C /* ShortcutsConfigView.swift */,
 				D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */,
@@ -1707,7 +1704,6 @@
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
 				D2071B86215135A9000156D7 /* openssl-compat.c in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
-				D2C24422238E44AB0082C69C /* KeyActionPicker.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,

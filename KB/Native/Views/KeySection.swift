@@ -71,26 +71,3 @@ struct KeySection: View {
     }
   }
 }
-
-
-struct KeySectionOld: View {
-  var title: String = ""
-  @ObservedObject var key: KeyConfig
-  
-  var body: some View {
-    Section(header: Text(title)) {
-      DefaultRow(title: "Down", description: key.down.description) {
-        KeyActionPicker(action: self.$key.down).navigationBarTitle("Down Action")
-      }
-      DefaultRow(title: "Modifier", description: key.mod.description) {
-        KeyModifierPicker(modifier: self.$key.mod).navigationBarTitle("Modifier")
-      }
-      DefaultRow(title: "Up", description: key.up.description) {
-        KeyActionPicker(action: self.$key.up).navigationBarTitle("Up Action")
-      }
-      if key.code.hasAccents {
-        Toggle(isOn: self.$key.ignoreAccents, label: { Text("Ignore Accents") })
-      }
-    }
-  }
-}
