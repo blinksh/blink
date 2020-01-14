@@ -1,5 +1,12 @@
 # Version 13.2
 
+## Changes in Build 202
+
+* Improved safe layout for devices with notch. #911
+* Fixed software kb detection on iphones.
+* Added Discord to support and feedback screens.
+* Prevent alt-tab to loose focus.
+
 ## Changes in Build 201
 
 * Allow to map back `§` with custom presses.
