@@ -203,14 +203,6 @@ NSString *_encodeString(NSString *str);
   return res;
 }
 
-- (void)setCaptureMode:(BOOL)value {
-  [self report:@"capture" arg: value ? @"true" : @"false"];
-}
-
-- (void)onCapture:(NSArray<NSString *> *)keys {
-  
-}
-
 - (void)onSelection:(NSDictionary *)args {
   
 }
@@ -348,9 +340,6 @@ NSString *_encodeString(NSString *str);
     [self onCommand: body[@"command"]];
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
-  } else if([@"capture" isEqual: op]) {
-    NSArray<NSString *> *keys = body[@"keys"];
-    [self onCapture:keys];
   }
 }
 
