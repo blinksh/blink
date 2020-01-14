@@ -256,7 +256,10 @@ class SmarterTermInput: KBWebView {
     let mainScreen   = UIScreen.main
     let screenHeight = mainScreen.bounds.height
     let isIPad       = traitCollection.userInterfaceIdiom == .pad
-    var isOnScreenKB = kbFrameEnd.size.height > 116
+    
+//    var isOnScreenKB: Bool
+    var isOnScreenKB = isIPad ? kbFrameEnd.size.height > 116 : screenHeight >= kbFrameEnd.maxY
+    
     // External screen kb workaround
     if isOnScreenKB && isIPad && device?.view?.window?.screen !== mainScreen {
       isOnScreenKB = kbFrameEnd.origin.y < screenHeight - 140
