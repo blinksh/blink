@@ -71,4 +71,14 @@
   [[UIApplication sharedApplication] openURL:mailURL options:@{} completionHandler:nil];
 }
 
++ (void)sendToDiscord {
+  NSURL *url = [NSURL URLWithString:@"https://discord.gg/ZTtMfvK"];
+  blink_openurl(url);
+}
+
++ (void)sendToDiscordSupport {
+  NSURL *url = [NSURL URLWithString:@"https://discord.gg/uATT2ad"];
+  blink_openurl(url);
+}
+
 @end

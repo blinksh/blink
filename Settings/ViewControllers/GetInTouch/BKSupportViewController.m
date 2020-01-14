@@ -37,6 +37,7 @@
 @property (weak, nonatomic) IBOutlet UITableViewCell *issuesCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *reportCell;
 @property (weak, nonatomic) IBOutlet UITableViewCell *emailCell;
+@property (weak, nonatomic) IBOutlet UITableViewCell *discordCell;
 
 @end
 
@@ -52,6 +53,8 @@
     [BKLinkActions sendToGitHub:@"blink/issues/new"];
   } else if (clickedCell == self.emailCell) {
     [BKLinkActions sendToEmailApp];
+  } else if (clickedCell == self.discordCell) {
+    [BKLinkActions sendToDiscordSupport];
   }
 }
 

@@ -37,5 +37,7 @@
 + (void)sendToGitHub:(NSString *)location;
 + (void)sendToAppStore;
 + (void)sendToEmailApp;
++ (void)sendToDiscord;
++ (void)sendToDiscordSupport;
 
 @end
