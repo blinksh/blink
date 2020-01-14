@@ -51,7 +51,6 @@ struct KBKey: Hashable {
     case .wideKey:   return KBKeyViewSymbol(key: self, keyDelegate: keyDelegate)
     case .flexKey:   return KBKeyViewFlexible(key: self, keyDelegate: keyDelegate)
     case .vertical2: return KBKeyViewVertical2(key: self, keyDelegate: keyDelegate)
-    case .triangle:  return KBKeyViewTriangle(key: self, keyDelegate: keyDelegate)
     case .arrows:    return KBKeyViewArrows(key: self, keyDelegate: keyDelegate)
     }
   }
@@ -74,10 +73,6 @@ struct KBKey: Hashable {
   
   static func vertical2(_ a: KBKeyValue, _ b: KBKeyValue, traits: KBTraits) -> Self {
     Self(.vertical2(a: a, b: b), traits: traits)
-  }
-  
-  static func triangle(_ a: String, _ b: String, _ c: String, traits: KBTraits) -> Self {
-    Self(.triangle(a: .text(value: a), b: .text(value: b), c: .text(value: c)), traits: traits)
   }
   
   static func flexKey(_ value: KBKeyValue, traits: KBTraits) -> Self {

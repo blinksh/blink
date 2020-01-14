@@ -42,8 +42,6 @@ enum KBKeyShape: Hashable {
   
   // Standart sized button with two values
   case vertical2(a: KBKeyValue, b: KBKeyValue)
-  // Standart sized button with three values
-  case triangle(a: KBKeyValue, b: KBKeyValue, c: KBKeyValue)
   
   case arrows
   
@@ -75,12 +73,6 @@ enum KBKeyShape: Hashable {
       return
     }
     
-    if let values = try container.decodeIfPresent([KBKeyValue].self, forKey: .triangle),
-      values.count == 3 {
-      self = .triangle(a: values[0], b: values[1], c: values[2])
-      return
-    }
-    
     throw DecodingError.dataCorrupted(DecodingError.Context(codingPath: [], debugDescription: "Hmm"))
   }
 }
@@ -93,7 +85,6 @@ extension KBKeyShape: Identifiable {
     case .wideKey(let value): return "wideKey.\(value.id)"
     case .flexKey(let value): return "flexKey.\(value.id)"
     case .vertical2(let a, let b): return "vertical2.\(a.id),\(b.id)"
-    case .triangle(let a, let b, let c): return "triangle.\(a.id),\(b.id),\(c.id)"
     case .arrows: return "arrows"
     }
   }
@@ -109,7 +100,6 @@ extension KBKeyShape {
     case .wideKey(let value): return value
     case .flexKey(let value): return value
     case .vertical2(let a, _): return a
-    case .triangle(let a, _, _): return a
     case .arrows: return .up
     }
   }
@@ -117,7 +107,6 @@ extension KBKeyShape {
   var secondaryValue: KBKeyValue? {
     switch self {
     case .vertical2(_, let b): return b
-    case .triangle(_, let b, _): return b
     default: return nil
     }
   }
@@ -129,14 +118,6 @@ extension KBKeyShape {
   var secondaryText: String? {
     switch self {
     case .vertical2(_, let b): return b.text
-    case .triangle(_, let b, _): return b.text
-    default: return nil
-    }
-  }
-  
-  var tertiaryText: String? {
-    switch self {
-    case .triangle(_, _, let c): return c.text
     default: return nil
     }
   }
@@ -167,8 +148,6 @@ extension KBKeyShape {
       try container.encode(value, forKey: .flexKey)
     case .vertical2(let a, let b):
       try container.encode([a, b], forKey: .vertical2)
-    case .triangle(let a, let b, let c):
-      try container.encode([a, b, c], forKey: .triangle)
     case .arrows:
       try container.encode(true, forKey: .arrows)
     }
