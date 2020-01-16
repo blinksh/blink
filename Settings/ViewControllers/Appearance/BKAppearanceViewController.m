@@ -111,6 +111,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   
   _termView = [[TermView alloc] initWithFrame:self.view.bounds];
   _termView.backgroundColor = UIColor.systemGroupedBackgroundColor;
+  _termView.userInteractionEnabled = NO;
   _termView.device = self;
   [_termView loadWith:nil];
 }
@@ -627,6 +628,11 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   [BKDefaults setFontSize:@(size)];
   _fontSizeStepper.value = size;
   [_fontSizeField setText:[NSString stringWithFormat:@"%@ px", @(size)]];
+}
+
+- (void)viewSelectionChanged
+{
+  
 }
 
 - (void)viewWinSizeChanged:(struct winsize)win
