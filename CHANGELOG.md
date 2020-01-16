@@ -3,13 +3,13 @@
 ## Changes in Build 203
 
 * Improved software kbs. #901, #915
-* Fixed crash in appreance config view.
+* Fixed crash in appearance config view.
 * Added JetBrains Mono font.
 
 ## Changes in Build 202
 
 * Improved safe layout for devices with notch. #911
-* Fixed software kb detection on iphones.
+* Fixed software kb detection on iPhones.
 * Added Discord to support and feedback screens.
 * Prevent alt-tab to loose focus.
 
@@ -24,7 +24,8 @@
 * Guard private key copy/delete with LocalAuth
 * Fixed disappearing config view
 * New separate font size setting for external displays
-* Improved stuck key view on exteranl displays. #906
+* Improved stuck key view on external displays. #906
+
 
 # Version 13.1
 
