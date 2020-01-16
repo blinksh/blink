@@ -3,6 +3,7 @@
 ## Changes in Build 203
 
 * Improved software kbs. #901, #915
+* Fixed crash in appreance config view.
 
 ## Changes in Build 202
 
