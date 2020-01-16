@@ -313,6 +313,15 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   }
 }
 
+- (NSString *)tableView:(UITableView *)tableView titleForFooterInSection:(NSInteger)section {
+  switch(section) {
+  case BKAppearance_Terminal:
+    return @"Configuration will be applied to new terminal sessions.";
+  default:
+    return nil;
+  }
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
   NSString *cellIdentifier = [self cellIdentifierForIndexPath:indexPath];
