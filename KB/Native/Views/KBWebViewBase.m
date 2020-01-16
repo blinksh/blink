@@ -144,8 +144,8 @@ NSString *_encodeString(NSString *str);
   [self report:@"selection" arg:value ? @"true" : @"false"];
 }
 
-- (void)reportLang:(NSString *) lang {
-  [self report:@"lang" arg:[NSString stringWithFormat:@"\"%@\"", lang]];
+- (void)reportLang:(NSString *) lang isHardwareKB: (BOOL)isHardwareKB; {
+  [self report:@"lang" arg:[NSString stringWithFormat:@"\"%@:%@\"", lang, isHardwareKB ? @"hw" : @"sw"]];
 }
 
 - (void)_keyDown:(KeyCommand *)cmd {

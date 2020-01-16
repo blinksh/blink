@@ -37,6 +37,8 @@ class SmarterTermInput: KBWebView {
   private var _hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   private var _inputAccessoryView: UIView? = nil
   
+  var isHardwareKB: Bool { _kbView.traits.isHKBAttached }
+  
   var device: TermDevice? = nil {
     didSet { reportStateReset() }
   }
@@ -125,7 +127,7 @@ class SmarterTermInput: KBWebView {
   private func _reportLang() {
     let lang = self.textInputMode?.primaryLanguage ?? ""
     _kbView.lang = lang
-    reportLang(lang)
+    reportLang(lang, isHardwareKB: _kbView.traits.isHKBAttached)
   }
   
   override var inputAssistantItem: UITextInputAssistantItem {
@@ -513,6 +515,11 @@ extension SmarterTermInput {
   func stuckKey() -> KeyCode? {
     let mods: UIKeyModifierFlags = [.shift, .control, .alternate, .command]
     let stuck = mods.intersection(trackingModifierFlags)
+    
+    // Return command key first
+    if stuck.contains(.command) {
+      return KeyCode.commandLeft
+    }
 
     if stuck.contains(.shift) {
       return KeyCode.shiftLeft
@@ -523,10 +530,6 @@ extension SmarterTermInput {
     
     if stuck.contains(.alternate) {
       return KeyCode.optionLeft
-    }
-    
-    if stuck.contains(.command) {
-      return KeyCode.commandLeft
     }
     
     return nil

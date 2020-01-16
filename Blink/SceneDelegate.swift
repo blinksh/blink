@@ -118,15 +118,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       debugPrint("BK:", "stuck!!!")
       input.setTrackingModifierFlags([])
       
-      let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
-        spCtrl.onStuckOpCommand()
-      }))
-      
-      ctrl.modalPresentationStyle = .formSheet
-      spCtrl.stuckKeyCode = key
-      spCtrl.present(ctrl, animated: false)
+      if input.isHardwareKB && key == .commandLeft {
+        let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
+          spCtrl.onStuckOpCommand()
+        }))
+        
+        ctrl.modalPresentationStyle = .formSheet
+        spCtrl.stuckKeyCode = key
+        spCtrl.present(ctrl, animated: false)
 
-      return
+        return
+      }
     }
     
     spCtrl.stuckKeyCode = nil

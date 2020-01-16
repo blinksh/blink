@@ -178,6 +178,7 @@ export default class Keyboard implements IKeyboard {
 
   _lang: string = 'en';
   _langWithDeletes = false;
+  _isHKB = false;
 
   hasSelection: boolean = false;
 
@@ -522,6 +523,13 @@ export default class Keyboard implements IKeyboard {
         return;
       }
 
+      if (!this._isHKB) {
+        // Some software KBs doesn't report shift presses (GBoard for instance)
+        this._output(key);
+        _blockEvent(e);
+        return;
+      }
+
       // TODO: may be remove accents only after options key is pressed.
       let out = this._removeAccents ? _removeAccents(key) : key;
       this._removeAccents = false;
@@ -685,11 +693,14 @@ export default class Keyboard implements IKeyboard {
   }
 
   // Keyboard language change
-  _handleLang(lang: string) {
-    this._lang = lang;
-    this._langWithDeletes = lang === 'ko-KR';
+  _handleLang(langAndKB: string) {
+    let parts = langAndKB.split(':');
+    this._lang = parts[0];
+    this._isHKB = parts[1] === 'hw';
+
+    this._langWithDeletes = this._lang === 'ko-KR';
     this._stateReset(this.hasSelection);
-    if (lang != 'dictation') {
+    if (this._lang !== 'dictation') {
       op('voice', {data: ''});
     }
   }
