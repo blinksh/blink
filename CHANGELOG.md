@@ -4,6 +4,7 @@
 
 * Improved software kbs. #901, #915
 * Fixed crash in appreance config view.
+* Added JetBrains Mono font.
 
 ## Changes in Build 202
 
