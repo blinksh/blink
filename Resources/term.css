@@ -105,6 +105,36 @@
   font-style: italic;
 }
 
+/* JetBrains Mono */
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('Fonts/JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('Fonts/JetBrainsMono-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('Fonts/JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono';
+  src: url('Fonts/JetBrainsMono-Bold-Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
 
 /* Roboto Mono */
 
