@@ -1,5 +1,9 @@
 # Version 13.2
 
+## Changes in Build 203
+
+* Improved software kbs. #901, #915
+
 ## Changes in Build 202
 
 * Improved safe layout for devices with notch. #911
