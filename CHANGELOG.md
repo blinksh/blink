@@ -1,10 +1,11 @@
 # Version 13.2
 
-## Changes in Build 203
+## Changes in Build 204
 
 * Improved software kbs. #901, #915
 * Fixed crash in appearance config view.
 * Added JetBrains Mono font.
+* Fixed unmapped CapsLock.
 
 ## Changes in Build 202
 
