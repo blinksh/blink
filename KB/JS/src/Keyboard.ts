@@ -252,12 +252,19 @@ export default class Keyboard implements IKeyboard {
     // @ts-ignore
     input.addEventListener('input', this._onInput);
 
+    this._updateRemappingFlags();
+  }
+
+  _updateRemappingFlags() {
     this._capsLockRemapped =
       this._modsMap['CapsLock'] != null ||
       this._downMap[_capsLockID] != null ||
       this._upMap[_capsLockID] != null;
     this._shiftRemapped =
-      this._modsMap['Shift'] != null || this._modsMap['Shift'] !== 'Shift';
+      (this._modsMap['ShiftLeft'] != null &&
+        this._modsMap['ShiftLeft'] !== 'Shift') ||
+      (this._modsMap['ShiftRight'] != null &&
+        this._modsMap['ShiftRight'] !== 'Shift');
   }
 
   _updateUIKitModsIfNeeded = (e: KeyboardEvent) => {
@@ -813,6 +820,8 @@ export default class Keyboard implements IKeyboard {
       };
       this._bindings.expandBinding(binding);
     }
+
+    this._updateRemappingFlags();
   };
 
   _keysFromShortcut(input: string, mods: number): Array<string> {
