@@ -35,9 +35,21 @@ import Combine
 import ios_system
 
 private let _completionQueue = DispatchQueue(label: "completion.queue")
+private var _showReplHints: Bool = {
+  guard
+    let value = getenv("BLINK_REPL_HINTS")
+  else {
+    return true
+  }
+  
+  if String(cString: value).lowercased() == "false" {
+    return false
+  }
+  
+  return true
+}()
 
 struct Complete {
-  
   struct ForRequest: Codable {
     let id: Int
     let cursor: Int
@@ -198,7 +210,10 @@ struct Complete {
   }
   
   static func _hint(kind: Kind, candidates: [String]) -> String {
-    guard let first = candidates.first else {
+    guard
+      _showReplHints,
+      let first = candidates.first 
+    else {
       return ""
     }
     var result = "";
@@ -252,7 +267,7 @@ struct Complete {
       )
     }
     
-    if token.query.first == "-" {
+    if _showReplHints, token.query.first == "-" {
       let opts = getoptString(cmd) ?? ""
       return (
         kind: .no,
