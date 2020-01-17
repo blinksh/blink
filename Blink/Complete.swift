@@ -147,7 +147,7 @@ struct Complete {
       "mkdir": "Make directories.", // fish
       "mosh": "Runs mosh client. 🦄",
       "mv": "Move files and directories.",
-      "nc": "", // TODO
+//      "nc": "", // TODO
       "nslookup": "Query Internet name servers interactively", // fish
       "pbcopy": "Copy to the pasteboard.",
       "pbpaste": "Paste from the pasteboard.",
