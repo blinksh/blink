@@ -172,9 +172,10 @@ function _patchKeyDown(
   // Software KB: we need handle shift right
   if (!isHKB) {
     let ch = e.key.toLowerCase();
-    if (/[~!@#$%^&*()_+{}|:"<>?]/.test(ch)) {
-      keyDown.shift = true;
-    } else if (/^\w&/.test(ch) && ch !== e.key) {
+    if (
+      /^[~!@#$%^&*()_+{}|:"<>?]$/.test(ch) ||
+      (/^\w$/.test(ch) && ch !== e.key)
+    ) {
       keyDown.shift = true;
     }
     return keyDown;
