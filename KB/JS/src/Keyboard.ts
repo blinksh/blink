@@ -133,6 +133,7 @@ function _blockEvent(e: UIEvent | null) {
 function _patchKeyDown(
   keyDown: KeyDownType,
   keyMap: KeyMap,
+  isHKB: boolean,
   e: KeyboardEvent | null,
 ): KeyDownType {
   if (!e) {
@@ -164,7 +165,19 @@ function _patchKeyDown(
       (kc === 27 && c === 'BracketLeft')
     ) {
       keyDown.keyCode = keyMap.keyCode(c) || keyDown.keyCode;
+      return keyDown;
     }
+  }
+
+  // Software KB: we need handle shift right
+  if (!isHKB) {
+    let ch = e.key.toLowerCase();
+    if (/[~!@#$%^&*()_+{}|:"<>?]/.test(ch)) {
+      keyDown.shift = true;
+    } else if (/^\w&/.test(ch) && ch !== e.key) {
+      keyDown.shift = true;
+    }
+    return keyDown;
   }
 
   return keyDown;
@@ -462,6 +475,7 @@ export default class Keyboard implements IKeyboard {
     let keyDown = _patchKeyDown(
       {key, code, keyCode, alt, ctrl, meta, shift},
       this._keyMap,
+      this._isHKB,
       e,
     );
 
