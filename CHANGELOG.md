@@ -1,5 +1,9 @@
 # Version 13.2
 
+## Changes in Build 205
+
+* Fixed alt+[non letter] on software kbs. #920
+
 ## Changes in Build 204
 
 * Improved software kbs. #901, #915
