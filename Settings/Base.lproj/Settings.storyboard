@@ -1200,7 +1200,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
                         <sections>
-                            <tableViewSection footerTitle="Note: on iPads Smart Keys visible only with Settings.app → General → Keyboard → Shortcuts toggle on." id="4LL-aT-m70">
+                            <tableViewSection footerTitle="Note: on iPads, Smart Keys bar is visible only when Settings.app → General → Keyboard → Shortcuts toggle is on." id="4LL-aT-m70">
                                 <cells>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="none" indentationWidth="10" rowHeight="44" id="Pas-GB-VuG">
                                         <rect key="frame" x="0.0" y="18" width="768" height="44"/>
