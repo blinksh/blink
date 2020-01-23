@@ -52,6 +52,10 @@ class SmarterTermInput: KBWebView {
     _kbView.keyInput = self
     _kbView.lang = textInputMode?.primaryLanguage ?? ""
     
+    // Assume hardware kb by default, since sometimes we don't have kbframe change events
+    // if shortcuts toggle in Settings.app is off.
+    _kbView.traits.isHKBAttached = true
+    
     _setupStyle()
     
     if traitCollection.userInterfaceIdiom == .pad {
@@ -273,6 +277,7 @@ class SmarterTermInput: KBWebView {
       traits.isFloatingKB = isFloatingKB
       traits.isHKBAttached = !isOnScreenKB
       _kbView.traits = traits
+      _reportLang()
     }
     
     if traits.isHKBAttached && isOnScreenKB {
@@ -392,8 +397,6 @@ class SmarterTermInput: KBWebView {
     super._keyboardDidShow(notification)
     _kbView.invalidateIntrinsicContentSize()
     _keyboardWillChangeFrame(notification)
-    
-    _reportLang()
   }
   
   @objc static let shared = SmarterTermInput()
