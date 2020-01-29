@@ -177,6 +177,13 @@ void __setupProcessEnv() {
   return YES;
 }
 
+- (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
+  if ([extensionPointIdentifier isEqualToString: UIApplicationKeyboardExtensionPointIdentifier]) {
+    return ![BKDefaults disableCustomKeyboards];
+  }
+  return YES;
+}
+
 #pragma mark - State saving and restoring
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
