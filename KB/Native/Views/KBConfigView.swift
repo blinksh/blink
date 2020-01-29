@@ -69,7 +69,7 @@ struct KBConfigView: View {
     return List {
       Section(
         header: Text("Blink"),
-        footer: Text("You can disable Emoji keyboard and third-party custom keyboards. You have to restart Blink for this change to take effect.")) {
+        footer: Text("You can disable third-party custom keyboards. You have to restart Blink for this change to take effect.")) {
         DefaultRow(title: "Shortcuts") {
           ShortcutsConfigView(
             config: self.config,
