@@ -1,3 +1,12 @@
+# Version 13.3
+
+## Changes in Build 211
+
+* Set option key as escape seq modifier by default.
+* Updated JetBrains Mono font to v1.0.2. #927
+* Allow to map `|` with custom presses. #928
+* Added option to disable third-party keyboards.
+
 # Version 13.2
 
 ## Changes in Build 206
@@ -31,18 +40,25 @@
 * New separate font size setting for external displays
 * Improved stuck key view on external displays. #906
 
-
 # Version 13.1
 
-This is a very important release with just a single change. We had to rewrite all our legendary keyboard code so that features like caps as control could continue working on iOS 13. If you use a keyboard in a different language, specially with accents and special characters, we need your help more than ever. Here is what’s new:
+This is a very important release with just a single change. We had to rewrite
+all our legendary keyboard code so that features like caps as control could
+continue working on iOS 13. If you use a keyboard in a different language,
+specially with accents and special characters, we need your help more than ever.
+Here is what’s new:
 
 * Caps as Control or escape is back!
-* You can now also define what individual modifier keys do on presses. Want to press Caps and send escape? No problem!
+* You can now also define what individual modifier keys do on presses. Want to
+  press Caps and send escape? No problem!
 * You can separate left and right modifiers. And even define key ups and downs.
 * Shortcuts can now also be configured and redefined.
 * You can now also assign a different key to Escape.
-* You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence within Blink.
-* Accents are now considered too for specific sequences so if you have an international keyboard like French, Danish, etc... let us know how things are looking like.
+* You can also assign Ctrl-Space (emacs & tmux mark) to a different sequence
+  within Blink.
+* Accents are now considered too for specific sequences so if you have an
+  international keyboard like French, Danish, etc... let us know how things are
+  looking like.
 
 ## Changes in Build 195
 
@@ -66,7 +82,6 @@ This is a very important release with just a single change. We had to rewrite al
 * Shortcut for config is working again
 * Proper theme for software KB
 * Allow to capture `°` in shortcuts
-
 
 # Version 13.0
 
