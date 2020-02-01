@@ -151,6 +151,8 @@ enum KeyBindingAction: Codable, Identifiable {
       .hex("3C", comment: "Press <"),
       .hex("3E", comment: "Press >"),
       .hex("A7", comment: "Press §"),
+      .hex("B1", comment: "Press ±"),
+      .hex("7E", comment: "Press ~"),
       .hex("7C", comment: "Press |"),
       .hex("5C", comment: "Press \\"),
     ]
