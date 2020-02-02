@@ -18,10 +18,10 @@ const PASS = KBActions.PASS;
 const STRIP = KBActions.STRIP;
 
 type KeyCode = {
-  keyCode: number;
-  key: string;
-  code: string;
-  id: string;
+  keyCode: number,
+  key: string,
+  code: string,
+  id: string,
 };
 
 type KeyAction = '' | 'escape';
@@ -57,30 +57,30 @@ type KeyModifier =
   | 'Meta-Escape';
 
 type KeyConfig = {
-  code: KeyCode;
-  up: KeyAction;
-  down: KeyAction;
-  mod: KeyModifier;
-  ignoreAccents: boolean;
+  code: KeyCode,
+  up: KeyAction,
+  down: KeyAction,
+  mod: KeyModifier,
+  ignoreAccents: boolean,
 };
 
 type KeyConfigPair = {
-  left: KeyConfig;
-  right: KeyConfig;
-  bothAsLeft: boolean;
+  left: KeyConfig,
+  right: KeyConfig,
+  bothAsLeft: boolean,
 };
 
 type KBConfig = {
-  capsLock: KeyConfig;
-  shift: KeyConfigPair;
-  control: KeyConfigPair;
-  option: KeyConfigPair;
-  command: KeyConfigPair;
-  fn: KeyBinding;
-  cursor: KeyBinding;
+  capsLock: KeyConfig,
+  shift: KeyConfigPair,
+  control: KeyConfigPair,
+  option: KeyConfigPair,
+  command: KeyConfigPair,
+  fn: KeyBinding,
+  cursor: KeyBinding,
 
-  bindings: {[index: string]: BindingAction};
-  shortcuts: Array<{action: BindingAction; input: string; modifiers: number}>;
+  bindings: {[index: string]: BindingAction},
+  shortcuts: Array<{action: BindingAction, input: string, modifiers: number}>,
 };
 
 const _holders = new Set([
@@ -165,18 +165,6 @@ function _patchKeyDown(
       (kc === 27 && c === 'BracketLeft')
     ) {
       keyDown.keyCode = keyMap.keyCode(c) || keyDown.keyCode;
-      return keyDown;
-    }
-  }
-
-  if (e.altKey) {
-    let kc = e.keyCode;
-    let c = e.code;
-
-    // No pipe ( | ) character with Danish Smart Keyboard #928
-    if (kc === 220 && c === 'KeyI') {
-      keyDown.alt = false;
-      keyDown.shift = true;
       return keyDown;
     }
   }
