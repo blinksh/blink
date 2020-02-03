@@ -1,7 +1,8 @@
 # Version 13.3
 
-## Changes in Build 213
+## Changes in Build 214
 
+* Removed temporary output in mosh.
 * Set option key as escape seq modifier by default.
 * Added option to bind '~' and `±` keys. #932
 * Updated JetBrains Mono font to v1.0.2. #927
