@@ -89,9 +89,8 @@ class KeyConfigPair: ObservableObject, Codable {
   }
   
   static var option: KeyConfigPair {
-    let cfg = KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .escape)
     // do not ignore accents by default. #928
-    cfg.ignoreAccents = false
+    let cfg = KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .escape, ignoreAccents: false)
     return cfg.pair(code: .optionRight)
   }
   
@@ -110,7 +109,13 @@ class KeyConfigPair: ObservableObject, Codable {
   public func encode(to encoder: Encoder) throws {
     var right = self.right
     if bothAsLeft {
-      right = KeyConfig(code: right.code, up: left.up, down: left.down, mod: left.mod)
+      right = KeyConfig(
+        code: right.code,
+        up: left.up,
+        down: left.down,
+        mod: left.mod,
+        ignoreAccents: left.ignoreAccents
+      )
     }
     
     var c = encoder.container(keyedBy: Keys.self)

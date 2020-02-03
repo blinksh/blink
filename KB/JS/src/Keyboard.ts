@@ -18,10 +18,10 @@ const PASS = KBActions.PASS;
 const STRIP = KBActions.STRIP;
 
 type KeyCode = {
-  keyCode: number,
-  key: string,
-  code: string,
-  id: string,
+  keyCode: number;
+  key: string;
+  code: string;
+  id: string;
 };
 
 type KeyAction = '' | 'escape';
@@ -57,30 +57,30 @@ type KeyModifier =
   | 'Meta-Escape';
 
 type KeyConfig = {
-  code: KeyCode,
-  up: KeyAction,
-  down: KeyAction,
-  mod: KeyModifier,
-  ignoreAccents: boolean,
+  code: KeyCode;
+  up: KeyAction;
+  down: KeyAction;
+  mod: KeyModifier;
+  ignoreAccents: boolean;
 };
 
 type KeyConfigPair = {
-  left: KeyConfig,
-  right: KeyConfig,
-  bothAsLeft: boolean,
+  left: KeyConfig;
+  right: KeyConfig;
+  bothAsLeft: boolean;
 };
 
 type KBConfig = {
-  capsLock: KeyConfig,
-  shift: KeyConfigPair,
-  control: KeyConfigPair,
-  option: KeyConfigPair,
-  command: KeyConfigPair,
-  fn: KeyBinding,
-  cursor: KeyBinding,
+  capsLock: KeyConfig;
+  shift: KeyConfigPair;
+  control: KeyConfigPair;
+  option: KeyConfigPair;
+  command: KeyConfigPair;
+  fn: KeyBinding;
+  cursor: KeyBinding;
 
-  bindings: {[index: string]: BindingAction},
-  shortcuts: Array<{action: BindingAction, input: string, modifiers: number}>,
+  bindings: {[index: string]: BindingAction};
+  shortcuts: Array<{action: BindingAction; input: string; modifiers: number}>;
 };
 
 const _holders = new Set([
@@ -782,7 +782,7 @@ export default class Keyboard implements IKeyboard {
       this._upMap[code.id] = up;
     }
 
-    if (code.code == 'AltRight' || code.code == 'AltLeft') {
+    if (code.code === 'AltRight' || code.code === 'AltLeft') {
       this._ignoreAccents[code.code] = key.ignoreAccents;
     }
   };
