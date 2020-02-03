@@ -1,11 +1,14 @@
 # Version 13.3
 
-## Changes in Build 211
+## Changes in Build 213
 
 * Set option key as escape seq modifier by default.
+* Added option to bind '~' and `±` keys. #932
 * Updated JetBrains Mono font to v1.0.2. #927
 * Allow to map `|` with custom presses. #928
 * Added option to disable third-party keyboards.
+
+Special thanks to @arkku for PR
 
 # Version 13.2
 
