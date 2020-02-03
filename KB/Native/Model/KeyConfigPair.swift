@@ -89,8 +89,7 @@ class KeyConfigPair: ObservableObject, Codable {
   }
   
   static var option: KeyConfigPair {
-    // do not ignore accents by default. #928
-    KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .escape, ignoreAccents: false).pair(code: .optionRight)
+    KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .none).pair(code: .optionRight)
   }
   
   static var command: KeyConfigPair {

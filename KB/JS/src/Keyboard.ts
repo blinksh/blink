@@ -381,7 +381,9 @@ export default class Keyboard implements IKeyboard {
 
     let handled = false;
     if (downOverride) {
-      handled = !(mod && this._mods[mod].has(keyId));
+      if (mod) {
+        handled = !this._mods[mod].has(keyId);
+      }
       if (!handled) {
         this._handleKeyDownKey(downOverride, e);
         handled = true;
@@ -783,7 +785,8 @@ export default class Keyboard implements IKeyboard {
     }
 
     if (code.code === 'AltRight' || code.code === 'AltLeft') {
-      this._ignoreAccents[code.code] = key.ignoreAccents;
+      this._ignoreAccents[code.code] =
+        key.ignoreAccents && (!!mod || !!up || !!down);
     }
   };
 
