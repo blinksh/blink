@@ -8,7 +8,7 @@
 ## Changes in Build 215
 
 * Removed temporary output in mosh.
-* Added option to bind '~' and `±` keys. #932
+* Added option to bind `~` and `±` keys. #932
 * Updated JetBrains Mono font to v1.0.2. #927
 * Allow to map `|` with custom presses. #928
 * Added option to disable third-party keyboards.
