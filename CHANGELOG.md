@@ -1,5 +1,10 @@
 # Version 13.3
 
+## Changes in Build 216
+
+* Added OSC 10,11 read operations.
+* Fixed color palette refresh. #540
+
 ## Changes in Build 215
 
 * Removed temporary output in mosh.
