@@ -1,8 +1,9 @@
 # Version 13.3
 
-## Changes in Build 216
+## Changes in Build 217
 
-* Added OSC 10,11 read operations.
+* Added support for OSC 9,777 for notification.
+* Added support for OSC 10,11 color read operations.
 * Fixed color palette refresh. #540
 
 ## Changes in Build 215
