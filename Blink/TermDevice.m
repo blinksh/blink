@@ -373,6 +373,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 #pragma mark - TermViewDeviceProtocol
 
+- (void)viewNotify:(NSDictionary *)data {
+  [_delegate viewNotify:data];
+}
+
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request {
   [_delegate apiCall:api andRequest:request];
 }

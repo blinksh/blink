@@ -8,6 +8,20 @@ function _postMessage(op, data) {
   window.webkit.messageHandlers.interOp.postMessage({op, data});
 }
 
+hterm.notify = function(params) {
+  var def = (curr, fallback) => curr !== undefined ? curr : fallback;
+  if (params === undefined || params === null) {
+    params = {};
+  }
+
+
+  var title = def(params.title, window.document.title);
+  if (!title)
+    title = 'hterm';
+
+  _postMessage('notify', {title, body: params.body})
+}
+
 hterm.Terminal.prototype.copyStringToClipboard = function(content) {
   if (this.prefs_.get('enable-clipboard-notice')) {
     setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);

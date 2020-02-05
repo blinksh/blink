@@ -684,6 +684,16 @@ extension SpaceController {
     _moveToShell(idx: _viewportsKeys.count - 1)
   }
   
+  @objc func moveToShell(key: String?) {
+    guard
+      let key = key,
+      let uuidKey = UUID(uuidString: key)
+    else {
+      return
+    }
+    _moveToShell(key: uuidKey, animated: true)
+  }
+  
   private func _moveToShell(key: UUID, animated: Bool = true) {
     guard
       let currentKey = _currentKey,

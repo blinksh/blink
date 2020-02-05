@@ -381,6 +381,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewSubmitLine:data[@"text"]];
   } else if ([operation isEqualToString:@"api"]) {
     [_device viewAPICall:data[@"name"] andJSONRequest:data[@"request"]];
+  } else if ([operation isEqualToString:@"notify"]) {
+    [_device viewNotify:data];
   }
 }
 
@@ -646,6 +648,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
           [script componentsJoinedByString:@"\n"]
                                 injectionTime:WKUserScriptInjectionTimeAtDocumentEnd
                              forMainFrameOnly:YES];
+}
+
+- (void)applyTheme:(NSString *)themeName {
+  NSString *themeContent = [[BKTheme withName: themeName ?: [BKDefaults selectedThemeName]] content];
+  if (themeContent) {
+    NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
+    [_webView evaluateJavaScript:script completionHandler:nil];
+  }
 }
 
 - (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler

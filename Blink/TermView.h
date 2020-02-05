@@ -51,6 +51,7 @@
 - (void)viewShowAlert:(NSString *)title andMessage:(NSString *)message;
 - (void)viewSubmitLine:(NSString *)line;
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request;
+- (void)viewNotify:(NSDictionary *)data;
 - (void)viewSelectionChanged;
 
 @end
@@ -85,6 +86,7 @@
 - (void)setBoldAsBright:(BOOL)state;
 - (void)setBoldEnabled:(NSUInteger)state;
 - (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler;
+- (void)applyTheme:(NSString *)themeName;
 - (void)copy:(id _Nullable )sender;
 - (void)pasteSelection:(id _Nullable)sender;
 - (void)terminate;

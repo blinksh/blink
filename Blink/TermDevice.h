@@ -56,6 +56,7 @@
 - (void)lineSubmitted:(NSString *)line;
 - (void)deviceFocused;
 - (void)apiCall:(NSString *)api andRequest:(NSString *)request;
+- (void)viewNotify:(NSDictionary *)data;
 - (UIViewController *)viewController;
 
 @end

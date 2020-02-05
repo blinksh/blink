@@ -33,6 +33,7 @@
 import Foundation
 import UIKit
 import Combine
+import UserNotifications
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
   // May be do it optional
@@ -226,6 +227,19 @@ let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
 ]
 
 extension TermController: TermDeviceDelegate {
+  
+  func viewNotify(_ data: [AnyHashable : Any]!) {
+    let content = UNMutableNotificationContent()
+    content.title = (data["title"] as? String) ?? title ?? "Blink"
+    content.body = (data["body"] as? String) ?? ""
+    content.sound = .default
+    content.threadIdentifier = meta.key.uuidString
+    content.targetContentIdentifier = "blink://open-scene/\(view?.window?.windowScene?.session.persistentIdentifier ?? "")"
+    
+    let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+    
+    UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
+  }
   
   func apiCall(_ api: String!, andRequest request: String!) {
     guard

@@ -54,6 +54,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
+    let conditions = scene.activationConditions
+    
+    conditions.canActivateForTargetContentIdentifierPredicate = NSPredicate(value: true)
+    conditions.prefersToActivateForTargetContentIdentifierPredicate = NSPredicate(format: "SELF == 'blink://open-scene/\(scene.session.persistentIdentifier)'")
+    
     _spCtrl.sceneRole = session.role
     
     self.window = UIWindow(windowScene: windowScene)
@@ -176,5 +181,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window?.rootViewController = _ctrl
     _ctrl.view.addSubview(_spCtrl.view)
   }
+  
+  @objc var spaceController: SpaceController { _spCtrl }
 
 }
