@@ -57,10 +57,13 @@ import LocalAuthentication
       object: nil,
       queue: OperationQueue.main
     ) { _ in
+
       // Do not reset didEnterBackground if we locked
-      if self._didEnterBackgroundAt == nil {
-        self._didEnterBackgroundAt = Date()
+      if let didEnterBackgroundAt = self._didEnterBackgroundAt,
+        Date().timeIntervalSince(didEnterBackgroundAt) > LocalAuth._maxInactiveInterval {
+        return
       }
+      self._didEnterBackgroundAt = Date()
     }
   }
   
