@@ -1,5 +1,9 @@
 # Version 13.3
 
+## Changes in Build 218
+
+* Fixed Autolock bypass.
+
 ## Changes in Build 217
 
 * Added support for OSC 9,777 for notification.
