@@ -57,7 +57,10 @@ import LocalAuthentication
       object: nil,
       queue: OperationQueue.main
     ) { _ in
-      self._didEnterBackgroundAt = Date()
+      // Do not reset didEnterBackground if we locked
+      if self._didEnterBackgroundAt == nil {
+        self._didEnterBackgroundAt = Date()
+      }
     }
   }
   
