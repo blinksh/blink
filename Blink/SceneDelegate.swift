@@ -50,6 +50,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions)
   {
+    _ = KBTracker.shared
+
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
@@ -68,6 +70,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
+    
+    
     guard let window = window else {
       return
     }

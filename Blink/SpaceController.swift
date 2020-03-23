@@ -30,10 +30,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
 import MBProgressHUD
 
-public class SpaceController: UIViewController {
+class SpaceController: UIViewController {
   
   struct UIState: UserActivityCodable {
     var keys: [UUID] = []
@@ -43,7 +42,7 @@ public class SpaceController: UIViewController {
     static var activityType: String { "space.ctrl.ui.state" }
   }
 
-  private lazy var _viewportsController = UIPageViewController(
+  final private lazy var _viewportsController = UIPageViewController(
     transitionStyle: .scroll,
     navigationOrientation: .horizontal,
     options: [.spineLocation: UIPageViewController.SpineLocation.mid]
@@ -135,20 +134,20 @@ public class SpaceController: UIViewController {
     }
   }
   
-  
-  public override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
-    _didBecomeKeyWindow()
-  }
-  
-  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    super.viewWillTransition(to: size, with: coordinator)
-    if view.window?.isKeyWindow == true {
-      DispatchQueue.main.async {
-        SmarterTermInput.shared.contentView()?.reloadInputViews()
-      }
-    }
-  }
+//
+//  public override func viewDidAppear(_ animated: Bool) {
+//    super.viewDidAppear(animated)
+//    _didBecomeKeyWindow()
+//  }
+//
+//  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+//    super.viewWillTransition(to: size, with: coordinator)
+//    if view.window?.isKeyWindow == true {
+//      DispatchQueue.main.async {
+//        SmarterTermInput.shared.contentView()?.reloadInputViews()
+//      }
+//    }
+//  }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
@@ -176,10 +175,10 @@ public class SpaceController: UIViewController {
       return
     }
     
-    if SmarterTermInput.shared.superview !== view,
-      window.screen === UIScreen.main {
-      view.addSubview(SmarterTermInput.shared)
-    }
+//    if SmarterTermInput.shared.superview !== view,
+//      window.screen === UIScreen.main {
+//      view.addSubview(SmarterTermInput.shared)
+//    }
     _focusOnShell()
     DispatchQueue.main.async {
       if let win = self.view.window?.windowScene?.windows.last,
@@ -269,19 +268,24 @@ public class SpaceController: UIViewController {
   
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
-    let input = SmarterTermInput.shared
-    _ = input.becomeFirstResponder()
-    // We should make input window key window
-    if input.window?.isKeyWindow == false {
-      input.window?.makeKeyAndVisible()
-    }
+//    let input = SmarterTermInput.shared
+////    _ = input.becomeFirstResponder()
+//    // We should make input window key window
+//    if input.window?.isKeyWindow == false {
+//      input.window?.makeKeyAndVisible()
+//    }
   }
   
   private func _attachInputToCurrentTerm() {
-    if let device = currentDevice {
-      device.attachInput(SmarterTermInput.shared)
-      device.focus()
+    guard let device = currentDevice else {
+      return
     }
+    
+    KBTracker.shared.attach(input: device.view?.webView)
+    device.attachInput(device.view.webView)
+    device.view.webView.reportFocus(true)
+//      device.view.webView.becomeFirstResponder()
+    device.focus()
   }
   
   var currentDevice: TermDevice? {
@@ -363,7 +367,7 @@ extension SpaceController: UIStateRestorable {
     let registry = SessionRegistry.shared
     sessions.forEach { session in
       guard
-        let uiState = SpaceController.UIState(userActivity: session.stateRestorationActivity)
+        let uiState = UIState(userActivity: session.stateRestorationActivity)
       else {
         return
       }
@@ -391,6 +395,8 @@ extension SpaceController: UIPageViewControllerDelegate {
     _displayHUD()
     _attachInputToCurrentTerm()
   }
+  
+  
 }
 
 extension SpaceController: UIPageViewControllerDataSource {
@@ -473,17 +479,18 @@ extension SpaceController {
   }
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
-    guard foregroundActive else {
+    guard foregroundActive,
+      let input = currentDevice?.view?.webView else {
       return
     }
 
-    SmarterTermInput.shared.reportStateReset()
+    input.reportStateReset()
     switch cmd.bindingAction {
     case .hex(let hex, comment: _):
-      SmarterTermInput.shared.reportHex(hex)
+      input.reportHex(hex)
       break;
     case .press(let keyCode, mods: let mods):
-      SmarterTermInput.shared.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
+      input.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
       break;
     case .command(let c):
       _onCommand(c)
@@ -534,7 +541,7 @@ extension SpaceController {
   }
   
   @objc func focusOnShellAction() {
-    SmarterTermInput.shared.reset()
+//    SmarterTermInput.shared.reset()
     _focusOnShell()
   }
   
@@ -555,7 +562,7 @@ extension SpaceController {
       let idx = sessions.firstIndex(of: session)?.advanced(by: 1)
     else  {
       if currentTerm()?.termDevice.view?.isFocused() == true {
-        _ = SmarterTermInput.shared.resignFirstResponder()
+        _ = currentTerm()?.termDevice.view?.webView?.resignFirstResponder()
       } else {
         _focusOnShell()
       }

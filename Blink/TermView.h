@@ -57,9 +57,7 @@
 @end
 
 
-@interface BKWebView: WKWebView
-
-@end
+@class TermView2;
 
 @interface TermView : UIView
 
@@ -73,6 +71,8 @@
 @property (nonatomic) CGRect layoutLockedFrame;
 @property (nonatomic, readonly) BOOL isReady;
 @property (nonatomic, readonly) CGRect selectionRect;
+@property (nonatomic, readonly) TermView2 *webView;
+
 
 - (CGRect)webViewFrame;
 - (void)loadWith:(MCPParams *)params;

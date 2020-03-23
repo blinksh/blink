@@ -62,6 +62,7 @@ NSString *_encodeString(NSString *str);
   KeyCommand *_activeModsCommand;
   NSArray<KeyCommand *> *_imeGuardCommands;
   NSArray<KeyCommand *> *_activeIMEGuardCommands;
+  BOOL _canResignFirstResponder;
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {
@@ -70,10 +71,13 @@ NSString *_encodeString(NSString *str);
   return cmd;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+
+
+- (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
 {
-  self = [super initWithFrame:frame];
+  self = [super initWithFrame:frame configuration:configuration];
   if (self) {
+    _canResignFirstResponder = YES;
     _keyCommands = @[];
     _jsPath = @"_onKB";
     _interopName = @"_kb";
@@ -192,14 +196,21 @@ NSString *_encodeString(NSString *str);
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
-  [self report:@"focus" arg:res ? @"true" : @"false"];
+  if (res) {
+    [self reportFocus:YES];
+  }
   return res;
+}
+
+- (void)reportFocus:(BOOL) value {
+  [self report:@"focus" arg:value ? @"true" : @"false"];
 }
 
 - (BOOL)resignFirstResponder {
   BOOL res = [super resignFirstResponder];
-  // leave textfield focused
-  // [self report:@"focus" arg: res ? @"false" : @"true"];
+  if (res) {
+    [self reportFocus:NO];
+  }
   return res;
 }
 

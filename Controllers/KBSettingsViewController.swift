@@ -35,7 +35,7 @@ import UIKit
 
 @objc class KBSettingsViewController: NSObject {
   @objc static func createWith(nav: UINavigationController?) -> UIViewController {
-    let rootView = KBConfigView(config: SmarterTermInput.shared.loadConfig())
+    let rootView = KBConfigView(config: KBTracker.shared.loadConfig())
     guard
       let nav = nav
     else {

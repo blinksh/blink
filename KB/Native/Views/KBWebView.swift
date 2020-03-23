@@ -102,45 +102,15 @@ class KBWebView: KBWebViewBase {
     NotificationCenter.default.removeObserver(v)
   }
   
-  private func _loadKBConfigData() -> Data? {
-    guard
-      let url = BlinkPaths.blinkKBConfigURL(),
-      let data = try? Data(contentsOf: url)
-    else {
-      return nil
-    }
-    return data
-  }
   
-  func loadConfig() -> KBConfig {
-    guard
-      let data = _loadKBConfigData(),
-      let cfg = try? JSONDecoder().decode(KBConfig.self, from: data)
-    else {
-      return KBConfig()
-    }
-    return cfg;
-  }
   
-  func saveAndApply(config: KBConfig) {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    guard
-      let url = BlinkPaths.blinkKBConfigURL(),
-      let data = try? encoder.encode(config)
-    else {
-      return
-    }
-    
-    try? data.write(to: url, options: .atomicWrite)
-    configure(config)
-  }
+  
   
   
   override func ready() {
     webViewReady = true
     super.ready()
-    configure(loadConfig())
+    configure(KBTracker.shared.loadConfig())
   }
   
   private func _loadKB() {

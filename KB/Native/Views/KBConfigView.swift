@@ -112,13 +112,7 @@ struct KBConfigView: View {
       )
     )
     .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
-      SmarterTermInput.shared.saveAndApply(config: self.config)
+      KBTracker.shared.saveAndApply(config: self.config)
     }
-  }
-}
-
-struct KBSettings_Previews: PreviewProvider {
-  static var previews: some View {
-    KBConfigView(config: KBConfig())
   }
 }

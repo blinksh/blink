@@ -30,8 +30,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
-import UIKit
 import Combine
 import UserNotifications
 
@@ -47,12 +45,39 @@ import UserNotifications
   func currentTerm() -> TermController!
 }
 
+private class ProxyView: UIView {
+  private var _targetContainer: UIView? = nil
+  var controlledView: UIView? = nil
+  private var _cancelable: AnyCancellable? = nil
+  
+  override func didMoveToSuperview() {
+    super.didMoveToSuperview()
+    if
+      let parent = superview,
+      let container = parent.superview {
+      _targetContainer = container
+      _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
+        self?.controlledView?.frame = frame
+      }
+      
+      guard let controlledView = controlledView
+      else {
+        return
+      }
+      container.addSubview(controlledView)
+    }
+    
+    controlledView?.isHidden = superview == nil
+  }
+}
+
 class TermController: UIViewController {
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
   private var _bag = Array<AnyCancellable>()
   private var _termView = TermView(frame: .zero)
+  private var _proxyView = ProxyView(frame: .zero)
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
     
@@ -87,13 +112,25 @@ class TermController: UIViewController {
   
   convenience init(sceneRole: UISceneSession.Role? = nil) {
     self.init(meta: nil)
-    if sceneRole == UISceneSession.Role.windowExternalDisplay {
+    if sceneRole == .windowExternalDisplay {
       _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  override func viewWillDisappear(_ animated: Bool) {
+    super.viewWillDisappear(animated)
+  }
+  
+  override func didMove(toParent parent: UIViewController?) {
+    super.didMove(toParent: parent);
+  }
+  
+  override func removeFromParent() {
+    super.removeFromParent()
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -109,7 +146,9 @@ class TermController: UIViewController {
     _termDevice.delegate = self
     _termDevice.attachView(_termView)
     _termView.backgroundColor = _bgColor
-    view = _termView
+    _proxyView.controlledView = _termView;
+    _proxyView.isUserInteractionEnabled = false
+    view = _proxyView
   }
   
   public override func viewDidLoad() {
@@ -155,6 +194,7 @@ class TermController: UIViewController {
     _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
     _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
     _termView.layoutLocked = _sessionParams.layoutLocked
+    _termView.setNeedsLayout()
   }
   
   public override func viewDidLayoutSubviews() {

@@ -48,46 +48,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@implementation BKWebView
-
-- (BOOL)canResignFirstResponder
-{
-  return NO;
-}
-
-- (BOOL)becomeFirstResponder
-{
-  return NO;
-}
-
-//- (BOOL)canBecomeFirstResponder {
-//  return NO;
-//}
-
-- (void)_keyboardDidChangeFrame:(id)sender
-{
-}
-
-- (void)_keyboardWillChangeFrame:(id)sender
-{
-}
-
-- (void)_keyboardWillShow:(id)sender
-{
-}
-
-- (void)_keyboardWillHide:(id)sender
-{
-}
-
-
-@end
-
 @interface TermView () <WKScriptMessageHandler>
 @end
 
 @implementation TermView {
-  WKWebView *_webView;
   WKWebViewGesturesInteraction *_gestureInteraction;
   
   BOOL _jsIsBusy;
@@ -98,6 +62,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSTimer *_layoutDebounceTimer;
   
   UIView *_coverView;
+  UIView *_parentScrollView;
 }
 
 
@@ -119,7 +84,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self addSubview:_coverView];
   _coverView.backgroundColor = [UIColor blackColor];
   
-
   return self;
 }
 
@@ -189,7 +153,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _webView = [[TermView2 alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
@@ -388,6 +352,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)_onTerminalReady:(NSDictionary *)data
 {
+  [_webView ready];
   NSArray *bgColor = data[@"bgColor"];
   if (bgColor && bgColor.count == 3) {
     UIColor *color = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
