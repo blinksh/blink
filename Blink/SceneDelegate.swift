@@ -122,12 +122,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // 3. Stuck Key Check
     
-    let input = SmarterTermInput.shared
-    if let key = input.stuckKey() {
+    let input = KBTracker.shared.input
+    if let key = input?.stuckKey() {
       debugPrint("BK:", "stuck!!!")
-      input.setTrackingModifierFlags([])
+      input?.setTrackingModifierFlags([])
       
-      if input.isHardwareKB && key == .commandLeft {
+      if input?.isHardwareKB == true && key == .commandLeft {
         let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
           spCtrl.onStuckOpCommand()
         }))
@@ -145,11 +145,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     // 4. Focus Check
     
     if term.termDevice.view?.isFocused() == false,
-      !input.isRealFirstResponder,
-      input.window === window {
+      input?.isRealFirstResponder == false,
+      input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
-          !input.isRealFirstResponder {
+          input?.isRealFirstResponder == false {
           spCtrl.focusOnShellAction()
         }
       }
@@ -157,7 +157,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
-    if input.window === window {
+    if input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
           term.termDevice.view?.isFocused() == false {
@@ -168,7 +168,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
-    SmarterTermInput.shared.reportStateReset()
+    input?.reportStateReset()
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {

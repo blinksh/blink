@@ -34,10 +34,10 @@ import Foundation
 import UIKit
 
 class KBTracker {
-  
   private(set) var hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
   
   static let shared = KBTracker()
+  
   private(set) var kbTraits = KBTraits.initial
   private(set) var kbDevice = KBDevice.detect()
   
@@ -81,13 +81,13 @@ class KBTracker {
   
   func attach(input: SmarterTermInput?) {
     self.input = input
-    if let input = input {
-      kbTraits = input.kbView.traits
-    }
+    input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
   }
   
   init() {
     let nc = NotificationCenter.default
+    
+    kbTraits.isHKBAttached = true
     
     nc.addObserver(self, selector: #selector(_keyboardDidChangeFrame(_:)), name: UIResponder.keyboardDidChangeFrameNotification, object: nil)
     nc.addObserver(self, selector: #selector(_keyboardWillChangeFrame(_:)), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
@@ -95,6 +95,22 @@ class KBTracker {
     nc.addObserver(self, selector: #selector(_keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
     nc.addObserver(self, selector: #selector(_keyboardDidHide(_:)), name: UIResponder.keyboardDidHideNotification, object: nil)
     nc.addObserver(self, selector: #selector(_keyboardDidShow(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+    nc.addObserver(self, selector: #selector(_inputModeChanged), name: UITextInputMode.currentInputModeDidChangeNotification, object: nil)
+    nc.addObserver(self, selector: #selector(_updateSettings), name: NSNotification.Name.BKUserConfigChanged, object: nil)
+  }
+  
+  @objc private func _updateSettings() {
+    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+    hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
+  
+    input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
+  }
+  
+  @objc func _inputModeChanged() {
+    let input = self.input
+    DispatchQueue.main.async {
+      input?.reportLang()
+    }
   }
   
   private func _setupWithKBNotification(notification: Notification) {
@@ -110,7 +126,6 @@ class KBTracker {
         return
     }
     
-    var traits       = kbTraits
     let mainScreen   = UIScreen.main
     let screenHeight = mainScreen.bounds.height
     let isIPad       = UIDevice.current.userInterfaceIdiom == .pad
@@ -125,54 +140,39 @@ class KBTracker {
     
     let isFloatingKB = isIPad && kbFrameEnd.origin.x > 0 && kbFrameEnd.origin.y > 0
     
-    let input = self.input
-    
     defer {
-      traits.isFloatingKB = isFloatingKB
-      traits.isHKBAttached = !isOnScreenKB
-      input?.kbView.traits = traits
-      input?.reportLang()
+      kbTraits.isFloatingKB = isFloatingKB
+      kbTraits.isHKBAttached = !isOnScreenKB
+      
+      debugPrint(kbTraits)
+      input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
     }
     
-    if traits.isHKBAttached && isOnScreenKB {
+    if !kbTraits.isHKBAttached && isOnScreenKB  {
       if isIPad {
         if isFloatingKB {
-          input?.kbView.kbDevice = .in6_5
-          traits.isPortrait = true
-          input?._setupAccessoryView()
+          kbDevice = .in6_5
+          kbTraits.isPortrait = true
         } else {
-          input?._setupAssistantItem()
+          kbDevice = .detect()
         }
-      } else {
-        input?._setupAccessoryView()
       }
-    } else if !traits.isHKBAttached && !isOnScreenKB {
-      input?.kbView.kbDevice = .detect()
-      if hideSmartKeysWithHKB {
-        input?._removeSmartKeys()
-      } else if isIPad {
-        input?._setupAssistantItem()
-      } else {
-        input?._setupAccessoryView()
-      }
-    } else if !traits.isFloatingKB && isFloatingKB {
-      if isFloatingKB {
-        input?.kbView.kbDevice = .in6_5
-        traits.isPortrait = true
-        input?._setupAccessoryView()
-      } else {
-        input?._setupAssistantItem()
-      }
-    } else if traits.isFloatingKB && !isFloatingKB {
-      input?.kbView.kbDevice = .detect()
-      input?._removeSmartKeys()
-      input?._setupAssistantItem()
-    } else {
       return
     }
     
-    DispatchQueue.main.async {
-      input?._refreshInputViews()
+    if kbTraits.isHKBAttached && !isOnScreenKB {
+      kbDevice = .detect()
+      return
+    }
+    if !kbTraits.isFloatingKB && isFloatingKB {
+      if isFloatingKB {
+        kbDevice = .in6_5
+        kbTraits.isPortrait = true
+      }
+      return
+    }
+    if kbTraits.isFloatingKB && !isFloatingKB {
+      kbDevice = .detect()
     }
   }
   
@@ -204,7 +204,6 @@ class KBTracker {
     }
     
     let idiom = UIDevice.current.userInterfaceIdiom
-    let input = self.input
     
     if isLocal && idiom == .pad {
       let isFloating = kbFrameEnd.origin.y > 0 && kbFrameEnd.origin.x > 0 || kbFrameEnd == .zero
@@ -212,21 +211,12 @@ class KBTracker {
       if !kbTraits.isFloatingKB && isFloating {
         kbDevice = .in6_5
         kbTraits.isPortrait = true
-        input?._setupAccessoryView()
-        DispatchQueue.main.async {
-          input?.contentView()?.reloadInputViews()
-        }
       } else if kbTraits.isFloatingKB && !isFloating && !kbTraits.isHKBAttached {
         kbDevice = .detect()
-        input?._removeSmartKeys()
-        input?._setupAssistantItem()
-        DispatchQueue.main.async {
-          input?.contentView()?.reloadInputViews()
-        }
       }
       kbTraits.isFloatingKB = isFloating
     }
-    
+
     //    if bottomInset == 0 && _kbTraits.isFloatingKB,
     //      let safeInsets = superview?.safeAreaInsets {
     //      bottomInset = _kbView.intrinsicContentSize.height + safeInsets.bottom
@@ -236,16 +226,20 @@ class KBTracker {
   }
   
   @objc private func _keyboardWillShow(_ notification: Notification) {
+    debugPrint("_keyboardWillShow")
     _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardWillHide(_ notification: Notification) {
+    debugPrint("_keyboardWillHide")
     _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardDidHide(_ notification: Notification) {
+    debugPrint("_keyboardDidHide")
   }
   
   @objc private func _keyboardDidShow(_ notification: Notification) {
+    debugPrint("_keyboardDidShow")
   }
 }
