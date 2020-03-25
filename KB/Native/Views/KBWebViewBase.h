@@ -34,10 +34,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface InteractionProxy : NSObject<UITextInteractionDelegate>
+
+@property id<UITextInteractionDelegate> target;
+
+- (instancetype)initWithTarget:(__nullable id<UITextInteractionDelegate>) target;
+
+@end
+
+
 @interface KBWebViewBase : WKWebView
 
 @property (readonly) UIKeyModifierFlags trackingModifierFlags;
 
+- ( UIView * _Nullable )selectionView;
 - (void)reportFocus:(BOOL) value;
 - (void)reportStateReset:(BOOL)hasSelection;
 - (void)reportLang:(NSString *) lang isHardwareKB: (BOOL)isHardwareKB;

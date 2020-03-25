@@ -125,7 +125,7 @@ class SpaceController: UIViewController {
       term.delegate = self
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
-        if SmarterTermInput.shared.device == nil {
+        if KBTracker.shared.input?.device == nil {
           DispatchQueue.main.async {
             self._attachInputToCurrentTerm()
           }
@@ -461,8 +461,9 @@ extension SpaceController {
   }
   
   public override var keyCommands: [UIKeyCommand]? {
-    let input = SmarterTermInput.shared
-    guard foregroundActive else {
+    
+    guard let input = KBTracker.shared.input, foregroundActive
+    else {
       return []
     }
     
@@ -529,11 +530,11 @@ extension SpaceController {
     case .windowClose: _closeWindowAction()
     case .windowFocusOther: _focusOtherWindowAction()
     case .windowNew: _newWindowAction()
-    case .clipboardCopy: SmarterTermInput.shared.copy(self)
-    case .clipboardPaste: SmarterTermInput.shared.paste(self)
-    case .selectionGoogle: SmarterTermInput.shared.googleSelection(self)
-    case .selectionStackOverflow: SmarterTermInput.shared.soSelection(self)
-    case .selectionShare: SmarterTermInput.shared.shareSelection(self)
+    case .clipboardCopy: KBTracker.shared.input?.copy(self)
+    case .clipboardPaste: KBTracker.shared.input?.paste(self)
+    case .selectionGoogle: KBTracker.shared.input?.googleSelection(self)
+    case .selectionStackOverflow: KBTracker.shared.input?.soSelection(self)
+    case .selectionShare: KBTracker.shared.input?.shareSelection(self)
     case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
     case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
     case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()

@@ -30,6 +30,22 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import UIKit
+import Combine
+
+class CaretHider {
+  var _cancelable: AnyCancellable? = nil
+  init(view: UIView) {
+    _cancelable = view.layer.publisher(for: \.sublayers).sink { (layers) in
+      if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+        caretView.isHidden = true
+      }
+      
+      if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
+        floatingView.isHidden = true
+      }
+    }
+  }
+}
 
 @objc class TermView2: SmarterTermInput {
   
@@ -38,6 +54,8 @@ import UIKit
 class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
+  
+  private var _proxies: [InteractionProxy] = []
   
   private var _inputAccessoryView: UIView? = nil
   
@@ -93,6 +111,8 @@ class SmarterTermInput: KBWebView {
     }
   }
   
+  var tracker: Tracker? = nil
+  
   override func ready() {
     super.ready()
     reportLang()
@@ -102,6 +122,10 @@ class SmarterTermInput: KBWebView {
     kbView.invalidateIntrinsicContentSize()
     _refreshInputViews()
 //    disableTextSelectionView()
+    
+    if let v = selectionView() {
+      self.tracker = Tracker(view: v)
+    }
   }
   
   
@@ -148,6 +172,23 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     kbView.isHidden = false
     _inputAccessoryView?.isHidden = false
+//
+//    guard let v = scrollView.subviews.first?.interactions
+//    else {
+//      return res
+//    }
+//
+//    for i in v {
+//      guard
+//        let interaction = i as? UITextInteraction
+//      else {
+//        continue;
+//      }
+//
+//      let p = InteractionProxy(target: interaction.delegate)
+//      interaction.delegate = p
+//      _proxies.append(p)
+//    }
 
     return res
   }
@@ -283,7 +324,7 @@ class SmarterTermInput: KBWebView {
   override func _keyboardDidShow(_ notification: Notification) {
   }
   
-  @objc static let shared = SmarterTermInput()
+//  @objc static let shared = SmarterTermInput()
 }
 
 // - MARK: Web communication
@@ -324,7 +365,7 @@ extension SmarterTermInput {
       let cmd = Command(rawValue: command),
       let spCtrl = spaceController
     else {
-        return
+      return
     }
     
     spCtrl._onCommand(cmd)

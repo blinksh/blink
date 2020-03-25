@@ -104,7 +104,7 @@ function term_setup() {
   t = new hterm.Terminal('blink');
 
   t.onTerminalReady = function() {
-    window.installKB(t.scrollPort_.screen_);
+    window.installKB(t, t.scrollPort_.screen_);
     term_setAutoCarriageReturn(true);
     t.setCursorVisible(true);
     
