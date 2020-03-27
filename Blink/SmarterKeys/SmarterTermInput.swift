@@ -111,7 +111,7 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  var tracker: Tracker? = nil
+  var tracker: CaretHider? = nil
   
   override func ready() {
     super.ready()
@@ -124,7 +124,7 @@ class SmarterTermInput: KBWebView {
 //    disableTextSelectionView()
     
     if let v = selectionView() {
-      self.tracker = Tracker(view: v)
+      self.tracker = CaretHider(view: v)
     }
   }
   
