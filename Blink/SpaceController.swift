@@ -132,12 +132,7 @@ class SpaceController: UIViewController {
     }
   }
   
-//
-//  public override func viewDidAppear(_ animated: Bool) {
-//    super.viewDidAppear(animated)
-//    _didBecomeKeyWindow()
-//  }
-//
+
 //  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
 //    super.viewWillTransition(to: size, with: coordinator)
 //    if view.window?.isKeyWindow == true {
