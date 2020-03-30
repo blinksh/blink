@@ -116,8 +116,6 @@ class SpaceController: UIViewController {
     _commandsHUD.delegate = self
     _registerForNotifications()
     
-    _commandsHUD.delegate = self
-    
     if _viewportsKeys.isEmpty {
       _createShell(userActivity: nil, animated: false)
     } else if let key = _currentKey {
@@ -166,6 +164,15 @@ class SpaceController: UIViewController {
                    object: nil)
   }
   
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    if let win = self.view.window?.windowScene?.windows.last,
+      win !== self.view.window,
+      win.screen === UIScreen.main {
+      self._commandsHUD.attachToWindow(inputWindow: win)
+    }
+  }
+  
   @objc func _didBecomeKeyWindow() {
     guard
       let window = view.window,
@@ -175,20 +182,7 @@ class SpaceController: UIViewController {
       return
     }
     
-//    if SmarterTermInput.shared.superview !== view,
-//      window.screen === UIScreen.main {
-//      view.addSubview(SmarterTermInput.shared)
-//    }
     _focusOnShell()
-    DispatchQueue.main.async {
-      if let win = self.view.window?.windowScene?.windows.last,
-        win !== self.view.window,
-        win.screen === UIScreen.main,
-        self._commandsHUD.superview == nil
-      {
-        self._commandsHUD.attachToWindow(inputWindow: win)
-      }
-    }
   }
   
   func _createShell(
