@@ -39,7 +39,7 @@ class CaretHider {
       if let caretView = view.value(forKeyPath: "caretView") as? UIView {
         caretView.isHidden = true
       }
-      
+
       if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
         floatingView.isHidden = true
       }
@@ -89,8 +89,6 @@ class SmarterTermInput: KBWebView {
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
     
     let nc = NotificationCenter.default
-    
-    
     
     nc.addObserver(
       self,
@@ -172,23 +170,6 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     kbView.isHidden = false
     _inputAccessoryView?.isHidden = false
-//
-//    guard let v = scrollView.subviews.first?.interactions
-//    else {
-//      return res
-//    }
-//
-//    for i in v {
-//      guard
-//        let interaction = i as? UITextInteraction
-//      else {
-//        continue;
-//      }
-//
-//      let p = InteractionProxy(target: interaction.delegate)
-//      interaction.delegate = p
-//      _proxies.append(p)
-//    }
 
     return res
   }
@@ -267,7 +248,6 @@ class SmarterTermInput: KBWebView {
       }
     }
     
-    debugPrint("applying", traits)
     if hideSmartKeysWithHKB && traits.isHKBAttached {
       _removeSmartKeys()
       return
@@ -323,8 +303,6 @@ class SmarterTermInput: KBWebView {
   
   override func _keyboardDidShow(_ notification: Notification) {
   }
-  
-//  @objc static let shared = SmarterTermInput()
 }
 
 // - MARK: Web communication

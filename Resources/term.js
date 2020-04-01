@@ -32,7 +32,7 @@ hterm.Terminal.prototype.copyStringToClipboard = function(content) {
 };
 
 // Speedup a little bit.
-hterm.Screen.prototype.syncSelectionCaret = function() {};
+//hterm.Screen.prototype.syncSelectionCaret = function() {};
 
 document.addEventListener('selectionchange', function() {
   _postMessage('selectionchange', term_getCurrentSelection());
