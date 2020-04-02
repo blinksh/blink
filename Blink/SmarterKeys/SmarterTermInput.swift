@@ -118,7 +118,6 @@ class SmarterTermInput: KBWebView {
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
     _refreshInputViews()
-//    disableTextSelectionView()
     
     if let v = selectionView() {
       _caretHider = CaretHider(view: v)
@@ -377,42 +376,11 @@ extension SmarterTermInput {
   }
   
   override func onIME(_ event: String, data: String) {
-    guard let deviceView = device?.view
-      else {
-        return
-    }
-    
     if event == "compositionstart" && data.isEmpty {
     } else if event == "compositionend" {
       kbView.traits.isIME = false
-      deviceView.setIme("", completionHandler: nil)
     } else { // "compositionupdate"
       kbView.traits.isIME = true
-      deviceView.setIme(data) {  (data, error) in
-        guard
-          error == nil,
-          let resp = data as? [String: Any],
-          let markedRect = resp["markedRect"] as? String
-        else {
-            return
-        }
-        let webViewFrame = deviceView.webViewFrame()
-        var rect = NSCoder.cgRect(for: markedRect)
-        let maxY = rect.maxY
-        let minY = rect.minY
-        if maxY > webViewFrame.height * 0.3 && maxY < webViewFrame.height * 0.8 {
-          rect.origin.y = minY - 44 - 14
-        } else if maxY > webViewFrame.height * 0.8 {
-          rect.origin.y = minY - 8
-        } else {
-          rect.origin.y = maxY
-        }
-        
-        rect.size.height = 0
-        rect.size.width = 0
-        
-        self.frame = deviceView.convert(rect, to: self.superview)
-      }
     }
   }
   

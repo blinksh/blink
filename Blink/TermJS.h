@@ -161,12 +161,6 @@ NSString *term_modifySelection(NSString *direction, NSString *granularity)
   return [NSString stringWithFormat:@"term_modifySelection(%@, %@);", _encodeString(direction), _encodeString(granularity)];
 }
 
-NSString *term_setIme(NSString *imeText)
-{
-  NSString *str = _encodeString(imeText);
-  return [NSString stringWithFormat:@"term_setIme(%@);", str];
-}
-
 NSString *term_modifySideSelection()
 {
   return @"term_modifySideSelection();";

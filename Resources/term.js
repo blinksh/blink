@@ -229,68 +229,6 @@ function term_clear() {
   t.clear();
 }
 
-function term_setIme(str) {
-  var length = lib.wc.strWidth(str);
-
-  var scrollPort = t.scrollPort_;
-  var ime = t.ime_;
-  ime.textContent = str;
-
-  if (length === 0) {
-    ime.style.left = 'auto';
-    ime.style.right = 'auto';
-    return;
-  }
-
-  ime.style.backgroundColor = lib.colors.setAlpha(t.getCursorColor(), 1);
-  ime.style.color = scrollPort.getBackgroundColor();
-
-  var screenCols = t.screenSize.width;
-  var cursorCol = t.screen_.cursorPosition.column;
-
-  ime.style.bottom = 'auto';
-  ime.style.top = 'auto';
-
-  if (length >= screenCols) {
-    // We are wider than the screen
-    ime.style.left = '0px';
-    ime.style.right = '0px';
-    if (t.screen_.cursorPosition.row < t.screenSize.height * 0.8) {
-      ime.style.top =
-        'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) + 1))';
-    } else {
-      ime.style.top =
-        'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - ' +
-        Math.floor(length / (screenCols + 1)) +
-        ' - 1))';
-    }
-  } else if (cursorCol + length <= screenCols) {
-    // we are inlined
-    ime.style.left =
-      'calc(var(--hterm-charsize-width) * var(--hterm-cursor-offset-col))';
-    ime.style.top =
-      'calc(var(--hterm-charsize-height) * var(--hterm-cursor-offset-row))';
-    ime.style.right = 'auto';
-  } else if (t.screen_.cursorPosition.row == 0) {
-    // we are at the end of line but need more space at the bottom
-    ime.style.top =
-      'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) + 1))';
-    ime.style.left = 'auto';
-    ime.style.right = '0px';
-  } else {
-    // we are at the end of line but need more space at the top
-    ime.style.top =
-      'calc(var(--hterm-charsize-height) * (var(--hterm-cursor-offset-row) - 1))';
-    ime.style.left = 'auto';
-    ime.style.right = '0px';
-  }
-  var r = ime.getBoundingClientRect();
-
-  const markedRect = `{{${r.x}, ${r.y}},{${r.width},${r.height}}}`;
-
-  return {markedRect};
-}
-
 function term_reset() {
   t.reset();
 }
