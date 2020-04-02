@@ -167,6 +167,8 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     kbView.isHidden = false
     _inputAccessoryView?.isHidden = false
+    
+    spaceController?.cleanupControllers()
 
     return res
   }

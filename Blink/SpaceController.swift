@@ -51,6 +51,7 @@ class SpaceController: UIViewController {
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
   
   private var _viewportsKeys = [UUID]()
+  private var _termControllers: Set<TermController> = Set()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
@@ -121,6 +122,7 @@ class SpaceController: UIViewController {
     } else if let key = _currentKey {
       let term: TermController = SessionRegistry.shared[key]
       term.delegate = self
+      _termControllers.insert(term)
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
         if KBTracker.shared.input?.device == nil {
@@ -189,6 +191,7 @@ class SpaceController: UIViewController {
     term.delegate = self
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black
+    _termControllers.insert(term)
     
     if let currentKey = _currentKey,
       let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
@@ -396,6 +399,7 @@ extension SpaceController: UIPageViewControllerDataSource {
     let newCtrl: TermController = SessionRegistry.shared[newKey]
     newCtrl.delegate = self
     newCtrl.bgColor = view.backgroundColor ?? .black
+    _termControllers.insert(newCtrl)
     return newCtrl
   }
   
@@ -535,6 +539,15 @@ extension SpaceController {
   @objc func closeShellAction() {
     _closeCurrentSpace()
   }
+  
+  func cleanupControllers() {
+    for c in _termControllers {
+      if c.view?.superview == nil {
+        c.removeFromContainer()
+        _termControllers.remove(c)
+      }
+    }
+  }
 
   private func _focusOtherWindowAction() {
     let sessions = _activeSessions()
@@ -604,6 +617,7 @@ extension SpaceController {
       return
     }
     
+//    _termControllers.remove(term)
     _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
   }
@@ -656,6 +670,7 @@ extension SpaceController {
   private func _addTerm(term: TermController, animated: Bool = true) {
     SessionRegistry.shared.track(session: term)
     term.delegate = self
+    _termControllers.insert(term)
     _viewportsKeys.append(term.meta.key)
     _moveToShell(key: term.meta.key, animated: animated)
   }

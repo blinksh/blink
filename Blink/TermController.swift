@@ -121,16 +121,8 @@ class TermController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
-  override func viewWillDisappear(_ animated: Bool) {
-    super.viewWillDisappear(animated)
-  }
-  
-  override func didMove(toParent parent: UIViewController?) {
-    super.didMove(toParent: parent);
-  }
-  
-  override func removeFromParent() {
-    super.removeFromParent()
+  func removeFromContainer() {
+    _proxyView.controlledView?.removeFromSuperview()
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
