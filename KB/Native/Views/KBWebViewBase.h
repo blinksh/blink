@@ -34,14 +34,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface InteractionProxy : NSObject<UITextInteractionDelegate>
-
-@property id<UITextInteractionDelegate> target;
-
-- (instancetype)initWithTarget:(__nullable id<UITextInteractionDelegate>) target;
-
-@end
-
 
 @interface KBWebViewBase : WKWebView
 

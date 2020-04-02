@@ -55,8 +55,6 @@ class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
   
-  private var _proxies: [InteractionProxy] = []
-  
   private var _inputAccessoryView: UIView? = nil
   
   var isHardwareKB: Bool { kbView.traits.isHKBAttached }
@@ -101,15 +99,16 @@ class SmarterTermInput: KBWebView {
     
     guard
       let scene = window?.windowScene
-      else {
-        return
+    else {
+      return
     }
+
     if traitCollection.userInterfaceIdiom == .phone {
       kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
     }
   }
   
-  var tracker: CaretHider? = nil
+  private var _caretHider: CaretHider? = nil
   
   override func ready() {
     super.ready()
@@ -122,16 +121,16 @@ class SmarterTermInput: KBWebView {
 //    disableTextSelectionView()
     
     if let v = selectionView() {
-      self.tracker = CaretHider(view: v)
+      _caretHider = CaretHider(view: v)
     }
   }
   
   
   // overriding chain
   override var next: UIResponder? {
-    guard let responder = device?.view?.superview
-      else {
-        return super.next
+    guard let responder = device?.delegate?.viewController()
+    else {
+      return super.next
     }
     return responder
   }
@@ -162,7 +161,6 @@ class SmarterTermInput: KBWebView {
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
     
     let res = super.becomeFirstResponder()
-//    disableTextSelectionView()
     if !webViewReady {
       return res
     }

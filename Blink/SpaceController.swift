@@ -257,12 +257,6 @@ class SpaceController: UIViewController {
   
   @objc func _focusOnShell() {
     _attachInputToCurrentTerm()
-//    let input = SmarterTermInput.shared
-////    _ = input.becomeFirstResponder()
-//    // We should make input window key window
-//    if input.window?.isKeyWindow == false {
-//      input.window?.makeKeyAndVisible()
-//    }
   }
   
   private func _attachInputToCurrentTerm() {
@@ -273,7 +267,6 @@ class SpaceController: UIViewController {
     KBTracker.shared.attach(input: device.view?.webView)
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
-//      device.view.webView.becomeFirstResponder()
     device.focus()
   }
   
@@ -384,8 +377,6 @@ extension SpaceController: UIPageViewControllerDelegate {
     _displayHUD()
     _attachInputToCurrentTerm()
   }
-  
-  
 }
 
 extension SpaceController: UIPageViewControllerDataSource {
@@ -450,8 +441,9 @@ extension SpaceController {
   }
   
   public override var keyCommands: [UIKeyCommand]? {
-    
-    guard let input = KBTracker.shared.input, foregroundActive
+    guard
+      let input = KBTracker.shared.input,
+      foregroundActive
     else {
       return []
     }
@@ -459,6 +451,7 @@ extension SpaceController {
     if let keyCode = stuckKeyCode {
       return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
     }
+    
     return input.blinkKeyCommands
   }
   
@@ -531,7 +524,7 @@ extension SpaceController {
   }
   
   @objc func focusOnShellAction() {
-//    SmarterTermInput.shared.reset()
+    KBTracker.shared.input?.reset()
     _focusOnShell()
   }
   

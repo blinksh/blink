@@ -33,42 +33,6 @@
 #import "KBWebViewBase.h"
 
 
-@implementation InteractionProxy
-
-- (instancetype)initWithTarget:(__nullable id<UITextInteractionDelegate>) target {
-  if (self = [super init]) {
-    _target = target;
-  }
-  
-  return self;
-}
-
-- (id)forwardingTargetForSelector:(SEL)aSelector {
-  return _target;
-}
-
-
-- (BOOL)interactionShouldBegin:(UITextInteraction *)interaction atPoint:(CGPoint)point {
-  if ([_target respondsToSelector:@selector(interactionShouldBegin:atPoint:)]) {
-    return [_target interactionShouldBegin:interaction atPoint:point];
-  }
-  return YES;
-}
-
-- (void)interactionWillBegin:(UITextInteraction *)interaction {
-  if ([_target respondsToSelector:@selector(interactionWillBegin:)]) {
-    [_target interactionWillBegin:interaction];
-  }
-}
-
-- (void)interactionDidEnd:(UITextInteraction *)interaction {
-  if ([_target respondsToSelector:@selector(interactionDidEnd:)]) {
-    [_target interactionDidEnd:interaction];
-  }
-}
-
-@end
-
 NSString *_encodeString(NSString *str);
 
 @interface KeyCommand: UIKeyCommand
@@ -139,10 +103,6 @@ NSString *_encodeString(NSString *str);
     [self removeAssistantsFromView];
   }
   return self;
-}
-
-- (id)targetForAction:(SEL)action withSender:(id)sender {
-  return [super targetForAction:action withSender:sender];
 }
 
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
