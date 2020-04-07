@@ -358,12 +358,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 - (void)focus {
   [_view focus];
   [_delegate deviceFocused];
-//  dispatch_async(dispatch_get_main_queue(), ^{
-//    if (![_input isFirstResponder]) {
-//      [_input becomeFirstResponder];
-//    }
-//  });
-  
 }
 
 - (void)blur {

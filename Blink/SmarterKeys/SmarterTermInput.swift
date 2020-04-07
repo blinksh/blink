@@ -105,6 +105,10 @@ class SmarterTermInput: KBWebView {
 
     if traitCollection.userInterfaceIdiom == .phone {
       kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+    } else if kbView.traits.isFloatingKB {
+      kbView.traits.isPortrait = true
+    } else {
+      kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
     }
   }
   
@@ -114,10 +118,10 @@ class SmarterTermInput: KBWebView {
     super.ready()
     reportLang()
     
-    device?.focus()
+//    device?.focus()
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
-    _refreshInputViews()
+//    _refreshInputViews()
     
     if let v = selectionView() {
       _caretHider = CaretHider(view: v)
@@ -125,14 +129,14 @@ class SmarterTermInput: KBWebView {
   }
   
   
-  // overriding chain
-  override var next: UIResponder? {
-    guard let responder = device?.delegate?.viewController()
-    else {
-      return super.next
-    }
-    return responder
-  }
+//  // overriding chain
+//  override var next: UIResponder? {
+//    guard let responder = device?.view?.superview
+//    else {
+//      return super.next
+//    }
+//    return responder
+//  }
   
   func reset() {
     
@@ -166,6 +170,8 @@ class SmarterTermInput: KBWebView {
     
     device?.focus()
     kbView.isHidden = false
+    setNeedsLayout()
+    
     _inputAccessoryView?.isHidden = false
     
     spaceController?.cleanupControllers()
@@ -231,7 +237,7 @@ class SmarterTermInput: KBWebView {
   }
   
   override var inputAccessoryView: UIView? {
-    return _inputAccessoryView
+    _inputAccessoryView
   }
   
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {

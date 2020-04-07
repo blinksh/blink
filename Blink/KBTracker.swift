@@ -241,5 +241,6 @@ class KBTracker {
   
   @objc private func _keyboardDidShow(_ notification: Notification) {
     debugPrint("_keyboardDidShow")
+//    kbTraits.isPortrait = 
   }
 }

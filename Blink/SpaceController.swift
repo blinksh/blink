@@ -124,25 +124,20 @@ class SpaceController: UIViewController {
       term.delegate = self
       _termControllers.insert(term)
       term.bgColor = view.backgroundColor ?? .black
-      _viewportsController.setViewControllers([term], direction: .forward, animated: false) { (didComplete) in
-        if KBTracker.shared.input?.device == nil {
-          DispatchQueue.main.async {
-            self._attachInputToCurrentTerm()
-          }
-        }
-      }
+      _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
   }
   
 
-//  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//    super.viewWillTransition(to: size, with: coordinator)
-//    if view.window?.isKeyWindow == true {
-//      DispatchQueue.main.async {
+  public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+    super.viewWillTransition(to: size, with: coordinator)
+    if view.window?.isKeyWindow == true {
+      DispatchQueue.main.async {
+//        self.currentTerm()?.termDevice.view?.webView?.kbView.reset()
 //        SmarterTermInput.shared.contentView()?.reloadInputViews()
-//      }
-//    }
-//  }
+      }
+    }
+  }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
@@ -202,14 +197,12 @@ class SpaceController: UIViewController {
     
     SessionRegistry.shared.track(session: term)
     
-    self._currentKey = term.meta.key
+    _currentKey = term.meta.key
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       DispatchQueue.main.async {
         self._displayHUD()
         self._attachInputToCurrentTerm()
-        if let completion = completion {
-          completion(didComplete)
-        }
+        completion?(didComplete)
       }
     }
   }
@@ -530,6 +523,10 @@ extension SpaceController {
   @objc func focusOnShellAction() {
     KBTracker.shared.input?.reset()
     _focusOnShell()
+  }
+  
+  @objc public func scaleWithPich(_ pinch: UIPinchGestureRecognizer) {
+    currentTerm()?.scaleWithPich(pinch)
   }
   
   @objc func newShellAction() {
