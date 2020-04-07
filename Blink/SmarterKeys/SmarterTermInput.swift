@@ -69,6 +69,7 @@ class SmarterTermInput: KBWebView {
     
     super.init(frame: frame, configuration: configuration)
     
+//    self.allowDisplayingKeyboardWithoutUserAction()
     kbView.keyInput = self
     kbView.lang = textInputMode?.primaryLanguage ?? ""
     
@@ -97,19 +98,8 @@ class SmarterTermInput: KBWebView {
   override func layoutSubviews() {
     super.layoutSubviews()
     
-    guard
-      let scene = window?.windowScene
-    else {
-      return
-    }
-
-    if traitCollection.userInterfaceIdiom == .phone {
-      kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-    } else if kbView.traits.isFloatingKB {
-      kbView.traits.isPortrait = true
-    } else {
-      kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
-    }
+    
+    kbView.setNeedsLayout()
   }
   
   private var _caretHider: CaretHider? = nil
@@ -245,7 +235,20 @@ class SmarterTermInput: KBWebView {
     
     var needToReload = false
     defer {
+      
       kbView.traits = traits
+      
+      if let scene = window?.windowScene {
+        if traitCollection.userInterfaceIdiom == .phone {
+          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+        } else if kbView.traits.isFloatingKB {
+          kbView.traits.isPortrait = true
+        } else {
+          kbView.traits.isPortrait = scene.interfaceOrientation.isPortrait
+        }
+      }
+      
+      
       if needToReload {
         DispatchQueue.main.async {
           self._refreshInputViews()

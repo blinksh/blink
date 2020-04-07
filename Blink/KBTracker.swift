@@ -120,9 +120,9 @@ class KBTracker {
       let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool,
       isLocal // we reconfigure kb only for local notifications
       else {
-        if notification.userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool == false {
-          self.input?.reportFocus(false)
-        }
+//        if notification.userInfo?[UIResponder.keyboardIsLocalUserInfoKey] as? Bool == false {
+//          self.input?.reportFocus(false)
+//        }
         return
     }
     

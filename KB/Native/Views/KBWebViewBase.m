@@ -59,6 +59,7 @@ NSString *_encodeString(NSString *str);
   NSArray<UIKeyCommand *> *_keyCommands;
   NSString *_jsPath;
   NSString *_interopName;
+  BOOL _focused;
   
   KeyCommand *_activeModsCommand;
   NSArray<KeyCommand *> *_imeGuardCommands;
@@ -85,6 +86,7 @@ NSString *_encodeString(NSString *str);
     _keyCommands = @[];
     _jsPath = @"_onKB";
     _interopName = @"_kb";
+    _focused = YES;
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
     self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
 //    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
@@ -196,7 +198,13 @@ NSString *_encodeString(NSString *str);
 }
 
 - (id)_inputDelegate { return self; }
-- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info { return 1; }
+- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info {
+  return _focused ? 1 : 0;
+}
+
+//- (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {
+//  return NO;
+//}
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
@@ -207,6 +215,7 @@ NSString *_encodeString(NSString *str);
 }
 
 - (void)reportFocus:(BOOL) value {
+  _focused = value;
   [self report:@"focus" arg:value ? @"true" : @"false"];
 }
 
