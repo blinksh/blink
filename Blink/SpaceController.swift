@@ -158,9 +158,10 @@ class SpaceController: UIViewController {
   
   override func viewDidAppear(_ animated: Bool) {
     super.viewDidAppear(animated)
-    if let win = self.view.window?.windowScene?.windows.last,
-      win !== self.view.window,
-      win.screen === UIScreen.main {
+    if
+      sceneRole == .windowApplication,
+      let win = self.view.window?.windowScene?.windows.last,
+      win !== self.view.window {
       self._commandsHUD.attachToWindow(inputWindow: win)
     }
   }
@@ -547,6 +548,15 @@ extension SpaceController {
   }
 
   private func _focusOtherWindowAction() {
+    
+//    _ = currentTerm()?.termDevice.view?.webView?.resignFirstResponder()
+    KBTracker.shared.input?.reportFocus(false)
+    ShadowWindow.shared?.makeKeyAndVisible()
+//    ShadowWindow.shared?.spaceController.currentTerm()?.termDevice.view?.webView.becomeFirstResponder()
+    ShadowWindow.shared?.spaceController.focusOnShellAction()
+    
+    return;
+    
     let sessions = _activeSessions()
     
     guard

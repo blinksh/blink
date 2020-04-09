@@ -33,6 +33,36 @@
 import Foundation
 import SwiftUI
 
+
+@objc class ShadowWindow: UIWindow {
+  private let _refWindow: UIWindow
+  private let _spCtrl: SpaceController
+  
+  var spaceController: SpaceController { _spCtrl }
+  @objc var refWindow: UIWindow { _refWindow }
+  
+  init(windowScene: UIWindowScene, refWindow: UIWindow, spCtrl: SpaceController) {
+    _refWindow = refWindow
+    _spCtrl = spCtrl
+    
+    super.init(windowScene: windowScene)
+    
+    frame = _refWindow.frame
+    rootViewController = _spCtrl
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  override var frame: CGRect {
+    get { _refWindow.frame }
+    set { super.frame = _refWindow.frame }
+  }
+  
+  @objc static var shared: ShadowWindow? = nil
+}
+
 class DummyVC: UIViewController {
   override var canBecomeFirstResponder: Bool { true }
   override var prefersStatusBarHidden: Bool { true }
@@ -51,7 +81,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     options connectionOptions: UIScene.ConnectionOptions)
   {
     _ = KBTracker.shared
-
+    
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
@@ -62,15 +92,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     conditions.prefersToActivateForTargetContentIdentifierPredicate = NSPredicate(format: "SELF == 'blink://open-scene/\(scene.session.persistentIdentifier)'")
     
     _spCtrl.sceneRole = session.role
-    
-    self.window = UIWindow(windowScene: windowScene)
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
-    window?.rootViewController = _spCtrl
-    window?.makeKeyAndVisible()
+    
+    let window = UIWindow(windowScene: windowScene)
+    defer { self.window = window }
+    
+    if session.role == .windowExternalDisplay,
+      let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
+    
+      let shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
+      defer { ShadowWindow.shared = shadowWin }
+      
+      shadowWin.makeKeyAndVisible()
+      
+      window.rootViewController = UIViewController()
+      window.layer.addSublayer(shadowWin.layer)
+      
+      
+      window.isHidden = false
+      shadowWin.windowLevel = .init(rawValue: UIWindow.Level.normal.rawValue - 1)
+      
+      return
+    }
+    
+    window.rootViewController = _spCtrl
+    window.isHidden = false
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
     
+    if (scene.session.role == .windowExternalDisplay) {
+      return
+    }
     
     guard let window = window else {
       return

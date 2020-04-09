@@ -214,6 +214,7 @@ class CommandsHUGView: UIView {
   }
   
   func attachToWindow(inputWindow: UIWindow?) {
+    
     // UIEditingOverlayGestureView
     guard let inputWin = inputWindow,
       inputWindow != _window,

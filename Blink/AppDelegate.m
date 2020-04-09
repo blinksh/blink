@@ -313,7 +313,10 @@ void __setupProcessEnv() {
 #pragma mark - Scenes
 
 - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+  
+  
   return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
+  
 }
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
