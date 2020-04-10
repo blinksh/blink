@@ -33,6 +33,9 @@
 import Foundation
 import SwiftUI
 
+class ExternalWindow: UIWindow {
+  var shadowWindow: UIWindow? = nil
+}
 
 @objc class ShadowWindow: UIWindow {
   private let _refWindow: UIWindow
@@ -60,6 +63,7 @@ import SwiftUI
     set { super.frame = _refWindow.frame }
   }
   
+  
   @objc static var shared: ShadowWindow? = nil
 }
 
@@ -74,6 +78,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   private var _ctrl = DummyVC()
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
+  
+  func sceneDidDisconnect(_ scene: UIScene) {
+    if scene == ShadowWindow.shared?.refWindow.windowScene {
+      ShadowWindow.shared?.layer.removeFromSuperlayer()
+      ShadowWindow.shared?.windowScene = nil
+      ShadowWindow.shared = nil
+    } else if scene == ShadowWindow.shared?.windowScene {
+      // We need to move it
+      ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
+    }
+  }
   
   func scene(
     _ scene: UIScene,
@@ -94,26 +109,34 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _spCtrl.sceneRole = session.role
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     
-    let window = UIWindow(windowScene: windowScene)
-    defer { self.window = window }
+    
+    
     
     if session.role == .windowExternalDisplay,
       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
+      
+      let window = ExternalWindow(windowScene: windowScene)
+      self.window = window
     
       let shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
       defer { ShadowWindow.shared = shadowWin }
+      
+      window.shadowWindow = shadowWin
       
       shadowWin.makeKeyAndVisible()
       
       window.rootViewController = UIViewController()
       window.layer.addSublayer(shadowWin.layer)
       
-      
+//      window.makeKeyAndVisible()
       window.isHidden = false
       shadowWin.windowLevel = .init(rawValue: UIWindow.Level.normal.rawValue - 1)
       
       return
     }
+    
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
     
     window.rootViewController = _spCtrl
     window.isHidden = false
@@ -121,6 +144,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func sceneDidBecomeActive(_ scene: UIScene) {
     
+    // TODO: 
     if (scene.session.role == .windowExternalDisplay) {
       return
     }

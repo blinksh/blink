@@ -199,10 +199,14 @@ class SpaceController: UIViewController {
     SessionRegistry.shared.track(session: term)
     
     _currentKey = term.meta.key
+    ShadowWindow.shared?.layer.removeFromSuperlayer()
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       DispatchQueue.main.async {
         self._displayHUD()
         self._attachInputToCurrentTerm()
+        if let layer = ShadowWindow.shared?.layer {
+          ShadowWindow.shared?.refWindow.layer.addSublayer(layer)
+        }
         completion?(didComplete)
       }
     }
@@ -260,7 +264,7 @@ class SpaceController: UIViewController {
     guard let device = currentDevice else {
       return
     }
-    
+
     KBTracker.shared.attach(input: device.view?.webView)
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
@@ -549,15 +553,7 @@ extension SpaceController {
 
   private func _focusOtherWindowAction() {
     
-//    _ = currentTerm()?.termDevice.view?.webView?.resignFirstResponder()
-    KBTracker.shared.input?.reportFocus(false)
-    ShadowWindow.shared?.makeKeyAndVisible()
-//    ShadowWindow.shared?.spaceController.currentTerm()?.termDevice.view?.webView.becomeFirstResponder()
-    ShadowWindow.shared?.spaceController.focusOnShellAction()
-    
-    return;
-    
-    let sessions = _activeSessions()
+    var sessions = _activeSessions()
     
     guard
       sessions.count > 1,
@@ -571,6 +567,20 @@ extension SpaceController {
       }
       return
     }
+
+    if
+      let shadowWindow = ShadowWindow.shared,
+      let shadowScene = shadowWindow.windowScene,
+      let window = self.view.window,
+      shadowScene == window.windowScene,
+      shadowWindow !== window {
+      shadowWindow.makeKeyAndVisible()
+//      shadowWindow.spaceController.currentDevice?.view?.webView?.becomeFirstResponder()
+      shadowWindow.spaceController._focusOnShell()
+      return
+    }
+          
+    sessions = sessions.filter { $0.role != .windowExternalDisplay }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -584,7 +594,8 @@ extension SpaceController {
       let delegate = scene.delegate as? SceneDelegate,
       let window = delegate.window,
       let spaceCtrl = window.rootViewController as? SpaceController {
-      if nextSession.role == .windowExternalDisplay || window.isKeyWindow {
+
+      if window.isKeyWindow {
         spaceCtrl._focusOnShell()
       } else {
         window.makeKeyAndVisible()

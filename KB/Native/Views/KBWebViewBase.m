@@ -199,7 +199,8 @@ NSString *_encodeString(NSString *str);
 
 - (id)_inputDelegate { return self; }
 - (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info {
-  return 1;//_focused ? 1 : 0;
+//  return _focused ? 1 : 0;
+  return 1;
 }
 
 - (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {

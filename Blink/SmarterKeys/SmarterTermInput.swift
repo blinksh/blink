@@ -206,6 +206,20 @@ class SmarterTermInput: KBWebView {
     contentView()?.reloadInputViews()
   }
   
+//  override var window: UIWindow? {
+//    guard let win = super.window
+//    else {
+//      return nil
+//    }
+//
+//
+//    if win == ShadowWindow.shared {
+//      return ShadowWindow.shared?.refWindow
+//    }
+//
+//    return win
+//  }
+  
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
     if res {
