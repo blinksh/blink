@@ -430,6 +430,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_device viewSelectionChanged];
   
   if (!_hasSelection) {
+    [[UIMenuController sharedMenuController] hideMenu];
     return;
   }
   
