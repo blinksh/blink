@@ -64,7 +64,14 @@ private class ProxyView: UIView {
       else {
         return
       }
+      
+      ShadowWindow.shared?.layer.removeFromSuperlayer()
+      
       container.addSubview(controlledView)
+      
+      if let layer = ShadowWindow.shared?.layer {
+        ShadowWindow.shared?.refWindow.layer.addSublayer(layer)
+      }
     }
     
     controlledView?.isHidden = superview == nil

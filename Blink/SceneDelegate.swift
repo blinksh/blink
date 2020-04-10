@@ -52,6 +52,7 @@ class ExternalWindow: UIWindow {
     
     frame = _refWindow.frame
     rootViewController = _spCtrl
+    self.clipsToBounds = false
   }
   
   required init?(coder: NSCoder) {

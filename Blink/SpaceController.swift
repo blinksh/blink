@@ -199,14 +199,11 @@ class SpaceController: UIViewController {
     SessionRegistry.shared.track(session: term)
     
     _currentKey = term.meta.key
-    ShadowWindow.shared?.layer.removeFromSuperlayer()
+    
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       DispatchQueue.main.async {
         self._displayHUD()
         self._attachInputToCurrentTerm()
-        if let layer = ShadowWindow.shared?.layer {
-          ShadowWindow.shared?.refWindow.layer.addSublayer(layer)
-        }
         completion?(didComplete)
       }
     }

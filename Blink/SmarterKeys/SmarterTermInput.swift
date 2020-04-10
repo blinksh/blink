@@ -178,6 +178,9 @@ class SmarterTermInput: KBWebView {
     device?.view?.cleanSelection()
   }
   
+  
+  
+  
   func _refreshInputViews() {
     guard
       traitCollection.userInterfaceIdiom == .pad,
