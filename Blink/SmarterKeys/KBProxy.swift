@@ -60,6 +60,7 @@ class KBProxy: UIView {
     super.didMoveToSuperview()
 
     guard let placeView = _placeView else {
+      _kbView.removeFromSuperview()
       return
     }
 

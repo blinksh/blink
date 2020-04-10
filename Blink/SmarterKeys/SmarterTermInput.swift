@@ -161,6 +161,7 @@ class SmarterTermInput: KBWebView {
     device?.focus()
     kbView.isHidden = false
     setNeedsLayout()
+    _refreshInputViews()
     
     _inputAccessoryView?.isHidden = false
     
