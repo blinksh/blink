@@ -671,7 +671,13 @@ extension SpaceController {
   }
   
   @objc func showConfigAction() {
-    if view.window?.windowScene?.session.role == .windowExternalDisplay {
+    if let shadowWindow = ShadowWindow.shared,
+      view.window == shadowWindow {
+      
+      if let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController {
+        spCtrl.showConfigAction()
+      }
+      
       return
     }
     

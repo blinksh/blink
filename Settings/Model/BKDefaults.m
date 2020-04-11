@@ -301,6 +301,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     default:
       break;
   }
+  
+  
 }
 
 @end
