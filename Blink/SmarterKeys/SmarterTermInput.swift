@@ -68,7 +68,7 @@ class SmarterTermInput: KBWebView {
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     
     super.init(frame: frame, configuration: configuration)
-    
+
 //    self.allowDisplayingKeyboardWithoutUserAction()
     kbView.keyInput = self
     kbView.lang = textInputMode?.primaryLanguage ?? ""

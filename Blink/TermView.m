@@ -146,6 +146,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return NO;
 }
 
+- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
+  [super setUserInteractionEnabled:userInteractionEnabled];
+  [_webView setUserInteractionEnabled:userInteractionEnabled];
+}
+
 - (void)_addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
