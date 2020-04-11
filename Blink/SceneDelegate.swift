@@ -110,11 +110,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _spCtrl.sceneRole = session.role
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     
-    
-    
-    
     if session.role == .windowExternalDisplay,
       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
+      
+      if BKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
+        return
+      }
       
       let window = ExternalWindow(windowScene: windowScene)
       self.window = window

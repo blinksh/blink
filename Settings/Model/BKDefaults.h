@@ -44,6 +44,7 @@ typedef NS_ENUM(NSInteger, BKOverscanCompensation) {
   BKBKOverscanCompensationScale = 0,
   BKBKOverscanCompensationInsetBounds,
   BKBKOverscanCompensationNone,
+  BKBKOverscanCompensationMirror,
 };
 
 typedef NS_ENUM(NSInteger, BKKeyboardStyle) {

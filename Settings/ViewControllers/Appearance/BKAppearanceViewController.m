@@ -306,8 +306,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     return @"Keyboard Appearance";
   case BKAppearance_AppIcon:
     return @"APP ICON";
-    case BKAppearance_Layout:
-      return @"Layout";
+  case BKAppearance_Layout:
+    return @"Layout";
   default:
     return nil;
   }
@@ -317,6 +317,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   switch(section) {
   case BKAppearance_Terminal:
     return @"Configuration will be applied to new terminal sessions.";
+  case BKAppearance_Layout:
+    return @"Mirror configuration will be applied after display reconnect.";
   default:
     return nil;
   }
@@ -418,6 +420,8 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       return 1;
     case BKBKOverscanCompensationNone:
       return 2;
+    case BKBKOverscanCompensationMirror:
+      return 3;
     default:
       return UISegmentedControlNoSegment;
   }
@@ -432,6 +436,9 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   }
   if (index == 2) {
     return BKBKOverscanCompensationNone;
+  }
+  if (index == 3) {
+    return BKBKOverscanCompensationMirror;
   }
   
   return BKBKOverscanCompensationScale;
