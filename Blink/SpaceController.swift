@@ -674,9 +674,8 @@ extension SpaceController {
     if let shadowWindow = ShadowWindow.shared,
       view.window == shadowWindow {
       
-      if let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController {
-        spCtrl.showConfigAction()
-      }
+      let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController
+      spCtrl?.showConfigAction()
       
       return
     }
