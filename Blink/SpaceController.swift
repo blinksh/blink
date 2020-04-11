@@ -674,6 +674,8 @@ extension SpaceController {
     if let shadowWindow = ShadowWindow.shared,
       view.window == shadowWindow {
       
+      _ = currentDevice?.view?.webView.resignFirstResponder()
+      
       let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController
       spCtrl?.showConfigAction()
       
