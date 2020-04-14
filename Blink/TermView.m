@@ -431,6 +431,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   _selectedText = data[@"text"];
   _hasSelection = _selectedText.length > 0;
+  _gestureInteraction.hasSelection = _hasSelection;
   
   [_device viewSelectionChanged];
   

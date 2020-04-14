@@ -66,6 +66,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _longPressRecognizer = UILongPressGestureRecognizer()
   
   @objc var focused: Bool = false;
+  @objc var hasSelection: Bool = false;
   
   @objc var indicatorStyle: UIScrollView.IndicatorStyle {
     get { _scrollView.indicatorStyle }
@@ -194,6 +195,9 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     let point = recognizer.location(in: recognizer.view)
     switch recognizer.state {
     case .recognized:
+      if hasSelection {
+        return
+      }
       if focused {
         _wkWebView?.evaluateJavaScript("term_reportMouseClick(\(point.x), \(point.y), 1, \(BKDefaults.isKeyCastsOn() ? "true" : "false"));", completionHandler: nil)
       }
