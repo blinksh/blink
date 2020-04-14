@@ -262,10 +262,14 @@ class SpaceController: UIViewController {
       return
     }
 
+    let input = KBTracker.shared.input
     KBTracker.shared.attach(input: device.view?.webView)
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
     device.focus()
+    if input != KBTracker.shared.input { //&& input?.window != KBTracker.shared.input?.window {
+      input?.reportFocus(false)
+    }
   }
   
   var currentDevice: TermDevice? {

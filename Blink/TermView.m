@@ -248,7 +248,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)focus {
   _gestureInteraction.focused = YES;
-  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
+//  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
+}
+
+- (void)blur {
+  _gestureInteraction.focused = NO;
+//  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
 - (void)reportTouchInPoint:(CGPoint)point
@@ -256,11 +261,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_reportTouchInPoint(point) completionHandler:nil];
 }
 
-- (void)blur
-{
-  _gestureInteraction.focused = NO;
-  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
-}
 
 - (void)processKB:(NSString *)str {
   [self _evalJSScript: term_processKB(str)];

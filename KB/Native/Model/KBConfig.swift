@@ -83,13 +83,13 @@ class KBConfig: ObservableObject, Codable {
   
   func _bindNotifications() {
     _cancellable = Set<AnyCancellable>()
+    
     capsLock.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     shift.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     control.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     option.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     command.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     fnBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
-    cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
     cursorBinding.objectWillChange.sink(receiveValue: objectWillChange.send).store(in: &_cancellable)
   }
   

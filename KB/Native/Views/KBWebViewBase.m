@@ -64,7 +64,6 @@ NSString *_encodeString(NSString *str);
   KeyCommand *_activeModsCommand;
   NSArray<KeyCommand *> *_imeGuardCommands;
   NSArray<KeyCommand *> *_activeIMEGuardCommands;
-  BOOL _canResignFirstResponder;
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {
@@ -82,7 +81,6 @@ NSString *_encodeString(NSString *str);
 {
   self = [super initWithFrame:frame configuration:configuration];
   if (self) {
-    _canResignFirstResponder = YES;
     _keyCommands = @[];
     _jsPath = @"_onKB";
     _interopName = @"_kb";
@@ -110,9 +108,9 @@ NSString *_encodeString(NSString *str);
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
 //  return YES;
 //}
-
+//
 //- (BOOL)_requiresKeyboardResetOnReload {
-//  return NO;
+//  return YES;
 //}
 
 //- (BOOL)_becomeFirstResponderWhenPossible {
