@@ -225,10 +225,11 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _2fTapRecognizer.numberOfTouchesRequired = 2
     _2fTapRecognizer.delegate = self
     _2fTapRecognizer.addTarget(self, action: #selector(_on2fTap(_:)))
+    _2fTapRecognizer.require(toFail: _pinchRecognizer)
     
     _pinchRecognizer.delegate = self
     _pinchRecognizer.addTarget(self, action: #selector(_onPinch(_:)))
-    _pinchRecognizer.require(toFail: _2fTapRecognizer)
+    
     
     _hoverRecognizer.addTarget(self, action: #selector(_onHover(_:)))
   }
