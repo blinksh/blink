@@ -69,6 +69,7 @@ function term_setupDefaults() {
   term_set('audible-bell-sound', '');
   term_set('receive-encoding', 'raw'); // we are UTF8
   term_set('allow-images-inline', true); // need to make it work
+  term_set('scroll-wheel-may-send-arrow-keys', true)
 }
 
 function term_processKB(str) {
@@ -279,11 +280,8 @@ function term_reportWheelEvent(name, x, y, deltaX, deltaY) {
     return;
   }
 
-  var event = new WheelEvent(name, {deltaX, deltaY});
-  _setTermCoordinates(event, x, y);
-  if (!t.prompt.processMouseScroll(event)) {
-    t.onMouse(event);
-  }
+  var event = new WheelEvent(name, {clientX: x, clientY: y, deltaX, deltaY});
+  t.onMouse_Blink(event);
 }
 
 function term_setWidth(cols) {
