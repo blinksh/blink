@@ -61,29 +61,22 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       contentSize = requiredSize
     }
     
-    var currentOffset = contentOffset
-    
-    let centerOffsetX = (requiredSize.width - bounds.size.width) * 0.5;
-    let centerOffsetY = (requiredSize.height - bounds.size.height) * 0.5;
-    
-    let distanceFromCenterY = abs(currentOffset.y - centerOffsetY);
-    let distanceFromCenterX = abs(currentOffset.x - centerOffsetY);
-    
-    if distanceFromCenterY > (requiredSize.height / 4.0) {
-      currentOffset = CGPoint(x: currentOffset.x, y: centerOffsetY)
-      contentOffset = currentOffset
-      reportedScroll = nil
-    }
-    
-//    if distanceFromCenterX > (requiredSize.width / 4.0) {
-//      currentOffset = CGPoint(x: centerOffsetX, y: currentOffset.y)
-//    }
-    
-//    if currentOffset != contentOffset {
-//      contentOffset = currentOffset
-//    }
+    recenterIfNeeded(force: false)
   }
   
+  func recenterIfNeeded(force: Bool = false) {
+    var currentOffset = contentOffset
+    
+    let centerOffsetY = (contentSize.height - bounds.size.height) * 0.5;
+    
+    let distanceFromCenterY = abs(currentOffset.y - centerOffsetY);
+    
+    if force || distanceFromCenterY > (contentSize.height / 4.0) {
+      currentOffset = CGPoint(x: currentOffset.x, y: centerOffsetY)
+      reportedScroll = currentOffset
+      contentOffset = currentOffset
+    }
+  }
 }
 
 /**
@@ -197,16 +190,12 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     _termScrollView.alwaysBounceVertical = false
     _termScrollView.alwaysBounceHorizontal = false
     _termScrollView.isDirectionalLockEnabled = true
-    _termScrollView.keyboardDismissMode = .none
+    _termScrollView.keyboardDismissMode = _scrollView.keyboardDismissMode
     _termScrollView.delaysContentTouches = false
     _termScrollView.delegate = self
-//    _termScrollView.isUserInteractionEnabled = true
     _termScrollView.showsVerticalScrollIndicator = false
     _termScrollView.showsHorizontalScrollIndicator = false
     _termScrollView.isInfinit = true
-    _termScrollView.decelerationRate = .fast
-//    _termScrollView.isUserInteractionEnabled = false
-//    _termScrollView.isHidden = true
 
     _3fTapRecognizer.numberOfTapsRequired = 1
     _3fTapRecognizer.numberOfTouchesRequired = 3
@@ -330,25 +319,41 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
       return
     }
     
+    
+    
     if scrollView === _termScrollView {
-      var charHeight: CGFloat = _characterSize?.height ?? 20
-      if (charHeight <= 0) {
-        charHeight = 20
+      guard var reportedScroll = _termScrollView.reportedScroll
+      else {
+        return
       }
-      if var reportedScroll = _termScrollView.reportedScroll {
-        let deltaY = offset.y - reportedScroll.y
-        if abs(deltaY) < charHeight {
-          return
+      
+      let offsetY = max(offset.y, 0)
+      
+      let defaultFontSize = 20
+      if _characterSize == .none || _characterSize == .zero {
+        var size = BKDefaults.selectedFontSize().intValue
+        if size == 0 {
+          size = defaultFontSize
         }
-        let dY = CGFloat(Int(deltaY) / Int(charHeight)) * charHeight
-        reportedScroll.y = reportedScroll.y + dY
-        _termScrollView.reportedScroll = reportedScroll
-        
-        let point = _scrollPoint ?? _scrollPointTrackpad ?? CGPoint.zero
-        
-        _wkWebView?.evaluateJavaScript("term_reportWheelEvent(\"wheel\", \(point.x), \(point.y), \(0), \(dY));", completionHandler: nil)
+        _characterSize = CGSize(width: size, height: size)
       }
 
+      var charHeight: CGFloat = _characterSize?.height ?? CGFloat(defaultFontSize)
+      if (charHeight <= 0) {
+        charHeight = CGFloat(defaultFontSize)
+      }
+      
+      let deltaY = offsetY - reportedScroll.y
+      if abs(deltaY) < charHeight {
+        return
+      }
+      let dY = CGFloat(Int(deltaY) / Int(charHeight)) * charHeight
+      reportedScroll.y = reportedScroll.y + dY
+      _termScrollView.reportedScroll = reportedScroll
+      
+      let point = _scrollPoint ?? _scrollPointTrackpad ?? CGPoint(x: scrollView.bounds.size.width * 0.5, y: scrollView.bounds.size.height * 0.5)
+      
+      _wkWebView?.evaluateJavaScript("term_reportWheelEvent(\"wheel\", \(point.x), \(point.y), \(0), \(dY));", completionHandler: nil)
     }
   }
   
@@ -360,6 +365,20 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
         _scrollPoint = nil
       }
       _termScrollView.reportedScroll = _termScrollView.contentOffset
+    }
+  }
+  
+  func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+    if scrollView == _termScrollView {
+      _termScrollView.recenterIfNeeded(force: true)
+    }
+  }
+  
+  func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+    if scrollView == _termScrollView {
+      if !decelerate {
+        _termScrollView.recenterIfNeeded(force: true)
+      }
     }
   }
 }
