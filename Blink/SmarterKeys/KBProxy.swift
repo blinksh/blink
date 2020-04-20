@@ -60,7 +60,7 @@ class KBProxy: UIView {
     super.didMoveToSuperview()
 
     guard let placeView = _placeView else {
-      _kbView.removeFromSuperview()
+      _kbView.isHidden = true//removeFromSuperview()
       return
     }
 
@@ -77,8 +77,11 @@ class KBProxy: UIView {
       let barButtonView = _barButtonView,
       let win = window
     else {
+      _kbView.isHidden = true
       return
     }
+    
+    _kbView.isHidden = false
     
     placeView.bringSubviewToFront(_kbView)
     // Detecting dismiss kb icon

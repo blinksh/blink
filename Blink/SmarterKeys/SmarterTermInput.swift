@@ -55,6 +55,10 @@ class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
   
+  lazy var _kbProxy: KBProxy = {
+    KBProxy(kbView: self.kbView)
+  }()
+  
   private var _inputAccessoryView: UIView? = nil
   
   var isHardwareKB: Bool { kbView.traits.isHKBAttached }
@@ -199,7 +203,7 @@ class SmarterTermInput: KBWebView {
     
     
     assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
-    reloadInputViews()
+    contentView()?.reloadInputViews()
     if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
       _removeSmartKeys()
     }
@@ -208,21 +212,8 @@ class SmarterTermInput: KBWebView {
     reportStateReset()
     // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
     contentView()?.reloadInputViews()
+    kbView.isHidden = false
   }
-  
-//  override var window: UIWindow? {
-//    guard let win = super.window
-//    else {
-//      return nil
-//    }
-//
-//
-//    if win == ShadowWindow.shared {
-//      return ShadowWindow.shared?.refWindow
-//    }
-//
-//    return win
-//  }
   
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
@@ -296,7 +287,7 @@ class SmarterTermInput: KBWebView {
   func _setupAssistantItem() {
     let item = inputAssistantItem
     
-    let proxyItem = UIBarButtonItem(customView: KBProxy(kbView: kbView))
+    let proxyItem = UIBarButtonItem(customView: _kbProxy)
     let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
     item.leadingBarButtonGroups = []
     item.trailingBarButtonGroups = [group]

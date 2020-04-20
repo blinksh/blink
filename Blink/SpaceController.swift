@@ -547,7 +547,11 @@ extension SpaceController {
   func cleanupControllers() {
     for c in _termControllers {
       if c.view?.superview == nil {
-        c.removeFromContainer()
+        if c.removeFromContainer() {
+          _termControllers.remove(c)
+        }
+      }
+      if c.view?.window != view.window {
         _termControllers.remove(c)
       }
     }
@@ -577,7 +581,6 @@ extension SpaceController {
       shadowScene == window.windowScene,
       shadowWindow !== window {
       shadowWindow.makeKeyAndVisible()
-//      shadowWindow.spaceController.currentDevice?.view?.webView?.becomeFirstResponder()
       shadowWindow.spaceController._focusOnShell()
       return
     }
@@ -608,7 +611,7 @@ extension SpaceController {
   }
   
   private func _moveToOtherWindowAction() {
-    let sessions = _activeSessions()
+    var sessions = _activeSessions()
     
     guard
       sessions.count > 1,
@@ -619,6 +622,23 @@ extension SpaceController {
     else  {
         return
     }
+    
+    if
+      let shadowWindow = ShadowWindow.shared,
+      let shadowScene = shadowWindow.windowScene,
+      let window = self.view.window,
+      shadowScene == window.windowScene,
+      shadowWindow !== window {
+      
+      _removeCurrentSpace(attachInput: false)
+      shadowWindow.spaceController._addTerm(term: term)
+      
+//      shadowWindow.makeKeyAndVisible()
+//      shadowWindow.spaceController._focusOnShell()
+      return
+    }
+          
+    sessions = sessions.filter { $0.role != .windowExternalDisplay }
     
     let nextSession: UISceneSession
     if idx < sessions.endIndex {
@@ -637,7 +657,7 @@ extension SpaceController {
       return
     }
     
-//    _termControllers.remove(term)
+
     _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
   }

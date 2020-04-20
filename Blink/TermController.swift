@@ -46,36 +46,40 @@ import UserNotifications
 }
 
 private class ProxyView: UIView {
-  private var _targetContainer: UIView? = nil
   var controlledView: UIView? = nil
   private var _cancelable: AnyCancellable? = nil
   
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
-    if
+    
+    guard
       let parent = superview,
-      let container = parent.superview {
-      _targetContainer = container
-      _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
-        self?.controlledView?.frame = frame
-      }
-      
-      guard let controlledView = controlledView
-      else {
-        return
-      }
-      
-      if let sharedWindow = ShadowWindow.shared,
-        container.window == sharedWindow {
-        sharedWindow.layer.removeFromSuperlayer()
-        container.addSubview(controlledView)
-        sharedWindow.refWindow.layer.addSublayer(sharedWindow.layer)
-      } else {
-        container.addSubview(controlledView)
-      }
+      let container = parent.superview
+    else {
+      _cancelable = nil
+      return
     }
     
-    controlledView?.isHidden = superview == nil
+    _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
+      self?.controlledView?.frame = frame
+    }
+    
+    guard let controlledView = controlledView
+    else {
+      return
+    }
+    
+    if
+      let sharedWindow = ShadowWindow.shared,
+      container.window == sharedWindow {
+      
+      sharedWindow.layer.removeFromSuperlayer()
+      container.addSubview(controlledView)
+      sharedWindow.refWindow.layer.addSublayer(sharedWindow.layer)
+      
+    } else {
+      container.addSubview(controlledView)
+    }
   }
 }
 
@@ -103,7 +107,7 @@ class TermController: UIViewController {
   private var _fontSizeBeforeScaling: Int? = nil
   
   @objc public var activityKey: String? = nil
-  @objc public var termDevice: TermDevice { get { _termDevice } }
+  @objc public var termDevice: TermDevice { _termDevice }
   @objc weak var delegate: TermControlDelegate? = nil
   @objc var sessionParams: MCPParams { _sessionParams }
   @objc var bgColor: UIColor? {
@@ -129,8 +133,12 @@ class TermController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
-  func removeFromContainer() {
+  func removeFromContainer() -> Bool {
+    if KBTracker.shared.input == _termView.webView {
+      return false
+    }
     _proxyView.controlledView?.removeFromSuperview()
+    return true
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

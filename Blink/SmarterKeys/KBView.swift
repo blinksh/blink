@@ -153,7 +153,6 @@ class KBView: UIView {
     
     let strictSpace = !traits.isHKBAttached && traits.hasSuggestions
     self.kbSizes = kbDevice.sizesFor(portrait: traits.isPortrait)
-    debugPrint("isPortrait", traits.isPortrait)
     
     let top: CGFloat = 0;
 
