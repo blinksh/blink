@@ -146,14 +146,37 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   func sceneDidBecomeActive(_ scene: UIScene) {
     
-    // TODO: 
-    if (scene.session.role == .windowExternalDisplay) {
-      return
-    }
-    
     guard let window = window else {
       return
     }
+    
+    if (scene.session.role == .windowExternalDisplay) {
+      if LocalAuth.shared.lockRequired {
+        if let lockCtrl = _lockCtrl {
+          if window.rootViewController != lockCtrl {
+            window.rootViewController = lockCtrl
+          }
+          
+          return
+        }
+
+        
+        _lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
+        window.rootViewController = _lockCtrl
+        return
+      }
+      if window.rootViewController == _lockCtrl {
+        window.rootViewController = UIViewController()
+      }
+      _lockCtrl = nil
+      
+      if let shadowWin = ShadowWindow.shared {
+        window.layer.addSublayer(shadowWin.layer)
+      }
+      
+      return
+    }
+    
     
     // 1. Local Auth AutoLock Check
     
@@ -178,6 +201,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     _lockCtrl = nil
     LocalAuth.shared.stopTrackTime()
+    
+    if let shadowWindow = ShadowWindow.shared,
+      shadowWindow.windowScene == scene,
+      let refScene = shadowWindow.refWindow.windowScene {
+      ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
+    }
     
     // 2. Set space controller back and refresh layout
     
