@@ -202,11 +202,9 @@ class SpaceController: UIViewController {
     _currentKey = term.meta.key
     
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
-      DispatchQueue.main.async {
-        self._displayHUD()
-        self._attachInputToCurrentTerm()
-        completion?(didComplete)
-      }
+      self._displayHUD()
+      self._attachInputToCurrentTerm()
+      completion?(didComplete)
     }
   }
   
@@ -265,6 +263,11 @@ class SpaceController: UIViewController {
 
     let input = KBTracker.shared.input
     KBTracker.shared.attach(input: device.view?.webView)
+
+    if !device.view.isReady {
+      return
+    }
+    
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
     device.focus()

@@ -47,11 +47,8 @@ class CaretHider {
   }
 }
 
-@objc class TermView2: SmarterTermInput {
-  
-}
 
-class SmarterTermInput: KBWebView {
+@objc class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
   
@@ -73,7 +70,7 @@ class SmarterTermInput: KBWebView {
     
     super.init(frame: frame, configuration: configuration)
 
-//    self.allowDisplayingKeyboardWithoutUserAction()
+    
     kbView.keyInput = self
     kbView.lang = textInputMode?.primaryLanguage ?? ""
     
@@ -122,16 +119,6 @@ class SmarterTermInput: KBWebView {
     }
   }
   
-  
-//  // overriding chain
-//  override var next: UIResponder? {
-//    guard let responder = device?.view?.superview
-//    else {
-//      return super.next
-//    }
-//    return responder
-//  }
-  
   func reset() {
     
   }
@@ -155,6 +142,7 @@ class SmarterTermInput: KBWebView {
   }
   
   override func becomeFirstResponder() -> Bool {
+    
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
     
     let res = super.becomeFirstResponder()
@@ -182,9 +170,6 @@ class SmarterTermInput: KBWebView {
     reportStateReset(false)
     device?.view?.cleanSelection()
   }
-  
-  
-  
   
   func _refreshInputViews() {
     guard
@@ -280,6 +265,7 @@ class SmarterTermInput: KBWebView {
       _setupAssistantItem()
     } else {
       _setupAccessoryView()
+      needToReload = true
     }
     
   }

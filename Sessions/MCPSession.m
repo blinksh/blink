@@ -160,6 +160,7 @@
     thread_stderr = nil;
     
     _cmdStream = [_device.stream duplicate];
+    [self setActiveSession];
     ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
     
     setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
@@ -332,6 +333,8 @@
           [_cmdStream closeIn];
           return NO;
         }
+        [self setActiveSession];
+        ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
         ios_kill();
       }
       return YES;
@@ -348,12 +351,21 @@
 }
 
 - (void)setActiveSession {
+
+  if (!_cmdStream) {
+    return;
+  }
+  
   FILE * savedStdOut = stdout;
   FILE * savedStdErr = stderr;
   FILE * savedStdIn = stdin;
+  
   stdout = _cmdStream.out;
   stderr = _cmdStream.err;
   stdin = _cmdStream.in;
+  
+  
+  ios_setContext((__bridge void*)self);
   ios_switchSession(_sessionUUID.UTF8String);
   stdout = savedStdOut;
   stderr = savedStdErr;

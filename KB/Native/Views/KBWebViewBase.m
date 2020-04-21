@@ -200,7 +200,7 @@ NSString *_encodeString(NSString *str);
   if (self.userInteractionEnabled) {
     return _focused ? 1 : 0;
   }
-  return NO;
+  return 0;
 }
 
 - (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {

@@ -307,6 +307,16 @@ extension TermController: TermDeviceDelegate {
   
   public func deviceIsReady() {
     startSession()
+
+    guard
+      let input = KBTracker.shared.input,
+      input == _termDevice.view.webView
+    else {
+      return
+    }
+    _termDevice.attachInput(input)
+    _termDevice.focus()
+    input.reportFocus(true)
   }
   
   public func deviceSizeChanged() {

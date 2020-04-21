@@ -144,7 +144,6 @@ class KBTracker {
       kbTraits.isFloatingKB = isFloatingKB
       kbTraits.isHKBAttached = !isOnScreenKB
       
-      debugPrint(kbTraits)
       input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
     }
     

@@ -158,7 +158,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[TermView2 alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
@@ -385,6 +385,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_coverView removeFromSuperview];
     _coverView = nil;
   }];
+  
+  
 }
 
 - (BOOL)isFocused {

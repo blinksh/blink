@@ -223,6 +223,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // 4. Focus Check
     
+    if input == nil {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if KBTracker.shared.input == nil {
+          window.makeKey()
+          spCtrl.focusOnShellAction()
+          KBTracker.shared.input?.reportFocus(true)
+        }
+      }
+      return
+    }
+    
     if term.termDevice.view?.isFocused() == false,
       input?.isRealFirstResponder == false,
       input?.window === window {
