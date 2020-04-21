@@ -634,10 +634,8 @@ extension SpaceController {
       shadowWindow !== window {
       
       _removeCurrentSpace(attachInput: false)
+      shadowWindow.makeKey()
       shadowWindow.spaceController._addTerm(term: term)
-      
-//      shadowWindow.makeKeyAndVisible()
-//      shadowWindow.spaceController._focusOnShell()
       return
     }
           
@@ -663,6 +661,7 @@ extension SpaceController {
 
     _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
+    nextWindow.makeKey()
   }
   
   func _activeSessions() -> [UISceneSession] {

@@ -49,6 +49,13 @@ private class ProxyView: UIView {
   var controlledView: UIView? = nil
   private var _cancelable: AnyCancellable? = nil
   
+  override func willMove(toSuperview newSuperview: UIView?) {
+    super.willMove(toSuperview: newSuperview)
+    if superview == nil {
+      _cancelable = nil
+    }
+  }
+  
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     
