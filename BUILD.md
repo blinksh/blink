@@ -1,6 +1,6 @@
 # Building
 We provide you with two ways to compile and install Blink Shell. This instructions will refer to assembling
-a full Blink Shell, compiling libraries and resources yourself. Due to the many dependencies that compose 
+a full Blink Shell, compiling libraries and resources yourself. Due to the many dependencies that compose
 Blink Shell, this is the recommended but not shortest method. You can also clone Blink and obtain a "ready to go"
 tar.gz with all the dependencies as described on [home](https://github.com/blinksh/blink)
 
@@ -22,7 +22,7 @@ git submodule update
 Blink makes use of multiple dependencies that you have to compile
 separately before building Blink itself. There are simple scripts available
 to perform this operation.
-- [Libssh2 for iOS](https://github.com/carloscabanero/libssh2-for-iOS); Includes OpenSSL.
+- [Libssh2 for iOS](https://github.com/holzschu/libssh2-for-iOS); Includes OpenSSL.
 - [Mosh for iOS](https://github.com/blinksh/build-mosh); Includes Protobuf.
 
 Please note that Blink currently only supports armv64, so compilation for other architectures is not necessary.
@@ -53,7 +53,7 @@ needed for Blink to work. Download the file and drop it into Resources folder.
 Blink's Terminal is running from JavaScript code linked at runtime.
 Most of the available open source terminals can be made to work with Blink,
 just by providing a "write" and "signal" functions. An example of this
-is provided in the Resources/term.html file. If you use another 
+is provided in the Resources/term.html file. If you use another
 terminal.js, edit term.html to match. We have been also successful plugging in other
 terminals like [Terminal.js](http://terminal.js.org).
 
