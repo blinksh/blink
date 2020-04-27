@@ -1,3 +1,8 @@
+# Version 13.4
+
+* Fixed selection
+* Tmux/mosh/vim scroll
+
 # Version 13.3
 
 ## Changes in Build 219
