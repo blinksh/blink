@@ -11,6 +11,8 @@ jobs:
     - uses: actions/checkout@v1
       with:
         submodules: true
+    - name: xcode-select
+      run: xcode-select -s /Applications/Xcode_11.4.1.app
     - name: get frameworks
       run: ./get_frameworks.sh
     - name: actual build
