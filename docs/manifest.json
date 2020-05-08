@@ -1,9 +1,19 @@
 {
   "routes": [
     {
-      "title": "Documentation",
+      "title": "Basics",
       "heading": true,
-      "routes": [{ "title": "Getting Started", "path": "/docs/home.md" }]
+      "routes": [
+        { "title": "Navigation", "path": "/docs/basics/navigation.md" },
+        { "title": "Hosts", "path": "/docs/basics/hosts.md" },
+        { "title": "SSH Keys", "path": "/docs/basics/ssh-keys.md" },
+        { "title": "Known Issues", "path": "/docs/basics/known-issues.md" }
+      ]
+    },
+    {
+      "title": "Commands",
+      "heading": true,
+      "routes": [{ "title": "Overview", "path": "/docs/basics/overview.md" }]
     }
   ]
 }
