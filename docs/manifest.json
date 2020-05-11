@@ -13,7 +13,7 @@
     {
       "title": "Commands",
       "heading": true,
-      "routes": [{ "title": "Overview", "path": "/docs/basics/overview.md" }]
+      "routes": [{ "title": "Overview", "path": "/docs/commands/overview.md" }]
     }
   ]
 }
