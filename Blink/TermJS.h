@@ -38,9 +38,9 @@ NSString *_encodeString(NSString *str)
   return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-NSString *term_init()
+NSString *term_init(BOOL accessibilityEnabled)
 {
-  return @"term_init();";
+  return [NSString stringWithFormat:@"term_init(%@);", accessibilityEnabled ? @"true" : @"false" ];
 }
 
 NSString *term_write(NSString *data) {

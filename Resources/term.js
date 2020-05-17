@@ -98,7 +98,7 @@ function term_displayInput(str, display) {
 }
 
 
-function term_setup() {
+function term_setup(accessibilityEnabled) {
   t = new hterm.Terminal('blink');
 
   t.onTerminalReady = function() {
@@ -130,13 +130,13 @@ function term_setup() {
     if (window.KeystrokeVisualizer) {
       window.KeystrokeVisualizer.enable();
     }
-    t.setAccessibilityEnabled(true);
+    t.setAccessibilityEnabled(accessibilityEnabled);
   };
 
   t.decorate(document.getElementById('terminal'));
 }
 
-function term_init() {
+function term_init(accessibilityEnabled) {
   term_setupDefaults();
   try {
     applyUserSettings();
@@ -151,7 +151,7 @@ function term_init() {
         'Failed to setup theme. Please check syntax of your theme.\n' +
         e.toString(),
     });
-    term_setup();
+    term_setup(accessibilityEnabled);
   }
 }
 
@@ -348,7 +348,7 @@ function term_loadFontFromCss(url, name) {
 
 function term_getCurrentSelection() {
   const selection = document.getSelection();
-  if (!selection || selection.rangeCount === 0) {
+    if (!selection || selection.rangeCount === 0 || selection.type === 'Caret') {
     return {base: '', offset: 0, text: ''};
   }
 

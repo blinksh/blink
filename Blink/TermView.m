@@ -616,7 +616,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   [script addObject:@"};"];
 
-  [script addObject:term_init()];
+  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning())];
 
   return [[WKUserScript alloc] initWithSource:
           [script componentsJoinedByString:@"\n"]
