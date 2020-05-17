@@ -359,7 +359,7 @@ function term_getCurrentSelection() {
   return {
     base: selection.baseNode.textContent,
     offset: selection.baseOffset,
-    text: selection.toString(),
+    text: t.getSelectionText() || "",
     rect,
   };
 }
