@@ -1,3 +1,14 @@
+# Version 13.5
+
+* Rendering speed improvments
+* Update wide char table to Unicode 13.0.0 release
+* Fixed multiline copy. #961
+* Removed duplicate share menu on selection
+* Updated libssh to 0.9.4
+  * Fixed CVE-2020-1730 (Possible DoS in client when handling AES-CTR keys with OpenSSL)
+  * Added diffie-hellman-group14-sha256
+  * Fixed several possible memory leaks
+
 # Version 13.4
 
 * Fixed selection
