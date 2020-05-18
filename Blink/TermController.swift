@@ -293,7 +293,13 @@ extension TermController: TermDeviceDelegate {
     
     let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
     
-    UNUserNotificationCenter.current().add(req, withCompletionHandler: nil)
+    let center = UNUserNotificationCenter.current()
+    center.requestAuthorization(options: [.alert, .sound, .announcement]) { (granted, error) in
+      if granted {
+        center.add(req, withCompletionHandler: nil)
+      }
+    }
+    
   }
   
   func apiCall(_ api: String!, andRequest request: String!) {
