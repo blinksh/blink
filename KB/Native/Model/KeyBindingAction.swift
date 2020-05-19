@@ -186,7 +186,7 @@ enum KeyBindingAction: Codable, Identifiable {
   var titleWithoutValue: String {
     switch self {
     case .hex(_, comment: let comment):
-      return comment ?? "Send Sequence"
+      return comment ?? "Send Hex Code"
     default: return title
     }
   }

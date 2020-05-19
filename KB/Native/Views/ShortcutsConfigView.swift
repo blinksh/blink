@@ -71,7 +71,7 @@ struct ActionsList: View {
       value = val
     }
     return HStack {
-      Text("Sequence")
+      Text("Hex Code")
       Spacer()
       Checkmark(checked: checked)
     }.overlay(
