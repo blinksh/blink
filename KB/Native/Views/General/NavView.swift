@@ -38,7 +38,7 @@ class Nav: ObservableObject {
   
   init(navController: UINavigationController) {
     self.navController = navController
-  }
+  }  
 }
 
 struct NavView<Content: View>: View {

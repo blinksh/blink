@@ -49,6 +49,9 @@ struct ActionsList: View {
           }
         }
       } else {
+        Section(header: Text("Send")) {
+          self._rowHex(action: self.action)
+        }
         Section(header: Text("Press")) {
           ForEach(pressList, id: \.id) { ka in
             self._row(action: self.action, value: ka)
@@ -58,6 +61,26 @@ struct ActionsList: View {
       
     }
     .listStyle(GroupedListStyle())
+  }
+  
+  private func _rowHex(action: KeyBindingAction) -> some View {
+    var checked = false
+    var value = ""
+    if case .hex(let val, let comment) = action, comment == nil {
+      checked = true
+      value = val
+    }
+    return HStack {
+      Text("Sequence")
+      Spacer()
+      Checkmark(checked: checked)
+    }.overlay(
+      Button(action: {
+        self.action = .hex(value, comment: nil)
+        self.updatedAt = Date()
+      }, label: { EmptyView() }
+      )
+    )
   }
   
   private func _row(action: KeyBindingAction, value: KeyBindingAction) -> some View {
@@ -75,28 +98,91 @@ struct ActionsList: View {
   }
 }
 
+class HexFormatter: Formatter {
+  private let _hexCharacterSet = CharacterSet(charactersIn: "0123456789abcdefABCDEF")
+  
+  override func string(for obj: Any?) -> String? {
+    guard let str = obj as? NSString
+    else {
+      return nil
+    }
+    return str.uppercased
+  }
+  
+  override func editingString(for obj: Any) -> String? {
+    if let str = obj as? NSString {
+      return str as String
+    }
+    return nil
+  }
+  
+  override func isPartialStringValid(_ partialString: String, newEditingString newString: AutoreleasingUnsafeMutablePointer<NSString?>?, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
+    return partialString.isEmpty || partialString.rangeOfCharacter(from: _hexCharacterSet.inverted) == nil
+  }
+  
+  override func getObjectValue(_ obj: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
+    obj?.pointee = hexString(str: string) as NSString
+    return true
+  }
+  
+  func hexString(str: String) -> String {
+    String(
+      str.replacingOccurrences(of: "[^0-9abcdef]", with: "", options: [.regularExpression, .caseInsensitive], range: nil)
+        .uppercased()
+        .prefix(1000)
+    )
+  }
+}
+
+struct HexEditorView: View {
+  @ObservedObject var shortcut: KeyShortcut
+  @State var value: String = ""
+  private let _formatter = HexFormatter()
+  
+  var body: some View {
+    TextField("HEX", value: $value, formatter: _formatter, onEditingChanged: { focused in
+      self.shortcut.action = .hex(self._formatter.hexString(str: self.value), comment: nil)
+    }) {
+//      self.shortcut.action = .hex(self._formatter.hexString(str: self.value), comment: nil)
+      }
+    .disableAutocorrection(true)
+    .keyboardType(.asciiCapable)
+  }
+}
+
+
 struct ShortcutConfigView: View {
   @EnvironmentObject var nav: Nav
   @ObservedObject var config: KBConfig
   @ObservedObject var shortcut: KeyShortcut
+  
   var commandsMode: Bool
   
   var body: some View {
-    List {
-      Section(
-        header: Text("Combination"),
-        footer: Text("Press keys on external KB to change.")
-      ) {
-        HStack {
-          Text(shortcut.description)
+      List {
+        Section(
+          header: Text("Combination"),
+          footer: Text("Press keys on external KB to change.")
+        ) {
+          HStack {
+            Text(shortcut.description)
+          }
+        }
+        Section(
+          header: Text("Action"),
+          footer: Text(self.shortcut.action.isCustomHEX ? "Use hex encoded sequence" : ""))
+        {
+          DefaultRow(title: shortcut.action.titleWithoutValue) {
+            ActionsList(action: self.$shortcut.action, commandsMode: self.commandsMode)
+          }
+          if self.shortcut.action.isCustomHEX {
+            HexEditorView(
+              shortcut: self.shortcut,
+              value: self.shortcut.action.hexValue
+            )
+          }
         }
       }
-      Section(header: Text("Action")) {
-        DefaultRow(title: shortcut.action.title) {
-          ActionsList(action: self.$shortcut.action, commandsMode: self.commandsMode)
-        }
-      }
-    }
     .navigationBarItems(trailing:
       Button("Delete") {
         self.config.shortcuts.removeAll(where: { $0 === self.shortcut })
@@ -107,6 +193,7 @@ struct ShortcutConfigView: View {
     .listStyle(GroupedListStyle())
     .background(KeyCaptureView(shortcut: shortcut))
     .onReceive(shortcut.objectWillChange, perform: config.objectWillChange.send)
+    
   }
 }
 
@@ -154,6 +241,7 @@ struct ShortcutsConfigView: View {
     let shortcut = KeyShortcut(action: action, modifiers: [], input: "")
     config.shortcuts.append(shortcut)
     config.touch()
+    
     let rootView = ShortcutConfigView(
       config: config,
       shortcut: shortcut,
