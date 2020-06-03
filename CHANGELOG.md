@@ -1,3 +1,8 @@
+# Version 13.5.1
+
+- Fixed ctrl-space mapping. #782, #942, #727
+- Fixed undefined text in terminal. #1017
+
 # Version 13.5
 
 - Rendering speed improvements
