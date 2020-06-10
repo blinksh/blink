@@ -36,6 +36,6 @@
 
 int clear_main(int argc, char *argv[]) {
 //  return [[(__bridge MCPSession *)thread_context repl] clear_main:argc argv:argv];
-  puts("\033c\033[H\033[2J\033[0m");
+  printf("\033c\033[H\033[2J\033[0m");
   return 0;
 }
