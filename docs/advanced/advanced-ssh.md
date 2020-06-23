@@ -38,7 +38,7 @@ The simplest example is bringing a port from a remote system to your local machi
 ssh -L 8080:localhost:8080 host
 ```
 
-Replacing `host` with the remote hostname or IP. Once authenticated, a service listening on port `8080` on the remote machine will now be accesible as though it were on your local device. A connection to localhost:8080` will forward via the SSH tunnel to the remote computer.
+Replacing `host` with the remote hostname or IP. Once authenticated, a service listening on port `8080` on the remote machine will now be accesible as though it were on your local device. A connection to `localhost:8080` will forward via the SSH tunnel to the remote computer.
 
 ## Jump/Bastion Hosts
 
@@ -50,7 +50,7 @@ To facilitate this, SSH has a `ProxyCommand` option that allows you to specify t
 ssh -o ProxyCommand="ssh -W %h:%p jumphost" host
 ```
 
-Replacing `jumphost with the jump/bastion server and `host` with the remote host.
+Replacing `jumphost` with the jump/bastion server and `host` with the remote host.
 
 SSH jump hosts eliminate the need for SSH agent forwarding, offering a more secure approach to connect to protected networks.
 

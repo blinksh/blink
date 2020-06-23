@@ -55,7 +55,7 @@ md5 filename.tar
 tar xfz filename.tar -C destination
 ```
 
-Blink Shell provides far more utilities and here's a list: `awk`, `cat`, `chflags`, `chksum`, `compress`, `cp`, `diff`, `du`, `ed`, `egrep`, `fgrep`, `find`, `gunzip`, `gzip`, `head`, link-files`, `ln`, `ls`, `md5`, `mv`, `pwd`, `rm`, `rmdir`, `sed`, `sort`, `tail`, `tar`, `touch`, `uncompress`, `uniq`, `wc` & `xargs`.
+Blink Shell provides far more utilities and here's a list: `awk`, `cat`, `chflags`, `chksum`, `compress`, `cp`, `diff`, `du`, `ed`, `egrep`, `fgrep`, `find`, `gunzip`, `gzip`, `head`, `link-files`, `ln`, `ls`, `md5`, `mv`, `pwd`, `rm`, `rmdir`, `sed`, `sort`, `tail`, `tar`, `touch`, `uncompress`, `uniq`, `wc` & `xargs`.
 
 ## Remote Transfer Tools
 

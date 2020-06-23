@@ -48,7 +48,7 @@ The `identity_file` argument is the name of your SSH key pair. The `user` is the
 
 ![img](images/using-ssh-key-image5.png)
 
-## Establishing A Connection Using SSH Keys
+## Establishing a Connection Using SSH Keys
 
 There are two different ways to establish a connection to a remote server - via SSH or via mosh. SSH will work in all cases, but if mosh is available it is preferred for mobile devices or internet/network connections that may encounter high latency or frequent disconnects.
 
