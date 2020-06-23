@@ -13,7 +13,18 @@
     {
       "title": "Commands",
       "heading": true,
-      "routes": [{ "title": "Overview", "path": "/docs/commands/overview.md" }]
+      "routes": [
+	{ "title": "Overview", "path": "/docs/commands/overview.md" }
+      ]
+    },
+    {
+      "title": "Advanced",
+      "heading": true,
+      "routes": [
+	{ "title": "Mosh", "path": "/docs/advanced/advanced-mosh.md" },
+	{ "title": "SSH", "path": "/docs/advanced/advanced-ssh.md" },
+	{ "title": "UNIX Commands", "path": "/docs/advanced/unix-roundup.md" }
+      ]
     }
   ]
 }
