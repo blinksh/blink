@@ -2,7 +2,7 @@
 
 ## Introduction to Blink
 
-Blink is a shell that allows you to connect to remote machines, use mosh, and has full SSH support. You can use it to connect to other servers, interface with your Raspberry Pior even write code! The shell is ready to go, blinking with anticipation as you discover its potential.
+Blink is a shell that allows you to connect to remote machines, use mosh, and has full SSH support. You can use it to connect to other servers, interface with your Raspberry Pi or even write code! The shell is ready to go, blinking with anticipation as you discover its potential.
 
 ## Using Blink Shell
 
@@ -50,7 +50,7 @@ To open the configuration section, type `config` within Blink Shell or press `�
 
 - Hosts: Create hosts in your `~/.ssh/config` and access them just with the hostname. More info link.
 - Keys: Create SSH key pairs for enhanced security and password-less convenience when accessing your servers. More info link.
-- Appearance: Personalize the terminal to your tastes. You can change themes, fonts, or even upload your own. More info link
+- Appearance: Personalize the terminal to your tastes. You can change themes, fonts, or even upload your own. More info link.
 
 (To know more... - Each section will contain a “Read more“ section with a list of other articles: “How to use SSH Keys with Blink Shell”, etc…)
 
@@ -60,7 +60,7 @@ We sincerely appreciate your support and use of Blink.
 
 You can contact us via [email](mailto:hello@blink.sh), but ideally it is best to file issues on our [GitHub](https://github.com/blinksh/blink/issues) so that all of the community is aware of the issue. Not only does it help make Blink better but another user may help you solve your issue. When reporting a problem, please give as much detailed information as possible describing what you were doing when the application crashed or acted unexpectedly. Screenshots usually help when there is a problem with the interface.
 
-**VERY IMPORTANT: Reporting a problem in your review in the AppStore will not help us solve issues that you might be experiencing. Please make sure to contact us too!**
+**VERY IMPORTANT: Reporting a problem in your review in the App Store will not help us solve issues that you might be experiencing. Please make sure to contact us too!**
 
 When a crash occurs in the application, we receive a report. When this happens, please [email](mailto:hello@blink.sh) us or open an issue on [GitHub](https://github.com/blinksh/blink/issues).
 
