@@ -8,11 +8,11 @@ The purpose of this guide is to show you how to pre-configure hosts for simpler 
 
 When accessing the Hosts section of Blink, you will be presented with a list of existing hosts. If this is your first time using this section, it will be empty.
 
-![img](images/create-access-host-image1.jpg)
+![img](images/create-access-host-image1.png)
 
 To add a host, click the `+` sign. When you do, you’ll be prompted for the details of that host.
 
-![img](images/create-access-host-image2.jpg)
+![img](images/create-access-host-image2.png)
 
 ### Host
 
@@ -52,7 +52,7 @@ If you need to specify a UDP port for Mosh, please enter it here.
 
 #### Prediction
 
-![img](images/create-access-host-image3.jpg)
+![img](images/create-access-host-image3.png)
 
 When you are finished with the parameters, tap Save. 
 
@@ -60,7 +60,7 @@ When you are finished with the parameters, tap Save.
 
 If you wish to change a host, tap on it in the hosts lists. If you wish to delete a host, slide to remove it.
 
-![img](images/create-access-host-image4.jpg)
+![img](images/create-access-host-image4.png)
 
 ## Using Hosts
 
@@ -70,11 +70,11 @@ Once you have a host entered, you can type (in Blink Shell):
 mosh plankton
 ```
 
-To use the host named “plankton”. Use the hostname that you specify in your command.
+To use the host named `plankton` use the hostname that you specify in your command. 
 
-![img](images/create-access-host-image5.jpg)
+![img](images/create-access-host-image5.png)
 
-Command line parameter always have preference over configuration. You can redefine a parameter by specifying it on the command line. For example, to use a different user (in this case, root), specify:
+Command line parameters always have preference over configuration. You can redefine a parameter by specifying it on the command line. For example, to use a different user (in this case, root), specify:
 
 ```bash
 mosh root@plankton
