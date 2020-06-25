@@ -12,21 +12,21 @@ Using SSH keys is more secure than passwords as they are more difficult to crack
 
 ## Using SSH Keys in Blink
 
-Before you can use SSH keys you must generate or import a keypair. In this article we will discuss generating a keypair. To get started, run the `config` command in Blink Shell to access the configuration pane. 
+Before you can use SSH keys you must generate or import a keypair. In this article we will discuss generating a keypair. To get started, run the `config` command in Blink Shell to access the configuration pane.
 
-![img](images/using-ssh-key-image1.png)
+![img](using-ssh-key-image1.png)
 
 Once that is done the Settings dialog will open as shown below:
 
-![img](images/using-ssh-key-image2.png)
+![img](using-ssh-key-image2.png)
 
 Click on the `Keys` button to enter the SSH keys menu.
 
-![img](images/using-ssh-key-image3.png)
+![img](using-ssh-key-image3.png)
 
 In the above example we see that there is a default key named `id_rsa`. The default key is always named `id_rsa` and this will be the key used first to authenticate. You can have multiple SSH keys to connect to multiple SSH servers. To create a key, click the `+` icon at the top and you will be presented with the New Key dialog as shown below:
 
-![img](images/using-ssh-key-image4.png)
+![img](using-ssh-key-image4.png)
 
 Blink creates a default key named `id_rsa`. If you wish to create another key, please give a descriptive name of your choosing. As a suggestion, if you are going to generate a specific key pair for access to a specific server, we would recommend naming the key the hostname of that server.
 
@@ -46,7 +46,7 @@ ssh-copy-id identity_file user@host
 
 The `identity_file` argument is the name of your SSH key pair. The `user` is the remote username, and the `host` is the remote hostname. You may also specify an IP address instead of a hostname so desired.
 
-![img](images/using-ssh-key-image5.png)
+![img](using-ssh-key-image5.png)
 
 ## Establishing a Connection Using SSH Keys
 
@@ -64,7 +64,7 @@ In this example, an SSH connection is established with the username user to the 
 ssh -i your_key myhost
 ```
 
-In the above example, the key `your_key` is used to connect to the pre-defined host `myhost`. You can add pre-defined hosts in the Hosts section of the application, as discussed [here](link to the document). 
+In the above example, the key `your_key` is used to connect to the pre-defined host `myhost`. You can add pre-defined hosts in the Hosts section of the application, as discussed [here](link to the document).
 
 To connect with Mosh, the syntax is mostly the same:
 

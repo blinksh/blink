@@ -8,7 +8,7 @@ Blink is a shell that allows you to connect to remote machines, use mosh, and ha
 
 Using Blink Shell is similar to most other terminals - you simply type commands and hit `RETURN`. Just like in Bash or similar UNIX shells, you can press the up arrow to access the history of previous commands. You can type the `help` comamnd to access Blink’s online help, `mosh` to access the mosh mobile shell, `ssh` to connect via SSH or `ssh-copy-id` to copy SSH keys.
 
-![img](images/navigating-blink-shell-image1.gif)
+![img](navigating-blink-shell-image1.gif)
 
 For example, you can type:
 
@@ -22,13 +22,13 @@ To connect to your desktop computer or Raspberry Pi (assuming `192.168.1.5` is t
 
 You can use a variety of finger gestures with Blink Shell. To create a new shell, you can tap the screen with two fingers. Swiping with one finger from side to side will move between active shells. You can control the size of your terminal by doing a pinch. Finally, tapping the screen with three fingers will open a contextual menu where you can close a shell and to configure the display modes for the current one.
 
-![img](images/navigating-blink-shell-image2.gif)
+![img](navigating-blink-shell-image2.gif)
 
 ## Blink Shell Keyboard Shortcuts
 
 Blink Shell can also be easily used with keyboard shortcuts along the finger gestures mentioned before. If you have an external keyboard attached or connected via Bluetooth press and hold the `Cmd` key to see the available shortcuts.
 
-![img](images/navigating-blink-shell-image3.png)
+![img](navigating-blink-shell-image3.png)
 
 ## Blink Shell SmartKeys
 
@@ -40,11 +40,11 @@ SmartKeys provide special keys to use in your terminal session. They are hidden 
 - Alternate keys after taping `CMD` ⌘ (function keys on central area plus cursor keys like Home, End, Page Down and Page Up)
 - Holding a modifier instead of tapping allows you to chain multiple combinations, which is especially useful in applications like Emacs where you use chains like C-x, C-c.
 
-![img](images/navigating-blink-shell-image4.gif)
+![img](navigating-blink-shell-image4.gif)
 
 ## Configuration
 
-![img](images/navigating-blink-shell-image5.jpg)
+![img](navigating-blink-shell-image5.png)
 
 To open the configuration section, type `config` within Blink Shell or press `⌘-,`. In the configuration section, you can configure the following:
 

@@ -12,7 +12,7 @@ You can see all the applications at your disposal by pressing TAB on the shell p
 
 iOS limits you to a sandbox, but you can make the most of this by linking files from other locations on your device like iCloud. Simply run `link files` to bring up a dialog allowing you to select the folder to connect to Blink.
 
-![img](images/unix-roundup-image1.png)
+![img](unix-roundup-image1.png)
 
 Once you've linked the desired folder to Blink you're ready to go. Want to make folders in iCloud? No problem,
 
@@ -86,6 +86,7 @@ Have a little downtime? Have some retro fun with `telnet`:
 ```bash
 telnet towel.blinkenlights.nl
 ```
+
 We provide a full set of network utilities, including: `dig`, `host`, `nslookup`, `ssh`, `mosh`, `nc`, `ping`, `rlogin` and `udptunnel`.
 
 ## Miscellaneous
@@ -123,8 +124,5 @@ Finally, use the `openurl` to launch a website. This is extremely powerful when 
 ```bash
 open url
 ```
+
 This whirlwind tour of the Blink Shell just scratches the surface of what you can do with Blink. Go ahead and put your command line chops to use with our innovative command line interface to unlock a whole new world of mobile functionality.
-
-
-
-
