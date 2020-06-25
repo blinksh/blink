@@ -214,7 +214,6 @@ class CommandsHUGView: UIView {
   }
   
   func attachToWindow(inputWindow: UIWindow?) {
-    
     // UIEditingOverlayGestureView
     guard let inputWin = inputWindow,
       inputWindow != _window,
@@ -228,7 +227,7 @@ class CommandsHUGView: UIView {
     
     let sublayers: ReferenceWritableKeyPath<CALayer, [CALayer]?> = \CALayer.sublayers
     _layerCancable = gestureOverlayView.layer.publisher(for: sublayers).sink(receiveValue: { (layers) in
-      let hud = gestureOverlayView.subviews.filter({$0 != self}).first
+      let hud = gestureOverlayView.subviews.filter { NSStringFromClass($0.classForCoder).hasPrefix("UI") }.first
       self._bindAlpha(hudView: hud)
       self.superview?.bringSubviewToFront(self)
     })
@@ -241,9 +240,12 @@ class CommandsHUGView: UIView {
       return
     }
     let alphaPath: ReferenceWritableKeyPath<UIView, CGFloat> = \.alpha
+    
      _alphaCancable = hud
        .publisher(for: alphaPath)
+       .print()
        .assign(to: alphaPath, on: self)
+    
     alpha = hud.alpha
   }
   
