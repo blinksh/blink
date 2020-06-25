@@ -1,3 +1,9 @@
+# Version 13.5.2
+
+- Fixed 3f menu on new OS versions. #1049
+- Updated JetBrainsMono to v2.3.
+- Allow to remap < and > on German keyboards. 
+
 # Version 13.5.1
 
 - Fixed ctrl-space mapping. #782, #942, #727
