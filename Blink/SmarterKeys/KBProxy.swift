@@ -75,7 +75,7 @@ class KBProxy: UIView {
     guard
       let placeView = _placeView,
       let barButtonView = _barButtonView,
-      let win = window
+      let _ = window
     else {
       _kbView.isHidden = true
       return
@@ -91,7 +91,7 @@ class KBProxy: UIView {
     var bKBframe = placeView.bounds
     
     var hardwareKBAttached = false
-    if bKBframe.size.width - rightBottom.x > 60 /* better check? */ {
+    if bKBframe.size.width - rightBottom.x > 58 /* better check? */ {
       bKBframe.size.width -= (bKBframe.size.width - rightBottom.x) - 6
       hardwareKBAttached = true
     }
