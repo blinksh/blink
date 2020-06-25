@@ -2,14 +2,35 @@
 
 ## Introduction
 
+<<<<<<< HEAD
+All system administrators know that SSH is arguably the most useful and powerful remote administration tool available for UNIX/Linux systems. SSH brings a remote system's command-line interface to our local mahcine unlocking the real source of the magic behind NIX systems - the shell.
+
+Bash, ZSH, fish and other shells allow us to run powerful command-line utilities that alone provide more capability than our average commercial GUI desktop program. Combining all of this with pipes and filters, these gems knit together an unrivaled system that empowers us all.
+=======
 All system administrators know SSH is arguably the most useful and powerful remote administration tool available for UNIX/Linux systems. SSH brings a remote system's command-line interface to our local mahcine unlocking the real source of the magic behind NIX systems - the shell.
 
 Bash, ZSH, fish and other shells allow us to run powerful command-line utilities that alone provide more capability than our average commercial GUI desktop program. Combined through pipes and filters, thes gems knit together an unrivaled system that empowers us all.
+>>>>>>> 25dd0489951a6f4143e7b0945e98305352d7f077
 
 And yet, you can spend years in the shell and not know about some of its most unique and useful features. Let us dig into some of the more obscure, but useful, features of SSH.
 
 ## Persistent SSH Connections with Blink
 
+<<<<<<< HEAD
+Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround to help with this. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest asured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
+
+## SSH Agent and Forwarding
+
+When stored securely, SSH keys provide strong security for your remote connections. SSH keys should be encrypted with a password to help guard against key theft. While this setup is incredibly secure repeatedly entering passwords can be annoying. Fortunately, there's a solution - the SSH agent.
+
+The SSH agent stores your key passwords in memory to prevent you from having to enter your password each time you want to connect. While incredibly useful in a local console setting, this benefit can also be securely extended to remote machines via SSH agent forwarding.
+
+Let's see the SSH agent forwarding in action. First, load the SSH agent with the `ssh-agent` command. To load al your keys (i.e., `id_rsa`, `id_dsa`, `id_ed25519`, etc.) run `ssh-add`. You can load specific keys by specifying the filename with `ssh-add KEY_FILE`. To see which keys are already loaded in the agent, run `ssh-add -l`. The agent will prompt you once for the passphrases to each of the keys (in the order they are added), then loaded into memory for use with future connections.
+
+The PID (**p**rogram **ID**) of the SSH agent is stored in the environment variables `SSH_AGENT`. If you were on a desktop you would need to export that variable for use in subsequent shells. Fortunately, Blink Shell handles this for you.
+
+By default, the `ssh` command doesn't forward the agent's passwords. To enable SSH agent forward, connect with `ssh -A`. This securely makes the keys available to the remote machine. Don't worry - the SSH keys won't be copied to the remote server's filesystem, they are only used to make outgoing connections for the duration of that specific SSH connection. 
+=======
 Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround. The `geo track` command in the Blink shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest asured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected.
 
 ## SSH Agent and Forwarding
@@ -23,6 +44,7 @@ Let's see the SSH agent forwarding in action. First, load the SSH agent with the
 The PID (**p**rogram **ID**) of the SSH agent is stored in the environment variables `SSH_AGENT`. If you were on a desktop you would need to export that variable for use in subsequent shells. Fortunately, Bllink handles this for you.
 
 By default, the `ssh` command doesn't forward the agent's passwords. To enable SSH agent forward, connect with `ssh -A`. This securely makes the keys available to the remote machine. Don't worry - the SSH keys won't be copied to the remote server's filesystem, only used to make outgoing connections for the duration of that SSH connection. 
+>>>>>>> 25dd0489951a6f4143e7b0945e98305352d7f077
 
 Even though SSH agent forwarding has numerous safeguards in place, an application on the remote server can still use your key for unintended or possibly malicious purposes. To help mitigate this risk, we recommend using a separate key for SSH agent forwarding.
 
@@ -38,7 +60,11 @@ The simplest example is bringing a port from a remote system to your local machi
 ssh -L 8080:localhost:8080 host
 ```
 
+<<<<<<< HEAD
+Replacing `host` with the remote hostname or IP. Once authenticated, a service listening on port `8080` on the remote machine will now be accesible as though it were on your local device. A connection to `localhost:8080` will be forwarded via the SSH tunnel to the remote computer.
+=======
 Replacing `host` with the remote hostname or IP. Once authenticated, a service listening on port `8080` on the remote machine will now be accesible as though it were on your local device. A connection to `localhost:8080` will forward via the SSH tunnel to the remote computer.
+>>>>>>> 25dd0489951a6f4143e7b0945e98305352d7f077
 
 ## Jump/Bastion Hosts
 
@@ -56,4 +82,8 @@ SSH jump hosts eliminate the need for SSH agent forwarding, offering a more secu
 
 ## Venture Forth with Your Advanced SSH Knowledge
 
+<<<<<<< HEAD
+We hope this guide to advanced SSH has been helpful. Blink Shell, with its native shell and SSH support combined with your knowledge of SSH agent forwarding, jump hosts, SSH tunnels and persistent connections transforms your iOS device into a networking and development powerhouse.
+=======
 We hope this guide to advanced SSH has been helpful. Blink, with its native shell and SSH support combined with your knowledge of SSH agent forwarding, jump hosts, SSH tunnels and persistent connections transforms your iOS device into a networking and development powerhouse.
+>>>>>>> 25dd0489951a6f4143e7b0945e98305352d7f077
