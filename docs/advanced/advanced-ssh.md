@@ -10,22 +10,21 @@ And yet, you can spend years in the shell and not know about some of its most un
 
 ## Persistent SSH Connections with Blink
 
-<<<<<<< HEAD
 Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround to help with this. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest asured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
 
 ## SSH Agent and Forwarding
 
-When stored securely, SSH keys provide strong security for your remote connections. SSH keys should be encrypted with a password to help guard against key theft. While this setup is incredibly secure repeatedly entering passwords can be annoying. Fortunately, there's a solution - the SSH agent.
+When stored securely, SSH keys provide strong security for your remote connections. SSH keys should be encrypted with a password to help guard against key theft. While this setup is incredibly secure, repeatedly entering passwords can be annoying. Fortunately, there's a solution - the SSH agent.
 
 The SSH agent stores your key passwords in memory to prevent you from having to enter your password each time you want to connect. While incredibly useful in a local console setting, this benefit can also be securely extended to remote machines via SSH agent forwarding.
 
-Let's see the SSH agent forwarding in action. First, load the SSH agent with the `ssh-agent` command. To load al your keys (i.e., `id_rsa`, `id_dsa`, `id_ed25519`, etc.) run `ssh-add`. You can load specific keys by specifying the filename with `ssh-add KEY_FILE`. To see which keys are already loaded in the agent, run `ssh-add -l`. The agent will prompt you once for the passphrases to each of the keys (in the order they are added), then loaded into memory for use with future connections.
+Let's see the SSH agent forwarding in action. First, load the SSH agent with the `ssh-agent` command. To load all of your stored keys (i.e., `id_rsa`, `id_dsa`, `id_ed25519`, etc.) run `ssh-add`. You can load specific keys by specifying the filename with `ssh-add KEY_FILE`. To see which keys are already loaded in the agent, run `ssh-add -l`. The agent will prompt you once for the passphrases to each of the keys (in the order they are added), then loaded into memory for use with future connections.
 
 The PID (**p**rogram **ID**) of the SSH agent is stored in the environment variables `SSH_AGENT`. If you were on a desktop you would need to export that variable for use in subsequent shells. Fortunately, Blink Shell handles this for you.
 
-By default, the `ssh` command doesn't forward the agent's passwords. To enable SSH agent forward, connect with `ssh -A`. This securely makes the keys available to the remote machine. Don't worry - the SSH keys won't be copied to the remote server's filesystem, they are only used to make outgoing connections for the duration of that specific SSH connection. 
+By default, the `ssh` command doesn't forward the agent's passwords. To enable SSH agent forwarding, connect with `ssh -A` option. This securely makes the keys available to the remote machine. Don't worry - the SSH keys won't be copied to the remote server's filesystem, they are only used to make outgoing connections for the duration of that specific SSH connection. 
 
-Even though SSH agent forwarding has numerous safeguards in place, an application on the remote server can still use your key for unintended or possibly malicious purposes. To help mitigate this risk, we recommend using a separate key for SSH agent forwarding.
+Even though SSH agent forwarding has numerous safeguards in place, an application running on the remote server can still use your key for unintended or possibly malicious purposes. To help mitigate this risk, we recommend using a separate key for SSH agent forwarding.
 
 To learn more about the security implications of SSH agent forwarding, please see [this](https://heipei.io/2015/02/26/SSH-Agent-Forwarding-considered-harmful/).
 
@@ -51,7 +50,7 @@ To facilitate this, SSH has a `ProxyCommand` option that allows you to specify t
 ssh -o ProxyCommand="ssh -W %h:%p jumphost" host
 ```
 
-Replacing `jumphost` with the jump/bastion server and `host` with the remote host.
+Where `jumphost` with the jump/bastion server and `host` with the remote host.
 
 SSH jump hosts eliminate the need for SSH agent forwarding, offering a more secure approach to connect to protected networks.
 

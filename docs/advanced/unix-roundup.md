@@ -10,12 +10,11 @@ You can see all the applications at your disposal by pressing `TAB` on the shell
 
 ## File Utilities
 
-iOS limits you to a sandbox, but you can make the most of this by linking files from other locations on your device like iCloud. Simply run `link files` to bring up a dialog allowing you to select the folder to connect to Blink.
+iOS limits you to a sandbox, but you can make the most of this by linking files from other locations on your device like iCloud. Simply run `link files` to bring up a dialog allowing you to select the folder to connect to Blink Shell.
 
+![img](unix-roundup/unix-roundup-image1.png)
 
-![img](images/unix-roundup-image1.png)
-
-Once you've linked the desired folder to Blink you're ready to go. Want to make folders in iCloud? No problem,
+Once you've linked the desired folder you're ready to go. Want to make folders in iCloud? No problem,
 
 ```bash
 mkdir docs
@@ -33,7 +32,7 @@ Need to find a particular file? Use the power of `grep`:
 grep -nHr TERM LOCATION
 ```
 
-We have even included `sed` and `awk`! `sed` is short for stream editor, allows you to edit text inline, while `awk` is a superb data reporting and extraction utility.
+We have even included `sed` and `awk`! `sed` is short for stream editor and it allows you to edit text inline, while `awk` is a superb data reporting and extraction utility.
 
 For exmaple, with `sed` we can remove any string of characters, in this example we will locate and remove `aoe` from our file to then form a new file:
 
@@ -50,7 +49,6 @@ echo "one potato two potato" | awk '{gsub(/potato/,"banana")}1'
 If you want to learn more about `sed` and `awk`check [this](https://github.com/codenameyau/sed-awk-cheatsheet) fantastic cheatsheet.
 
 Another typical scenario when using a shell is the extraction of a compressed file downloaded from a web browser like Safari. Blink Shell provides `tar`, `gzip` and `md5` to make this task a breeze.
-
 
 ```bash
 md5 filename.tar
@@ -75,7 +73,7 @@ Some servers only support SFTP, so it is also bundled into Bliink Shell. To conn
 sftp user@remotehost
 ```
 
-Once connected you can run FTP commands like `cd`, `get` and `put`.
+Once connected, you can run FTP commands like `cd`, `get` and `put`.
 
 ## Network Diagnotsics
 

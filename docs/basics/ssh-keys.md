@@ -6,7 +6,7 @@ This article will give an overview of what SSH keys are and describe how to use 
 
 ## About SSH Keys
 
-SSH Keys are small text files meant to be exchanged in lieu of passwords for verifying access to a remote server. An SSH key consists of two parts: a public and a private key. The public key is what resides on the remote server and the private key is stored on your local device. The public key is not a secret but the private key should never be shared with anyone nor uploaded to any untrusted location.
+SSH Keys are small text files meant to be exchanged in lieu of passwords for verifying access to a remote server. A SSH key consists of two parts: a public and a private key. The public key is what resides on the remote server and the private key is stored on your local device. The public key is not a secret but the private key should never be shared with anyone nor uploaded to any untrusted location.
 
 Using SSH keys is more secure than passwords as they are more difficult to crack compared to typical passwords. For example, using standard computing power it may take over a million years to crack an SSH key, but a standard password will take far less time to compromise. Additionally, SSH keys are more convenient as you don’t have to type your password in each time you want to connect to a remote server.
 
@@ -30,7 +30,7 @@ In the above example we see that there is a default key named `id_rsa`. The defa
 
 Blink creates a default key named `id_rsa`. If you wish to create another key, please give a descriptive name of your choosing. As a suggestion, if you are going to generate a specific key pair for access to a specific server, we would recommend naming the key the hostname of that server so that's easy to remember in the future.
 
-By default, Blink suggests RSA keys which have been the standard for years. Nowadays other types of keys based on other mathematical problems like elliptic curves are becoming trend. If your server supports it, you can create an ECDSA or Ed25519 key. For RSA keys, a 2048 bit key is probably large enough, but you can even choose a 4096 bit key for extra security if you desire.
+By default, Blink Shell suggests RSA keys which have been the standard for years. Nowadays other types of keys based on other mathematical problems like elliptic curves are becoming a trend. If your server supports it, you can create an ECDSA or Ed25519 key. For RSA keys, a 2048 bit key is probably large enough, but you can even choose a 4096 bit key for extra security if you desire.
 
 If you wish, you may provide a passphrase for your key. This will encrypt the private key so that if it is ever compromised it will not be useable without knowing the passphrase. An SSH connection is still encrypted and secure if you choose not to protect your key, but if you do, you will ensure an extra measure of security. Keep in mind that the encryption of your private key is only as good as the passphrase you choose to use. You can use a website like [How Secure is My Password](https://howsecureismypassword.net/) to determine the strength of your passphrase.
 
@@ -50,7 +50,7 @@ The `identity_file` argument is the name of your SSH key pair. The `user` is the
 
 ## Establishing a Connection Using SSH Keys
 
-There are two different ways to establish a connection to a remote server - via SSH or via Mosh. SSH will work in all cases, but if mosh is available it is preferred for mobile devices or internet/network connections that may encounter high latency or frequent disconnects.
+There are two different ways to establish a connection to a remote server - via SSH or via Mosh. SSH will work in all cases, but if Mosh is available it is preferred for mobile devices or internet/network connections that may encounter high latency or frequent disconnects.
 
 To connect via SSH:
 
@@ -64,7 +64,7 @@ In this example, an SSH connection is established with the username user to the 
 ssh -i your_key myhost
 ```
 
-In the above example, the key `your_key` is used to connect to the pre-defined host `myhost`. You can add pre-defined hosts in the Hosts section of the application, as discussed [here](link to the document).
+In the above example, the key `your_key` is used to connect to the pre-defined host `myhost`. You can add pre-defined hosts in the Hosts section of the application. 
 
 To connect with Mosh, the syntax is mostly the same:
 

@@ -2,13 +2,13 @@
 
 ## Introduction
 
-Mosh, a portmanteau word for mobile shell, is a terminal connection program that facilitates persisten shell sessions in less-than-ideal network situations. If you have a low-bandwidth or intermittent connectino, switch between multiple devices or ISPs or even use devices with sporadic Internet access you will be able to maintain consistent shell sessions with Mosh.
+Mosh, a portmanteau word for mobile shell, is a terminal connection program that facilitates persistent shell sessions in less-than-ideal network situations. If you have a low-bandwidth or intermittent connection, switch between multiple devices or ISPs or even use devices with sporadic Internet access you will be able to maintain consistent shell sessions with Mosh.
 
 Mosh accomplishes this feat by using the UDP-based state-synchronization protocol ([SSP](https://en.wikipedia.org/wiki/Mosh_(software)#Roaming)), which isn't bound to a particular network connection. SSP keeps the client and server in sync, while predictive local echo can "guess" what will be displayed after the user presses a key. This approach reduces input latency and transfers fewer bytes of data over the wire.
 
 Mosh isn't just for mobile devices. Ever have to connect to a SSH server in another continent? Sometimes the input latency is so high on international SSH connections that editing files and typing on the command line can be a frustrating experience. Mosh can significantly decrease your latency and improve your worldwide server connections.
 
-Mosh runs as the user and doesn't need root access so if the process were somehow compromised the damage would be contained to the user and the system's administrative account would be spared. SSH still governs the authetication process, so your standard authentication methods such as SSH keys and passwords are still useable. Once connected, Mosh takes over the connection.
+Mosh runs as the user and doesn't need root access so if the process were somehow compromised the damage would be contained to the user and the system's administrative account would be spared. SSH still governs the authentication process, so your standard authentication methods such as SSH keys and passwords are still useable. Once connected, Mosh takes over the connection.
 
 ## Installing Mosh
 
@@ -62,7 +62,7 @@ Due to Mosh's predictive local echo and unique transmission methods it cannot ma
 
 ## A World About Firewalls and Ports
 
-Most system administrators open port `22` via TCP to SSH. Since Mosh uses UDP, you'll need to open UDP ports `60000` through `61000` for the SSP packets. This range opens one thousand ports which is more than enough but. If you only plan to make a few Mosh connections you can enable a smaller range, for example `60000` through `60005`,  that leaves room for five simultaneous sessions. You can also specify the UDP port with the `-p` option on the `mosh` command if you wish yo use an entirely different range.
+Most system administrators open port `22` via TCP to SSH. Since Mosh uses UDP, you'll need to open UDP ports `60000` through `61000` for the SSP packets. This range opens one thousand ports which is more than enough but, if you only plan to make a few Mosh connections you can enable a smaller range, for example ports `60000` through `60005`,  that leaves room for five simultaneous sessions. You can also specify the UDP port with the `-p` option on the `mosh` command if you wish to use an entirely different range.
 
 If SSH runs on a different port than the default you'll need to invoke Mosh with a custom SSH argument like this:
 
@@ -78,4 +78,4 @@ Mosh has no concepts of SSH tunnels or bastion hosts but you can run a SSH tunne
 
 ## The Bleeding Edge of Mosh
 
-Blink has additional support for new Mosh features like TrueColor rendering and remote clipboard. Some of these features are not supported in the older Mosh versions that may be installed on your servers. If that's the case, you can uninstall Mosh via your package manager or compile it and install it from source. Please see this [link](https://mosh.org) for more information.
+Blink has additional support for new Mosh features like TrueColor rendering and remote clipboard. Some of these features are not supported in older versions of Mosh versions that may be installed on your servers. If that's the case, you can uninstall Mosh via your package manager or compile it and install it from source. Please see this [link](https://mosh.org) for more information.

@@ -2,7 +2,7 @@
 
 ## Introduction to Blink
 
-Blink is a shell that allows you to connect to remote machines, use mosh and has full SSH support. You can use it to connect to other servers, interface with your Raspberry Pi or even write code! The shell is ready to go, blinking with anticipation as you discover its potential.
+Blink is a shell that allows you to connect to remote machines, use Mosh and has full SSH support. You can use it to connect to other servers, interface with your Raspberry Pi or even write code! The shell is ready to go, blinking with anticipation as you discover its potential.
 
 ## Using Blink Shell
 
@@ -26,7 +26,7 @@ You can use a variety of finger gestures with Blink Shell. To create a new shell
 
 ## Blink Shell Keyboard Shortcuts
 
-Blink Shell can also be easily used with keyboard shortcuts along with the finger gestures mentioned before. If you have an external keyboard attached or connected via Bluetooth press and hold the `Cmd` key to see the available shortcuts.
+Blink Shell can also be easily used with keyboard shortcuts along with the finger gestures mentioned before. If you have an external keyboard attached or connected via Bluetooth press and hold the `CMD` ⌘ key to see the available shortcuts.
 
 ![img](navigation/navigating-blink-shell-image3.png)
 
@@ -48,9 +48,9 @@ SmartKeys provide special keys to use in your terminal session. They are hidden 
 
 To open the configuration section, type `config` within Blink Shell or press `⌘-,`. In the configuration section, you can configure the following:
 
-- Hosts: Create hosts in your `~/.ssh/config` and access them just with the hostname. [More info](../basics/hosts.md).
-- Keys: Create SSH key pairs for enhanced security and password-less convenience when accessing your servers. [More info](../basics/ssh-keys.md).
-- Appearance: Personalize the terminal to your tastes. You can change themes, fonts, or even upload your own.
+- **Hosts**: Create hosts in your `~/.ssh/config` and access them just with the hostname. [More info](../basics/hosts).
+- **Keys**: Create SSH key pairs for enhanced security and password-less convenience when accessing your servers. [More info](../basics/ssh-keys).
+- **Appearance**: Personalize the terminal to your taste. You can change themes, fonts, or even upload your own.
 
 ## Support and Community
 

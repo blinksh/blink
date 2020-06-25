@@ -2,7 +2,7 @@
 
 ## Overview
 
-The purpose of this guide is to show you how to pre-configure hosts for simpler and more secure access. It is time consuming to type the same IP address, username and possibly password repeatedly, so we added the Hosts feature in Blink to allow this data to be saved for easier use.
+The purpose of this guide is to show you how to pre-configure hosts for a simpler and more secure access. It is time consuming to type the same IP address, username and possibly password repeatedly, so we added the Hosts feature in Blink to allow this data to be saved for easier use.
 
 ## Adding a Host
 
@@ -32,7 +32,7 @@ This is the username to connect with on the remote host.
 
 ### Password
 
-If using password-based authentication, enter the password here. If you leave this blank and you don’t have a key for this host you will be prompted for the password each time you connect. If you choose to save a password, it is stored securely in the iOS secure enclave.
+If using password-based authentication, enter the password here. If you leave this blank and you don’t have a key for this host you will be prompted for the password each time you connect. If you choose to save a password, it is stored securely in the iOS Secure Enclave.
 
 ### Keys
 
@@ -44,7 +44,7 @@ If you wish to use Mosh, you will have to supply additional parameters.
 
 #### Server
 
-The route for the `mosh-server` command on the destination server. In most cases this will be `/usr/bin/mosh-server` but on some remote systems, like macOS, the binary may be located in `/opt/bin/mosh-server`. You can check if on the server using the `which` command as shown below,
+The route for the `mosh-server` command on the destination server. In most cases this will be `/usr/bin/mosh-server` but on some remote systems, like macOS, the binary may be located in `/opt/bin/mosh-server`. You can check where is it located on the server using the `which` command as shown below,
 
 ```bash
 which mosh-server
@@ -62,7 +62,7 @@ When you are finished with the parameters tap Save.
 
 ## Changing or Deleting Host
 
-If you wish to change a host, tap on it in the hosts lists. If you wish to delete a host, slide to remove it.
+If you wish to change a host, tap on it in the hosts lists. Alternatively, to delete a host slide to remove it.
 
 ![img](hosts/create-access-host-image4.png)
 
