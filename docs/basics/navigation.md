@@ -48,8 +48,8 @@ SmartKeys provide special keys to use in your terminal session. They are hidden 
 
 To open the configuration section, type `config` within Blink Shell or press `⌘-,`. In the configuration section, you can configure the following:
 
-- **Hosts**: Create hosts in your `~/.ssh/config` and access them just with the hostname. [More info](../basics/hosts).
-- **Keys**: Create SSH key pairs for enhanced security and password-less convenience when accessing your servers. [More info](../basics/ssh-keys).
+- **Hosts**: Create hosts in your `~/.ssh/config` and access them just with the hostname. [More info](../basics/hosts.md).
+- **Keys**: Create SSH key pairs for enhanced security and password-less convenience when accessing your servers. [More info](../basics/ssh-keys.md).
 - **Appearance**: Personalize the terminal to your taste. You can change themes, fonts, or even upload your own.
 
 ## Support and Community
