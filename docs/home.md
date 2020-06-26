@@ -1,1 +1,1 @@
-Welcome to the blink wiki!
+Welcome to the Blink Shell wiki!
