@@ -40,7 +40,7 @@ In the above example, a connection will be attempted to `11.22.33.44` using the 
 
 Mosh is a mobile remote shell that is better suited for mobile use. It allows for roaming and supports the intermittent connectivity that is commonly found on mobile devices.
 
-Mosh has its own detailed set of arguments, however, for most common uses you’ll use a syntax similar to the `ssh` command:
+Mosh has its own detailed set of arguments, however, for most common uses you’ll use a syntax similar to the ssh command:
 
 ```bash
 mosh user@host
@@ -50,7 +50,7 @@ If you type `mosh` without any arguments you will see a full list of available o
 
 ![img](overview/command-blink-image3.png)
 
-You can configure most Mosh options, including the startup command, in your host configuration. For more information, please see “Create and Access Hosts Using Blink Shell”.
+You can configure most Mosh options, including the startup command, in your host configuration. For more information, please see [“Create and Access Hosts Using Blink Shell”](../basics/hosts.md).
 
 An example of using Mosh in Blink Shell would be:
 
