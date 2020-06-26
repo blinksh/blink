@@ -26,7 +26,7 @@ ssh user@host
 
 Where `user` is the username you wish to use, and `host` is the hostname (or IP address) of the remote machine to connect to. If you type `ssh` by itself you’ll see a simple usage guide that explains the other optional parameters:
 
-![img](overview/command-blink-image2.jpg)
+![img](overview/command-blink-image2.png)
 
 The most common parameters you may need to specify are the port, identify file, and adjust the verbosity to debug connection issues.
 
@@ -48,7 +48,7 @@ mosh user@host
 
 If you type `mosh` without any arguments you will see a full list of available options:
 
-![img](overview/command-blink-image3.jpg)
+![img](overview/command-blink-image3.png)
 
 You can configure most Mosh options, including the startup command, in your host configuration. For more information, please see “Create and Access Hosts Using Blink Shell”.
 
@@ -74,7 +74,7 @@ ssh-copy-id identity_file user@host
 
 Where `identity_file` is the name of the SSH key you wish to copy, `user` is the username on the remote server, and `host` is the hostname or IP address of the server in question.
 
-![img](overview/command-blink-image4.jpg)
+![img](overview/command-blink-image4.png)
 
 It should be noted that this command will require you to either have another key on the server or the password. If you aren’t being presented with a password prompt, please check on the remote server that SSH password authentication is turned on. Though SSH keys are more secure, it may be helpful to temporarily turn on password authentication so that you can copy your key to the machine.
 
