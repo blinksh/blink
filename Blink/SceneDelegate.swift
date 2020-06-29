@@ -91,6 +91,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
+
+  /// Handle opened URL schemes for iOS devices that are over iOS 13
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    
+    if let sshUrlScheme = URLContexts.first(where: { $0.url.absoluteString.starts(with: "ssh://")})?.url {
+      dump(sshUrlScheme)
+      
+      var sshCommand = "ssh"
+      
+      if let port = sshUrlScheme.port {
+        sshCommand += " -p \(port)"
+      }
+      
+      if let username = sshUrlScheme.user {
+        sshCommand += " \(username)@"
+      }
+      
+      if let host = sshUrlScheme.host {
+        sshCommand += "\(host)"
+      }
+      
+      dump(sshCommand)
+      
+      let spCtrl = _spCtrl
+      
+      guard let term = spCtrl.currentTerm() else {
+        return
+      }
+      
+      term.termDevice.write(sshCommand)
+    }
+  }
+  
   func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
