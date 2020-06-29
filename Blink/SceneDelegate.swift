@@ -118,7 +118,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         return
       }
       
-      // A SSH/mosh connection is open
+      spCtrl.focusOnShellAction()
+      
+      // If SSH/mosh connection is already open in the current terminal shell
+      // create a new one and then write the SSH command
       if term.isRunningCmd() {
         
         spCtrl.newShellAction()
