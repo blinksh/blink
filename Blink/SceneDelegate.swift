@@ -112,15 +112,28 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         sshCommand += "\(host)"
       }
       
-      dump(sshCommand)
-      
       let spCtrl = _spCtrl
       
       guard let term = spCtrl.currentTerm() else {
         return
       }
       
-      term.termDevice.write(sshCommand)
+      // A SSH/mosh connection is open
+      if term.isRunningCmd() {
+        
+        spCtrl.newShellAction()
+        
+        guard let term = spCtrl.currentTerm() else {
+          return
+        }
+        
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+          term.termDevice.write(sshCommand)
+        }
+        
+      } else {
+          term.termDevice.write(sshCommand)
+      }
     }
   }
   
