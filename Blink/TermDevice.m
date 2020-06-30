@@ -358,12 +358,6 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 - (void)focus {
   [_view focus];
   [_delegate deviceFocused];
-//  dispatch_async(dispatch_get_main_queue(), ^{
-//    if (![_input isFirstResponder]) {
-//      [_input becomeFirstResponder];
-//    }
-//  });
-  
 }
 
 - (void)blur {
@@ -372,6 +366,10 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
 
 
 #pragma mark - TermViewDeviceProtocol
+
+- (void)viewNotify:(NSDictionary *)data {
+  [_delegate viewNotify:data];
+}
 
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request {
   [_delegate apiCall:api andRequest:request];

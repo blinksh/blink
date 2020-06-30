@@ -38,9 +38,9 @@ NSString *_encodeString(NSString *str)
   return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
-NSString *term_init()
+NSString *term_init(BOOL accessibilityEnabled)
 {
-  return @"term_init();";
+  return [NSString stringWithFormat:@"term_init(%@);", accessibilityEnabled ? @"true" : @"false" ];
 }
 
 NSString *term_write(NSString *data) {
@@ -159,12 +159,6 @@ NSString *term_cleanSelection()
 NSString *term_modifySelection(NSString *direction, NSString *granularity)
 {
   return [NSString stringWithFormat:@"term_modifySelection(%@, %@);", _encodeString(direction), _encodeString(granularity)];
-}
-
-NSString *term_setIme(NSString *imeText)
-{
-  NSString *str = _encodeString(imeText);
-  return [NSString stringWithFormat:@"term_setIme(%@);", str];
 }
 
 NSString *term_modifySideSelection()

@@ -36,11 +36,16 @@
 #import "BKPubKey.h"
 #import "BKHosts.h"
 #import <ios_system/ios_system.h>
+#import <UserNotifications/UserNotifications.h>
 #include <libssh/callbacks.h>
 #include "xcall.h"
 #include "Blink-Swift.h"
 
+
 @import CloudKit;
+
+@interface AppDelegate () <UNUserNotificationCenterDelegate>
+@end
 
 @implementation AppDelegate {
   NSTimer *_suspendTimer;
@@ -97,6 +102,8 @@ void __setupProcessEnv() {
   [nc addObserver:self
          selector: @selector(_onScreenConnect)
              name:UIScreenDidConnectNotification object:nil];
+  
+  [UNUserNotificationCenter currentNotificationCenter].delegate = self;
   
 //  [nc addObserver:self selector:@selector(_logEvent:) name:nil object:nil];
 //  [nc addObserver:self selector:@selector(_active) name:@"UIApplicationSystemNavigationActionChangedNotification" object:nil];
@@ -174,6 +181,13 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application continueUserActivity:(NSUserActivity *)userActivity restorationHandler:(void (^)(NSArray * _Nullable))restorationHandler
 {
+  return YES;
+}
+
+- (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
+  if ([extensionPointIdentifier isEqualToString: UIApplicationKeyboardExtensionPointIdentifier]) {
+    return ![BKDefaults disableCustomKeyboards];
+  }
   return YES;
 }
 
@@ -299,7 +313,10 @@ void __setupProcessEnv() {
 #pragma mark - Scenes
 
 - (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
+  
+  
   return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
+  
 }
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
@@ -326,6 +343,23 @@ void __setupProcessEnv() {
 
 - (void)_onScreenConnect {
   [BKDefaults applyExternalScreenCompensation:BKDefaults.overscanCompensation];
+}
+
+#pragma mark - UNUserNotificationCenterDelegate
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center willPresentNotification:(UNNotification *)notification withCompletionHandler:(void (^)(UNNotificationPresentationOptions))completionHandler {
+  UNNotificationPresentationOptions opts = UNNotificationPresentationOptionSound | UNNotificationPresentationOptionAlert | UNNotificationPresentationOptionBadge;
+  completionHandler(opts);
+}
+
+- (void)userNotificationCenter:(UNUserNotificationCenter *)center didReceiveNotificationResponse:(UNNotificationResponse *)response withCompletionHandler:(void (^)(void))completionHandler {
+  SceneDelegate *sceneDelegate = (SceneDelegate *)response.targetScene.delegate;
+  
+  SpaceController *ctrl = sceneDelegate.spaceController;
+  
+  [ctrl moveToShellWithKey:response.notification.request.content.threadIdentifier];
+  
+  completionHandler();
 }
 
 @end

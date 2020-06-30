@@ -247,8 +247,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
          .commandLeft: return 1
     case .shiftRight,
          .controlRight,
-         .optionRight: return 2
-    case .commandRight: return 0
+         .optionRight,
+         .commandRight: return 2
     default: return 0
     }
   }

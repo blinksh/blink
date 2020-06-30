@@ -59,12 +59,3 @@ struct DefaultRow<Details: View>: View {
     }, details: self.details)
   }
 }
-
-
-struct DefaultRow_Previews: PreviewProvider {
-  static var previews: some View {
-    DefaultRow(title: .constant("Title"), description: .constant("Description")) {
-      EmptyView()
-    }
-  }
-}

@@ -148,6 +148,7 @@
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
 		D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */; };
+		D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */; };
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
 		D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D28F301921AD8A6B00E5259F /* DeviceInfo.m */; };
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
@@ -225,14 +226,13 @@
 		D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440E238E44AB0082C69C /* KBWebView.swift */; };
 		D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C2440F238E44AB0082C69C /* KBWebViewBase.m */; };
 		D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */; };
-		D2C24428238E44CD0082C69C /* kb.js in Resources */ = {isa = PBXBuildFile; fileRef = D2C24426238E44CC0082C69C /* kb.js */; };
-		D2C24429238E44CD0082C69C /* kb.html in Resources */ = {isa = PBXBuildFile; fileRef = D2C24427238E44CC0082C69C /* kb.html */; };
 		D2C2442F238E62A70082C69C /* KBSettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */; };
 		D2C244332390FB830082C69C /* KeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244322390FB830082C69C /* KeyBinding.swift */; };
 		D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244342390FEEF0082C69C /* KeyBindingAction.swift */; };
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
+		D2CF27292428A791009885ED /* KBTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF27282428A791009885ED /* KBTracker.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D75EDF21AFDA10007336B6 /* LayoutManager.m */; };
 		D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */; };
@@ -555,6 +555,7 @@
 		D27BBA1B20529FFF00AEA303 /* TermStream.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermStream.m; sourceTree = "<group>"; };
 		D2887A5522DC676F00701BD5 /* SpaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceController.swift; sourceTree = "<group>"; };
 		D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+UIScene.swift"; sourceTree = "<group>"; };
 		D28DB3AB210B110B008A1139 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		D28F301821AD8A6B00E5259F /* DeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		D28F301921AD8A6B00E5259F /* DeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfo.m; sourceTree = "<group>"; };
@@ -651,14 +652,13 @@
 		D2C2440E238E44AB0082C69C /* KBWebView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBWebView.swift; sourceTree = "<group>"; };
 		D2C2440F238E44AB0082C69C /* KBWebViewBase.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = KBWebViewBase.m; sourceTree = "<group>"; };
 		D2C24410238E44AB0082C69C /* KeyModifierPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyModifierPicker.swift; sourceTree = "<group>"; };
-		D2C24426238E44CC0082C69C /* kb.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; name = kb.js; path = KB/JS/dist/kb.js; sourceTree = SOURCE_ROOT; };
-		D2C24427238E44CC0082C69C /* kb.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = kb.html; path = KB/JS/dist/kb.html; sourceTree = SOURCE_ROOT; };
 		D2C2442E238E62A70082C69C /* KBSettingsViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBSettingsViewController.swift; sourceTree = "<group>"; };
 		D2C244322390FB830082C69C /* KeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBinding.swift; sourceTree = "<group>"; };
 		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
+		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
 		D2D75EDE21AFDA10007336B6 /* LayoutManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
@@ -769,6 +769,7 @@
 				D2499BEB2362EFD40009C701 /* cpp.cpp */,
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
+				D2CF27282428A791009885ED /* KBTracker.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -776,8 +777,6 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D2C24427238E44CC0082C69C /* kb.html */,
-				D2C24426238E44CC0082C69C /* kb.js */,
 				D21A3FC521943BE200269705 /* DarkAppIcon */,
 				D29FE548208DC860004679D0 /* commandDictionary.plist */,
 				D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */,
@@ -1251,6 +1250,7 @@
 				D23D258723438B15002850CA /* UIColor.swift */,
 				D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */,
 				D2AB611D23AB5ACD00BE6585 /* UIApplication+Version.m */,
+				D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */,
 			);
 			path = UIKit;
 			sourceTree = "<group>";
@@ -1579,7 +1579,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2C24429238E44CD0082C69C /* kb.html in Resources */,
 				D21A3FE321943BE200269705 /* dark-notification-ipad-20pt@2x.png in Resources */,
 				07E3AED31D919272007BC086 /* css in Resources */,
 				D21A3FDD21943BE200269705 /* dark-settings-iphone-29pt@2x.png in Resources */,
@@ -1588,7 +1587,6 @@
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
-				D2C24428238E44CD0082C69C /* kb.js in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				D296199B214F995D0070935A /* ge25519_base.data in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
@@ -1677,6 +1675,7 @@
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
 				D2F330D420A6F1DF0074ADD7 /* clear.m in Sources */,
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
+				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				D29619AF214FB5EA0070935A /* ssh-ecdsa.c in Sources */,
@@ -1711,6 +1710,7 @@
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2961983214F968A0070935A /* cipher.c in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
+				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
@@ -2018,7 +2018,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 210;
+				CURRENT_PROJECT_VERSION = 238;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
@@ -2042,7 +2042,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 13.2.1;
+				MARKETING_VERSION = 13.5.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
@@ -2063,7 +2063,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 210;
+				CURRENT_PROJECT_VERSION = 238;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				ENABLE_BITCODE = NO;
@@ -2083,7 +2083,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 13.2.1;
+				MARKETING_VERSION = 13.5.2;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;

@@ -41,7 +41,7 @@ struct NavButton<Details: View>: View {
       let rootView = self.details().environmentObject(self.nav)
       let vc = UIHostingController(rootView: rootView)
       self.nav.navController.pushViewController(vc, animated: true)
-    }, label: { EmptyView() })
+      }, label: { EmptyView() })
   }
 }
 

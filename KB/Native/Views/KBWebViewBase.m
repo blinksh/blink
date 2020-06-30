@@ -32,6 +32,7 @@
 
 #import "KBWebViewBase.h"
 
+
 NSString *_encodeString(NSString *str);
 
 @interface KeyCommand: UIKeyCommand
@@ -58,6 +59,7 @@ NSString *_encodeString(NSString *str);
   NSArray<UIKeyCommand *> *_keyCommands;
   NSString *_jsPath;
   NSString *_interopName;
+  BOOL _focused;
   
   KeyCommand *_activeModsCommand;
   NSArray<KeyCommand *> *_imeGuardCommands;
@@ -70,13 +72,19 @@ NSString *_encodeString(NSString *str);
   return cmd;
 }
 
-- (instancetype)initWithFrame:(CGRect)frame
+- ( UIView * _Nullable )selectionView {
+  return [self.scrollView.subviews.firstObject valueForKeyPath:@"interactionAssistant.selectionView"];
+}
+
+
+- (instancetype)initWithFrame:(CGRect)frame configuration:(WKWebViewConfiguration *)configuration
 {
-  self = [super initWithFrame:frame];
+  self = [super initWithFrame:frame configuration:configuration];
   if (self) {
     _keyCommands = @[];
     _jsPath = @"_onKB";
     _interopName = @"_kb";
+    _focused = YES;
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
     self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
 //    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
@@ -100,9 +108,9 @@ NSString *_encodeString(NSString *str);
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
 //  return YES;
 //}
-
+//
 //- (BOOL)_requiresKeyboardResetOnReload {
-//  return NO;
+//  return YES;
 //}
 
 //- (BOOL)_becomeFirstResponderWhenPossible {
@@ -188,18 +196,35 @@ NSString *_encodeString(NSString *str);
 }
 
 - (id)_inputDelegate { return self; }
-- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info { return 1; }
+- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info {
+  if (self.userInteractionEnabled) {
+    return _focused ? 1 : 0;
+  }
+  return 0;
+}
+
+- (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {
+  return YES;
+}
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
-  [self report:@"focus" arg:res ? @"true" : @"false"];
+  if (res) {
+    [self reportFocus:YES];
+  }
   return res;
+}
+
+- (void)reportFocus:(BOOL) value {
+  _focused = value;
+  [self report:@"focus" arg:value ? @"true" : @"false"];
 }
 
 - (BOOL)resignFirstResponder {
   BOOL res = [super resignFirstResponder];
-  // leave textfield focused
-  // [self report:@"focus" arg: res ? @"false" : @"true"];
+  if (res) {
+    [self reportFocus:NO];
+  }
   return res;
 }
 
@@ -219,6 +244,7 @@ NSString *_encodeString(NSString *str);
       @selector(toggleFontPanel:) == action ||
       @selector(select:) == action ||
       @selector(selectAll:) == action ||
+      @selector(_share:) == action ||
       @selector(toggleUnderline:) == action) {
     return NO;
   }

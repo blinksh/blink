@@ -48,46 +48,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@implementation BKWebView
-
-- (BOOL)canResignFirstResponder
-{
-  return NO;
-}
-
-- (BOOL)becomeFirstResponder
-{
-  return NO;
-}
-
-//- (BOOL)canBecomeFirstResponder {
-//  return NO;
-//}
-
-- (void)_keyboardDidChangeFrame:(id)sender
-{
-}
-
-- (void)_keyboardWillChangeFrame:(id)sender
-{
-}
-
-- (void)_keyboardWillShow:(id)sender
-{
-}
-
-- (void)_keyboardWillHide:(id)sender
-{
-}
-
-
-@end
-
 @interface TermView () <WKScriptMessageHandler>
 @end
 
 @implementation TermView {
-  WKWebView *_webView;
   WKWebViewGesturesInteraction *_gestureInteraction;
   
   BOOL _jsIsBusy;
@@ -98,6 +62,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSTimer *_layoutDebounceTimer;
   
   UIView *_coverView;
+  UIView *_parentScrollView;
 }
 
 
@@ -119,7 +84,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self addSubview:_coverView];
   _coverView.backgroundColor = [UIColor blackColor];
   
-
   return self;
 }
 
@@ -182,6 +146,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return NO;
 }
 
+- (void)setUserInteractionEnabled:(BOOL)userInteractionEnabled {
+  [super setUserInteractionEnabled:userInteractionEnabled];
+  [_webView setUserInteractionEnabled:userInteractionEnabled];
+}
+
 - (void)_addWebView
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
@@ -189,7 +158,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
-  _webView = [[BKWebView alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
@@ -279,7 +248,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)focus {
   _gestureInteraction.focused = YES;
-  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
+//  [_webView evaluateJavaScript:term_focus() completionHandler:nil];
+}
+
+- (void)blur {
+  _gestureInteraction.focused = NO;
+//  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
 }
 
 - (void)reportTouchInPoint:(CGPoint)point
@@ -287,11 +261,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_reportTouchInPoint(point) completionHandler:nil];
 }
 
-- (void)blur
-{
-  _gestureInteraction.focused = NO;
-  [_webView evaluateJavaScript:term_blur() completionHandler:nil];
-}
 
 - (void)processKB:(NSString *)str {
   [self _evalJSScript: term_processKB(str)];
@@ -381,11 +350,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewSubmitLine:data[@"text"]];
   } else if ([operation isEqualToString:@"api"]) {
     [_device viewAPICall:data[@"name"] andJSONRequest:data[@"request"]];
+  } else if ([operation isEqualToString:@"notify"]) {
+    [_device viewNotify:data];
   }
 }
 
 - (void)_onTerminalReady:(NSDictionary *)data
 {
+  [_webView ready];
   NSArray *bgColor = data[@"bgColor"];
   if (bgColor && bgColor.count == 3) {
     UIColor *color = [UIColor colorWithRed:[bgColor[0] floatValue] / 255.0f
@@ -413,6 +385,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_coverView removeFromSuperview];
     _coverView = nil;
   }];
+  
+  
 }
 
 - (BOOL)isFocused {
@@ -459,10 +433,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   _selectedText = data[@"text"];
   _hasSelection = _selectedText.length > 0;
+  _gestureInteraction.hasSelection = _hasSelection;
   
   [_device viewSelectionChanged];
   
   if (!_hasSelection) {
+    [[UIMenuController sharedMenuController] hideMenu];
     return;
   }
   
@@ -640,7 +616,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   [script addObject:@"};"];
 
-  [script addObject:term_init()];
+  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning())];
 
   return [[WKUserScript alloc] initWithSource:
           [script componentsJoinedByString:@"\n"]
@@ -648,9 +624,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
                              forMainFrameOnly:YES];
 }
 
-- (void)setIme:(NSString *)imeText completionHandler:(void (^ _Nullable)(_Nullable id, NSError * _Nullable error))completionHandler
-{
-  [_webView evaluateJavaScript:term_setIme(imeText) completionHandler:completionHandler];
+- (void)applyTheme:(NSString *)themeName {
+  NSString *themeContent = [[BKTheme withName: themeName ?: [BKDefaults selectedThemeName]] content];
+  if (themeContent) {
+    NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
+    [_webView evaluateJavaScript:script completionHandler:nil];
+  }
 }
 
 - (void)terminate

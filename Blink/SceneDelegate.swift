@@ -33,6 +33,41 @@
 import Foundation
 import SwiftUI
 
+class ExternalWindow: UIWindow {
+  var shadowWindow: UIWindow? = nil
+}
+
+@objc class ShadowWindow: UIWindow {
+  private let _refWindow: UIWindow
+  private let _spCtrl: SpaceController
+  
+  var spaceController: SpaceController { _spCtrl }
+  @objc var refWindow: UIWindow { _refWindow }
+  
+  init(windowScene: UIWindowScene, refWindow: UIWindow, spCtrl: SpaceController) {
+    _refWindow = refWindow
+    _spCtrl = spCtrl
+    
+    super.init(windowScene: windowScene)
+    
+    frame = _refWindow.frame
+    rootViewController = _spCtrl
+    self.clipsToBounds = false
+  }
+  
+  required init?(coder: NSCoder) {
+    fatalError("init(coder:) has not been implemented")
+  }
+  
+  override var frame: CGRect {
+    get { _refWindow.frame }
+    set { super.frame = _refWindow.frame }
+  }
+  
+  
+  @objc static var shared: ShadowWindow? = nil
+}
+
 class DummyVC: UIViewController {
   override var canBecomeFirstResponder: Bool { true }
   override var prefersStatusBarHidden: Bool { true }
@@ -45,27 +80,103 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
   
+  func sceneDidDisconnect(_ scene: UIScene) {
+    if scene == ShadowWindow.shared?.refWindow.windowScene {
+      ShadowWindow.shared?.layer.removeFromSuperlayer()
+      ShadowWindow.shared?.windowScene = nil
+      ShadowWindow.shared = nil
+    } else if scene == ShadowWindow.shared?.windowScene {
+      // We need to move it
+      ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
+    }
+  }
+  
   func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
     options connectionOptions: UIScene.ConnectionOptions)
   {
+    _ = KBTracker.shared
+    
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
     
-    _spCtrl.sceneRole = session.role
+    let conditions = scene.activationConditions
     
-    self.window = UIWindow(windowScene: windowScene)
+    conditions.canActivateForTargetContentIdentifierPredicate = NSPredicate(value: true)
+    conditions.prefersToActivateForTargetContentIdentifierPredicate = NSPredicate(format: "SELF == 'blink://open-scene/\(scene.session.persistentIdentifier)'")
+    
+    _spCtrl.sceneRole = session.role
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
-    window?.rootViewController = _spCtrl
-    window?.makeKeyAndVisible()
+    
+    if session.role == .windowExternalDisplay,
+      let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
+      
+      if BKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
+        return
+      }
+      
+      let window = ExternalWindow(windowScene: windowScene)
+      self.window = window
+    
+      let shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
+      defer { ShadowWindow.shared = shadowWin }
+      
+      window.shadowWindow = shadowWin
+      
+      shadowWin.makeKeyAndVisible()
+      
+      window.rootViewController = UIViewController()
+      window.layer.addSublayer(shadowWin.layer)
+      
+//      window.makeKeyAndVisible()
+      window.isHidden = false
+      shadowWin.windowLevel = .init(rawValue: UIWindow.Level.normal.rawValue - 1)
+      
+      return
+    }
+    
+    let window = UIWindow(windowScene: windowScene)
+    self.window = window
+    
+    window.rootViewController = _spCtrl
+    window.isHidden = false
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
+    
     guard let window = window else {
       return
     }
+    
+    if (scene.session.role == .windowExternalDisplay) {
+      if LocalAuth.shared.lockRequired {
+        if let lockCtrl = _lockCtrl {
+          if window.rootViewController != lockCtrl {
+            window.rootViewController = lockCtrl
+          }
+          
+          return
+        }
+
+        
+        _lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
+        window.rootViewController = _lockCtrl
+        return
+      }
+      if window.rootViewController == _lockCtrl {
+        window.rootViewController = UIViewController()
+      }
+      _lockCtrl = nil
+      
+      if let shadowWin = ShadowWindow.shared {
+        window.layer.addSublayer(shadowWin.layer)
+      }
+      
+      return
+    }
+    
     
     // 1. Local Auth AutoLock Check
     
@@ -91,6 +202,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _lockCtrl = nil
     LocalAuth.shared.stopTrackTime()
     
+    if let shadowWindow = ShadowWindow.shared,
+      shadowWindow.windowScene == scene,
+      let refScene = shadowWindow.refWindow.windowScene {
+      ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
+    }
+    
     // 2. Set space controller back and refresh layout
     
     let spCtrl = _spCtrl
@@ -113,12 +230,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // 3. Stuck Key Check
     
-    let input = SmarterTermInput.shared
-    if let key = input.stuckKey() {
+    let input = KBTracker.shared.input
+    if let key = input?.stuckKey() {
       debugPrint("BK:", "stuck!!!")
-      input.setTrackingModifierFlags([])
+      input?.setTrackingModifierFlags([])
       
-      if input.isHardwareKB && key == .commandLeft {
+      if input?.isHardwareKB == true && key == .commandLeft {
         let ctrl = UIHostingController(rootView: StuckView(keyCode: key, dismissAction: {
           spCtrl.onStuckOpCommand()
         }))
@@ -135,12 +252,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // 4. Focus Check
     
+    if input == nil {
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if KBTracker.shared.input == nil {
+          window.makeKey()
+          spCtrl.focusOnShellAction()
+          KBTracker.shared.input?.reportFocus(true)
+        }
+      }
+      return
+    }
+    
     if term.termDevice.view?.isFocused() == false,
-      !input.isRealFirstResponder,
-      input.window === window {
+      input?.isRealFirstResponder == false,
+      input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
-          !input.isRealFirstResponder {
+          input?.isRealFirstResponder == false {
           spCtrl.focusOnShellAction()
         }
       }
@@ -148,7 +276,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
-    if input.window === window {
+    if input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
           term.termDevice.view?.isFocused() == false {
@@ -159,7 +287,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
-    SmarterTermInput.shared.reportStateReset()
+    input?.reportStateReset()
   }
   
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
@@ -176,5 +304,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     window?.rootViewController = _ctrl
     _ctrl.view.addSubview(_spCtrl.view)
   }
+  
+  @objc var spaceController: SpaceController { _spCtrl }
 
 }

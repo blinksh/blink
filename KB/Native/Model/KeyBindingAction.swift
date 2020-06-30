@@ -109,7 +109,7 @@ enum KeyBindingAction: Codable, Identifiable {
   
   var id: String {
     switch self {
-    case .hex(let str): return "hex-\(str)"
+    case .hex(let str, _): return "hex-\(str)"
     case .press(let keyCode, let mods): return "press-\(keyCode.id)-\(mods)"
     case .command(let cmd): return "cmd-\(cmd)"
     case .none: return "none"
@@ -119,6 +119,14 @@ enum KeyBindingAction: Codable, Identifiable {
   var isCommand: Bool {
     switch self {
     case .command: return true
+    default: return false
+    }
+  }
+  
+  var isCustomHEX: Bool {
+    switch self {
+    case .hex(_, comment: let comment):
+      return comment == nil
     default: return false
     }
   }
@@ -151,6 +159,10 @@ enum KeyBindingAction: Codable, Identifiable {
       .hex("3C", comment: "Press <"),
       .hex("3E", comment: "Press >"),
       .hex("A7", comment: "Press §"),
+      .hex("B1", comment: "Press ±"),
+      .hex("7E", comment: "Press ~"),
+      .hex("7C", comment: "Press |"),
+      .hex("5C", comment: "Press \\"),
     ]
   }
   
@@ -161,13 +173,29 @@ enum KeyBindingAction: Codable, Identifiable {
   var title: String {
     switch self {
     case .hex(let str, comment: let comment):
-      return comment ?? "Hex: (\(str))"
+      return comment ?? "Hex: \(str)"
     case .press(let keyCode, let mods):
       var sym = UIKeyModifierFlags(rawValue: mods).toSymbols()
       sym += keyCode.symbol
       return "Press \(sym)"
     case .command(let cmd): return cmd.title
     case .none: return "none"
+    }
+  }
+  
+  var titleWithoutValue: String {
+    switch self {
+    case .hex(_, comment: let comment):
+      return comment ?? "Send Hex Code"
+    default: return title
+    }
+  }
+  
+  var hexValue: String {
+    switch self {
+    case .hex(let str, comment: _):
+      return str
+    default: return ""
     }
   }
   

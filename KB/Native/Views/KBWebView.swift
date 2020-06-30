@@ -41,6 +41,7 @@ class KBWebView: KBWebViewBase {
   private var _loaded = false
   private(set) var webViewReady = false
   private(set) var blinkKeyCommands: [BlinkCommand] = []
+  private var _grabsCtrlSpace = false
   
   func configure(_ cfg: KBConfig) {
     _buildCommands(cfg)
@@ -66,6 +67,8 @@ class KBWebView: KBWebViewBase {
       cmd.bindingAction = shortcut.action
       return cmd
     }
+    
+    _grabsCtrlSpace = matchCommand(input: " ", flags: [UIKeyModifierFlags.control]) != nil
   }
   
   func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
@@ -87,6 +90,22 @@ class KBWebView: KBWebViewBase {
     return result
   }
   
+  override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
+    guard
+      _grabsCtrlSpace,
+      let key = presses.first?.key,
+      key.keyCode == .keyboardSpacebar,
+      key.modifierFlags.contains(.control),
+      let (cmd, responder) = matchCommand(input: " ", flags: key.modifierFlags),
+      let action = cmd.action
+    else {
+      super.pressesBegan(presses, with: event)
+      return
+    }
+    
+    responder.perform(action, with: cmd)
+  }
+  
   func contentView() -> UIView? {
     scrollView.subviews.first
   }
@@ -102,45 +121,10 @@ class KBWebView: KBWebViewBase {
     NotificationCenter.default.removeObserver(v)
   }
   
-  private func _loadKBConfigData() -> Data? {
-    guard
-      let url = BlinkPaths.blinkKBConfigURL(),
-      let data = try? Data(contentsOf: url)
-    else {
-      return nil
-    }
-    return data
-  }
-  
-  func loadConfig() -> KBConfig {
-    guard
-      let data = _loadKBConfigData(),
-      let cfg = try? JSONDecoder().decode(KBConfig.self, from: data)
-    else {
-      return KBConfig()
-    }
-    return cfg;
-  }
-  
-  func saveAndApply(config: KBConfig) {
-    let encoder = JSONEncoder()
-    encoder.outputFormatting = .prettyPrinted
-    guard
-      let url = BlinkPaths.blinkKBConfigURL(),
-      let data = try? encoder.encode(config)
-    else {
-      return
-    }
-    
-    try? data.write(to: url, options: .atomicWrite)
-    configure(config)
-  }
-  
-  
   override func ready() {
     webViewReady = true
     super.ready()
-    configure(loadConfig())
+    configure(KBTracker.shared.loadConfig())
   }
   
   private func _loadKB() {

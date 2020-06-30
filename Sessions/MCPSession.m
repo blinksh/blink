@@ -74,6 +74,18 @@
     _sshClients = [[NSMutableArray alloc] init];
     _sessionUUID = [[NSProcessInfo processInfo] globallyUniqueString];
     _cmdQueue = dispatch_queue_create("mcp.command.queue", DISPATCH_QUEUE_SERIAL);
+    
+    [self setActiveSession];
+//    ios_setMiniRoot([BlinkPaths documents]);
+//    [self updateAllowedPaths];
+//    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
+//    ios_setContext((__bridge void*)self);
+//
+    thread_stdout = nil;
+    thread_stdin = nil;
+    thread_stderr = nil;
+    
+    ios_setStreams(_stream.in, _stream.out, _stream.err);
   }
   
   return self;
@@ -85,8 +97,8 @@
     ios_setMiniRoot([BlinkPaths documents]);
     [self updateAllowedPaths];
     [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
-    ios_setContext((__bridge void*)self);
-    
+//    ios_setContext((__bridge void*)self);
+//    
     thread_stdout = nil;
     thread_stdin = nil;
     thread_stderr = nil;
@@ -127,12 +139,12 @@
   
   [self setActiveSession];
   
-  ios_setContext((__bridge void*)self);
+//  ios_setContext((__bridge void*)self);
   
   thread_stdout = nil;
   thread_stdin = nil;
   thread_stderr = nil;
-  
+
   ios_setStreams(_stream.in, _stream.out, _stream.err);
   
   if ([cmd isEqualToString:@"exit"]) {
@@ -160,6 +172,7 @@
     thread_stderr = nil;
     
     _cmdStream = [_device.stream duplicate];
+    [self setActiveSession];
     ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
     
     setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
@@ -332,6 +345,8 @@
           [_cmdStream closeIn];
           return NO;
         }
+        [self setActiveSession];
+//        ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
         ios_kill();
       }
       return YES;
@@ -347,17 +362,36 @@
   return NO;
 }
 
+
 - (void)setActiveSession {
-  FILE * savedStdOut = stdout;
-  FILE * savedStdErr = stderr;
-  FILE * savedStdIn = stdin;
-  stdout = _cmdStream.out;
-  stderr = _cmdStream.err;
-  stdin = _cmdStream.in;
-  ios_switchSession(_sessionUUID.UTF8String);
-  stdout = savedStdOut;
-  stderr = savedStdErr;
-  stdin = savedStdIn;
+//  thread_stdout = nil;
+//    thread_stdin = nil;
+//    thread_stderr = nil;
+//
+//    FILE * savedStdOut = stdout;
+//    FILE * savedStdErr = stderr;
+//    FILE * savedStdIn = stdin;
+//
+//    if (_cmdStream) {
+//      stdout = _cmdStream.out;
+//      stderr = _cmdStream.err;
+//      stdin = _cmdStream.in;
+//    } else {
+//      stdout = _stream.out;
+//      stderr = _stream.err;
+//      stdin = _stream.in;
+//  //    ios_setStreams(_stream.in, _stream.out, _stream.err);
+//    }
+    
+    ios_switchSession(_sessionUUID.UTF8String);
+    ios_setContext((__bridge void*)self);
+    
+//    stdout = savedStdOut;
+//    stderr = savedStdErr;
+//    stdin = savedStdIn;
+//
+  
+  
 }
 
 

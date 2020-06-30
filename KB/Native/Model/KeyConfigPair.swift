@@ -107,7 +107,13 @@ class KeyConfigPair: ObservableObject, Codable {
   public func encode(to encoder: Encoder) throws {
     var right = self.right
     if bothAsLeft {
-      right = KeyConfig(code: right.code, up: left.up, down: left.down, mod: left.mod)
+      right = KeyConfig(
+        code: right.code,
+        up: left.up,
+        down: left.down,
+        mod: left.mod,
+        ignoreAccents: left.ignoreAccents
+      )
     }
     
     var c = encoder.container(keyedBy: Keys.self)

@@ -30,9 +30,8 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
-import UIKit
 import Combine
+import UserNotifications
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
   // May be do it optional
@@ -46,12 +45,58 @@ import Combine
   func currentTerm() -> TermController!
 }
 
+private class ProxyView: UIView {
+  var controlledView: UIView? = nil
+  private var _cancelable: AnyCancellable? = nil
+  
+  override func willMove(toSuperview newSuperview: UIView?) {
+    super.willMove(toSuperview: newSuperview)
+    if superview == nil {
+      _cancelable = nil
+    }
+  }
+  
+  override func didMoveToSuperview() {
+    super.didMoveToSuperview()
+    
+    guard
+      let parent = superview,
+      let container = parent.superview
+    else {
+      _cancelable = nil
+      return
+    }
+    
+    _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
+      self?.controlledView?.frame = frame
+    }
+    
+    guard let controlledView = controlledView
+    else {
+      return
+    }
+    
+    if
+      let sharedWindow = ShadowWindow.shared,
+      container.window == sharedWindow {
+      
+      sharedWindow.layer.removeFromSuperlayer()
+      container.addSubview(controlledView)
+      sharedWindow.refWindow.layer.addSublayer(sharedWindow.layer)
+      
+    } else {
+      container.addSubview(controlledView)
+    }
+  }
+}
+
 class TermController: UIViewController {
   private let _meta: SessionMeta
   
   private var _termDevice = TermDevice()
   private var _bag = Array<AnyCancellable>()
   private var _termView = TermView(frame: .zero)
+  private var _proxyView = ProxyView(frame: .zero)
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
     
@@ -69,7 +114,7 @@ class TermController: UIViewController {
   private var _fontSizeBeforeScaling: Int? = nil
   
   @objc public var activityKey: String? = nil
-  @objc public var termDevice: TermDevice { get { _termDevice } }
+  @objc public var termDevice: TermDevice { _termDevice }
   @objc weak var delegate: TermControlDelegate? = nil
   @objc var sessionParams: MCPParams { _sessionParams }
   @objc var bgColor: UIColor? {
@@ -86,13 +131,21 @@ class TermController: UIViewController {
   
   convenience init(sceneRole: UISceneSession.Role? = nil) {
     self.init(meta: nil)
-    if sceneRole == UISceneSession.Role.windowExternalDisplay {
+    if sceneRole == .windowExternalDisplay {
       _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  func removeFromContainer() -> Bool {
+    if KBTracker.shared.input == _termView.webView {
+      return false
+    }
+    _proxyView.controlledView?.removeFromSuperview()
+    return true
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -108,7 +161,9 @@ class TermController: UIViewController {
     _termDevice.delegate = self
     _termDevice.attachView(_termView)
     _termView.backgroundColor = _bgColor
-    view = _termView
+    _proxyView.controlledView = _termView;
+    _proxyView.isUserInteractionEnabled = false
+    view = _proxyView
   }
   
   public override func viewDidLoad() {
@@ -154,6 +209,7 @@ class TermController: UIViewController {
     _termView.additionalInsets = LayoutManager.buildSafeInsets(for: self, andMode: layoutMode)
     _termView.layoutLockedFrame = _sessionParams.layoutLockedFrame
     _termView.layoutLocked = _sessionParams.layoutLocked
+    _termView.setNeedsLayout()
   }
   
   public override func viewDidLayoutSubviews() {
@@ -227,6 +283,25 @@ let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
 
 extension TermController: TermDeviceDelegate {
   
+  func viewNotify(_ data: [AnyHashable : Any]!) {
+    let content = UNMutableNotificationContent()
+    content.title = (data["title"] as? String) ?? title ?? "Blink"
+    content.body = (data["body"] as? String) ?? ""
+    content.sound = .default
+    content.threadIdentifier = meta.key.uuidString
+    content.targetContentIdentifier = "blink://open-scene/\(view?.window?.windowScene?.session.persistentIdentifier ?? "")"
+    
+    let req = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+    
+    let center = UNUserNotificationCenter.current()
+    center.requestAuthorization(options: [.alert, .sound, .announcement]) { (granted, error) in
+      if granted {
+        center.add(req, withCompletionHandler: nil)
+      }
+    }
+    
+  }
+  
   func apiCall(_ api: String!, andRequest request: String!) {
     guard
       let api = api,
@@ -245,6 +320,16 @@ extension TermController: TermDeviceDelegate {
   
   public func deviceIsReady() {
     startSession()
+
+    guard
+      let input = KBTracker.shared.input,
+      input == _termDevice.view.webView
+    else {
+      return
+    }
+    _termDevice.attachInput(input)
+    _termDevice.focus()
+    input.reportFocus(true)
   }
   
   public func deviceSizeChanged() {

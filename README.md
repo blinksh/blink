@@ -1,5 +1,5 @@
 # Blink Shell for iOS
-Do Blink! [Blink](http://blink.sh) is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool.
+Do Blink! [Blink](https://blink.sh) is the first professional, desktop-grade terminal for iOS that leverages the support of Mosh and SSH. Thus, we can unequivocally guarantee stable connections, lightning-fast speeds, and full configurations. It can and should be your all-day-long tool.
 
 We did not create another terminal to fix your website on the go. Blink was built as a professional grade product from the onset. We started by analyzing what the must-haves were and we ended up grounding Blink on these three concepts:
 - Fast rendering: dmesg in your Unix server should be instantaneous. We can't wait even a second to render. We didn't need to reinvent the wheel to make this happen. We simply used Chromium's HTerm to ensure that rendering is perfect and fast, even with those special, tricky encodings.
@@ -13,7 +13,7 @@ But, Blink is much more. Please read on:
 - Configure your Blink connections by adding your own Hosts and RSA Encryption keys. Everything will look familiar and you get to work, fast!
 - We've incorporated SplitView, for those necessary Google searches and chats with coworkers.
 
-For more information, please visit [Blink Shell](http://blink.sh).
+For more information, please visit [Blink Shell](https://blink.sh).
 
 # Additions: 
 
@@ -63,7 +63,7 @@ setenv SSL_CERT_FILE = $HOME/Documents/cacert.pem
 If you want to change them permanently, it's probably best to edit `MCPSession.m`.
 
 # Obtaining Blink
-Blink is available now on the [AppStore](http://itunes.apple.com/app/id1156707581). Check it out!
+Blink is available now on the [AppStore](https://itunes.apple.com/app/id1156707581). Check it out!
 
 If you would like to participate on its development, we would love to have you on board! There are two ways to collaborate with the project: you can download and build Blink yourself, or you can request an invitation to help us test future versions (on the raw branch). If you want to participate on the testing, follow and tweet us [@BlinkShell](https://twitter.com/BlinkShell) about your usage scenarios. Invitations will be sent out in waves, please be patient if you do not receive yours immediately.
 
@@ -91,11 +91,11 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - Use two fingers tap to create a new shell.
 - Move between shells by swiping your finger.
 - You can exit the session and get back to the shell to open a new connection.
-- You can also close a session by dragging two fingers down.
 - Use pinch gesture to increase or reduce size of text. You can also use Cmd+ or Cmd- if using the keyboard.
 - Copy and Paste by selecting text o tapping the screen.
 - Run 'config' to setup your keys. Install them to a server through ssh-copy-id.
 - Ctrl and Alt modifiers at the SmartKeys bar allow for continuous presses, like in a real keyboard.
+- Use 3 finger tap to menu.
 
 # Changelog
 
@@ -104,6 +104,6 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 # Attributions
 - [Mosh](https://mosh.org) was written by Keith Winstein, along with Anders Kaseorg, Quentin Smith, Richard Tibbetts, Keegan McAllister, and John Hood.
 - This product includes software developed by the OpenSSL Project
-for use in the OpenSSL Toolkit. (http://www.openssl.org/).
+for use in the OpenSSL Toolkit. (https://www.openssl.org/).
 - [Libssh2](https://www.libssh2.org)
 - Entypo pictograms by Bruce Daniel www.entypo.com.

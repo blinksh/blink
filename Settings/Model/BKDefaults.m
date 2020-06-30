@@ -60,6 +60,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
   _xCallBackURLKey = [coder decodeObjectForKey:@"xCallBackURLKey"];
+  _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];
   return self;
 }
 
@@ -80,6 +81,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeInteger:_overscanCompensation forKey:@"overscanCompensation"];
   [encoder encodeBool:_xCallBackURLEnabled forKey:@"xCallBackURLEnabled"];
   [encoder encodeObject:_xCallBackURLKey forKey:@"xCallBackURLKey"];
+  [encoder encodeBool:_disableCustomKeyboards forKey:@"disableCustomKeyboards"];
 }
 
 + (void)loadDefaults
@@ -193,6 +195,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.xCallBackURLEnabled = value;
 }
 
++ (void)setDisableCustomKeyboards:(BOOL)state {
+  defaults.disableCustomKeyboards = state;
+}
+
 + (void)setXCallBackURLKey:(NSString *)key {
   defaults.xCallBackURLKey = key;
 }
@@ -271,6 +277,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   return defaults.xCallBackURLKey;
 }
 
++ (BOOL)disableCustomKeyboards {
+  return defaults.disableCustomKeyboards;
+}
+
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {
   if (UIScreen.screens.count <= 1) {
     return;
@@ -291,6 +301,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     default:
       break;
   }
+  
+  
 }
 
 @end

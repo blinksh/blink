@@ -52,16 +52,33 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
 
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
+  @State private var _enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
+  
+  init(config: KBConfig) {
+    self.config = config
+  }
   
   var body: some View {
-    List {
-      Section(header: Text("Blink")) {
+    let customKeyboards = Binding(get: {
+      return self._enableCustomKeyboards
+    }, set: { value in
+      self._enableCustomKeyboards = value
+      BKDefaults.setDisableCustomKeyboards(!value)
+      BKDefaults.save()
+    })
+    return List {
+      Section(
+        header: Text("Blink"),
+        footer: Text("You can disable third-party custom keyboards. You have to restart Blink for this change to take effect.")) {
         DefaultRow(title: "Shortcuts") {
           ShortcutsConfigView(
             config: self.config,
             commandsMode: true
           )
           .navigationBarTitle("Shortcuts")
+        }
+        HStack {
+          Toggle("Custom Keyboards", isOn: customKeyboards)
         }
       }
       Section(header: Text("Terminal")) {
@@ -86,19 +103,16 @@ struct KBConfigView: View {
     .navigationBarItems(trailing:
       Button(
         action: {
+          BKDefaults.setDisableCustomKeyboards(false)
+          BKDefaults.save()
+          self._enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
           self.config.reset()
         },
         label: { Text("Reset") }
       )
     )
     .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
-      SmarterTermInput.shared.saveAndApply(config: self.config)
+      KBTracker.shared.saveAndApply(config: self.config)
     }
-  }
-}
-
-struct KBSettings_Previews: PreviewProvider {
-  static var previews: some View {
-    KBConfigView(config: KBConfig())
   }
 }

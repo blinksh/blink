@@ -256,3 +256,9 @@ extension KBTraits {
     lhs.union(rhs)
   }
 }
+
+extension KBTraits: CustomDebugStringConvertible {
+  var debugDescription: String {
+    "KBTraits - { hkb: \(isHKBAttached), floating: \(isFloatingKB), landscape: \(isLandscape) }"
+  }
+}

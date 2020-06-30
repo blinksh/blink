@@ -141,7 +141,13 @@
     @"iPad8,5"   : @"iPad Pro (12.9\") 3G",
     @"iPad8,6"   : @"iPad Pro (12.9\") 3G",
     @"iPad8,7"   : @"iPad Pro (12.9\") 3G",
-    @"iPad8,8"   : @"iPad Pro (12.9\") 3G"
+    @"iPad8,8"   : @"iPad Pro (12.9\") 3G",
+    
+    @"iPad8,9"   : @"iPad Pro (11.0\") 2G",
+    @"iPad8,10"  : @"iPad Pro (11.0\") 2G",
+    
+    @"iPad8,11" : @"iPad Pro (12.9\") 4G",
+    @"iPad8,12" : @"iPad Pro (12.9\") 4G",
   };
   
   NSString *value = codes[_machine];
