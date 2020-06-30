@@ -92,9 +92,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
 
-  /// Handle opened URL schemes for iOS devices that are over iOS 13
+  /// - Handle opened URL schemes for iOS devices that are over iOS 13
+  /// - Handles x-callback-url
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     
+    // Handle ssh:// URL scheme
     if let sshUrlScheme = URLContexts.first(where: { $0.url.absoluteString.starts(with: "ssh://")})?.url {
       dump(sshUrlScheme)
       
@@ -136,6 +138,60 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
       } else {
           term.termDevice.write(sshCommand)
+      }
+    } else if let xCallbackUrl = URLContexts.first(where: { $0.url.absoluteString.starts(with: "blinkshell://")})?.url {
+      if let xCallbackUrlHost = xCallbackUrl.host, xCallbackUrlHost == "run" {
+        if BKDefaults.isXCallBackURLEnabled() {
+          let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
+          guard let items = components?.queryItems else {
+            return }
+          
+          
+          dump(items)
+          guard let keyItem: String = items.filter({ $0.name == "key" }).first?.value else {
+            return
+          }
+          
+          if keyItem != BKDefaults.xCallBackURLKey() {
+            return
+          }
+          
+          guard let cmdItem: String = items.filter({ $0.name == "cmd" }).first?.value ?? "help" else { return }
+          
+          dump(cmdItem)
+          
+          let activity = NSUserActivity(activityType: "com.blink.session")
+          activity.isEligibleForPublicIndexing = false
+          activity.title = "run: \(cmdItem)"
+//          activity.userInfo[]
+          
+          let spCtrl = _spCtrl
+          
+          guard let term = spCtrl.currentTerm() else {
+            return
+          }
+          
+          spCtrl.focusOnShellAction()
+          
+          // If SSH/mosh connection is already open in the current terminal shell
+          // create a new one and then write the SSH command
+          if term.isRunningCmd() {
+            
+            spCtrl.newShellAction()
+            
+            guard let term = spCtrl.currentTerm() else {
+              return
+            }
+            
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+              term.termDevice.write(cmdItem + "\n")
+            }
+            
+          } else {
+              term.termDevice.write(cmdItem + "\n")
+          }
+          
+        }
       }
     }
   }
