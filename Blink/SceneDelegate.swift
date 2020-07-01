@@ -329,21 +329,21 @@ extension SceneDelegate {
    - Parameters:
      - xCallbackUrl: The x-callback-url specified by the user
    */
-  func handleSshUrlScheme(with sshUrlScheme: URL) {
+  func handleSshUrlScheme(with sshUrl: URL) {
     
     var sshCommand = "ssh"
     
     // Progressively unwrap all of the parameters available on the URL to form
     // the SSH command to be later passed to the shell
-    if let port = sshUrlScheme.port {
+    if let port = sshUrl.port {
       sshCommand += " -p \(port)"
     }
     
-    if let username = sshUrlScheme.user {
+    if let username = sshUrl.user {
       sshCommand += " \(username)@"
     }
     
-    if let host = sshUrlScheme.host {
+    if let host = sshUrl.host {
       sshCommand += "\(host)"
     }
     
@@ -380,66 +380,84 @@ extension SceneDelegate {
    */
   func handleXcallbackUrl(with xCallbackUrl: URL) {
     
-    if let xCallbackUrlHost = xCallbackUrl.host, xCallbackUrlHost == "run" {
+    guard let xCallbackUrlHost = xCallbackUrl.host, xCallbackUrlHost == "run" else {
+      return
+    }
+    
+    let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
+    
+    var xCancelURL: URL?
+    var xSuccessURL: URL?
+    var xErrorURL: URL?
+    
+    guard let items = components?.queryItems else {
+      return
+    }
+    
+    if let xCancel = items.first(where: { $0.name == "x-cancel" })?.value {
+      xCancelURL = URL(string: xCancel)
+    }
+    
+    if let xError = items.first(where: { $0.name == "x-error" })?.value {
+      xErrorURL = URL(string: xError)
+    }
+    
+    if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
+      xSuccessURL = URL(string: xSuccess)
+    }
+    
+    guard BKDefaults.isXCallBackURLEnabled() else {
+      if let xCancelURL = xCancelURL {
+        blink_openurl(xCancelURL)
+      }
+      return
+    }
+    
+    // Cancel execution of the command if the x-callback-url doesn't have a
+    // key field present that is needed to allow URL actions
+    guard let keyItem: String = items.first(where: { $0.name == "key" })?.value else {
       
-      let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
-      
-      var xCancelURL: URL?
-      var xSuccessURL: URL?
-      var xErrorURL: URL?
-      
-      guard let items = components?.queryItems else {
-        return
+      if let xCancelURL = xCancelURL {
+        blink_openurl(xCancelURL)
       }
       
-      if let xCancel = items.first(where: { $0.name == "x-cancel" })?.value {
-        xCancelURL = URL(string: xCancel)
-      }
-
-      if let xError = items.first(where: { $0.name == "x-error" })?.value {
-        xErrorURL = URL(string: xError)
-      }
+      return
+    }
+    
+    // Cancel the execution of the command as x-callback-url are not
+    // enabled for the user's or the x-callback-url does not have
+    // the correct key set
+    guard keyItem == BKDefaults.xCallBackURLKey() else {
       
-      if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
-        xSuccessURL = URL(string: xSuccess)
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
       }
-      
-      if !BKDefaults.isXCallBackURLEnabled() {
-        if let xCancelURL = xCancelURL {
-          blink_openurl(xCancelURL)
-        }
-        return
+      return
+    }
+    
+    guard let cmdItem: String = items.first(where: { $0.name == "cmd" })?.value else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
       }
-      
-      // Cancel execution of the command if the x-callback-url doesn't have a
-      // key field present that is needed to allow URL actions
-      guard let keyItem: String = items.first(where: { $0.name == "key" })?.value else {
-        if let xCancelURL = xCancelURL {
-          blink_openurl(xCancelURL)
-        }
-        
-        return
+      return
+    }
+    
+    let spCtrl = _spCtrl
+    
+    guard let term = spCtrl.currentTerm() else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
       }
+      return
+    }
+    
+    spCtrl.focusOnShellAction()
+    
+    // If SSH/mosh connection is already open in the current terminal shell
+    // create a new one and then write the SSH command
+    if term.isRunningCmd() {
       
-      // Cancel the execution of the command as x-callback-url are not
-      // enabled for the user's or the x-callback-url does not have
-      // the correct key set
-      if keyItem != BKDefaults.xCallBackURLKey() {
-        if let xCancelURL = xCancelURL {
-          blink_openurl(xCancelURL)
-        }
-        
-        return
-      }
-      
-      guard let cmdItem: String = items.first(where: { $0.name == "cmd" })?.value else {
-        if let xErrorURL = xErrorURL {
-          blink_openurl(xErrorURL)
-        }
-        return
-      }
-      
-      let spCtrl = _spCtrl
+      spCtrl.newShellAction()
       
       guard let term = spCtrl.currentTerm() else {
         if let xErrorURL = xErrorURL {
@@ -448,31 +466,14 @@ extension SceneDelegate {
         return
       }
       
-      spCtrl.focusOnShellAction()
-      
-      // If SSH/mosh connection is already open in the current terminal shell
-      // create a new one and then write the SSH command
-      if term.isRunningCmd() {
-        
-        spCtrl.newShellAction()
-        
-        guard let term = spCtrl.currentTerm() else {
-          if let xErrorURL = xErrorURL {
-            blink_openurl(xErrorURL)
-          }
-          return
-        }
-        
-        // Wait until the new terminal has been opened and loaded,
-        // then submit the new command
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-          term.xCallbackLineSubmitted(cmdItem)
-        }
-        
-      } else {
-        // There's a free terminal to use, submit the command directly
+      // Wait until the new terminal has been opened and loaded,
+      // then submit the new command
+      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
         term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
       }
+    } else {
+      // There's a free terminal to use, submit the command directly
+      term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
     }
   }
   
