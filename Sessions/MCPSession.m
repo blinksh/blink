@@ -119,7 +119,7 @@
 }
 
 /*!
- @brief Enqueue a new command coming from a x-callback-url
+ @brief Enqueue a new command coming from a x-callback-url. After completing successfully return to the
  @discussion Accepts the x-callback-url and the x-success URL to call after a successful command completion
  @param cmd Command to be executed
  @param xCallbackSuccessUrl Success URL of the original application (like Shortcuts) to return to after reunning the command
@@ -128,7 +128,7 @@
   [self enqueueCommand:cmd];
   
   dispatch_async(_cmdQueue, ^{
-    [self.delegate xCallbackFinished:xCallbackSuccessUrl];
+    blink_openurl(xCallbackSuccessUrl);
   });
   
 }
