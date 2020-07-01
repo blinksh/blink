@@ -97,9 +97,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     
     if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
-      handleSshUrlScheme(with: sshUrlScheme)
+      _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
-      handleXcallbackUrl(with: xCallbackUrl)
+      _handleXcallbackUrl(with: xCallbackUrl)
     }
   }
   
@@ -329,7 +329,7 @@ extension SceneDelegate {
    - Parameters:
      - xCallbackUrl: The x-callback-url specified by the user
    */
-  func handleSshUrlScheme(with sshUrl: URL) {
+  private func _handleSshUrlScheme(with sshUrl: URL) {
     
     var sshCommand = "ssh"
     
@@ -350,26 +350,24 @@ extension SceneDelegate {
     guard let term = _spCtrl.currentTerm() else {
       return
     }
+
+    guard term.isRunningCmd() else {
+       // No running command or shell found running, run the SSH command on the
+       // available shell
+       term.termDevice.write(sshCommand)
+       return;
+    }
     
-    _spCtrl.focusOnShellAction()
-    
-    if term.isRunningCmd() {
-      // If a SSH/mosh connection is already open in the current terminal shell
-      // create a new one and then write the SSH command
-      
-      _spCtrl.newShellAction()
-      
-      guard let term = _spCtrl.currentTerm() else {
-        return
-      }
-      
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-        term.termDevice.write(sshCommand)
-      }
-    } else {
-      // No running command or shell found running, run the SSH command on the
-      // available shell
-      term.termDevice.write(sshCommand)
+    // If a SSH/mosh connection is already open in the current terminal shell
+    // create a new one and then write the command
+    _spCtrl.newShellAction()
+
+    guard let newTerm = _spCtrl.currentTerm() else {
+       return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+       newTerm.termDevice.write(sshCommand)
     }
   }
   
@@ -378,11 +376,7 @@ extension SceneDelegate {
     - Parameters:
       - xCallbackUrl: The x-callback-url specified by the user, URL format should be `blinkshell://run?key=KEY&cmd=CMD%20ENCODED`
    */
-  func handleXcallbackUrl(with xCallbackUrl: URL) {
-    
-    guard let xCallbackUrlHost = xCallbackUrl.host, xCallbackUrlHost == "run" else {
-      return
-    }
+  private func _handleXcallbackUrl(with xCallbackUrl: URL) {
     
     let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
     
@@ -404,6 +398,15 @@ extension SceneDelegate {
     
     if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
       xSuccessURL = URL(string: xSuccess)
+    }
+    
+    dump(xCallbackUrl.host)
+        
+    guard case xCallbackUrl.host = "run" else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
+      }
+      return
     }
     
     guard BKDefaults.isXCallBackURLEnabled() else {
@@ -442,38 +445,34 @@ extension SceneDelegate {
       return
     }
     
-    let spCtrl = _spCtrl
-    
-    guard let term = spCtrl.currentTerm() else {
+    guard let term = _spCtrl.currentTerm() else {
       if let xErrorURL = xErrorURL {
         blink_openurl(xErrorURL)
       }
       return
     }
     
-    spCtrl.focusOnShellAction()
+    _spCtrl.focusOnShellAction()
     
-    // If SSH/mosh connection is already open in the current terminal shell
+    // If SSH/mosh session is already open in the current terminal shell
     // create a new one and then write the SSH command
-    if term.isRunningCmd() {
-      
-      spCtrl.newShellAction()
-      
-      guard let term = spCtrl.currentTerm() else {
-        if let xErrorURL = xErrorURL {
-          blink_openurl(xErrorURL)
-        }
-        return
-      }
-      
-      // Wait until the new terminal has been opened and loaded,
-      // then submit the new command
-      DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-        term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
-      }
-    } else {
-      // There's a free terminal to use, submit the command directly
+    guard term.isRunningCmd() else {
+       // No running command or shell found running, run the SSH command on the
+       // available shell
       term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
+       return;
+    }
+    
+    // If a SSH/mosh connection is already open in the current terminal shell
+    // create a new one and then write the command
+    _spCtrl.newShellAction()
+
+    guard let newTerm = _spCtrl.currentTerm() else {
+       return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+      newTerm.xCallbackLineSubmitted(cmdItem, xSuccessURL)
     }
   }
   
