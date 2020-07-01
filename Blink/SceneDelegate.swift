@@ -399,8 +399,6 @@ extension SceneDelegate {
     if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
       xSuccessURL = URL(string: xSuccess)
     }
-    
-    dump(xCallbackUrl.host)
         
     guard case xCallbackUrl.host = "run" else {
       if let xErrorURL = xErrorURL {
@@ -460,7 +458,7 @@ extension SceneDelegate {
        // No running command or shell found running, run the SSH command on the
        // available shell
       term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
-       return;
+      return
     }
     
     // If a SSH/mosh connection is already open in the current terminal shell
