@@ -126,11 +126,7 @@
 */
 - (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl {
   [self enqueueCommand:cmd];
-  
-  dispatch_async(_cmdQueue, ^{
-    blink_openurl(xCallbackSuccessUrl);
-  });
-  
+  blink_openurl(xCallbackSuccessUrl);
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
