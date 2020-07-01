@@ -264,14 +264,6 @@ class TermController: UIViewController {
 }
 
 extension TermController: SessionDelegate {
-  func xCallbackFinished(_ xCallbackSuccessUrl: URL!) {
-    if let xCallbackSuccessUrl = xCallbackSuccessUrl {
-      DispatchQueue.main.async {
-        UIApplication.shared.open(xCallbackSuccessUrl, options: [:])
-      }
-    }
-  }
-  
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {
       _session?.delegate = nil
