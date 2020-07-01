@@ -98,7 +98,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     // Handle ssh:// URL scheme
     if let sshUrlScheme = URLContexts.first(where: { $0.url.absoluteString.starts(with: "ssh://")})?.url {
-      dump(sshUrlScheme)
       
       var sshCommand = "ssh"
       
@@ -116,21 +115,19 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         sshCommand += "\(host)"
       }
       
-      let spCtrl = _spCtrl
-      
-      guard let term = spCtrl.currentTerm() else {
+      guard let term = _spCtrl.currentTerm() else {
         return
       }
       
-      spCtrl.focusOnShellAction()
+      _spCtrl.focusOnShellAction()
       
       if term.isRunningCmd() {
         // If a SSH/mosh connection is already open in the current terminal shell
         // create a new one and then write the SSH command
         
-        spCtrl.newShellAction()
+        _spCtrl.newShellAction()
         
-        guard let term = spCtrl.currentTerm() else {
+        guard let term = _spCtrl.currentTerm() else {
           return
         }
         
@@ -157,21 +154,21 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           return
         }
         
-        if let xCancel = items.filter({ $0.name == "x-cancel" }).first?.value {
+        if let xCancel = items.first(where: { $0.name == "x-cancel" })?.value {
           xCancelURL = URL(string: xCancel)
         }
 
-        if let xError = items.filter({ $0.name == "x-error" }).first?.value {
+        if let xError = items.first(where: { $0.name == "x-error" })?.value {
           xErrorURL = URL(string: xError)
         }
         
-        if let xSuccess = items.filter({ $0.name == "x-success" }).first?.value {
+        if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
           xSuccessURL = URL(string: xSuccess)
         }
         
         if !BKDefaults.isXCallBackURLEnabled() {
           if let xCancelURL = xCancelURL {
-            UIApplication.shared.open(xCancelURL, options: [:])
+            blink_openurl(xCancelURL)
           }
         }
         
@@ -179,7 +176,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // key field present that is needed to allow URL actions
         guard let keyItem: String = items.filter({ $0.name == "key" }).first?.value else {
           if let xCancelURL = xCancelURL {
-            UIApplication.shared.open(xCancelURL, options: [:])
+            blink_openurl(xCancelURL)
           }
           return
         }
@@ -189,7 +186,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // the correct key set
         if keyItem != BKDefaults.xCallBackURLKey() {
           if let xCancelURL = xCancelURL {
-            UIApplication.shared.open(xCancelURL, options: [:])
+            blink_openurl(xCancelURL)
           }
           
           return
@@ -197,7 +194,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let cmdItem: String = items.filter({ $0.name == "cmd" }).first?.value else {
           if let xErrorURL = xErrorURL {
-            UIApplication.shared.open(xErrorURL, options: [:])
+            blink_openurl(xErrorURL)
           }
           return
         }
@@ -206,7 +203,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let term = spCtrl.currentTerm() else {
           if let xErrorURL = xErrorURL {
-            UIApplication.shared.open(xErrorURL, options: [:])
+            blink_openurl(xErrorURL)
           }
           return
         }
@@ -221,7 +218,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           
           guard let term = spCtrl.currentTerm() else {
             if let xErrorURL = xErrorURL {
-              UIApplication.shared.open(xErrorURL, options: [:])
+              blink_openurl(xErrorURL)
             }
             return
           }
