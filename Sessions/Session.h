@@ -40,11 +40,6 @@
 @protocol SessionDelegate
 
 - (void)sessionFinished;
-/*!
-  @brief Open the original app that called the x-callback-url after a successful execution. If the x-callback-url is called from an app like shortcuts it will have a non nil xCallbackSuccessUrl to return to that app later. If it's called from Safari, for example, it won't as it doesn't need to return to that app after the command is executed.
-  @param xCallbackSuccessUrl x-success URL of the original app
- */
-- (void)xCallbackFinished:(NSURL *)xCallbackSuccessUrl;
 
 @end
 
