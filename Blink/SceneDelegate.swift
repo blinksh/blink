@@ -91,9 +91,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
-
-  /// - Handle opened URL schemes for iOS devices that are over iOS 13
-  /// - Handles x-callback-url
+  /**
+   Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
+   */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     
     // Handle ssh:// URL scheme
@@ -102,6 +102,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
       var sshCommand = "ssh"
       
+      // Progressively unwrap all of the parameters available on the URL to form
+      // the SSH command to be later passed to the shell
       if let port = sshUrlScheme.port {
         sshCommand += " -p \(port)"
       }
@@ -122,9 +124,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
       spCtrl.focusOnShellAction()
       
-      // If SSH/mosh connection is already open in the current terminal shell
-      // create a new one and then write the SSH command
       if term.isRunningCmd() {
+        // If a SSH/mosh connection is already open in the current terminal shell
+        // create a new one and then write the SSH command
         
         spCtrl.newShellAction()
         
@@ -135,62 +137,104 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
           term.termDevice.write(sshCommand)
         }
-        
       } else {
-          term.termDevice.write(sshCommand)
+        // No running command or shell found running, run the SSH command on the
+        // available shell
+        term.termDevice.write(sshCommand)
       }
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.absoluteString.starts(with: "blinkshell://")})?.url {
+      // Handle the x-callback-urls, format should be:
+      // blinkshell://run?key=KEY&cmd=CMD%20ENCODED
       if let xCallbackUrlHost = xCallbackUrl.host, xCallbackUrlHost == "run" {
-        if BKDefaults.isXCallBackURLEnabled() {
-          let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
-          guard let items = components?.queryItems else {
-            return }
-          
-          
-          dump(items)
-          guard let keyItem: String = items.filter({ $0.name == "key" }).first?.value else {
-            return
+        
+        let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
+        
+        var xCancelURL: URL?
+        var xSuccessURL: URL?
+        var xErrorURL: URL?
+        
+        guard let items = components?.queryItems else {
+          return
+        }
+        
+        if let xCancel = items.filter({ $0.name == "x-cancel" }).first?.value {
+          xCancelURL = URL(string: xCancel)
+        }
+
+        if let xError = items.filter({ $0.name == "x-error" }).first?.value {
+          xErrorURL = URL(string: xError)
+        }
+        
+        if let xSuccess = items.filter({ $0.name == "x-success" }).first?.value {
+          xSuccessURL = URL(string: xSuccess)
+        }
+        
+        if !BKDefaults.isXCallBackURLEnabled() {
+          if let xCancelURL = xCancelURL {
+            UIApplication.shared.open(xCancelURL, options: [:])
+          }
+        }
+        
+        // Cancel execution of the command if the x-callback-url doesn't have a
+        // key field present that is needed to allow URL actions
+        guard let keyItem: String = items.filter({ $0.name == "key" }).first?.value else {
+          if let xCancelURL = xCancelURL {
+            UIApplication.shared.open(xCancelURL, options: [:])
+          }
+          return
+        }
+        
+        // Cancel the execution of the command as x-callback-url are not
+        // enabled for the user's or the x-callback-url does not have
+        // the correct key set
+        if keyItem != BKDefaults.xCallBackURLKey() {
+          if let xCancelURL = xCancelURL {
+            UIApplication.shared.open(xCancelURL, options: [:])
           }
           
-          if keyItem != BKDefaults.xCallBackURLKey() {
-            return
+          return
+        }
+        
+        guard let cmdItem: String = items.filter({ $0.name == "cmd" }).first?.value else {
+          if let xErrorURL = xErrorURL {
+            UIApplication.shared.open(xErrorURL, options: [:])
           }
+          return
+        }
+        
+        let spCtrl = _spCtrl
+        
+        guard let term = spCtrl.currentTerm() else {
+          if let xErrorURL = xErrorURL {
+            UIApplication.shared.open(xErrorURL, options: [:])
+          }
+          return
+        }
+        
+        spCtrl.focusOnShellAction()
+        
+        // If SSH/mosh connection is already open in the current terminal shell
+        // create a new one and then write the SSH command
+        if term.isRunningCmd() {
           
-          guard let cmdItem: String = items.filter({ $0.name == "cmd" }).first?.value ?? "help" else { return }
-          
-          dump(cmdItem)
-          
-          let activity = NSUserActivity(activityType: "com.blink.session")
-          activity.isEligibleForPublicIndexing = false
-          activity.title = "run: \(cmdItem)"
-//          activity.userInfo[]
-          
-          let spCtrl = _spCtrl
+          spCtrl.newShellAction()
           
           guard let term = spCtrl.currentTerm() else {
+            if let xErrorURL = xErrorURL {
+              UIApplication.shared.open(xErrorURL, options: [:])
+            }
             return
           }
           
-          spCtrl.focusOnShellAction()
-          
-          // If SSH/mosh connection is already open in the current terminal shell
-          // create a new one and then write the SSH command
-          if term.isRunningCmd() {
-            
-            spCtrl.newShellAction()
-            
-            guard let term = spCtrl.currentTerm() else {
-              return
-            }
-            
-            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-              term.termDevice.write(cmdItem + "\n")
-            }
-            
-          } else {
-              term.termDevice.write(cmdItem + "\n")
+          // Wait until the new terminal has been opened and loaded,
+          // then submit the new command
+          DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+            term.xCallbackLineSubmitted(cmdItem)
           }
           
+        } else {
+          // There's a free terminal to use, submit the command directly
+          term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
         }
       }
     }

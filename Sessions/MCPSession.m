@@ -118,6 +118,21 @@
   });
 }
 
+/*!
+ @brief Enqueue a new command coming from a x-callback-url
+ @discussion Accepts the x-callback-url and the x-success URL to call after a successful command completion
+ @param cmd Command to be executed
+ @param xCallbackSuccessUrl Success URL of the original application (like Shortcuts) to return to after reunning the command
+*/
+- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl {
+  [self enqueueCommand:cmd];
+  
+  dispatch_async(_cmdQueue, ^{
+    [self.delegate xCallbackFinished:xCallbackSuccessUrl];
+  });
+  
+}
+
 - (void)enqueueCommand:(NSString *)cmd {
   if (_cmdStream) {
     [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
