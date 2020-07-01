@@ -45,6 +45,7 @@
 - (void)unregisterSSHClient:(SSHClient *)sshClient;
 
 - (void)enqueueCommand:(NSString *)cmd;
+- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
 - (bool)isRunningCmd;
 
 - (void)updateAllowedPaths;

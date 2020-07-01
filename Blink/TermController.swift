@@ -264,6 +264,13 @@ class TermController: UIViewController {
 }
 
 extension TermController: SessionDelegate {
+  func xCallbackFinished(_ xCallbackSuccessUrl: URL!) {
+    if let xCallbackSuccessUrl = xCallbackSuccessUrl {
+      DispatchQueue.main.async {
+        UIApplication.shared.open(xCallbackSuccessUrl, options: [:])
+      }
+    }
+  }
   
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {
@@ -356,6 +363,10 @@ extension TermController: TermDeviceDelegate {
   
   public func viewController() -> UIViewController! {
     return self
+  }
+  
+  public func xCallbackLineSubmitted(_ line: String!, _ successUrl: URL? = nil) {
+    _session?.enqueueXCallbackCommand(line, xCallbackSuccessUrl: successUrl)
   }
   
   public func lineSubmitted(_ line: String!) {
