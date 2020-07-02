@@ -357,7 +357,7 @@ extension TermController: TermDeviceDelegate {
     return self
   }
   
-  public func xCallbackLineSubmitted(_ line: String!, _ successUrl: URL? = nil) {
+  public func xCallbackLineSubmitted(_ line: String, _ successUrl: URL? = nil) {
     _session?.enqueueXCallbackCommand(line, xCallbackSuccessUrl: successUrl)
   }
   
