@@ -4,7 +4,7 @@
 
 Mosh, a portmanteau word for mobile shell, is a terminal connection program that facilitates persistent shell sessions in less-than-ideal network situations. If you have a low-bandwidth or intermittent connection, switch between multiple devices or ISPs or even use devices with sporadic Internet access you will be able to maintain consistent shell sessions with Mosh.
 
-Mosh accomplishes this feat by using the UDP-based state-synchronization protocol ([SSP](https://en.wikipedia.org/wiki/Mosh_(software)#Roaming)), which isn't bound to a particular network connection. SSP keeps the client and server in sync, while predictive local echo can "guess" what will be displayed after the user presses a key. This approach reduces input latency and transfers fewer bytes of data over the wire.
+Mosh accomplishes this feat by using the UDP-based state-synchronisation protocol ([SSP](https://en.wikipedia.org/wiki/Mosh_(software)#Roaming)), which isn't bound to a particular network connection. SSP keeps the client and server in sync, while predictive local echo can "guess" what will be displayed after the user presses a key. This approach reduces input latency and transfers fewer bytes of data over the wire.
 
 Mosh isn't just for mobile devices. Ever have to connect to a SSH server in another continent? Sometimes the input latency is so high on international SSH connections that editing files and typing on the command line can be a frustrating experience. Mosh can significantly decrease your latency and improve your worldwide server connections.
 
@@ -54,13 +54,13 @@ Where `remote` for the host or IP address of the remote server. Authentication o
 mosh -P 1234 remote
 ```
 
-Replacing `1234` with the port number of your remote SSH server. The Mosh sesion ends when you use the `logout` or `exit` commands.
+Replacing `1234` with the port number of your remote SSH server. The Mosh session ends when you use the `logout` or `exit` commands.
 
 ## Mosh and Command History
 
 Due to Mosh's predictive local echo and unique transmission methods it cannot maintain a history of previously used commands. To work around this shortcoming, you can use `tmux` or `screen`.
 
-## A World About Firewalls and Ports
+## A Word About Firewalls and Ports
 
 Most system administrators open port `22` via TCP to SSH. Since Mosh uses UDP, you'll need to open UDP ports `60000` through `61000` for the SSP packets. This range opens one thousand ports which is more than enough but, if you only plan to make a few Mosh connections you can enable a smaller range, for example ports `60000` through `60005`,  that leaves room for five simultaneous sessions. You can also specify the UDP port with the `-p` option on the `mosh` command if you wish to use an entirely different range.
 

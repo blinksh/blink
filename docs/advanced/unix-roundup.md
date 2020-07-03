@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Most users use Blink Shell to access remote machines, but many don't know that beneath our easy to use interface lies a robust set of command-line tools that would impress even the most proficient UNIX graybeard.
+Most users use Blink Shell to access remote machines, but many don't know that beneath our easy to use interface lies a robust set of command-line tools that would impress even the most proficient UNIX greybeard.
 
 Ever wanted to diagnose a network issue? Sure, there are applications with fancy GUIs for running network analysis, but any UNIX veteran knows that tools like `ping` and `dig` are quick and powerful. Want to search through and manipulate your files? `grep`, `awk` and `sed` have you covered. Transfer your command line wizardry to your phone or tablet with Blink Shell.
 
@@ -34,7 +34,7 @@ grep -nHr TERM LOCATION
 
 We have even included `sed` and `awk`! `sed` is short for stream editor and it allows you to edit text inline, while `awk` is a superb data reporting and extraction utility.
 
-For exmaple, with `sed` we can remove any string of characters, in this example we will locate and remove `aoe` from our file to then form a new file:
+For example, with `sed` we can remove any string of characters, in this example we will locate and remove `aoe` from our file to then form a new file:
 
 ```bash
 sed -i 's/[aoe]//g' file
@@ -65,9 +65,9 @@ Blink Shell offers a lot of useful local functionality but Blink specializes in 
 scp file user@remotehost:remotepath
 ```
 
-In this example, we will transfer a file named `file` to the server `remotehost` with the username of `user` to place it in the `remotepath` folder. `scp` accepts wildcards, allowing the transfer of mulitple files at once, but you can also `tar` the files for a better transfer experience.
+In this example, we will transfer a file named `file` to the server `remotehost` with the username of `user` to place it in the `remotepath` folder. `scp` accepts wildcards, allowing the transfer of multiple files at once, but you can also `tar` the files for a better transfer experience.
 
-Some servers only support SFTP, so it is also bundled into Bliink Shell. To connect to a server simpy run:
+Some servers only support SFTP, so it is also bundled into Blink Shell. To connect to a server simply run:
 
 ```bash
 sftp user@remotehost
@@ -75,7 +75,7 @@ sftp user@remotehost
 
 Once connected, you can run FTP commands like `cd`, `get` and `put`.
 
-## Network Diagnotsics
+## Network Diagnostics
 
 The network commands built into Blink Shell can save your day. Have you ever needed to check if a server is up from your phone? Running `ping` will get the ball rolling, followed with `nc` for advanced diagnostics.
 
