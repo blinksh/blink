@@ -12,7 +12,7 @@ Using SSH keys is more secure than passwords as they are more difficult to crack
 
 ## Using SSH Keys in Blink
 
-Before you can use SSH keys you must generate or import a keypair. In this article we will discuss generating a keypair. To get started, run the `config` command in Blink Shell to access the configuration pane.
+Before you can use SSH keys you must generate or import a key pair. In this article we will discuss generating a key pair. To get started, run the `config` command in Blink Shell to access the configuration pane.
 
 ![img](ssh-keys/using-ssh-key-image1.png)
 

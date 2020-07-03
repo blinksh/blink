@@ -6,7 +6,7 @@ Blink is a shell that allows you to connect to remote machines, use Mosh and has
 
 ## Using Blink Shell
 
-Using Blink Shell is similar to most other terminals - you simply type commands and hit the `RETURN` key. Just like in Bash or similar UNIX shells you can press the up arrow to access the history of previous commands. You can type the `help` comamnd to access Blink’s online help, `mosh` to access the mosh mobile shell, `ssh` to connect via SSH or `ssh-copy-id` to copy SSH keys.
+Using Blink Shell is similar to most other terminals - you simply type commands and hit the `RETURN` key. Just like in Bash or similar UNIX shells you can press the up arrow to access the history of previous commands. You can type the `help` command to access Blink’s online help, `mosh` to access the mosh mobile shell, `ssh` to connect via SSH or `ssh-copy-id` to copy SSH keys.
 
 ![img](navigation/navigating-blink-shell-image1.gif)
 

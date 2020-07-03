@@ -2,15 +2,15 @@
 
 ## Introduction
 
-All system administrators know that SSH is arguably the most useful and powerful remote administration tool available for UNIX/Linux systems. SSH brings a remote system's command-line interface to our local mahcine unlocking the real source of the magic behind NIX systems - the shell.
+All system administrators know that SSH is arguably the most useful and powerful remote administration tool available for UNIX/Linux systems. SSH brings a remote system's command-line interface to our local machine unlocking the real source of the magic behind NIX systems - the shell.
 
-Bash, ZSH, fish and other shells allow us to run powerful command-line utilities that alone provide more capability than our average commercial GUI desktop program. Combining all of this with pipes and filters, these gems knit together an unrivaled system that empowers us all.
+Bash, ZSH, fish and other shells allow us to run powerful command-line utilities that alone provide more capability than our average commercial GUI desktop program. Combining all of this with pipes and filters, these gems knit together an unrivalled system that empowers us all.
 
 And yet, you can spend years in the shell and not know about some of its most unique and useful features. Let us dig into some of the more obscure, but useful, features of SSH.
 
 ## Persistent SSH Connections with Blink
 
-Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround to help with this. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest asured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
+Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround to help with this. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest assured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
 
 ## SSH Agent and Forwarding
 
