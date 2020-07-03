@@ -264,7 +264,6 @@ class TermController: UIViewController {
 }
 
 extension TermController: SessionDelegate {
-  
   public func sessionFinished() {
     if _sessionParams.hasEncodedState() {
       _session?.delegate = nil
@@ -356,6 +355,10 @@ extension TermController: TermDeviceDelegate {
   
   public func viewController() -> UIViewController! {
     return self
+  }
+  
+  public func xCallbackLineSubmitted(_ line: String, _ successUrl: URL? = nil) {
+    _session?.enqueueXCallbackCommand(line, xCallbackSuccessUrl: successUrl)
   }
   
   public func lineSubmitted(_ line: String!) {

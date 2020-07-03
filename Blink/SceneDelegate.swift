@@ -91,6 +91,18 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
   }
   
+  /**
+   Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
+   */
+  func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    
+    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
+      _handleSshUrlScheme(with: sshUrlScheme)
+    } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
+      _handleXcallbackUrl(with: xCallbackUrl)
+    }
+  }
+  
   func scene(
     _ scene: UIScene,
     willConnectTo session: UISceneSession,
@@ -307,4 +319,159 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   
   @objc var spaceController: SpaceController { _spCtrl }
 
+}
+
+// MARK: Manage the `scene(_:openURLContexts:)` actions
+extension SceneDelegate {
+  
+  /**
+   Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
+   - Parameters:
+     - xCallbackUrl: The x-callback-url specified by the user
+   */
+  private func _handleSshUrlScheme(with sshUrl: URL) {
+    
+    var sshCommand = "ssh"
+    
+    // Progressively unwrap all of the parameters available on the URL to form
+    // the SSH command to be later passed to the shell
+    if let port = sshUrl.port {
+      sshCommand += " -p \(port)"
+    }
+    
+    if let username = sshUrl.user {
+      sshCommand += " \(username)@"
+    }
+    
+    if let host = sshUrl.host {
+      sshCommand += "\(host)"
+    }
+    
+    guard let term = _spCtrl.currentTerm() else {
+      return
+    }
+
+    guard term.isRunningCmd() else {
+       // No running command or shell found running, run the SSH command on the
+       // available shell
+       term.termDevice.write(sshCommand)
+       return;
+    }
+    
+    // If a SSH/mosh connection is already open in the current terminal shell
+    // create a new one and then write the command
+    _spCtrl.newShellAction()
+
+    guard let newTerm = _spCtrl.currentTerm() else {
+       return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+       newTerm.termDevice.write(sshCommand)
+    }
+  }
+  
+  /**
+   Handles the x-callback-url, if  a successful `x-success` URL is provided when being called from apps like Shortcuts it returns to the original app after a successful execution.
+    - Parameters:
+      - xCallbackUrl: The x-callback-url specified by the user, URL format should be `blinkshell://run?key=KEY&cmd=CMD%20ENCODED`
+   */
+  private func _handleXcallbackUrl(with xCallbackUrl: URL) {
+    
+    let components = URLComponents(url: xCallbackUrl, resolvingAgainstBaseURL: true)
+    
+    var xCancelURL: URL?
+    var xSuccessURL: URL?
+    var xErrorURL: URL?
+    
+    guard let items = components?.queryItems else {
+      return
+    }
+    
+    if let xCancel = items.first(where: { $0.name == "x-cancel" })?.value {
+      xCancelURL = URL(string: xCancel)
+    }
+    
+    if let xError = items.first(where: { $0.name == "x-error" })?.value {
+      xErrorURL = URL(string: xError)
+    }
+    
+    if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
+      xSuccessURL = URL(string: xSuccess)
+    }
+        
+    guard case xCallbackUrl.host = "run" else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
+      }
+      return
+    }
+    
+    guard BKDefaults.isXCallBackURLEnabled() else {
+      if let xCancelURL = xCancelURL {
+        blink_openurl(xCancelURL)
+      }
+      return
+    }
+    
+    // Cancel execution of the command if the x-callback-url doesn't have a
+    // key field present that is needed to allow URL actions
+    guard let keyItem: String = items.first(where: { $0.name == "key" })?.value else {
+      
+      if let xCancelURL = xCancelURL {
+        blink_openurl(xCancelURL)
+      }
+      
+      return
+    }
+    
+    // Cancel the execution of the command as x-callback-url are not
+    // enabled for the user's or the x-callback-url does not have
+    // the correct key set
+    guard keyItem == BKDefaults.xCallBackURLKey() else {
+      
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
+      }
+      return
+    }
+    
+    guard let cmdItem: String = items.first(where: { $0.name == "cmd" })?.value else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
+      }
+      return
+    }
+    
+    guard let term = _spCtrl.currentTerm() else {
+      if let xErrorURL = xErrorURL {
+        blink_openurl(xErrorURL)
+      }
+      return
+    }
+    
+    _spCtrl.focusOnShellAction()
+    
+    // If SSH/mosh session is already open in the current terminal shell
+    // create a new one and then write the SSH command
+    guard term.isRunningCmd() else {
+       // No running command or shell found running, run the SSH command on the
+       // available shell
+      term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
+      return
+    }
+    
+    // If a SSH/mosh connection is already open in the current terminal shell
+    // create a new one and then write the command
+    _spCtrl.newShellAction()
+
+    guard let newTerm = _spCtrl.currentTerm() else {
+       return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+      newTerm.xCallbackLineSubmitted(cmdItem, xSuccessURL)
+    }
+  }
+  
 }
