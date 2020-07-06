@@ -93,7 +93,7 @@ We provide a full set of network utilities, including: `dig`, `host`, `nslookup`
 
 Blink Shell includes a few extra tools designed to make your mobile life easier.
 
-Perhaps the most essential command is `geo`. This takes advantage of the device tracking functionality in iOS to keep your SSH connections running in the background. Don't worry, your location data won't be sent to Blink. In fact, it isn't sent anywhere.
+Perhaps the most essential command is `geo`. This takes advantage of the device tracking functionality in iOS to enhance security, with the secondary effect of keeping your SSH connections running in the background. Don't worry, your location data won't be sent to Blink. In fact, it isn't sent anywhere.
 
 To enable `geo`, run:
 
@@ -105,9 +105,15 @@ To enhance the security of your SSH sessions you can run:
 
 ```bash
 geo lock
+# Once you want to stop tracking
+geo stop
 ```
 
-This will disconnect all active SSH connections if the device is moved.
+This will disconnect all active SSH connections if the device is moved. If you only want to enable background tracking for background connections, do:
+
+```bash
+geo track
+```
 
 Put the clipboard to use on your mobile device with `pbpaste` and `pbcopy`. Use the `pbcopy` command to put the contents of a file into the clipboard and `pbpaste` to paste the data. You can even use the `touch` command to create an empty file and paste it with `pbpaste` clearing your clipboard.
 
