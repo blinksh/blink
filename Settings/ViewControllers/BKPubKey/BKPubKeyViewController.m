@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <CommonCrypto/CommonDigest.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import "BKPubKey.h"
 #import "BKPubKeyCreateViewController.h"
@@ -38,12 +39,75 @@
 #import "Blink-Swift.h"
 
 
-@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate>
+@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate, UIDocumentPickerDelegate>
 
 @end
 
+
 @implementation BKPubKeyViewController {
   BOOL _selectable;
+}
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+  
+  
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+  
+  NSArray *readFileUrls = urls;
+  
+  for (NSURL *fileUrl in readFileUrls) {
+    
+    NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
+    
+    [self importKeyFromString:keyString];
+  }
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
+  
+  NSString *keyString = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:NULL];
+
+  [self importKeyFromString:keyString];
+}
+
+- (void) importKeyFromString: (NSString *)keyString {
+  
+  if ([keyString length] == 0) {
+    UIAlertController *alertCtrl = [UIAlertController
+                                    alertControllerWithTitle:@"Invalid key"
+                                    message:@"Clipboard content couldn't be validated as a key"
+                                    preferredStyle:UIAlertControllerStyleAlert];
+    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    
+    [self presentViewController:alertCtrl animated:YES completion:nil];
+    return;
+  }
+  
+  if (![keyString hasSuffix:@"\n"]) {
+    keyString = [keyString stringByAppendingString:@"\n"];
+  }
+  
+  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
+    if (key == nil) {
+      UIAlertController *alertCtrl = [UIAlertController
+                                      alertControllerWithTitle:@"Invalid key"
+                                      message:@"Clipboard content couldn't be validated as a key"
+                                      preferredStyle:UIAlertControllerStyleAlert];
+      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+      
+      [self presentViewController:alertCtrl animated:YES completion:nil];
+      return;
+    }
+    
+    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    ctrl.importMode = YES;
+    ctrl.key = key;
+    ctrl.comment = comment;
+    ctrl.createKeyDelegate = self;
+    [self.navigationController pushViewController:ctrl animated:YES];
+  }];
 }
 
 - (void)viewDidLoad
@@ -150,6 +214,16 @@
                                                    // ImportKey flow
                                                    [self importKey];
                                                  }];
+  
+  UIAlertAction *importFromFiles = [UIAlertAction actionWithTitle:@"Import from a file"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                   // ImportKey flow
+    [self importKeyFromFile];
+    
+                                                 }];
+  
+  
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
                                                  handler:^(UIAlertAction *_Nonnull action){
@@ -158,6 +232,7 @@
 
   [keySourceController addAction:generate];
   [keySourceController addAction:import];
+  [keySourceController addAction:importFromFiles];
   [keySourceController addAction:cancel];
   [[keySourceController popoverPresentationController] setBarButtonItem:sender];
   [self presentViewController:keySourceController animated:YES completion:nil];
@@ -169,46 +244,58 @@
   [self.navigationController pushViewController:ctrl animated:YES];
 }
 
+- (void) importKeyFromFile {
+  
+  UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data", @"public.item", (NSString *)kUTTypeText] inMode:UIDocumentPickerModeOpen];
+  picker.allowsMultipleSelection = true;
+  picker.delegate = self;
+  
+  [self presentViewController:picker animated:true completion:nil];
+  
+}
+
 - (void)importKey
 {
   UIPasteboard *pb = [UIPasteboard generalPasteboard];
   
   NSString *keyString = pb.string;
   
-  if ([keyString length] == 0) {
-    UIAlertController *alertCtrl = [UIAlertController
-                                    alertControllerWithTitle:@"Invalid key"
-                                    message:@"Clipboard content couldn't be validated as a key"
-                                    preferredStyle:UIAlertControllerStyleAlert];
-    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-    
-    [self presentViewController:alertCtrl animated:YES completion:nil];
-    return;
-  }
+  [self importKeyFromString:keyString];
   
-  if (![keyString hasSuffix:@"\n"]) {
-    keyString = [keyString stringByAppendingString:@"\n"];
-  }
-  
-  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
-    if (key == nil) {
-      UIAlertController *alertCtrl = [UIAlertController
-                                      alertControllerWithTitle:@"Invalid key"
-                                      message:@"Clipboard content couldn't be validated as a key"
-                                      preferredStyle:UIAlertControllerStyleAlert];
-      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-      
-      [self presentViewController:alertCtrl animated:YES completion:nil];
-      return;
-    }
-
-    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    ctrl.importMode = YES;
-    ctrl.key = key;
-    ctrl.comment = comment;
-    ctrl.createKeyDelegate = self;
-    [self.navigationController pushViewController:ctrl animated:YES];
-  }];
+//  if ([keyString length] == 0) {
+//    UIAlertController *alertCtrl = [UIAlertController
+//                                    alertControllerWithTitle:@"Invalid key"
+//                                    message:@"Clipboard content couldn't be validated as a key"
+//                                    preferredStyle:UIAlertControllerStyleAlert];
+//    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+//
+//    [self presentViewController:alertCtrl animated:YES completion:nil];
+//    return;
+//  }
+//
+//  if (![keyString hasSuffix:@"\n"]) {
+//    keyString = [keyString stringByAppendingString:@"\n"];
+//  }
+//
+//  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
+//    if (key == nil) {
+//      UIAlertController *alertCtrl = [UIAlertController
+//                                      alertControllerWithTitle:@"Invalid key"
+//                                      message:@"Clipboard content couldn't be validated as a key"
+//                                      preferredStyle:UIAlertControllerStyleAlert];
+//      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+//
+//      [self presentViewController:alertCtrl animated:YES completion:nil];
+//      return;
+//    }
+//
+//    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+//    ctrl.importMode = YES;
+//    ctrl.key = key;
+//    ctrl.comment = comment;
+//    ctrl.createKeyDelegate = self;
+//    [self.navigationController pushViewController:ctrl animated:YES];
+//  }];
 }
 
 - (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
