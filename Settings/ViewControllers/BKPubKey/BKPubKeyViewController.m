@@ -48,31 +48,11 @@
   BOOL _selectable;
 }
 
-- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
-  
-  
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
-  
-  NSArray *readFileUrls = urls;
-  
-  for (NSURL *fileUrl in readFileUrls) {
-    
-    NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
-    
-    [self importKeyFromString:keyString];
-  }
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-  
-  NSString *keyString = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:NULL];
-
-  [self importKeyFromString:keyString];
-}
-
-- (void) importKeyFromString: (NSString *)keyString {
+/*!
+ @brief Given a NSString import the key in the secure enclave
+ @param keyString NSString containing the key to import
+*/
+- (void) _importKeyFromString: (NSString *)keyString {
   
   if ([keyString length] == 0) {
     UIAlertController *alertCtrl = [UIAlertController
@@ -260,42 +240,7 @@
   
   NSString *keyString = pb.string;
   
-  [self importKeyFromString:keyString];
-  
-//  if ([keyString length] == 0) {
-//    UIAlertController *alertCtrl = [UIAlertController
-//                                    alertControllerWithTitle:@"Invalid key"
-//                                    message:@"Clipboard content couldn't be validated as a key"
-//                                    preferredStyle:UIAlertControllerStyleAlert];
-//    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-//
-//    [self presentViewController:alertCtrl animated:YES completion:nil];
-//    return;
-//  }
-//
-//  if (![keyString hasSuffix:@"\n"]) {
-//    keyString = [keyString stringByAppendingString:@"\n"];
-//  }
-//
-//  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
-//    if (key == nil) {
-//      UIAlertController *alertCtrl = [UIAlertController
-//                                      alertControllerWithTitle:@"Invalid key"
-//                                      message:@"Clipboard content couldn't be validated as a key"
-//                                      preferredStyle:UIAlertControllerStyleAlert];
-//      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-//
-//      [self presentViewController:alertCtrl animated:YES completion:nil];
-//      return;
-//    }
-//
-//    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
-//    ctrl.importMode = YES;
-//    ctrl.key = key;
-//    ctrl.comment = comment;
-//    ctrl.createKeyDelegate = self;
-//    [self.navigationController pushViewController:ctrl animated:YES];
-//  }];
+  [self _importKeyFromString:keyString];
 }
 
 - (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
@@ -384,6 +329,32 @@
 - (void)showKeyInfo:(NSIndexPath *)indexPath
 {
   [self performSegueWithIdentifier:@"keyInfoSegue" sender:self];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+  
+  
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+  
+  NSArray *readFileUrls = urls;
+  
+  for (NSURL *fileUrl in readFileUrls) {
+    
+    NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
+    
+    [self _importKeyFromString:keyString];
+  }
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
+  
+  NSString *keyString = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:NULL];
+
+  [self _importKeyFromString:keyString];
 }
 
 @end
