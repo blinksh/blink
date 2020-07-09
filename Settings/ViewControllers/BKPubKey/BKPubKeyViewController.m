@@ -206,11 +206,11 @@ enum SshKeyImportOrigin {
                                                    handler:^(UIAlertAction *_Nonnull action) {
                                                      [self createKey];
                                                    }];
-  UIAlertAction *import = [UIAlertAction actionWithTitle:@"Import from clipboard"
+  UIAlertAction *importFromClipboard = [UIAlertAction actionWithTitle:@"Import from clipboard"
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                    // ImportKey flow
-                                                   [self importKey];
+                                                   [self importKeyFromClipboard];
                                                  }];
   
   UIAlertAction *importFromFiles = [UIAlertAction actionWithTitle:@"Import from a file"
@@ -229,7 +229,7 @@ enum SshKeyImportOrigin {
                                                  }];
 
   [keySourceController addAction:generate];
-  [keySourceController addAction:import];
+  [keySourceController addAction:importFromClipboard];
   [keySourceController addAction:importFromFiles];
   [keySourceController addAction:cancel];
   [[keySourceController popoverPresentationController] setBarButtonItem:sender];
@@ -242,21 +242,25 @@ enum SshKeyImportOrigin {
   [self.navigationController pushViewController:ctrl animated:YES];
 }
 
+/*!
+ @brief Call to open UIDocumentPicker so the user select the file that contains a key to be imported into the Secure Enclave
+*/
 - (void) importKeyFromFile {
   
-  UIDocumentPickerViewController *picker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data", @"public.item", (NSString *)kUTTypeText] inMode:UIDocumentPickerModeOpen];
-  picker.allowsMultipleSelection = true;
-  picker.delegate = self;
+  UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data", @"public.item", (NSString *)kUTTypeText] inMode:UIDocumentPickerModeOpen];
+  documentPicker.allowsMultipleSelection = true;
+  documentPicker.delegate = self;
   
-  [self presentViewController:picker animated:true completion:nil];
+  [self presentViewController:documentPicker animated:true completion:nil];
   
 }
 
-- (void)importKey
-{
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
+/*!
+ @brief Import a key into the Secure Enclave getting the content from the clipboard
+*/
+- (void)importKeyFromClipboard {
   
-  NSString *keyString = pb.string;
+  NSString *keyString = [UIPasteboard generalPasteboard].string;
   
   [self _importKeyFromString:keyString importOrigin:(FROM_CLIPBOARD)];
 }
@@ -358,21 +362,12 @@ enum SshKeyImportOrigin {
 
 - (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
   
-  NSArray *readFileUrls = urls;
-  
-  for (NSURL *fileUrl in readFileUrls) {
+  for (NSURL *fileUrl in urls) {
     
     NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
-    
+
     [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
   }
-}
-
-- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentAtURL:(NSURL *)url {
-  
-  NSString *keyString = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:NULL];
-
-  [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
 }
 
 @end
