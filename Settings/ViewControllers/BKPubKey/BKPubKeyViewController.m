@@ -43,6 +43,11 @@
 
 @end
 
+enum SshKeyImportOrigin {
+  FROM_CLIPBOARD,
+  FROM_FILE,
+};
+
 
 @implementation BKPubKeyViewController {
   BOOL _selectable;
@@ -51,13 +56,26 @@
 /*!
  @brief Given a NSString import the key in the secure enclave
  @param keyString NSString containing the key to import
+ @param importOrigin SshKeyImportOrigin origin of they key that's being imported
 */
-- (void) _importKeyFromString: (NSString *)keyString {
+- (void) _importKeyFromString: (NSString *)keyString importOrigin:(enum SshKeyImportOrigin) importOrigin {
+  
+  NSString *errorImportingKeyMessage = @"%origin% content couldn't be validated as a key";
+  
+  switch (importOrigin) {
+    
+    case FROM_CLIPBOARD:
+      errorImportingKeyMessage = [errorImportingKeyMessage stringByReplacingOccurrencesOfString:@"%origin%" withString:@"Clipboard"];
+      break;
+    case FROM_FILE:
+      errorImportingKeyMessage = [errorImportingKeyMessage stringByReplacingOccurrencesOfString:@"%origin%" withString:@"File"];
+      break;
+  }
   
   if ([keyString length] == 0) {
     UIAlertController *alertCtrl = [UIAlertController
                                     alertControllerWithTitle:@"Invalid key"
-                                    message:@"Clipboard content couldn't be validated as a key"
+                                    message: errorImportingKeyMessage
                                     preferredStyle:UIAlertControllerStyleAlert];
     [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
     
@@ -73,7 +91,7 @@
     if (key == nil) {
       UIAlertController *alertCtrl = [UIAlertController
                                       alertControllerWithTitle:@"Invalid key"
-                                      message:@"Clipboard content couldn't be validated as a key"
+                                      message:errorImportingKeyMessage
                                       preferredStyle:UIAlertControllerStyleAlert];
       [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
       
@@ -240,7 +258,7 @@
   
   NSString *keyString = pb.string;
   
-  [self _importKeyFromString:keyString];
+  [self _importKeyFromString:keyString importOrigin:(FROM_CLIPBOARD)];
 }
 
 - (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
@@ -346,7 +364,7 @@
     
     NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
     
-    [self _importKeyFromString:keyString];
+    [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
   }
 }
 
@@ -354,7 +372,7 @@
   
   NSString *keyString = [NSString stringWithContentsOfURL:url encoding:NSUTF8StringEncoding error:NULL];
 
-  [self _importKeyFromString:keyString];
+  [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
 }
 
 @end
