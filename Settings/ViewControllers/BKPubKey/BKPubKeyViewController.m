@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import <CommonCrypto/CommonDigest.h>
+#import <MobileCoreServices/MobileCoreServices.h>
 
 #import "BKPubKey.h"
 #import "BKPubKeyCreateViewController.h"
@@ -38,12 +39,73 @@
 #import "Blink-Swift.h"
 
 
-@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate>
+@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate, UIDocumentPickerDelegate>
 
 @end
 
+enum SshKeyImportOrigin {
+  FROM_CLIPBOARD,
+  FROM_FILE,
+};
+
+
 @implementation BKPubKeyViewController {
   BOOL _selectable;
+}
+
+/*!
+ @brief Given a NSString import the key in the secure enclave
+ @param keyString NSString containing the key to import
+ @param importOrigin SshKeyImportOrigin origin of they key that's being imported
+*/
+- (void) _importKeyFromString: (NSString *)keyString importOrigin:(enum SshKeyImportOrigin) importOrigin {
+  
+  NSString *errorImportingKeyMessage = @"%origin% content couldn't be validated as a key";
+  
+  switch (importOrigin) {
+    
+    case FROM_CLIPBOARD:
+      errorImportingKeyMessage = [errorImportingKeyMessage stringByReplacingOccurrencesOfString:@"%origin%" withString:@"Clipboard"];
+      break;
+    case FROM_FILE:
+      errorImportingKeyMessage = [errorImportingKeyMessage stringByReplacingOccurrencesOfString:@"%origin%" withString:@"File"];
+      break;
+  }
+  
+  if ([keyString length] == 0) {
+    UIAlertController *alertCtrl = [UIAlertController
+                                    alertControllerWithTitle:@"Invalid key"
+                                    message: errorImportingKeyMessage
+                                    preferredStyle:UIAlertControllerStyleAlert];
+    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+    
+    [self presentViewController:alertCtrl animated:YES completion:nil];
+    return;
+  }
+  
+  if (![keyString hasSuffix:@"\n"]) {
+    keyString = [keyString stringByAppendingString:@"\n"];
+  }
+  
+  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
+    if (key == nil) {
+      UIAlertController *alertCtrl = [UIAlertController
+                                      alertControllerWithTitle:@"Invalid key"
+                                      message:errorImportingKeyMessage
+                                      preferredStyle:UIAlertControllerStyleAlert];
+      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+      
+      [self presentViewController:alertCtrl animated:YES completion:nil];
+      return;
+    }
+    
+    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    ctrl.importMode = YES;
+    ctrl.key = key;
+    ctrl.comment = comment;
+    ctrl.createKeyDelegate = self;
+    [self.navigationController pushViewController:ctrl animated:YES];
+  }];
 }
 
 - (void)viewDidLoad
@@ -144,12 +206,22 @@
                                                    handler:^(UIAlertAction *_Nonnull action) {
                                                      [self createKey];
                                                    }];
-  UIAlertAction *import = [UIAlertAction actionWithTitle:@"Import from clipboard"
+  UIAlertAction *importFromClipboard = [UIAlertAction actionWithTitle:@"Import from clipboard"
                                                    style:UIAlertActionStyleDefault
                                                  handler:^(UIAlertAction *_Nonnull action) {
                                                    // ImportKey flow
-                                                   [self importKey];
+                                                   [self importKeyFromClipboard];
                                                  }];
+  
+  UIAlertAction *importFromFiles = [UIAlertAction actionWithTitle:@"Import from a file"
+                                                   style:UIAlertActionStyleDefault
+                                                 handler:^(UIAlertAction *_Nonnull action) {
+                                                   // ImportKey flow
+    [self importKeyFromFile];
+    
+                                                 }];
+  
+  
   UIAlertAction *cancel = [UIAlertAction actionWithTitle:@"Cancel"
                                                    style:UIAlertActionStyleCancel
                                                  handler:^(UIAlertAction *_Nonnull action){
@@ -157,7 +229,8 @@
                                                  }];
 
   [keySourceController addAction:generate];
-  [keySourceController addAction:import];
+  [keySourceController addAction:importFromClipboard];
+  [keySourceController addAction:importFromFiles];
   [keySourceController addAction:cancel];
   [[keySourceController popoverPresentationController] setBarButtonItem:sender];
   [self presentViewController:keySourceController animated:YES completion:nil];
@@ -169,46 +242,27 @@
   [self.navigationController pushViewController:ctrl animated:YES];
 }
 
-- (void)importKey
-{
-  UIPasteboard *pb = [UIPasteboard generalPasteboard];
+/*!
+ @brief Call to open UIDocumentPicker so the user select the file that contains a key to be imported into the Secure Enclave
+*/
+- (void) importKeyFromFile {
   
-  NSString *keyString = pb.string;
+  UIDocumentPickerViewController *documentPicker = [[UIDocumentPickerViewController alloc] initWithDocumentTypes:@[@"public.data", @"public.item", (NSString *)kUTTypeText] inMode:UIDocumentPickerModeOpen];
+  documentPicker.allowsMultipleSelection = true;
+  documentPicker.delegate = self;
   
-  if ([keyString length] == 0) {
-    UIAlertController *alertCtrl = [UIAlertController
-                                    alertControllerWithTitle:@"Invalid key"
-                                    message:@"Clipboard content couldn't be validated as a key"
-                                    preferredStyle:UIAlertControllerStyleAlert];
-    [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-    
-    [self presentViewController:alertCtrl animated:YES completion:nil];
-    return;
-  }
+  [self presentViewController:documentPicker animated:true completion:nil];
   
-  if (![keyString hasSuffix:@"\n"]) {
-    keyString = [keyString stringByAppendingString:@"\n"];
-  }
-  
-  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
-    if (key == nil) {
-      UIAlertController *alertCtrl = [UIAlertController
-                                      alertControllerWithTitle:@"Invalid key"
-                                      message:@"Clipboard content couldn't be validated as a key"
-                                      preferredStyle:UIAlertControllerStyleAlert];
-      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-      
-      [self presentViewController:alertCtrl animated:YES completion:nil];
-      return;
-    }
+}
 
-    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    ctrl.importMode = YES;
-    ctrl.key = key;
-    ctrl.comment = comment;
-    ctrl.createKeyDelegate = self;
-    [self.navigationController pushViewController:ctrl animated:YES];
-  }];
+/*!
+ @brief Import a key into the Secure Enclave getting the content from the clipboard
+*/
+- (void)importKeyFromClipboard {
+  
+  NSString *keyString = [UIPasteboard generalPasteboard].string;
+  
+  [self _importKeyFromString:keyString importOrigin:(FROM_CLIPBOARD)];
 }
 
 - (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
@@ -297,6 +351,23 @@
 - (void)showKeyInfo:(NSIndexPath *)indexPath
 {
   [self performSegueWithIdentifier:@"keyInfoSegue" sender:self];
+}
+
+#pragma mark - UIDocumentPickerDelegate
+
+- (void)documentPickerWasCancelled:(UIDocumentPickerViewController *)controller {
+  
+  
+}
+
+- (void)documentPicker:(UIDocumentPickerViewController *)controller didPickDocumentsAtURLs:(NSArray<NSURL *> *)urls {
+  
+  for (NSURL *fileUrl in urls) {
+    
+    NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
+
+    [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
+  }
 }
 
 @end
