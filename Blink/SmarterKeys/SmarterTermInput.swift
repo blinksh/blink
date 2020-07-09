@@ -264,8 +264,8 @@ class CaretHider {
       needToReload = inputAssistantItem.trailingBarButtonGroups.count != 1
       _setupAssistantItem()
     } else {
+      needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
       _setupAccessoryView()
-      needToReload = true
     }
     
   }
