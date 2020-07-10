@@ -10,7 +10,7 @@ And yet, you can spend years in the shell and not know about some of its most un
 
 ## Persistent SSH Connections with Blink
 
-Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, we have developed a workaround to help with this. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. Rest assured, we don't use or store any of the location data from your device. The `geo track` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
+Phones and tablets are tuned for extended battery life, but the power saving technology in iOS works against long-running SSH connections. Fortunately, Blink ships with a security feature that has the secondary effect of keeping your connections running longer. The `geo track` command available on Blink Shell will enable the location tracking feature in iOS to ensure Blink can maintain active SSH connections. If run as `geo lock`, additionally the location of your device will be "locked" and in case your device is moved, all your connections will be dropped. Rest assured, we don't use or store any of the location data from your device. The `geo` command bypasses the power saving system to ensure you remain connected while keeping your privacy intact.
 
 ## SSH Agent and Forwarding
 

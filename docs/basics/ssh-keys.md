@@ -1,10 +1,6 @@
 # Using SSH Keys with Blink Shell for iOS
 
-## Summary
-
-This article will give an overview of what SSH keys are and describe how to use them in Blink.
-
-## About SSH Keys
+## SSH Keys
 
 SSH Keys are small text files meant to be exchanged in lieu of passwords for verifying access to a remote server. A SSH key consists of two parts: a public and a private key. The public key is what resides on the remote server and the private key is stored on your local device. The public key is not a secret but the private key should never be shared with anyone nor uploaded to any untrusted location.
 
@@ -24,7 +20,7 @@ Click on the `Keys` button to enter the SSH keys menu.
 
 ![img](ssh-keys/using-ssh-key-image3.png)
 
-In the above example we see that there is a default key named `id_rsa`. The default key is always named `id_rsa` and this will be the key used first to authenticate. You can have multiple SSH keys to connect to multiple SSH servers. To create a key, click the `+` icon at the top and you will be presented with the New Key dialog as shown below:
+In the above example we see that there is a default key named `id_rsa`. The default keys are always named `id_xxxx` like `id_ecdsa` or `id_ed25519`, and these will be the keys used first to authenticate. You can have multiple SSH keys to connect to multiple SSH servers. To create a key, click the `+` icon at the top and you will be presented with the New Key dialog as shown below:
 
 ![img](ssh-keys/using-ssh-key-image4.png)
 
