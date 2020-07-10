@@ -1,0 +1,45 @@
+# Connecting to your AWS EC2 Instance with Blink
+
+## Introduction
+
+We could make a convincing argument that Amazon popularized, if not invented, the cloud computing movement. By offering servers, storage and other computing services, priced by the hour and accessible via an API, Amazon started a new phase in internet computing. In just fifteen years, Amazon has gone from ma pie-in-the-sky idea by visionaries at the company to a large public utility that powers a substantial portion of the Internet.
+
+EC2, or **E**lastic **C**ompute **C**loud, is the virtual server offering of AWS. Customers can launch a wide variety of Linux and Windows instances with EC2, each running a full copy of the operating system backed by Amazon's highly reliable infraestructure. EC2 instances operate much like regular servers, except resources like CPU and memory can be changed with a simple reboot. Disks for the instances are powered by EBS (**E**lastic **B**lock **S**torage), a technology allowing for easy disk management. Volumes can be resized and sclaed with a click of the mouse.
+
+Let's examine the process of launching a Linux EC2 instance in the AWS cloud and connecting to it with Blink.
+
+## Creating an Instance
+
+Sign in to your AWS account, then check in the top right corner on the menu bar between your name and support to ensure you're in the right datacenter region. You can use any datacenter in the world, but it's best to select a location near you or closer to your customers for reduced latency.
+
+Once you've confirmed your region, click on the Services menu at the top, then pick EC2 under Compute. You might have to type EC2 in the search box to find the link. Now you're on the EC2 dashboard.
+
+On the storage page enter the size, in gigabytes, of the root drive to create. For testing purposes, the default size, usually 8 GiB, is fine. You can resize later if needed. Then click next: Tags. If you wish to label this instante for a particular project or customer, you can add a name/value pair calle da tag. It's recommended to create a tag called `Name` and give it the value of the intended hostname. Once you've finished click next: Configure Security Group.
+
+If this is a new account or you don't have an existing infraestructure at AWS, you will be prompted to create a new security group. Assign it a meaningful name, then add any open ports you will need. At a minimum you'll need SSH (port `22`) open to your IP. Alternativelly, if you want to use Mosh you'll need to allow UDP traffic on ports `60000` to `61000`.
+
+To open a port, select the type of port (i.e. SSH, HTTP, HTTPS...) or if none matches pick a custom TCP or UDP port and add the number of range of ports in the Port Range box. The destination can be set to anywhere if you wish the port to be open to all IP addresses, or set to a custom IP or My IP, a shortcut provided to autimatically fill in your current IP address. Nothe that IP addresses must be entered in CIDR format (i.e. `1.2.3.4/32`) for a specific IP, and `1.2.3.0/24` for a Class C range). Once you've whitelisted any ports and IP addreses, click Review and Launch.
+
+You'll now see a detailed list confirming all of your selected options for the new instance. If everything's okay click Launch. After that, you can generate a new public/private key pair or choose an existing pair previously imported into AWS. If you create a new one you'll be prompted to save the private key file. You must have this file to connect to your instance, so you'll want to keep it safe. We will explore how to import an Amazon generated private key inside Blink.
+
+The instance will launch once you confirm the SSH key. Within minutes you'll be able to use your new EC2 instance.
+
+## Importing an Amazon Private Key
+
+Importing keys into Blink Shell is as easy at it gets. Open the settings panel by either typing `config` in the shell or by pressing `Cmd + ,` if you have a keyboard attached. Select the Keys menu and press add (`+`) to import it using the assistant using the option that best suits you. For example you can copy it to yout clipboard and then pase it into the assistant.
+
+Remember that if you name your key a non-default name, `id_rsa`, you'll have to add the `-i <keyname>` flag to the SSH command.
+
+## Accessing Your Instance
+
+Click on Instances under the Instances group on the left-hand side menu, then select the intance you wish yo conenct to with Blink. Right-click on the instance, then click Connect. The resulting page will show the SSH commands to use. If your key has already been added to Blink,  you can use the same SSH connection command to connect, like this:
+
+```bash
+ssh ubuntu@IP
+```
+
+In the above example replace IP with the address of your EC2 instance. If you choose an Amazon Linux AMI, you'll want to change the user `ubuntu` with `ec2-user`.
+
+## Conclusion
+
+AWS powers a large portion of the Internet, so launching an EC2 instance inside Amazon's powerful cloud puts your server in good compani with leading web brands. Blink's flexible command-line tools, including SSH, mosh and Rsyng make managing your amazon clour server a breeze.
