@@ -7,7 +7,7 @@
         { "title": "Navigation", "path": "/docs/basics/navigation.md" },
         { "title": "Hosts", "path": "/docs/basics/hosts.md" },
         { "title": "SSH Keys", "path": "/docs/basics/ssh-keys.md" },
-        { "title": "Commands", "path": "/docs/commands/commands.md" },
+        { "title": "Commands", "path": "/docs/commands/overview.md" },
         { "title": "Known Issues", "path": "/docs/basics/known-issues.md" }
       ]
     },
