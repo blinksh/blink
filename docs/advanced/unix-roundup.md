@@ -109,7 +109,7 @@ geo lock
 geo stop
 ```
 
-This will disconnect all active SSH connections if the device is moved. If you only want to enable background tracking for background connections, do:
+`geo lock` will disconnect all active SSH connections if the device is moved significantly, like someone stealing your device. If you only want to enable background tracking for background connections, do:
 
 ```bash
 geo track
