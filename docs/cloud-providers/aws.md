@@ -14,6 +14,10 @@ Sign in to your AWS account, then check in the top right corner on the menu bar 
 
 Once you've confirmed your region, click on the Services menu at the top, then pick EC2 under Compute. You might have to type EC2 in the search box to find the link. Now you're on the EC2 dashboard.
 
+Click on instances under the Instances group on the left-hand menu to see a full list of your instances. On a new account, you won't find any. Click Launch Instance, then select your AMI (Amazon Machine Image). An AMI is simply a disk image that contains an operating system. In the Quick Start section, you'll find a list of common systems, like RedHat Enterprise Linux, SUSE Linux, Amazon Linux, Microsoft Windows Server and Ubuntu. Since we're connecting to a Linux Server, let's choose Ubuntu.
+
+On the next page, you can select the instance type. For testing and development purposes, the t2 and t3 are generally adecuate. Contult the CPU and Memory specifications for each size to make sure it fits your requirements. Once you've made your selection click Next: Configure Instance Details. The defaults on this page are likely fine, but you know have the opportunity to make any networking configuration or monitoring changes. When finished, click next: Add Storage.
+
 On the storage page enter the size, in gigabytes, of the root drive to create. For testing purposes, the default size, usually 8 GiB, is fine. You can resize later if needed. Then click next: Tags. If you wish to label this instante for a particular project or customer, you can add a name/value pair calle da tag. It's recommended to create a tag called `Name` and give it the value of the intended hostname. Once you've finished click next: Configure Security Group.
 
 If this is a new account or you don't have an existing infraestructure at AWS, you will be prompted to create a new security group. Assign it a meaningful name, then add any open ports you will need. At a minimum you'll need SSH (port `22`) open to your IP. Alternativelly, if you want to use Mosh you'll need to allow UDP traffic on ports `60000` to `61000`.
