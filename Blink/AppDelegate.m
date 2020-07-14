@@ -211,9 +211,7 @@ void __setupProcessEnv() {
   
   UIApplication *application = [UIApplication sharedApplication];
   
-  if (_suspendTaskId != UIBackgroundTaskInvalid) {
-    [application endBackgroundTask:_suspendTaskId];
-  }
+  [self _cancelApplicationSuspendTask];
   
   _suspendTaskId = [application beginBackgroundTaskWithName:@"Suspend" expirationHandler:^{
     [self _suspendApplicationWithExpirationHandler];
@@ -228,13 +226,21 @@ void __setupProcessEnv() {
                                                   repeats:NO];
 }
 
-- (void)_cancelApplicationSuspend {
+- (void)_cancelApplicationSuspendTask {
   [_suspendTimer invalidate];
-  _suspendedMode = NO;
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
     [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
   }
   _suspendTaskId = UIBackgroundTaskInvalid;
+}
+
+- (void)_cancelApplicationSuspend {
+  [self _cancelApplicationSuspendTask];
+  
+  // We can't resume if we don't have access to protected data
+  if (UIApplication.sharedApplication.isProtectedDataAvailable) {
+    _suspendedMode = NO;
+  }
 }
 
 // Simple wrappers to get the reason of failure from call stack
@@ -263,12 +269,7 @@ void __setupProcessEnv() {
   
   [[SessionRegistry shared] suspend];
   _suspendedMode = YES;
-  
-  if (_suspendTaskId != UIBackgroundTaskInvalid) {
-    [[UIApplication sharedApplication] endBackgroundTask:_suspendTaskId];
-  }
-  
-  _suspendTaskId = UIBackgroundTaskInvalid;
+  [self _cancelApplicationSuspendTask];
 }
 
 #pragma mark - LSSupportsOpeningDocumentsInPlace
