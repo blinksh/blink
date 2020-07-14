@@ -2,7 +2,7 @@
 
 ## Introduction
 
-Digital Ocean is a prominent cloud service provider that offers an inexpensive yet performant cloud server solutions. While Amazon Web Services focuses on a wide array of smaller IT components taht can work together to form a virtual infraestructura, Digital Ocean takes a more traditional approach.
+Digital Ocean is a prominent cloud service provider that offers an inexpensive yet performant cloud server solutions. While Amazon Web Services focuses on a wide array of smaller IT components that can work together to form a virtual infraestructura, Digital Ocean takes a more traditional approach.
 
 Droplets are Digital Ocean's name for servers. They have fixed disk space, bandwidth and networking resources. This allows for a more straightforward onboarding experience. Unlike traditional providers, services are billed by the minute, creating a hybrid cloud solution that works well for many production configurations, including testing and development environments.
 
@@ -12,7 +12,7 @@ Let's take a deep dive under and see how to launch a Droplet and connect to it u
 
 Sign in to your Digital Ocean account and then click *Create* at the top right corner of the page and finally pick Droplet. You can also create a Droplet from the Droplets page found on the left-hand side menu. Pick your desired Linux distribution, version and server plan. Don't worry too much about the Droplet's size as you can resize it afterwards if your needs change.
 
-The next option to pick is the datacenter location. Selecting the closest location to you will give you lower latencies. This helps improve the overall user experience. Next, you're given the opportunity to select additional networking options, then you'll be prompted for credentials. You ca nclick *New SSH key* and then add your public key so you can easily connect to your Droplet via SSH or choose password authentication. Please be aware that password authentication method is less secure.
+The next option to pick is the datacenter location. Selecting the closest location to you will give you lower latencies. This helps improve the overall user experience. Next, you're given the opportunity to select additional networking options, then you'll be prompted for credentials. You can click *New SSH key* and then add your public key so you can easily connect to your Droplet via SSH or choose password authentication. Please be aware that password authentication method is less secure.
 
 In just a few minutes, your Droplet will become part of Digital Ocean's vas sea of servers - ready to go to work for you!
 
