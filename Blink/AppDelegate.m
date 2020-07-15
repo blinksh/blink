@@ -51,6 +51,7 @@
   NSTimer *_suspendTimer;
   UIBackgroundTaskIdentifier _suspendTaskId;
   BOOL _suspendedMode;
+  BOOL _enforceSuspension;
 }
   
 void __on_pipebroken_signal(int signum){
@@ -195,6 +196,16 @@ void __setupProcessEnv() {
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
+  NSLog(@"ProtectedDataWillBecomeUnavailable");
+  // If a scene is not yet in the background, then await for it to suspend
+  NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
+  for (UIScene *scene in scenes) {
+    if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
+      _enforceSuspension = true;
+      return;
+    }
+  }
+
   [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
 }
 
@@ -205,6 +216,8 @@ void __setupProcessEnv() {
 
 - (void)_startMonitoringForSuspending
 {
+  NSLog(@"awaitingSuspension... %s", _suspendedMode ? "true" : "false");
+
   if (_suspendedMode) {
     return;
   }
@@ -229,6 +242,8 @@ void __setupProcessEnv() {
 }
 
 - (void)_cancelApplicationSuspend {
+  NSLog(@"cancelSuspension");
+
   [_suspendTimer invalidate];
   _suspendedMode = NO;
   if (_suspendTaskId != UIBackgroundTaskInvalid) {
@@ -239,10 +254,12 @@ void __setupProcessEnv() {
 
 // Simple wrappers to get the reason of failure from call stack
 - (void)_suspendApplicationWithSuspendTimer {
+  NSLog(@"suspendApplicationWithSuspendTimer");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplicationWithExpirationHandler {
+  NSLog(@"suspendApplicationWithExpirationHandler");
   [self _suspendApplication];
 }
 
@@ -251,11 +268,16 @@ void __setupProcessEnv() {
 }
 
 - (void)_suspendApplicationOnProtectedDataWillBecomeUnavailable {
+  NSLog(@"protectedDataWillBecomeUnavailable");
   [self _suspendApplication];
 }
 
 - (void)_suspendApplication {
   [_suspendTimer invalidate];
+
+  NSLog(@"suspend... %s", _suspendedMode ? "true" : "false");
+
+  _enforceSuspension = false;
   
   if (_suspendedMode) {
     return;
@@ -324,20 +346,30 @@ void __setupProcessEnv() {
 }
 
 - (void)_onSceneDidEnterBackground:(NSNotification *)notification {
+  NSLog(@"sceneBackground");
+
   NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
   for (UIScene *scene in scenes) {
     if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
       return;
     }
   }
-  [self _startMonitoringForSuspending];
+  if (_enforceSuspension) {
+    [self _suspendApplication];
+  } else {
+    [self _startMonitoringForSuspending];
+  }
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
+  NSLog(@"sceneForeground");
+
   [self _cancelApplicationSuspend];
 }
 
 - (void)_onSceneDidActiveNotification:(NSNotification *)notification {
+  NSLog(@"sceneActive");
+
   [self _cancelApplicationSuspend];
 }
 
