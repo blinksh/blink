@@ -51,6 +51,7 @@
   NSTimer *_suspendTimer;
   UIBackgroundTaskIdentifier _suspendTaskId;
   BOOL _suspendedMode;
+  BOOL _enforceSuspension;
 }
   
 void __on_pipebroken_signal(int signum){
@@ -195,6 +196,15 @@ void __setupProcessEnv() {
 
 - (void)applicationProtectedDataWillBecomeUnavailable:(UIApplication *)application
 {
+  // If a scene is not yet in the background, then await for it to suspend
+  NSArray * scenes = UIApplication.sharedApplication.connectedScenes.allObjects;
+  for (UIScene *scene in scenes) {
+    if (scene.activationState == UISceneActivationStateForegroundActive || scene.activationState == UISceneActivationStateForegroundInactive) {
+      _enforceSuspension = true;
+      return;
+    }
+  }
+
   [self _suspendApplicationOnProtectedDataWillBecomeUnavailable];
 }
 
@@ -262,6 +272,8 @@ void __setupProcessEnv() {
 
 - (void)_suspendApplication {
   [_suspendTimer invalidate];
+
+  _enforceSuspension = false;
   
   if (_suspendedMode) {
     return;
@@ -292,7 +304,11 @@ void __setupProcessEnv() {
       return;
     }
   }
-  [self _startMonitoringForSuspending];
+  if (_enforceSuspension) {
+    [self _suspendApplication];
+  } else {
+    [self _startMonitoringForSuspending];
+  }
 }
 
 - (void)_onSceneWillEnterForeground:(NSNotification *)notification {
