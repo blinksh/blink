@@ -19,6 +19,15 @@
 	{ "title": "SSH", "path": "/docs/advanced/advanced-ssh.md" },
 	{ "title": "UNIX Commands", "path": "/docs/advanced/unix-roundup.md" }
       ]
+    },
+    {
+      "title": "Cloud Providers",
+      "heading": true,
+      "routes": [
+	{ "title": "Digital Ocean", "path": "/docs/cloud-providers/do.md" },
+	{ "title": "Amazon Web Services", "path": "/docs/cloud-providers/aws.md" }
+      ]
     }
+    
   ]
 }
