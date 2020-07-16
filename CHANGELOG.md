@@ -1,3 +1,7 @@
+# Version 13.5.6
+
+- Improved mosh restore. #1048
+
 # Version 13.5.5
 
 - Restored iCloud sync
