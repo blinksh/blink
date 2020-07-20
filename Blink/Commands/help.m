@@ -89,6 +89,8 @@ int help_main(int argc, char *argv[]) {
     @"    C-x (change selection point)",
     @"  OTHER: arrows and fingers",
     @"",
+    @"Docs: https://blink.sh/docs",
+    @"",
     
  ] componentsJoinedByString:@"\n"];
  
