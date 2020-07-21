@@ -190,7 +190,7 @@ extension SuspendableSession {
     )
     
     supporDirUrl.appendPathComponent("sessions")
-    var isDir:ObjCBool = false
+    var isDir:ObjCBool = true
     if !fm.fileExists(atPath: supporDirUrl.path, isDirectory: &isDir) {
       try fm.createDirectory(at: supporDirUrl, withIntermediateDirectories: true, attributes: nil)
     }
@@ -254,11 +254,19 @@ extension SuspendableSession {
       let data = try jsonEncoder.encode(_metaIndex)
       let sessionsFolder = try _fsSessionsFolder()
       let indexURL = sessionsFolder.appendingPathComponent("index.json")
+      _createIndexFileIfNotExists(indexURL)
       try data.write(to: indexURL, options: [.atomic])
     } catch let e {
       debugPrint(e)
     }
   }
+  
+	private func _createIndexFileIfNotExists(_ fileURL: URL) {
+		let fm = FileManager.default
+		if !fm.fileExists(atPath: fileURL.path) {
+			fm.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+		}
+	}
   
   private func _fsReadMetaIndex() {
     do {
