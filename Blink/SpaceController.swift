@@ -213,6 +213,13 @@ class SpaceController: UIViewController {
     _removeCurrentSpace()
   }
   
+  /**
+    Sends `Ctrl + L` sequence when `Cmd + K` is pressed. Mimics the iTerm's clean screen behavior. Behaves the same as `Ctrl + L`.
+   */
+  @objc private func _clearCurrentTerminal() {
+    currentDevice?.view.webView.reportPress(.control, keyId: "76:0")
+  }
+  
   private func _removeCurrentSpace(attachInput: Bool = true) {
     guard
       let currentKey = _currentKey,
@@ -527,6 +534,7 @@ extension SpaceController {
     case .zoomIn: currentTerm()?.termDevice.view?.increaseFontSize()
     case .zoomOut: currentTerm()?.termDevice.view?.decreaseFontSize()
     case .zoomReset: currentTerm()?.termDevice.view?.resetFontSize()
+    case .clearScreen: _clearCurrentTerminal()
     }
   }
   

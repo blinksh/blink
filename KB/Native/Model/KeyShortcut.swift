@@ -155,6 +155,8 @@ class KeyShortcut: ObservableObject, Codable, Identifiable {
       KeyShortcut(.zoomOut, .command, "-"),
       KeyShortcut(.zoomReset, .command, "="),
       
+      KeyShortcut(.clearScreen, .command, "k"),
+      
       KeyShortcut(.configShow, [.command], ","),
     ]
   }

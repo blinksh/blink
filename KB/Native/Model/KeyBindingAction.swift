@@ -62,6 +62,7 @@ enum Command: String, Codable, CaseIterable {
   case selectionStackOverflow
   case selectionShare
   case configShow
+  case clearScreen
   
   var title: String {
     switch self {
@@ -97,6 +98,7 @@ enum Command: String, Codable, CaseIterable {
     case .selectionStackOverflow: return "StackOverflow Selection"
     case .selectionShare:         return "Share Selection"
     case .configShow:             return "Show Config"
+    case .clearScreen:            return "Clear screen"
     }
   }
 }
