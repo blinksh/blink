@@ -24,7 +24,8 @@
       "title": "Cloud Providers",
       "heading": true,
       "routes": [
-	{ "title": "Digital Ocean", "path": "/docs/cloud-providers/do.md" }
+	{ "title": "Digital Ocean", "path": "/docs/cloud-providers/do.md" },
+	{ "title": "Amazon Web Services", "path": "/docs/cloud-providers/aws.md" }
       ]
     }
     
