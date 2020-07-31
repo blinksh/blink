@@ -77,6 +77,18 @@
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
 	<array>
+    <dict>
+      <key>CFBundleTypeRole</key>
+      <string>Editor</string>
+      <key>CFBundleURLIconFile</key>
+      <string></string>
+      <key>CFBundleURLName</key>
+      <string>Com.CarlosCabanero.BlinkShell</string>
+      <key>CFBundleURLSchemes</key>
+      <array>
+        <string>Com.CarlosCabanero.BlinkShell</string>
+      </array>
+    </dict>
 		<dict>
 			<key>CFBundleTypeRole</key>
 			<string>Editor</string>
@@ -96,6 +108,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>blinkshell</string>
+    <string>Com.CarlosCabanero.BlinkShell</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
