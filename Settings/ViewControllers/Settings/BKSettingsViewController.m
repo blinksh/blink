@@ -104,6 +104,35 @@
     UIViewController *vc = [KBSettingsViewController createWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
   }
+  // Export license cell
+  else if (indexPath.section == 5 && indexPath.row == 0) {
+    ReceiptFetcher * receiptFetcher = [ReceiptFetcher sharedInstance];
+    NSString *receiptString = [receiptFetcher fetchReceipt];
+    
+    
+    [receiptFetcher validateLicenseWithReceipt:receiptString completion:^(NSString *signedReceiptFromBase64){
+      
+      NSString *licenseXCallbackUrl = [NSString stringWithFormat:@"sh.blink.shell://x-callback-url/validateReceipt?receipt=%@", signedReceiptFromBase64];
+      
+      NSURL *xCallbackUrl = [NSURL URLWithString:licenseXCallbackUrl];
+      dispatch_async(dispatch_get_main_queue(), ^{
+        
+        if ([UIApplication.sharedApplication canOpenURL:xCallbackUrl]) {
+          blink_openurl(xCallbackUrl);
+        }
+        // Blink14 is not installed on device, show an alert as the license can not be validated.
+        else {
+          UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"License validation" message:@"You don't hav a copy of Blink 14 to validate your license against." preferredStyle:UIAlertControllerStyleAlert];
+          UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+          [alertController addAction:ok];
+          
+          [self presentViewController:alertController animated:YES completion:nil];
+        }
+        
+      });
+
+    }];
+  }
 }
 
 

@@ -38,6 +38,8 @@
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */; };
+		80CA970624DC27AF00CDBFDA /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA970524DC27AF00CDBFDA /* Calendar.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
 		85A34309200A8FAF009324F1 /* term.css in Resources */ = {isa = PBXBuildFile; fileRef = 85A34308200A8FAF009324F1 /* term.css */; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
@@ -401,6 +403,8 @@
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptFetcher.swift; sourceTree = "<group>"; };
+		80CA970524DC27AF00CDBFDA /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
 		85A34308200A8FAF009324F1 /* term.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = term.css; sourceTree = "<group>"; };
 		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
@@ -721,6 +725,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				80CA96F824DC277100CDBFDA /* StoreKit */,
 				D215AC282335218E00E164C3 /* WebKit */,
 				D265FBC7231904B50017EAC4 /* Foundation */,
 				D2A52225231304A90010AC04 /* UIKit */,
@@ -908,6 +913,22 @@
 			);
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
+		};
+		80CA96F824DC277100CDBFDA /* StoreKit */ = {
+			isa = PBXGroup;
+			children = (
+				80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */,
+			);
+			path = StoreKit;
+			sourceTree = "<group>";
+		};
+		80CA970424DC27A400CDBFDA /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				80CA970524DC27AF00CDBFDA /* Calendar.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
 		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
 			isa = PBXGroup;
@@ -1359,6 +1380,7 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				80CA970424DC27A400CDBFDA /* Extensions */,
 				D2C243F7238E44960082C69C /* KB */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				D265FBBB2317DD3C0017EAC4 /* BlinkTests */,
@@ -1663,6 +1685,7 @@
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,
+				80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */,
 				D2961970214F89360070935A /* ssh-agent.m in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
@@ -1758,6 +1781,7 @@
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
+				80CA970624DC27AF00CDBFDA /* Calendar.swift in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */,
