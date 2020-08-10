@@ -10,7 +10,7 @@ You can see all the applications at your disposal by pressing `TAB` on the shell
 
 ## File Utilities
 
-iOS limits you to a sandbox, but you can make the most of this by linking files from other locations on your device like iCloud. Simply run `link files` to bring up a dialog allowing you to select the folder to connect to Blink Shell.
+iOS limits you to a sandbox, but you can make the most of this by linking files from other locations on your device like iCloud. Simply run `link-files` to bring up a dialog allowing you to select the folder to connect to Blink Shell.
 
 ![img](unix-roundup/unix-roundup-image1.png)
 
