@@ -111,8 +111,14 @@
     
     
     [receiptFetcher validateLicenseWithReceipt:receiptString completion:^(NSString *signedReceiptFromBase64){
-      
-      NSString *licenseXCallbackUrl = [NSString stringWithFormat:@"sh.blink.shell://x-callback-url/validateReceipt?receipt=%@", signedReceiptFromBase64];
+                                                                  
+      // TODO: THIS IS FOR TESTING PURPOSES
+      NSData *encodeData = [signedReceiptFromBase64 dataUsingEncoding:NSUTF8StringEncoding];
+      NSString *base64String = [encodeData base64EncodedStringWithOptions:0];
+      NSLog(@"Encode String Value: %@", base64String);
+      // ------------------------------------------------------------------------------------------
+
+      NSString *licenseXCallbackUrl = [NSString stringWithFormat:@"sh.blink.shell://x-callback-url/validateMigration?receipt=%@", base64String];
       
       NSURL *xCallbackUrl = [NSURL URLWithString:licenseXCallbackUrl];
       dispatch_async(dispatch_get_main_queue(), ^{
@@ -122,7 +128,7 @@
         }
         // Blink14 is not installed on device, show an alert as the license can not be validated.
         else {
-          UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"License validation" message:@"You don't hav a copy of Blink 14 to validate your license against." preferredStyle:UIAlertControllerStyleAlert];
+          UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"License validation" message:@"You don't have a copy of Blink 14 to validate your license against." preferredStyle:UIAlertControllerStyleAlert];
           UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
           [alertController addAction:ok];
           
@@ -132,6 +138,24 @@
       });
 
     }];
+  } else if (indexPath.section == 6 && indexPath.row == 0) {
+    BackupAid * bk = [[BackupAid alloc] init];
+    
+    NSError *error;
+    
+    @try {
+      [bk copyBlinkFilesAndShareViaXcallbackUrlAndReturnError:&error];
+      
+      if (error != nil) {
+        @throw [NSException exceptionWithName:@"Error" reason:error.localizedDescription userInfo:nil];
+      }
+    } @catch (NSException *exception) {
+      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:exception.name message: exception.reason preferredStyle:UIAlertControllerStyleAlert];
+      UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+      [alertController addAction:ok];
+      
+      [self presentViewController:alertController animated:YES completion:nil];
+    }
   }
 }
 

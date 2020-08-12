@@ -95,6 +95,7 @@
 	<string>$(CURRENT_PROJECT_VERSION)</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
+		<string>sh.blink.shell</string>
 		<string>blinkshell</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>

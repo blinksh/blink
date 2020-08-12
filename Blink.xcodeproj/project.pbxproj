@@ -38,6 +38,8 @@
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721A24E2BF6200E26681 /* BackupAid.swift */; };
+		8060721D24E2BF8600E26681 /* FileToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721C24E2BF8600E26681 /* FileToMigrate.swift */; };
 		80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */; };
 		80CA970624DC27AF00CDBFDA /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA970524DC27AF00CDBFDA /* Calendar.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -403,6 +405,8 @@
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		8060721A24E2BF6200E26681 /* BackupAid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAid.swift; sourceTree = "<group>"; };
+		8060721C24E2BF8600E26681 /* FileToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToMigrate.swift; sourceTree = "<group>"; };
 		80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptFetcher.swift; sourceTree = "<group>"; };
 		80CA970524DC27AF00CDBFDA /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
@@ -725,6 +729,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				8060721324E2BF5100E26681 /* Backup */,
 				80CA96F824DC277100CDBFDA /* StoreKit */,
 				D215AC282335218E00E164C3 /* WebKit */,
 				D265FBC7231904B50017EAC4 /* Foundation */,
@@ -913,6 +918,15 @@
 			);
 			path = Sessions;
 			sourceTree = SOURCE_ROOT;
+		};
+		8060721324E2BF5100E26681 /* Backup */ = {
+			isa = PBXGroup;
+			children = (
+				8060721A24E2BF6200E26681 /* BackupAid.swift */,
+				8060721C24E2BF8600E26681 /* FileToMigrate.swift */,
+			);
+			path = Backup;
+			sourceTree = "<group>";
 		};
 		80CA96F824DC277100CDBFDA /* StoreKit */ = {
 			isa = PBXGroup;
@@ -1705,6 +1719,7 @@
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
+				8060721D24E2BF8600E26681 /* FileToMigrate.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
 				D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */,
@@ -1828,6 +1843,7 @@
 				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
 				D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */,
 				D2C2442F238E62A70082C69C /* KBSettingsViewController.swift in Sources */,
+				8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
