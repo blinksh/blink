@@ -39,6 +39,7 @@
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		805D7B4E24E5217400C1DEEF /* BackUpAidError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */; };
+		805D7B5024E588F800C1DEEF /* KeyToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */; };
 		8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721A24E2BF6200E26681 /* BackupAid.swift */; };
 		8060721D24E2BF8600E26681 /* FileToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721C24E2BF8600E26681 /* FileToMigrate.swift */; };
 		80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */; };
@@ -407,6 +408,7 @@
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
 		805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackUpAidError.swift; sourceTree = "<group>"; };
+		805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyToMigrate.swift; sourceTree = "<group>"; };
 		8060721A24E2BF6200E26681 /* BackupAid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAid.swift; sourceTree = "<group>"; };
 		8060721C24E2BF8600E26681 /* FileToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToMigrate.swift; sourceTree = "<group>"; };
 		80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptFetcher.swift; sourceTree = "<group>"; };
@@ -927,6 +929,7 @@
 				8060721A24E2BF6200E26681 /* BackupAid.swift */,
 				805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */,
 				8060721C24E2BF8600E26681 /* FileToMigrate.swift */,
+				805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */,
 			);
 			path = Backup;
 			sourceTree = "<group>";
@@ -1699,6 +1702,7 @@
 				D2C2441B238E44AB0082C69C /* NavView.swift in Sources */,
 				D241CBD623040734003D64A5 /* KBSection.swift in Sources */,
 				D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */,
+				805D7B5024E588F800C1DEEF /* KeyToMigrate.swift in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
 				D296199E214F995D0070935A /* sc25519.c in Sources */,

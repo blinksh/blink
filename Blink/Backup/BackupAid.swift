@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
+import UICKeyChainStore
 
 /**
  Utility to compress & export Blink essential folders: `.ssh` & `.blink`.
@@ -65,62 +66,24 @@ import Foundation
     documentURL = url
   }
   
-  /**
-   Receives `Data` with the hosts stored in Blink 13, decodes it and appends them to the already existing hosts.
-   */
-  private func _restoreHostsFromMigration(hostsData: Data) {
-    
-    /// Decode the `Data` object casting it as an array of hosts
-    guard var migratedHosts = NSKeyedUnarchiver.unarchiveObject(with: hostsData) as? [BKHosts] else {
-      return
-    }
-    
-    var hostsToSave: [BKHosts] = migratedHosts
-    
-    ///  Read the already stored hosts on device
-    if let localHosts = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] {
-      hostsToSave += localHosts
-    }
-    
-    for host in migratedHosts {
-      
-      BKHosts.saveHost(
-        host.host,
-        withNewHost: host.host,
-        hostName: host.hostName,
-        sshPort: "\(host.port)",
-        user: host.user,
-        password: host.password,
-        hostKey: host.key,
-        moshServer: host.moshServer,
-        moshPortRange: "\(host.moshPort):\(host.moshPortEnd)",
-        startUpCmd: host.moshStartup,
-        prediction: BKMoshPrediction(rawValue: BKMoshPrediction.RawValue(host.prediction!)),
-        proxyCmd: host.proxyCmd)
-    }
-  }
+  
   
   /**
    De-base64 the `JSONEncoded` `[FileToMigrate]` data from Blink.
    */
-  func deBase64AndRestore(backUpData: String, hosts: String) {
+  func deBase64AndRestore(xCallbackUrlQueryParameters: [String: String]) {
     
-    guard let documentsUrl = documentURL else { return }
-    
-    guard let decodedBase64Data = Data(base64Encoded: backUpData, options: .ignoreUnknownCharacters) else { return }
-    
-    guard let decodedBase64Hosts = Data(base64Encoded: hosts, options: .ignoreUnknownCharacters) else { return }
-    
-    _restoreHostsFromMigration(hostsData: decodedBase64Hosts)
-    
-    guard let folderStruct = try? _decoder.decode([FileToMigrate].self, from: decodedBase64Data) else { return }
-    
-    // Iterate through all the files to restore them
-    for file in folderStruct {
+    if let fileFoldersData = xCallbackUrlQueryParameters.first(where: { $0.key == "data" })?.value {
       
-      let filePath = documentsUrl.appendingPathComponent(file.fileName)
-      
-      guard (try? file.fileContents.write(to: filePath)) != nil else { return }
+      _restoreFilesFromMigration(filesData: fileFoldersData)
+    }
+    
+    if let hostsData = xCallbackUrlQueryParameters.first(where: { $0.key == "hosts" })?.value {
+      _restoreHostsFromMigration(hostsData: hostsData)
+    }
+    
+    if let keysData = xCallbackUrlQueryParameters.first(where: { $0.key == "keys" })?.value {
+      _restoreKeysFromMigration(keysInBase64: keysData)
     }
   }
   
@@ -162,16 +125,15 @@ import Foundation
     
     var queryComponents: [URLQueryItem] = []
     
-    guard let hostsData = try? Data(contentsOf: URL(fileURLWithPath: BlinkPaths.blinkHostsFile())) else { return }
-    
-    guard let hosts = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] else { return }
-    
-    if let hostsDataArchived = try? NSKeyedArchiver.archivedData(withRootObject: hosts, requiringSecureCoding: false) {
-      let hostsBase64Encoded = hostsDataArchived.base64EncodedString()
-      let hostsComponent = URLQueryItem(name: "hosts", value: hostsBase64Encoded)
+    if let hostsBase64 = _migrateHosts() {
+      let hostsComponent = URLQueryItem(name: "hosts", value: hostsBase64)
       queryComponents.append(hostsComponent)
     }
 
+    if let keysBase64 = _migrateKeys() {
+      let keysComponent = URLQueryItem(name: "keys", value: keysBase64)
+      queryComponents.append(keysComponent)
+    }
     
     var xCallbackUrlComponents = URLComponents()
     
@@ -254,5 +216,134 @@ import Foundation
     }
     
     return blinkFolders
+  }
+}
+
+
+// MARK: Keys migration
+extension BackupAid {
+  
+  /**
+   Decode the `Base64` encoded `[KeyToMigrate]` `Codable` structure and saves it to Blink's key store using `BKPubKey.saveCard(:)`
+   
+   - Parameters:
+      - `keysInBase64`: `Base64` encoded `String` containing [KeyToMigrate]
+   */
+  private func _restoreKeysFromMigration(keysInBase64: String) {
+    
+    guard let decodedBase64Keys = Data(base64Encoded: keysInBase64, options: .ignoreUnknownCharacters) else { return }
+    
+
+    guard let migratedKeys = try? _decoder.decode([KeyToMigrate].self, from: decodedBase64Keys) else {
+      return
+    }
+    
+    /**
+     Save the migrated keys on the system. Saves `priateKey` in the `UICKeyChainStore` creating a new
+     private key reference with the format: `KEY_ID.pem`.
+     */
+    migratedKeys.forEach({ BKPubKey.saveCard($0.id, privateKey: $0.privateKey, publicKey: $0.publicKey) })
+  }
+  
+  /**
+   Read keys stored on device encoding the resulting `Data` into a `Base64` `String` to export them to a new version of Blink.
+   
+   - Returns:
+      - `keysBase64Encoded`:  a `String` containing a `[KeyToMigrate]` encoded in `Base64` to be shared later on with `x-callback-url`
+   */
+  private func _migrateKeys() -> String? {
+    
+    let keychainStore = UICKeyChainStore(service: "sh.blink.pkcard")
+    
+    guard let identities: [BKPubKey] = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkKeysFile()) as? [BKPubKey] else { return nil }
+    
+    guard let keysDataArchived = try? NSKeyedArchiver.archivedData(withRootObject: identities, requiringSecureCoding: false) else { return nil }
+    
+    var keysToMigrate: [KeyToMigrate] = []
+    
+    for card in identities {
+      
+      /// Read the private key for the current `BKPubKey` from the `UICKeyChainStore`
+      let privateKey = keychainStore.string(forKey: card.id + ".pem") ?? ""
+      
+      keysToMigrate.append(KeyToMigrate(
+                            id: card.id,
+                            publicKey: card.publicKey,
+                            privateKey: privateKey))
+    }
+    
+    guard let keysAsData = try? _encoder.encode(keysToMigrate) else { return nil }
+    
+    let keysBase64Encoded = keysAsData.base64EncodedString()
+    
+    return keysBase64Encoded
+  }
+}
+
+// MARK: Hosts migration
+extension BackupAid {
+  
+  /**
+   Read hosts stored on device encoding the resulting `Data` into a `Base64` `String` to export them to a new version of Blink.
+   
+   - Returns:
+      - `hostsBase64Encoded`:  a `String` containing a `[BKHosts]` encoded in `Base64` to be shared later on with `x-callback-url`
+   */
+  private func _migrateHosts() -> String? {
+    
+    guard let hosts: [BKHosts] = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] else { return nil }
+    
+    guard let hostsDataArchived = try? NSKeyedArchiver.archivedData(withRootObject: hosts, requiringSecureCoding: false) else { return nil }
+    
+    let hostsBase64Encoded = hostsDataArchived.base64EncodedString()
+    
+    return hostsBase64Encoded
+  }
+  
+  /**
+   Decode the `Base64` encoded `[BKHosts]` and append the hosts to the new version of Blink.
+   
+   - Parameters:
+      - `hostsData`: `Base64` encoded `String` containing [KeyToMigrate]
+   */
+  private func _restoreHostsFromMigration(hostsData: String) {
+    
+    guard let decodedBase64Hosts = Data(base64Encoded: hostsData, options: .ignoreUnknownCharacters) else { return }
+    
+    /// Decode the `Data` object casting it as an array of hosts
+    guard var migratedHosts = NSKeyedUnarchiver.unarchiveObject(with: decodedBase64Hosts) as? [BKHosts] else {
+      return
+    }
+    
+    var hostsToSave: [BKHosts] = migratedHosts
+    
+    ///  Read the already stored hosts on device
+    if let localHosts = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] {
+      hostsToSave += localHosts
+    }
+    
+    NSKeyedArchiver.archiveRootObject(migratedHosts, toFile: BlinkPaths.blinkHostsFile())
+  }
+}
+
+// MARK: File/Folder migration
+extension BackupAid {
+  
+  private func _restoreFilesFromMigration(filesData: String) {
+    
+    guard let documentsUrl = documentURL else { return }
+    
+    guard let decodedBase64Data = Data(base64Encoded: filesData, options: .ignoreUnknownCharacters) else { return }
+    
+    
+    guard let folderStruct = try? _decoder.decode([FileToMigrate].self, from: decodedBase64Data) else { return }
+    
+    // Iterate through all the files to restore them
+    for file in folderStruct {
+      
+      let filePath = documentsUrl.appendingPathComponent(file.fileName)
+      
+      guard (try? file.fileContents.write(to: filePath)) != nil else { return }
+    }
   }
 }

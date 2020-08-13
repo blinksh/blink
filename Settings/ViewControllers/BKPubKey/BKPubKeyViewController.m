@@ -111,6 +111,8 @@ enum SshKeyImportOrigin {
 - (void)viewDidLoad
 {
   [super viewDidLoad];
+  
+  [BKPubKey loadIDS];
 }
 
 - (void)viewWillDisappear:(BOOL)animated

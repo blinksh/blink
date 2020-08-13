@@ -30,20 +30,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import Foundation
 
-#import "BKDefaults.h"
-#import "BKHosts.h"
-#import "BlinkPaths.h"
-#import "DeviceInfo.h"
-#import "LayoutManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-#import "KBWebViewBase.h"
-#import "openurl.h"
-#import "BKPubKey.h"
-
-#endif /* Blink_bridge_h */
+struct KeyToMigrate: Codable {
+  /// The key's identifier, the private key's identifier will be `id` + `.pem`
+  let id: String
+  let publicKey: String
+  /// Stored in `UICKeyChainStore` under `sh.blink.pkcard`'s service
+  let privateKey: String
+}
