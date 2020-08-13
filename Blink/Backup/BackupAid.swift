@@ -29,29 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 import Foundation
-
-enum BackUpAidError: Error {
-  case blinkFourteenIsNotInstalled
-  case couldNotReadFilesContent(filePath: String)
-  case couldNotReadFilesDocument
-  
-}
-
-extension BackUpAidError: LocalizedError {
-  public var errorDescription: String? {
-    switch self {
-    case .blinkFourteenIsNotInstalled:
-      return "Error opening the newest version of Blink to restore your data. If you don't have Blink 14 install it from the App Store and come back to this to migrate your personal data."
-    case .couldNotReadFilesContent(let path):
-      return "Could not read the contents of file at path \(path)"
-    case .couldNotReadFilesDocument:
-      return "Could not read data from the document's folder"
-    }
-  }
-}
-
 
 /**
  Utility to compress & export Blink essential folders: `.ssh` & `.blink`.
@@ -82,22 +60,58 @@ extension BackUpAidError: LocalizedError {
   override init() {
     super.init()
     
-    guard let url = _fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else {
+    guard let url = _fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
+    
+    documentURL = url
+  }
+  
+  /**
+   Receives `Data` with the hosts stored in Blink 13, decodes it and appends them to the already existing hosts.
+   */
+  private func _restoreHostsFromMigration(hostsData: Data) {
+    
+    /// Decode the `Data` object casting it as an array of hosts
+    guard var migratedHosts = NSKeyedUnarchiver.unarchiveObject(with: hostsData) as? [BKHosts] else {
       return
     }
     
-    documentURL = url
+    var hostsToSave: [BKHosts] = migratedHosts
     
+    ///  Read the already stored hosts on device
+    if let localHosts = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] {
+      hostsToSave += localHosts
+    }
+    
+    for host in migratedHosts {
+      
+      BKHosts.saveHost(
+        host.host,
+        withNewHost: host.host,
+        hostName: host.hostName,
+        sshPort: "\(host.port)",
+        user: host.user,
+        password: host.password,
+        hostKey: host.key,
+        moshServer: host.moshServer,
+        moshPortRange: "\(host.moshPort):\(host.moshPortEnd)",
+        startUpCmd: host.moshStartup,
+        prediction: BKMoshPrediction(rawValue: BKMoshPrediction.RawValue(host.prediction!)),
+        proxyCmd: host.proxyCmd)
+    }
   }
   
   /**
    De-base64 the `JSONEncoded` `[FileToMigrate]` data from Blink.
    */
-  func deBase64AndRestore(backUpData: String) {
+  func deBase64AndRestore(backUpData: String, hosts: String) {
     
     guard let documentsUrl = documentURL else { return }
     
     guard let decodedBase64Data = Data(base64Encoded: backUpData, options: .ignoreUnknownCharacters) else { return }
+    
+    guard let decodedBase64Hosts = Data(base64Encoded: hosts, options: .ignoreUnknownCharacters) else { return }
+    
+    _restoreHostsFromMigration(hostsData: decodedBase64Hosts)
     
     guard let folderStruct = try? _decoder.decode([FileToMigrate].self, from: decodedBase64Data) else { return }
     
@@ -130,7 +144,6 @@ extension BackUpAidError: LocalizedError {
         print(error.localizedDescription)
         throw error
       }
-      
     } catch {
       throw error
     }
@@ -147,10 +160,34 @@ extension BackUpAidError: LocalizedError {
    */
   @objc func copyBlinkFilesAndShareViaXcallbackUrl() throws {
     
+    var queryComponents: [URLQueryItem] = []
+    
+    guard let hostsData = try? Data(contentsOf: URL(fileURLWithPath: BlinkPaths.blinkHostsFile())) else { return }
+    
+    guard let hosts = NSKeyedUnarchiver.unarchiveObject(withFile: BlinkPaths.blinkHostsFile()) as? [BKHosts] else { return }
+    
+    if let hostsDataArchived = try? NSKeyedArchiver.archivedData(withRootObject: hosts, requiringSecureCoding: false) {
+      let hostsBase64Encoded = hostsDataArchived.base64EncodedString()
+      let hostsComponent = URLQueryItem(name: "hosts", value: hostsBase64Encoded)
+      queryComponents.append(hostsComponent)
+    }
+
+    
+    var xCallbackUrlComponents = URLComponents()
+    
+    xCallbackUrlComponents.scheme = "sh.blink.shell"
+    xCallbackUrlComponents.host = "x-callback-url"
+    xCallbackUrlComponents.path = "/restoreBackup"
+    
     do {
       let base64BackupData = try _getBlinkFoldersAsBase64()
       
-      guard let xCallbackUrl = URL(string: "sh.blink.shell://x-callback-url/restoreBackup?data=\(base64BackupData)") else { return }
+      let foldersComponent = URLQueryItem(name: "data", value: base64BackupData)
+      queryComponents.append(foldersComponent)
+      
+      xCallbackUrlComponents.queryItems = queryComponents
+      
+      guard let xCallbackUrl = xCallbackUrlComponents.url else { return }
       
       if UIApplication.shared.canOpenURL(xCallbackUrl) {
         blink_openurl(xCallbackUrl)
@@ -188,7 +225,6 @@ extension BackUpAidError: LocalizedError {
       
       if !folder.hasDirectoryPath {
         
-        
         guard let stringFileContents = try? Data(contentsOf: documentURL.appendingPathComponent(String(fileFolderPath.dropFirst()))) else {
           // If the file's content can't be read throw an error indicating which file couldn't be read.
           continue
@@ -211,7 +247,6 @@ extension BackUpAidError: LocalizedError {
             throw BackUpAidError.couldNotReadFilesContent(filePath: file.lastPathComponent)
           }
           
-          
           let currentFile = FileToMigrate(fileName: String(fileFolderPath.dropFirst()) + "/" + file.lastPathComponent, fileContents: stringFileContents)
           blinkFolders.append(currentFile)
         }
@@ -220,5 +255,4 @@ extension BackUpAidError: LocalizedError {
     
     return blinkFolders
   }
-  
 }

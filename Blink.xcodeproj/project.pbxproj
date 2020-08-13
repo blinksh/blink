@@ -38,6 +38,7 @@
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		805D7B4E24E5217400C1DEEF /* BackUpAidError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */; };
 		8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721A24E2BF6200E26681 /* BackupAid.swift */; };
 		8060721D24E2BF8600E26681 /* FileToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721C24E2BF8600E26681 /* FileToMigrate.swift */; };
 		80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */; };
@@ -405,6 +406,7 @@
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackUpAidError.swift; sourceTree = "<group>"; };
 		8060721A24E2BF6200E26681 /* BackupAid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAid.swift; sourceTree = "<group>"; };
 		8060721C24E2BF8600E26681 /* FileToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToMigrate.swift; sourceTree = "<group>"; };
 		80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptFetcher.swift; sourceTree = "<group>"; };
@@ -923,6 +925,7 @@
 			isa = PBXGroup;
 			children = (
 				8060721A24E2BF6200E26681 /* BackupAid.swift */,
+				805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */,
 				8060721C24E2BF8600E26681 /* FileToMigrate.swift */,
 			);
 			path = Backup;
@@ -1791,6 +1794,7 @@
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
 				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
+				805D7B4E24E5217400C1DEEF /* BackUpAidError.swift in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
