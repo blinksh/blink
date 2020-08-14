@@ -42,6 +42,7 @@
 		805D7B5024E588F800C1DEEF /* KeyToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */; };
 		8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721A24E2BF6200E26681 /* BackupAid.swift */; };
 		8060721D24E2BF8600E26681 /* FileToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721C24E2BF8600E26681 /* FileToMigrate.swift */; };
+		8065124D24E6DB52000159E2 /* FileManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8065124C24E6DB52000159E2 /* FileManager.swift */; };
 		80CA970024DC277C00CDBFDA /* ReceiptFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */; };
 		80CA970624DC27AF00CDBFDA /* Calendar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80CA970524DC27AF00CDBFDA /* Calendar.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -411,6 +412,7 @@
 		805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyToMigrate.swift; sourceTree = "<group>"; };
 		8060721A24E2BF6200E26681 /* BackupAid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAid.swift; sourceTree = "<group>"; };
 		8060721C24E2BF8600E26681 /* FileToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileToMigrate.swift; sourceTree = "<group>"; };
+		8065124C24E6DB52000159E2 /* FileManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileManager.swift; sourceTree = "<group>"; };
 		80CA96FF24DC277C00CDBFDA /* ReceiptFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptFetcher.swift; sourceTree = "<group>"; };
 		80CA970524DC27AF00CDBFDA /* Calendar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Calendar.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
@@ -946,6 +948,7 @@
 			isa = PBXGroup;
 			children = (
 				80CA970524DC27AF00CDBFDA /* Calendar.swift */,
+				8065124C24E6DB52000159E2 /* FileManager.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1713,6 +1716,7 @@
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
+				8065124D24E6DB52000159E2 /* FileManager.swift in Sources */,
 				D296198D214F96D50070935A /* digest-openssl.c in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,

@@ -66,8 +66,6 @@ import UICKeyChainStore
     documentURL = url
   }
   
-  
-  
   /**
    De-base64 the `JSONEncoded` `[FileToMigrate]` data from Blink.
    */
@@ -87,30 +85,6 @@ import UICKeyChainStore
     }
   }
   
-  /**
-   Read the files & folder structure, encode the `[FileToMigrate]` resulting `Codable` struct and then `Base64` the result.
-   
-   - Returns: `String` Base64 encoded containing a JSONEncoded `[FileToMigrate]`
-   - Throws: `Error`
-   */
-  private func _getBlinkFoldersAsBase64() throws -> String {
-    
-    do {
-      let readFiles = try _getBlinkFileStructure()
-      
-      do {
-        let coded = try _encoder.encode(readFiles)
-        
-        return coded.base64EncodedString()
-        
-      } catch {
-        print(error.localizedDescription)
-        throw error
-      }
-    } catch {
-      throw error
-    }
-  }
   
   /**
    Backs up data and share it as base64 to be shared via a x-callback-url. This is intended to be used from Blink13 to move data to Blink14.
@@ -121,7 +95,7 @@ import UICKeyChainStore
    
    - Throws: `throw BackUpAidError.blinkFourteenIsNotInstalled` if the associated x-callback-url couldn't be opened
    */
-  @objc func copyBlinkFilesAndShareViaXcallbackUrl() throws {
+  @objc func exportBlinkContentsAndConfigurationViaXcallbackUrl() throws {
     
     var queryComponents: [URLQueryItem] = []
     
@@ -135,31 +109,32 @@ import UICKeyChainStore
       queryComponents.append(keysComponent)
     }
     
+    if let filesBase64 = _migrateFiles() {
+      let filesComponent = URLQueryItem(name: "data", value: filesBase64)
+      queryComponents.append(filesComponent)
+    }
+    
     var xCallbackUrlComponents = URLComponents()
     
     xCallbackUrlComponents.scheme = "sh.blink.shell"
     xCallbackUrlComponents.host = "x-callback-url"
     xCallbackUrlComponents.path = "/restoreBackup"
     
-    do {
-      let base64BackupData = try _getBlinkFoldersAsBase64()
-      
-      let foldersComponent = URLQueryItem(name: "data", value: base64BackupData)
-      queryComponents.append(foldersComponent)
-      
-      xCallbackUrlComponents.queryItems = queryComponents
-      
-      guard let xCallbackUrl = xCallbackUrlComponents.url else { return }
-      
-      if UIApplication.shared.canOpenURL(xCallbackUrl) {
-        blink_openurl(xCallbackUrl)
-      } else {
-        throw BackUpAidError.blinkFourteenIsNotInstalled
-      }
-    } catch {
-      throw error
+    xCallbackUrlComponents.queryItems = queryComponents
+    
+    guard let xCallbackUrl = xCallbackUrlComponents.url else { return }
+    
+    if UIApplication.shared.canOpenURL(xCallbackUrl) {
+      blink_openurl(xCallbackUrl)
+    } else {
+      throw BackUpAidError.blinkFourteenIsNotInstalled
     }
   }
+}
+
+// MARK: Files migration
+
+extension BackupAid {
   
   /**
    Detect Blink's current files and returns the structure of it.
@@ -177,45 +152,37 @@ import UICKeyChainStore
       throw BackUpAidError.couldNotReadFilesDocument
     }
     
-    guard let directoryContents = try? _fileManager.contentsOfDirectory(at: documentURL, includingPropertiesForKeys: nil, options: []) else {
-      throw BackUpAidError.couldNotReadFilesDocument
-    }
+    let files = _fileManager.getBlinkFilesUrls()
     
-    for folder in directoryContents {
+    // With all of the files' URLs read the contents of each one
+    for file in files {
       
-      let fileFolderPath = folder.path.replacingOccurrences(of: _fileManager.currentDirectoryPath, with: "", options: .caseInsensitive, range: nil)
-      
-      if !folder.hasDirectoryPath {
-        
-        guard let stringFileContents = try? Data(contentsOf: documentURL.appendingPathComponent(String(fileFolderPath.dropFirst()))) else {
-          // If the file's content can't be read throw an error indicating which file couldn't be read.
-          continue
-        }
-        
-        let file = FileToMigrate(fileName: String(fileFolderPath.dropFirst()), fileContents: stringFileContents)
-        blinkFolders.append(file)
-        
-      } else {
-        
-        // Get the files in directory
-        guard let subFolderFiles = try? _fileManager.contentsOfDirectory(at: documentURL.appendingPathComponent(String(fileFolderPath.dropFirst())), includingPropertiesForKeys: nil, options: []) else {
-          continue
-        }
-        
-        for file in subFolderFiles {
-          
-          guard let stringFileContents = try? Data(contentsOf: file) else {
-            // If the file's content can't be read throw an error indicating which file couldn't be read.
-            throw BackUpAidError.couldNotReadFilesContent(filePath: file.lastPathComponent)
-          }
-          
-          let currentFile = FileToMigrate(fileName: String(fileFolderPath.dropFirst()) + "/" + file.lastPathComponent, fileContents: stringFileContents)
-          blinkFolders.append(currentFile)
-        }
+      let fileFolderPath = file.path.replacingOccurrences(of: _fileManager.currentDirectoryPath, with: "", options: .caseInsensitive, range: nil)
+
+      guard let stringFileContents = try? Data(contentsOf: documentURL.appendingPathComponent(String(fileFolderPath.dropFirst()))) else {
+        // If the file's content can't be read throw an error indicating which file couldn't be read.
+        continue
       }
+      
+      let file = FileToMigrate(fileName: String(fileFolderPath.dropFirst()), fileContents: stringFileContents)
+      blinkFolders.append(file)
     }
     
     return blinkFolders
+  }
+  
+  private func _migrateFiles() -> String? {
+    guard let fileUrls = try? _getBlinkFileStructure() else { return nil }
+    
+    do {
+      let coded = try _encoder.encode(fileUrls)
+      
+      return coded.base64EncodedString()
+      
+    } catch {
+      print(error.localizedDescription)
+      return nil
+    }
   }
 }
 
@@ -341,9 +308,15 @@ extension BackupAid {
     // Iterate through all the files to restore them
     for file in folderStruct {
       
-      let filePath = documentsUrl.appendingPathComponent(file.fileName)
+      let filePath = documentsUrl.appendingPathComponent(file.fileName, isDirectory: false)
+      let folderUrl = documentsUrl.appendingPathComponent(file.fileName).deletingLastPathComponent()
       
-      guard (try? file.fileContents.write(to: filePath)) != nil else { return }
+      do {
+        try _fileManager.createDirectory(at: folderUrl, withIntermediateDirectories: true, attributes: nil)
+        try file.fileContents.write(to: filePath, options: .atomicWrite)
+      } catch {
+        print(error.localizedDescription)
+      }
     }
   }
 }

@@ -123,7 +123,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _spCtrl.restoreWith(stateRestorationActivity: session.stateRestorationActivity)
     
     if session.role == .windowExternalDisplay,
-      let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
+       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
       
       if BKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
         return
@@ -131,7 +131,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
       let window = ExternalWindow(windowScene: windowScene)
       self.window = window
-    
+      
       let shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
       defer { ShadowWindow.shared = shadowWin }
       
@@ -142,7 +142,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       window.rootViewController = UIViewController()
       window.layer.addSublayer(shadowWin.layer)
       
-//      window.makeKeyAndVisible()
+      //      window.makeKeyAndVisible()
       window.isHidden = false
       shadowWin.windowLevel = .init(rawValue: UIWindow.Level.normal.rawValue - 1)
       
@@ -171,7 +171,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
           
           return
         }
-
+        
         
         _lockCtrl = UIHostingController(rootView: LockView(unlockAction: nil))
         window.rootViewController = _lockCtrl
@@ -207,16 +207,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       window.rootViewController = _lockCtrl
       
       unlockAction?()
-
+      
       return
     }
-
+    
     _lockCtrl = nil
     LocalAuth.shared.stopTrackTime()
     
     if let shadowWindow = ShadowWindow.shared,
-      shadowWindow.windowScene == scene,
-      let refScene = shadowWindow.refWindow.windowScene {
+       shadowWindow.windowScene == scene,
+       let refScene = shadowWindow.refWindow.windowScene {
       ShadowWindow.shared?.refWindow.windowScene?.delegate?.sceneDidBecomeActive?(refScene)
     }
     
@@ -255,7 +255,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         ctrl.modalPresentationStyle = .formSheet
         spCtrl.stuckKeyCode = key
         spCtrl.present(ctrl, animated: false)
-
+        
         return
       }
     }
@@ -276,11 +276,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     }
     
     if term.termDevice.view?.isFocused() == false,
-      input?.isRealFirstResponder == false,
-      input?.window === window {
+       input?.isRealFirstResponder == false,
+       input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
-          input?.isRealFirstResponder == false {
+           input?.isRealFirstResponder == false {
           spCtrl.focusOnShellAction()
         }
       }
@@ -291,11 +291,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
         if scene.activationState == .foregroundActive,
-          term.termDevice.view?.isFocused() == false {
+           term.termDevice.view?.isFocused() == false {
           spCtrl.focusOnShellAction()
         }
       }
-
+      
       return
     }
     
@@ -318,7 +318,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   @objc var spaceController: SpaceController { _spCtrl }
-
+  
 }
 
 // MARK: Manage the `scene(_:openURLContexts:)` actions
@@ -327,7 +327,7 @@ extension SceneDelegate {
   /**
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    - Parameters:
-     - xCallbackUrl: The x-callback-url specified by the user
+   - xCallbackUrl: The x-callback-url specified by the user
    */
   private func _handleSshUrlScheme(with sshUrl: URL) {
     
@@ -350,31 +350,31 @@ extension SceneDelegate {
     guard let term = _spCtrl.currentTerm() else {
       return
     }
-
+    
     guard term.isRunningCmd() else {
-       // No running command or shell found running, run the SSH command on the
-       // available shell
-       term.termDevice.write(sshCommand)
-       return;
+      // No running command or shell found running, run the SSH command on the
+      // available shell
+      term.termDevice.write(sshCommand)
+      return;
     }
     
     // If a SSH/mosh connection is already open in the current terminal shell
     // create a new one and then write the command
     _spCtrl.newShellAction()
-
+    
     guard let newTerm = _spCtrl.currentTerm() else {
-       return
+      return
     }
-
+    
     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
-       newTerm.termDevice.write(sshCommand)
+      newTerm.termDevice.write(sshCommand)
     }
   }
   
   /**
    Handles the x-callback-url, if  a successful `x-success` URL is provided when being called from apps like Shortcuts it returns to the original app after a successful execution.
-    - Parameters:
-      - xCallbackUrl: The x-callback-url specified by the user, URL format should be `blinkshell://run?key=KEY&cmd=CMD%20ENCODED`
+   - Parameters:
+   - xCallbackUrl: The x-callback-url specified by the user, URL format should be `blinkshell://run?key=KEY&cmd=CMD%20ENCODED`
    */
   private func _handleXcallbackUrl(with xCallbackUrl: URL) {
     
@@ -399,7 +399,7 @@ extension SceneDelegate {
     if let xSuccess = items.first(where: { $0.name == "x-success" })?.value {
       xSuccessURL = URL(string: xSuccess)
     }
-        
+    
     guard case xCallbackUrl.host = "run" else {
       if let xErrorURL = xErrorURL {
         blink_openurl(xErrorURL)
@@ -455,8 +455,8 @@ extension SceneDelegate {
     // If SSH/mosh session is already open in the current terminal shell
     // create a new one and then write the SSH command
     guard term.isRunningCmd() else {
-       // No running command or shell found running, run the SSH command on the
-       // available shell
+      // No running command or shell found running, run the SSH command on the
+      // available shell
       term.xCallbackLineSubmitted(cmdItem, xSuccessURL)
       return
     }
@@ -464,11 +464,11 @@ extension SceneDelegate {
     // If a SSH/mosh connection is already open in the current terminal shell
     // create a new one and then write the command
     _spCtrl.newShellAction()
-
+    
     guard let newTerm = _spCtrl.currentTerm() else {
-       return
+      return
     }
-
+    
     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
       newTerm.xCallbackLineSubmitted(cmdItem, xSuccessURL)
     }

@@ -141,21 +141,33 @@
   } else if (indexPath.section == 6 && indexPath.row == 0) {
     BackupAid * bk = [[BackupAid alloc] init];
     
-    NSError *error;
-    
-    @try {
-      [bk copyBlinkFilesAndShareViaXcallbackUrlAndReturnError:&error];
+    [[LocalAuth shared] authenticateWithCallback:^(BOOL success) {
       
-      if (error != nil) {
-        @throw [NSException exceptionWithName:@"Error" reason:error.localizedDescription userInfo:nil];
+      // If local authentication fails don't perform any action
+      if (!success) {
+        return;
       }
-    } @catch (NSException *exception) {
-      UIAlertController *alertController = [UIAlertController alertControllerWithTitle:exception.name message: exception.reason preferredStyle:UIAlertControllerStyleAlert];
-      UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-      [alertController addAction:ok];
       
-      [self presentViewController:alertController animated:YES completion:nil];
-    }
+      NSError *error;
+      
+      @try {
+        
+        [bk exportBlinkContentsAndConfigurationViaXcallbackUrlAndReturnError:&error];
+        
+        if (error != nil) {
+          @throw [NSException exceptionWithName:@"Error" reason:error.localizedDescription userInfo:nil];
+        }
+      } @catch (NSException *exception) {
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:exception.name message: exception.reason preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction* ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+        [alertController addAction:ok];
+        
+        [self presentViewController:alertController animated:YES completion:nil];
+      }
+      
+    } reason:@"Share your Blink current configuration."];
+    
+    
   }
 }
 
