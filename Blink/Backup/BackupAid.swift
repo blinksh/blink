@@ -42,15 +42,10 @@ import UICKeyChainStore
   /**
    App document's URL where Blink's files are stored
    */
-  var documentURL: URL? = nil
+  var blinksDocumentsUrl: URL? = nil
   
-  /**
-   Encodes `[FileToMigrate]`
-   */
   private let _encoder = JSONEncoder()
-  /**
-   Decodes `[FileToMigrate]`
-   */
+  
   private let _decoder = JSONDecoder()
   
   /**
@@ -63,26 +58,132 @@ import UICKeyChainStore
     
     guard let url = _fileManager.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
     
-    documentURL = url
+    blinksDocumentsUrl = url
   }
   
   /**
-   De-base64 the `JSONEncoded` `[FileToMigrate]` data from Blink.
+   De-base64 the `JSONEncoded` `[FileToMigrate]` data from Blink. Only used  when migrating from Blink 13.
+   
+   - Parameter xCallbackUrlQueryParameters: Dictionary coming from the `URLQueryItem` containing the backup data in `Base64` `String` form
+   - Parameter completion: Optional callback called when the restoration operation finished, set to `true` if the operation was successful and to `false` if it fails
    */
-  func deBase64AndRestore(xCallbackUrlQueryParameters: [String: String]) {
+  func deBase64AndRestore(xCallbackUrlQueryParameters: [String: String],_ completion: ((Bool) -> Void)? = nil) {
     
-    if let fileFoldersData = xCallbackUrlQueryParameters.first(where: { $0.key == "data" })?.value {
-      
+    guard let backUpData = xCallbackUrlQueryParameters.first(where: { $0.key == "backUpData" })?.value else {
+      completion?(false)
+      return
+    }
+    
+    guard let decodedBackUpData = Data(base64Encoded: backUpData, options: .ignoreUnknownCharacters) else {
+      completion?(false)
+      return
+    }
+    
+    let blinkItemsToRestore = try? _decoder.decode(BKBackupItemsValues.self, from: decodedBackUpData)
+    
+    if let fileFoldersData = blinkItemsToRestore?.files {
       _restoreFilesFromMigration(filesData: fileFoldersData)
     }
     
-    if let hostsData = xCallbackUrlQueryParameters.first(where: { $0.key == "hosts" })?.value {
+    if let hostsData = blinkItemsToRestore?.hosts {
       _restoreHostsFromMigration(hostsData: hostsData)
     }
     
-    if let keysData = xCallbackUrlQueryParameters.first(where: { $0.key == "keys" })?.value {
+    if let keysData = blinkItemsToRestore?.keys {
       _restoreKeysFromMigration(keysInBase64: keysData)
     }
+    
+    completion?(true)
+  }
+  
+  /**
+   Given the items to export proceed exporting them and encoding each one as a `Base64` `String` using the respective method for each option.
+   
+   - Parameters items: Contains the components of the app to export
+   - Returns `BKBackupItemValues` containing a `Base64` encoded `String` for each element being exported
+   */
+  func backUpBlink(items: Set<BKItemsToExport>) -> BKBackupItemsValues {
+    
+    var backup = BKBackupItemsValues()
+    
+    for item in items {
+      switch item.item {
+      case .files:
+        if let filesB64 = _migrateFiles() {
+          backup.files = filesB64
+        }
+      case .keys:
+        if let keysB64 = _migrateKeys() {
+          backup.keys = keysB64
+        }
+      case .hosts:
+        if let hostsB64 = _migrateHosts() {
+          backup.hosts = hostsB64
+        }
+      }
+    }
+    
+    return backup
+  }
+  
+  /**
+   Exports the specified contents of Blink in `items` to a file that can be restored later on.
+   
+   - Parameters items: `Set<BKItemsToExport>` containing the items to export
+   - Throws: Error ir the operation fails
+   - Returns: The `URL` containing the file being exported.
+   */
+  func exportBlinkContentsViaFile(items: Set<BKItemsToExport>) throws -> URL? {
+    
+    let items = backUpBlink(items: items)
+    
+    guard let encoded = try? _encoder.encode(items) else { return nil }
+    
+    guard let documentsUrl = blinksDocumentsUrl else { return nil }
+    
+    let backUpFileName = documentsUrl.appendingPathComponent("backup_\(Date().blinkBackUpDateString).blink")
+    
+    try? encoded.write(to: backUpFileName, options: .atomic)
+    
+    return backUpFileName
+  }
+  
+  /**
+    Restores the contents and configuration of Blink from a file.
+   
+   - Parameter url: The `URL` of the file which contains the contents to restore, it has a `.blink` extension
+   - Parameter completion: Optional callback called when the restoration operation finished, set to `true` if the operation was successful and to `false` if it fails
+   */
+  func restoreContentsOfFile(url: URL, _ completion: ((Bool) -> Void)? = nil) {
+    
+    // Needed to mark this when accessing files inside iCloud
+    _ = url.startAccessingSecurityScopedResource()
+    let dataContents = try? Data(contentsOf: url)
+    url.stopAccessingSecurityScopedResource()
+    
+    guard let data = dataContents else {
+      completion?(false)
+      return
+    }
+    
+    guard let decoded = try? _decoder.decode(BKBackupItemsValues.self, from: data) else {
+      completion?(false)
+      return
+    }
+    
+    if let fileFoldersData = decoded.files {
+      _restoreFilesFromMigration(filesData: fileFoldersData)
+    }
+    
+    if let hostsData = decoded.hosts {
+      _restoreHostsFromMigration(hostsData: hostsData)
+    }
+    
+    if let keysData = decoded.keys {
+      _restoreKeysFromMigration(keysInBase64: keysData)
+    }
+    
+    completion?(true)
   }
   
   
@@ -97,22 +198,23 @@ import UICKeyChainStore
    */
   @objc func exportBlinkContentsAndConfigurationViaXcallbackUrl() throws {
     
+    let itemsToExport: Set<BKItemsToExport> = [
+      BKItemsToExport(item: .files, enabled: true),
+      BKItemsToExport(item: .hosts, enabled: true),
+      BKItemsToExport(item: .keys, enabled: true)
+    ]
+    
+    let exportItems = backUpBlink(items: itemsToExport)
+    
+    guard let backUpCoded = try? _encoder.encode(exportItems) else { return }
+    
+    let base64CodedBackup = backUpCoded.base64EncodedString()
+    
     var queryComponents: [URLQueryItem] = []
     
-    if let hostsBase64 = _migrateHosts() {
-      let hostsComponent = URLQueryItem(name: "hosts", value: hostsBase64)
-      queryComponents.append(hostsComponent)
-    }
-
-    if let keysBase64 = _migrateKeys() {
-      let keysComponent = URLQueryItem(name: "keys", value: keysBase64)
-      queryComponents.append(keysComponent)
-    }
+    let hostsComponent = URLQueryItem(name: "backUpData", value: base64CodedBackup)
+    queryComponents.append(hostsComponent)
     
-    if let filesBase64 = _migrateFiles() {
-      let filesComponent = URLQueryItem(name: "data", value: filesBase64)
-      queryComponents.append(filesComponent)
-    }
     
     var xCallbackUrlComponents = URLComponents()
     
@@ -148,7 +250,7 @@ extension BackupAid {
     
     blinkFolders = []
     
-    guard let documentURL = documentURL else {
+    guard let documentURL = blinksDocumentsUrl else {
       throw BackUpAidError.couldNotReadFilesDocument
     }
     
@@ -298,10 +400,9 @@ extension BackupAid {
   
   private func _restoreFilesFromMigration(filesData: String) {
     
-    guard let documentsUrl = documentURL else { return }
+    guard let documentsUrl = blinksDocumentsUrl else { return }
     
     guard let decodedBase64Data = Data(base64Encoded: filesData, options: .ignoreUnknownCharacters) else { return }
-    
     
     guard let folderStruct = try? _decoder.decode([FileToMigrate].self, from: decodedBase64Data) else { return }
     

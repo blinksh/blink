@@ -38,6 +38,10 @@
 		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		803E21F524E85C7D00463E55 /* BKBackupItemsValues.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803E21F424E85C7D00463E55 /* BKBackupItemsValues.swift */; };
+		803E220124E85CBB00463E55 /* BlinkItemToExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803E220024E85CBB00463E55 /* BlinkItemToExport.swift */; };
+		803E220324E85CD000463E55 /* BKItemsToExport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803E220224E85CD000463E55 /* BKItemsToExport.swift */; };
+		8051AFEC24EAA11200C1571A /* Date.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8051AFEB24EAA11200C1571A /* Date.swift */; };
 		805D7B4E24E5217400C1DEEF /* BackUpAidError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */; };
 		805D7B5024E588F800C1DEEF /* KeyToMigrate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */; };
 		8060721B24E2BF6200E26681 /* BackupAid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8060721A24E2BF6200E26681 /* BackupAid.swift */; };
@@ -408,6 +412,10 @@
 		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
 		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
+		803E21F424E85C7D00463E55 /* BKBackupItemsValues.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKBackupItemsValues.swift; sourceTree = "<group>"; };
+		803E220024E85CBB00463E55 /* BlinkItemToExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkItemToExport.swift; sourceTree = "<group>"; };
+		803E220224E85CD000463E55 /* BKItemsToExport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKItemsToExport.swift; sourceTree = "<group>"; };
+		8051AFEB24EAA11200C1571A /* Date.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Date.swift; sourceTree = "<group>"; };
 		805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackUpAidError.swift; sourceTree = "<group>"; };
 		805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyToMigrate.swift; sourceTree = "<group>"; };
 		8060721A24E2BF6200E26681 /* BackupAid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupAid.swift; sourceTree = "<group>"; };
@@ -929,6 +937,9 @@
 			isa = PBXGroup;
 			children = (
 				8060721A24E2BF6200E26681 /* BackupAid.swift */,
+				803E220224E85CD000463E55 /* BKItemsToExport.swift */,
+				803E220024E85CBB00463E55 /* BlinkItemToExport.swift */,
+				803E21F424E85C7D00463E55 /* BKBackupItemsValues.swift */,
 				805D7B4D24E5217300C1DEEF /* BackUpAidError.swift */,
 				8060721C24E2BF8600E26681 /* FileToMigrate.swift */,
 				805D7B4F24E588F800C1DEEF /* KeyToMigrate.swift */,
@@ -949,6 +960,7 @@
 			children = (
 				80CA970524DC27AF00CDBFDA /* Calendar.swift */,
 				8065124C24E6DB52000159E2 /* FileManager.swift */,
+				8051AFEB24EAA11200C1571A /* Date.swift */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1813,6 +1825,7 @@
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
+				803E220324E85CD000463E55 /* BKItemsToExport.swift in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
@@ -1824,6 +1837,7 @@
 				D241CBDD23040734003D64A5 /* KBProxy.swift in Sources */,
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				D2C24413238E44AB0082C69C /* KeyConfigPair.swift in Sources */,
+				803E220124E85CBB00463E55 /* BlinkItemToExport.swift in Sources */,
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
@@ -1839,6 +1853,7 @@
 				D296199F214F995D0070935A /* ge25519.c in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
+				8051AFEC24EAA11200C1571A /* Date.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
@@ -1846,6 +1861,7 @@
 				D29619A9214FB4110070935A /* base64.c in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
+				803E21F524E85C7D00463E55 /* BKBackupItemsValues.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
