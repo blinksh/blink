@@ -155,6 +155,13 @@ class SpaceController: UIViewController {
     }
   }
   
+  override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    DispatchQueue.main.async {
+      self._attachHUD()
+    }
+    return .default
+  }
+  
   deinit {
     NotificationCenter.default.removeObserver(self)
   }
@@ -174,16 +181,15 @@ class SpaceController: UIViewController {
     nc.addObserver(self, selector: #selector(_setupAppearance),
                    name: NSNotification.Name(rawValue: BKAppearanceChanged),
                    object: nil)
+    
   }
-
   
-  override func viewDidAppear(_ animated: Bool) {
-    super.viewDidAppear(animated)
+  private func _attachHUD() {
     if
       sceneRole == .windowApplication,
-      let win = self.view.window?.windowScene?.windows.last,
-      win !== self.view.window {
-      self._commandsHUD.attachToWindow(inputWindow: win)
+      let win = view.window?.windowScene?.windows.last,
+      win !== view.window {
+      _commandsHUD.attachToWindow(inputWindow: win)
     }
   }
   

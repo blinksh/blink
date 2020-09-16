@@ -243,7 +243,6 @@ class CommandsHUGView: UIView {
     
      _alphaCancable = hud
        .publisher(for: alphaPath)
-       .print()
        .assign(to: alphaPath, on: self)
     
     alpha = hud.alpha
