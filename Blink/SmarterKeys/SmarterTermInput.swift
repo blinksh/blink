@@ -77,8 +77,7 @@ class CaretHider {
     // Assume hardware kb by default, since sometimes we don't have kbframe change events
     // if shortcuts toggle in Settings.app is off.
     kbView.traits.isHKBAttached = true
-    
-    _setupStyle()
+
     
     if traitCollection.userInterfaceIdiom == .pad {
       _setupAssistantItem()
@@ -88,12 +87,6 @@ class CaretHider {
     
     KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
     
-    let nc = NotificationCenter.default
-    
-    nc.addObserver(
-      self,
-      selector: #selector(_setupStyle),
-      name: NSNotification.Name(rawValue: BKAppearanceChanged), object: nil)
   }
   
   override func layoutSubviews() {
@@ -416,17 +409,6 @@ extension SmarterTermInput {
 // - MARK: Config
 
 extension SmarterTermInput {
-  @objc private func _setupStyle() {
-    tintColor = .cyan
-    switch BKDefaults.keyboardStyle() {
-    case .light:
-      overrideUserInterfaceStyle = .light
-    case .dark:
-      overrideUserInterfaceStyle = .dark
-    default:
-      overrideUserInterfaceStyle = .unspecified
-    }
-  }
   
   @objc private func _updateSettings() {
 //    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
