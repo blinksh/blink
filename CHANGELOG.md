@@ -1,3 +1,8 @@
+# Version 13.5.7
+
+- Fixed 3f menu on iPhones
+- Fixed keyboard appearance style
+
 # Version 13.5.6
 
 - Improved mosh restore. #1048
