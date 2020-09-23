@@ -13,7 +13,7 @@ assignees: ''
 
 - [ ] Using latest version on the [App Store](http://itunes.apple.com/app/id1156707581)
 - [ ] Read the [docs](http://blink.sh/docs/)
-- [ ] Searched for [existing GitHub issues](https://github.com/fastlane/fastlane/issues)
+- [ ] Searched for [existing GitHub issues](https://github.com/blinksh/blink/issues)
 
 ### Configuration
 
