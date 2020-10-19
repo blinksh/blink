@@ -8,13 +8,23 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - uses: actions/checkout@v2
       with:
         submodules: true
+
     - name: xcode-select
       run: sudo xcode-select -s /Applications/Xcode_11.4.1.app
-    - name: get frameworks
-      run: ./get_frameworks.sh
-    - name: actual build
-      run: set -o pipefail && xcodebuild -project Blink.xcodeproj -scheme Blink -sdk iphoneos -configuration Debug clean build CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO | tee build.log | xcpretty
 
+    - name: use cache
+      id: cache
+      uses: actions/cache@v2
+      with:
+        path: Frameworks
+        key: ${{ runner.os }}-${{ hashFiles('get_frameworks.sh') }}
+
+    - name: get frameworks
+      if: steps.cache.outputs.cache-hit != 'true'
+      run: ./get_frameworks.sh
+
+    - name: actual build
+      run: set -o pipefail && xcodebuild archive -project Blink.xcodeproj -scheme Blink -sdk iphoneos -configuration Debug clean build CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO | tee build.log | xcpretty
