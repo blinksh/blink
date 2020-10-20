@@ -34,9 +34,7 @@ jobs:
         cd ~
         mkdir Payload
         mv ~/Library/Developer/Xcode/Archives/*/*/Products/Applications/Blink.app ~/Payload/
-        zip -r Payload.zip Payload
-        mv Payload.zip Blink.ipa
-
+        zip -r Blink.ipa Payload
     - name: upload ipa
       uses: actions/upload-artifact@v2.2.0
       with:
