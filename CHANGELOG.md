@@ -1,3 +1,7 @@
+# Version 13.5.8
+
+- Added support for iPad Air 4 and iPhone 12
+
 # Version 13.5.7
 
 - Fixed 3f menu on iPhones
