@@ -36,7 +36,7 @@ enum KBDevice {
   case in4   // iPhone4   // SE
   case in4_7 // iPhone4_7 // 6, 7, 8              phone_2
   case in5_5 //
-  case in5_8 // X, Xs
+  case in5_8 // X, Xs, 12 Mini
   // 6.1 ?
   case in6_5 // Xr!, Xs Max?         phone_5
   
@@ -81,8 +81,10 @@ enum KBDevice {
     case 568:  return .in4
     case 667:  return .in4_7
     case 736:  return .in5_5
-    case 812:  return .in5_8
+    case 812:  return .in5_8 // 11 Pro
+    case 844:  return .in5_8 // 12 Pro
     case 896:  return .in6_5
+    case 916:  return .in6_5 // 12 Pro Max
     case 1024: return .in9_7
     case 1080: return .in10_2
     case 1112: return .in10_5
