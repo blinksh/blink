@@ -66,7 +66,7 @@ struct KBSizes {
   typealias Widths = (icon: CGFloat, key: CGFloat, wide: CGFloat)
   
   typealias KB  = (height: CGFloat, padding: CGFloat, spacer: CGFloat)
-  typealias Key =  (fonts: Fonts, insets: Insets, corner: CGFloat, widths: Widths)
+  typealias Key = (fonts: Fonts, insets: Insets, corner: CGFloat, widths: Widths)
 
   fileprivate static let _fontsSmall: Fonts = (text: .textSmall, symbol: .symbolSmall)
   fileprivate static let _fonts:      Fonts = (text: .text,      symbol: .symbol)
@@ -100,8 +100,16 @@ extension KBSizes {
     Self(kb: _portraitPhoneKB, key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 33, wide: 39)))
   }
   
+  static var portrait_iPhone_6_1: Self {
+    Self(kb: _portraitPhoneKB, key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 33, wide: 39)))
+  }
+  
   static var portrait_iPhone_6_5: Self {
     Self(kb: _portraitPhoneKB, key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 33, wide: 39)))
+  }
+  
+  static var portrait_iPhone_6_7: Self {
+    Self(kb: _portraitPhoneKB, key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 34, wide: 40)))
   }
   
   // MARK: Portrait iPad sizes
@@ -114,8 +122,12 @@ extension KBSizes {
     Self(kb: (.height, padding: 4, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 58, wide: 76)))
   }
   
+  static var portrait_iPad_10_9: Self {
+    Self(kb: (.height, padding: 6, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 56, wide: 82)))
+  }
+  
   static var portrait_iPad_11: Self {
-    Self(kb: (.height, padding: 7, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 54, wide: 82)))
+    Self(kb: (.height, padding: 6, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 58, wide: 82)))
   }
   
   static var portrait_iPad_12_9: Self {
@@ -140,8 +152,16 @@ extension KBSizes {
     Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 40, wide: 62.5)))
   }
   
+  static var landscape_iPhone_6_1: Self {
+    Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 42, wide: 64)))
+  }
+  
   static var landscape_iPhone_6_5: Self {
     Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 45, wide: 66.5)))
+  }
+  
+  static var landscape_iPhone_6_7: Self {
+    Self(kb: (.heightTiny, padding: 32, spacer: 0), key: (_fontsSmall, _insetsSmall, .cornerSmall, widths: (.icon, key: 47, wide: 68)))
   }
   
   // MARK: Landscape iPad Sizes
@@ -154,8 +174,12 @@ extension KBSizes {
     Self(kb: (.height, padding: 4, spacer: 1), key: (_fonts, _insets, .corner, widths: (.icon, key: 74, wide: 96)))
   }
   
+  static var landscape_iPad_10_9: Self {
+    Self(kb: (.height, padding: 11.5, spacer: 6), key: (_fonts, _insets, .corner, widths: (.icon, key: 78.5, wide: 107)))
+  }
+  
   static var landscape_iPad_11: Self {
-    Self(kb: (.height, padding: 11.5, spacer: 6.5), key: (_fonts, _insets, .corner, widths: (.icon, key: 78, wide: 108)))
+    Self(kb: (.height, padding: 11.5, spacer: 6.5), key: (_fonts, _insets, .corner, widths: (.icon, key: 79, wide: 108)))
   }
   
   static var landscape_iPad_12_9: Self {
