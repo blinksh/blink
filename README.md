@@ -72,7 +72,7 @@ Bugs should be reported here on GitHub. Crash reports will be automatically repo
 We can't wait to receive your valuable feedback. Enjoy!
 
 ## Build
-[![Build Status](https://img.shields.io/endpoint.svg?url=https%3A%2F%2Factions-badge.atrox.dev%2Fblinksh%2Fblink%2Fbadge%3Fref%3Draw&style=flat)](https://actions-badge.atrox.dev/blinksh/blink/goto?ref=raw)
+![CI](https://github.com/blinksh/blink/workflows/CI/badge.svg)
 
 We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
 
