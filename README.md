@@ -74,12 +74,20 @@ We can't wait to receive your valuable feedback. Enjoy!
 ## Build
 ![CI](https://github.com/blinksh/blink/workflows/CI/badge.svg)
 
-We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Just extract this package in your Framework folder and build Blink.
+We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Here are the steps:
 
+1. Run the following command:
 ```bash
 git clone --recursive https://github.com/blinksh/blink.git && \
-cd blink && ./get_frameworks.sh
+    cd blink && ./get_frameworks.sh && \
+    rm -rf Blink.xcodeproj/project.xcworkspace/xcshareddata/
 ```
+2. Open the project in XCode
+3. Before doing anything else, go into the capabilities for the project and turn off Push Notifications, iCloud, and Keychain Sharing
+4. Go to the General tab and change the bundle identifier to something that will work for your team
+5. Stay in the general tab and select your team under the "Signing" section
+6. Connect the device you want to build for and select it in Product -> Destination
+7. Build and run on the device
 
 This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 
