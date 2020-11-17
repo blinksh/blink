@@ -66,6 +66,9 @@ static const char *usage_format =
 "\r\n"
 "                --verbose            verbose mode\r\n"
 "                --help               this message\r\n"
+"\r\n"
+" --experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
+"                                            (default: remote)\r\n"
 "\r\n";
 
 
@@ -119,6 +122,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     //{"ssh", required_argument, 0, 'S'},
     {"verbose", no_argument, &_debug, 1},
     {"help", no_argument, &help, 1},
+    {"experimental-remote-ip", required_argument, 0, 'R'},
     {0, 0, 0, 0}};
   
   optind = 0;
@@ -173,6 +177,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       case 'T':
         sshTTY = NO;
       break;
+      case 'R':
+      self.sessionParams.experimentalRemoteIp = [NSString stringWithFormat:@"%s", optarg];
+      break;
       default:
       return [self dieMsg:@(usage_format)];
     }
@@ -183,6 +190,16 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   }
   
   if (help) {
+    return [self dieMsg:@(usage_format)];
+  }
+  
+  if (!self.sessionParams.experimentalRemoteIp) {
+    self.sessionParams.experimentalRemoteIp = @"remote";
+  }
+  
+  if ([@"remote" isEqual:self.sessionParams.experimentalRemoteIp]) {
+  } else if ([@"local" isEqual:self.sessionParams.experimentalRemoteIp]) {
+  } else {
     return [self dieMsg:@(usage_format)];
   }
   
@@ -340,7 +357,11 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 {
   ssh = ssh ? ssh : @"ssh";
   
-  NSMutableArray*sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, command] mutableCopy];
+  NSString *echoSshConnectionCommand = @"";
+  if ([@"remote" isEqual:self.sessionParams.experimentalRemoteIp]) {
+    echoSshConnectionCommand = @"echo \"\" && echo \"MOSH SSH_CONNECTION $SSH_CONNECTION\" &&";
+  }
+  NSMutableArray*sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, echoSshConnectionCommand, command] mutableCopy];
   if (port) {
     [sshArgs insertObject:[NSString stringWithFormat:@"-p %@", port] atIndex:1];
   }
@@ -367,21 +388,29 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   NSString *connPattern = @"MOSH CONNECT (\\d+) (\\S*)$";
   NSRegularExpression *connFormat = [NSRegularExpression regularExpressionWithPattern:connPattern options:0 error:nil];
   
+  NSString *sshConnectionPattern = @"MOSH SSH_CONNECTION (\\S*) (\\d*) (\\S*) (\\d*)$";
+  NSRegularExpression *sshConnectionFormat = [NSRegularExpression regularExpressionWithPattern:sshConnectionPattern options:0 error:nil];
+  
   NSTextCheckingResult *match;
   
   ssize_t n = 0;
+  
+  NSString *ipFromIpFormat = @"";
+  NSString *ipFromSshConnection = @"";
   
   while ((n = getline(&buf, &buf_sz, term_r)) >= 0) {
     line = [NSString stringWithFormat:@"%.*s", (int)n, buf];
     if ((match = [ipFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
-      self.sessionParams.ip = [line substringWithRange:matchRange];
+      ipFromIpFormat = [line substringWithRange:matchRange];
     } else if ((match = [connFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
       NSRange matchRange = [match rangeAtIndex:1];
       self.sessionParams.port = [line substringWithRange:matchRange];
       matchRange = [match rangeAtIndex:2];
       self.sessionParams.key = [line substringWithRange:matchRange];
-      break;
+    } else if ((match = [sshConnectionFormat firstMatchInString:line options:0 range:NSMakeRange(0, line.length)])) {
+      NSRange matchRange = [match rangeAtIndex:3];
+      ipFromSshConnection = [line substringWithRange:matchRange];
     } else {
       fwrite(buf, 1, n, _stream.out);
     }
@@ -389,10 +418,21 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   fclose(term_r);
   
-  if (!self.sessionParams.ip) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
-    return;
-  }
+   if ([@"remote" isEqual:self.sessionParams.experimentalRemoteIp]) {
+     if (ipFromSshConnection) {
+       self.sessionParams.ip = ipFromSshConnection;
+     } else {
+       *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+       return;
+     }
+   } else {
+     if (ipFromIpFormat) {
+       self.sessionParams.ip = ipFromIpFormat;
+     } else {
+       *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+       return;
+     }
+   }
   
   if (self.sessionParams.key == nil || self.sessionParams.port == nil) {
     *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];

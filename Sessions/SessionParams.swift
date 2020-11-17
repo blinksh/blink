@@ -70,6 +70,7 @@ import UIKit
   @objc var predictionMode: String? = nil
   @objc var startupCmd: String? = nil
   @objc var serverPath: String? = nil
+  @objc var experimentalRemoteIp: String? = nil
   
   override init() {
     super.init()
