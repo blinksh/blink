@@ -1,8 +1,10 @@
 # Building
 We provide you with two ways to compile and install Blink Shell. This instructions will refer to assembling
 a full Blink Shell, compiling libraries and resources yourself. Due to the many dependencies that compose
-Blink Shell, this is the recommended but not shortest method. You can also clone Blink and obtain a "ready to go"
-tar.gz with all the dependencies as described on [home](https://github.com/blinksh/blink)
+Blink Shell, this is the recommended but not shortest method.
+
+You can also clone Blink and obtain a "ready to go"
+tar.gz with all the dependencies as described in the ["Build" section of the README.md file](README.md#build).
 
 ## Requirements
 Please note that to compile and install Blink in your personal
