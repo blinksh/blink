@@ -1,3 +1,9 @@
+# Version 13.5.10
+
+- Added `--experimental-remote-ip={remote|local}` flag to mosh command. #1127
+
+Many thanks to @DilumAluthge
+
 # Version 13.5.8
 
 - Added support for iPad Air 4 and iPhone 12
