@@ -69,13 +69,13 @@ t.prefs_.set('cursor-blink', true);
     font-family: "Fira Code";
     font-style: normal;
     font-weight: 200;
-    src: url(data:font/woff;charset-utf-8;base64,<base64 dump>);
+    src: url(data:font/woff;charset=utf-8;base64,<base64 dump>);
 }
 @font-face {
     font-family: "Fira Code";
     font-style: normal;
     font-weight: 400;
-    src: url(data:font/woff;charset-utf-8;base64,<base64 dump>);
+    src: url(data:font/woff;charset=utf-8;base64,<base64 dump>);
 }
 @font-face {
     font-family: "Fira Code";
