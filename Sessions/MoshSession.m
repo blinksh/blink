@@ -68,7 +68,7 @@ static const char *usage_format =
 "                --help               this message\r\n"
 "\r\n"
 " --experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
-"                                            (default: remote)\r\n"
+"                                            (default: local)\r\n"
 "\r\n";
 
 
