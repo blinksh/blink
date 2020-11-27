@@ -83,6 +83,7 @@ import UIKit
     case predictionMode
     case startupCmd
     case serverPath
+    case experimentalRemoteIp
   }
   
   override func encode(with coder: NSCoder) {
@@ -94,6 +95,7 @@ import UIKit
     coder.encode(predictionMode, for: Key.predictionMode)
     coder.encode(startupCmd, for: Key.startupCmd)
     coder.encode(serverPath, for: Key.serverPath)
+    coder.encode(experimentalRemoteIp, for: Key.experimentalRemoteIp)
   }
   
   required init?(coder: NSCoder) {
@@ -105,6 +107,7 @@ import UIKit
     self.predictionMode = coder.decode(for: Key.predictionMode)
     self.startupCmd = coder.decode(for: Key.startupCmd)
     self.serverPath = coder.decode(for: Key.serverPath)
+    self.experimentalRemoteIp = coder.decode(for: Key.experimentalRemoteIp)
   }
   
   
