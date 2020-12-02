@@ -3,10 +3,16 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
+		070C03352576FA51001C21F5 /* SSH.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C03342576FA51001C21F5 /* SSH.swift */; };
+		070C03392576FC24001C21F5 /* SSHLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 070C03382576FC24001C21F5 /* SSHLoader.m */; };
+		070C034325772BE1001C21F5 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 070C034225772BE1001C21F5 /* ArgumentParser */; };
+		070C03462577335F001C21F5 /* SSHConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C03452577335F001C21F5 /* SSHConfig.swift */; };
+		070C034A25773826001C21F5 /* SSHCommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C034925773826001C21F5 /* SSHCommandTests.swift */; };
+		070C035725773DBF001C21F5 /* SSHConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C03452577335F001C21F5 /* SSHConfig.swift */; };
 		0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 0716B52A1CFFAB9300268B5B /* AppDelegate.m */; };
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
@@ -21,6 +27,7 @@
 		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
+		07B8B24925793AFC0023A09A /* SSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07B8B24825793AFC0023A09A /* SSH */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
 		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
@@ -140,7 +147,6 @@
 		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D263489720BEBFE000A8E89F /* libsshd.a */; };
-		D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -357,6 +363,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		070C03342576FA51001C21F5 /* SSH.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSH.swift; sourceTree = "<group>"; };
+		070C03382576FC24001C21F5 /* SSHLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHLoader.m; sourceTree = "<group>"; };
+		070C03452577335F001C21F5 /* SSHConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHConfig.swift; sourceTree = "<group>"; };
+		070C034925773826001C21F5 /* SSHCommandTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHCommandTests.swift; sourceTree = "<group>"; };
 		0716B5291CFFAB9300268B5B /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		0716B52A1CFFAB9300268B5B /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		0716B52D1CFFAB9300268B5B /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -545,7 +555,6 @@
 		D263489020BEBF5800A8E89F /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = server.h; sourceTree = "<group>"; };
 		D263489720BEBFE000A8E89F /* libsshd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsshd.a; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkTests.swift; sourceTree = "<group>"; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
@@ -704,6 +713,8 @@
 				D2A3F4F020690B71006BB305 /* tar.framework in Frameworks */,
 				D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
+				070C034325772BE1001C21F5 /* ArgumentParser in Frameworks */,
+				07B8B24925793AFC0023A09A /* SSH in Frameworks */,
 				D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */,
 				D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */,
 				D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */,
@@ -718,6 +729,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		070C032D2576FA2B001C21F5 /* ssh */ = {
+			isa = PBXGroup;
+			children = (
+				070C03452577335F001C21F5 /* SSHConfig.swift */,
+				070C03342576FA51001C21F5 /* SSH.swift */,
+				070C03382576FC24001C21F5 /* SSHLoader.m */,
+			);
+			path = ssh;
+			sourceTree = "<group>";
+		};
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
@@ -1150,8 +1171,8 @@
 		D265FBBB2317DD3C0017EAC4 /* BlinkTests */ = {
 			isa = PBXGroup;
 			children = (
+				070C034925773826001C21F5 /* SSHCommandTests.swift */,
 				D265FBBE2317DD3C0017EAC4 /* Info.plist */,
-				D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */,
 				D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */,
 				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
 			);
@@ -1334,6 +1355,7 @@
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
+				070C032D2576FA2B001C21F5 /* ssh */,
 				D2961968214F89060070935A /* openssh */,
 				D2334D1221495DAE00D26AC3 /* udptunnel */,
 				D240806020BC8DF800F30099 /* tool_main.c */,
@@ -1420,6 +1442,10 @@
 				D24AFD5B222410E700CFD3C1 /* PBXTargetDependency */,
 			);
 			name = Blink;
+			packageProductDependencies = (
+				070C034225772BE1001C21F5 /* ArgumentParser */,
+				07B8B24825793AFC0023A09A /* SSH */,
+			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
 			productType = "com.apple.product-type.application";
@@ -1484,6 +1510,10 @@
 				"zh-Hans",
 			);
 			mainGroup = EA0BA1821C0CC57B00719C1A;
+			packageReferences = (
+				070C034125772BE1001C21F5 /* XCRemoteSwiftPackageReference "swift-argument-parser" */,
+				07B8B24725793AFC0023A09A /* XCRemoteSwiftPackageReference "blinkcore.binary" */,
+			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1627,12 +1657,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				070C035725773DBF001C21F5 /* SSHConfig.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
-				D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */,
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
+				070C034A25773826001C21F5 /* SSHCommandTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1653,6 +1684,7 @@
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
 				D2071B83215101DC000156D7 /* blink-compat.c in Sources */,
+				070C03462577335F001C21F5 /* SSHConfig.swift in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
 				D29619AD214FB5EA0070935A /* ssh-ed25519.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
@@ -1713,6 +1745,7 @@
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
+				070C03352576FA51001C21F5 /* SSH.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,
 				D29619A0214F995D0070935A /* fe25519.c in Sources */,
@@ -1790,6 +1823,7 @@
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				070C03392576FC24001C21F5 /* SSHLoader.m in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,
@@ -1867,7 +1901,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BlinkTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkTests;
@@ -1896,7 +1934,11 @@
 				DEVELOPMENT_TEAM = HV2S48975V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2003,7 +2045,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
@@ -2035,8 +2078,11 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
@@ -2076,8 +2122,11 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
@@ -2125,6 +2174,38 @@
 			defaultConfigurationName = Debug;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		070C034125772BE1001C21F5 /* XCRemoteSwiftPackageReference "swift-argument-parser" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-argument-parser";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.3.1;
+			};
+		};
+		07B8B24725793AFC0023A09A /* XCRemoteSwiftPackageReference "blinkcore.binary" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/blinksh/blinkcore.binary.git";
+			requirement = {
+				kind = exactVersion;
+				version = 0.1.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		070C034225772BE1001C21F5 /* ArgumentParser */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 070C034125772BE1001C21F5 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
+			productName = ArgumentParser;
+		};
+		07B8B24825793AFC0023A09A /* SSH */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07B8B24725793AFC0023A09A /* XCRemoteSwiftPackageReference "blinkcore.binary" */;
+			productName = SSH;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EA0BA1831C0CC57B00719C1A /* Project object */;
 }

@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,29 +29,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
 
+#import <Blink-Swift.h>
 
-#import "Session.h"
-#import "SSHClient.h"
+#include "ios_system/ios_system.h"
+#include "ios_error.h"
 
+int blink_ssh_main(int argc, char *argv[]) {
+  MCPSession *session = (__bridge MCPSession *)thread_context;
+  
+  setvbuf(thread_stdin, NULL, _IONBF, 0);
+  setvbuf(thread_stdout, NULL, _IONBF, 0);
+  setvbuf(thread_stderr, NULL, _IONBF, 0);
+  
+  BlinkSSH *c = [[BlinkSSH alloc]
+                 initWithStdout:fileno(thread_stdout) andStdin:fileno(thread_stdin)
+                 device:session.device];
+  
+  NSMutableArray *arguments = [NSMutableArray array];
+  for (int i = 0; i < argc; i++) {
+      NSString *str = [[NSString alloc] initWithCString:argv[i] encoding:NSUTF8StringEncoding];
+      [arguments addObject:str];
+  }
+  
+  [session registerBlinkSSHClient:c];
+  
+  int rc = [c start:argc argv:arguments];
+  [session unregisterBlinkSSHClient:c];
 
-@class MCPParams;
-@class BlinkSSH;
-
-@interface MCPSession : Session
-
-@property (strong) MCPParams *sessionParams;
-
-- (void)registerSSHClient:(SSHClient *)sshClient;
-- (void)registerBlinkSSHClient:(BlinkSSH *)blinkSSH;
-- (void)unregisterSSHClient:(SSHClient *)sshClient;
-- (void)unregisterBlinkSSHClient:(BlinkSSH *)blinkSSH;
-
-- (void)enqueueCommand:(NSString *)cmd;
-- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
-- (bool)isRunningCmd;
-
-- (void)updateAllowedPaths;
-
-@end
+  return rc;
+}

@@ -30,28 +30,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
+import Foundation
 import XCTest
 
-class BlinkTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+class SSHCommandTests: XCTestCase {
+  
+  override func setUp() {
+    // Put setup code here. This method is called before the invocation of each test method in the class.
+  }
+  
+  override func tearDown() {
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+  }
+  
+  func testSshCommandNoParameters() throws {
+    let commandString = "-v -L 8080:localhost:80 -i id_rsa -p 2023 username@17.0.0.1 --"
+    
+    do {
+      var components = commandString.components(separatedBy: " ")
+      // Have to figure out how to work with the quotes.
+      components.append("echo 'hello'")
+      let command = try SSHCommand.parse(components)
+      
+      XCTAssertTrue(command.localPortForward == "8080:localhost:80")
+      XCTAssertTrue(command.verbosityLogWarning)
+      XCTAssertTrue(command.port == "2023")
+      XCTAssertTrue(command.identityFile == "id_rsa")
+      XCTAssertTrue(command.host == "17.0.0.1")
+      XCTAssertTrue(command.user == "username")
+      XCTAssertTrue(command.command == "echo 'hello'")
+    } catch {
+      XCTFail("Couldn't parse SSH command \(error.localizedDescription)")
     }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+  }
+  
 }

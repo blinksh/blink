@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>bssh</key>
+	<array>
+		<string>MAIN</string>
+		<string>blink_ssh_main</string>
+		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
+		<string>no</string>
+	</array>
 	<key>ssh</key>
 	<array>
 		<string>MAIN</string>

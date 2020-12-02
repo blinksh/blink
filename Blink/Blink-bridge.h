@@ -44,5 +44,7 @@
 #import "TermDevice.h"
 #import "KBWebViewBase.h"
 #import "openurl.h"
+#import "BKPubKey.h"
+#import "BKHosts.h"
 
 #endif /* Blink_bridge_h */

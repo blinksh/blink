@@ -50,6 +50,7 @@
 
 @interface WeakSSHClient : NSObject
 @property (weak) SSHClient *value;
+@property (weak) BlinkSSH *blinkSSH;
 @end
 
 @implementation WeakSSHClient
@@ -216,10 +217,28 @@
   [_sshClients addObject:client];
 }
 
+- (void)registerBlinkSSHClient:(BlinkSSH *)blinkSSH {
+  WeakSSHClient *client = [[WeakSSHClient alloc] init];
+  client.blinkSSH = blinkSSH;
+  [_sshClients addObject:client];
+}
+
 - (void)unregisterSSHClient:(SSHClient *)sshClient {
   WeakSSHClient *foundClient = nil;
   for (WeakSSHClient *client in _sshClients) {
     if ([client.value isEqual:sshClient]) {
+      foundClient = client;
+      break;
+    }
+  }
+  
+  [_sshClients removeObject:foundClient];
+}
+
+- (void)unregisterBlinkSSHClient:(BlinkSSH *)blinkSSH {
+  WeakSSHClient *foundClient = nil;
+  for (WeakSSHClient *client in _sshClients) {
+    if ([client.blinkSSH isEqual:blinkSSH]) {
       foundClient = client;
       break;
     }
@@ -299,7 +318,11 @@
 {
   [_childSession sigwinch];
   for (WeakSSHClient *client in _sshClients) {
-    [client.value sigwinch];
+    if (client.value != nil) {
+      [client.value sigwinch];
+    } else {
+      [client.blinkSSH sigwinch];
+    }
   }
 }
 
@@ -307,7 +330,11 @@
 {
   if (_sshClients.count > 0) {
     for (WeakSSHClient *client in _sshClients) {
-      [client.value kill];
+      if (client.value != nil) {
+        [client.value kill];
+      } else {
+        [client.blinkSSH kill];
+      }
     }
     [_device writeIn:@"\x03"];
     
@@ -352,7 +379,12 @@
       if (_sshClients.count > 0) {
         [_device closeReadline];
         for (WeakSSHClient *client in _sshClients) {
-          [client.value kill];
+          if (client.value != nil) {
+            [client.value kill];
+          } else {
+            // Disable kill for now.
+            //[client.blinkSSH kill];
+          }
         }
       } else {
         if ([control isEqualToString:ctrlD]) {
