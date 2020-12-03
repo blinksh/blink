@@ -2088,7 +2088,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 13.5.10;
+				MARKETING_VERSION = 13.90.1;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
@@ -2132,7 +2132,7 @@
 					"$(PROJECT_DIR)/Frameworks/lib",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 13.5.10;
+				MARKETING_VERSION = 13.90.1;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
@@ -2189,7 +2189,7 @@
 			repositoryURL = "https://github.com/blinksh/blinkcore.binary.git";
 			requirement = {
 				kind = exactVersion;
-				version = 0.1.0;
+				version = 0.1.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
