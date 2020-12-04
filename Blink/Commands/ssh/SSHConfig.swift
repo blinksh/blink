@@ -67,7 +67,6 @@ struct SSHCommand: ParsableCommand {
   // Port forwarding options
   @Option(name: .customShort("L"), help: "port:host:hostport Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.")
   var localPortForward: String?
-  
   var localPortForwardLocalPort: String? {
     get {
       return localPortForward?.components(separatedBy: ":")[0]
@@ -111,11 +110,41 @@ struct SSHCommand: ParsableCommand {
   @Flag(name: .customLong("vvv", withSingleDash: true), help: "Third level of logging: Lower level protocol information, packet level") var verbosityLogPacket = false
   @Flag(name: .customLong("vvvv", withSingleDash: true), help: "Maximum level of logging: Every function path") var verbosityLogFunctions = false
   
+  // Login name
+  @Option(name: [.customShort("l")],
+          help: "Login name. This option can also be specified at the host")
+  var loginName: String?
+  
+  // Jumps
+  @Option(name:  [.customShort("J")],
+          help: "Jump Hosts in a comma separated list")
+  var proxyJump: String?
+  
+  // Stdio forward
+  @Option(name: [.customShort("W")],
+          help: "Forward stdio to the specified destination")
+  var stdioHostAndPort: String?
+  // If you are using these, then stdioFwd exists
+  var stdioHost: String {
+    get {
+      stdioHostAndPort!.contains(":") ?
+        stdioHostAndPort!.components(separatedBy: ":")[0] : stdioHostAndPort!
+    }
+  }
+  var stdioPort: Int32 {
+    get {
+      stdioHostAndPort!.contains(":") ?
+        Int32(stdioHostAndPort!.components(separatedBy: ":")[1])! : 22
+    }
+  }
+  
+    
   // SSH Port
   @Option(name:  [.customLong("port"), .customShort("p")],
-          default: "22",
+          default: 22,
           help: "Specifies the port to connect to on the remote host.")
-  var port: String
+  var portNum: Int32
+  var port: String { get {String(portNum) } }
   
   // Identity
   @Option(name:  [.customShort("i")],
@@ -126,7 +155,8 @@ struct SSHCommand: ParsableCommand {
   var identityFile: String?
   
   // Connect to User at Host
-  @Argument(help: "[user@]host") var userAtHost: String
+  @Argument(help: "[user@]host")
+  var userAtHost: String
   var host: String {
     get {
       let comps = userAtHost.components(separatedBy: "@")
@@ -135,6 +165,10 @@ struct SSHCommand: ParsableCommand {
   }
   var user: String? {
     get {
+      // Login name preference over user@host
+      if let user = loginName {
+        return user
+      }
       let comps = userAtHost.components(separatedBy: "@")
       return comps.count > 1 ? comps[0] : nil
     }
@@ -168,7 +202,7 @@ class SSHClientConfigProvider {
     let user = cmd.user ?? "carlos"
     let authMethods = prov.availableAuthMethods()
     
-    return SSHClientConfig(user: user, authMethods: authMethods, verifyHostCallback: prov.cliVerifyHostCallback, sshDirectory: BlinkPaths.ssh()!)
+    return SSHClientConfig(user: user, proxyJump: cmd.proxyJump, authMethods: authMethods, verifyHostCallback: prov.cliVerifyHostCallback, sshDirectory: BlinkPaths.ssh()!)
   }
 }
 
