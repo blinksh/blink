@@ -1,5 +1,6 @@
 # Version 13.5.10
 
+- Improved error handling in ssh.
 - Added `--experimental-remote-ip={remote|local}` flag to mosh command. #1127
 
 Many thanks to @DilumAluthge
