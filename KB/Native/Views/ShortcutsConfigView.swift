@@ -140,11 +140,12 @@ struct HexEditorView: View {
   private let _formatter = HexFormatter()
   
   var body: some View {
-    TextField("HEX", value: $value, formatter: _formatter, onEditingChanged: { focused in
-      self.shortcut.action = .hex(self._formatter.hexString(str: self.value), comment: nil)
-    }) {
-//      self.shortcut.action = .hex(self._formatter.hexString(str: self.value), comment: nil)
-      }
+    TextField("HEX", text: $value, onEditingChanged: { _ in
+      // Whenever the view is first shown, enter pressed, tap back on Navigation Link & TextField selected
+      // Update the HEX code using the HexFormatter to only accept valid HEX encoded Strings
+      value = _formatter.hexString(str: value)
+      shortcut.action = .hex(value, comment: nil)
+    })
     .disableAutocorrection(true)
     .keyboardType(.asciiCapable)
   }
