@@ -48,7 +48,9 @@ import Dispatch
   var connectionSetup: AnyCancellable?
   var stream: SSH.Stream?
   var tunnel: [SSHPortForwardListener] = []
+  var reverseTunnels: [SSHPortForwardClient] = []
   var tunnelStream: SSH.Stream?
+  var reverseTunnelStream: SSH.Stream?
   var proxyThread: Thread?
   
   @objc public init(stdout: Int32, andStdin stdin: Int32, device dev: TermDevice) {
@@ -89,6 +91,7 @@ import Dispatch
         self.connection = conn
         self.startInteractiveSessions(conn, command: cmd)
         self.startForwardTunnels(conn, command: cmd)
+        self.startReverseTunnels(conn, command: cmd)
       }).store(in: &cancellableBag)
 
     CFRunLoopRun()
@@ -117,29 +120,29 @@ import Dispatch
       
       let config = SSHClientConfigProvider.config(command: cmd, using: self.device)
       
-      let c = SSHClient.dial(cmd.host, with: config)
-        .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
-          connection = conn
-          // TODO There is a mismatch on Port, config gets a string, but we
-          // use Int32 everywhere else.
-          return conn.requestForward(to: cmd.host, port: cmd.portNum,
-                                     // TODO Just informative, should make optional.
-                                     from: "localhost", localPort: 22)
-        }.sink(receiveCompletion: { end in
-          switch end {
-          case .failure(let error):
-            close(sockIn)
-            close(sockOut)
-            print("Proxy Command failed to execute \(error)")
-          default:
-            break
-          }
-        }, receiveValue: { s in
-          let output = DispatchOutputStream(stream: sockOut)
-          let input = DispatchInputStream(stream: sockIn)
-          proxyStream = s
-          s.connect(stdout: output, stdin: input)
-        })
+//      let c = SSHClient.dial(cmd.host, with: config)
+//        .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
+//          connection = conn
+//          // TODO There is a mismatch on Port, config gets a string, but we
+//          // use Int32 everywhere else.
+//          return conn.requestForward(to: cmd.host, port: cmd.portNum,
+//                                     // TODO Just informative, should make optional.
+//                                     from: "localhost", localPort: 22)
+//        }.sink(receiveCompletion: { end in
+//          switch end {
+//          case .failure(let error):
+//            close(sockIn)
+//            close(sockOut)
+//            print("Proxy Command failed to execute \(error)")
+//          default:
+//            break
+//          }
+//        }, receiveValue: { s in
+//          let output = DispatchOutputStream(stream: sockOut)
+//          let input = DispatchInputStream(stream: sockIn)
+//          proxyStream = s
+//          s.connect(stdout: output, stdin: input)
+//        })
       
       CFRunLoopRun()
     }
@@ -184,36 +187,71 @@ import Dispatch
   }
   
   func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
-    if let localPort = command.localPortForwardLocalPort,
-       let tunnelHost = command.localPortForwardHost,
-       let remotePort = command.localPortForwardRemotePort {
-      let lis: SSHPortForwardListener
-      do {
-        lis = try SSHPortForwardListener(on: localPort, toDestination: tunnelHost, on: remotePort, using: conn)
-      } catch {
-        print("Listener configuration error \(error)")
-        self.kill()
-        return
-      }
-      tunnel.append(lis)
-      
-      // TODO: Will update the interface so you do not have to keep a
-      // reference to the stream sent from the tunnel
-      lis.receive().sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          print("Tunnel finished")
-        case .failure(let error):
-          print("TUNNEL ERROR \(error)")
-        }
-      }, receiveValue: { event in
-        switch event {
-        case .received(let streamPub):
-          streamPub.assertNoFailure().sink { self.tunnelStream = $0 }.store(in: &self.cancellableBag)
-        default:
-          print("Tunnel received \(event)")
-        } }).store(in: &cancellableBag)
-    }
+//    if let tunnel = command.localPortForward {
+//      let lis: SSHPortForwardListener
+//      do {
+//        lis = try SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
+//      } catch {
+//        print("Listener configuration error \(error)")
+//        self.kill()
+//        return
+//      }
+//      tunnel.append(lis)
+//
+//      // TODO: Will update the interface so you do not have to keep a
+//      // reference to the stream sent from the tunnel
+//      lis.receive().sink(receiveCompletion: { completion in
+//        switch completion {
+//        case .finished:
+//          print("Tunnel finished")
+//        case .failure(let error):
+//          print("TUNNEL ERROR \(error)")
+//        }
+//      }, receiveValue: { event in
+//        switch event {
+//        case .received(let streamPub):
+//          streamPub.assertNoFailure().sink { self.tunnelStream = $0 }.store(in: &self.cancellableBag)
+//        default:
+//          print("Tunnel received \(event)")
+//        } }).store(in: &cancellableBag)
+//    }
+  }
+  
+  func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
+//    if let localPort = command.reversePortForwardLocalPort,
+//       let tunnelHost = command.reversePortForwardHost,
+//       let remotePort = command.reversePortForwardRemotePort {
+//      let client: SSHPortForwardClient
+//      do {
+//        client = try SSHPortForwardClient(forward: tunnelHost,
+//                                          onPort: localPort,
+//                                          toRemotePort: remotePort,
+//                                          using: conn)
+//      } catch {
+//        print("Client configuration error \(error)")
+//        self.kill()
+//        return
+//      }
+//      reverseTunnels.append(client)
+//
+//      // TODO Same issue here, we should get the stream on the fwd side.
+//      client.connect().sink(receiveCompletion: { completion in
+//        switch completion {
+//        case .finished:
+//          print("Reverse tunnel finished")
+//        case .failure(let error):
+//          print("Reverse tunnel error \(error)")
+//        }
+//      }, receiveValue: { event in
+//        switch event {
+//        case .received(let streamPub):
+//          streamPub.assertNoFailure().sink { self.reverseTunnelStream = $0 }
+//            .store(in: &self.cancellableBag)
+//        default:
+//          print("Reverse tunnel event \(event)")
+//        }
+//      }).store(in: &self.cancellableBag)
+//    }
   }
   
   @objc public func sigwinch() {

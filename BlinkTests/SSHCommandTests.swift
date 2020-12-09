@@ -32,6 +32,7 @@
 
 import Foundation
 import XCTest
+import ArgumentParser
 
 class SSHCommandTests: XCTestCase {
   
@@ -43,8 +44,8 @@ class SSHCommandTests: XCTestCase {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
   
-  func testSshCommandNoParameters() throws {
-    let commandString = "-v -L 8080:localhost:80 -i id_rsa -p 2023 username@17.0.0.1 --"
+  func testSshCommandParameters() throws {
+    let commandString = "-vv -L 8080:localhost:80 -i id_rsa -p 2023 username@17.0.0.1 --"
     
     do {
       var components = commandString.components(separatedBy: " ")
@@ -52,16 +53,42 @@ class SSHCommandTests: XCTestCase {
       components.append("echo 'hello'")
       let command = try SSHCommand.parse(components)
       
-      XCTAssertTrue(command.localPortForward == "8080:localhost:80")
-      XCTAssertTrue(command.verbosityLogWarning)
+      XCTAssertTrue(command.localPortForward?.localPort == "8080")
+      XCTAssertTrue(command.localPortForward?.remotePort == "80")
+      XCTAssertTrue(command.localPortForward?.bindAddress == "localhost")
+      XCTAssertTrue(command.verbosity == 2)
       XCTAssertTrue(command.port == "2023")
       XCTAssertTrue(command.identityFile == "id_rsa")
       XCTAssertTrue(command.host == "17.0.0.1")
       XCTAssertTrue(command.user == "username")
       XCTAssertTrue(command.command == "echo 'hello'")
     } catch {
-      XCTFail("Couldn't parse SSH command \(error.localizedDescription)")
+      let msg = SSHCommand.message(for: error)
+      XCTFail("Couldn't parse SSH command: \(msg)")
     }
   }
   
+  func testSshCommandOptionals() throws {
+    let args = ["-o", "ProxyCommand=ssh", "localhost", "-o", "Compression=yes", "-o", "CompressionLevel=4"]
+    do {
+      let command = try SSHCommand.parse(args)
+      
+      let options = try command.connectionOptions.get()
+      XCTAssertTrue(options.proxyCommand == "ssh")
+      XCTAssertTrue(options.compression == true)
+      XCTAssert(options.compressionLevel == 4)
+    } catch {
+      let msg = SSHCommand.message(for: error)
+      XCTFail("Couldn't parse SSH command: \(msg)")
+    }
+  }
+  
+  func testUnknownOptional() throws {
+    let args = ["-o", "ProxyCommand=ssh", "localhost", "-o", "Compresion=yes"]
+    do {
+      let command = try SSHCommand.parse(args)
+      XCTFail("Parsing should have failed")
+    } catch {
+    }
+  }
 }

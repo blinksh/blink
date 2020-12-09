@@ -32,24 +32,7 @@
 
 import Foundation
 import ArgumentParser
-import SSH
-import Combine
 
-
-fileprivate let HostKeyChangedWarningMessage = """
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Host key for server changed. It is now: Public key hash %@.
-
-An attacker might change the default server key to confuse your client into thinking the key does not exist. It is also possible that the host key has just been changed.\n
-"""
-
-fileprivate let HostKeyChangedReplaceRequestMessage = "Accepting the following prompt will replace the old fingerprint. Do you trust the host key? [Y/n]: "
-
-fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
-
-fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
 
 struct SSHCommand: ParsableCommand {
   static var configuration = CommandConfiguration(
@@ -65,50 +48,21 @@ struct SSHCommand: ParsableCommand {
     version: "1.0.0")
   
   // Port forwarding options
-  @Option(name: .customShort("L"), help: "port:host:hostport Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.")
-  var localPortForward: String?
-  var localPortForwardLocalPort: String? {
-    get {
-      return localPortForward?.components(separatedBy: ":")[0]
-    }
-  }
-  var localPortForwardHost: String? {
-    get {
-      return localPortForward?.components(separatedBy: ":")[1].components(separatedBy: ":")[0]
-    }
-  }
-  var localPortForwardRemotePort: String? {
-    get {
-      return localPortForward?.components(separatedBy: ":")[2]
-    }
-  }
+  @Option(name: .customShort("L"),
+          help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.",
+          transform: {  try PortForwardInfo($0) })
+  var localPortForward: PortForwardInfo?
 
   // Reverse Port forwarding
   @Option(name:  [.customShort("R")],
-          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.")
-  var reversePortForward: String?
-  
-  var reversePortForwardLocalPort: String? {
-    get {
-      return reversePortForward?.components(separatedBy: ":")[0]
-    }
-  }
-  var reversePortForwardHost: String? {
-    get {
-      return reversePortForward?.components(separatedBy: ":")[1].components(separatedBy: ":")[0]
-    }
-  }
-  var reversePortForwardRemotePort: String? {
-    get {
-      return reversePortForward?.components(separatedBy: ":")[2]
-    }
-  }
+          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.",
+          transform: { try PortForwardInfo($0) })
+  var reversePortForward: PortForwardInfo?
   
   // Verbosity levels
-  @Flag(name: .customShort("v"), help: "First level of logging: Only warnings") var verbosityLogWarning = false
-  @Flag(name: .customLong("vv", withSingleDash: true), help: "Second level of logging: High level protocol infomation") var verbosityLogProtocol = false
-  @Flag(name: .customLong("vvv", withSingleDash: true), help: "Third level of logging: Lower level protocol information, packet level") var verbosityLogPacket = false
-  @Flag(name: .customLong("vvvv", withSingleDash: true), help: "Maximum level of logging: Every function path") var verbosityLogFunctions = false
+  // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
+  @Flag(name: .shortAndLong)
+  var verbose: Int
   
   // Login name
   @Option(name: [.customShort("l")],
@@ -122,33 +76,31 @@ struct SSHCommand: ParsableCommand {
   
   // Stdio forward
   @Option(name: [.customShort("W")],
-          help: "Forward stdio to the specified destination")
-  var stdioHostAndPort: String?
-  // If you are using these, then stdioFwd exists
-  var stdioHost: String {
-    get {
-      stdioHostAndPort!.contains(":") ?
-        stdioHostAndPort!.components(separatedBy: ":")[0] : stdioHostAndPort!
-    }
-  }
-  var stdioPort: Int32 {
-    get {
-      stdioHostAndPort!.contains(":") ?
-        Int32(stdioHostAndPort!.components(separatedBy: ":")[1])! : 22
-    }
+          help: "Forward stdio to the specified destination",
+          transform: { try StdioForwardInfo($0) })
+  var stdioHostAndPort: StdioForwardInfo?
+  
+  @Option(name: [.customShort("o")],
+          help: "Secondary connection options in config file format.")
+  var options: [String] = []
+  var connectionOptions: Result<ConfigFileOptions, Error> {
+    get { Result { try ConfigFileOptions(options) } }
   }
   
-    
+  // TODO Constraint things like port. Perform some validation
+  // TODO Special -o commands - send env variables, etc...
+  // TODO -G print configuration
+  // TODO -F customize config file
+  // TODO -t request tty. And the opposite, just launch in background.
+  // TODO Disable host key check
+  
   // SSH Port
-  @Option(name:  [.customLong("port"), .customShort("p")],
-          default: 22,
+  @Option(name: [.customLong("port"), .customShort("p")],
           help: "Specifies the port to connect to on the remote host.")
-  var portNum: Int32
-  var port: String { get {String(portNum) } }
+  var port: UInt16?
   
   // Identity
-  @Option(name:  [.customShort("i")],
-          default: nil,
+  @Option(name: [.customShort("i")],
           help: """
   Selects a file from which the identity (private key) for public key authentication is read. The default is ~/.ssh/id_dsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ed25519 and ~/.ssh/id_rsa.  Identity files may also be specified on a per-host basis in the configuration pane in the Settings of Blink.
   """)
@@ -181,163 +133,101 @@ struct SSHCommand: ParsableCommand {
   }
   
   func validate() throws {
+    let _ = try connectionOptions.get()
   }
 }
 
-// Having access from CLI
-// Having access from UI. Some parameters must already exist, others need to be tweaked.
-// Pass it a host and get everything necessary to connect, but some functions still need to be setup.
-class SSHClientConfigProvider {
-  let device: TermDevice
-  let command: SSHCommand
-  
-  fileprivate init(command cmd: SSHCommand, using device: TermDevice) {
-    self.device = device
-    self.command = cmd
-  }
-  
-  static func config(command cmd: SSHCommand, using device: TermDevice) -> SSHClientConfig {
-    let prov = SSHClientConfigProvider(command: cmd, using: device)
-    
-    let user = cmd.user ?? "carlos"
-    let authMethods = prov.availableAuthMethods()
-    
-    return SSHClientConfig(user: user, proxyJump: cmd.proxyJump, authMethods: authMethods, verifyHostCallback: prov.cliVerifyHostCallback, sshDirectory: BlinkPaths.ssh()!)
-  }
-}
+struct ConfigFileOptions {
+  var proxyCommand: String?
+  var compression: Bool?
+  var compressionLevel: UInt?
 
-extension SSHClientConfigProvider {
-  fileprivate func availableAuthMethods() -> [AuthMethod] {
-    var authMethods: [AuthMethod] = []
-    
-    // Explicit identity
-    if let identityFile = command.identityFile {
-      if let identityKey = Self.privateKey(fromIdentifier: identityFile) {
-        authMethods.append(AuthPublicKey(privateKey: identityKey))
-      }
-    }
-    
-    // Host key
-    if let hostKey = Self.privateKey(fromHost: command.host) {
-      authMethods.append(AuthPublicKey(privateKey: hostKey))
-    }
-    
-    // Host password
-    if let password = Self.password(fromHost: command.host) {
-      authMethods.append(AuthPassword(with: password))
-    }
-    
-    // All default keys
-    for defaultKey in Self.defaultKeys() {
-      authMethods.append(AuthPublicKey(privateKey: defaultKey))
-    }
-    
-    // Interactive
-    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
-    
-    return authMethods
-  }
-  
-  fileprivate func authPrompt(_ prompt: Prompt) -> AnyPublisher<[String], Error> {
-    var answers: [String] = []
-
-    if prompt.userPrompts.count > 0 {
-      for question in prompt.userPrompts {
-        if let input = device.readline(question.prompt, secure: true) {
-          answers.append(input)
+  init(_ options: [String]) throws {
+    for o in options {
+      let option = o.components(separatedBy: "=")
+      
+      switch option[0].lowercased() {
+      case "proxycommand":
+        if option.count != 2 {
+          throw ValidationError("ProxyCommand option missing command")
         }
+        self.proxyCommand = option[1]
+      case "compression":
+        if option.count != 2 {
+          throw ValidationError("Compression option missing yes/no")
+        }
+        compression = try ConfigFileOptions.yesNoValue(option[1], name: "compression")
+      case "compressionlevel":
+        if option.count != 2 {
+          throw ValidationError("Compression level missing number")
+        }
+        guard let level = UInt(option[1]) else {
+          throw ValidationError("Compression level is not a number")
+        }
+        if !(level > 0 && level < 10) {
+          throw ValidationError("Compression level must be between 1-9")
+        }
+        compressionLevel = level
+      default:
+        throw ValidationError("Unknown option \(option[0])")
       }
     }
-
-    return Just(answers).setFailureType(to: Error.self).eraseToAnyPublisher()
   }
   
-  fileprivate static func privateKey(fromIdentifier identifier: String) -> String? {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
-      return nil
+  fileprivate static func yesNoValue(_ str: String, name: String) throws -> Bool {
+    switch str.lowercased() {
+    case "yes":
+      return true
+    case "no":
+      return false
+    default:
+      throw ValidationError("Value \(name) should be yes/no")
     }
-    
-    guard let privateKey = publicKeys.first(where: { $0.id == identifier }) else {
-      return nil
-    }
-    
-    return privateKey.privateKey
-  }
-  
-  fileprivate static func privateKey(fromHost host: String) -> String? {
-
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-
-    guard let host = hosts.first(where: { $0.host == host }) else {
-      return nil
-    }
-
-    guard let keyIdentifier = host.key, let privateKey = privateKey(fromIdentifier: keyIdentifier) else {
-      return nil
-    }
-
-    return privateKey
-  }
-  
-  fileprivate static func defaultKeys() -> [String] {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
-      return []
-    }
-    
-    let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    let keys: [String] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? $0.privateKey : nil }
-    
-    return keys.count > 0 ? keys : []
-  }
-  
-  fileprivate static func password(fromHost host: String) -> String? {
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-    
-    guard let host = hosts.first(where: { $0.host == host }) else {
-      return nil
-    }
-    
-    return host.password
   }
 }
 
-extension SSHClientConfigProvider {
-  func cliVerifyHostCallback(_ prompt: SSH.VerifyHost) -> AnyPublisher<InteractiveResponse, Error> {
-    var response: SSH.InteractiveResponse = .negative
 
-    var messageToShow: String = ""
 
-    switch prompt {
-    case .changed(serverFingerprint: let serverFingerprint):
-      let headerMessage = String(format: HostKeyChangedWarningMessage, serverFingerprint)
-      messageToShow = String(format: "%@\n%@", headerMessage, HostKeyChangedReplaceRequestMessage)
-    case .unknown(serverFingerprint: let serverFingerprint):
-      messageToShow = String(format: HostKeyChangedUnknownRequestMessage, serverFingerprint)
-    case .notFound(serverFingerprint: let serverFingerprint):
-      messageToShow = String(format: HostKeyChangedNotFoundRequestMessage, serverFingerprint)
-    @unknown default:
-      break
+struct PortForwardInfo {
+  let localPort: UInt16
+  let bindAddress: String
+  let remotePort: UInt16
+
+  init(_ pattern: String) throws {
+    let comps = pattern.components(separatedBy: ":")
+    if comps.count != 3 {
+      throw ValidationError("Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
     }
-
-    let readAnswer = self.device.readline(messageToShow, secure: false)
-
-    if let answer = readAnswer?.lowercased() {
-      if answer.starts(with: "y") {
-        response = .affirmative
-      }
-    } else {
-      printLn("Cannot read input.")
+    
+    guard let localPort = UInt16(comps[0]) else {
+      throw ValidationError("Invalid port \(comps[0])")
     }
-
-    return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
+    self.localPort = localPort
+    
+    self.bindAddress = comps[1]
+    
+    guard let remotePort = UInt16(comps[2]) else {
+      throw ValidationError("Invalid port \(comps[2])")
+    }
+    self.remotePort = remotePort
   }
-  
-  fileprivate func printLn(_ string: String) {
-    let line = string.appending("\n")
-    fwrite(line, line.lengthOfBytes(using: .utf8), 1, device.stream.out)
+}
+
+struct StdioForwardInfo {
+  let bindAddress: String
+  let remotePort: UInt16
+
+  init(_ pattern: String) throws {
+    let comps = pattern.components(separatedBy: ":")
+    if comps.count != 2 {
+      throw ValidationError("Missing <bind_address>:<remoteport> for stdio forwarding.")
+    }
+    
+    self.bindAddress = comps[0]
+    
+    guard let remotePort = UInt16(comps[1]) else {
+      throw ValidationError("Invalid port \(comps[1])")
+    }
+    self.remotePort = remotePort
   }
 }

@@ -382,8 +382,7 @@
           if (client.value != nil) {
             [client.value kill];
           } else {
-            // Disable kill for now.
-            //[client.blinkSSH kill];
+            [client.blinkSSH kill];
           }
         }
       } else {

@@ -23,11 +23,13 @@
 		0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
+		0737BDED25892A0400C718D1 /* BlinkFiles in Frameworks */ = {isa = PBXBuildFile; productRef = 0737BDEC25892A0400C718D1 /* BlinkFiles */; };
 		07446E7C25796D0200443798 /* SSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E7B25796D0200443798 /* SSH */; };
 		07446E8E2579815400443798 /* LibSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E8D2579815400443798 /* LibSSH */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
 		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
+		078AF970257EB61E00A0B825 /* SSHConfigProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
@@ -382,6 +384,7 @@
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
+		078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHConfigProvider.swift; sourceTree = "<group>"; };
 		0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blink.entitlements; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
@@ -716,6 +719,7 @@
 				D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */,
 				D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */,
 				07446E7C25796D0200443798 /* SSH in Frameworks */,
+				0737BDED25892A0400C718D1 /* BlinkFiles in Frameworks */,
 				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
 				07446E8E2579815400443798 /* LibSSH in Frameworks */,
 				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
@@ -734,6 +738,7 @@
 				070C03452577335F001C21F5 /* SSHConfig.swift */,
 				070C03342576FA51001C21F5 /* SSH.swift */,
 				070C03382576FC24001C21F5 /* SSHLoader.m */,
+				078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */,
 			);
 			path = ssh;
 			sourceTree = "<group>";
@@ -1444,6 +1449,7 @@
 				070C034225772BE1001C21F5 /* ArgumentParser */,
 				07446E7B25796D0200443798 /* SSH */,
 				07446E8D2579815400443798 /* LibSSH */,
+				0737BDEC25892A0400C718D1 /* BlinkFiles */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -1743,6 +1749,7 @@
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
+				078AF970257EB61E00A0B825 /* SSHConfigProvider.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				070C03352576FA51001C21F5 /* SSH.swift in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
@@ -2185,11 +2192,10 @@
 		};
 		07B8B24725793AFC0023A09A /* XCRemoteSwiftPackageReference "BlinkCore" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/blinksh/blinkcore.binary.git";
+			repositoryURL = /Users/carlos/dev/BlinkCore.binary;
 			requirement = {
-				kind = versionRange;
-				maximumVersion = 0.2.0;
-				minimumVersion = 0.1.0;
+				kind = exactVersion;
+				version = 0.2.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -2199,6 +2205,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 070C034125772BE1001C21F5 /* XCRemoteSwiftPackageReference "swift-argument-parser" */;
 			productName = ArgumentParser;
+		};
+		0737BDEC25892A0400C718D1 /* BlinkFiles */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 07B8B24725793AFC0023A09A /* XCRemoteSwiftPackageReference "BlinkCore" */;
+			productName = BlinkFiles;
 		};
 		07446E7B25796D0200443798 /* SSH */ = {
 			isa = XCSwiftPackageProductDependency;
