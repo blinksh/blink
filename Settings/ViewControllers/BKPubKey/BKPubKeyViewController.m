@@ -364,12 +364,15 @@ enum SshKeyImportOrigin {
   
   for (NSURL *fileUrl in urls) {
     // Make the resource we're trying to access accessible to the app.
-    if ([fileUrl startAccessingSecurityScopedResource]) {
-      NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
-      [fileUrl stopAccessingSecurityScopedResource];
-      
-      [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
+    if ([fileUrl startAccessingSecurityScopedResource] == NO) {
+      continue;
     }
+    
+    NSString *keyString = [NSString stringWithContentsOfURL:fileUrl encoding:NSUTF8StringEncoding error:NULL];
+    [fileUrl stopAccessingSecurityScopedResource];
+    
+    [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
+    
   }
 }
 
