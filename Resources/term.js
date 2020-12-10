@@ -22,6 +22,15 @@ hterm.notify = function(params) {
   _postMessage('notify', {title, body: params.body})
 }
 
+hterm.Terminal.prototype.ringBell = function() {
+  // Blink cursor on BEL character
+  this.cursorNode_.style.backgroundColor = this.scrollPort_.getForegroundColor();
+    
+  setTimeout(() => this.restyleCursor_(), 200);
+  
+  _postMessage('ring-bell', null);
+};
+
 hterm.Terminal.prototype.copyStringToClipboard = function(content) {
   if (this.prefs_.get('enable-clipboard-notice')) {
     setTimeout(this.showOverlay.bind(this, hterm.notifyCopyMessage, 500), 200);

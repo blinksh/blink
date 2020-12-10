@@ -101,7 +101,10 @@
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   if (indexPath.section == 1 && indexPath.row == 1) {
-    UIViewController *vc = [KBSettingsViewController createWithNav:self.navigationController];
+    UIViewController *vc = [SettingsHostingController createKeyboardControllerWithNav:self.navigationController];
+    [self.navigationController pushViewController:vc animated:YES];
+  } else if (indexPath.section == 1 && indexPath.row == 3) {
+    UIViewController *vc = [SettingsHostingController createNotificationsWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
   }
 }

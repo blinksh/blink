@@ -61,6 +61,11 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
   _xCallBackURLKey = [coder decodeObjectForKey:@"xCallBackURLKey"];
   _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];
+  _playSoundOnBell = [coder decodeBoolForKey:@"playSoundOnBell"];
+  _notificationOnBellUnfocused = [coder decodeBoolForKey:@"notificationOnBellUnfocused"];
+  _hapticFeedbackOnBellOff = [coder decodeBoolForKey:@"hapticFeedbackOnBellOff"];
+  _oscNotifications = [coder decodeBoolForKey:@"oscNotifications"];
+  
   return self;
 }
 
@@ -82,6 +87,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_xCallBackURLEnabled forKey:@"xCallBackURLEnabled"];
   [encoder encodeObject:_xCallBackURLKey forKey:@"xCallBackURLKey"];
   [encoder encodeBool:_disableCustomKeyboards forKey:@"disableCustomKeyboards"];
+  [encoder encodeBool:_playSoundOnBell forKey:@"playSoundOnBell"];
+  [encoder encodeBool:_notificationOnBellUnfocused forKey:@"notificationOnBellUnfocused"];
+  [encoder encodeBool:_hapticFeedbackOnBellOff forKey:@"hapticFeedbackOnBellOff"];
+  [encoder encodeBool:_oscNotifications forKey:@"oscNotifications"];
 }
 
 + (void)loadDefaults
@@ -203,6 +212,22 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.xCallBackURLKey = key;
 }
 
++ (void)setPlaySoundOnBell:(BOOL)state {
+  defaults.playSoundOnBell = state;
+}
+
++ (void)setNotificationOnBellUnfocused:(BOOL)state {
+  defaults.notificationOnBellUnfocused = state;
+}
+
++ (void)setHapticFeedbackOnBellOff:(BOOL)state {
+  defaults.hapticFeedbackOnBellOff = state;
+}
+
++ (void)setOscNotifications:(BOOL)state {
+  defaults.oscNotifications = state;
+}
+
 + (NSString *)selectedFontName
 {
   return defaults.fontName;
@@ -221,7 +246,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 {
   return defaults.externalDisplayFontSize;
 }
-
 
 + (BOOL)isCursorBlink
 {
@@ -279,6 +303,22 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (BOOL)disableCustomKeyboards {
   return defaults.disableCustomKeyboards;
+}
+
++ (BOOL)isPlaySoundOnBellOn {
+  return defaults.playSoundOnBell;
+}
+
++ (BOOL)isNotificationOnBellUnfocusedOn {
+  return defaults.notificationOnBellUnfocused;
+}
+
++ (BOOL)hapticFeedbackOnBellOff {
+  return defaults.hapticFeedbackOnBellOff;
+}
+
++ (BOOL)isOscNotificationsOn {
+  return defaults.oscNotifications;
 }
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {

@@ -32,6 +32,7 @@
 
 import Combine
 import UserNotifications
+import AVFoundation
 
 @objc protocol TermControlDelegate: NSObjectProtocol {
   // May be do it optional
@@ -280,9 +281,52 @@ let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
   "completion.for": Complete.forAPI
 ]
 
+// MARK: - TermDeviceDelegate methods
+
 extension TermController: TermDeviceDelegate {
   
+  /**
+   When a `ring-bell` notification has been received on `TermView` react to it by sounding a bell if the terminal that sent it
+   is in focus and if it's not send a notification. Tapping the notification opens the session that sent it.
+   
+   Only reproduce haptic feedback on iPhones and if it's enabled.
+   
+   Enable/Disable standard OSC sequences & iTerm2 notifications
+   */
+  func viewDidReceiveBellRing() {
+    if !_termView.isFocused() && BKDefaults.isNotificationOnBellUnfocusedOn() {
+      viewNotify(["title": "🔔 \(_termView.title ?? "")"])
+    } else if BKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
+      AudioServicesPlaySystemSound(1103);
+    }
+    
+    // Haptic feedback is only visible from iPhones
+    if UIDevice.current.userInterfaceIdiom == .phone && !BKDefaults.hapticFeedbackOnBellOff() {
+      UINotificationFeedbackGenerator().notificationOccurred(.warning)
+    }
+  }
+  
+  /**
+   Presents a UserNotification with the `title` & `body` values passed on `data`. Tapping on the notification opens the terminal that originated the notification. Also triggered when the terminal receives a standard `OSC` sequence & iTerm2-like notification.
+   
+   - Parameters:
+    - data: Set the `title` and `body` String values to display those values in the notification banner.
+   */
   func viewNotify(_ data: [AnyHashable : Any]!) {
+    
+    /// Don't show anything if OSC notifications have been deactivated
+    guard BKDefaults.isOscNotificationsOn() else {
+      return
+    }
+    
+    /**
+     - Show notification if terminal is in focus
+     - Don't show notification if terminal is not in focus and user has deactivated background notifications
+     */
+    guard _termView.isFocused() || BKDefaults.isNotificationOnBellUnfocusedOn() else {
+      return
+    }
+    
     let content = UNMutableNotificationContent()
     content.title = (data["title"] as? String) ?? title ?? "Blink"
     content.body = (data["body"] as? String) ?? ""
@@ -298,7 +342,6 @@ extension TermController: TermDeviceDelegate {
         center.add(req, withCompletionHandler: nil)
       }
     }
-    
   }
   
   func apiCall(_ api: String!, andRequest request: String!) {

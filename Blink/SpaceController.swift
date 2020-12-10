@@ -443,6 +443,7 @@ extension SpaceController: UIPageViewControllerDataSource {
 }
 
 extension SpaceController: TermControlDelegate {
+  
   func terminalHangup(control: TermController) {
     if currentTerm() == control {
       _closeCurrentSpace()

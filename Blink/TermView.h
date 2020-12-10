@@ -53,6 +53,7 @@
 - (void)viewAPICall:(NSString *)api andJSONRequest:(NSString *)request;
 - (void)viewNotify:(NSDictionary *)data;
 - (void)viewSelectionChanged;
+- (void)viewDidReceiveBellRing;
 
 @end
 

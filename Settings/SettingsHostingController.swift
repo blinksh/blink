@@ -29,18 +29,30 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 import SwiftUI
 import UIKit
 
-@objc class KBSettingsViewController: NSObject {
-  @objc static func createWith(nav: UINavigationController?) -> UIViewController {
-    let rootView = KBConfigView(config: KBTracker.shared.loadConfig())
+@objc class SettingsHostingController: NSObject {
+  private static func _createWith<T: View>(view: T, nav: UINavigationController?) -> UIViewController {
     guard
       let nav = nav
     else {
-      return UIHostingController(rootView: rootView)
+      return UIHostingController(rootView: view)
     }
-    return UIHostingController(rootView: NavView(navController: nav)  { rootView } )
+    return UIHostingController(rootView: NavView(navController: nav)  { view } )
+  }
+  
+  @objc static func createKeyboardControllerWith(nav: UINavigationController?) -> UIViewController {
+    _createWith(
+      view: KBConfigView(config: KBTracker.shared.loadConfig()),
+      nav: nav
+    )
+  }
+  
+  @objc static func createNotificationsWith(nav: UINavigationController?) -> UIViewController {
+    _createWith(
+      view: BKNotificationsView(),
+      nav: nav
+    )
   }
 }
