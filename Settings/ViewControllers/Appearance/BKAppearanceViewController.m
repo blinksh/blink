@@ -35,6 +35,7 @@
 #import "BKTheme.h"
 #import "TermView.h"
 #import "TermDevice.h"
+#import <UserNotifications/UserNotifications.h>
 
 #define FONT_SIZE_FIELD_TAG 2001
 #define FONT_SIZE_STEPPER_TAG 2002
@@ -50,7 +51,6 @@
 #define KEYBOARDSTYLE_TAG 2010
 #define KEYCASTS_TAG 2011
 
-
 typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   BKAppearance_Terminal = 0,
     BKAppearance_Themes,
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     BKAppearance_FontSize,
     BKAppearance_KeyboardAppearance,
     BKAppearance_AppIcon,
-    BKAppearance_Layout,
+    BKAppearance_Layout
 };
 
 @interface BKAppearanceViewController () <TermViewDeviceProtocol>
@@ -283,7 +283,6 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     }
   }
   
-  
   return cellIdentifier;
 }
 
@@ -382,6 +381,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     _overscanCompensationSegmentedControl = [cell viewWithTag:OVERSCAN_COMPENSATION_TAG];
     _overscanCompensationSegmentedControl.selectedSegmentIndex = [self _overscanCompensationToIndex:_overscanCompensationValue];
   }
+  
   return cell;
 }
 

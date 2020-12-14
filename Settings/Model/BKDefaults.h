@@ -71,6 +71,10 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic) BOOL xCallBackURLEnabled;
 @property (nonatomic) NSString *xCallBackURLKey;
 @property (nonatomic) BOOL disableCustomKeyboards;
+@property (nonatomic) BOOL playSoundOnBell;
+@property (nonatomic) BOOL notificationOnBellUnfocused;
+@property (nonatomic) BOOL hapticFeedbackOnBellOff;
+@property (nonatomic) BOOL oscNotifications;
 
 + (void)loadDefaults;
 + (BOOL)saveDefaults;
@@ -87,6 +91,10 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setThemeName:(NSString *)themeName;
 + (void)setFontSize:(NSNumber *)fontSize;
 + (void)setExternalDisplayFontSize:(NSNumber *)fontSize;
++ (void)setPlaySoundOnBell:(BOOL)state;
++ (void)setNotificationOnBellUnfocused:(BOOL)state;
++ (void)setHapticFeedbackOnBellOff:(BOOL)state;
++ (void)setOscNotifications:(BOOL)state;
 + (NSString *)selectedFontName;
 + (NSString *)selectedThemeName;
 + (NSNumber *)selectedFontSize;
@@ -107,7 +115,10 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setLayoutMode:(BKLayoutMode)mode;
 + (void)setOversanCompensation:(BKOverscanCompensation)value;
 + (void)setKeyboardStyle:(BKKeyboardStyle)value;
-
++ (BOOL)isPlaySoundOnBellOn;
++ (BOOL)isNotificationOnBellUnfocusedOn;
++ (BOOL)hapticFeedbackOnBellOff;
++ (BOOL)isOscNotificationsOn;
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value;
 @end

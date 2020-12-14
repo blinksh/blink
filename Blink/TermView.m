@@ -35,6 +35,7 @@
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
+#import <AVFoundation/AVFoundation.h>
 
 #import "Blink-Swift.h"
 
@@ -352,6 +353,9 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_device viewAPICall:data[@"name"] andJSONRequest:data[@"request"]];
   } else if ([operation isEqualToString:@"notify"]) {
     [_device viewNotify:data];
+  } else if ([operation isEqualToString:@"ring-bell"]) {
+    [_device viewDidReceiveBellRing];
+    
   }
 }
 
@@ -385,8 +389,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [_coverView removeFromSuperview];
     _coverView = nil;
   }];
-  
-  
 }
 
 - (BOOL)isFocused {

@@ -57,6 +57,7 @@
 - (void)deviceFocused;
 - (void)apiCall:(NSString *)api andRequest:(NSString *)request;
 - (void)viewNotify:(NSDictionary *)data;
+- (void)viewDidReceiveBellRing;
 - (UIViewController *)viewController;
 
 @end
