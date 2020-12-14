@@ -1,5 +1,7 @@
 # Version 13.5.10
 
+- Configuration for notify and bell. 
+- Fixed key import from files. #1106
 - Improved error handling in ssh.
 - Added `--experimental-remote-ip={remote|local}` flag to mosh command. #1127
 
