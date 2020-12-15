@@ -40,19 +40,18 @@ import Dispatch
   let stdout: Int32
   let stdin: Int32
   let device: TermDevice
-  
+
   var exitCode = 0
   var cancellableBag: Set<AnyCancellable> = []
   var connection: SSH.SSHClient?
   var currentRunLoop: RunLoop?
   var connectionSetup: AnyCancellable?
   var stream: SSH.Stream?
-  var tunnel: [SSHPortForwardListener] = []
-  var reverseTunnels: [SSHPortForwardClient] = []
+  var tunnels: [SSHPortForwardListener] = []
   var tunnelStream: SSH.Stream?
-  var reverseTunnelStream: SSH.Stream?
+  var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
-  
+
   @objc public init(stdout: Int32, andStdin stdin: Int32, device dev: TermDevice) {
     // Duplicate before transforming them, because ios_sytem
     // still needs the original streams.
@@ -60,12 +59,12 @@ import Dispatch
     self.stdin = stdin
     self.device = dev
   }
-  
+
   @objc public func start(_ argc: Int, argv: [String]) -> Int {
     let originalRawMode = device.rawMode
-    
+
     currentRunLoop = RunLoop.current
-    
+
     let cmd: SSHCommand
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
@@ -74,9 +73,9 @@ import Dispatch
       print("\(message)")
       return -1
     }
-    
+
     let config = SSHClientConfigProvider.config(command: cmd, using: device)
-    
+
     SSH.SSHClient.dial(cmd.host, with: config, withProxy: executeProxyCommand)
       .sink(receiveCompletion: { completion in
         switch completion {
@@ -99,13 +98,13 @@ import Dispatch
     device.rawMode = originalRawMode
     return exitCode
   }
-  
+
   func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
     // If this is a jump, we process it here.
     // Otherwise we execute another command through the shell.
-    
+
     // TODO Possible issues with the command, as components may not be enough.
-    
+
     // TODO Thread per connection should be handled by the pool,
     // but for now we will dump it here.
     proxyThread = Thread {
@@ -117,39 +116,37 @@ import Dispatch
 
       var connection: SSH.SSHClient?
       var proxyStream: SSH.Stream?
-      
+
       let config = SSHClientConfigProvider.config(command: cmd, using: self.device)
-      
-//      let c = SSHClient.dial(cmd.host, with: config)
-//        .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
-//          connection = conn
-//          // TODO There is a mismatch on Port, config gets a string, but we
-//          // use Int32 everywhere else.
-//          return conn.requestForward(to: cmd.host, port: cmd.portNum,
-//                                     // TODO Just informative, should make optional.
-//                                     from: "localhost", localPort: 22)
-//        }.sink(receiveCompletion: { end in
-//          switch end {
-//          case .failure(let error):
-//            close(sockIn)
-//            close(sockOut)
-//            print("Proxy Command failed to execute \(error)")
-//          default:
-//            break
-//          }
-//        }, receiveValue: { s in
-//          let output = DispatchOutputStream(stream: sockOut)
-//          let input = DispatchInputStream(stream: sockIn)
-//          proxyStream = s
-//          s.connect(stdout: output, stdin: input)
-//        })
-      
+
+      let c = SSHClient.dial(cmd.host, with: config)
+        .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
+          connection = conn
+          return conn.requestForward(to: cmd.host, port: Int32(cmd.port ?? 22),
+                                     // TODO Just informative, should make optional.
+                                     from: "localhost", localPort: 22)
+        }.sink(receiveCompletion: { end in
+          switch end {
+          case .failure(let error):
+            close(sockIn)
+            close(sockOut)
+            print("Proxy Command failed to execute \(error)")
+          default:
+            break
+          }
+        }, receiveValue: { s in
+          let output = DispatchOutputStream(stream: sockOut)
+          let input = DispatchInputStream(stream: sockIn)
+          proxyStream = s
+          s.connect(stdout: output, stdin: input)
+        })
+
       CFRunLoopRun()
     }
-    
+
     proxyThread?.start()
   }
-  
+
   func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) {
     let rows = self.device.rows
     let cols = self.device.cols
@@ -185,38 +182,26 @@ import Dispatch
         s.connect(stdout: outStream, stdin: inStream)
       }).store(in: &cancellableBag)
   }
-  
+
   func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
-//    if let tunnel = command.localPortForward {
-//      let lis: SSHPortForwardListener
-//      do {
-//        lis = try SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
-//      } catch {
-//        print("Listener configuration error \(error)")
-//        self.kill()
-//        return
-//      }
-//      tunnel.append(lis)
-//
-//      // TODO: Will update the interface so you do not have to keep a
-//      // reference to the stream sent from the tunnel
-//      lis.receive().sink(receiveCompletion: { completion in
-//        switch completion {
-//        case .finished:
-//          print("Tunnel finished")
-//        case .failure(let error):
-//          print("TUNNEL ERROR \(error)")
-//        }
-//      }, receiveValue: { event in
-//        switch event {
-//        case .received(let streamPub):
-//          streamPub.assertNoFailure().sink { self.tunnelStream = $0 }.store(in: &self.cancellableBag)
-//        default:
-//          print("Tunnel received \(event)")
-//        } }).store(in: &cancellableBag)
-//    }
+    if let tunnel = command.localPortForward {
+      let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
+      tunnels.append(lis)
+
+      // do not start the shell until the tunnels are set. How?
+      lis.connect().sink(receiveCompletion: { completion in
+        switch completion {
+        case .finished:
+          print("Tunnel finished")
+        case .failure(let error):
+          print("TUNNEL ERROR \(error)")
+        }
+      }, receiveValue: { event in
+        print("Tunnel received \(event)")
+      }).store(in: &cancellableBag)
+    }
   }
-  
+
   func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
 //    if let localPort = command.reversePortForwardLocalPort,
 //       let tunnelHost = command.reversePortForwardHost,
@@ -253,7 +238,7 @@ import Dispatch
 //      }).store(in: &self.cancellableBag)
 //    }
   }
-  
+
   @objc public func sigwinch() {
     var c: AnyCancellable?
     c = stream?.resizePty(rows: Int32(device.rows), columns: Int32(device.cols))
@@ -265,14 +250,14 @@ import Dispatch
           c = nil
         }
       }, receiveValue: {})
-    
-    
+
+
   }
-  
+
   @objc public func kill() {
     cancellableBag.forEach { $0.cancel() }
     stream?.cancel()
-    
+
     if let cfRunLoop = currentRunLoop?.getCFRunLoop() {
       CFRunLoopStop(cfRunLoop)
     }

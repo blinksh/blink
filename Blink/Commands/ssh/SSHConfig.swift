@@ -62,7 +62,7 @@ struct SSHCommand: ParsableCommand {
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
   @Flag(name: .shortAndLong)
-  var verbose: Int
+  var verbosity: Int
   
   // Login name
   @Option(name: [.customShort("l")],
