@@ -114,7 +114,6 @@ class SpaceController: UIViewController {
     _viewportsController.dataSource = self
     _viewportsController.delegate = self
     
-    
     addChild(_viewportsController)
     
     if let v = _viewportsController.view {

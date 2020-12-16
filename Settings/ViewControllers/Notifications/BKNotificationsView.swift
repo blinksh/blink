@@ -38,7 +38,7 @@ struct BKNotificationsView: View {
   
   var body: some View {
     List {
-      Section(footer: Text("Play a sound when a BEL character is received and send a notification if the terminal is not in focus.")) {
+      Section(header: Text("BEL Notifications"), footer: Text("Play a sound when a BEL character is received and send a notification if the terminal is not in focus.")) {
         Toggle("Play Sound on active shell", isOn: $notification.playSoundOnActiveShell)
         Toggle("Notification on background shell", isOn: $notification.notificationOnBackgroundShell)
         
@@ -87,7 +87,7 @@ fileprivate enum BKNotifications: CaseIterable {
 struct NotifyNotificationsView: View {
   var body: some View {
     VStack(alignment: .leading) {
-      Text("Blink supports standard OSC sequences & iTerm2 notifications. Examples (tap to copy & use them on a SSH connection):")
+      Text("Blink supports standard OSC sequences & iTerm2 growl notifications. Some OSC sequences might not be supported in Mosh. Persist your connections using the geo command to receive notifications in the background after a while.\n\nExamples (tap to copy & use them on a SSH connection):")
       
       ForEach(BKNotifications.allCases, id: \.self) { notification in
         

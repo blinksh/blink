@@ -352,6 +352,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else if ([operation isEqualToString:@"api"]) {
     [_device viewAPICall:data[@"name"] andJSONRequest:data[@"request"]];
   } else if ([operation isEqualToString:@"notify"]) {
+    [data setValue:[NSNumber numberWithInt:BKNotificationTypeOsc] forKey:@"type"];
     [_device viewNotify:data];
   } else if ([operation isEqualToString:@"ring-bell"]) {
     [_device viewDidReceiveBellRing];

@@ -281,8 +281,14 @@ let _apiRoutes:[String: (MCPSession, String) -> AnyPublisher<String, Never>] = [
   "completion.for": Complete.forAPI
 ]
 
-// MARK: - TermDeviceDelegate methods
 
+/// Types of supported notifications
+@objc enum BKNotificationType: NSInteger {
+  case bell = 0
+  case osc = 1
+}
+
+// MARK: - TermDeviceDelegate methods
 extension TermController: TermDeviceDelegate {
   
   /**
@@ -294,11 +300,12 @@ extension TermController: TermDeviceDelegate {
    Enable/Disable standard OSC sequences & iTerm2 notifications
    */
   func viewDidReceiveBellRing() {
-    if !_termView.isFocused() && BKDefaults.isNotificationOnBellUnfocusedOn() {
-      viewNotify(["title": "🔔 \(_termView.title ?? "")"])
-    } else if BKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
+    
+    if BKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
       AudioServicesPlaySystemSound(1103);
     }
+  
+    viewNotify(["title": "🔔 \(_termView.title ?? "")", "type": BKNotificationType.bell.rawValue])
     
     // Haptic feedback is only visible from iPhones
     if UIDevice.current.userInterfaceIdiom == .phone && !BKDefaults.hapticFeedbackOnBellOff() {
@@ -310,21 +317,17 @@ extension TermController: TermDeviceDelegate {
    Presents a UserNotification with the `title` & `body` values passed on `data`. Tapping on the notification opens the terminal that originated the notification. Also triggered when the terminal receives a standard `OSC` sequence & iTerm2-like notification.
    
    - Parameters:
-    - data: Set the `title` and `body` String values to display those values in the notification banner.
+    - data: Set the `title` and `body` String values to display those values in the notification banner. Set the `type`'s rawValue of `BKNotificationType` to identify the type of notification used.
    */
   func viewNotify(_ data: [AnyHashable : Any]!) {
     
-    /// Don't show anything if OSC notifications have been deactivated
-    guard BKDefaults.isOscNotificationsOn() else {
+    guard let notificationTypeRaw = data["type"] as? Int, let notificationType = BKNotificationType(rawValue: notificationTypeRaw) else {
       return
     }
-    
-    /**
-     - Show notification if terminal is in focus
-     - Don't show notification if terminal is not in focus and user has deactivated background notifications
-     */
-    guard _termView.isFocused() || BKDefaults.isNotificationOnBellUnfocusedOn() else {
-      return
+        
+    if notificationType  == .bell && (_termView.isFocused() || !BKDefaults.isNotificationOnBellUnfocusedOn())
+        || notificationType == .osc && !BKDefaults.isOscNotificationsOn() {
+       return
     }
     
     let content = UNMutableNotificationContent()
