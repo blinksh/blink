@@ -43,10 +43,10 @@ struct SSHCommand: ParsableCommand {
 
     ssh connects and logs into the specified hostname (with optional user name). The user must prove his/her identity to the remote machine using one of several methods depending on the protocol version used (see below).
     """,
-    
+
     // Commands can define a version for automatic '--version' support.
     version: "1.0.0")
-  
+
   // Port forwarding options
   @Option(name: .customShort("L"),
           help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.",
@@ -58,56 +58,56 @@ struct SSHCommand: ParsableCommand {
           help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.",
           transform: { try PortForwardInfo($0) })
   var reversePortForward: PortForwardInfo?
-  
+
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
   @Flag(name: .shortAndLong)
-  var verbosity: Int
-  
+  var verbose: Int
+
   // Login name
   @Option(name: [.customShort("l")],
           help: "Login name. This option can also be specified at the host")
   var loginName: String?
-  
+
   // Jumps
   @Option(name:  [.customShort("J")],
           help: "Jump Hosts in a comma separated list")
   var proxyJump: String?
-  
+
   // Stdio forward
   @Option(name: [.customShort("W")],
           help: "Forward stdio to the specified destination",
           transform: { try StdioForwardInfo($0) })
   var stdioHostAndPort: StdioForwardInfo?
-  
+
   @Option(name: [.customShort("o")],
           help: "Secondary connection options in config file format.")
   var options: [String] = []
   var connectionOptions: Result<ConfigFileOptions, Error> {
     get { Result { try ConfigFileOptions(options) } }
   }
-  
+
   // TODO Constraint things like port. Perform some validation
   // TODO Special -o commands - send env variables, etc...
   // TODO -G print configuration
   // TODO -F customize config file
   // TODO -t request tty. And the opposite, just launch in background.
   // TODO Disable host key check
-  
+
   // SSH Port
   @Option(name: [.customLong("port"), .customShort("p")],
           help: "Specifies the port to connect to on the remote host.")
-  var port: UInt16?
-  
+  var customPort: UInt16?
+
   // Identity
   @Option(name: [.customShort("i")],
           help: """
   Selects a file from which the identity (private key) for public key authentication is read. The default is ~/.ssh/id_dsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ed25519 and ~/.ssh/id_rsa.  Identity files may also be specified on a per-host basis in the configuration pane in the Settings of Blink.
   """)
   var identityFile: String?
-  
+
   // Connect to User at Host
-  @Argument(help: "[user@]host")
+  @Argument(help: "[user@]host[#port]")
   var userAtHost: String
   var host: String {
     get {
@@ -125,13 +125,23 @@ struct SSHCommand: ParsableCommand {
       return comps.count > 1 ? comps[0] : nil
     }
   }
-  
+  var port: UInt16? {
+    get {
+      if let port = customPort {
+        return port
+      }
+      let comps = userAtHost.components(separatedBy: "#")
+      return comps.count > 1 ? UInt16(comps[1]) : nil
+    }
+  }
+
+
   @Argument(help: "command")
   var command: String?
-  
+
   func run() throws {
   }
-  
+
   func validate() throws {
     let _ = try connectionOptions.get()
   }
@@ -145,7 +155,7 @@ struct ConfigFileOptions {
   init(_ options: [String]) throws {
     for o in options {
       let option = o.components(separatedBy: "=")
-      
+
       switch option[0].lowercased() {
       case "proxycommand":
         if option.count != 2 {
@@ -173,7 +183,7 @@ struct ConfigFileOptions {
       }
     }
   }
-  
+
   fileprivate static func yesNoValue(_ str: String, name: String) throws -> Bool {
     switch str.lowercased() {
     case "yes":
@@ -198,14 +208,14 @@ struct PortForwardInfo {
     if comps.count != 3 {
       throw ValidationError("Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
     }
-    
+
     guard let localPort = UInt16(comps[0]) else {
       throw ValidationError("Invalid port \(comps[0])")
     }
     self.localPort = localPort
-    
+
     self.bindAddress = comps[1]
-    
+
     guard let remotePort = UInt16(comps[2]) else {
       throw ValidationError("Invalid port \(comps[2])")
     }
@@ -222,9 +232,9 @@ struct StdioForwardInfo {
     if comps.count != 2 {
       throw ValidationError("Missing <bind_address>:<remoteport> for stdio forwarding.")
     }
-    
+
     self.bindAddress = comps[0]
-    
+
     guard let remotePort = UInt16(comps[1]) else {
       throw ValidationError("Invalid port \(comps[1])")
     }

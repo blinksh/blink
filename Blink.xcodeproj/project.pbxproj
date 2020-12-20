@@ -24,6 +24,8 @@
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
 		0737BDED25892A0400C718D1 /* BlinkFiles in Frameworks */ = {isa = PBXBuildFile; productRef = 0737BDEC25892A0400C718D1 /* BlinkFiles */; };
+		0737BDF02589323100C718D1 /* CopyFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0737BDEF2589323100C718D1 /* CopyFiles.swift */; };
+		0737BE30258AED2900C718D1 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0737BE2F258AED2900C718D1 /* Helpers.swift */; };
 		07446E7C25796D0200443798 /* SSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E7B25796D0200443798 /* SSH */; };
 		07446E8E2579815400443798 /* LibSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E8D2579815400443798 /* LibSSH */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
@@ -381,6 +383,8 @@
 		0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UICKeyChainStore.xcodeproj; path = UICKeyChainStore/Lib/UICKeyChainStore.xcodeproj; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
+		0737BDEF2589323100C718D1 /* CopyFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyFiles.swift; sourceTree = "<group>"; };
+		0737BE2F258AED2900C718D1 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
@@ -735,10 +739,12 @@
 		070C032D2576FA2B001C21F5 /* ssh */ = {
 			isa = PBXGroup;
 			children = (
-				070C03452577335F001C21F5 /* SSHConfig.swift */,
+				0737BDEF2589323100C718D1 /* CopyFiles.swift */,
 				070C03342576FA51001C21F5 /* SSH.swift */,
 				070C03382576FC24001C21F5 /* SSHLoader.m */,
+				070C03452577335F001C21F5 /* SSHConfig.swift */,
 				078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */,
+				0737BE2F258AED2900C718D1 /* Helpers.swift */,
 			);
 			path = ssh;
 			sourceTree = "<group>";
@@ -1738,6 +1744,7 @@
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
+				0737BE30258AED2900C718D1 /* Helpers.swift in Sources */,
 				D2071B86215135A9000156D7 /* openssl-compat.c in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
@@ -1781,6 +1788,7 @@
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
+				0737BDF02589323100C718D1 /* CopyFiles.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
 				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
@@ -2195,7 +2203,7 @@
 			repositoryURL = /Users/carlos/dev/BlinkCore.binary;
 			requirement = {
 				kind = exactVersion;
-				version = 0.2.0;
+				version = 0.2.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

@@ -48,21 +48,12 @@
 #include "ios_error.h"
 #include "Blink-Swift.h"
 
-@interface WeakSSHClient : NSObject
-@property (weak) SSHClient *value;
-@property (weak) BlinkSSH *blinkSSH;
-@end
-
-@implementation WeakSSHClient
-
-@end
-
 
 @implementation MCPSession {
   NSString * _sessionUUID;
   Session *_childSession;
   NSString *_currentCmd;
-  NSMutableArray<WeakSSHClient *> *_sshClients;
+  NSMutableArray *_sshClients;
   dispatch_queue_t _cmdQueue;
   TermStream *_cmdStream;
   NSString *_currentCmdLine;
@@ -211,40 +202,12 @@
   return 0;
 }
 
-- (void)registerSSHClient:(SSHClient *)sshClient {
-  WeakSSHClient *client = [[WeakSSHClient alloc] init];
-  client.value = sshClient;
-  [_sshClients addObject:client];
+- (void)registerSSHClient:(id __weak)sshClient {
+  [_sshClients addObject:sshClient];
 }
 
-- (void)registerBlinkSSHClient:(BlinkSSH *)blinkSSH {
-  WeakSSHClient *client = [[WeakSSHClient alloc] init];
-  client.blinkSSH = blinkSSH;
-  [_sshClients addObject:client];
-}
-
-- (void)unregisterSSHClient:(SSHClient *)sshClient {
-  WeakSSHClient *foundClient = nil;
-  for (WeakSSHClient *client in _sshClients) {
-    if ([client.value isEqual:sshClient]) {
-      foundClient = client;
-      break;
-    }
-  }
-  
-  [_sshClients removeObject:foundClient];
-}
-
-- (void)unregisterBlinkSSHClient:(BlinkSSH *)blinkSSH {
-  WeakSSHClient *foundClient = nil;
-  for (WeakSSHClient *client in _sshClients) {
-    if ([client.blinkSSH isEqual:blinkSSH]) {
-      foundClient = client;
-      break;
-    }
-  }
-  
-  [_sshClients removeObject:foundClient];
+- (void)unregisterSSHClient:(id __weak)sshClient {
+  [_sshClients removeObject:sshClient];
 }
 
 - (bool)isRunningCmd {
@@ -317,24 +280,16 @@
 - (void)sigwinch
 {
   [_childSession sigwinch];
-  for (WeakSSHClient *client in _sshClients) {
-    if (client.value != nil) {
-      [client.value sigwinch];
-    } else {
-      [client.blinkSSH sigwinch];
-    }
+  for (id client in _sshClients) {
+    [client sigwinch];
   }
 }
 
 - (void)kill
 {
   if (_sshClients.count > 0) {
-    for (WeakSSHClient *client in _sshClients) {
-      if (client.value != nil) {
-        [client.value kill];
-      } else {
-        [client.blinkSSH kill];
-      }
+    for (id client in _sshClients) {
+      [client kill];
     }
     [_device writeIn:@"\x03"];
     
@@ -378,12 +333,8 @@
       }
       if (_sshClients.count > 0) {
         [_device closeReadline];
-        for (WeakSSHClient *client in _sshClients) {
-          if (client.value != nil) {
-            [client.value kill];
-          } else {
-            [client.blinkSSH kill];
-          }
+        for (id client in _sshClients) {
+          [client kill];
         }
       } else {
         if ([control isEqualToString:ctrlD]) {

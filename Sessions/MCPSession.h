@@ -43,10 +43,8 @@
 
 @property (strong) MCPParams *sessionParams;
 
-- (void)registerSSHClient:(SSHClient *)sshClient;
-- (void)registerBlinkSSHClient:(BlinkSSH *)blinkSSH;
-- (void)unregisterSSHClient:(SSHClient *)sshClient;
-- (void)unregisterBlinkSSHClient:(BlinkSSH *)blinkSSH;
+- (void)registerSSHClient:(id __weak)sshClient;
+- (void)unregisterSSHClient:(id __weak)sshClient;
 
 - (void)enqueueCommand:(NSString *)cmd;
 - (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;

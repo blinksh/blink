@@ -33,6 +33,16 @@
 #ifndef Blink_bridge_h
 #define Blink_bridge_h
 
+#include <stdio.h>
+#include <pthread.h>
+
+// Thread-local input and output streams
+// Note we could not import ios_system
+extern __thread FILE* thread_stdin;
+extern __thread FILE* thread_stdout;
+extern __thread FILE* thread_stderr;
+extern __thread void* thread_context;
+
 #import "BKDefaults.h"
 #import "BKHosts.h"
 #import "BlinkPaths.h"

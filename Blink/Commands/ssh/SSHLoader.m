@@ -54,10 +54,10 @@ int blink_ssh_main(int argc, char *argv[]) {
       [arguments addObject:str];
   }
   
-  [session registerBlinkSSHClient:c];
+  [session registerSSHClient:c];
   
   int rc = [c start:argc argv:arguments];
-  [session unregisterBlinkSSHClient:c];
+  [session unregisterSSHClient:c];
 
   return rc;
 }
