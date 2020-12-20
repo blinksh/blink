@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		070C03352576FA51001C21F5 /* SSH.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C03342576FA51001C21F5 /* SSH.swift */; };
-		070C03392576FC24001C21F5 /* SSHLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 070C03382576FC24001C21F5 /* SSHLoader.m */; };
 		070C034325772BE1001C21F5 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = 070C034225772BE1001C21F5 /* ArgumentParser */; };
 		070C03462577335F001C21F5 /* SSHConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C03452577335F001C21F5 /* SSHConfig.swift */; };
 		070C034A25773826001C21F5 /* SSHCommandTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 070C034925773826001C21F5 /* SSHCommandTests.swift */; };
@@ -368,7 +367,6 @@
 
 /* Begin PBXFileReference section */
 		070C03342576FA51001C21F5 /* SSH.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSH.swift; sourceTree = "<group>"; };
-		070C03382576FC24001C21F5 /* SSHLoader.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHLoader.m; sourceTree = "<group>"; };
 		070C03452577335F001C21F5 /* SSHConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHConfig.swift; sourceTree = "<group>"; };
 		070C034925773826001C21F5 /* SSHCommandTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHCommandTests.swift; sourceTree = "<group>"; };
 		0716B5291CFFAB9300268B5B /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -741,7 +739,6 @@
 			children = (
 				0737BDEF2589323100C718D1 /* CopyFiles.swift */,
 				070C03342576FA51001C21F5 /* SSH.swift */,
-				070C03382576FC24001C21F5 /* SSHLoader.m */,
 				070C03452577335F001C21F5 /* SSHConfig.swift */,
 				078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */,
 				0737BE2F258AED2900C718D1 /* Helpers.swift */,
@@ -1837,7 +1834,6 @@
 				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
-				070C03392576FC24001C21F5 /* SSHLoader.m in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D29619A9214FB4110070935A /* base64.c in Sources */,

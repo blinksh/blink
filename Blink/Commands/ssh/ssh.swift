@@ -36,15 +36,27 @@ import Combine
 import Dispatch
 
 
-@objc public class BlinkSSH: NSObject {
-  let stdout: Int32
-  let stdin: Int32
-  let device: TermDevice
+@_cdecl("blink_ssh_main")
+func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
+  let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
+  let cmd = BlinkSSH()
+  session.registerSSHClient(cmd)
+  let rc = cmd.start(argc, argv: argv.args(count: argc))
+  session.unregisterSSHClient(cmd)
 
-  var exitCode = 0
+  return rc
+}
+
+@objc public class BlinkSSH: NSObject {
+  let outstream: Int32
+  let instream: Int32
+  let device: TermDevice
+  var stderr = StderrOutputStream()
+
+  var exitCode: Int32 = 0
   var cancellableBag: Set<AnyCancellable> = []
   var connection: SSH.SSHClient?
-  var currentRunLoop: RunLoop?
+  let currentRunLoop: RunLoop
   var connectionSetup: AnyCancellable?
   var stream: SSH.Stream?
   var tunnels: [SSHPortForwardListener] = []
@@ -52,25 +64,24 @@ import Dispatch
   var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
 
-  @objc public init(stdout: Int32, andStdin stdin: Int32, device dev: TermDevice) {
+  override init() {
     // Duplicate before transforming them, because ios_sytem
     // still needs the original streams.
-    self.stdout = stdout
-    self.stdin = stdin
-    self.device = dev
+    self.outstream = fileno(thread_stdout)
+    self.instream = fileno(thread_stdin)
+    self.device = tty()
+    self.currentRunLoop = RunLoop.current
   }
 
-  @objc public func start(_ argc: Int, argv: [String]) -> Int {
+  @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     let originalRawMode = device.rawMode
-
-    currentRunLoop = RunLoop.current
 
     let cmd: SSHCommand
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
     } catch {
       let message = SSHCommand.message(for: error)
-      print("\(message)")
+      print("\(message)", to: &stderr)
       return -1
     }
 
@@ -80,7 +91,7 @@ import Dispatch
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):
-          print(error)
+          print("Error connecting to \(cmd.host). \(error)", to: &self.stderr)
           self.kill()
         default:
           // Connection OK
@@ -93,7 +104,7 @@ import Dispatch
         self.startReverseTunnels(conn, command: cmd)
       }).store(in: &cancellableBag)
 
-    CFRunLoopRun()
+    await(runLoop: currentRunLoop)
 
     device.rawMode = originalRawMode
     return exitCode
@@ -110,7 +121,7 @@ import Dispatch
     proxyThread = Thread {
       let args = command.dropFirst("ssh ".count)
       guard let cmd = try? SSHCommand.parse(args.components(separatedBy: " ")) else {
-        print("Unrecognized command")
+        print("Unrecognized ProxyCommand arguments", to: &self.stderr)
         return
       }
 
@@ -130,7 +141,7 @@ import Dispatch
           case .failure(let error):
             close(sockIn)
             close(sockOut)
-            print("Proxy Command failed to execute \(error)")
+            print("Failed to execute ProxyCommand", to: &self.stderr)
           default:
             break
           }
@@ -139,6 +150,7 @@ import Dispatch
           let input = DispatchInputStream(stream: sockIn)
           proxyStream = s
           s.connect(stdout: output, stdin: input)
+          // TODO Capture Completion
         })
 
       CFRunLoopRun()
@@ -172,12 +184,12 @@ import Dispatch
         }
         s.handleFailure = { error in
           self.exitCode = -1
-          print("ERROR \(error)")
+          print("Error starting Interactive Shell. \(error)", to: &self.stderr)
           self.kill()
           return
         }
-        let outStream = DispatchOutputStream(stream: dup(self.stdout))
-        let inStream = DispatchInputStream(stream: dup(self.stdin))
+        let outStream = DispatchOutputStream(stream: dup(self.outstream))
+        let inStream = DispatchInputStream(stream: dup(self.instream))
 
         s.connect(stdout: outStream, stdin: inStream)
       }).store(in: &cancellableBag)
@@ -188,13 +200,12 @@ import Dispatch
       let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
       tunnels.append(lis)
 
-      // do not start the shell until the tunnels are set. How?
       lis.connect().sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
           print("Tunnel finished")
         case .failure(let error):
-          print("TUNNEL ERROR \(error)")
+          print("Error starting tunnel. \(error)", to: &self.stderr)
         }
       }, receiveValue: { event in
         print("Tunnel received \(event)")
@@ -203,40 +214,35 @@ import Dispatch
   }
 
   func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
-//    if let localPort = command.reversePortForwardLocalPort,
-//       let tunnelHost = command.reversePortForwardHost,
-//       let remotePort = command.reversePortForwardRemotePort {
-//      let client: SSHPortForwardClient
-//      do {
-//        client = try SSHPortForwardClient(forward: tunnelHost,
-//                                          onPort: localPort,
-//                                          toRemotePort: remotePort,
-//                                          using: conn)
-//      } catch {
-//        print("Client configuration error \(error)")
-//        self.kill()
-//        return
-//      }
-//      reverseTunnels.append(client)
-//
-//      // TODO Same issue here, we should get the stream on the fwd side.
-//      client.connect().sink(receiveCompletion: { completion in
-//        switch completion {
-//        case .finished:
-//          print("Reverse tunnel finished")
-//        case .failure(let error):
-//          print("Reverse tunnel error \(error)")
-//        }
-//      }, receiveValue: { event in
-//        switch event {
-//        case .received(let streamPub):
-//          streamPub.assertNoFailure().sink { self.reverseTunnelStream = $0 }
-//            .store(in: &self.cancellableBag)
-//        default:
-//          print("Reverse tunnel event \(event)")
-//        }
-//      }).store(in: &self.cancellableBag)
-//    }
+    if let tunnel = command.reversePortForward {
+      let client: SSHPortForwardClient
+      client = SSHPortForwardClient(forward: tunnel.bindAddress,
+                                          onPort: tunnel.localPort,
+                                          toRemotePort: tunnel.remotePort,
+                                          using: conn)
+      reverseTunnels.append(client)
+
+      client.connect().sink(receiveCompletion: { completion in
+        switch completion {
+        case .finished:
+          print("Reverse tunnel finished")
+        case .failure(let error):
+          print("Error starting reverse tunnel. \(error)", to: &self.stderr)
+        }
+      }, receiveValue: { event in
+        print("Reverse tunnel event \(event)")
+        switch event {
+        case .ready:
+          // Mark to dashboard
+          break
+        case .error(let error):
+          // Capture on dashboard.
+          print("Error on reverse tunnel \(error)")
+        default:
+          break
+        }
+      }).store(in: &self.cancellableBag)
+    }
   }
 
   @objc public func sigwinch() {
@@ -250,16 +256,12 @@ import Dispatch
           c = nil
         }
       }, receiveValue: {})
-
-
   }
 
   @objc public func kill() {
     cancellableBag.forEach { $0.cancel() }
     stream?.cancel()
 
-    if let cfRunLoop = currentRunLoop?.getCFRunLoop() {
-      CFRunLoopStop(cfRunLoop)
-    }
+    awake(runLoop: currentRunLoop)
   }
 }

@@ -83,14 +83,22 @@ extension Argv {
     return res
   }
 }
-func printBlink(_ items: Any..., separator: String = " ", terminator: String = "\n") {
-  var out = StdoutOutputStream()
-  print(items, separator: separator, terminator: terminator, to: &out)
-}
 
 func tty() -> TermDevice {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   return session.device
+}
+
+enum iOSStd {
+  static func print(_ items: Any...) {
+    var out = StdoutOutputStream()
+    Swift.print(items, to: &out)
+  }
+}
+
+func printBlink(_ items: Any..., separator: String = " ", terminator: String = "\n") {
+  var out = StdoutOutputStream()
+  print(items, separator: separator, terminator: terminator, to: &out)
 }
 
 struct StdoutOutputStream: TextOutputStream {
