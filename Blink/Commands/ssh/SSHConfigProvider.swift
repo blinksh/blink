@@ -69,7 +69,8 @@ class SSHClientConfigProvider {
     
     // TODO Apply connection options, that is different than config.
     // The config helps in the pool, but then you can connect there in many ways.
-    return SSHClientConfig(user: user, proxyJump: cmd.proxyJump, authMethods: authMethods, verifyHostCallback: prov.cliVerifyHostCallback, sshDirectory: BlinkPaths.ssh()!)
+    return SSHClientConfig(user: user, proxyJump: cmd.proxyJump, authMethods: authMethods, loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose)!,
+                           verifyHostCallback: prov.cliVerifyHostCallback, sshDirectory: BlinkPaths.ssh()!)
   }
 }
 

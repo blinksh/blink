@@ -55,10 +55,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   var exitCode: Int32 = 0
   var cancellableBag: Set<AnyCancellable> = []
-  var connection: SSH.SSHClient?
   let currentRunLoop: RunLoop
-  var connectionSetup: AnyCancellable?
+  var command: SSHCommand?
   var stream: SSH.Stream?
+  var connection: SSH.SSHClient?
   var tunnels: [SSHPortForwardListener] = []
   var tunnelStream: SSH.Stream?
   var reverseTunnels: [SSHPortForwardClient] = []
@@ -79,6 +79,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let cmd: SSHCommand
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
+      command = cmd
     } catch {
       let message = SSHCommand.message(for: error)
       print("\(message)", to: &stderr)
@@ -87,7 +88,29 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
     let config = SSHClientConfigProvider.config(command: cmd, using: device)
 
-    SSH.SSHClient.dial(cmd.host, with: config, withProxy: executeProxyCommand)
+    if let control = cmd.control {
+      guard let conn = SSHPool.connection(for: cmd.host, with: config) else {
+        print("No connection for \(cmd.host) to control", to: &stderr)
+        return -1
+      }
+      switch control {
+      case .stop:
+        SSHPool.deregister(runningCommand: cmd, on: conn)
+//      case .cancel:
+//        SSHPool.deregister(allTunnelsFor: connection)
+//      case .exit:
+//        // This one would require to have a handle to the Session as well.
+//        SSHPool.deregister(allFor: connection)
+      default:
+        print("Unknown control parameter \(control)", to: &stderr)
+        return -1
+      }
+      return 0
+    }
+
+    // Request the connection to the pool, or start a new one and register it here.
+    // If we don't centralize it, then other commands will have to start it on their own.
+    SSHPool.dial(cmd.host, with: config) //, withProxy: executeProxyCommand)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):
@@ -99,13 +122,30 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         }
       }, receiveValue: { conn in
         self.connection = conn
-        self.startInteractiveSessions(conn, command: cmd)
+
         self.startForwardTunnels(conn, command: cmd)
         self.startReverseTunnels(conn, command: cmd)
+
+        if cmd.startsSession {
+          self.startInteractiveSessions(conn, command: cmd)
+        }
       }).store(in: &cancellableBag)
 
-    await(runLoop: currentRunLoop)
+    if cmd.startsSession {
+      await(runLoop: currentRunLoop)
 
+      // NOTE First deallocate the stream, so it can be deinited before
+      // the thread is descheduled.
+      stream!.cancel()
+      self.stream = nil
+      self.cancellableBag = []
+
+      SSHPool.deregister(runningCommand: cmd, on: self.connection!)
+    }
+
+    // Deregister the command
+    // Do not get a reference here.
+    
     device.rawMode = originalRawMode
     return exitCode
   }
@@ -132,7 +172,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
       let c = SSHClient.dial(cmd.host, with: config)
         .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
-          connection = conn
+          // connection = conn
           return conn.requestForward(to: cmd.host, port: Int32(cmd.port ?? 22),
                                      // TODO Just informative, should make optional.
                                      from: "localhost", localPort: 22)
@@ -188,17 +228,22 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           self.kill()
           return
         }
+        
         let outStream = DispatchOutputStream(stream: dup(self.outstream))
         let inStream = DispatchInputStream(stream: dup(self.instream))
-
         s.connect(stdout: outStream, stdin: inStream)
+        
+        // TODO A try here would not be bad...
+        SSHPool.register(shellOn: conn)
       }).store(in: &cancellableBag)
   }
 
   func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
     if let tunnel = command.localPortForward {
       let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
-      tunnels.append(lis)
+      //tunnels.append(lis)
+      // TODO Only register with the pool once the event is 'ready'.
+      SSHPool.register(lis, runningCommand: command, on: conn)
 
       lis.connect().sink(receiveCompletion: { completion in
         switch completion {
@@ -217,9 +262,9 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     if let tunnel = command.reversePortForward {
       let client: SSHPortForwardClient
       client = SSHPortForwardClient(forward: tunnel.bindAddress,
-                                          onPort: tunnel.localPort,
-                                          toRemotePort: tunnel.remotePort,
-                                          using: conn)
+                                    onPort: tunnel.localPort,
+                                    toRemotePort: tunnel.remotePort,
+                                    using: conn)
       reverseTunnels.append(client)
 
       client.connect().sink(receiveCompletion: { completion in
@@ -259,9 +304,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   }
 
   @objc public func kill() {
-    cancellableBag.forEach { $0.cancel() }
-    stream?.cancel()
-
     awake(runLoop: currentRunLoop)
+  }
+  
+  deinit {
+    print("OUT")
   }
 }

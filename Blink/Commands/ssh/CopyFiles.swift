@@ -234,7 +234,7 @@ public class BlinkCopy: NSObject {
     }
 
     let config = SSHClientConfigProvider.config(command: sshCommand, using: device)
-    return SSH.SSHClient.dial(sshCommand.host, with: config)
+    return SSHPool.dial(sshCommand.host, with: config)
       .flatMap { conn -> AnyPublisher<Translator, Error> in
           return conn.requestSFTP().flatMap { $0.walkTo(filePath) }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()

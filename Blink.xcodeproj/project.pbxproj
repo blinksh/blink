@@ -25,6 +25,7 @@
 		0737BDED25892A0400C718D1 /* BlinkFiles in Frameworks */ = {isa = PBXBuildFile; productRef = 0737BDEC25892A0400C718D1 /* BlinkFiles */; };
 		0737BDF02589323100C718D1 /* CopyFiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0737BDEF2589323100C718D1 /* CopyFiles.swift */; };
 		0737BE30258AED2900C718D1 /* Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0737BE2F258AED2900C718D1 /* Helpers.swift */; };
+		0737C0052590193C00C718D1 /* SSHPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0737C0042590193C00C718D1 /* SSHPool.swift */; };
 		07446E7C25796D0200443798 /* SSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E7B25796D0200443798 /* SSH */; };
 		07446E8E2579815400443798 /* LibSSH in Frameworks */ = {isa = PBXBuildFile; productRef = 07446E8D2579815400443798 /* LibSSH */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
@@ -383,6 +384,7 @@
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		0737BDEF2589323100C718D1 /* CopyFiles.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CopyFiles.swift; sourceTree = "<group>"; };
 		0737BE2F258AED2900C718D1 /* Helpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers.swift; sourceTree = "<group>"; };
+		0737C0042590193C00C718D1 /* SSHPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHPool.swift; sourceTree = "<group>"; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
 		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
 		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
@@ -742,6 +744,7 @@
 				070C03452577335F001C21F5 /* SSHConfig.swift */,
 				078AF96F257EB61E00A0B825 /* SSHConfigProvider.swift */,
 				0737BE2F258AED2900C718D1 /* Helpers.swift */,
+				0737C0042590193C00C718D1 /* SSHPool.swift */,
 			);
 			path = ssh;
 			sourceTree = "<group>";
@@ -1789,6 +1792,7 @@
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
 				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
+				0737C0052590193C00C718D1 /* SSHPool.swift in Sources */,
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
 				D296199C214F995D0070935A /* ed25519.c in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,

@@ -64,6 +64,24 @@ struct SSHCommand: ParsableCommand {
   @Flag(name: .shortAndLong)
   var verbose: Int
 
+  @Option(name: [.customShort("O")],
+          help: "Control an active connection multiplexing master process",
+          transform: {
+            try SSHControlCommands(rawValue: $0) ?? {
+              throw ArgumentParser.ValidationError("Unknown control command.")
+            }()
+
+  } )
+  var control: SSHControlCommands?
+
+  @Flag(name: [.customShort("N")],
+        help: "Do not execute a remote command. This is useful for just forwarding ports.")
+  var noExecuteShell: Bool = false
+  var startsSession: Bool { get {
+    // A session is started if there is no "noCommands" flag, or if the command is not a control one.
+    return !noExecuteShell && control == nil
+  }}
+
   // Login name
   @Option(name: [.customShort("l")],
           help: "Login name. This option can also be specified at the host")
@@ -196,9 +214,7 @@ struct ConfigFileOptions {
   }
 }
 
-
-
-struct PortForwardInfo {
+struct PortForwardInfo: Equatable {
   let localPort: UInt16
   let bindAddress: String
   let remotePort: UInt16
@@ -240,4 +256,11 @@ struct StdioForwardInfo {
     }
     self.remotePort = remotePort
   }
+}
+
+enum SSHControlCommands: String {
+  case forward = "forward"
+  case exit = "exit"
+  case cancel = "cancel"
+  case stop = "stop"
 }
