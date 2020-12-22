@@ -27,7 +27,7 @@ Gestures are very important inside Blink. Thanks to them we can enjoy a full scr
 * You can control the size of your terminal by pinching the screen.
 * Tapping with three fingers will open a contextual menu where you can close a shell or configure display modes.
 * Tapping and scrolling with a single finger will move the focus to that window and scroll it. If the application supports mouse control, then you will be able to control the pointer that way.
-* Long presses will start selection mode, just as you are used to everywhere else.
+* Tap and drag to start selection mode.
 * Don't be afraid to drag your selection to another app, or to drop content inside Blink, we will paste it right where your cursor is placed.
 
 ## Blink Shell Keyboard Shortcuts
