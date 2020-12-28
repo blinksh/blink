@@ -536,6 +536,7 @@ extension SpaceController {
     case .tab12: _moveToShell(idx: 11)
     case .tabClose: _closeCurrentSpace()
     case .tabMoveToOtherWindow: _moveToOtherWindowAction()
+    case .toggleKeyCast: _toggleKeyCast()
     case .tabNew: newShellAction()
     case .tabNext: _advanceShell(by: 1)
     case .tabPrev: _advanceShell(by: -1)
@@ -688,6 +689,11 @@ extension SpaceController {
     _removeCurrentSpace(attachInput: false)
     nextSpaceCtrl._addTerm(term: term)
     nextWindow.makeKey()
+  }
+  
+  func _toggleKeyCast() {
+    BKDefaults.setKeycasts(!BKDefaults.isKeyCastsOn())
+    BKDefaults.save()
   }
   
   func _activeSessions() -> [UISceneSession] {
