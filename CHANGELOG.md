@@ -1,5 +1,7 @@
 # Version 13.5.10
 
+- Added action for KeyCast toggle. #1180
+- Fixed display of images. #1170
 - Configuration for notify and bell. 
 - Fixed key import from files. #1106
 - Improved error handling in ssh.
