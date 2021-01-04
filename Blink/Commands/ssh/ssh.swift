@@ -137,11 +137,13 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
       // NOTE First deallocate the stream, so it can be deinited before
       // the thread is descheduled.
-      stream!.cancel()
+      stream?.cancel()
       self.stream = nil
       self.cancellableBag = []
 
-      SSHPool.deregister(runningCommand: cmd, on: self.connection!)
+      if let conn = self.connection {
+        SSHPool.deregister(runningCommand: cmd, on: conn)
+      }
     }
 
     // Deregister the command
