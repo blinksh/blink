@@ -219,6 +219,7 @@ public class BlinkCopy: NSObject {
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
     // At the moment everything is just SSH. At some point we should have a factory.
     let sshCommand: SSHCommand
+    let sshOptions: ConfigFileOptions
     let cmd = command!
     var params = [hostPath]
     do {
@@ -228,13 +229,14 @@ public class BlinkCopy: NSObject {
         params.append(v)
       }
       sshCommand = try SSHCommand.parse(params)
+      sshOptions = try sshCommand.connectionOptions.get()
     } catch {
       let message = SSHCommand.message(for: error)
       return Fail(error: CommandError(message: message)).eraseToAnyPublisher()
     }
 
     let config = SSHClientConfigProvider.config(command: sshCommand, using: device)
-    return SSHPool.dial(sshCommand.host, with: config)
+    return SSHPool.dial(sshCommand.host, with: config, connectionOptions: sshOptions)
       .flatMap { conn -> AnyPublisher<Translator, Error> in
           return conn.requestSFTP().flatMap { $0.walkTo(filePath) }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()

@@ -77,8 +77,11 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let originalRawMode = device.rawMode
 
     let cmd: SSHCommand
+    let options: ConfigFileOptions
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
+      options = try cmd.connectionOptions.get()
+
       command = cmd
     } catch {
       let message = SSHCommand.message(for: error)
@@ -108,9 +111,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return 0
     }
 
-    // Request the connection to the pool, or start a new one and register it here.
-    // If we don't centralize it, then other commands will have to start it on their own.
-    SSHPool.dial(cmd.host, with: config) //, withProxy: executeProxyCommand)
+    SSHPool.dial(cmd.host, with: config, connectionOptions: options)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):
@@ -215,7 +216,6 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           break
         }
       }, receiveValue: { s in
-        self.stream = s
         self.device.rawMode = true
         s.handleCompletion = {
           // Once finished, exit.
@@ -233,8 +233,8 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         let inStream = DispatchInputStream(stream: dup(self.instream))
         s.connect(stdout: outStream, stdin: inStream)
         
-        // TODO A try here would not be bad...
         SSHPool.register(shellOn: conn)
+        self.stream = s
       }).store(in: &cancellableBag)
   }
 

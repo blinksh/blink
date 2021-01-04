@@ -43,14 +43,21 @@ class SSHPool {
   
   private init() {}
 
-  static func dial(_ host: String, with config: SSHClientConfig) -> AnyPublisher<SSH.SSHClient, Error> {
+  static func dial(_ host: String, with config: SSHClientConfig, connectionOptions options: ConfigFileOptions) -> AnyPublisher<SSH.SSHClient, Error> {
+    // Do not use an existing socket.
+    if !options.controlMaster {
+      // TODO We may want a new socket, but still be able to manipulate it.
+      // For now we will not allow that situation.
+      return shared.startConnection(host, with: config, exposeSocket: false)
+    }
     guard let conn = connection(for: host, with: config) else {
       return shared.startConnection(host, with: config)
     }
     return Just(conn).mapError { $0 as Error }.eraseToAnyPublisher()
   }
 
-  private func startConnection(_ host: String, with config: SSHClientConfig) -> AnyPublisher<SSH.SSHClient, Error> {
+  private func startConnection(_ host: String, with config: SSHClientConfig,
+                               exposeSocket exposed: Bool = true) -> AnyPublisher<SSH.SSHClient, Error> {
     let pb = PassthroughSubject<SSH.SSHClient, Error>()
     var cancel: AnyCancellable?
     var runLoop: RunLoop?
@@ -61,7 +68,7 @@ class SSHPool {
       cancel = SSH.SSHClient.dial(host, with: config)
         .sink(receiveCompletion: { pb.send(completion: $0) },
               receiveValue: { conn in
-                let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop!)
+                let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop!, exposed: exposed)
                 SSHPool.shared.controls.append(control)
                 pb.send(conn)
         })
@@ -143,6 +150,7 @@ fileprivate class SSHClientControl {
   let host: String
   let config: SSHClientConfig
   let runLoop: RunLoop
+  let exposed: Bool
   
   var numShells: Int = 0
   //var shells: [(SSHCommand, SSH.Stream)] = []
@@ -154,17 +162,21 @@ fileprivate class SSHClientControl {
     }
   }
   
-  init(for connection: SSH.SSHClient, on host: String, with config: SSHClientConfig, running runLoop: RunLoop) {
+  init(for connection: SSH.SSHClient, on host: String, with config: SSHClientConfig, running runLoop: RunLoop, exposed: Bool) {
     self.connection = connection
     self.host = host
     self.config = config
     self.runLoop = runLoop
+    self.exposed = exposed
   }
   
   // Other parameters could specify how the connection should be treated by the pool
   // (timeouts, etc...)
   func isConnection(for host: String, with config: SSHClientConfig) -> Bool {
     // TODO equatable on config from API.
+    if !self.exposed {
+      return false
+    }
     return host == host ? true : false
   }
   

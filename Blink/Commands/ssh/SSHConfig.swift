@@ -169,26 +169,20 @@ struct ConfigFileOptions {
   var proxyCommand: String?
   var compression: Bool?
   var compressionLevel: UInt?
+  var controlMaster: Bool = true
 
   init(_ options: [String]) throws {
     for o in options {
       let option = o.components(separatedBy: "=")
-
+      if option.count != 2 {
+        throw ValidationError("\(option[0]) missing value")
+      }
       switch option[0].lowercased() {
       case "proxycommand":
-        if option.count != 2 {
-          throw ValidationError("ProxyCommand option missing command")
-        }
         self.proxyCommand = option[1]
       case "compression":
-        if option.count != 2 {
-          throw ValidationError("Compression option missing yes/no")
-        }
         compression = try ConfigFileOptions.yesNoValue(option[1], name: "compression")
       case "compressionlevel":
-        if option.count != 2 {
-          throw ValidationError("Compression level missing number")
-        }
         guard let level = UInt(option[1]) else {
           throw ValidationError("Compression level is not a number")
         }
@@ -196,6 +190,8 @@ struct ConfigFileOptions {
           throw ValidationError("Compression level must be between 1-9")
         }
         compressionLevel = level
+      case "controlmaster":
+        controlMaster = try ConfigFileOptions.yesNoValue(option[1], name: "controlmaster")
       default:
         throw ValidationError("Unknown option \(option[0])")
       }
