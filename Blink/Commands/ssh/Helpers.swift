@@ -103,17 +103,20 @@ func printBlink(_ items: Any..., separator: String = " ", terminator: String = "
 
 struct StdoutOutputStream: TextOutputStream {
   let out = thread_stdout
+  let stdout = fileno(thread_stdout)
 
   public func write(_ string: String) {
-    fputs(string, out)
+    // Use write to ensure it is unbuffered. Sample code used fputs.
+    Darwin.write(stdout, string, string.count)
   }
 }
 
 struct StderrOutputStream: TextOutputStream {
   let out = thread_stderr
+  let stderr = fileno(thread_stderr)
 
   public func write(_ string: String) {
-    fputs(string, out)
+    Darwin.write(stderr, string, string.count)
   }
 }
 

@@ -48,9 +48,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 }
 
 @objc public class BlinkSSH: NSObject {
-  let outstream: Int32
-  let instream: Int32
+  var outstream: Int32
+  var instream: Int32
   let device: TermDevice
+  var stdout = StdoutOutputStream()
   var stderr = StderrOutputStream()
 
   var exitCode: Int32 = 0
@@ -65,8 +66,6 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var proxyThread: Thread?
 
   override init() {
-    // Duplicate before transforming them, because ios_sytem
-    // still needs the original streams.
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
     self.device = tty()
@@ -154,7 +153,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
     // Deregister the command
     // Do not get a reference here.
-    
+
     device.rawMode = originalRawMode
     return exitCode
   }
@@ -233,23 +232,33 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           break
         }
       }, receiveValue: { s in
+        let outStream = DispatchOutputStream(stream: self.outstream)
+        let inStream = DispatchInputStream(stream: self.instream)
         self.device.rawMode = true
+
         s.handleCompletion = {
           // Once finished, exit.
           self.kill()
+          // Close the DispatchStreams.
+          // NOTE In theory we should not close the stdio streams ourselves, because
+          // it is responsibility of the system, and the result of closing twice is unknown.
+          // DispatchStreams should make a copy of the stream, but if we do so, then the
+          // original streams seem to never get closed (getline will block forever).
+          outStream.close()
+          inStream.close()
           return
         }
         s.handleFailure = { error in
           self.exitCode = -1
           print("Error starting Interactive Shell. \(error)", to: &self.stderr)
           self.kill()
+          outStream.close()
+          inStream.close()
           return
         }
-        
-        let outStream = DispatchOutputStream(stream: dup(self.outstream))
-        let inStream = DispatchInputStream(stream: dup(self.instream))
+
         s.connect(stdout: outStream, stdin: inStream)
-        
+
         SSHPool.register(shellOn: conn)
         self.stream = s
       }).store(in: &cancellableBag)
@@ -323,7 +332,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   @objc public func kill() {
     awake(runLoop: currentRunLoop)
   }
-  
+
   deinit {
     print("OUT")
   }

@@ -111,6 +111,13 @@ struct SSHCommand: ParsableCommand {
   // TODO -F customize config file
   // TODO -t request tty. And the opposite, just launch in background.
   // TODO Disable host key check
+  @Flag(name: [.customShort("T")],
+        help: "Disable pseudo-tty allocation")
+  var disableTTY: Bool
+
+  @Flag(name: [.customShort("t")],
+        help: "Force pseudo-tty allocation.")
+  var forceTTY: Bool
 
   // SSH Port
   @Option(name: [.customLong("port"), .customShort("p")],
@@ -172,6 +179,10 @@ struct SSHCommand: ParsableCommand {
 
   func validate() throws {
     let _ = try connectionOptions.get()
+
+    if disableTTY && forceTTY {
+      throw ValidationError("Incompatible flags t and T")
+    }
   }
 }
 
