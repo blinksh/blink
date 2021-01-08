@@ -153,9 +153,19 @@ struct SSHCommand: ParsableCommand {
     }
   }
 
-
-  @Argument(help: "command")
-  var command: String?
+  @Argument(parsing: .unconditionalRemaining,
+            help: "command")
+  //@Argument(help: "command")
+  fileprivate var cmd: [String] = []
+  var command: [String] {
+    get {
+      if cmd.first == "--" {
+        return Array(cmd.dropFirst())
+      } else {
+        return cmd
+      }
+    }
+  }
 
   func run() throws {
   }

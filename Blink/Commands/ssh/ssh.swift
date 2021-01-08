@@ -124,6 +124,12 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }, receiveValue: { conn in
         self.connection = conn
 
+        // Print connected address to pickup by mosh command
+        if let addr = conn.clientAddressIP() {
+          print("Connected to \(addr)", to: &self.stdout)
+        }
+
+        // [NSString stringWithFormat:@"Connected to %@]
         self.startForwardTunnels(conn, command: cmd)
         self.startReverseTunnels(conn, command: cmd)
 
@@ -203,10 +209,19 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   }
 
   func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) {
-    let rows = self.device.rows
-    let cols = self.device.cols
+    let rows = Int32(self.device.rows)
+    let cols = Int32(self.device.cols)
 
-    conn.requestInteractiveShell(rows: Int32(rows), columns: Int32(cols))
+    let session: AnyPublisher<SSH.Stream, Error>
+    if command.command.isEmpty {
+      session = conn.requestInteractiveShell(withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
+    } else {
+      // Rename command.execute
+      let exec = command.command.joined(separator: " ")
+      session = conn.requestExec(command: exec, withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
+    }
+
+    session
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):

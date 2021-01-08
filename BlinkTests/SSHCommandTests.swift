@@ -35,44 +35,67 @@ import XCTest
 import ArgumentParser
 
 class SSHCommandTests: XCTestCase {
-  
+
   override func setUp() {
     // Put setup code here. This method is called before the invocation of each test method in the class.
   }
-  
+
   override func tearDown() {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
-  
+
   func testSshCommandParameters() throws {
-    let commandString = "-vv -L 8080:localhost:80 -i id_rsa -p 2023 username@17.0.0.1 --"
-    
+    let commandString = "-vv -L 8080:localhost:80 -i id_rsa -p 2023 username@17.0.0.1 -- echo 'hello'"
+
     do {
       var components = commandString.components(separatedBy: " ")
-      // Have to figure out how to work with the quotes.
-      components.append("echo 'hello'")
       let command = try SSHCommand.parse(components)
-      
-      XCTAssertTrue(command.localPortForward?.localPort == "8080")
-      XCTAssertTrue(command.localPortForward?.remotePort == "80")
+
+      XCTAssertTrue(command.localPortForward?.localPort == 8080)
+      XCTAssertTrue(command.localPortForward?.remotePort == 80)
       XCTAssertTrue(command.localPortForward?.bindAddress == "localhost")
-      XCTAssertTrue(command.verbosity == 2)
-      XCTAssertTrue(command.port == "2023")
+      XCTAssertTrue(command.verbose == 2)
+      XCTAssertTrue(command.port == 2023)
       XCTAssertTrue(command.identityFile == "id_rsa")
       XCTAssertTrue(command.host == "17.0.0.1")
       XCTAssertTrue(command.user == "username")
-      XCTAssertTrue(command.command == "echo 'hello'")
+      XCTAssertTrue(command.command == ["echo", "'hello'"])
     } catch {
       let msg = SSHCommand.message(for: error)
-      XCTFail("Couldn't parse SSH command: \(msg)")
+      XCTFail("Couldn't parse command: \(msg)")
     }
   }
-  
+
+  func testMoshCommandParameters() throws {
+    var commandString = "localhost tmux -vv --attach"
+
+    do {
+      let components = commandString.components(separatedBy: " ")
+      let command = try SSHCommand.parse(components)
+      XCTAssertTrue(command.command == ["tmux", "--attach"])
+    } catch {
+      let msg = SSHCommand.message(for: error)
+      XCTFail("Couldn't parse command: \(msg)")
+    }
+
+    commandString = "localhost -- tmux -vv --attach"
+
+    do {
+      let components = commandString.components(separatedBy: " ")
+      let command = try SSHCommand.parse(components)
+      XCTAssertTrue(command.command == ["tmux", "-vv", "--attach"])
+    } catch {
+      let msg = SSHCommand.message(for: error)
+      XCTFail("Couldn't parse command: \(msg)")
+    }
+  }
+
+
   func testSshCommandOptionals() throws {
     let args = ["-o", "ProxyCommand=ssh", "localhost", "-o", "Compression=yes", "-o", "CompressionLevel=4"]
     do {
       let command = try SSHCommand.parse(args)
-      
+
       let options = try command.connectionOptions.get()
       XCTAssertTrue(options.proxyCommand == "ssh")
       XCTAssertTrue(options.compression == true)
@@ -82,7 +105,7 @@ class SSHCommandTests: XCTestCase {
       XCTFail("Couldn't parse SSH command: \(msg)")
     }
   }
-  
+
   func testUnknownOptional() throws {
     let args = ["-o", "ProxyCommand=ssh", "localhost", "-o", "Compresion=yes"]
     do {
