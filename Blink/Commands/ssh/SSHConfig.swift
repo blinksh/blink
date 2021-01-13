@@ -76,11 +76,20 @@ struct SSHCommand: ParsableCommand {
 
   @Flag(name: [.customShort("N")],
         help: "Do not execute a remote command. This is useful for just forwarding ports.")
-  var noExecuteShell: Bool = false
+  var noRemoteCommand: Bool = false
   var startsSession: Bool { get {
-    // A session is started if there is no "noCommands" flag, or if the command is not a control one.
-    return !noExecuteShell && control == nil
+    control == nil && !noRemoteCommand && stdioHostAndPort == nil
   }}
+  var blocks: Bool { get {
+    !noRemoteCommand || stdioHostAndPort != nil
+  }}
+//  var startsSession: Bool { get {
+//    // A session is started if there is no "noCommands" flag, or if the command is not a control one.
+//    return !noExecuteShell
+//  }}
+//  var blocks: Bool { get {
+//    return stdioHostAndPort == nil && !noExecuteShell &&
+//  }}
 
   // Login name
   @Option(name: [.customShort("l")],
@@ -256,7 +265,7 @@ struct PortForwardInfo: Equatable {
   }
 }
 
-struct StdioForwardInfo {
+struct StdioForwardInfo: Equatable {
   let bindAddress: String
   let remotePort: UInt16
 

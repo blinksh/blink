@@ -112,10 +112,6 @@ class FileLocationPath {
   }
 }
 
-fileprivate struct CommandError: Error {
-  let message: String
-}
-
 
 public class BlinkCopy: NSObject {
   var copyCancellable: AnyCancellable?
@@ -235,7 +231,7 @@ public class BlinkCopy: NSObject {
       return Fail(error: CommandError(message: message)).eraseToAnyPublisher()
     }
 
-    let config = SSHClientConfigProvider.config(command: sshCommand, using: device)
+    let config = SSHClientConfigProvider.config(command: sshCommand, config: sshOptions, using: device)
     return SSHPool.dial(sshCommand.host, with: config, connectionOptions: sshOptions)
       .flatMap { conn -> AnyPublisher<Translator, Error> in
           return conn.requestSFTP().flatMap { $0.walkTo(filePath) }.eraseToAnyPublisher()

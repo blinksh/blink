@@ -34,10 +34,14 @@ import Foundation
 import SSH
 import Combine
 import Dispatch
-
+import ios_system
 
 @_cdecl("blink_ssh_main")
 func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
+  setvbuf(thread_stdin, nil, _IONBF, 0)
+  setvbuf(thread_stdout, nil, _IONBF, 0)
+  setvbuf(thread_stderr, nil, _IONBF, 0)
+
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   let cmd = BlinkSSH()
   session.registerSSHClient(cmd)
@@ -65,6 +69,9 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
 
+  var outStream: DispatchOutputStream?
+  var inStream: DispatchInputStream?
+
   override init() {
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
@@ -88,7 +95,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return -1
     }
 
-    let config = SSHClientConfigProvider.config(command: cmd, using: device)
+    let config = SSHClientConfigProvider.config(command: cmd, config: options, using: device)
 
     if let control = cmd.control {
       guard let conn = SSHPool.connection(for: cmd.host, with: config) else {
@@ -110,7 +117,8 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return 0
     }
 
-    SSHPool.dial(cmd.host, with: config, connectionOptions: options)
+    SSHPool.dial(cmd.host, with: config, connectionOptions: options,
+                 withProxy: { [weak self] in self?.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2) })
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):
@@ -128,7 +136,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           print("Connected to \(addr)", to: &self.stdout)
         }
 
-        // [NSString stringWithFormat:@"Connected to %@]
+        // A tunnel may still be running in the background if we wish, like this one. The thread should only
+        // not block if we have a specific flag (like just starting a tunnel, control command or the specific flag).
+        self.startStdioTunnel(conn, command: cmd)
+        // NOTE Cannot implement ExitOnForwardFailure with this flow.
         self.startForwardTunnels(conn, command: cmd)
         self.startReverseTunnels(conn, command: cmd)
 
@@ -137,74 +148,46 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         }
       }).store(in: &cancellableBag)
 
-    if cmd.startsSession {
+    if cmd.blocks {
       await(runLoop: currentRunLoop)
-
-      // NOTE First deallocate the stream, so it can be deinited before
-      // the thread is descheduled.
-      stream?.cancel()
-      self.stream = nil
-      self.cancellableBag = []
-
-      if let conn = self.connection {
-        SSHPool.deregister(runningCommand: cmd, on: conn)
-      }
+      print("Thread woke")
     }
 
-    // Deregister the command
-    // Do not get a reference here.
+    stream?.cancel()
+    outStream?.close()
+    inStream?.close()
+    // Dispatch streams need a cycle to close.
+    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.1))
+
+    // Need to get rid of the stream because the channel needs a cycle to be closed.
+    self.stream = nil
+    // The channel is responsibility of the other thread, so this runloop is not need atm.
+    //RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+    if let conn = self.connection, cmd.stdioHostAndPort == nil {
+      SSHPool.deregister(runningCommand: cmd, on: conn)
+    }
 
     device.rawMode = originalRawMode
     return exitCode
   }
 
   func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
-    // If this is a jump, we process it here.
-    // Otherwise we execute another command through the shell.
-
-    // TODO Possible issues with the command, as components may not be enough.
-
-    // TODO Thread per connection should be handled by the pool,
-    // but for now we will dump it here.
-    proxyThread = Thread {
-      let args = command.dropFirst("ssh ".count)
-      guard let cmd = try? SSHCommand.parse(args.components(separatedBy: " ")) else {
-        print("Unrecognized ProxyCommand arguments", to: &self.stderr)
-        return
-      }
-
-      var connection: SSH.SSHClient?
-      var proxyStream: SSH.Stream?
-
-      let config = SSHClientConfigProvider.config(command: cmd, using: self.device)
-
-      let c = SSHClient.dial(cmd.host, with: config)
-        .flatMap { conn -> AnyPublisher<SSH.Stream, Error> in
-          // connection = conn
-          return conn.requestForward(to: cmd.host, port: Int32(cmd.port ?? 22),
-                                     // TODO Just informative, should make optional.
-                                     from: "localhost", localPort: 22)
-        }.sink(receiveCompletion: { end in
-          switch end {
-          case .failure(let error):
-            close(sockIn)
-            close(sockOut)
-            print("Failed to execute ProxyCommand", to: &self.stderr)
-          default:
-            break
-          }
-        }, receiveValue: { s in
-          let output = DispatchOutputStream(stream: sockOut)
-          let input = DispatchInputStream(stream: sockIn)
-          proxyStream = s
-          s.connect(stdout: output, stdin: input)
-          // TODO Capture Completion
-        })
-
-      CFRunLoopRun()
+    // Tried to run it through objc, but no luck.
+    //__thread_ssh_execute_command(command, sockIn, sockOut)
+    /* Prepare /dev/null socket for the stderr redirection */
+    let devnull = open("/dev/null", O_WRONLY);
+    if devnull == -1 {
+      ios_exit(1)
     }
 
-    proxyThread?.start()
+    /* redirect in and out to stdin, stdout */
+    ios_dup2(sockIn,  STDIN_FILENO)
+    ios_dup2(sockOut, STDOUT_FILENO)
+    ios_dup2(devnull, STDERR_FILENO)
+
+    var cmd = command
+    cmd.removeAll(where: { $0 == "[" || $0 == "]" })
+    ios_system(cmd);
   }
 
   func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) {
@@ -217,7 +200,8 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     } else {
       // Rename command.execute
       let exec = command.command.joined(separator: " ")
-      session = conn.requestExec(command: exec, withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
+      // If we do a PTY on Exec, then the proxycommand won't work.
+      session = conn.requestExec(command: exec)//, withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
     }
 
     session
@@ -232,36 +216,58 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           break
         }
       }, receiveValue: { s in
-        let outStream = DispatchOutputStream(stream: self.outstream)
-        let inStream = DispatchInputStream(stream: self.instream)
+        let outs = DispatchOutputStream(stream: self.outstream)
+        let ins = DispatchInputStream(stream: self.instream)
         self.device.rawMode = true
 
         s.handleCompletion = {
           // Once finished, exit.
           self.kill()
-          // Close the DispatchStreams.
-          // NOTE In theory we should not close the stdio streams ourselves, because
-          // it is responsibility of the system, and the result of closing twice is unknown.
-          // DispatchStreams should make a copy of the stream, but if we do so, then the
-          // original streams seem to never get closed (getline will block forever).
-          outStream.close()
-          inStream.close()
           return
         }
         s.handleFailure = { error in
           self.exitCode = -1
           print("Error starting Interactive Shell. \(error)", to: &self.stderr)
           self.kill()
-          outStream.close()
-          inStream.close()
           return
         }
 
-        s.connect(stdout: outStream, stdin: inStream)
-
+        s.connect(stdout: outs, stdin: ins)
+        self.outStream = outs
+        self.inStream = ins
         SSHPool.register(shellOn: conn)
         self.stream = s
       }).store(in: &cancellableBag)
+  }
+
+  func startStdioTunnel(_ conn: SSH.SSHClient, command: SSHCommand) {
+    if let tunnel = command.stdioHostAndPort {
+      conn.requestForward(to: tunnel.bindAddress, port: Int32(tunnel.remotePort),
+                          // Just informative.
+                          from: "stdio", localPort: 22)
+        .sink(receiveCompletion: { completion in
+          if case .failure(let error) = completion {
+            print("Error creating stdio tunnel. \(error)", to: &self.stderr)
+            self.exitCode = -1
+            self.kill()
+          }
+        },
+        receiveValue: { s in
+          SSHPool.register(stdioStream: s, runningCommand: command, on: conn)
+          let outStream = DispatchOutputStream(stream: dup(self.outstream))
+          let inStream = DispatchInputStream(stream: dup(self.instream))
+          s.connect(stdout: outStream, stdin: inStream)
+
+          s.handleCompletion = {
+            SSHPool.deregister(runningCommand: command, on: conn)
+          }
+          s.handleFailure = { error in
+            SSHPool.deregister(runningCommand: command, on: conn)
+          }
+          // The tunnel is already stored, so we can close the process.
+          self.kill()
+        }).store(in: &cancellableBag)
+    }
   }
 
   func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
@@ -269,7 +275,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
       //tunnels.append(lis)
       // TODO Only register with the pool once the event is 'ready'.
-      SSHPool.register(lis, runningCommand: command, on: conn)
+      //SSHPool.register(lis, runningCommand: command, on: conn)
 
       lis.connect().sink(receiveCompletion: { completion in
         switch completion {
@@ -280,6 +286,9 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         }
       }, receiveValue: { event in
         print("Tunnel received \(event)")
+        if case .ready = event {
+          SSHPool.register(lis, runningCommand: command, on: conn)
+        }
       }).store(in: &cancellableBag)
     }
   }
@@ -330,6 +339,11 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   }
 
   @objc public func kill() {
+    // Cancelling here makes sure the flows are cancelled.
+    // Trying to do it at the runloop has the issue that flows may continue running.
+    print("Kill received")
+    cancellableBag = []
+
     awake(runLoop: currentRunLoop)
   }
 

@@ -84,6 +84,10 @@ extension Argv {
   }
 }
 
+struct CommandError: Error {
+  let message: String
+}
+
 func tty() -> TermDevice {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   return session.device

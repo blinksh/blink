@@ -33,6 +33,7 @@
 #include <string.h>
 #include <libgen.h>
 #include <sys/stat.h>
+#include <dispatch/dispatch.h>
 
 #import "MCPSession.h"
 #import "MoshSession.h"
@@ -55,6 +56,7 @@
   NSString *_currentCmd;
   NSMutableArray *_sshClients;
   dispatch_queue_t _cmdQueue;
+  dispatch_queue_t _sshQueue;
   TermStream *_cmdStream;
   NSString *_currentCmdLine;
 }
@@ -66,7 +68,7 @@
     _sshClients = [[NSMutableArray alloc] init];
     _sessionUUID = [[NSProcessInfo processInfo] globallyUniqueString];
     _cmdQueue = dispatch_queue_create("mcp.command.queue", DISPATCH_QUEUE_SERIAL);
-    
+    _sshQueue = dispatch_queue_create("mcp.sshclients.queue", DISPATCH_QUEUE_SERIAL);
     [self setActiveSession];
 //    ios_setMiniRoot([BlinkPaths documents]);
 //    [self updateAllowedPaths];
@@ -203,11 +205,15 @@
 }
 
 - (void)registerSSHClient:(id __weak)sshClient {
-  [_sshClients addObject:sshClient];
+  dispatch_sync(_sshQueue, ^(void){
+    [_sshClients addObject:sshClient];
+  });
 }
 
 - (void)unregisterSSHClient:(id __weak)sshClient {
-  [_sshClients removeObject:sshClient];
+  dispatch_sync(_sshQueue, ^(void){
+    [_sshClients removeObject:sshClient];
+  });
 }
 
 - (bool)isRunningCmd {
@@ -280,18 +286,22 @@
 - (void)sigwinch
 {
   [_childSession sigwinch];
-  for (id client in _sshClients) {
-    [client sigwinch];
-  }
+  dispatch_sync(_sshQueue, ^{
+    for (id client in _sshClients) {
+      [client sigwinch];
+    }
+  });
 }
 
 - (void)kill
 {
   if (_sshClients.count > 0) {
-    for (id client in _sshClients) {
-      [client kill];
-    }
-    [_device writeIn:@"\x03"];
+    dispatch_sync(_sshQueue, ^{
+      for (id client in _sshClients) {
+        [client kill];
+      }
+      [_device writeIn:@"\x03"];
+    });
     
     return;
   } else if (_childSession) {
@@ -323,6 +333,15 @@
     if ([control isEqualToString:ctrlC] || [control isEqualToString:ctrlD]) {
       [_device closeReadline];
     }
+    
+    if (_sshClients.count > 0) {
+      [_device closeReadline];
+      dispatch_sync(_sshQueue, ^{
+        for (id client in _sshClients) {
+          [client kill];
+        }
+      });
+    }
     return [_childSession handleControl:control];
   }
   
@@ -333,9 +352,11 @@
       }
       if (_sshClients.count > 0) {
         [_device closeReadline];
-        for (id client in _sshClients) {
-          [client kill];
-        }
+        dispatch_sync(_sshQueue, ^{
+          for (id client in _sshClients) {
+            [client kill];
+          }
+        });
       } else {
         if ([control isEqualToString:ctrlD]) {
           [_device closeReadline];

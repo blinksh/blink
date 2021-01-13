@@ -9,14 +9,14 @@
 		<string></string>
 		<string>no</string>
 	</array>
-	<key>bssh</key>
+	<key>ssh</key>
 	<array>
 		<string>MAIN</string>
 		<string>blink_ssh_main</string>
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
 		<string>no</string>
 	</array>
-	<key>ssh</key>
+	<key>cssh</key>
 	<array>
 		<string>MAIN</string>
 		<string>ssh_main</string>

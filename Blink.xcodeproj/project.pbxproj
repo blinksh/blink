@@ -392,6 +392,7 @@
 		0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blink.entitlements; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
+		07969E1425AA728D00E2E7EB /* BlinkCore */ = {isa = PBXFileReference; lastKnownFileType = folder; name = BlinkCore; path = ../BlinkCore; sourceTree = "<group>"; };
 		07E3AEAE1D8F6758007BC086 /* BKFeedbackViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFeedbackViewController.h; sourceTree = "<group>"; };
 		07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFeedbackViewController.m; sourceTree = "<group>"; };
 		07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSupportViewController.h; sourceTree = "<group>"; };
@@ -1390,6 +1391,7 @@
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
+				07969E1425AA728D00E2E7EB /* BlinkCore */,
 				D2C243F7238E44960082C69C /* KB */,
 				C9B2E0031D6B612300B89F69 /* Settings */,
 				D265FBBB2317DD3C0017EAC4 /* BlinkTests */,
@@ -2202,8 +2204,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = /Users/carlos/dev/BlinkCore.binary;
 			requirement = {
-				kind = exactVersion;
-				version = 0.2.2;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.2.2;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

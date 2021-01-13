@@ -353,7 +353,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
 - (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity sshTTY:(BOOL)sshTTY moshCommand:(NSString *)command error:(NSError **)error
 {
-  ssh = ssh ? ssh : @"bssh";
+  ssh = ssh ? ssh : @"ssh";
   
   NSMutableArray * sshArgs;
   
