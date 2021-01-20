@@ -118,7 +118,6 @@ struct SSHCommand: ParsableCommand {
   // TODO Special -o commands - send env variables, etc...
   // TODO -G print configuration
   // TODO -F customize config file
-  // TODO -t request tty. And the opposite, just launch in background.
   // TODO Disable host key check
   @Flag(name: [.customShort("T")],
         help: "Disable pseudo-tty allocation")
@@ -127,6 +126,10 @@ struct SSHCommand: ParsableCommand {
   @Flag(name: [.customShort("t")],
         help: "Force pseudo-tty allocation.")
   var forceTTY: Bool
+
+  @Flag(name: [.customShort("G")],
+        help: "Print configuration for host.")
+  var printConfiguration: Bool
 
   // SSH Port
   @Option(name: [.customLong("port"), .customShort("p")],

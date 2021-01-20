@@ -55,10 +55,14 @@ fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@. The
 class SSHClientConfigProvider {
   let device: TermDevice
   let command: SSHCommand
+  let logger = PassthroughSubject<String, Never>()
+  var logCancel: AnyCancellable? = nil
   
   fileprivate init(command cmd: SSHCommand, using device: TermDevice) {
     self.device = device
     self.command = cmd
+
+    logCancel = logger.sink { [weak self] in self?.printLn($0, err: true) }
   }
   
   static func config(command cmd: SSHCommand, config options: ConfigFileOptions?, using device: TermDevice) -> SSHClientConfig {
@@ -73,9 +77,11 @@ class SSHClientConfigProvider {
                            proxyJump: cmd.proxyJump,
                            proxyCommand: options?.proxyCommand,
                            authMethods: authMethods,
-                           loggingVerbosity: .debug,
+                           loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
                            verifyHostCallback: prov.cliVerifyHostCallback,
-                           sshDirectory: BlinkPaths.ssh()!)
+                           sshDirectory: BlinkPaths.ssh()!,
+                           logger: prov.logger
+                           )
   }
 }
 
@@ -199,14 +205,15 @@ extension SSHClientConfigProvider {
         response = .affirmative
       }
     } else {
-      printLn("Cannot read input.")
+      printLn("Cannot read input.", err: true)
     }
 
     return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
   }
   
-  fileprivate func printLn(_ string: String) {
+  fileprivate func printLn(_ string: String, err: Bool = false) {
     let line = string.appending("\n")
-    fwrite(line, line.lengthOfBytes(using: .utf8), 1, device.stream.out)
+    let s = err ? device.stream.err : device.stream.out
+    fwrite(line, line.lengthOfBytes(using: .utf8), 1, s)
   }
 }

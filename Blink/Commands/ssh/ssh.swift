@@ -95,6 +95,11 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return -1
     }
 
+    if cmd.printConfiguration {
+      print("Configuration is", to: &stdout)
+      return 0
+    }
+
     let config = SSHClientConfigProvider.config(command: cmd, config: options, using: device)
 
     if let control = cmd.control {
