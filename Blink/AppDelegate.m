@@ -72,7 +72,7 @@ void __setupProcessEnv() {
   setenv("TERM", "xterm-256color", forceOverwrite);
   
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
-  ssh_init();
+//  ssh_init();
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {

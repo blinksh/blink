@@ -34,7 +34,7 @@
 #include <unistd.h>
 #include <pthread.h>
 
-#include "libmoshios/moshiosbridge.h"
+#include <mosh/moshiosbridge.h>
 
 #import "BKHosts.h"
 #import "MoshSession.h"

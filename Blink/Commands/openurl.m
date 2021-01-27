@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #include <stdio.h>
+#import <UIKit/UIKit.h>
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
 #include "openurl.h"

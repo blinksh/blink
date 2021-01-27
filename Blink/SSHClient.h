@@ -31,7 +31,7 @@
 
 
 #import <Foundation/Foundation.h>
-#include <libssh/libssh.h>
+#import <libssh/libssh.h>
 #import "SSHClientOptions.h"
 #import "TermDevice.h"
 

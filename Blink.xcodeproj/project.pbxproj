@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 52;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -11,15 +11,11 @@
 		0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */; };
 		0732F04D1D062B9A00AB5438 /* locales.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04A1D062B9A00AB5438 /* locales.bundle */; };
 		0732F04E1D062B9A00AB5438 /* term.html in Resources */ = {isa = PBXBuildFile; fileRef = 0732F04B1D062B9A00AB5438 /* term.html */; };
-		0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F05F1D062BB300AB5438 /* libssh2.framework */; };
-		0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F0841D062BB300AB5438 /* openssl.framework */; };
 		0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; };
 		0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1171D062CA000AB5438 /* UICKeyChainStore.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1261D06323A00AB5438 /* libz.tbd */; };
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
-		076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */; };
-		076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 076FBD511DB6BE1D00F6D997 /* libprotobuf.a */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
 		07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEAF1D8F6758007BC086 /* BKFeedbackViewController.m */; };
 		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
@@ -34,10 +30,6 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
-		22A9494B2067FD5E003A0666 /* files.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A949492067FD5E003A0666 /* files.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22A9494A2067FD5E003A0666 /* tar.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3332036EE86001FCC5C /* openssl.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 22E1F3342036EE86001FCC5C /* libssh2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803B99D62582869200DC99C8 /* BKNotificationsView.swift */; };
 		803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803B99E2258381B200DC99C8 /* SettingsHostingController.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -74,12 +66,6 @@
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
-		D2071B732150E4AA000156D7 /* ssh-add.m in Sources */ = {isa = PBXBuildFile; fileRef = D2071B722150E4AA000156D7 /* ssh-add.m */; };
-		D2071B7B2150EBC1000156D7 /* authfile.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7A2150EBC1000156D7 /* authfile.c */; };
-		D2071B7E2150EE77000156D7 /* authfd.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7C2150EE77000156D7 /* authfd.c */; };
-		D2071B812150FFD1000156D7 /* match.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B7F2150FFD0000156D7 /* match.c */; };
-		D2071B83215101DC000156D7 /* blink-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B82215101DC000156D7 /* blink-compat.c */; };
-		D2071B86215135A9000156D7 /* openssl-compat.c in Sources */ = {isa = PBXBuildFile; fileRef = D2071B84215135A9000156D7 /* openssl-compat.c */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
@@ -107,6 +93,36 @@
 		D21A3FE721943BE200269705 /* dark-app-ipad-76pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FD621943BE200269705 /* dark-app-ipad-76pt@2x.png */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
+		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
+		D2334EEF25C1C28F00385378 /* awk.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EF025C1C28F00385378 /* curl_ios.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECE25C1C04700385378 /* curl_ios.xcframework */; };
+		D2334EF125C1C28F00385378 /* curl_ios.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECE25C1C04700385378 /* curl_ios.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECA25C1C04700385378 /* files.xcframework */; };
+		D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECA25C1C04700385378 /* files.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ED025C1C04700385378 /* ios_system.xcframework */; };
+		D2334EF525C1C28F00385378 /* ios_system.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ED025C1C04700385378 /* ios_system.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EF625C1C28F00385378 /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
+		D2334EF725C1C28F00385378 /* LibSSH.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC525C1C04700385378 /* mosh.xcframework */; };
+		D2334EF925C1C28F00385378 /* mosh.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC525C1C04700385378 /* mosh.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC625C1C04700385378 /* network_ios.xcframework */; };
+		D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC625C1C04700385378 /* network_ios.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EFC25C1C28F00385378 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECC25C1C04700385378 /* openssl.xcframework */; };
+		D2334EFD25C1C28F00385378 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECC25C1C04700385378 /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334EFE25C1C28F00385378 /* Protobuf_C_.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; };
+		D2334EFF25C1C28F00385378 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC925C1C04700385378 /* shell.xcframework */; };
+		D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC925C1C04700385378 /* shell.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F0225C1C28F00385378 /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
+		D2334F0325C1C28F00385378 /* ssh_cmd.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECD25C1C04700385378 /* tar.xcframework */; };
+		D2334F0525C1C28F00385378 /* tar.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECD25C1C04700385378 /* tar.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F0625C1C28F00385378 /* text.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC725C1C04700385378 /* text.xcframework */; };
+		D2334F0725C1C28F00385378 /* text.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC725C1C04700385378 /* text.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; };
+		D2334F0D25C1C3C600385378 /* OpenSSH.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2334F1925C1C4E100385378 /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F1825C1C4D100385378 /* libssh2.xcframework */; };
+		D2334F1A25C1C4E100385378 /* libssh2.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F1825C1C4D100385378 /* libssh2.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D23742CA21106ADF00366359 /* bench.m in Sources */ = {isa = PBXBuildFile; fileRef = D23742C921106ADF00366359 /* bench.m */; };
 		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
@@ -141,7 +157,6 @@
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
-		D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D263489720BEBFE000A8E89F /* libsshd.a */; };
 		D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
@@ -156,46 +171,10 @@
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29568B921BE629100480A83 /* bk_getopts.c in Sources */ = {isa = PBXBuildFile; fileRef = D29568B821BE629100480A83 /* bk_getopts.c */; };
-		D2961970214F89360070935A /* ssh-agent.m in Sources */ = {isa = PBXBuildFile; fileRef = D296196F214F89210070935A /* ssh-agent.m */; };
-		D2961975214F8A580070935A /* sshbuf.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961972214F8A580070935A /* sshbuf.c */; };
-		D296197C214F8ABE0070935A /* atomicio.c in Sources */ = {isa = PBXBuildFile; fileRef = D296197A214F8ABD0070935A /* atomicio.c */; };
-		D296197F214F91550070935A /* sshkey.c in Sources */ = {isa = PBXBuildFile; fileRef = D296197D214F91550070935A /* sshkey.c */; };
-		D2961983214F968A0070935A /* cipher.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961981214F96890070935A /* cipher.c */; };
-		D2961989214F96A10070935A /* chacha.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961987214F96A10070935A /* chacha.c */; };
-		D296198A214F96A10070935A /* poly1305.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961988214F96A10070935A /* poly1305.c */; };
-		D296198D214F96D50070935A /* digest-openssl.c in Sources */ = {isa = PBXBuildFile; fileRef = D296198B214F96D50070935A /* digest-openssl.c */; };
-		D296199A214F995D0070935A /* blocks.c in Sources */ = {isa = PBXBuildFile; fileRef = D296198F214F995D0070935A /* blocks.c */; };
-		D296199B214F995D0070935A /* ge25519_base.data in Resources */ = {isa = PBXBuildFile; fileRef = D2961990214F995D0070935A /* ge25519_base.data */; };
-		D296199C214F995D0070935A /* ed25519.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961991214F995D0070935A /* ed25519.c */; };
-		D296199D214F995D0070935A /* hash.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961995214F995D0070935A /* hash.c */; };
-		D296199E214F995D0070935A /* sc25519.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961996214F995D0070935A /* sc25519.c */; };
-		D296199F214F995D0070935A /* ge25519.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961997214F995D0070935A /* ge25519.c */; };
-		D29619A0214F995D0070935A /* fe25519.c in Sources */ = {isa = PBXBuildFile; fileRef = D2961999214F995D0070935A /* fe25519.c */; };
-		D29619A4214F99A30070935A /* rsa.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619A3214F99A30070935A /* rsa.c */; };
-		D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619A6214FA7D30070935A /* bcrypt-pbkdf.c */; };
-		D29619A9214FB4110070935A /* base64.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619A8214FB4110070935A /* base64.c */; };
-		D29619AD214FB5EA0070935A /* ssh-ed25519.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619AA214FB5EA0070935A /* ssh-ed25519.c */; };
-		D29619AE214FB5EA0070935A /* ssh-rsa.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619AB214FB5EA0070935A /* ssh-rsa.c */; };
-		D29619AF214FB5EA0070935A /* ssh-ecdsa.c in Sources */ = {isa = PBXBuildFile; fileRef = D29619AC214FB5EA0070935A /* ssh-ecdsa.c */; };
 		D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */ = {isa = PBXBuildFile; fileRef = D298D67C2110803600992CA4 /* SSHClientPortListener.m */; };
 		D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29D6C3022DB9CA700A84173 /* TermController.swift */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
 		D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE549208DC860004679D0 /* extraCommandsDictionary.plist */; };
-		D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E120690B70006BB305 /* text.framework */; };
-		D2A3F4EC20690B71006BB305 /* shell.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E320690B70006BB305 /* shell.framework */; };
-		D2A3F4F020690B71006BB305 /* tar.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E720690B71006BB305 /* tar.framework */; };
-		D2A3F4F120690B71006BB305 /* network_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E820690B71006BB305 /* network_ios.framework */; };
-		D2A3F4F220690B71006BB305 /* curl_ios.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; };
-		D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F520690C24006BB305 /* awk.framework */; };
-		D2A3F4F820690CB0006BB305 /* awk.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F520690C24006BB305 /* awk.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F320690BE6006BB305 /* ios_system.framework */; };
-		D2A3F4FA20690CDF006BB305 /* ios_system.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4F320690BE6006BB305 /* ios_system.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F4FC20690D08006BB305 /* shell.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E320690B70006BB305 /* shell.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F4FE20690D23006BB305 /* text.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E120690B70006BB305 /* text.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F50020690D44006BB305 /* network_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E820690B71006BB305 /* network_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; };
-		D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E620690B71006BB305 /* ssh_cmd.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2A3F4E920690B71006BB305 /* curl_ios.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
@@ -338,19 +317,23 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				22A9494B2067FD5E003A0666 /* files.framework in Embed Frameworks */,
+				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
 				D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */,
-				D2A3F4FC20690D08006BB305 /* shell.framework in Embed Frameworks */,
-				22A9494C2067FD5E003A0666 /* tar.framework in Embed Frameworks */,
-				22E1F3352036EE87001FCC5C /* openssl.framework in Embed Frameworks */,
-				22E1F3362036EE87001FCC5C /* libssh2.framework in Embed Frameworks */,
-				D2A3F4F820690CB0006BB305 /* awk.framework in Embed Frameworks */,
-				D2A3F50020690D44006BB305 /* network_ios.framework in Embed Frameworks */,
+				D2334EFF25C1C28F00385378 /* Protobuf_C_.xcframework in Embed Frameworks */,
 				0732F11F1D062DDB00AB5438 /* UICKeyChainStore.framework in Embed Frameworks */,
-				D2A3F4FA20690CDF006BB305 /* ios_system.framework in Embed Frameworks */,
-				D2A3F50420690D7E006BB305 /* ssh_cmd.framework in Embed Frameworks */,
-				D2A3F4FE20690D23006BB305 /* text.framework in Embed Frameworks */,
-				D2A3F50620690D8A006BB305 /* curl_ios.framework in Embed Frameworks */,
+				D2334F0725C1C28F00385378 /* text.xcframework in Embed Frameworks */,
+				D2334EFD25C1C28F00385378 /* openssl.xcframework in Embed Frameworks */,
+				D2334EF725C1C28F00385378 /* LibSSH.xcframework in Embed Frameworks */,
+				D2334EF525C1C28F00385378 /* ios_system.xcframework in Embed Frameworks */,
+				D2334F0525C1C28F00385378 /* tar.xcframework in Embed Frameworks */,
+				D2334F1A25C1C4E100385378 /* libssh2.xcframework in Embed Frameworks */,
+				D2334F0325C1C28F00385378 /* ssh_cmd.xcframework in Embed Frameworks */,
+				D2334F0D25C1C3C600385378 /* OpenSSH.xcframework in Embed Frameworks */,
+				D2334EEF25C1C28F00385378 /* awk.xcframework in Embed Frameworks */,
+				D2334EF125C1C28F00385378 /* curl_ios.xcframework in Embed Frameworks */,
+				D2334EF925C1C28F00385378 /* mosh.xcframework in Embed Frameworks */,
+				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
+				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -364,15 +347,11 @@
 		0716B53C1CFFAB9300268B5B /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		0732F04A1D062B9A00AB5438 /* locales.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = locales.bundle; sourceTree = "<group>"; };
 		0732F04B1D062B9A00AB5438 /* term.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = term.html; sourceTree = "<group>"; };
-		0732F05F1D062BB300AB5438 /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
-		0732F0841D062BB300AB5438 /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
 		0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MBProgressHUD.xcodeproj; path = MBProgressHUD/MBProgressHUD.xcodeproj; sourceTree = "<group>"; };
 		0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = UICKeyChainStore.xcodeproj; path = UICKeyChainStore/Lib/UICKeyChainStore.xcodeproj; sourceTree = "<group>"; };
 		0732F1261D06323A00AB5438 /* libz.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libz.tbd; path = usr/lib/libz.tbd; sourceTree = SDKROOT; };
 		0732F1281D06324200AB5438 /* libcurses.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcurses.tbd; path = usr/lib/libcurses.tbd; sourceTree = SDKROOT; };
 		074F30781D062A2800A73445 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libmoshios.framework; sourceTree = "<group>"; };
-		076FBD511DB6BE1D00F6D997 /* libprotobuf.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libprotobuf.a; sourceTree = "<group>"; };
 		0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blink.entitlements; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
@@ -398,10 +377,6 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
-		22A949492067FD5E003A0666 /* files.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = files.framework; sourceTree = "<group>"; };
-		22A9494A2067FD5E003A0666 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
-		22E1F3332036EE86001FCC5C /* openssl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = openssl.framework; sourceTree = "<group>"; };
-		22E1F3342036EE86001FCC5C /* libssh2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = libssh2.framework; sourceTree = "<group>"; };
 		803B99D62582869200DC99C8 /* BKNotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKNotificationsView.swift; sourceTree = "<group>"; };
 		803B99E2258381B200DC99C8 /* SettingsHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHostingController.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
@@ -465,18 +440,6 @@
 		D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingConfigView.swift; sourceTree = "<group>"; };
 		D2060A5220E2644400CF5122 /* SSHClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClient.h; sourceTree = "<group>"; };
 		D2060A5320E2644400CF5122 /* SSHClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClient.m; sourceTree = "<group>"; };
-		D2071B722150E4AA000156D7 /* ssh-add.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-add.m"; sourceTree = "<group>"; };
-		D2071B742150E51F000156D7 /* pathnames.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = pathnames.h; sourceTree = "<group>"; };
-		D2071B752150E5A3000156D7 /* blink-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "blink-compat.h"; sourceTree = "<group>"; };
-		D2071B792150EBC1000156D7 /* authfile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = authfile.h; sourceTree = "<group>"; };
-		D2071B7A2150EBC1000156D7 /* authfile.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = authfile.c; sourceTree = "<group>"; };
-		D2071B7C2150EE77000156D7 /* authfd.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = authfd.c; sourceTree = "<group>"; };
-		D2071B7D2150EE77000156D7 /* authfd.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = authfd.h; sourceTree = "<group>"; };
-		D2071B7F2150FFD0000156D7 /* match.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = match.c; sourceTree = "<group>"; };
-		D2071B802150FFD0000156D7 /* match.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = match.h; sourceTree = "<group>"; };
-		D2071B82215101DC000156D7 /* blink-compat.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "blink-compat.c"; sourceTree = "<group>"; };
-		D2071B84215135A9000156D7 /* openssl-compat.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "openssl-compat.c"; sourceTree = "<group>"; };
-		D2071B87215135EF000156D7 /* openssl-compat.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "openssl-compat.h"; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
@@ -505,6 +468,21 @@
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
+		D2334EC425C1C04700385378 /* LibSSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = LibSSH.xcframework; path = xcfs/.build/artifacts/xcfs/LibSSH.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334EC525C1C04700385378 /* mosh.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = mosh.xcframework; path = xcfs/.build/artifacts/xcfs/mosh.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334EC625C1C04700385378 /* network_ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = network_ios.xcframework; path = xcfs/.build/artifacts/xcfs/network_ios.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334EC725C1C04700385378 /* text.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = text.xcframework; path = xcfs/.build/artifacts/xcfs/text.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334EC825C1C04700385378 /* ssh_cmd.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ssh_cmd.xcframework; path = xcfs/.build/artifacts/xcfs/ssh_cmd.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334EC925C1C04700385378 /* shell.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = shell.xcframework; path = xcfs/.build/artifacts/xcfs/shell.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECA25C1C04700385378 /* files.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = files.xcframework; path = xcfs/.build/artifacts/xcfs/files.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = Protobuf_C_.xcframework; path = xcfs/.build/artifacts/xcfs/Protobuf_C_.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECC25C1C04700385378 /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECD25C1C04700385378 /* tar.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = tar.xcframework; path = xcfs/.build/artifacts/xcfs/tar.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECE25C1C04700385378 /* curl_ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = curl_ios.xcframework; path = xcfs/.build/artifacts/xcfs/curl_ios.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ECF25C1C04700385378 /* awk.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = awk.xcframework; path = xcfs/.build/artifacts/xcfs/awk.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334ED025C1C04700385378 /* ios_system.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = ios_system.xcframework; path = xcfs/.build/artifacts/xcfs/ios_system.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSH.xcframework; path = xcfs/.build/artifacts/xcfs/OpenSSH.xcframework; sourceTree = SOURCE_ROOT; };
+		D2334F1825C1C4D100385378 /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
 		D235579622CE07D20094AADB /* Blink-bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Blink-bridge.h"; sourceTree = "<group>"; };
 		D23742C921106ADF00366359 /* bench.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = bench.m; sourceTree = "<group>"; };
 		D23A7B24233C934900B3B66D /* UIColor+isLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+isLight.swift"; sourceTree = "<group>"; };
@@ -539,14 +517,6 @@
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
-		D263488A20BEBF5800A8E89F /* libsshpp.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = libsshpp.hpp; sourceTree = "<group>"; };
-		D263488B20BEBF5800A8E89F /* legacy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = legacy.h; sourceTree = "<group>"; };
-		D263488C20BEBF5800A8E89F /* callbacks.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = callbacks.h; sourceTree = "<group>"; };
-		D263488D20BEBF5800A8E89F /* libssh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = libssh.h; sourceTree = "<group>"; };
-		D263488E20BEBF5800A8E89F /* sftp.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sftp.h; sourceTree = "<group>"; };
-		D263488F20BEBF5800A8E89F /* ssh2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ssh2.h; sourceTree = "<group>"; };
-		D263489020BEBF5800A8E89F /* server.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = server.h; sourceTree = "<group>"; };
-		D263489720BEBFE000A8E89F /* libsshd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libsshd.a; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkTests.swift; sourceTree = "<group>"; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -566,59 +536,12 @@
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29568B721BE629100480A83 /* bk_getopts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bk_getopts.h; sourceTree = "<group>"; };
 		D29568B821BE629100480A83 /* bk_getopts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bk_getopts.c; sourceTree = "<group>"; };
-		D296196F214F89210070935A /* ssh-agent.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "ssh-agent.m"; sourceTree = "<group>"; };
-		D2961971214F8A580070935A /* sshbuf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sshbuf.h; sourceTree = "<group>"; };
-		D2961972214F8A580070935A /* sshbuf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sshbuf.c; sourceTree = "<group>"; };
-		D2961974214F8A580070935A /* ssherr.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssherr.h; sourceTree = "<group>"; };
-		D2961978214F8AA30070935A /* authfd-old.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "authfd-old.c"; sourceTree = "<group>"; };
-		D296197A214F8ABD0070935A /* atomicio.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = atomicio.c; sourceTree = "<group>"; };
-		D296197B214F8ABE0070935A /* atomicio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = atomicio.h; sourceTree = "<group>"; };
-		D296197D214F91550070935A /* sshkey.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sshkey.c; sourceTree = "<group>"; };
-		D296197E214F91550070935A /* sshkey.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = sshkey.h; sourceTree = "<group>"; };
-		D2961980214F94110070935A /* crypto_api.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = crypto_api.h; sourceTree = "<group>"; };
-		D2961981214F96890070935A /* cipher.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cipher.c; sourceTree = "<group>"; };
-		D2961982214F968A0070935A /* cipher.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cipher.h; sourceTree = "<group>"; };
-		D2961985214F96A10070935A /* chacha.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = chacha.h; sourceTree = "<group>"; };
-		D2961986214F96A10070935A /* poly1305.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = poly1305.h; sourceTree = "<group>"; };
-		D2961987214F96A10070935A /* chacha.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = chacha.c; sourceTree = "<group>"; };
-		D2961988214F96A10070935A /* poly1305.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = poly1305.c; sourceTree = "<group>"; };
-		D296198B214F96D50070935A /* digest-openssl.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "digest-openssl.c"; sourceTree = "<group>"; };
-		D296198C214F96D50070935A /* digest.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = digest.h; sourceTree = "<group>"; };
-		D296198F214F995D0070935A /* blocks.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = blocks.c; sourceTree = "<group>"; };
-		D2961990214F995D0070935A /* ge25519_base.data */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = ge25519_base.data; sourceTree = "<group>"; };
-		D2961991214F995D0070935A /* ed25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ed25519.c; sourceTree = "<group>"; };
-		D2961992214F995D0070935A /* sc25519.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = sc25519.h; sourceTree = "<group>"; };
-		D2961993214F995D0070935A /* ge25519.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ge25519.h; sourceTree = "<group>"; };
-		D2961994214F995D0070935A /* fe25519.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fe25519.h; sourceTree = "<group>"; };
-		D2961995214F995D0070935A /* hash.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = hash.c; sourceTree = "<group>"; };
-		D2961996214F995D0070935A /* sc25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = sc25519.c; sourceTree = "<group>"; };
-		D2961997214F995D0070935A /* ge25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ge25519.c; sourceTree = "<group>"; };
-		D2961998214F995D0070935A /* crypto_api.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = crypto_api.h; sourceTree = "<group>"; };
-		D2961999214F995D0070935A /* fe25519.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = fe25519.c; sourceTree = "<group>"; };
-		D29619A1214F99750070935A /* blf.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = blf.h; sourceTree = "<group>"; };
-		D29619A2214F99A30070935A /* rsa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = rsa.h; sourceTree = "<group>"; };
-		D29619A3214F99A30070935A /* rsa.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = rsa.c; sourceTree = "<group>"; };
-		D29619A5214FA0C40070935A /* ssh2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ssh2.h; sourceTree = "<group>"; };
-		D29619A6214FA7D30070935A /* bcrypt-pbkdf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "bcrypt-pbkdf.c"; sourceTree = "<group>"; };
-		D29619A8214FB4110070935A /* base64.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = base64.c; sourceTree = "<group>"; };
-		D29619AA214FB5EA0070935A /* ssh-ed25519.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ssh-ed25519.c"; sourceTree = "<group>"; };
-		D29619AB214FB5EA0070935A /* ssh-rsa.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ssh-rsa.c"; sourceTree = "<group>"; };
-		D29619AC214FB5EA0070935A /* ssh-ecdsa.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = "ssh-ecdsa.c"; sourceTree = "<group>"; };
 		D298D67B2110803600992CA4 /* SSHClientPortListener.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientPortListener.h; sourceTree = "<group>"; };
 		D298D67C2110803600992CA4 /* SSHClientPortListener.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientPortListener.m; sourceTree = "<group>"; };
 		D29D6C3022DB9CA700A84173 /* TermController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermController.swift; sourceTree = "<group>"; };
 		D29FE548208DC860004679D0 /* commandDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandDictionary.plist; sourceTree = "<group>"; };
 		D29FE549208DC860004679D0 /* extraCommandsDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = extraCommandsDictionary.plist; sourceTree = "<group>"; };
 		D2A0C63E20AAD98D001CF38F /* ios_error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_error.h; sourceTree = "<group>"; };
-		D2A3F4E120690B70006BB305 /* text.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = text.framework; sourceTree = "<group>"; };
-		D2A3F4E220690B70006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
-		D2A3F4E320690B70006BB305 /* shell.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = shell.framework; sourceTree = "<group>"; };
-		D2A3F4E620690B71006BB305 /* ssh_cmd.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ssh_cmd.framework; sourceTree = "<group>"; };
-		D2A3F4E720690B71006BB305 /* tar.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tar.framework; sourceTree = "<group>"; };
-		D2A3F4E820690B71006BB305 /* network_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = network_ios.framework; sourceTree = "<group>"; };
-		D2A3F4E920690B71006BB305 /* curl_ios.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = curl_ios.framework; sourceTree = "<group>"; };
-		D2A3F4F320690BE6006BB305 /* ios_system.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ios_system.framework; sourceTree = "<group>"; };
-		D2A3F4F520690C24006BB305 /* awk.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = awk.framework; sourceTree = "<group>"; };
 		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
 		D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGestureRecognizer.swift; sourceTree = "<group>"; };
 		D2A86D6720EB86F2000DF1DA /* SSHClientOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientOptions.h; sourceTree = "<group>"; };
@@ -694,26 +617,28 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2334EFE25C1C28F00385378 /* Protobuf_C_.xcframework in Frameworks */,
+				D2334EF025C1C28F00385378 /* curl_ios.xcframework in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
+				D2334F0225C1C28F00385378 /* ssh_cmd.xcframework in Frameworks */,
+				D2334F0625C1C28F00385378 /* text.xcframework in Frameworks */,
+				D2334EFC25C1C28F00385378 /* openssl.xcframework in Frameworks */,
+				D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */,
+				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
+				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
+				D2334F1925C1C4E100385378 /* libssh2.xcframework in Frameworks */,
+				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
+				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				D2512AC520BD4C3000A80257 /* curl_ios_static.framework in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
+				D2334EF625C1C28F00385378 /* LibSSH.xcframework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
-				D2A3F4F920690CDF006BB305 /* ios_system.framework in Frameworks */,
-				076FBD521DB6BE1D00F6D997 /* libprotobuf.a in Frameworks */,
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
-				D2A3F4EC20690B71006BB305 /* shell.framework in Frameworks */,
+				D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */,
 				D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */,
-				D2A3F4F020690B71006BB305 /* tar.framework in Frameworks */,
-				D2A3F50320690D7E006BB305 /* ssh_cmd.framework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
-				D2A3F4EA20690B71006BB305 /* text.framework in Frameworks */,
-				D2A3F4F620690C24006BB305 /* awk.framework in Frameworks */,
-				D263489820BEBFE000A8E89F /* libsshd.a in Frameworks */,
-				0732F0D11D062BB400AB5438 /* openssl.framework in Frameworks */,
-				0732F0BE1D062BB400AB5438 /* libssh2.framework in Frameworks */,
-				076FBD501DB6BD9400F6D997 /* libmoshios.framework in Frameworks */,
-				D2A3F4F120690B71006BB305 /* network_ios.framework in Frameworks */,
-				D2A3F4F220690B71006BB305 /* curl_ios.framework in Frameworks */,
+				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
+				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -801,50 +726,30 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D2334ECF25C1C04700385378 /* awk.xcframework */,
+				D2334ECE25C1C04700385378 /* curl_ios.xcframework */,
+				D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */,
+				D2334F1825C1C4D100385378 /* libssh2.xcframework */,
+				D2334ECA25C1C04700385378 /* files.xcframework */,
+				D2334ED025C1C04700385378 /* ios_system.xcframework */,
+				D2334EC425C1C04700385378 /* LibSSH.xcframework */,
+				D2334EC525C1C04700385378 /* mosh.xcframework */,
+				D2334EC625C1C04700385378 /* network_ios.xcframework */,
+				D2334ECC25C1C04700385378 /* openssl.xcframework */,
+				D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */,
+				D2334EC925C1C04700385378 /* shell.xcframework */,
+				D2334EC825C1C04700385378 /* ssh_cmd.xcframework */,
+				D2334ECD25C1C04700385378 /* tar.xcframework */,
+				D2334EC725C1C04700385378 /* text.xcframework */,
 				D28DB3AB210B110B008A1139 /* libcompression.tbd */,
 				D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */,
-				D2A3F4F520690C24006BB305 /* awk.framework */,
-				D2A3F4F320690BE6006BB305 /* ios_system.framework */,
-				D2A3F4E920690B71006BB305 /* curl_ios.framework */,
-				22A949492067FD5E003A0666 /* files.framework */,
-				22A9494A2067FD5E003A0666 /* tar.framework */,
-				D2A3F4E220690B70006BB305 /* awk.framework */,
-				D2A3F4E820690B71006BB305 /* network_ios.framework */,
-				D2A3F4E320690B70006BB305 /* shell.framework */,
-				D2A3F4E620690B71006BB305 /* ssh_cmd.framework */,
-				D2A3F4E720690B71006BB305 /* tar.framework */,
-				D2A3F4E120690B70006BB305 /* text.framework */,
-				22E1F3342036EE86001FCC5C /* libssh2.framework */,
-				22E1F3332036EE86001FCC5C /* openssl.framework */,
 				B700AED71DD0F2C200100EBF /* CloudKit.framework */,
-				076FBD4F1DB6BD9400F6D997 /* libmoshios.framework */,
 				0732F1281D06324200AB5438 /* libcurses.tbd */,
 				0732F1261D06323A00AB5438 /* libz.tbd */,
 				0732F1101D062C9F00AB5438 /* UICKeyChainStore.xcodeproj */,
 				0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */,
-				0732F0541D062BB300AB5438 /* include */,
-				0732F0561D062BB300AB5438 /* lib */,
-				0732F05F1D062BB300AB5438 /* libssh2.framework */,
-				0732F0841D062BB300AB5438 /* openssl.framework */,
 			);
 			path = Frameworks;
-			sourceTree = "<group>";
-		};
-		0732F0541D062BB300AB5438 /* include */ = {
-			isa = PBXGroup;
-			children = (
-				D263488920BEBF5800A8E89F /* libssh */,
-			);
-			path = include;
-			sourceTree = "<group>";
-		};
-		0732F0561D062BB300AB5438 /* lib */ = {
-			isa = PBXGroup;
-			children = (
-				D263489720BEBFE000A8E89F /* libsshd.a */,
-				076FBD511DB6BE1D00F6D997 /* libprotobuf.a */,
-			);
-			path = lib;
 			sourceTree = "<group>";
 		};
 		0732F1061D062BF700AB5438 /* Products */ = {
@@ -1145,20 +1050,6 @@
 			path = KeyViews;
 			sourceTree = "<group>";
 		};
-		D263488920BEBF5800A8E89F /* libssh */ = {
-			isa = PBXGroup;
-			children = (
-				D263488A20BEBF5800A8E89F /* libsshpp.hpp */,
-				D263488B20BEBF5800A8E89F /* legacy.h */,
-				D263488C20BEBF5800A8E89F /* callbacks.h */,
-				D263488D20BEBF5800A8E89F /* libssh.h */,
-				D263488E20BEBF5800A8E89F /* sftp.h */,
-				D263488F20BEBF5800A8E89F /* ssh2.h */,
-				D263489020BEBF5800A8E89F /* server.h */,
-			);
-			path = libssh;
-			sourceTree = "<group>";
-		};
 		D265FBBB2317DD3C0017EAC4 /* BlinkTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -1176,79 +1067,6 @@
 				D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */,
 			);
 			path = Foundation;
-			sourceTree = "<group>";
-		};
-		D2961968214F89060070935A /* openssh */ = {
-			isa = PBXGroup;
-			children = (
-				D2071B87215135EF000156D7 /* openssl-compat.h */,
-				D2071B84215135A9000156D7 /* openssl-compat.c */,
-				D2071B7F2150FFD0000156D7 /* match.c */,
-				D2071B802150FFD0000156D7 /* match.h */,
-				D2071B7C2150EE77000156D7 /* authfd.c */,
-				D2071B7D2150EE77000156D7 /* authfd.h */,
-				D2071B7A2150EBC1000156D7 /* authfile.c */,
-				D2071B792150EBC1000156D7 /* authfile.h */,
-				D29619AC214FB5EA0070935A /* ssh-ecdsa.c */,
-				D29619AA214FB5EA0070935A /* ssh-ed25519.c */,
-				D29619AB214FB5EA0070935A /* ssh-rsa.c */,
-				D29619A8214FB4110070935A /* base64.c */,
-				D29619A6214FA7D30070935A /* bcrypt-pbkdf.c */,
-				D29619A5214FA0C40070935A /* ssh2.h */,
-				D29619A3214F99A30070935A /* rsa.c */,
-				D29619A2214F99A30070935A /* rsa.h */,
-				D29619A1214F99750070935A /* blf.h */,
-				D296198E214F995D0070935A /* ed25519 */,
-				D296198B214F96D50070935A /* digest-openssl.c */,
-				D296198C214F96D50070935A /* digest.h */,
-				D2961984214F96A10070935A /* chapoly */,
-				D2961981214F96890070935A /* cipher.c */,
-				D2961982214F968A0070935A /* cipher.h */,
-				D2961980214F94110070935A /* crypto_api.h */,
-				D296197D214F91550070935A /* sshkey.c */,
-				D296197E214F91550070935A /* sshkey.h */,
-				D296197A214F8ABD0070935A /* atomicio.c */,
-				D296197B214F8ABE0070935A /* atomicio.h */,
-				D2961978214F8AA30070935A /* authfd-old.c */,
-				D2961972214F8A580070935A /* sshbuf.c */,
-				D2961971214F8A580070935A /* sshbuf.h */,
-				D2961974214F8A580070935A /* ssherr.h */,
-				D2071B722150E4AA000156D7 /* ssh-add.m */,
-				D296196F214F89210070935A /* ssh-agent.m */,
-				D2071B742150E51F000156D7 /* pathnames.h */,
-				D2071B82215101DC000156D7 /* blink-compat.c */,
-				D2071B752150E5A3000156D7 /* blink-compat.h */,
-			);
-			path = openssh;
-			sourceTree = "<group>";
-		};
-		D2961984214F96A10070935A /* chapoly */ = {
-			isa = PBXGroup;
-			children = (
-				D2961985214F96A10070935A /* chacha.h */,
-				D2961986214F96A10070935A /* poly1305.h */,
-				D2961987214F96A10070935A /* chacha.c */,
-				D2961988214F96A10070935A /* poly1305.c */,
-			);
-			path = chapoly;
-			sourceTree = "<group>";
-		};
-		D296198E214F995D0070935A /* ed25519 */ = {
-			isa = PBXGroup;
-			children = (
-				D296198F214F995D0070935A /* blocks.c */,
-				D2961990214F995D0070935A /* ge25519_base.data */,
-				D2961991214F995D0070935A /* ed25519.c */,
-				D2961992214F995D0070935A /* sc25519.h */,
-				D2961993214F995D0070935A /* ge25519.h */,
-				D2961994214F995D0070935A /* fe25519.h */,
-				D2961995214F995D0070935A /* hash.c */,
-				D2961996214F995D0070935A /* sc25519.c */,
-				D2961997214F995D0070935A /* ge25519.c */,
-				D2961998214F995D0070935A /* crypto_api.h */,
-				D2961999214F995D0070935A /* fe25519.c */,
-			);
-			path = ed25519;
 			sourceTree = "<group>";
 		};
 		D2A52225231304A90010AC04 /* UIKit */ = {
@@ -1337,7 +1155,6 @@
 		D2F330C520A6C8E20074ADD7 /* Commands */ = {
 			isa = PBXGroup;
 			children = (
-				D2961968214F89060070935A /* openssh */,
 				D2334D1221495DAE00D26AC3 /* udptunnel */,
 				D240806020BC8DF800F30099 /* tool_main.c */,
 				D2F330D320A6F1DF0074ADD7 /* clear.m */,
@@ -1591,7 +1408,6 @@
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
-				D296199B214F995D0070935A /* ge25519_base.data in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
 				D21A3FD921943BE200269705 /* dark-settings-iphone-29pt@3x.png in Resources */,
 				D21A3FE021943BE200269705 /* dark-notification-iphone-20pt@3x.png in Resources */,
@@ -1643,8 +1459,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D296197F214F91550070935A /* sshkey.c in Sources */,
-				D2961989214F96A10070935A /* chacha.c in Sources */,
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
@@ -1657,9 +1471,7 @@
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
-				D2071B83215101DC000156D7 /* blink-compat.c in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
-				D29619AD214FB5EA0070935A /* ssh-ed25519.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2C2441B238E44AB0082C69C /* NavView.swift in Sources */,
@@ -1667,14 +1479,11 @@
 				D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
-				D296199E214F995D0070935A /* sc25519.c in Sources */,
-				D2961970214F89360070935A /* ssh-agent.m in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
-				D296198D214F96D50070935A /* digest-openssl.c in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -1683,7 +1492,6 @@
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
-				D29619AF214FB5EA0070935A /* ssh-ecdsa.c in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
 				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
@@ -1693,34 +1501,25 @@
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
-				D296198A214F96A10070935A /* poly1305.c in Sources */,
-				D2961975214F8A580070935A /* sshbuf.c in Sources */,
-				D296199D214F995D0070935A /* hash.c in Sources */,
-				D2071B812150FFD1000156D7 /* match.c in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
-				D2071B732150E4AA000156D7 /* ssh-add.m in Sources */,
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
-				D2071B86215135A9000156D7 /* openssl-compat.c in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
-				D29619AE214FB5EA0070935A /* ssh-rsa.c in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
-				D2961983214F968A0070935A /* cipher.c in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,
-				D29619A0214F995D0070935A /* fe25519.c in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
@@ -1741,7 +1540,6 @@
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
-				D296199A214F995D0070935A /* blocks.c in Sources */,
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
@@ -1751,13 +1549,11 @@
 				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
-				D296199C214F995D0070935A /* ed25519.c in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
-				D2071B7E2150EE77000156D7 /* authfd.c in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				C989E5651D6CC95A003E0079 /* BKPubKeyCreateViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
@@ -1765,7 +1561,6 @@
 				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
-				D29619A7214FA7D40070935A /* bcrypt-pbkdf.c in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
@@ -1787,23 +1582,18 @@
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
-				D296197C214F8ABE0070935A /* atomicio.c in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
-				D296199F214F995D0070935A /* ge25519.c in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
-				D2071B7B2150EBC1000156D7 /* authfile.c in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
-				D29619A9214FB4110070935A /* base64.c in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
-				D29619A4214F99A30070935A /* rsa.c in Sources */,
 				D2C2441A238E44AB0082C69C /* KeySection.swift in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
@@ -1871,7 +1661,11 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BlinkTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkTests;
@@ -1900,7 +1694,11 @@
 				DEVELOPMENT_TEAM = HV2S48975V;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkTests/Info.plist;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -2007,7 +1805,8 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = arm64;
@@ -2039,8 +1838,11 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
@@ -2080,8 +1882,11 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.1;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks/lib",
