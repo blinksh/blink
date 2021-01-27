@@ -39,6 +39,8 @@ import BlinkFiles
 import SSH
 
 
+// TODO Wildcards on source will be matched by the shell, and throw No Match if there are none.
+// Test on new ios_system and fix there.
 @_cdecl("copyfiles_main")
 func copyfiles_main(argc: Int32, argv: Argv) -> Int32 {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
@@ -165,13 +167,18 @@ public class BlinkCopy: NSObject {
     var currentSpeed: Double?
     var startTimestamp = 0
     var lastElapsed = 0
-    copyCancellable = sourceTranslator.flatMap { source in
-      return destTranslator.flatMap { d -> CopyProgressInfo in
-        return d.copy(from: [source])
+    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfo in
+      return sourceTranslator.flatMap {
+        $0.translatorsMatching(path: cmd.source.filePath)
       }
+        .reduce([] as [Translator]) { (all, t) in
+          var new = all
+          new.append(t)
+          return new
+        }.flatMap { d.copy(from: $0) }.eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
       if case let .failure(error) = completion {
-        print("\(error)")
+        print("Copy failed. \(error)", to: &self.stderr)
         rc = -1
       }
       awake(runLoop: self.currentRunLoop)
@@ -194,9 +201,9 @@ public class BlinkCopy: NSObject {
         }
       }
       if currentCopied == size {
-        print("\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", terminator: "\r\n\033[0K", to: &self.stdout)
+        print("\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", to: &self.stdout)
       } else {
-        print("\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", terminator: "\r\033[0K", to: &self.stdout)
+        print("\r\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", terminator: "", to: &self.stdout)
       }
     })
 
@@ -206,10 +213,7 @@ public class BlinkCopy: NSObject {
   }
 
   func localTranslator(to path: String) -> AnyPublisher<Translator, Error> {
-    // TODO Take into account current path in case of relative
-    return BlinkFiles.Local().walkTo(path).map { p in
-      return p
-    }.eraseToAnyPublisher()
+    return Just(BlinkFiles.Local()).mapError {$0 as Error}.eraseToAnyPublisher()
   }
 
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
@@ -234,7 +238,7 @@ public class BlinkCopy: NSObject {
     let config = SSHClientConfigProvider.config(command: sshCommand, config: sshOptions, using: device)
     return SSHPool.dial(sshCommand.host, with: config, connectionOptions: sshOptions)
       .flatMap { conn -> AnyPublisher<Translator, Error> in
-          return conn.requestSFTP().flatMap { $0.walkTo(filePath) }.eraseToAnyPublisher()
+        return conn.requestSFTP().map { $0 as Translator }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()
   }
 
