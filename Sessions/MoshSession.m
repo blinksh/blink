@@ -331,7 +331,10 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
 }
 
-- (NSString *)getMoshServerStringCmd:(NSString *)server port:(NSString *)port withColors:(NSString *)colors run:(NSString *)command
+- (NSString *)getMoshServerStringCmd:(NSString *)server
+                                port:(NSString *)port
+                          withColors:(NSString *)colors
+                                 run:(NSString *)command
 {
   server = server.length ? server : @"mosh-server";
   colors = colors.length ? colors : @"256";
@@ -351,7 +354,13 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   return [NSString stringWithFormat:@"%@", [moshServerArgs componentsJoinedByString:@" "]];
 }
 
-- (void)setConnParamsWithSsh:(NSString *)ssh userHost:(NSString *)userHost port:(NSString *)port identity:(NSString *)identity sshTTY:(BOOL)sshTTY moshCommand:(NSString *)command error:(NSError **)error
+- (void)setConnParamsWithSsh:(NSString *)ssh
+                    userHost:(NSString *)userHost
+                        port:(NSString *)port
+                    identity:(NSString *)identity
+                      sshTTY:(BOOL)sshTTY
+                 moshCommand:(NSString *)command
+                       error:(NSError **)error
 {
   ssh = ssh ? ssh : @"ssh";
   
@@ -374,6 +383,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   if (_debug) {
     [sshArgs insertObject:@"-v" atIndex:1];
   }
+  
+  [_mcpSession setActiveSession];
   
   NSString * sshCmd = [sshArgs componentsJoinedByString:@" "];
   [self debugMsg:sshCmd];

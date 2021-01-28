@@ -32,9 +32,11 @@
 #import "Session.h"
 
 @class MoshParams;
+@class MCPSession;
 
 @interface MoshSession : Session
 
 @property (strong) MoshParams *sessionParams;
+@property (weak) MCPSession *mcpSession;
 
 @end

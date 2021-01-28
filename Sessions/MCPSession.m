@@ -107,7 +107,9 @@
     
     // We are restoring mosh session if possible first.
     if ([@"mosh" isEqualToString:self.sessionParams.childSessionType] && self.sessionParams.hasEncodedState) {
-      _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+      MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+      mosh.mcpSession = self;
+      _childSession = mosh;
       [_childSession executeAttachedWithArgs:@""];
       _childSession = nil;
       if (self.sessionParams.hasEncodedState) {
@@ -281,7 +283,9 @@
 {
   self.sessionParams.childSessionParams = [[MoshParams alloc] init];
   self.sessionParams.childSessionType = @"mosh";
-  _childSession = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+  MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
+  mosh.mcpSession = self;
+  _childSession = mosh;
   [_childSession executeAttachedWithArgs:args];
   _childSession = nil;
 }
