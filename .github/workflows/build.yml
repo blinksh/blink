@@ -20,7 +20,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: Frameworks
-        key: ${{ runner.os }}-${{ hashFiles('get_frameworks.sh') }}
+        key: ${{ runner.os }}-${{ hashFiles('get_frameworks.sh', 'xcfs/Package.swift') }}
 
     - name: get frameworks
       if: steps.cache.outputs.cache-hit != 'true'
