@@ -31,6 +31,7 @@
 
 
 #import "DeviceInfo.h"
+#import <UIKit/UIKit.h>
 
 #import <sys/utsname.h>
 
@@ -72,7 +73,9 @@
   NSDictionary * codes =
   @{
     @"i386"      : @"Simulator",
+    @"arm64"     : @"Simulator",
     @"x86_64"    : @"Simulator",
+
     @"iPod1,1"   : @"iPod Touch",        // (Original)
     @"iPod2,1"   : @"iPod Touch",        // (Second Generation)
     @"iPod3,1"   : @"iPod Touch",        // (Third Generation)
@@ -120,7 +123,7 @@
     
     @"iPhone12,8": @"iPhone SE 2",
     
-    @"iPhone13,1": @"iPhone 12 Mini",
+    @"iPhone13,1": @"iPhone 12 mini",
     @"iPhone13,2": @"iPhone 12",
     @"iPhone13,3": @"iPhone 12 Pro",
     @"iPhone13,4": @"iPhone 12 Pro Max",
@@ -168,6 +171,9 @@
   
   NSString *value = codes[_machine];
   if (value) {
+    if ([value isEqualToString:@"Simulator"]) {
+      return [UIDevice currentDevice].name;
+    }
     return value;
   }
   return @"unknown";
