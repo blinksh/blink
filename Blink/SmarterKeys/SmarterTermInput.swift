@@ -60,7 +60,7 @@ class CaretHider {
   
   var isHardwareKB: Bool { kbView.traits.isHKBAttached }
   
-  var device: TermDevice? = nil {
+  weak var device: TermDevice? = nil {
     didSet { reportStateReset() }
   }
   

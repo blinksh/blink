@@ -143,6 +143,9 @@ NSString *_encodeString(NSString *str);
 
 
 
+- (void)terminate {
+  [self.configuration.userContentController removeScriptMessageHandlerForName:_interopName];
+}
 
 - (void)dealloc {
   [NSNotificationCenter.defaultCenter removeObserver:self];
