@@ -326,6 +326,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         switch event {
         case .ready:
           // Mark to dashboard
+          SSHPool.register(client, runningCommand: command, on: conn)
           break
         case .error(let error):
           // Capture on dashboard.
