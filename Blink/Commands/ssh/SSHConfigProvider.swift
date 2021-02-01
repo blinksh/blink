@@ -73,12 +73,16 @@ class SSHClientConfigProvider {
     
     // TODO Apply connection options, that is different than config.
     // The config helps in the pool, but then you can connect there in many ways.
+    var proxy: String? = options?.proxyCommand
+    if proxy == nil {
+      proxy = proxyCommand(from: cmd.host)
+    }
     return SSHClientConfig(user: user,
                            proxyJump: cmd.proxyJump,
-                           proxyCommand: options?.proxyCommand,
+                           proxyCommand: proxy,
                            authMethods: authMethods,
                            loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-                           verifyHostCallback: prov.cliVerifyHostCallback,
+                           verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
                            sshDirectory: BlinkPaths.ssh()!,
                            logger: prov.logger
                            )
@@ -177,6 +181,18 @@ extension SSHClientConfigProvider {
     }
     
     return host.password
+  }
+  
+  fileprivate static func proxyCommand(from host: String) -> String? {
+    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
+      return nil
+    }
+
+    guard let host = hosts.first(where: { $0.host == host }) else {
+      return nil
+    }
+    
+    return host.proxyCmd
   }
 }
 

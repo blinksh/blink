@@ -55,6 +55,7 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var outstream: Int32
   var instream: Int32
   let device: TermDevice
+  var isTTY: Bool
   var stdout = StdoutOutputStream()
   var stderr = StderrOutputStream()
 
@@ -71,11 +72,12 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
-
+  
   override init() {
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
     self.device = tty()
+    self.isTTY = ios_isatty(self.instream) != 0
     self.currentRunLoop = RunLoop.current
   }
 
@@ -198,15 +200,20 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) {
     let rows = Int32(self.device.rows)
     let cols = Int32(self.device.cols)
-
+    var pty: SSH.SSHClient.PTY? = nil
+    if command.forceTTY || (self.isTTY && !command.disableTTY) {
+      pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
+    }
+    
     let session: AnyPublisher<SSH.Stream, Error>
+    
+    let opts = try? command.connectionOptions.get()
+    
     if command.command.isEmpty {
-      session = conn.requestInteractiveShell(withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
+      session = conn.requestInteractiveShell(withPTY: pty, withEnvVars: opts?.sendEnv ?? [:])
     } else {
-      // Rename command.execute
       let exec = command.command.joined(separator: " ")
-      // If we do a PTY on Exec, then the proxycommand won't work.
-      session = conn.requestExec(command: exec)//, withPTY: SSH.SSHClient.PTY(rows: rows, columns: cols))
+      session = conn.requestExec(command: exec, withPTY: pty, withEnvVars: opts?.sendEnv ?? [:])
     }
 
     session

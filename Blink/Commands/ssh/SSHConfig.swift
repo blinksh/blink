@@ -203,12 +203,21 @@ struct ConfigFileOptions {
   var compression: Bool?
   var compressionLevel: UInt?
   var controlMaster: Bool = true
+  var sendEnv: [String: String] = [:]
+  var strictHostChecking: Bool = true
 
   init(_ options: [String]) throws {
+    let lang = String(cString: getenv("LANG"))
+    let term = String(cString: getenv("TERM"))
+    sendEnv = ["TERM": term, "LANG": lang]
+
     for o in options {
-      let option = o.components(separatedBy: "=")
+      var option = o.components(separatedBy: "=")
       if option.count != 2 {
-        throw ValidationError("\(option[0]) missing value")
+        option = o.components(separatedBy: " ")
+        if option.count != 2 {
+          throw ValidationError("\(option[0]) missing value")
+        }
       }
       switch option[0].lowercased() {
       case "proxycommand":
@@ -225,6 +234,20 @@ struct ConfigFileOptions {
         compressionLevel = level
       case "controlmaster":
         controlMaster = try ConfigFileOptions.yesNoValue(option[1], name: "controlmaster")
+      case "sendenv":
+        var key = option[1]
+        if key.starts(with: "-") {
+          key.removeFirst()
+          sendEnv.removeValue(forKey: key)
+        } else {
+          let env = String(cString: getenv(key))
+          if env.isEmpty {
+            continue
+          }
+          sendEnv[key] = env
+        }
+      case "stricthostchecking":
+        strictHostChecking = try ConfigFileOptions.yesNoValue(option[1], name: "stricthostchecking")
       default:
         throw ValidationError("Unknown option \(option[0])")
       }
