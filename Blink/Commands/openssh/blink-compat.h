@@ -30,25 +30,56 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#import <Foundation/Foundation.h>
-#include <libssh/libssh.h>
-#import "SSHClientOptions.h"
-#import "TermDevice.h"
+#ifndef blink_compat_h
+#define blink_compat_h
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+#include <stdio.h>
+#include <ctype.h>
+#include <limits.h>
+#include "ios_error.h"
+
+#define fatal printf
+#define verbose printf
+#define error printf
 
 
-NS_ASSUME_NONNULL_BEGIN
+#define debug printf
+#define debug2 printf
+#define debug3 printf
 
-@interface SSHClient : NSObject
+#define explicit_bzero(data, len) memset_s(data, len, 0x0, len)
 
-- (instancetype)initWithStdIn:(dispatch_fd_t)fdIn
-                       stdOut:(dispatch_fd_t)fdOut
-                       stdErr:(dispatch_fd_t)fdErr
-                       device:(TermDevice *)device
-                        isTTY:(BOOL)isTTY;
-- (int)main:(int) argc argv:(char **) argv;
-- (void)sigwinch;
-- (void)kill;
+#define xstrdup strdup
 
-@end
+#define SSH_LISTEN_BACKLOG    128
+#define SSH_AUTHSOCKET_ENV_NAME "SSH_AUTH_SOCK"
+#define SSH_AGENTPID_ENV_NAME  "SSH_AGENT_PID"
 
-NS_ASSUME_NONNULL_END
+#define SECONDS    1
+#define MINUTES    (SECONDS * 60)
+#define HOURS    (MINUTES * 60)
+#define DAYS    (HOURS * 24)
+#define WEEKS    (DAYS * 7)
+
+
+/* readpass.c */
+
+#define RP_ECHO      0x0001
+#define RP_ALLOW_STDIN    0x0002
+#define RP_ALLOW_EOF    0x0004
+#define RP_USE_ASKPASS    0x0008
+
+char  *read_passphrase(const char *, int);
+int   ask_permission(const char *, ...) __attribute__((format(printf, 1, 2)));
+
+#define MINIMUM(a, b)  (((a) < (b)) ? (a) : (b))
+#define MAXIMUM(a, b)  (((a) > (b)) ? (a) : (b))
+#define ROUNDUP(x, y)   ((((x)+((y)-1))/(y))*(y))
+
+long convtime(const char *s);
+void freezero(void *ptr, size_t sz);
+void lowercase(char *s);
+
+#endif /* blink_compat_h */

@@ -36,10 +36,9 @@
 #import "UICKeyChainStore/UICKeyChainStore.h"
 
 #import "BlinkPaths.h"
-#import <openssl/rsa.h>
-#import <OpenSSH/sshbuf.h>
-#import <OpenSSH/sshkey.h>
-#import <OpenSSH/ssherr.h>
+#import "sshbuf.h"
+#import "sshkey.h"
+#import "ssherr.h"
 
 const NSString *BK_KEYTYPE_RSA = @"RSA";
 const NSString *BK_KEYTYPE_DSA = @"DSA";
