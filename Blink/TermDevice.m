@@ -166,6 +166,9 @@ static int __sizeOfIncompleteSequenceAtTheEnd(const char *buffer, size_t len) {
   NSString *_readlineResult;
 }
 
+// Make win accesible on Swift
+@synthesize win = win;
+
 - (id)init
 {
   self = [super init];

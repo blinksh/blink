@@ -35,14 +35,16 @@
 #import "Session.h"
 #import "SSHClient.h"
 
+
 @class MCPParams;
+@class BlinkSSH;
 
 @interface MCPSession : Session
 
 @property (strong) MCPParams *sessionParams;
 
-- (void)registerSSHClient:(SSHClient *)sshClient;
-- (void)unregisterSSHClient:(SSHClient *)sshClient;
+- (void)registerSSHClient:(id __weak)sshClient;
+- (void)unregisterSSHClient:(id __weak)sshClient;
 
 - (void)enqueueCommand:(NSString *)cmd;
 - (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;

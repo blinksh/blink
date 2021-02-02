@@ -19,13 +19,12 @@ var binaryTargets: [PackageDescription.Target] = [
   ( "network_ios", "ec5860ecd720ccaaa298ab02766d8469c21f5fe5d3bab5a43bab090001dafa9c", "https://github.com/yury/network_ios/releases/download/v0.2/network_ios.xcframework.zip" )
 ].map { name, checksum, url in PackageDescription.Target.binaryTarget(name: name, url: url, checksum: checksum)}
 
-binaryTargets += [PackageDescription.Target.binaryTarget(name: "SSH", path: "SSH.xcframework"),
-                  PackageDescription.Target.binaryTarget(name: "BlinkFiles", path: "BlinkFiles.xcframework")]
 _ = Package(
     name: "deps",
     platforms: [.macOS("11")],
     dependencies: [
-        .package(url: "https://github.com/yury/FMake", from: "0.0.15")
+        .package(url: "https://github.com/yury/FMake", from: "0.0.15"),
+        .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.3.0"))
     ],
     
     targets: binaryTargets + [

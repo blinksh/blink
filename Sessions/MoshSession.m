@@ -369,9 +369,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   BOOL useIPFromSSHConnectionEnv = [@"remote" isEqual:self.sessionParams.experimentalRemoteIp];
   if (useIPFromSSHConnectionEnv) {
     NSString * echoSshConnectionCommand = @"echo \"\" && echo \"MOSH SSH_CONNECTION $SSH_CONNECTION\" &&";
-    sshArgs = [@[ssh, @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, echoSshConnectionCommand, command] mutableCopy];
+    sshArgs = [@[ssh, @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, echoSshConnectionCommand, @"--", command] mutableCopy];
   } else {
-    sshArgs = [@[ssh, @"-o _printaddress=yes", @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, command] mutableCopy];
+    sshArgs = [@[ssh, @"-o compression=no", sshTTY ? @"-t" : @"-T", userHost, @"--", command] mutableCopy];
   }
   
   if (port) {

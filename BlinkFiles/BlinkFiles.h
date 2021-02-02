@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2019 Blink Mobile Shell Project
+// Copyright (C) 2016-2021 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,37 +29,14 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+#import <Foundation/Foundation.h>
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+//! Project version number for BlinkFiles.
+FOUNDATION_EXPORT double BlinkFilesVersionNumber;
 
-#include <stdio.h>
-#include <pthread.h>
+//! Project version string for BlinkFiles.
+FOUNDATION_EXPORT const unsigned char BlinkFilesVersionString[];
 
-// Thread-local input and output streams
-// Note we could not import ios_system
-extern __thread FILE* thread_stdin;
-extern __thread FILE* thread_stdout;
-extern __thread FILE* thread_stderr;
-extern __thread void* thread_context;
+// In this header, you should import all the public headers of your framework using statements like #import <BlinkFiles/PublicHeader.h>
 
-typedef int socket_t;
-extern void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out);
-extern int ios_dup2(int fd1, int fd2);
-extern void ios_exit(int errorCode) __dead2; // set error code and exits from the thread.
 
-#import "BKDefaults.h"
-#import "BKHosts.h"
-#import "BlinkPaths.h"
-#import "DeviceInfo.h"
-#import "LayoutManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-#import "KBWebViewBase.h"
-#import "openurl.h"
-#import "BKPubKey.h"
-#import "BKHosts.h"
-
-#endif /* Blink_bridge_h */

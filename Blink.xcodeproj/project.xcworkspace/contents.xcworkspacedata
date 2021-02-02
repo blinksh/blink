@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/carlos/dev/Blink/Blink.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

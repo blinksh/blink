@@ -66,6 +66,7 @@
   @public struct winsize win;
 }
 
+@property (nonatomic) struct winsize win;
 @property (readonly) TermStream *stream;
 @property (readonly) TermView *view;
 @property (readonly) UIView<TermInput> *input;

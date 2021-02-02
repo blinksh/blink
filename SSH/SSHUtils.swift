@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2019 Blink Mobile Shell Project
+// Copyright (C) 2016-2021 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,29 +29,31 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Foundation
+import Network
 
-import XCTest
-
-class BlinkTests: XCTestCase {
-
-    override func setUp() {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
+struct SSHUtils {
+  static func isValidIPv4(address: String) -> Bool {
+    if let _ = IPv4Address(address) {
+      return true
     }
-
-    override func tearDown() {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
+    
+    return false
+  }
+  
+  static func isValidIPv6(address: String) -> Bool {
+    if let _ = IPv4Address(address) {
+      return true
     }
-
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    
+    return false
+  }
+  
+  static func isValidIP(address: String) -> Bool {
+    if isValidIPv4(address: address) || isValidIPv6(address: address) {
+      return true
     }
-
-    func testPerformanceExample() {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
-        }
-    }
-
+    
+    return false
+  }
 }

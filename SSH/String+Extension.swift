@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2019 Blink Mobile Shell Project
+// Copyright (C) 2016-2021 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,37 +29,21 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Foundation
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import Foundation
 
-#include <stdio.h>
-#include <pthread.h>
-
-// Thread-local input and output streams
-// Note we could not import ios_system
-extern __thread FILE* thread_stdin;
-extern __thread FILE* thread_stdout;
-extern __thread FILE* thread_stderr;
-extern __thread void* thread_context;
-
-typedef int socket_t;
-extern void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out);
-extern int ios_dup2(int fd1, int fd2);
-extern void ios_exit(int errorCode) __dead2; // set error code and exits from the thread.
-
-#import "BKDefaults.h"
-#import "BKHosts.h"
-#import "BlinkPaths.h"
-#import "DeviceInfo.h"
-#import "LayoutManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-#import "KBWebViewBase.h"
-#import "openurl.h"
-#import "BKPubKey.h"
-#import "BKHosts.h"
-
-#endif /* Blink_bridge_h */
+extension String {
+  func matchingStrings(regex: String) -> [[String]] {
+    guard let regex = try? NSRegularExpression(pattern: regex, options: []) else { return [] }
+    let nsString = self as NSString
+    let results  = regex.matches(in: self, options: [], range: NSMakeRange(0, nsString.length))
+    return results.map { result in
+      (0..<result.numberOfRanges).map {
+        result.range(at: $0).location != NSNotFound
+          ? nsString.substring(with: result.range(at: $0))
+          : ""
+      }
+    }
+  }
+}
