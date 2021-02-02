@@ -30,6 +30,8 @@
 		07F670751D05EEE200C0A53C /* Session.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706C1D05EEE200C0A53C /* Session.m */; };
 		07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */; };
 		07F670771D05EEE200C0A53C /* SSHSession.m in Sources */ = {isa = PBXBuildFile; fileRef = 07F670701D05EEE200C0A53C /* SSHSession.m */; };
+		07FAB8D825C8E45300E1CC2C /* BlinkFiles.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FAB8D025C8E45200E1CC2C /* BlinkFiles.xcframework */; };
+		07FAB8D925C8E45300E1CC2C /* SSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FAB8D725C8E45300E1CC2C /* SSH.xcframework */; };
 		803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803B99D62582869200DC99C8 /* BKNotificationsView.swift */; };
 		803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803B99E2258381B200DC99C8 /* SettingsHostingController.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
@@ -377,6 +379,8 @@
 		07F6706E1D05EEE200C0A53C /* SSHCopyIDSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHCopyIDSession.m; sourceTree = "<group>"; };
 		07F6706F1D05EEE200C0A53C /* SSHSession.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SSHSession.h; sourceTree = "<group>"; };
 		07F670701D05EEE200C0A53C /* SSHSession.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SSHSession.m; sourceTree = "<group>"; };
+		07FAB8D025C8E45200E1CC2C /* BlinkFiles.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = BlinkFiles.xcframework; path = xcfs/.build/artifacts/xcfs/BlinkFiles.xcframework; sourceTree = SOURCE_ROOT; };
+		07FAB8D725C8E45300E1CC2C /* SSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = SSH.xcframework; path = xcfs/.build/artifacts/xcfs/SSH.xcframework; sourceTree = SOURCE_ROOT; };
 		803B99D62582869200DC99C8 /* BKNotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKNotificationsView.swift; sourceTree = "<group>"; };
 		803B99E2258381B200DC99C8 /* SettingsHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHostingController.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
@@ -617,6 +621,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				07FAB8D825C8E45300E1CC2C /* BlinkFiles.xcframework in Frameworks */,
 				D2334EFE25C1C28F00385378 /* Protobuf_C_.xcframework in Frameworks */,
 				D2334EF025C1C28F00385378 /* curl_ios.xcframework in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
@@ -636,6 +641,7 @@
 				0732F11E1D062DDB00AB5438 /* UICKeyChainStore.framework in Frameworks */,
 				D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */,
 				D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */,
+				07FAB8D925C8E45300E1CC2C /* SSH.xcframework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
@@ -737,6 +743,8 @@
 				D2334EC625C1C04700385378 /* network_ios.xcframework */,
 				D2334ECC25C1C04700385378 /* openssl.xcframework */,
 				D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */,
+				07FAB8D025C8E45200E1CC2C /* BlinkFiles.xcframework */,
+				07FAB8D725C8E45300E1CC2C /* SSH.xcframework */,
 				D2334EC925C1C04700385378 /* shell.xcframework */,
 				D2334EC825C1C04700385378 /* ssh_cmd.xcframework */,
 				D2334ECD25C1C04700385378 /* tar.xcframework */,

@@ -2,7 +2,7 @@
 import PackageDescription
 
 var binaryTargets: [PackageDescription.Target] = [
-  ( "Protobuf_C_", "07433ba7926493200ff7ad31412bc9247d6ddc092b4fa5e650b01c6f36a35559", "https://github.com/yury/protobuf-cpp-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip" ),
+  ( "Protobuf_C_", "69e60a51a6aa63b86c00d86c7594538ba7f15e6377b0eadf458c6294ef13c97e", "https://github.com/yury/protobuf-cpp-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip" ),
   ( "mosh"       , "727d404455b94de3fa9834441b19cf6c51e93db64cd91f7dd31d0683e42b52ad", "https://github.com/yury/mosh-apple/releases/download/v1.3.2/mosh.xcframework.zip" ),
   ( "OpenSSH"    , "9bd2b5bf5167b38e27d500ab1dfd7fcdb3fe48aad464dedf1ab980238956c9de", "https://github.com/yury/openssh-apple/releases/download/v8.4.0/OpenSSH-static.xcframework.zip" ),
   ( "libssh2"    , "07952e484eb511b1badb110c15d4621bb84ef98b28ea4d6e1d3a067d420806f5", "https://github.com/yury/libssh2-apple/releases/download/v1.9.0/libssh2-dynamic.xcframework.zip" ),
@@ -19,6 +19,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ( "network_ios", "ec5860ecd720ccaaa298ab02766d8469c21f5fe5d3bab5a43bab090001dafa9c", "https://github.com/yury/network_ios/releases/download/v0.2/network_ios.xcframework.zip" )
 ].map { name, checksum, url in PackageDescription.Target.binaryTarget(name: name, url: url, checksum: checksum)}
 
+binaryTargets += [PackageDescription.Target.binaryTarget(name: "SSH", path: "SSH.xcframework"),
+                  PackageDescription.Target.binaryTarget(name: "BlinkFiles", path: "BlinkFiles.xcframework")]
 _ = Package(
     name: "deps",
     platforms: [.macOS("11")],
