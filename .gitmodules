@@ -1,6 +1,3 @@
-[submodule "Frameworks/UICKeyChainStore"]
-	path = Frameworks/UICKeyChainStore
-	url = https://github.com/kishikawakatsumi/UICKeyChainStore.git
 [submodule "Frameworks/ios_system"]
 	path = Frameworks/ios_system
 	url = https://github.com/holzschu/ios_system.git

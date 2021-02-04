@@ -30,10 +30,10 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
+//import Foundation
 import UIKit
 
-extension NSCoder {
+extension UIKit.NSCoder {
   
   func encode(_ value: Any?, for key: CodingKey) {
     encode(value, forKey: key.stringValue)
@@ -99,9 +99,9 @@ extension NSCoder {
   
   // MARK: - CGRect
   
-  func encode(_ value: CGRect, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
-  }
+//  func encode(_ value: CGRect, for key: CodingKey) {
+//    encode(value, forKey: key.stringValue)
+//  }
   
   func decode(for key: CodingKey) -> CGRect {
     decodeCGRect(forKey: key.stringValue)
@@ -109,19 +109,19 @@ extension NSCoder {
   
   // MARK: - CGSize
   
-  func encode(_ value: CGSize, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
-  }
-  
+//  func encode(_ value: CGSize, for key: CodingKey) {
+//    encode(value, forKey: key.stringValue)
+//  }
+//
   func decode(for key: CodingKey) -> CGSize {
     decodeCGSize(forKey: key.stringValue)
   }
   
   // MARK: - CGPoint
   
-  func encode(_ value: CGPoint, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
-  }
+//  func encode(_ value: CGPoint, for key: CodingKey) {
+//    encode(value, forKey: key.stringValue)
+//  }
   
   func decode(for key: CodingKey) -> CGPoint {
     decodeCGPoint(forKey: key.stringValue)

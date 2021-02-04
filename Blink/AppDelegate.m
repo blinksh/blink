@@ -109,6 +109,15 @@ void __setupProcessEnv() {
 //  [nc addObserver:self selector:@selector(_active) name:@"UIApplicationSystemNavigationActionChangedNotification" object:nil];
 
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
+  
+//#ifdef TARGET_OS_MACCATALYST
+//  NSURL * bundleURL = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"AppKitBridge.bundle"];
+//  [[NSBundle bundleWithURL:bundleURL] load];
+//  NSObject *clas = (NSObject *)NSClassFromString(@"AppBridge");
+//
+//  [clas performSelector:@selector(tuneStyle)];
+//#endif
+
   return YES;
 }
 

@@ -33,7 +33,7 @@
 
 
 #import "BKPubKey.h"
-#import "UICKeyChainStore/UICKeyChainStore.h"
+#import "UICKeyChainStore.h"
 
 #import "BlinkPaths.h"
 #import <openssl/rsa.h>

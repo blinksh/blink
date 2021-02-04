@@ -31,7 +31,7 @@
 
 #import "BKHosts.h"
 #import "BKiCloudSyncHandler.h"
-#import "UICKeyChainStore/UICKeyChainStore.h"
+#import "UICKeyChainStore.h"
 #import "BlinkPaths.h"
 
 NSMutableArray *Hosts;

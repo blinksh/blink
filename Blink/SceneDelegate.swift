@@ -33,6 +33,8 @@
 import Foundation
 import SwiftUI
 
+
+
 class ExternalWindow: UIWindow {
   var shadowWindow: UIWindow? = nil
 }
@@ -89,6 +91,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       // We need to move it
       ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
     }
+    
+//    
   }
   
   /**
@@ -113,6 +117,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     guard let windowScene = scene as? UIWindowScene else {
       return
     }
+    
+    #if targetEnvironment(macCatalyst)
+      if let titlebar = windowScene.titlebar {
+        titlebar.titleVisibility = .hidden
+        titlebar.autoHidesToolbarInFullScreen = true
+      }
+    #endif
     
     let conditions = scene.activationConditions
     
@@ -153,7 +164,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.window = window
     
     window.rootViewController = _spCtrl
-    window.isHidden = false
+    window.isHidden = false    
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
