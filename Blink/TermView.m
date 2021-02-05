@@ -440,13 +440,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   [_device viewSelectionChanged];
   
+  UIMenuController * menu = [UIMenuController sharedMenuController];
+  
   if (!_hasSelection) {
-    [[UIMenuController sharedMenuController] hideMenu];
+    [menu hideMenu];
     return;
   }
   
   NSMutableArray *items = [[NSMutableArray alloc] init];
-  UIMenuController * menu = [UIMenuController sharedMenuController];
+  
   
   [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste selection"
                                               action:@selector(pasteSelection:)]];
@@ -471,23 +473,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _selectionRect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
-#ifndef TARGET_OS_MACCATALYST
-  [menu showMenuFromView:self rect:_selectionRect];
+#ifdef TARGET_OS_MACCATALYST
+//  if (!menu.isMenuVisible) {
+//    [menu showMenuFromView:self rect:_selectionRect];
+//  }
 #else
-  
-//  NSURL * bundleURL = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"AppKitBridge.bundle"];
-//  [[NSBundle bundleWithURL:bundleURL] load];
-//  NSObject *clas = (NSObject *)NSClassFromString(@"AppBridge");
-//  
-//  [clas performSelector:@selector(tuneStyle)];
-//  NSObject *app = [clas performSelector:@selector(sharedApplication)];
-//  [app performSelector:@selector(setPresentationOptions:) withObject:@((1 << 2) | (1 << 0)) ];
-//  NSObject *mainWin = [app performSelector:@selector(mainWindow)];
-  
-//  [[mainWin performSelector:@selector(standardWindowButton:) withObject:nil] performSelector:@selector(setHidden:) withObject:@(YES)];
-//  [[self.window standardWindowButton:0] setHidden:YES];
-//  [[self.window standardWindowButton:1] setHidden:YES];
-//  [[self.window standardWindowButton:2] setHidden:YES];
+  [menu showMenuFromView:self rect:_selectionRect];
 #endif
 }
 
