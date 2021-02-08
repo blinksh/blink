@@ -68,24 +68,21 @@ class SSHClientConfigProvider {
   static func config(command cmd: SSHCommand, config options: ConfigFileOptions?, using device: TermDevice) -> SSHClientConfig {
     let prov = SSHClientConfigProvider(command: cmd, using: device)
     
-    let user = cmd.user ?? "carlos"
-    let authMethods = prov.availableAuthMethods()
-    
     // TODO Apply connection options, that is different than config.
     // The config helps in the pool, but then you can connect there in many ways.
-    var proxy: String? = options?.proxyCommand
-    if proxy == nil {
-      proxy = proxyCommand(from: cmd.host)
-    }
-    return SSHClientConfig(user: user,
-                           proxyJump: cmd.proxyJump,
-                           proxyCommand: proxy,
-                           authMethods: authMethods,
-                           loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-                           verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
-                           sshDirectory: BlinkPaths.ssh()!,
-                           logger: prov.logger
-                           )
+    let proxy: String? = options?.proxyCommand ?? proxyCommand(from: cmd.host)
+    
+    return SSHClientConfig(
+      user: cmd.user ?? "root",
+      port: "\(cmd.port ?? 22)",
+      proxyJump: cmd.proxyJump,
+      proxyCommand: proxy,
+      authMethods: prov.availableAuthMethods(),
+      loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
+      verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
+      sshDirectory: BlinkPaths.ssh()!,
+      logger: prov.logger
+    )
   }
 }
 

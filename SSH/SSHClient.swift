@@ -73,8 +73,8 @@ public enum VerifyHost {
 }
 
 public struct SSHClientConfig {
-  let user: String?
-  let port: String?
+  let user: String
+  let port: String
   
   public typealias RequestVerifyHostCallback = (VerifyHost) -> AnyPublisher<InteractiveResponse, Error>
   
@@ -111,7 +111,7 @@ public struct SSHClientConfig {
   /**
    - Parameters:
    - user:
-   - port: Default will be `22`.
+   - port: Default will be `22`
    - authMethods: Different authentication methods to try
    - loggingVerbosity: Default LibSSH logging shown is `SSH_LOG_NOLOG`
    - verifyHostCallback:
@@ -120,7 +120,7 @@ public struct SSHClientConfig {
    - keepAliveInterval: if `nil` it won't send KeepAlive packages from Client to the Server
    */
   public init(user: String,
-              port: String? = "22",
+              port: String = "22",
               proxyJump: String? = nil,
               proxyCommand: String? = nil,
               authMethods: [AuthMethod]? = nil,
@@ -242,9 +242,7 @@ public class SSHClient {
     ssh_options_set(session, SSH_OPTIONS_COMPRESSION, &compression)
     ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, &level)
     
-    if (options.port != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port!)
-    }
+    ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port)
     
     if (options.proxyJump != nil) {
       ssh_options_set(session, SSH_OPTIONS_PROXYJUMP, options.proxyJump)
