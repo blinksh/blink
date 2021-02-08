@@ -83,6 +83,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     let originalRawMode = device.rawMode
+    
+    defer {
+      device.rawMode = originalRawMode
+    }
 
     let cmd: SSHCommand
     let options: ConfigFileOptions
@@ -174,7 +178,6 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       SSHPool.deregister(runningCommand: cmd, on: conn)
     }
 
-    device.rawMode = originalRawMode
     return exitCode
   }
 
