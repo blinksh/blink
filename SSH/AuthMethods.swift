@@ -77,11 +77,11 @@ public class AuthPassword: AuthMethod, Authenticator {
   }
   
   func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
-    return conn.tryAuth { try self.auth($0) }
+    conn.tryAuth { try self.auth($0) }
   }
   
   public func name() -> String {
-    return "password"
+    "password"
   }
 }
 
@@ -109,11 +109,11 @@ public class AuthNone: AuthMethod, Authenticator {
   }
   
   internal func auth(_ connection: SSHConnection) -> AnyPublisher<AuthState, Error> {
-    return connection.tryAuth { try self.auth($0) }
+    connection.tryAuth { try self.auth($0) }
   }
   
   public func name() -> String {
-    return "none"
+    "none"
   }
 }
 
@@ -217,7 +217,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
   }
   
   public func name() -> String {
-    return "keyboard-interactive"
+    "keyboard-interactive"
   }
 }
 
@@ -301,7 +301,7 @@ public class AuthPublicKey: AuthMethod, Authenticator {
   }
   
   public func name() -> String {
-    return "publickey"
+    "publickey"
   }
   
   deinit {

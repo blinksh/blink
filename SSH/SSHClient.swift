@@ -151,13 +151,11 @@ public struct SSHClientConfig {
     // that may come back from the server.
     // self.keepAliveInterval = keepAliveInterval
     
-    if let methods = authMethods {
-      methods.forEach({ auth in
-        if let auth = (auth as? Authenticator) {
-          self.authenticators.append(auth)
-        }
-      })
-    }
+    authMethods?.forEach({ auth in
+      if let auth = (auth as? Authenticator) {
+        self.authenticators.append(auth)
+      }
+    })
   }
 }
 
@@ -177,7 +175,7 @@ public class SSHClient {
   var keepAliveTimer: Timer?
   
   var isConnected: Bool {
-    get { ssh_is_connected(session) == 1 ? true : false }
+    ssh_is_connected(session) == 1 ? true : false
   }
   
   public struct PTY {
@@ -226,7 +224,7 @@ public class SSHClient {
     
     self.callbacks = ssh_callbacks_struct()
     
-    if setupCallbacks() != SSH_OK {
+    guard setupCallbacks() == SSH_OK else {
       throw SSHError(title: "Could not setup callbacks for session")
     }
     
@@ -271,7 +269,7 @@ public class SSHClient {
   }
   
   @objc private func onServerKeepAlive() {
-    if !isConnected {
+    guard isConnected else {
       return
     }
     
@@ -313,7 +311,7 @@ public class SSHClient {
   }
   
   func connection() -> SSHConnection {
-    return Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
+    Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
