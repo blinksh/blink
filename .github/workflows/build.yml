@@ -22,7 +22,7 @@ jobs:
         path: |
           xcfs/.build
           Frameworks/ios_system/xcfs/.build
-        key: ${{ runner.os }}-${{ hashFiles('get_frameworks.sh', 'xcfs/Package.swift', 'Frameworks/ios_system/xcfs/Package.swift') }}
+        key: ${{ runner.os }}-${{ hashFiles('get_frameworks.sh', 'xcfs/Package.swift') }}
 
     - name: get frameworks
       if: steps.cache.outputs.cache-hit != 'true'
