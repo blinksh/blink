@@ -125,9 +125,9 @@ struct StderrOutputStream: TextOutputStream {
 }
 
 func await(runLoop: RunLoop) {
-  let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true, block: { timer in
-      print("timer")
-  })
+  let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
+    print("timer")
+  }
   runLoop.add(timer, forMode: .default)
   CFRunLoopRun()
 }
