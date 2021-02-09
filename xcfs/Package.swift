@@ -49,11 +49,6 @@ var binaryTargets: [PackageDescription.Target] = [
     "https://github.com/yury/ios_system/releases/download/v2.7.0/awk.xcframework.zip"
   ),
   (
-    "curl_ios",
-    "77973ae6de04e28e122bd45a5057e4f63b9872d07efe18a9ff1f34cecfbb3879",
-    "https://github.com/yury/ios_system/releases/download/v2.7.0/curl_ios.xcframework.zip"
-  ),
-  (
     "files",
     "d1c464c0abc010fb66b6514396836676d77195fa6b3e4207c8a27aa0e63e69c0",
     "https://github.com/yury/ios_system/releases/download/v2.7.0/files.xcframework.zip"
