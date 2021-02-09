@@ -34,6 +34,7 @@
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
 
+__attribute__ ((visibility("default")))
 int config_main(int argc, char *argv[]) {
   if (argc == 1) {
     dispatch_async(dispatch_get_main_queue(), ^{

@@ -104,6 +104,7 @@ void blink_openurl(NSURL *url) {
   });
 }
 
+__attribute__ ((visibility("default")))
 int blink_openurl_main(int argc, char *argv[]) {
   NSString *usage = [@[@"Usage: openurl url",
                        @"you can change default browser with BROWSER env var:",

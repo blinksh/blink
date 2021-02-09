@@ -110,6 +110,8 @@
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
+		D209C79B25D2937700E75A86 /* Protobuf_C_.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; };
+		D209C79C25D2937700E75A86 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
 		D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
@@ -123,8 +125,6 @@
 		D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		D218074C25CD4B3D00B98902 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC425C1C04700385378 /* LibSSH.xcframework */; };
-		D218079925CD520500B98902 /* Protobuf_C_.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; };
-		D218079A25CD520500B98902 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D21A3FD721943BE200269705 /* dark-settings-ipad-29pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC621943BE200269705 /* dark-settings-ipad-29pt.png */; };
 		D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC721943BE200269705 /* dark-notification-ipad-20pt.png */; };
 		D21A3FD921943BE200269705 /* dark-settings-iphone-29pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FC821943BE200269705 /* dark-settings-iphone-29pt@3x.png */; };
@@ -389,7 +389,7 @@
 				D2334F0525C1C28F00385378 /* tar.xcframework in Embed Frameworks */,
 				D2334F0325C1C28F00385378 /* ssh_cmd.xcframework in Embed Frameworks */,
 				D2334EEF25C1C28F00385378 /* awk.xcframework in Embed Frameworks */,
-				D218079A25CD520500B98902 /* Protobuf_C_.xcframework in Embed Frameworks */,
+				D209C79C25D2937700E75A86 /* Protobuf_C_.xcframework in Embed Frameworks */,
 				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
 				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 				07FABBC525C9AECF00E1CC2C /* BlinkFiles.framework in Embed Frameworks */,
@@ -719,7 +719,6 @@
 		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
 		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl.xcframework; sourceTree = SOURCE_ROOT; };
 		D2F64C9525CA99AD00F2225D /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
-		D2F64CA225CA9F6900F2225D /* curl_ios.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = curl_ios.xcframework; path = xcfs/.build/artifacts/xcfs/curl_ios.xcframework; sourceTree = SOURCE_ROOT; };
 		D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
 		D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
@@ -788,7 +787,7 @@
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
 				D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
-				D218079925CD520500B98902 /* Protobuf_C_.xcframework in Frameworks */,
+				D209C79B25D2937700E75A86 /* Protobuf_C_.xcframework in Frameworks */,
 				D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
@@ -895,7 +894,6 @@
 				D2334ECF25C1C04700385378 /* awk.xcframework */,
 				D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */,
 				D2334ECA25C1C04700385378 /* files.xcframework */,
-				D2F64CA225CA9F6900F2225D /* curl_ios.xcframework */,
 				D2334ED025C1C04700385378 /* ios_system.xcframework */,
 				D2334EC425C1C04700385378 /* LibSSH.xcframework */,
 				D2334EC525C1C04700385378 /* mosh.xcframework */,
@@ -2721,7 +2719,6 @@
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				RUN_CLANG_STATIC_ANALYZER = YES;
-				STRIP_STYLE = "non-global";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -2752,7 +2749,6 @@
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell;
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				STRIP_STYLE = "non-global";
 				SUPPORTS_MACCATALYST = YES;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				TARGETED_DEVICE_FAMILY = "1,2,6";

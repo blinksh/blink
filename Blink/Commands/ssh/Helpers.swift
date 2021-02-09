@@ -33,7 +33,7 @@
 import Foundation
 
 
-typealias Argv = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?
+public typealias Argv = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?
 
 extension Argv {
   static func build(_ args: [String]) -> (argc: Int32, argv: Self, buff: UnsafeMutablePointer<Int8>?) {

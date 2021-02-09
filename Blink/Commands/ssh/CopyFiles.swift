@@ -42,7 +42,7 @@ import SSH
 // TODO Wildcards on source will be matched by the shell, and throw No Match if there are none.
 // Test on new ios_system and fix there.
 @_cdecl("copyfiles_main")
-func copyfiles_main(argc: Int32, argv: Argv) -> Int32 {
+public func copyfiles_main(argc: Int32, argv: Argv) -> Int32 {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   let cmd = BlinkCopy()
   session.registerSSHClient(cmd)

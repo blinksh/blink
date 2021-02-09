@@ -84,7 +84,7 @@ API_AVAILABLE(ios(11.0))
 
 @end
 
-
+__attribute__ ((visibility("default")))
 int link_files_main(int argc, char *argv[]) {
 //  if (argc != 2) {
 //    NSString *usage = [@[

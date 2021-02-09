@@ -250,6 +250,7 @@ void __blink_call_cleanup_callback(void *callData) {
   [call _unregister];
 }
 
+__attribute__ ((visibility("default")))
 int blink_xcall_main(int argc, char *argv[]) {
   thread_optind = 1;
   

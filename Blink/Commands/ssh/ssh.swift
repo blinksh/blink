@@ -37,7 +37,7 @@ import Dispatch
 import ios_system
 
 @_cdecl("blink_ssh_main")
-func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
+public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdin, nil, _IONBF, 0)
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
