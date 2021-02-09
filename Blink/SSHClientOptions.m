@@ -184,7 +184,7 @@ const NSString * SSHOptionValueDEBUG3 = @"debug3";
   NSMutableArray<NSString *> *identityfileOption = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *localforwardOption = [[NSMutableArray alloc] init];
   NSMutableArray<NSString *> *remoteforwardOption = [[NSMutableArray alloc] init];
-  NSMutableArray<NSString *> *sendEnvOption = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString *> *sendEnvOption = [@[@"LANG"] mutableCopy];
   
   // Set options:
   for (NSString *optionStr in options) {
