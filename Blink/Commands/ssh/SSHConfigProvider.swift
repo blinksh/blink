@@ -73,8 +73,10 @@ class SSHClientConfigProvider {
     let proxy: String? = options?.proxyCommand ?? proxyCommand(from: cmd.host)
     
     return SSHClientConfig(
-      user: cmd.user ?? BKDefaults.defaultUserName() ?? "root",
-      port: "\(cmd.port ?? 22)",
+      // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
+      user: options?.user ?? cmd.user ?? BKDefaults.defaultUserName() ?? "root",
+      // first use `port` from command, then from options and defaults to 22
+      port: cmd.port.map(String.init) ?? options?.port ?? "22",
       proxyJump: cmd.proxyJump,
       proxyCommand: proxy,
       authMethods: prov.availableAuthMethods(),
