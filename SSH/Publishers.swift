@@ -45,7 +45,6 @@ extension Publisher {
       return Just(session).tryMap { session in
         lock.lock()
         if stop {
-          lock.unlock()
           throw SSHError(title: "Cancelled")
         }
         let val = try operation(session)
@@ -89,7 +88,6 @@ extension Publisher {
       return Just(channel).tryMap { chan in
         lock.lock()
         if stop {
-          lock.unlock()
           throw SSHError(title: "Cancelled")
         }
         let val = try operation(chan)
@@ -153,7 +151,6 @@ extension AnyPublisher where Output == ssh_session, Failure == Error {
       return Just(session).tryMap { session in
         lock.lock()
         if stop {
-          lock.unlock()
           throw SSHError(title: "Cancelled")
         }
         let val = try operation(session)
