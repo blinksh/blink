@@ -1,3 +1,9 @@
+# Version 13.5.11
+
+- Pass LANG env by default to ssh connections
+- Fixed OSC 10,11 responses
+- Fixed memory leak
+
 # Version 13.5.10
 
 - Added action for KeyCast toggle. #1180
