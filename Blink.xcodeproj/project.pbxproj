@@ -105,6 +105,10 @@
 		BDEBFED625D3265B00B4952A /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEBFECF25D3265B00B4952A /* Keys.swift */; };
 		BDEBFF2D25D44AAD00B4952A /* libssh in Resources */ = {isa = PBXBuildFile; fileRef = BDEBFF2625D44AAD00B4952A /* libssh */; };
 		BDEBFF3325D476A800B4952A /* KeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDEBFF3225D476A800B4952A /* KeyTests.swift */; };
+		BDEBFF5125D5CD7E00B4952A /* id_ecdsa.pub in Resources */ = {isa = PBXBuildFile; fileRef = BDEBFF4925D5CD7E00B4952A /* id_ecdsa.pub */; };
+		BDEBFF5225D5CD7E00B4952A /* id_ecdsa in Resources */ = {isa = PBXBuildFile; fileRef = BDEBFF5025D5CD7E00B4952A /* id_ecdsa */; };
+		BDEBFF5925D5CED400B4952A /* user_key in Resources */ = {isa = PBXBuildFile; fileRef = BDEBFF5725D5CED400B4952A /* user_key */; };
+		BDEBFF5A25D5CED400B4952A /* user_key-cert.pub in Resources */ = {isa = PBXBuildFile; fileRef = BDEBFF5825D5CED400B4952A /* user_key-cert.pub */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		C94437651D838ABF0096F84E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
@@ -577,6 +581,10 @@
 		BDEBFECF25D3265B00B4952A /* Keys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		BDEBFF2625D44AAD00B4952A /* libssh */ = {isa = PBXFileReference; lastKnownFileType = folder; name = libssh; path = "../../libssh-apple/libssh"; sourceTree = "<group>"; };
 		BDEBFF3225D476A800B4952A /* KeyTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyTests.swift; sourceTree = "<group>"; };
+		BDEBFF4925D5CD7E00B4952A /* id_ecdsa.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = id_ecdsa.pub; sourceTree = "<group>"; };
+		BDEBFF5025D5CD7E00B4952A /* id_ecdsa */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = id_ecdsa; sourceTree = "<group>"; };
+		BDEBFF5725D5CED400B4952A /* user_key */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user_key; sourceTree = "<group>"; };
+		BDEBFF5825D5CED400B4952A /* user_key-cert.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "user_key-cert.pub"; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
 		C944375F1D831CD30096F84E /* Themes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Themes; sourceTree = "<group>"; };
@@ -1076,6 +1084,7 @@
 		07FABB9225C9AEC100E1CC2C /* SSHTests */ = {
 			isa = PBXGroup;
 			children = (
+				BDEBFF6325D5CEDD00B4952A /* keys */,
 				BD8D817A25CB077C002D1AF2 /* AgentTests.swift */,
 				07FABBF225C9AF7A00E1CC2C /* AuthTests.swift */,
 				BDEBFF3225D476A800B4952A /* KeyTests.swift */,
@@ -1167,6 +1176,17 @@
 				D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */,
 			);
 			path = Security;
+			sourceTree = "<group>";
+		};
+		BDEBFF6325D5CEDD00B4952A /* keys */ = {
+			isa = PBXGroup;
+			children = (
+				BDEBFF5725D5CED400B4952A /* user_key */,
+				BDEBFF5825D5CED400B4952A /* user_key-cert.pub */,
+				BDEBFF5025D5CD7E00B4952A /* id_ecdsa */,
+				BDEBFF4925D5CD7E00B4952A /* id_ecdsa.pub */,
+			);
+			name = keys;
 			sourceTree = "<group>";
 		};
 		C989E53B1D6CC488003E0079 /* BKHosts */ = {
@@ -1827,6 +1847,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BDEBFF5A25D5CED400B4952A /* user_key-cert.pub in Resources */,
+				BDEBFF5225D5CD7E00B4952A /* id_ecdsa in Resources */,
+				BDEBFF5125D5CD7E00B4952A /* id_ecdsa.pub in Resources */,
+				BDEBFF5925D5CED400B4952A /* user_key in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -80,7 +80,7 @@ public class SSHAgent {
       }
 
       replyData.withUnsafeMutableBytes { ptr in
-        reply?.copyMemory(from: ptr.baseAddress!, byteCount: replyLength)
+        ssh_buffer_add_data(reply, ptr.baseAddress!, UInt32(replyLength))
       }
 
       return Int32(replyData.count)

@@ -32,19 +32,16 @@
 import Foundation
 
 public struct MockCredentials {
-  static let user: String = "vagrant"
-  static let password: String = "vagrant"
+  static let user: String = "regular"
+  static let password: String = "regular"
   
   // TODO: check host
-  static let host: String = "192.170.1.100"
+  static let host: String = "localhost"
+  static let port: Int = 1080
   static let incorrectIpHost: String = "256.8.4.2"
   
   static let pathWithFile = "/Users/javierdemartin/TestSftpFile.dat"
   static let folderPath = "/Users/javierdemartin"
-  
-  //    let user: String = "vagrant"
-  //    let password: String = "vagrant"
-  //    let host: String = "192.168.1.100"
   
   static var credentials = Credentials(user: MockCredentials.user,password: MockCredentials.password, host: MockCredentials.host)
   

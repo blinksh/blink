@@ -52,7 +52,7 @@ class SSHTests: XCTestCase {
   
   func testClient() throws {
     // Get a proper client working to start performing operations with.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, port: MockCredential.passwordCredentials.port, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
     
     let expectConn = self.expectation(description: "Connection")
     

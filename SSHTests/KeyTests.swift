@@ -39,9 +39,12 @@ import CryptoKit
 @testable import SSH
 
 class Keystests: XCTestCase {
+  var bundle: Bundle? = nil
+  
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     // TODO Create and store a key for later use.
+    bundle = Bundle(for: type(of: self))
   }
 
   override func tearDownWithError() throws {
@@ -49,7 +52,12 @@ class Keystests: XCTestCase {
   }
 
   func testLoadKey() throws {
-    let key = try SSHKey(fromFile: "/Users/carloscabanero/.ssh/id_ecdsa")
+    let privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
+    var key = try? SSHKey(fromFile: privPath!)
+    XCTAssertNotNil(key)
+    
+    let pubPath = bundle?.path(forResource: "id_ecdsa", ofType: "pub")
+    key = try? SSHKey(fromPublicKeyFile: pubPath!)
     XCTAssertNotNil(key)
   }
 
@@ -72,6 +80,17 @@ class Keystests: XCTestCase {
     bkey = try? SSHKey(fromBlob: SSHKey.sanitize(key: keyIndented).data(using: .utf8)!)
     XCTAssertNotNil(bkey)
   }
+
+  func testCertificates() throws {
+    var privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
+    var pubPath = bundle?.path(forResource: "user_key-cert", ofType: "pub")
+    var key = try? SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
+    XCTAssertNil(key)
+    
+    privPath = bundle?.path(forResource: "user_key", ofType: nil)
+    key = try SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
+    XCTAssertNotNil(key)
+  }
 }
 
 fileprivate let keyNoNewLine = """
@@ -88,9 +107,9 @@ fileprivate let keyNoNewLine = """
 
 fileprivate let keyIndented = """
   -----BEGIN OPENSSH PRIVATE KEY-----
-  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
-  1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQTaVgu9iAzo1RGgJ+TVdp67x3n42ZAK
-  zSbAK8knXLuc2FRR88wxJs8CuDXfKMLPu40IdMsudN5J7dMiz1waaVowAAAAwB3H0ukdx9
+  b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS  \
+  1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQTaVgu9iAzo1RGgJ+TVdp67x3n42ZAK  \
+  zSbAK8knXLuc2FRR88wxJs8CuDXfKMLPu40IdMsudN5J7dMiz1waaVowAAAAwB3H0ukdx9  \
   LpAAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBNpWC72IDOjVEaAn
   5NV2nrvHefjZkArNJsArySdcu5zYVFHzzDEmzwK4Nd8ows+7jQh0yy503knt0yLPXBppWj
   AAAAAgQELBR6zdFqqzyaGnAwcY0yZZ+fmBh7qV1fPYAUuyH+4AAAAlY2FybG9zY2FiYW5l
@@ -112,3 +131,7 @@ fileprivate let keyPrependedChars = """
   cm9AQ2FybG9zcy1NYWMtbWluaS5sb2NhbAECAw==
   -----END OPENSSH PRIVATE KEY-----  
   """
+
+fileprivate let publicKey = """
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDPBHd16dB89jLVsLH0DhM0FzTsj0tZtyT95XPXQiEEA0nxqC0rKy8gMUAmbqQlh3QZizOEUeUZVwGMBFbjw9rZfjmY9Vdb3CvDhcK0t7ooZUTm6W+yrTKkbmSkWDbbQOemgNyy8biSc18168I/QCg9Ul8pAdLRQnCJd3mlUHX67yVoBAD2Jx/GGhPhmRsk1dDRhJjhyxyIAvjgwOhR+mbNp20MqTTz4MLScJvt9n1Hg5me24HJcYQrIq/2tbP37vKY4bjDkxIZAunkQDusx66/ZZ3tOrNIskKp1z9nxyqUTPqv/dOTmT5cTL/7dN/Sy+eCDK44CGWJT4T2uNGpwnmODkB0/2dX1ZcYScXLCj1kVVTfng1/yet9Lybh9uZ7OWWRttolEl+ShpFLO8DF8zZG5fI2qa6YLIWy4wqC7aMlEc6D+cxb04vBRXbgVvNj6xiSJF04cVd3NhGWGAoeQrOANieXaAG9Z9+K+i5rIDnYRzQ8YRIlLPUIF2dc6CGylCN8lcj8oWw6qAx1D+ficJUc0Jpn1R7v1SzowJfs8DpiUDN+isDsSyeS2y6xNfb1aqjH0gJgCngzBFHTXyJ8h223qqgsepUzckS5GQ5e99eoc6V3qBdJIdVo28FMo4UjfElrIVounPvnJQc1H6DsXVOtFefVz9uBu+yII52wHPWDoQ== javierdemartin@macbook-pro.lan
+"""

@@ -86,8 +86,8 @@ public class SSHKey: Signer, PublicKey {
   public var publicKey: PublicKey { get { self } }
   public var type: SSHKeyType { get { keyType  } }
 
-  convenience public init(fromFile path: String) throws {
-    let f = try FileDescriptor.open(path, .readOnly)
+  convenience public init(fromFile privateKeyPath: String, withPublicCert publicCertPath: String? = nil) throws {
+    let f = try FileDescriptor.open(privateKeyPath, .readOnly)
     var blob: psshbuf? = nil
     defer {
       sshbuf_free(blob)
@@ -100,14 +100,32 @@ public class SSHKey: Signer, PublicKey {
 
     // TODO Passphrase. We may not need an async flow for it.
     try self.init(blob: blob!)
+
+    if let publicCertPath = publicCertPath {
+      var pubkey: psshkey?
+      let rc = sshkey_load_public(publicCertPath, &pubkey, &pcomment)
+      if rc != 0 {
+        throw SSHKeyError(rc, title: "Error parsing certificate file.")
+      }
+      
+      if sshkey_equal_public(self.pkey, pubkey) == 0 {
+        throw SSHKeyError(title: "Key does not match certificate")
+      }
+      
+      // NOTE They need to be tied to each other. We cannot just separate in our structure.
+      if sshkey_to_certified(self.pkey) != 0 || sshkey_cert_copy(pubkey, self.pkey) != 0 {
+        throw SSHKeyError(title: "Error processing certificate")
+      }
+      sshkey_free(pubkey)
+    }
   }
 
-  convenience public init(fromBlob data: Data) throws {
+  convenience public init(fromBlob privateKey: Data) throws {
     // We need to retain Data as the key object is empty
     var blob: psshbuf? = nil
 
-    try data.withUnsafeBytes { bytes in
-      guard let b = sshbuf_from(bytes.baseAddress, data.count) else {
+    try privateKey.withUnsafeBytes { bytes in
+      guard let b = sshbuf_from(bytes.baseAddress, privateKey.count) else {
         throw SSHKeyError(title: "Could not initiate buffer")
       }
       blob = b
@@ -132,6 +150,7 @@ public class SSHKey: Signer, PublicKey {
     self.keyType = try SSHKeyType(for: pkey!)
   }
 
+  // Wire public representation for key
   public init(fromPublicBlob data: Data) throws {
     let length = data.count
     var pkey: psshkey?
@@ -141,6 +160,18 @@ public class SSHKey: Signer, PublicKey {
       if rc != 0 || pkey == nil {
         throw SSHKeyError(rc, title: "Error parsing public key.")
       }
+    }
+    self.pkey = pkey!
+    self.keyType = try SSHKeyType(for: pkey!)
+  }
+
+  public init(fromPublicKeyFile path: String) throws {
+    var pkey: psshkey?
+
+    // NOTE There is no function to read the file as a blob on OpenSSH.
+    let rc = sshkey_load_public(path, &pkey, &pcomment)
+    if rc != 0 {
+      throw SSHKeyError(rc, title: "Error parsing public key file.")
     }
     self.pkey = pkey!
     self.keyType = try SSHKeyType(for: pkey!)

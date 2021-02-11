@@ -124,6 +124,41 @@ class AgentTests: XCTestCase {
     waitForExpectations(timeout: 3, handler: nil)
     XCTAssertNotNil(connection)
   }
+
+  func testAgentAuthenticationWithCertificate() throws {
+    let agent = SSHAgent()
+    let bundle = Bundle(for: type(of: self))
+    let privPath = bundle.path(forResource: "user_key", ofType: nil)
+    let pubPath  = bundle.path(forResource: "user_key-cert", ofType: "pub")
+    let key = try SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
+    
+    try agent.loadKey(key)
+    
+    let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
+    
+    let expectation = self.expectation(description: "SSH connected")
+
+    var connection: SSHClient?
+    let c = SSHClient.dial("localhost", with: config)
+      .sink(receiveCompletion: { completion in
+              switch completion {
+              case .finished:
+                break
+              case .failure(let error):
+                if let error = error as? SSHError {
+                  XCTFail(error.description)
+                  break
+                }
+                XCTFail("Unknown error")
+              }
+            }, receiveValue: { conn in
+                 connection = conn
+                 expectation.fulfill()
+               })
+
+    waitForExpectations(timeout: 3, handler: nil)
+    XCTAssertNotNil(connection)
+  }
 }
 
 // Encoding PKCS12. PFX is rarely used, and we can say we do not accept it.
