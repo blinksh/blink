@@ -52,7 +52,11 @@ class SSHTests: XCTestCase {
   
   func testClient() throws {
     // Get a proper client working to start performing operations with.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     
     let expectConn = self.expectation(description: "Connection")
     
@@ -79,12 +83,11 @@ class SSHTests: XCTestCase {
   }
   
   func testClientCancel() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
     
     //let expectConnCancel = self.expectation(description: "Connection Cancel")
     
     var connection: SSHClient?
-    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -108,12 +111,11 @@ class SSHTests: XCTestCase {
   // This test goes both for tryOperation and tryChannel, as the publisher is almost the same
   // This is more an implementation test than a functional one.
   func testClientCancelDuringTry() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
     
     //let expectConnCancel = self.expectation(description: "Connection Cancel")
     
     var connection: SSHClient?
-    let c = SSHClient.dial("192.168.1.15", with: config)
+    let c = SSHClient.dial("192.168.1.15", with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -145,13 +147,11 @@ class SSHTests: XCTestCase {
     continueAfterFailure = false
     throw XCTSkip("It is impossible to replicate reliably.")
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
-    
     let expectConn = self.expectation(description: "Connection")
     
     
     var connection: SSHClient?
-    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -175,7 +175,7 @@ class SSHTests: XCTestCase {
     // TODO We need to let the runloop run to close everything down?
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
     
-    let c2 = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    let c2 = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -462,18 +462,14 @@ class SSHTests: XCTestCase {
     // This is seen as an "exception" in the connection, and we want to gracefully close everything.
     // Second the same command is allowed to run and we expect to finish after a reconnection.
     // This is supposed to emulate what in the future a "reconnect" would look like.
-    var config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
+    
     var connection: SSHClient?
     var stream: SSH.Stream?
     let cmd = "sleep 5"
     let buffer = MemoryBuffer(fast: true)
     let expectConn = self.expectation(description: "Connection established")
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .assertNoFailure()
       .sink { conn in
         print("Received Connection")
@@ -533,7 +529,7 @@ class SSHTests: XCTestCase {
     }, receiveValue: {_ in }).store(in: &cancellableBag)
     
     let newConnectionExpected = self.expectation(description: "New connection")
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .assertNoFailure()
       .sink { conn in
         print("Received Connection")

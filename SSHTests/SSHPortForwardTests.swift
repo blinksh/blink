@@ -155,14 +155,12 @@ extension SSHTests {
   func testListenerPort() throws {
     self.continueAfterFailure = false
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user,
-                                 authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
     var expectConnection = self.expectation(description: "Connected")
     
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .tryMap() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -430,16 +428,16 @@ extension SSHTests {
     // chain should make everything else receive a close as well, probably
     // at the session level.
     // This test may be necessary to see how the flow of errors would work.
-    var config = SSHClientConfig(user: "carlos",
+    let config = SSHClientConfig(user: MockCredentials.user,
+                                 port: MockCredentials.port,
                                  proxyJump: "localhost",
-                                 //proxyCommand: "ssh -W %h:%p localhost",
-                                 authMethods: [AuthPassword(with: "")],
+                                 proxyCommand: "ssh -W %h:%p localhost",
+                                 authMethods: [AuthPassword(with: MockCredentials.password)],
                                  loggingVerbosity: .debug)
     
     let destination = "localhost"
     let destinationPort = 22
-    let configProxy = SSHClientConfig(user: "carlos",
-                                      authMethods: [AuthPassword(with: "")])
+    let configProxy = SSHClientConfig.testConfig
     
     let expectConnection = self.expectation(description: "Connected")
     let expectExecFinished = self.expectation(description: "Exec finished")
