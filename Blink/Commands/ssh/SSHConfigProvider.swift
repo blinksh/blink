@@ -94,14 +94,14 @@ extension SSHClientConfigProvider {
     
     // Explicit identity
     if let identityFile = command.identityFile {
-      if let identityKey = Self.privateKey(fromIdentifier: identityFile) {
-        authMethods.append(AuthPublicKey(privateKey: identityKey))
+      if let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
+        authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
       }
     }
     
     // Host key
-    if let hostKey = Self.privateKey(fromHost: command.host) {
-      authMethods.append(AuthPublicKey(privateKey: hostKey))
+    if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+      authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
     }
     
     // Host password
@@ -110,8 +110,8 @@ extension SSHClientConfigProvider {
     }
     
     // All default keys
-    for defaultKey in Self.defaultKeys() {
-      authMethods.append(AuthPublicKey(privateKey: defaultKey))
+    for (defaultKey, name) in Self.defaultKeys() {
+      authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
     }
     
     // Interactive
@@ -130,7 +130,7 @@ extension SSHClientConfigProvider {
     .eraseToAnyPublisher()
   }
   
-  fileprivate static func privateKey(fromIdentifier identifier: String) -> String? {
+  fileprivate static func privateKey(fromIdentifier identifier: String) -> (String, String)? {
     guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
       return nil
     }
@@ -139,10 +139,10 @@ extension SSHClientConfigProvider {
       return nil
     }
     
-    return privateKey.privateKey
+    return (privateKey.privateKey, identifier)
   }
   
-  fileprivate static func privateKey(fromHost host: String) -> String? {
+  fileprivate static func privateKey(fromHost host: String) -> (String, String)? {
 
     guard let hosts = (BKHosts.all() as? [BKHosts]) else {
       return nil
@@ -159,13 +159,13 @@ extension SSHClientConfigProvider {
     return privateKey
   }
   
-  fileprivate static func defaultKeys() -> [String] {
+  fileprivate static func defaultKeys() -> [(String, String)] {
     guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
       return []
     }
     
     let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    let keys: [String] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? $0.privateKey : nil }
+    let keys: [(String, String)] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? ($0.privateKey, $0.id) : nil }
     
     return keys.count > 0 ? keys : []
   }

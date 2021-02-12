@@ -547,7 +547,7 @@ public class SSHClient {
       }
       
       let method = methods.first!
-      log.message("Trying \(method.name())...", SSH_LOG_INFO)
+      log.message("Trying \(method.displayName)...", SSH_LOG_INFO)
       
       return method
         .auth(connection())

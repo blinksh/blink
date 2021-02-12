@@ -37,6 +37,11 @@ import LibSSH
 public protocol AuthMethod {
   // Standard name used to compare the auth method with the available ones from the server.
   func name() -> String
+  var displayName: String { get }
+}
+
+extension AuthMethod {
+  public var displayName: String { get { return name() } }
 }
 
 protocol Authenticator: AuthMethod {
@@ -234,16 +239,19 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
  5. Clean up memory using `ssh_key_free()`
  */
 public class AuthPublicKey: AuthMethod, Authenticator {
-  
+  public var displayName: String { get { "\(name()) \(keyName)"  } }
   let privateKey: String
   var key: ssh_key?
+  var keyName: String
   // Blink only works with no passphrase keys
   // let callback: ssh_auth_callback?
   
   // Constructor from a String already, we assume content is obtained somewhere else.
-  public init(privateKey: String) {
+  // Pass the privateKey in blob format, and optionally the name for the key, to identify on logs.
+  public init(privateKey: String, keyName: String = "") {
     // We could import here, but prefer to do it somewhere else outside the configuration.
     self.privateKey = privateKey
+    self.keyName = keyName
   }
   
   func publicKeyNegotiation(_ session: ssh_session) throws -> AuthState {
