@@ -1,0 +1,11 @@
+#!/bin/sh
+
+cd "${0%/*}"
+
+if [[ -z "${SSHD_PORT}" ]]; then
+    SSHD_PORT=2222
+fi
+
+docker build -t sshd .
+echo Starting sshd on port $SSHD_PORT
+docker run --rm --init --name sshd -p $SSHD_PORT:22 sshd $@

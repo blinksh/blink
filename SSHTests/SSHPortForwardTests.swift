@@ -39,9 +39,12 @@ extension SSHTests {
   func testForwardPort() throws {
     self.continueAfterFailure = false
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user,
-                                 authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
-                                 loggingVerbosity: .debug)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      loggingVerbosity: .debug
+    )
     var expectConnection = self.expectation(description: "Connected")
     let expectListenerClosed = self.expectation(description: "Listener Closed")
     

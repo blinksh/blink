@@ -38,7 +38,11 @@ import LibSSH
 
 extension SSHTests {
   func testStreamConnect() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let cmd = "dd if=/dev/urandom bs=1024 count=10000 2> /dev/null"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -88,8 +92,12 @@ extension SSHTests {
     // Trigger windowed writes and continous usage of active windows.
     // Use data from the previous stdout to do stdin. Handle writes at different rates with the Buffer.
     // We can adjust the windows on buffer as we see it here.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
-                                 loggingVerbosity: .debug)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      loggingVerbosity: .debug
+    )
     let expectation = self.expectation(description: "Buffer Written")
     let cmd = "cat"
     
@@ -124,7 +132,11 @@ extension SSHTests {
   
   func testErrStream() throws {
     // Read on Error Stream, while nothing is received on stdout.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let cmd = "dd if=/dev/urandom bs=1024 count=1000 status=none 1>&2"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -247,7 +259,11 @@ extension SSHTests {
   }
   
   func testStreamEOF() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
+    let config = SSHClientConfig(
+      user: MockCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.password)]
+    )
     let cmd = "cat"
     
     let expectCancel = self.expectation(description: "Operation Cancelled")
@@ -258,7 +274,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial("localhost", with: config)
+    var cancellable = SSHClient.dial(MockCredentials.host, with: config)
       //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
@@ -320,7 +336,11 @@ extension SSHTests {
   
   
   func testStreamCloseRemote() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     
     var connection: SSHClient?
     var stream: SSH.Stream?
@@ -331,8 +351,8 @@ extension SSHTests {
     
     let expectKill = self.expectation(description: "Session killed from remote")
     
-    var cancellable = SSHClient.dial("192.170.1.100", with: config)
-      //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+//    var cancellable = SSHClient.dial("192.170.1.100", with: config)
+    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -379,7 +399,12 @@ extension SSHTests {
   // In this case the stream is connected to a pipe. In case the pipe closes, the stream needs to finalize.
   // This tries to imitate what happens at the terminal level with a proxy connection.
   func testStreamToPipe() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)], loggingVerbosity: .trace)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      loggingVerbosity: .trace
+    )
     
     var connection: SSHClient?
     var stream: SSH.Stream?

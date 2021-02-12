@@ -36,6 +36,13 @@ import Dispatch
 
 @testable import SSH
 
+extension SSHClientConfig {
+  static let testConfig = SSHClientConfig(
+    user: MockCredentials.user,
+    port: MockCredentials.port,
+    authMethods: [AuthPassword(with: MockCredentials.password)]
+  )
+}
 
 class SFTPTests: XCTestCase {
   var cancellableBag: [AnyCancellable] = []
@@ -50,14 +57,11 @@ class SFTPTests: XCTestCase {
   }
   
   func testRequest() throws {
-    // TODO Share credentials between tests
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
     let expectation = self.expectation(description: "Buffer Written")
     
     var connection: SSHClient?
     var sftp: SFTPClient?
-    let cancellable = SSHClient.dial("localhost", with: config)
+    let cancellable = SSHClient.dial("localhost", with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -76,15 +80,12 @@ class SFTPTests: XCTestCase {
   }
   
   func testRead() throws {
-    // TODO Share credentials between tests
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
     let expectation = self.expectation(description: "Buffer Written")
     
     var connection: SSHClient?
     var sftp: SFTPClient?
     
-    let cancellable = SSHClient.dial("localhost", with: config)
+    let cancellable = SSHClient.dial("localhost", with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn

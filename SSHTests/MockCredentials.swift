@@ -32,11 +32,12 @@
 import Foundation
 
 public struct MockCredentials {
-  static let user: String = "vagrant"
-  static let password: String = "vagrant"
+  static let user: String = "regular"
+  static let password: String = "regular"
   
   // TODO: check host
-  static let host: String = "192.170.1.100"
+  static let port: String = "2222"
+  static let host: String = "localhost"
   static let incorrectIpHost: String = "256.8.4.2"
   
   static let pathWithFile = "/Users/javierdemartin/TestSftpFile.dat"
@@ -46,7 +47,11 @@ public struct MockCredentials {
   //    let password: String = "vagrant"
   //    let host: String = "192.168.1.100"
   
-  static var credentials = Credentials(user: MockCredentials.user,password: MockCredentials.password, host: MockCredentials.host)
+  static var credentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
   /// This one assumes another nonexistent machine on the same network, so it cannot be resolved.
   static let timeoutHost = Credentials(user: "asdf", password: "zxcv", host: "192.168.1.155")
@@ -56,15 +61,31 @@ public struct MockCredentials {
   
   static var wrongHost = Credentials(user: MockCredentials.user, password: "1234567890", host: "asdf")
   
-  static var interactiveCredentials = Credentials(user: MockCredentials.user, password: MockCredentials.password, host: MockCredentials.host)
+  static var interactiveCredentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
   static var noneCredentials = Credentials(user: "no-password", password: "", host: MockCredentials.host)
   
-  static var passwordCredentials = Credentials(user: MockCredentials.user, password: MockCredentials.password, host: MockCredentials.host)
+  static var passwordCredentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
-  static var partialAuthenticationCredentials = Credentials(user: "partial", password: "partial", host: MockCredentials.host)
+  static var partialAuthenticationCredentials = Credentials(
+    user: "partial",
+    password: "partial",
+    host: MockCredentials.host
+  )
   
-  static var publicKeyAuthentication = Credentials(user: MockCredentials.user, password: "", host: MockCredentials.host)
+  static var publicKeyAuthentication = Credentials(
+    user: MockCredentials.user,
+    password: "",
+    host: MockCredentials.host
+  )
   
   static let wrongPrivateKey: String = """
     -----BEGIN OPENSSH PRIVATE KEY-----

@@ -64,7 +64,12 @@ class AuthTests: XCTestCase {
       return Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)], verifyHostCallback: requestAnswers)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      verifyHostCallback: requestAnswers
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -126,7 +131,14 @@ class AuthTests: XCTestCase {
    Feed the wrong private key to the test and then continue as normal to test partial authentication.
    */
   func testPartialAuthenticationFailingFirst() throws {
-    let config = SSHClientConfig(user: MockCredentials.partialAuthenticationCredentials.user, authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey), AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password), AuthPublicKey(privateKey: MockCredentials.privateKey)])
+    let config = SSHClientConfig(
+      user: MockCredentials.partialAuthenticationCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [
+        AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey),
+        AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password),
+        AuthPublicKey(privateKey: MockCredentials.privateKey)
+      ])
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -158,7 +170,11 @@ class AuthTests: XCTestCase {
    Only providing a method of the two needed to authenticate. Should fail as it also need password authentication to be provided.
    */
   func testFailingPartialAuthentication() throws {
-    let config = SSHClientConfig(user: MockCredentials.partialAuthenticationCredentials.user, authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey)])
+    let config = SSHClientConfig(
+      user: MockCredentials.partialAuthenticationCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey)]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -190,7 +206,14 @@ class AuthTests: XCTestCase {
    
    */
   func testPartialAuthentication() throws {
-    let config = SSHClientConfig(user: MockCredentials.partialAuthenticationCredentials.user, authMethods: [AuthPublicKey(privateKey: MockCredentials.privateKey), AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.partialAuthenticationCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [
+        AuthPublicKey(privateKey: MockCredentials.privateKey),
+        AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password)
+      ]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -220,7 +243,11 @@ class AuthTests: XCTestCase {
   // MARK: Wrong credentials
   // This test should fail before the timeout expecation is consumed
   func testFailWithWrongCredentials() throws {
-    let config = SSHClientConfig(user: MockCredentials.wrongCredentials.user, authMethods: [AuthPassword(with: MockCredentials.wrongCredentials.password)] )
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.wrongCredentials.password)]
+    )
     
     let expectation = self.expectation(description: "SSH config")
     
@@ -256,7 +283,11 @@ class AuthTests: XCTestCase {
    Don't provide any authentication methods. Should succeed with a host that has none auth method
    */
   func testEmptyAuthMethods() throws {
-    let config = SSHClientConfig(user: MockCredentials.noneCredentials.user, authMethods: [])
+    let config = SSHClientConfig(
+      user: MockCredentials.noneCredentials.user,
+      port: MockCredentials.port,
+      authMethods: []
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -285,7 +316,11 @@ class AuthTests: XCTestCase {
   }
   
   func testNoneAuthentication() throws {
-    let config = SSHClientConfig(user: MockCredentials.noneCredentials.user, authMethods: [AuthNone()])
+    let config = SSHClientConfig(
+      user: MockCredentials.noneCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthNone()]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -316,7 +351,14 @@ class AuthTests: XCTestCase {
    Test first a failing method then a method that succeeds.
    */
   func testFirstFailingThenSucceeding() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.wrongCredentials.password), AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [
+        AuthPassword(with: MockCredentials.wrongCredentials.password),
+        AuthPassword(with: MockCredentials.passwordCredentials.password)
+      ]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -350,7 +392,11 @@ class AuthTests: XCTestCase {
    */
   func testImportingIncorrectPrivateKey() throws {
     
-    let config = SSHClientConfig(user: MockCredentials.publicKeyAuthentication.user, authMethods: [AuthPublicKey(privateKey: MockCredentials.wrongPrivateKey)])
+    let config = SSHClientConfig(
+      user: MockCredentials.publicKeyAuthentication.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPublicKey(privateKey: MockCredentials.wrongPrivateKey)]
+    )
     
     let expectation = self.expectation(description: "SSH config")
     
@@ -384,7 +430,11 @@ class AuthTests: XCTestCase {
   
   func testPubKeyAuthentication() throws {
     
-    let config = SSHClientConfig(user: MockCredentials.publicKeyAuthentication.user, authMethods: [AuthPublicKey(privateKey: MockCredentials.privateKey)])
+    let config = SSHClientConfig(
+      user: MockCredentials.publicKeyAuthentication.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPublicKey(privateKey: MockCredentials.privateKey)]
+    )
     
     let expectation = self.expectation(description: "SSH config")
     
@@ -416,7 +466,7 @@ class AuthTests: XCTestCase {
   func testInteractiveKeyboardAuth() throws {
     var retry = 0
     
-    let requestAnswers: AuthKeyboardInteractive.RequestAnswersCb = { (prompt) in
+    let requestAnswers: AuthKeyboardInteractive.RequestAnswersCb = { prompt in
       dump(prompt)
       
       var answers: [String] = []
@@ -436,7 +486,11 @@ class AuthTests: XCTestCase {
       return Just(answers).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
-    let config = SSHClientConfig(user: MockCredentials.interactiveCredentials.user, authMethods: [AuthKeyboardInteractive(requestAnswers: requestAnswers)] )
+    let config = SSHClientConfig(
+      user: MockCredentials.interactiveCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthKeyboardInteractive(requestAnswers: requestAnswers)]
+    )
     
     let expectation = self.expectation(description: "SSH config")
     

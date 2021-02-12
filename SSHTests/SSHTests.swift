@@ -230,7 +230,11 @@ class SSHTests: XCTestCase {
     
     // The connection pool should be maintained by the pool itself.
     // Restarting sessions though when required, should be done by the one using the sessions as a preference.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -309,7 +313,11 @@ class SSHTests: XCTestCase {
     // Create an interactive shell and close it. Note it is not enough to just
     // send an exit on the input, because otherwise we may be missing output. We
     // need to process all the output before the EOF and close are triggered.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let expectPty = self.expectation(description: "PTY")
     let expectClose = self.expectation(description: "PTY Closed")
     
@@ -357,7 +365,11 @@ class SSHTests: XCTestCase {
   }
   
   func testExecChannel() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let cmd = "dd if=/dev/urandom bs=1024 count=10000 2> /dev/null"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -406,7 +418,11 @@ class SSHTests: XCTestCase {
   
   // NOTE This test requires to have the variable TEST as AcceptEnv at the host.
   func testEnvironment() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let key = "TEST"
     let val = "asdf"
     let cmd = "echo $\(key)"
@@ -446,7 +462,11 @@ class SSHTests: XCTestCase {
     // This is seen as an "exception" in the connection, and we want to gracefully close everything.
     // Second the same command is allowed to run and we expect to finish after a reconnection.
     // This is supposed to emulate what in the future a "reconnect" would look like.
-    var config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    var config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     var connection: SSHClient?
     var stream: SSH.Stream?
     let cmd = "sleep 5"

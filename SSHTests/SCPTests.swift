@@ -169,7 +169,11 @@ class SCPTests: XCTestCase {
   
   // Copy path from scp to path on sftp
   func testCopyTo() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
+    let config = SSHClientConfig(
+      user: MockCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.password)]
+    )
     
     let expectation = self.expectation(description: "scp")
     
@@ -177,7 +181,7 @@ class SCPTests: XCTestCase {
     var sftp: SFTPClient?
     var scp: SCPClient?
     
-    let c1 = SSHClient.dial("localhost", with: config)
+    let c1 = SSHClient.dial(MockCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SCPClient, Error> in
         connection = conn
         return SCPClient.execute(using: conn, as: [.Source, .Recursive], root: "/Users/carlos/tmp/*")

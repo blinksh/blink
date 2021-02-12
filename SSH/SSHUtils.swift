@@ -42,7 +42,7 @@ struct SSHUtils {
   }
   
   static func isValidIPv6(address: String) -> Bool {
-    if let _ = IPv4Address(address) {
+    if let _ = IPv6Address(address) {
       return true
     }
     

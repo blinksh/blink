@@ -60,10 +60,11 @@ class SSHErrorTests: XCTestCase {
    In this case is trying to use `AuthNone()` as an authetnication method for a host that doesn't accept it.
    */
   func testAuthError() throws {
-    
-    let authMethods: [AuthMethod] = []
-    
-    let config = SSHClientConfig(user: MockCredentials.wrongCredentials.user, authMethods: authMethods)
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongCredentials.user,
+      port: MockCredentials.port,
+      authMethods: []
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -91,9 +92,11 @@ class SSHErrorTests: XCTestCase {
   
   func testConnectionError() throws {
     
-    let authMethods: [AuthMethod] = [AuthPassword(with: MockCredentials.wrongHost.password)]
-    
-    let config = SSHClientConfig(user: MockCredentials.wrongHost.user, authMethods: authMethods)
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongHost.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.wrongHost.password)]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -126,7 +129,11 @@ class SSHErrorTests: XCTestCase {
     
     let authMethods = [AuthPassword(with: MockCredentials.wrongCredentials.password)]
     
-    let config = SSHClientConfig(user: MockCredentials.wrongCredentials.user, authMethods: authMethods)
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongCredentials.user,
+      port: MockCredentials.port,
+      authMethods: authMethods
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -150,7 +157,7 @@ class SSHErrorTests: XCTestCase {
         XCTFail("Should not have received a connection")
       }).store(in: &cancellableBag)
     
-    waitForExpectations(timeout: 5, handler: nil)
+    waitForExpectations(timeout: 10, handler: nil)
   }
   
   /**
@@ -159,7 +166,11 @@ class SSHErrorTests: XCTestCase {
    Uses the `SSHClient.urlToIpHostResolution(_:)`
    */
   func testCouldntResolveHostAddress() throws {
-    let config = SSHClientConfig(user: MockCredentials.user, authMethods: [AuthPassword(with: MockCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.password)]
+    )
     
     let expectation = self.expectation(description: "Buffer Written")
     
