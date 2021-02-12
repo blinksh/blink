@@ -230,7 +230,7 @@ public class SSHClient {
     
     ssh_set_log_callback(loggingCallback)
     
-    var verbosity = options.loggingVerbosity
+    var verbosity = options.loggingVerbosity.rawValue
     ssh_options_set(session, SSH_OPTIONS_HOST, host)
     ssh_options_set(session, SSH_OPTIONS_USER, opts.user)
     ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
