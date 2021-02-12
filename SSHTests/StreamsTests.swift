@@ -323,7 +323,7 @@ extension SSHTests {
                     stream?.sendEOF().assertNoFailure()
                       .sink {}.store(in: &self.cancellableBag)
                   })
-    wait(for: [expectCancel], timeout: 10)
+    wait(for: [expectCancel], timeout: 14)
   }
   
   
