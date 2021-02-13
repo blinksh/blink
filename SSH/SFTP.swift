@@ -325,7 +325,7 @@ public class SFTPClient : BlinkFiles.Translator {
 }
 
 public class SFTPFile : BlinkFiles.File {
-  let file: sftp_file
+  var file: sftp_file?
   let client: SFTPClient
   let session: ssh_session
   let rloop: RunLoop
@@ -355,6 +355,8 @@ public class SFTPFile : BlinkFiles.File {
       if rc != SSH_OK {
         throw FileError(title: "Error closing file", in: self.session)
       }
+      self.file = nil
+      
       return true
     }.eraseToAnyPublisher()
   }
@@ -387,13 +389,13 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
     return pub.handleEvents(
       receiveRequest: { (req) in
         //print("demand")
+        self.demand = req
         self.rloop.perform {
           //print("processing demand")
-          self.demand = req
           self.inflightReadsLoop()
         }
       }
-    )
+    ).subscribe(on: self.rloop)
     .flatMap(maxPublishers: .max(1)) { data -> AnyPublisher<Int, Error> in
       return w.write(data, max: data.count)
     }
@@ -447,10 +449,16 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
   
   
   func readBlocks() throws -> (DispatchData, Bool) {
-    var data = DispatchData.empty
-    var newReads: [UInt32] = []
+    // In an asynchronous scenario, the file may close while we are still reading somewhere else.
+    // We follow DispatchIO interface, throwing an error in case the file closes.
+    if file == nil {
+      throw FileError(title: "File Closed", in: self.session)
+    }
     
+    var data = DispatchData.empty
+    let newReads: [UInt32] = []
     var lastIdx = -1
+    
     //print("Reading blocks starting from \(inflightReads[0])")
     for (idx, block) in inflightReads.enumerated() {
       let buf = UnsafeMutableRawPointer.allocate(byteCount: self.blockSize, alignment: MemoryLayout<UInt8>.alignment)
@@ -462,14 +470,17 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
         data.append(bb)
         
         lastIdx = idx
-      } else if nbytes == SSH_AGAIN {
-        //print("AGAIN")
-        break
-      } else if nbytes < 0 {
-        throw FileError(title: "Error while reading blocks", in: session)
-      } else if nbytes == 0 {
-        inflightReads = []
-        return (data, true)
+      } else {
+        buf.deallocate()
+        if nbytes == SSH_AGAIN {
+          //print("AGAIN")
+            break
+        } else if nbytes < 0 {
+          throw FileError(title: "Error while reading blocks", in: session)
+        } else if nbytes == 0 {
+          inflightReads = []
+          return (data, true)
+        }
       }
     }
     
