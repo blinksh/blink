@@ -82,7 +82,7 @@ class PublishersTests: XCTestCase {
     var triesSecondLoop = 0
     let expectRetries = expectation(description: "Retries done")
     let c = session().print("Flow").eraseToAnyPublisher()
-      .tryOperation { conn in
+      .tryOperation { conn -> ssh_session in
         triesFirstLoop += 1
         if triesFirstLoop <= 3 {
           print ("Retrying First Loop")
