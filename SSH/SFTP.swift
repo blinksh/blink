@@ -388,49 +388,36 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
     
     return pub.handleEvents(
       receiveRequest: { (req) in
-        //print("demand")
+        print("demand")
         self.demand = req
         self.rloop.perform {
-          //print("processing demand")
+          print("processing demand")
           self.inflightReadsLoop()
         }
       }
     ).subscribe(on: self.rloop)
     .flatMap(maxPublishers: .max(1)) { data -> AnyPublisher<Int, Error> in
-      return w.write(data, max: data.count)
+      return w.write(data, max: data.count).eraseToAnyPublisher()
     }
     .eraseToAnyPublisher()
   }
   
+  // Handle demand. Read scheduled blocks if they are available and push them.
   func inflightReadsLoop() {
-    // Handle demand. Read scheduled blocks if they are available and push them.
+    var data: DispatchData?
+    var isComplete = false
+    
     if inflightReads.count > 0 {
-      var data: DispatchData
-      var isComplete = false
-      
       do {
         (data, isComplete) = try self.readBlocks()
       } catch {
         pub.send(completion: .failure(error))
         return
       }
-      
-      if data.count > 0 {
-        pub.send(data)
-        // TODO Account for demand here
-        if self.demand != .unlimited {
-          self.demand = .none
-        }
-      }
-      
-      if isComplete {
-        pub.send(completion: .finished)
-        return
-      }
     }
     
     // Schedule more blocks to read. This way data will already be ready when we come back.
-    while inflightReads.count < self.maxConcurrentOps {
+    while isComplete == false && inflightReads.count < self.maxConcurrentOps {
       let asyncRequest = sftp_async_read_begin(self.file, UInt32(self.blockSize))
       if asyncRequest < 0 {
         pub.send(completion: .failure(FileError(title: "Could not pre-alloc request file", in: session)))
@@ -439,6 +426,19 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
       inflightReads.append(UInt32(asyncRequest))
     }
     
+    if let data = data, data.count > 0 {
+      pub.send(data)
+      // TODO Account for demand here
+      if self.demand != .unlimited {
+        self.demand = .none
+      }
+    }
+    
+    if isComplete {
+      pub.send(completion: .finished)
+      return
+    }
+
     // Enqueue again if there is still demand.
     if self.demand != .none {
       rloop.schedule(after: .init(Date(timeIntervalSinceNow: 0.001))) {
@@ -561,7 +561,6 @@ extension SFTPFile: BlinkFiles.Writer {
         rloop.schedule { writeLoop(write, written) }
       }
     }
-    
     
     return pb.handleEvents(receiveRequest: { _ in self.rloop.perform { writeLoop(buf, buf) } })
       .eraseToAnyPublisher()
