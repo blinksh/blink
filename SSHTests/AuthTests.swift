@@ -283,24 +283,19 @@ class AuthTests: XCTestCase {
       ]
     )
     
-    let connection = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var completion: Any? = nil
+    
+    let connection = SSHClient
+      .dial(MockCredentials.passwordCredentials.host, with: config)
       .lastOutput(
         test: self,
         timeout: 10,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
