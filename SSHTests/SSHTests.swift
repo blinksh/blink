@@ -52,16 +52,11 @@ class SSHTests: XCTestCase {
   
   func testClient() throws {
     // Get a proper client working to start performing operations with.
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
     
     let expectConn = self.expectation(description: "Connection")
     
     var connection: SSHClient?
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -418,11 +413,6 @@ class SSHTests: XCTestCase {
   
   // NOTE This test requires to have the variable TEST as AcceptEnv at the host.
   func testEnvironment() throws {
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
     let key = "TEST"
     let val = "asdf"
     let cmd = "echo $\(key)"
@@ -433,7 +423,7 @@ class SSHTests: XCTestCase {
     var stream: SSH.Stream?
     var output: DispatchData?
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn

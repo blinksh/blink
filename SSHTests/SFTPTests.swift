@@ -44,6 +44,12 @@ extension SSHClientConfig {
   )
 }
 
+extension SSHClient {
+  static func dialWithTestConfig() -> AnyPublisher<SSHClient, Error> {
+    dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+  }
+}
+
 class SFTPTests: XCTestCase {
   var cancellableBag: [AnyCancellable] = []
   

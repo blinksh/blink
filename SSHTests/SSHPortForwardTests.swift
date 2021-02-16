@@ -37,22 +37,15 @@ import Network
 
 extension SSHTests {
   func testForwardPort() throws {
-    self.continueAfterFailure = false
-    
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
-      loggingVerbosity: .debug
-    )
-    var expectConnection = self.expectation(description: "Connected")
+    let expectConnection = self.expectation(description: "Connected")
     let expectListenerClosed = self.expectation(description: "Listener Closed")
     
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
-    var url: URLSession? = URLSession(configuration: URLSessionConfiguration.default)
+    let urlSession = URLSession(configuration: URLSessionConfiguration.default)
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient
+      .dialWithTestConfig()
       .map() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -91,9 +84,12 @@ extension SSHTests {
     
     let expectResponse = self.expectation(description: "Response received")
     
+    var request = URLRequest(url: URL(string: "http://127.0.0.1:8080")!)
+    request.addValue("www.guimp.com", forHTTPHeaderField: "Host")
+    
     // Launch a request on the port
-    url!
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+    urlSession
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {
@@ -112,8 +108,8 @@ extension SSHTests {
     
     let expectResponse2 = self.expectation(description: "Response received")
     // Launch a request on the port
-    url!
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+    urlSession
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {
@@ -131,7 +127,7 @@ extension SSHTests {
     let expectResponse3 = self.expectation(description: "Response received")
     // Launch a request on the port
     URLSession.shared
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {

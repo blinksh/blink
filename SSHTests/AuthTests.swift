@@ -60,7 +60,6 @@ class AuthTests: XCTestCase {
   
   func testPasswordAuthenticationWithCallback() throws {
     let requestAnswers: SSHClientConfig.RequestVerifyHostCallback = { (prompt) in
-      
       return Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
