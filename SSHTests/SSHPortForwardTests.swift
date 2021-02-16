@@ -58,27 +58,29 @@ extension SSHTests {
         )
         
         return lis!
-      }.flatMap { $0.connect() }
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          expectListenerClosed.fulfill()
-        case .failure(let error):
-          XCTFail("\(error)")
-        }
-      },
-      receiveValue: { event in
-        switch event {
-        case .starting:
-          print("Listener Starting")
-        case .ready:
-          expectConnection.fulfill()
-        case .error(let error):
-          XCTFail("\(error)")
-        default:
-          break
-        }
-      }).store(in: &cancellableBag)
+      }
+      .flatMap { $0.connect() }
+      .sink(
+        receiveCompletion: { completion in
+          switch completion {
+          case .finished:
+            expectListenerClosed.fulfill()
+          case .failure(let error):
+            XCTFail("\(error)")
+          }
+        },
+        receiveValue: { event in
+          switch event {
+          case .starting:
+            print("Listener Starting")
+          case .ready:
+            expectConnection.fulfill()
+          case .error(let error):
+            XCTFail("\(error)")
+          default:
+            break
+          }
+        }).store(in: &cancellableBag)
     
     wait(for: [expectConnection], timeout: 15)
     

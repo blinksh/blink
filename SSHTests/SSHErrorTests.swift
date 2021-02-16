@@ -35,17 +35,6 @@ import Dispatch
 
 @testable import SSH
 
-func __assertCompletionFailure(_ completion: Any?, withError error: SSHError, file: StaticString = #filePath, line: UInt = #line) {
-  guard
-    let c = completion as? Subscribers.Completion<Error>,
-    let err = c.error as? SSHError,
-    err == error
-  else {
-    XCTFail("Should completed with .faulure(\(error). Got: " + String(describing: completion), file: file, line: line)
-    return
-  }
-}
-
 class SSHErrorTests: XCTestCase {
   
   /**
@@ -71,17 +60,14 @@ class SSHErrorTests: XCTestCase {
 
     SSHClient
       .dial(MockCredentials.wrongCredentials.host, with: config)
-      .sink(
+      .noOutput(
         test: self,
         receiveCompletion: {
           completion = $0
-        },
-        receiveValue: { _ in
-          XCTFail("Should not have received a connection")
         }
       )
     
-    __assertCompletionFailure(completion, withError: .authError(msg: ""))
+    assertCompletionFailure(completion, withError: .authError(msg: ""))
   }
   
   func testConnectionError() {
@@ -94,16 +80,14 @@ class SSHErrorTests: XCTestCase {
     var completion: Any? = nil
 
     SSHClient.dial(MockCredentials.wrongHost.host, with: config)
-      .sink(
+      .noOutput(
         test: self,
         receiveCompletion: {
           completion = $0
-        }, receiveValue: { _ in
-          XCTFail("Should not have received a connection")
         }
       )
     
-    __assertCompletionFailure(completion, withError: .connError(msg: ""))
+    assertCompletionFailure(completion, withError: .connError(msg: ""))
   }
   
   /**
@@ -121,14 +105,13 @@ class SSHErrorTests: XCTestCase {
     var completion: Any? = nil
 
     SSHClient.dial(MockCredentials.wrongCredentials.host, with: config)
-      .sink(
+      .noOutput(
         test: self,
         receiveCompletion: {
           completion = $0
-      }, receiveValue: { _ in
-        XCTFail("Should not have received a connection")
-      })
-    __assertCompletionFailure(completion, withError: .authFailed(methods: authMethods))
+        }
+      )
+    assertCompletionFailure(completion, withError: .authFailed(methods: authMethods))
   }
   
   /**
@@ -144,15 +127,13 @@ class SSHErrorTests: XCTestCase {
     var completion: Any? = nil
     
     SSHClient.dial(MockCredentials.incorrectIpHost, with: config)
-      .sink(
+      .noOutput(
         test: self,
         receiveCompletion: {
           completion = $0
-        },
-        receiveValue: { _ in
-          XCTFail("Shouldn't have received a connection")
-        })
+        }
+      )
     
-    __assertCompletionFailure(completion, withError: .connError(msg: "Socket error: No such file or directory"))
+    assertCompletionFailure(completion, withError: .connError(msg: "Socket error: No such file or directory"))
   }
 }

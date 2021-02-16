@@ -41,26 +41,6 @@ struct Credentials {
   let host: String
 }
 
-func __assertCompletionFinished(_ completion: Any?, file: StaticString = #filePath, line: UInt = #line) {
-  guard
-    let c = completion as? Subscribers.Completion<Error>
-  else {
-    XCTFail("receiveCompletion is not called", file: file, line: line)
-    return
-  }
-  
-  switch c {
-  case .finished: break
-  case .failure(let error):
-    if let error = error as? SSHError {
-      XCTFail(error.description, file: file, line: line)
-    } else {
-      XCTFail("Unknown error: \(error)", file: file, line: line)
-    }
-  }
-}
-
-
 class AuthTests: XCTestCase {
   
   override class func setUp() {
@@ -68,8 +48,8 @@ class AuthTests: XCTestCase {
   }
     
   func testPasswordAuthenticationWithCallback() {
-    let requestAnswers: SSHClientConfig.RequestVerifyHostCallback = { (prompt) in
-      return Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
+    let requestAnswers: SSHClientConfig.RequestVerifyHostCallback = { prompt in
+      Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
     
     let config = SSHClientConfig(
@@ -89,7 +69,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -111,7 +91,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -139,7 +119,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -164,7 +144,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
+    assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
     XCTAssertNil(connection)
   }
   
@@ -191,7 +171,7 @@ class AuthTests: XCTestCase {
           completion = $0
         }
       )
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -208,17 +188,15 @@ class AuthTests: XCTestCase {
     
     SSHClient
       .dial(MockCredentials.wrongCredentials.host, with: config)
-      .sink(
+      .noOutput(
         test: self,
         timeout: 10,
         receiveCompletion: {
           completion = $0
-        }, receiveValue: { _ in
-          XCTFail("Should not have received a connection")
         }
       )
     
-    __assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
+    assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
   }
   
   // MARK: No authentication methods provided
@@ -244,7 +222,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -266,7 +244,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -295,7 +273,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -323,7 +301,7 @@ class AuthTests: XCTestCase {
         }
       )
 
-    __assertCompletionFailure(completion, withError: .authError(msg: ""))
+    assertCompletionFailure(completion, withError: .authError(msg: ""))
   }
   
   func testPubKeyAuthentication() {
@@ -344,7 +322,7 @@ class AuthTests: XCTestCase {
         }
       )
     
-    __assertCompletionFinished(completion)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
