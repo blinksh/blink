@@ -97,25 +97,25 @@ extension SSHClientConfigProvider {
       if let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
         authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
       }
-    }
-    
-    // Host key
-    if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
-      authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
+    } else {
+      // Host key
+      if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+        authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
+      } else {
+        // All default keys
+        for (defaultKey, name) in Self.defaultKeys() {
+          authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
+        }
+      }
     }
     
     // Host password
-    if let password = Self.password(fromHost: command.host) {
+    if let password = Self.password(fromHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
+    } else {
+      // Interactive
+      authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
     }
-    
-    // All default keys
-    for (defaultKey, name) in Self.defaultKeys() {
-      authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
-    }
-    
-    // Interactive
-    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
     
     return authMethods
   }

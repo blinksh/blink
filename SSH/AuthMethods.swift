@@ -163,7 +163,6 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
       case SSH_AUTH_PARTIAL.rawValue:
         return .Partial
       case SSH_AUTH_DENIED.rawValue:
-        
         self.wrongRetriesLeft -= 1
         
         if self.wrongRetriesLeft >= 0 {
