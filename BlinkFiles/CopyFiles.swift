@@ -123,8 +123,7 @@ extension File {
             // Close and send the final report
             // NOTE We are closing a file for an active operation (the writeTo).
             // We have no other point to close and also emit progress. Future ideas may change that.
-            return (file as! BlinkFiles.File).close()
-              .flatMap { result -> CopyProgressInfo in
+            return Publishers.MergeMany([(file as! BlinkFiles.File).close(), self.close()]).collect().flatMap { _ -> CopyProgressInfo in
                 print("File finished copying")
                 return report
               }.eraseToAnyPublisher()

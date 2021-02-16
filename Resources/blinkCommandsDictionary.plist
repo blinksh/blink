@@ -9,6 +9,20 @@
 		<string></string>
 		<string>no</string>
 	</array>
+	<key>sftp</key>
+	<array>
+		<string>MAIN</string>
+		<string>copyfiles_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
+	<key>scp</key>
+	<array>
+		<string>MAIN</string>
+		<string>copyfiles_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>ssh</key>
 	<array>
 		<string>MAIN</string>

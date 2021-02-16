@@ -36,12 +36,12 @@ import LibSSH
 // https://stackoverflow.com/questions/60624851/combine-framework-retry-after-delay
 // https://stackoverflow.com/questions/61557327/401-retry-mechanism-using-combine-publishers
 extension Publisher {
-  func tryOperation<T>(_ operation: @escaping (ssh_session) throws -> T)
-  -> AnyPublisher<T, Error> where Self == AnyPublisher<ssh_session, Error> {
+  func tryOperation<T, U>(_ operation: @escaping (U) throws -> T)
+  -> AnyPublisher<T, Error> where Self == AnyPublisher<U, Error> {
     let lock = UnfairLock()
     var stop = false
     
-    func loop(_ session: ssh_session) -> AnyPublisher<T, Error> {
+    func loop(_ session: U) -> AnyPublisher<T, Error> {
       return Just(session).tryMap { session in
         lock.lock()
         if stop {
@@ -122,22 +122,7 @@ extension Publisher {
   
   func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
   AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
-    let lock = UnfairLock()
-    var stop = false
-    
-    return self.handleEvents(receiveCancel: {
-      lock.unlock()
-    }).tryMap { sftp in
-      lock.lock()
-      defer { lock.unlock() }
-      if stop {
-        throw SSHError(title: "Cancelled")
-      }
-      return try operation(sftp)
-    }.handleEvents(receiveCancel: {
-      lock.spinLock()
-      stop = true
-    }).eraseToAnyPublisher()
+    return tryOperation(operation)
   }
 }
 
