@@ -41,13 +41,33 @@ struct Credentials {
   let host: String
 }
 
+func __assertCompletionFinished(_ completion: Any?, file: StaticString = #filePath, line: UInt = #line) {
+  guard
+    let c = completion as? Subscribers.Completion<Error>
+  else {
+    XCTFail("receiveCompletion is not called", file: file, line: line)
+    return
+  }
+  
+  switch c {
+  case .finished: break
+  case .failure(let error):
+    if let error = error as? SSHError {
+      XCTFail(error.description, file: file, line: line)
+    } else {
+      XCTFail("Unknown error: \(error)", file: file, line: line)
+    }
+  }
+}
+
+
 class AuthTests: XCTestCase {
   
   override class func setUp() {
     SSHInit()
   }
     
-  func testPasswordAuthenticationWithCallback() throws {
+  func testPasswordAuthenticationWithCallback() {
     let requestAnswers: SSHClientConfig.RequestVerifyHostCallback = { (prompt) in
       return Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
     }
@@ -59,24 +79,17 @@ class AuthTests: XCTestCase {
       verifyHostCallback: requestAnswers
     )
     
+    var completion: Any? = nil
     let connection = SSHClient
       .dial(MockCredentials.passwordCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -87,24 +100,18 @@ class AuthTests: XCTestCase {
       authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient
       .dial(MockCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -120,25 +127,19 @@ class AuthTests: XCTestCase {
         AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password),
         AuthPublicKey(privateKey: MockCredentials.privateKey)
       ])
+    
+    var completion: Any? = nil
 
     let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -152,25 +153,18 @@ class AuthTests: XCTestCase {
       authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey)]
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
       .lastOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            XCTFail("Unexpected completion. Should failed")
-          case .failure(let error):
-            if let error = error as? SSHError {
-              if case SSHError.authFailed = error {
-                break
-              }
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
     XCTAssertNil(connection)
   }
   
@@ -187,63 +181,44 @@ class AuthTests: XCTestCase {
       ]
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
-    
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
   // MARK: Wrong credentials
   // This test should fail before the timeout expecation is consumed
-  func testFailWithWrongCredentials() throws {
+  func testFailWithWrongCredentials() {
     let config = SSHClientConfig(
       user: MockCredentials.wrongCredentials.user,
       port: MockCredentials.port,
       authMethods: [AuthPassword(with: MockCredentials.wrongCredentials.password)]
     )
     
-    let expectation = self.expectation(description: "SSH config")
+    var completion: Any? = nil
     
     SSHClient
       .dial(MockCredentials.wrongCredentials.host, with: config)
       .sink(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            XCTFail("Connection succeded for wrong credentials")
-          case .failure(let error):
-            if let error = error as? SSHError {
-              // TODO Assert error is an Auth error
-              print(error.description)
-              
-              // Connection failed, which is what we wanted to test.
-              expectation.fulfill()
-              break
-            }
-            XCTFail("Unknown error during connection")
-          }
+        timeout: 10,
+        receiveCompletion: {
+          completion = $0
         }, receiveValue: { _ in
           XCTFail("Should not have received a connection")
         }
       )
     
-    wait(for: [expectation], timeout: 10)
+    __assertCompletionFailure(completion, withError: .authFailed(methods: config.authenticators))
   }
   
   // MARK: No authentication methods provided
@@ -258,52 +233,40 @@ class AuthTests: XCTestCase {
       authMethods: []
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient
       .dial(MockCredentials.noneCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
-  func testNoneAuthentication() throws {
+  func testNoneAuthentication() {
     let config = SSHClientConfig(
       user: MockCredentials.noneCredentials.user,
       port: MockCredentials.port,
       authMethods: [AuthNone()]
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient
       .dial(MockCredentials.noneCredentials.host, with: config)
       .exactOneOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -346,41 +309,29 @@ class AuthTests: XCTestCase {
   /**
    Should fail when importing a private key `wrongPrivateKey` that's not correctly formatted.
    */
-  func testImportingIncorrectPrivateKey() throws {
+  func testImportingIncorrectPrivateKey() {
     
     let config = SSHClientConfig(
       user: MockCredentials.publicKeyAuthentication.user,
       port: MockCredentials.port,
       authMethods: [AuthPublicKey(privateKey: MockCredentials.wrongPrivateKey)]
     )
-    
-    let expectation = self.expectation(description: "SSH config")
+  
+    var completion: Any? = nil
     
     SSHClient
       .dial(MockCredentials.publicKeyAuthentication.host, with: config)
       .sink(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              if case SSHError.authError = error {
-                expectation.fulfill()
-                break
-              }
-            }
-            
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
-    
-    wait(for: [expectation], timeout: 10)
+
+    __assertCompletionFailure(completion, withError: .authError(msg: ""))
   }
   
-  func testPubKeyAuthentication() throws {
+  func testPubKeyAuthentication() {
     
     let config = SSHClientConfig(
       user: MockCredentials.publicKeyAuthentication.user,
@@ -388,23 +339,17 @@ class AuthTests: XCTestCase {
       authMethods: [AuthPublicKey(privateKey: MockCredentials.privateKey)]
     )
     
+    var completion: Any? = nil
+    
     let connection = SSHClient.dial(MockCredentials.publicKeyAuthentication.host, with: config)
       .lastOutput(
         test: self,
-        receiveCompletion: { completion in
-          switch completion {
-          case .finished:
-            break
-          case .failure(let error):
-            if let error = error as? SSHError {
-              XCTFail(error.description)
-              break
-            }
-            XCTFail("Unknown error")
-          }
+        receiveCompletion: {
+          completion = $0
         }
       )
     
+    __assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
   
@@ -457,7 +402,6 @@ class AuthTests: XCTestCase {
       )
     
     waitForExpectations(timeout: 5, handler: nil)
-    
     XCTAssertNotNil(connection)
   }
 }
