@@ -38,14 +38,6 @@ import LibSSH
 
 class PublishersTests: XCTestCase {
   
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
-  
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   func testTryOperation() throws {
     func session() -> SSHConnection {
       guard let session = ssh_new() else {
@@ -67,6 +59,7 @@ class PublishersTests: XCTestCase {
     }.assertNoFailure().print("Sink").sink{}
     
     wait(for: [expectRetries], timeout: 2)
+    c.cancel()
   }
   
   func testMultiStepOperation() throws {
@@ -103,6 +96,7 @@ class PublishersTests: XCTestCase {
       .assertNoFailure().print("Sink").sink{}
     
     wait(for: [expectRetries], timeout: 2)
+    c.cancel()
   }
   
   func testTryOperationWithValue() throws {
