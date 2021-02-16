@@ -138,6 +138,12 @@ extension AnyPublisher where Output == ssh_session, Failure == Error {
         if stop {
           throw SSHError(title: "Cancelled")
         }
+
+        // Check we are still connected as sometimes authentication may close from one side.
+        if ssh_is_connected(session) == 0 {
+          throw SSHError(title: "Disconnected", forSession: session)
+        }
+
         let val = try operation(session)
         lock.unlock()
         return val
