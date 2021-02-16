@@ -61,7 +61,7 @@ class AuthTests: XCTestCase {
     
     let connection = SSHClient
       .dial(MockCredentials.passwordCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -89,7 +89,7 @@ class AuthTests: XCTestCase {
     
     let connection = SSHClient
       .dial(MockCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -123,7 +123,7 @@ class AuthTests: XCTestCase {
 
     let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -152,9 +152,9 @@ class AuthTests: XCTestCase {
       authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey)]
     )
     
-    SSHClient
+    let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
-      .sink(
+      .lastOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -168,9 +168,10 @@ class AuthTests: XCTestCase {
             }
             XCTFail("Unknown error")
           }
-        },
-        receiveValue: { _ in }
+        }
       )
+    
+    XCTAssertNil(connection)
   }
   
   /**
@@ -188,7 +189,7 @@ class AuthTests: XCTestCase {
     
     let connection = SSHClient
       .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -259,7 +260,7 @@ class AuthTests: XCTestCase {
     
     let connection = SSHClient
       .dial(MockCredentials.noneCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -287,7 +288,7 @@ class AuthTests: XCTestCase {
     
     let connection = SSHClient
       .dial(MockCredentials.noneCredentials.host, with: config)
-      .lastOutput(
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {
@@ -437,8 +438,9 @@ class AuthTests: XCTestCase {
       authMethods: [AuthKeyboardInteractive(requestAnswers: requestAnswers)]
     )
     
-    let connection = SSHClient.dial(MockCredentials.interactiveCredentials.host, with: config)
-      .lastOutput(
+    let connection = SSHClient
+      .dial(MockCredentials.interactiveCredentials.host, with: config)
+      .exactOneOutput(
         test: self,
         receiveCompletion: { completion in
           switch completion {

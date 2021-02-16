@@ -41,48 +41,33 @@ class SSHTests: XCTestCase {
   
   var cancellableBag: Set<AnyCancellable> = []
   
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+  override class func setUp() {
     SSHInit()
   }
   
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   func testClient() throws {
-    // Get a proper client working to start performing operations with.
-    
-    let expectConn = self.expectation(description: "Connection")
-    
-    var connection: SSHClient?
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          expectConn.fulfill()
-        case .failure(let error):
-          if let error = error as? SSHError {
-            XCTFail(error.description)
-            break
+    let connection = SSHClient
+      .dialWithTestConfig()
+      .lastOutput(
+        test: self,
+        receiveCompletion: { completion in
+          switch completion {
+          case .finished: break
+          case .failure(let error):
+            if let error = error as? SSHError {
+              XCTFail(error.description)
+              break
+            }
+            XCTFail("Unknown error")
           }
-          XCTFail("Unknown error")
-        }
-      }, receiveValue: { conn in
-        connection = conn
-      }).store(in: &cancellableBag)
-    
-    wait(for: [expectConn], timeout: 5)
+        })
     
     XCTAssertNotNil(connection)
   }
   
   func testClientCancel() throws {
-    
-    //let expectConnCancel = self.expectation(description: "Connection Cancel")
-    
-    var connection: SSHClient?
-    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    let c = SSHClient
+      .dialWithTestConfig()
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -95,22 +80,19 @@ class SSHTests: XCTestCase {
           XCTFail("Unknown error")
         }
       }, receiveValue: { conn in
-        connection = conn
+        XCTFail("Should not have receive the connection")
       })
     
     c.cancel()
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
-    XCTAssertNil(connection)
+    c.cancel()
   }
   
   // This test goes both for tryOperation and tryChannel, as the publisher is almost the same
   // This is more an implementation test than a functional one.
   func testClientCancelDuringTry() throws {
-    
-    //let expectConnCancel = self.expectation(description: "Connection Cancel")
-    
-    var connection: SSHClient?
-    let c = SSHClient.dial("192.168.1.15", with: .testConfig)
+    let c = SSHClient
+      .dial("192.168.1.15", with: .testConfig)
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -122,8 +104,8 @@ class SSHTests: XCTestCase {
           }
           XCTFail("Unknown error")
         }
-      }, receiveValue: { conn in
-        connection = conn
+      }, receiveValue: { _ in
+        XCTFail("Should not receive the connection")
       })
     
     let t = Thread {
@@ -134,7 +116,7 @@ class SSHTests: XCTestCase {
     }
     t.start()
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 5))
-    XCTAssertNil(connection)
+    t.cancel()
   }
   
   
@@ -185,7 +167,7 @@ class SSHTests: XCTestCase {
         connection = conn
       })
     wait(for: [expectConn], timeout: 5)
-    
+    c2.cancel()
     // Check connection has been closed?
     // connection?.close()
   }
@@ -193,36 +175,42 @@ class SSHTests: XCTestCase {
   func testConnectionTimeout() throws {
     // Dial an unknown host on same network, so it should timeout.
     // Note the result may be a bit unreliable.
-    let config = SSHClientConfig(user: MockCredentials.timeoutHost.user, authMethods: [AuthPassword(with: MockCredentials.timeoutHost.password)], connectionTimeout: 3)
+    let config = SSHClientConfig(
+      user: MockCredentials.timeoutHost.user,
+      authMethods: [AuthPassword(with: MockCredentials.timeoutHost.password)],
+      connectionTimeout: 3
+    )
     
     let expectFail = self.expectation(description: "Time out")
     
-    var connection: SSHClient?
-    SSHClient.dial(MockCredentials.timeoutHost.host, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          XCTFail("Should not have succeeded")
-        case .failure(let error):
-          if let error = error as? SSHError {
-            XCTAssertTrue((error.description.contains("timed out") || error.description.contains("Host is down")))
-            expectFail.fulfill()
-            
-            break
+    let connection = SSHClient
+      .dial(MockCredentials.timeoutHost.host, with: config)
+      .lastOutput(
+        test: self,
+        receiveCompletion: { completion in
+          switch completion {
+          case .finished:
+            XCTFail("Should not have succeeded")
+          case .failure(let error):
+            if let error = error as? SSHError {
+              XCTAssertTrue((error.description.contains("timed out") || error.description.contains("Host is down")))
+              expectFail.fulfill()
+              
+              break
+            }
+            XCTFail("Unknown error")
           }
-          XCTFail("Unknown error")
         }
-      }, receiveValue: { _ in }).store(in: &cancellableBag)
+      )
     
     wait(for: [expectFail], timeout: 5)
+    XCTAssertNil(connection)
   }
   
   /**
    Check if the currently connected host returns a valid formatted IP address.
    */
   func testGetConnectedIp() throws {
-    // Get a proper client working to start performing operations with.
-    
     // The connection pool should be maintained by the pool itself.
     // Restarting sessions though when required, should be done by the one using the sessions as a preference.
     let config = SSHClientConfig(
@@ -231,43 +219,33 @@ class SSHTests: XCTestCase {
       authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
     )
     
-    let expectation = self.expectation(description: "Buffer Written")
-    
     // TODO Figure out errors better here, because otherwise this will be painful
     // TODO Maybe print the error during a catch, because that's really how errors will have to be processed.
     // TODO Connections are not stopped if cancelled. You can close the connection from outside, everything may subsequently
     // fail, but not be properly closed.
     // TODO: How does OpenSSH finish gracefully while connecting?
-    var connection: SSHClient?
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          break
-        case .failure(let error):
-          if let error = error as? SSHError {
-            XCTFail(error.description)
+    let connection = SSHClient
+      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .lastOutput(
+        test: self,
+        receiveCompletion: { completion in
+          switch completion {
+          case .finished:
             break
+          case .failure(let error):
+            if let error = error as? SSHError {
+              XCTFail(error.description)
+              break
+            }
+            XCTFail("Unknown error")
           }
-          XCTFail("Unknown error")
         }
-      }, receiveValue: { conn in
-        connection = conn
-        guard let connectedIp = conn.clientAddressIP() else {
-          XCTFail("Failed to get connected IP address")
-          return
-        }
-        
-        if !SSHUtils.isValidIP(address: connectedIp) {
-          XCTFail("Not a valid IP")
-          return
-        }
-        
-        expectation.fulfill()
-      }).store(in: &cancellableBag)
+      )
     
-    
-    waitForExpectations(timeout: 5, handler: nil)
+    XCTAssertNotNil(connection)
+    let connectedIp = connection!.clientAddressIP()
+    XCTAssertNotNil(connectedIp, "Failed to get connected IP address")
+    XCTAssert(SSHUtils.isValidIP(address: connectedIp!), "Not a valid IP")
   }
   
   //    func testConnectionCancel() throws {
@@ -319,17 +297,20 @@ class SSHTests: XCTestCase {
     var connection: SSHClient?
     var stream: SSH.Stream?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient
+      .dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received connection")
         connection = conn
         return conn.requestInteractiveShell(withPTY: SSHClient.PTY(rows: 80, columns: 42))
-      }.assertNoFailure()
+      }
+      .assertNoFailure()
       .sink { pty in
         pty.handleCompletion = { expectClose.fulfill() }
         stream = pty
         expectPty.fulfill()
-      }.store(in: &cancellableBag)
+      }
+      .store(in: &cancellableBag)
     
     wait(for:[expectPty], timeout: 500)
     

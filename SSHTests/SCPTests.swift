@@ -39,37 +39,21 @@ import Dispatch
 
 class SCPTests: XCTestCase {
   
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
-  
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   func testSCPInit() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
-    let expectation = self.expectation(description: "Buffer Written")
-    
-    var connection: SSHClient?
-    let cancellable = SSHClient.dial("localhost", with: config)
-      .flatMap() { conn -> AnyPublisher<SCPClient, Error> in
+    let scp = SSHClient
+      .dialWithTestConfig()
+      .flatMap() { c -> AnyPublisher<SCPClient, Error> in
         print("Received connection")
-        connection = conn
-        return SCPClient.execute(using: conn, as: .Sink, root: "/tmp")
-      }.assertNoFailure()
-      .sink { scp in
-        dump(scp)
-        expectation.fulfill()
+        return SCPClient.execute(using: c, as: .Sink, root: "/tmp")
       }
+      .assertNoFailure()
+      .lastOutput(test: self)
     
-    waitForExpectations(timeout: 15, handler: nil)
+    dump(scp)
+    XCTAssertNotNil(scp)
   }
   
-  func testSCPFileCopyFrom() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
+  func testSCPFileCopyFrom() throws {    
     let expectation = self.expectation(description: "sftp")
     
     var connection: SSHClient?
@@ -77,7 +61,7 @@ class SCPTests: XCTestCase {
     var scp: SCPClient?
     var totalWritten: UInt64 = 0
     
-    let c1 = SSHClient.dial("localhost", with: config)
+    let c1 = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SCPClient, Error> in
         connection = conn
         return SCPClient.execute(using: conn, as: .Sink, root: "/tmp")
@@ -185,7 +169,8 @@ class SCPTests: XCTestCase {
       .flatMap() { conn -> AnyPublisher<SCPClient, Error> in
         connection = conn
         return SCPClient.execute(using: conn, as: [.Source, .Recursive], root: "/Users/carlos/tmp/*")
-      }.assertNoFailure()
+      }
+      .assertNoFailure()
       .sink { client in
         scp = client
         expectation.fulfill()
@@ -194,7 +179,9 @@ class SCPTests: XCTestCase {
     wait(for: [expectation], timeout: 15)
     
     let expectation2 = self.expectation(description: "sftp")
-    let c2 = connection?.requestSFTP().flatMap { client -> AnyPublisher<Translator, Error> in
+    let c2 = connection?
+      .requestSFTP()
+      .flatMap { client -> AnyPublisher<Translator, Error> in
       sftp = client
       return sftp!.walkTo("/tmp/test")
     }.flatMap { dir in

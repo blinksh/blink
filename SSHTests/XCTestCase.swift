@@ -33,11 +33,11 @@ import XCTest
 import Combine
 
 extension XCTestCase {
-  func waitPublisher<T, E>(
-    _ publisher: AnyPublisher<T, E>,
+  func waitPublisher<P: Publisher>(
+    _ publisher: P,
     timeout: TimeInterval = 5,
-    receiveCompletion: @escaping ((Subscribers.Completion<E>) -> Void),
-    receiveValue: @escaping (T) -> Void
+    receiveCompletion: @escaping ((Subscribers.Completion<P.Failure>) -> Void),
+    receiveValue: @escaping (P.Output) -> Void
   ) {
     let expectation = self.expectation(description: "Publisher completes or cancel")
     let c = publisher.handleEvents(
@@ -55,7 +55,7 @@ extension XCTestCase {
   }
 }
 
-extension AnyPublisher {
+extension Publisher {
   func sink(
     test: XCTestCase,
     timeout: TimeInterval = 5,
@@ -75,5 +75,20 @@ extension AnyPublisher {
       lastValue = v
     }
     return lastValue
+  }
+  
+  func exactOneOutput(
+    test: XCTestCase,
+    timeout: TimeInterval = 5,
+    receiveCompletion: @escaping ((Subscribers.Completion<Self.Failure>) -> Void) = { _ in }
+  ) -> Self.Output! {
+    var value: Self.Output? = nil
+    sink(test: test, timeout: timeout, receiveCompletion: receiveCompletion) { v in
+      XCTAssertNil(value)
+      value = v
+    }
+    
+    XCTAssertNotNil(value)
+    return value
   }
 }

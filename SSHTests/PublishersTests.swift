@@ -130,6 +130,7 @@ class PublishersTests: XCTestCase {
     //
     //        session(pub)
     wait(for: [expectRetries], timeout: 5)
+    c.cancel()
   }
   
   func testTryOperationWithPassthrough() throws {
@@ -164,5 +165,6 @@ class PublishersTests: XCTestCase {
     
     session(pub)
     wait(for: [expectRetries], timeout: 5)
+    c.cancel()
   }
 }
