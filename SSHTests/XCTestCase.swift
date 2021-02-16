@@ -56,12 +56,13 @@ extension XCTestCase {
 }
 
 extension Publisher {
+  
   func sink(
     test: XCTestCase,
     timeout: TimeInterval = 5,
     receiveCompletion: @escaping ((Subscribers.Completion<Self.Failure>) -> Void) = { _ in },
-    receiveValue: @escaping ((Self.Output) -> Void) = {_ in } )
-  {
+    receiveValue: @escaping ((Self.Output) -> Void) = {_ in }
+  ) {
     test.waitPublisher(self, timeout: timeout, receiveCompletion: receiveCompletion, receiveValue: receiveValue)
   }
   
@@ -90,5 +91,15 @@ extension Publisher {
     
     XCTAssertNotNil(value)
     return value
+  }
+}
+
+
+extension Subscribers.Completion {
+  var error: Error? {
+    switch self {
+    case .finished: return nil
+    case .failure(let err): return err
+    }
   }
 }
