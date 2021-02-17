@@ -440,13 +440,15 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   [_device viewSelectionChanged];
   
+  UIMenuController * menu = [UIMenuController sharedMenuController];
+  
   if (!_hasSelection) {
-    [[UIMenuController sharedMenuController] hideMenu];
+    [menu hideMenu];
     return;
   }
   
   NSMutableArray *items = [[NSMutableArray alloc] init];
-  UIMenuController * menu = [UIMenuController sharedMenuController];
+  
   
   [items addObject:[[UIMenuItem alloc] initWithTitle:@"Paste selection"
                                               action:@selector(pasteSelection:)]];
@@ -471,7 +473,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   _selectionRect = CGRectFromString(data[@"rect"]);
   [menu setMenuItems:items];
+#ifdef TARGET_OS_MACCATALYST
+//  if (!menu.isMenuVisible) {
+//    [menu showMenuFromView:self rect:_selectionRect];
+//  }
+#else
   [menu showMenuFromView:self rect:_selectionRect];
+#endif
 }
 
 - (void)modifySideOfSelection

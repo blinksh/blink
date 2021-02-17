@@ -68,24 +68,23 @@ class SSHClientConfigProvider {
   static func config(command cmd: SSHCommand, config options: ConfigFileOptions?, using device: TermDevice) -> SSHClientConfig {
     let prov = SSHClientConfigProvider(command: cmd, using: device)
     
-    let user = cmd.user ?? "carlos"
-    let authMethods = prov.availableAuthMethods()
-    
     // TODO Apply connection options, that is different than config.
     // The config helps in the pool, but then you can connect there in many ways.
-    var proxy: String? = options?.proxyCommand
-    if proxy == nil {
-      proxy = proxyCommand(from: cmd.host)
-    }
-    return SSHClientConfig(user: user,
-                           proxyJump: cmd.proxyJump,
-                           proxyCommand: proxy,
-                           authMethods: authMethods,
-                           loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-                           verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
-                           sshDirectory: BlinkPaths.ssh()!,
-                           logger: prov.logger
-                           )
+    let proxy: String? = options?.proxyCommand ?? proxyCommand(from: cmd.host)
+    
+    return SSHClientConfig(
+      // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
+      user: options?.user ?? cmd.user ?? BKDefaults.defaultUserName() ?? "root",
+      // first use `port` from command, then from options and defaults to 22
+      port: cmd.port.map(String.init) ?? options?.port ?? "22",
+      proxyJump: cmd.proxyJump,
+      proxyCommand: proxy,
+      authMethods: prov.availableAuthMethods(),
+      loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
+      verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
+      sshDirectory: BlinkPaths.ssh()!,
+      logger: prov.logger
+    )
   }
 }
 
@@ -95,28 +94,28 @@ extension SSHClientConfigProvider {
     
     // Explicit identity
     if let identityFile = command.identityFile {
-      if let identityKey = Self.privateKey(fromIdentifier: identityFile) {
-        authMethods.append(AuthPublicKey(privateKey: identityKey))
+      if let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
+        authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
+      }
+    } else {
+      // Host key
+      if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+        authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
+      } else {
+        // All default keys
+        for (defaultKey, name) in Self.defaultKeys() {
+          authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
+        }
       }
     }
     
-    // Host key
-    if let hostKey = Self.privateKey(fromHost: command.host) {
-      authMethods.append(AuthPublicKey(privateKey: hostKey))
-    }
-    
     // Host password
-    if let password = Self.password(fromHost: command.host) {
+    if let password = Self.password(fromHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
+    } else {
+      // Interactive
+      authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
     }
-    
-    // All default keys
-    for defaultKey in Self.defaultKeys() {
-      authMethods.append(AuthPublicKey(privateKey: defaultKey))
-    }
-    
-    // Interactive
-    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
     
     return authMethods
   }
@@ -131,7 +130,7 @@ extension SSHClientConfigProvider {
     .eraseToAnyPublisher()
   }
   
-  fileprivate static func privateKey(fromIdentifier identifier: String) -> String? {
+  fileprivate static func privateKey(fromIdentifier identifier: String) -> (String, String)? {
     guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
       return nil
     }
@@ -140,10 +139,10 @@ extension SSHClientConfigProvider {
       return nil
     }
     
-    return privateKey.privateKey
+    return (privateKey.privateKey, identifier)
   }
   
-  fileprivate static func privateKey(fromHost host: String) -> String? {
+  fileprivate static func privateKey(fromHost host: String) -> (String, String)? {
 
     guard let hosts = (BKHosts.all() as? [BKHosts]) else {
       return nil
@@ -160,13 +159,13 @@ extension SSHClientConfigProvider {
     return privateKey
   }
   
-  fileprivate static func defaultKeys() -> [String] {
+  fileprivate static func defaultKeys() -> [(String, String)] {
     guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
       return []
     }
     
     let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    let keys: [String] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? $0.privateKey : nil }
+    let keys: [(String, String)] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? ($0.privateKey, $0.id) : nil }
     
     return keys.count > 0 ? keys : []
   }

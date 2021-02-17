@@ -37,19 +37,15 @@ import Network
 
 extension SSHTests {
   func testForwardPort() throws {
-    self.continueAfterFailure = false
-    
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user,
-                                 authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
-                                 loggingVerbosity: .debug)
-    var expectConnection = self.expectation(description: "Connected")
+    let expectConnection = self.expectation(description: "Connected")
     let expectListenerClosed = self.expectation(description: "Listener Closed")
     
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
-    var url: URLSession? = URLSession(configuration: URLSessionConfiguration.default)
+    let urlSession = URLSession(configuration: URLSessionConfiguration.default)
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient
+      .dialWithTestConfig()
       .map() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -62,35 +58,40 @@ extension SSHTests {
         )
         
         return lis!
-      }.flatMap { $0.connect() }
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          expectListenerClosed.fulfill()
-        case .failure(let error):
-          XCTFail("\(error)")
-        }
-      },
-      receiveValue: { event in
-        switch event {
-        case .starting:
-          print("Listener Starting")
-        case .ready:
-          expectConnection.fulfill()
-        case .error(let error):
-          XCTFail("\(error)")
-        default:
-          break
-        }
-      }).store(in: &cancellableBag)
+      }
+      .flatMap { $0.connect() }
+      .sink(
+        receiveCompletion: { completion in
+          switch completion {
+          case .finished:
+            expectListenerClosed.fulfill()
+          case .failure(let error):
+            XCTFail("\(error)")
+          }
+        },
+        receiveValue: { event in
+          switch event {
+          case .starting:
+            print("Listener Starting")
+          case .ready:
+            expectConnection.fulfill()
+          case .error(let error):
+            XCTFail("\(error)")
+          default:
+            break
+          }
+        }).store(in: &cancellableBag)
     
     wait(for: [expectConnection], timeout: 15)
     
     let expectResponse = self.expectation(description: "Response received")
     
+    var request = URLRequest(url: URL(string: "http://127.0.0.1:8080")!)
+    request.addValue("www.guimp.com", forHTTPHeaderField: "Host")
+    
     // Launch a request on the port
-    url!
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+    urlSession
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {
@@ -109,8 +110,8 @@ extension SSHTests {
     
     let expectResponse2 = self.expectation(description: "Response received")
     // Launch a request on the port
-    url!
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+    urlSession
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {
@@ -128,7 +129,7 @@ extension SSHTests {
     let expectResponse3 = self.expectation(description: "Response received")
     // Launch a request on the port
     URLSession.shared
-      .dataTaskPublisher(for: URL(string: "http://localhost:8080")!)
+      .dataTaskPublisher(for: request)
       .assertNoFailure()
       .sink { element in
         guard let httpResponse = element.response as? HTTPURLResponse else {
@@ -152,14 +153,12 @@ extension SSHTests {
   func testListenerPort() throws {
     self.continueAfterFailure = false
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user,
-                                 authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
     var expectConnection = self.expectation(description: "Connected")
     
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .tryMap() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -427,16 +426,16 @@ extension SSHTests {
     // chain should make everything else receive a close as well, probably
     // at the session level.
     // This test may be necessary to see how the flow of errors would work.
-    var config = SSHClientConfig(user: "carlos",
+    let config = SSHClientConfig(user: MockCredentials.user,
+                                 port: MockCredentials.port,
                                  proxyJump: "localhost",
-                                 //proxyCommand: "ssh -W %h:%p localhost",
-                                 authMethods: [AuthPassword(with: "")],
+                                 proxyCommand: "ssh -W %h:%p localhost",
+                                 authMethods: [AuthPassword(with: MockCredentials.password)],
                                  loggingVerbosity: .debug)
     
     let destination = "localhost"
     let destinationPort = 22
-    let configProxy = SSHClientConfig(user: "carlos",
-                                      authMethods: [AuthPassword(with: "")])
+    let configProxy = SSHClientConfig.testConfig
     
     let expectConnection = self.expectation(description: "Connected")
     let expectExecFinished = self.expectation(description: "Exec finished")

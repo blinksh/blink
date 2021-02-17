@@ -80,6 +80,31 @@ class SpaceController: UIViewController {
     _commandsHUD.setNeedsLayout()
   }
   
+  override func viewDidAppear(_ animated: Bool) {
+    super.viewDidAppear(animated)
+    
+    #if targetEnvironment(macCatalyst)
+    guard let appBundleUrl = Bundle.main.builtInPlugInsURL else {
+      return
+    }
+    
+    let helperBundleUrl = appBundleUrl.appendingPathComponent("AppKitBridge.bundle")
+    
+    guard let bundle = Bundle(url: helperBundleUrl) else {
+      return
+    }
+    
+    bundle.load()
+    
+    guard let object = NSClassFromString("AppBridge") as? NSObjectProtocol else {
+      return
+    }
+    
+    let selector = NSSelectorFromString("tuneStyle")
+    object.perform(selector)
+    #endif
+  }
+  
   @objc func _relayout() {
     guard
       let window = view.window,

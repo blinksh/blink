@@ -68,7 +68,7 @@ const NSString *term_write_data_fragment(NSString *data) {
   return [[NSString alloc] initWithData:result encoding:NSUTF8StringEncoding];
 }
 
-
+__attribute__ ((visibility("default")))
 int bench_main(int argc, char *argv[]) {
   NSString *data = @"dklfajasd fkashdfk asjdflkajsdfl;kj asdkfjas;lkdf ja;lksdjf ;lkasjdf ;lkjas;dfs;d fkj alk;sdjf ;aksjdfka;lksdjf ;asjdg;ak sjdg;kajdf;ja;ld fjajdf ;lkasjdf;lkjasdkfja;lksf dj";
   

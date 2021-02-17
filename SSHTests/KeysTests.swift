@@ -38,7 +38,7 @@ import CryptoKit
 
 @testable import SSH
 
-class Keystests: XCTestCase {
+class KeysTests: XCTestCase {
   var bundle: Bundle? = nil
   
   override func setUpWithError() throws {
@@ -62,10 +62,7 @@ class Keystests: XCTestCase {
   }
 
   func testLoadFromBlob() throws {
-    var bkey = try? SSHKey(fromBlob: MockCredentials.curvePrivateKey.data(using: .utf8)!)
-    XCTAssertNotNil(bkey)
-    
-    bkey = try? SSHKey(fromBlob: keyNoNewLine.data(using: .utf8)!)
+    var bkey = try? SSHKey(fromBlob: keyNoNewLine.data(using: .utf8)!)
     XCTAssertNil(bkey)
     bkey = try? SSHKey(fromBlob: SSHKey.sanitize(key: keyNoNewLine).data(using: .utf8)!)
     XCTAssertNotNil(bkey)
@@ -83,13 +80,27 @@ class Keystests: XCTestCase {
 
   func testCertificates() throws {
     var privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
-    var pubPath = bundle?.path(forResource: "user_key-cert", ofType: "pub")
+    let pubPath = bundle?.path(forResource: "user_key-cert", ofType: "pub")
     var key = try? SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
     XCTAssertNil(key)
     
     privPath = bundle?.path(forResource: "user_key", ofType: nil)
     key = try SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
     XCTAssertNotNil(key)
+  }
+  
+  func testSignature() throws {
+    continueAfterFailure = false
+    let privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
+    let key = try SSHKey(fromFile: privPath!)
+
+    // SHA256 hash
+    let helloWorld = Data("Hello World".utf8)
+    let helloWorldHash = SHA256.hash(data: helloWorld).data
+    let sig = try key.sign(helloWorldHash)
+    let isValid = try key.verify(signature: sig, of: helloWorldHash)
+
+    XCTAssertTrue(isValid)
   }
 }
 

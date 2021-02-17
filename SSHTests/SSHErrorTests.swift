@@ -45,144 +45,95 @@ class SSHErrorTests: XCTestCase {
    - SSHError.notImplemented(_:)
    */
   
-  var cancellableBag = Set<AnyCancellable>()
-  
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
-  
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   /**
    SSHError.authError(:) is thrown when trying to use a method to authenticate on a host that's not allowed.
    In this case is trying to use `AuthNone()` as an authetnication method for a host that doesn't accept it.
    */
-  func testAuthError() throws {
+  func testAuthError() {
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongCredentials.user,
+      port: MockCredentials.port,
+      authMethods: []
+    )
     
-    let authMethods: [AuthMethod] = []
-    
-    let config = SSHClientConfig(user: MockCredentials.wrongCredentials.user, authMethods: authMethods)
-    
-    let expectation = self.expectation(description: "Buffer Written")
-    
-    SSHClient.dial(MockCredentials.wrongCredentials.host, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          XCTFail("Authentication should not have succeeded")
-        case .failure(let error as SSHError):
-          dump(error)
-          if error == .authError(msg: "") {
-            expectation.fulfill()
-          } else {
-            XCTFail("Unknown error")
-          }
-        case .failure(_):
-          XCTFail("It should present an error of type SSHError.authError(msg:)")
+    var completion: Any? = nil
+
+    SSHClient
+      .dial(MockCredentials.wrongCredentials.host, with: config)
+      .noOutput(
+        test: self,
+        receiveCompletion: {
+          completion = $0
         }
-      }, receiveValue: { _ in
-        XCTFail("Should not have received a connection")
-      }).store(in: &cancellableBag)
+      )
     
-    waitForExpectations(timeout: 5, handler: nil)
+    assertCompletionFailure(completion, withError: .authError(msg: ""))
   }
   
-  func testConnectionError() throws {
-    
-    let authMethods: [AuthMethod] = [AuthPassword(with: MockCredentials.wrongHost.password)]
-    
-    let config = SSHClientConfig(user: MockCredentials.wrongHost.user, authMethods: authMethods)
-    
-    let expectation = self.expectation(description: "Buffer Written")
-    
+  func testConnectionError() {
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongHost.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.wrongHost.password)]
+    )
+
+    var completion: Any? = nil
+
     SSHClient.dial(MockCredentials.wrongHost.host, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          XCTFail("Authentication should not have succeeded")
-        case .failure(let error as SSHError):
-          dump(error)
-          if error == .connError(msg: "") {
-            expectation.fulfill()
-          } else {
-            XCTFail("Unknown error")
-          }
-        case .failure(_):
-          XCTFail("It should present an error of type SSHError.connError(msg:)")
+      .noOutput(
+        test: self,
+        receiveCompletion: {
+          completion = $0
         }
-      }, receiveValue: { _ in
-        XCTFail("Should not have received a connection")
-      }).store(in: &cancellableBag)
+      )
     
-    waitForExpectations(timeout: 5, handler: nil)
+    assertCompletionFailure(completion, withError: .connError(msg: ""))
   }
   
   /**
    Trying to authenticate against a host with either incorrect username or password credentials
    */
-  func testAuthFailed() throws {
-    
+  func testAuthFailed() {
     let authMethods = [AuthPassword(with: MockCredentials.wrongCredentials.password)]
     
-    let config = SSHClientConfig(user: MockCredentials.wrongCredentials.user, authMethods: authMethods)
+    let config = SSHClientConfig(
+      user: MockCredentials.wrongCredentials.user,
+      port: MockCredentials.port,
+      authMethods: authMethods
+    )
     
-    let expectation = self.expectation(description: "Buffer Written")
-    
+    var completion: Any? = nil
+
     SSHClient.dial(MockCredentials.wrongCredentials.host, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          XCTFail("Authentication should not have succeeded")
-        case .failure(let error as SSHError):
-          
-          if error == .authFailed(methods: authMethods) {
-            expectation.fulfill()
-          } else {
-            XCTFail("Unknown error")
-          }
-        case .failure(_):
-          XCTFail("It should present an error of type SSHError.authFailed(methods:)")
-          
+      .noOutput(
+        test: self,
+        receiveCompletion: {
+          completion = $0
         }
-      }, receiveValue: { _ in
-        XCTFail("Should not have received a connection")
-      }).store(in: &cancellableBag)
-    
-    waitForExpectations(timeout: 5, handler: nil)
+      )
+    assertCompletionFailure(completion, withError: .authFailed(methods: authMethods))
   }
   
   /**
    Given a wrong/fake IP it should fail as the host couldn't be translated to a usable IP.
-   
-   Uses the `SSHClient.urlToIpHostResolution(_:)`
    */
   func testCouldntResolveHostAddress() throws {
-    let config = SSHClientConfig(user: MockCredentials.user, authMethods: [AuthPassword(with: MockCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.password)]
+    )
     
-    let expectation = self.expectation(description: "Buffer Written")
+    var completion: Any? = nil
     
     SSHClient.dial(MockCredentials.incorrectIpHost, with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          break
-        case .failure(let error as SSHError):
-          /// The given IP address couldn't be resolved into an IP address
-          expectation.fulfill()
-          
-        case .failure(let genericError):
-          XCTFail("Shouldn't have received an error that's not of type SSHError \(genericError.localizedDescription)")
+      .noOutput(
+        test: self,
+        receiveCompletion: {
+          completion = $0
         }
-      }, receiveValue: { _ in
-        XCTFail("Shouldn't have received a connection")
-      }).store(in: &cancellableBag)
+      )
     
-    waitForExpectations(timeout: 5, handler: nil)
-  }
-  
-  override func tearDown() {
-    cancellableBag.removeAll()
+    assertCompletionFailure(completion, withError: .connError(msg: "Socket error: No such file or directory"))
   }
 }

@@ -38,14 +38,6 @@ import LibSSH
 
 class PublishersTests: XCTestCase {
   
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
-  }
-  
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   func testTryOperation() throws {
     func session() -> SSHConnection {
       guard let session = ssh_new() else {
@@ -67,6 +59,7 @@ class PublishersTests: XCTestCase {
     }.assertNoFailure().print("Sink").sink{}
     
     wait(for: [expectRetries], timeout: 2)
+    c.cancel()
   }
   
   func testMultiStepOperation() throws {
@@ -82,7 +75,7 @@ class PublishersTests: XCTestCase {
     var triesSecondLoop = 0
     let expectRetries = expectation(description: "Retries done")
     let c = session().print("Flow").eraseToAnyPublisher()
-      .tryOperation { conn in
+      .tryOperation { conn -> ssh_session in
         triesFirstLoop += 1
         if triesFirstLoop <= 3 {
           print ("Retrying First Loop")
@@ -103,6 +96,7 @@ class PublishersTests: XCTestCase {
       .assertNoFailure().print("Sink").sink{}
     
     wait(for: [expectRetries], timeout: 2)
+    c.cancel()
   }
   
   func testTryOperationWithValue() throws {
@@ -136,6 +130,7 @@ class PublishersTests: XCTestCase {
     //
     //        session(pub)
     wait(for: [expectRetries], timeout: 5)
+    c.cancel()
   }
   
   func testTryOperationWithPassthrough() throws {
@@ -170,5 +165,6 @@ class PublishersTests: XCTestCase {
     
     session(pub)
     wait(for: [expectRetries], timeout: 5)
+    c.cancel()
   }
 }

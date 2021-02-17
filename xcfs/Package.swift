@@ -4,79 +4,79 @@ import PackageDescription
 var binaryTargets: [PackageDescription.Target] = [
   ( 
     "Protobuf_C_",
-    "69e60a51a6aa63b86c00d86c7594538ba7f15e6377b0eadf458c6294ef13c97e",
-    "https://github.com/yury/protobuf-cpp-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip"
+    "a90dbb75b3ef12224d66cddee28073066e0cab6453f79392d8f954b5904b8790",
+    "https://github.com/blinksh/protobuf-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip"
   ),
   (
     "mosh",
-    "727d404455b94de3fa9834441b19cf6c51e93db64cd91f7dd31d0683e42b52ad",
-    "https://github.com/yury/mosh-apple/releases/download/v1.3.2/mosh.xcframework.zip"
+    "f564b29d11bed18b64c780f90bfd9fd188f145dd849565f90664f3023808370d",
+    "https://github.com/blinksh/mosh-apple/releases/download/v1.3.2/mosh.xcframework.zip"
   ),
   (
     "libssh",
-    "9779da1a08e3a23bd1f2534da9c33f5f2075b9206283d106f454d881cc26d12a",
-    "https://github.com/yury/libssh-apple/releases/download/v0.9.4/LibSSH-dynamic.xcframework.zip"
+    "648eaacfaf67e4d7765b26af8d723fabf571a2121cf0aef587d8265595d62ef8",
+    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.4/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
-    "62819e6ede23243fb370b452fc288e0c61eaf468cd692b7ea4473f245504f7d8",
-    "https://github.com/yury/openssh-apple/releases/download/v8.4.0/OpenSSH-static.xcframework.zip"
+    "f55a92a497df09f31f5a138db459915fae7897263d807fe5fb486edfa7dafceb",
+    "https://github.com/blinksh/openssh-apple/releases/download/v8.4.0/OpenSSH-static.xcframework.zip"
   ),
   (
     "openssl",
-    "d07917d2db5480add458a7373bb469b2e46e9aba27ab0ebd3ddc8654df58e60f",
-    "https://github.com/yury/openssl-apple/releases/download/v1.1.1i/openssl-dynamic.xcframework.zip"
+    "6ab47a85acb5d70318877b11bf38b9154b25faab3c78cbade384dc23d870bf34",
+    "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1i/openssl-static.xcframework.zip"
+  ),
+//  (
+//    "openssl",
+//    "7f7e7cf7a1717dde6fdc71ef62c24e782f3c0ca1a2621e9376699362da990993",
+//    "https://github.com/blinksh/openssl-apple/releases/download/v1.1.1i/openssl-dynamic.xcframework.zip"
+//  ),
+  (
+    "libssh2",
+    "bcf240b14e5b0d982bde81419dbdf45d9155aea7401669f0c4bfd74db976d50a",
+    "https://github.com/blinksh/libssh2-apple/releases/download/v1.9.0/libssh2-static.xcframework.zip"
   ),
 
   (
-    "libssh2",
-    "07952e484eb511b1badb110c15d4621bb84ef98b28ea4d6e1d3a067d420806f5",
-    "https://github.com/yury/libssh2-apple/releases/download/v1.9.0/libssh2-dynamic.xcframework.zip"
-  ),
-  (
     "ios_system",
-    "e98c075c088f916649426720afa50df03904aa36d321fe072c9bd6ccbc12806c",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/ios_system.xcframework.zip"
+    "b4c982131b2c7e641d22be5bc4ae1d8046ba8ad7afd4a16df368da1267a01777",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/ios_system.xcframework.zip"
   ),
   (
     "awk",
-    "663554d7fca4fcdc670ab91c2f10c175bd10ca8dca3977fbeb6ee8dcd9571e05",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/awk.xcframework.zip"
-  ),
-  (
-    "curl_ios",
-    "bd1b1f430693c3dc3c0e03bccea810391e5d0d348fbd3ca2d31ff56b5026d1bb",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/curl_ios.xcframework.zip"
+    "16e60005194c8b0dc0a43b254a4f34a60cf7e759953e43dba2a2ec83cd4d0261",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/awk.xcframework.zip"
   ),
   (
     "files",
-    "c1fbd93d35d3659d3f600400f079bfd3b29f9f869be6d1c418e3ac0e7ad8e56a",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/files.xcframework.zip"
+    "d1c464c0abc010fb66b6514396836676d77195fa6b3e4207c8a27aa0e63e69c0",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/files.xcframework.zip"
   ),
   (
     "shell",
-    "726bafd246106424b807631ac81cc99aed42f8d503127a03ea6d034c58c7e020",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/shell.xcframework.zip"
+    "d4763e81ae2be69479bcac87217ff1bafd20fab4aa4be489fafbc51ff61f8b31",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/shell.xcframework.zip"
   ),
   (
     "ssh_cmd",
-    "8c769ad16bdab29617f59a5ae4514356be5296595ec5daf4300440a1dc7b3bf7",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/ssh_cmd.xcframework.zip"
+    "6d1f643084560aae6185a13cfdc210875169cb6b25b0dc3c705bb3cd10c79cc7",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/ssh_cmd.xcframework.zip"
   ),
   (
     "tar",
-    "25b817baab9229952c47babc2a885313070a0db1463d7cd43d740164bd1f951b",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/tar.xcframework.zip"
+    "f161dc5c43a721b5ca98ba0ccac539b12014975a9b855f4fc52e8a78eb9a57ec",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/tar.xcframework.zip"
   ),
   (
     "text",
-    "54acd52b21ae9cfa85e3c54d743009593dd78bf6b53387185fd81cf95d8ddf05",
-    "https://github.com/holzschu/ios_system/releases/download/v2.7.0/text.xcframework.zip"
+    "d8e54a9cf1f41bc0f20edea5778767b64bef473301081d60044cb6e387fffe8a",
+    "https://github.com/yury/ios_system/releases/download/v2.7.0/text.xcframework.zip"
   ),
   (
     "network_ios",
-    "89a465b32e8aed3fcbab0691d8cb9abeecc54ec6f872181dad97bb105b72430a",
-    "https://github.com/holzschu/network_ios/releases/download/v0.2/network_ios.xcframework.zip"
+    "7a8153411db8b8758fae41624933052f073b56c8eefdb421a8651cd46f7b8edb",
+    "https://github.com/yury/network_ios/releases/download/v0.2/network_ios.xcframework.zip"
   )
 ].map { name, checksum, url in PackageDescription.Target.binaryTarget(name: name, url: url, checksum: checksum)}
 

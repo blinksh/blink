@@ -100,6 +100,7 @@ extension Translator {
 
 extension File {
   fileprivate func copyFile(from t: Translator, name: String, size: NSNumber) -> CopyProgressInfo {
+    let fileSize = size.uint64Value
     var totalWritten: UInt64 = 0
     print("Copying file \(name)")
     
@@ -115,20 +116,30 @@ extension File {
           let written = UInt64(w)
           print("File Copied bytes \(totalWritten)")
           totalWritten += written
-          let report = Just((name, size.uint64Value, written))
+          let report = Just((name, fileSize, written))
             .mapError { $0 as Error }.eraseToAnyPublisher()
           
-          if totalWritten == size.int64Value {
+          if totalWritten == fileSize {
             // Close and send the final report
-            return (file as! BlinkFiles.File).close()
-              .flatMap { result -> CopyProgressInfo in
+            // NOTE We are closing a file for an active operation (the writeTo).
+            // We have no other point to close and also emit progress. Future ideas may change that.
+            return Publishers.MergeMany([(file as! BlinkFiles.File).close(), self.close()]).collect().flatMap { _ -> CopyProgressInfo in
                 print("File finished copying")
                 return report
               }.eraseToAnyPublisher()
           }
           
           return report
-        }.eraseToAnyPublisher()
+        }
+        .tryCatch { error -> CopyProgressInfo in
+          // Closing the file while reading may provoke an error. Capture it here and if we are done, we ignore it.
+          if totalWritten == fileSize {
+            return Just((name, fileSize, 0)).mapError {$0 as Error}.eraseToAnyPublisher()
+          } else {
+            throw error
+          }
+        }
+        .eraseToAnyPublisher()
       }.eraseToAnyPublisher()
   }
 }

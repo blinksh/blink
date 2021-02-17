@@ -66,7 +66,7 @@ void __ssh_logging(int priority,
 }
 
 
-
+__attribute__ ((visibility("default")))
 int ssh_main(int argc, char *argv[]) {
   
   MCPSession *session = (__bridge MCPSession *)thread_context;

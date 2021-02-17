@@ -34,6 +34,7 @@
 #include "ios_system/ios_system.h"
 #include "ios_error.h"
 
+__attribute__ ((visibility("default")))
 int showkey_main(int argc, char *argv[]) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   

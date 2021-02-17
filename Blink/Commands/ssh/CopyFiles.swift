@@ -42,7 +42,7 @@ import SSH
 // TODO Wildcards on source will be matched by the shell, and throw No Match if there are none.
 // Test on new ios_system and fix there.
 @_cdecl("copyfiles_main")
-func copyfiles_main(argc: Int32, argv: Argv) -> Int32 {
+public func copyfiles_main(argc: Int32, argv: Argv) -> Int32 {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   let cmd = BlinkCopy()
   session.registerSSHClient(cmd)
@@ -88,26 +88,28 @@ class FileLocationPath {
 
   init(_ path: String) throws {
     self.fullPath = path
-    // If we are a relative path, then do not parse it.
-    if self.fullPath.first != "/" {
-      self.filePath = path
-      self.proto = .local
-      return
-    }
 
-    let components = self.fullPath.dropFirst().components(separatedBy: ":")
-
+    let components = self.fullPath.components(separatedBy: ":")
+    
     switch components.count {
     case 1:
       self.filePath = components[0]
       self.proto = .local
     case 2:
       self.filePath = components[1]
-      self.hostPath = components[0]
+      var host = components[0]
+      if host.starts(with: "/") {
+        host.removeFirst()
+      }
+      self.hostPath = host
     case 3:
       self.filePath = components[2]
       self.hostPath = components[1]
-      self.proto = BlinkFilesProtocols(rawValue: components[0])
+      var proto = components[0]
+      if proto.starts(with: "/") {
+        proto.removeFirst()
+      }
+      self.proto = BlinkFilesProtocols(rawValue: proto)
     default:
       throw ArgumentParser.ValidationError("Path format can only have three components /<protocol>:<host>:<path>")
     }
@@ -132,6 +134,8 @@ public class BlinkCopy: NSObject {
     let defaultRemoteProtocol: BlinkFilesProtocols
     switch argv[0] {
     case "fcp":
+      defaultRemoteProtocol = .sftp
+    case "scp":
       defaultRemoteProtocol = .sftp
     case "sftp":
       defaultRemoteProtocol = .sftp

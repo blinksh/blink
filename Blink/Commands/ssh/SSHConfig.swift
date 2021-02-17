@@ -199,6 +199,8 @@ struct SSHCommand: ParsableCommand {
 }
 
 struct ConfigFileOptions {
+  var user: String?
+  var port: String?
   var proxyCommand: String?
   var compression: Bool?
   var compressionLevel: UInt?
@@ -220,6 +222,10 @@ struct ConfigFileOptions {
         }
       }
       switch option[0].lowercased() {
+      case "user":
+        self.user = option[1]
+      case "port":
+        self.port = option[1]
       case "proxycommand":
         self.proxyCommand = option[1]
       case "compression":

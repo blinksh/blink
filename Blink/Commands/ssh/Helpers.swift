@@ -33,7 +33,7 @@
 import Foundation
 
 
-typealias Argv = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?
+public typealias Argv = UnsafeMutablePointer<UnsafeMutablePointer<Int8>?>?
 
 extension Argv {
   static func build(_ args: [String]) -> (argc: Int32, argv: Self, buff: UnsafeMutablePointer<Int8>?) {
@@ -125,9 +125,9 @@ struct StderrOutputStream: TextOutputStream {
 }
 
 func await(runLoop: RunLoop) {
-  let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true, block: { timer in
-      print("timer")
-  })
+  let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
+    print("timer")
+  }
   runLoop.add(timer, forMode: .default)
   CFRunLoopRun()
 }

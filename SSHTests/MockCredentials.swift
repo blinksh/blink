@@ -36,14 +36,22 @@ public struct MockCredentials {
   static let password: String = "regular"
   
   // TODO: check host
+  static let port: String = "2222"
   static let host: String = "localhost"
-  static let port: Int = 1080
   static let incorrectIpHost: String = "256.8.4.2"
   
   static let pathWithFile = "/Users/javierdemartin/TestSftpFile.dat"
   static let folderPath = "/Users/javierdemartin"
   
-  static var credentials = Credentials(user: MockCredentials.user,password: MockCredentials.password, host: MockCredentials.host)
+  //    let user: String = "vagrant"
+  //    let password: String = "vagrant"
+  //    let host: String = "192.168.1.100"
+  
+  static var credentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
   /// This one assumes another nonexistent machine on the same network, so it cannot be resolved.
   static let timeoutHost = Credentials(user: "asdf", password: "zxcv", host: "192.168.1.155")
@@ -53,17 +61,33 @@ public struct MockCredentials {
   
   static var wrongHost = Credentials(user: MockCredentials.user, password: "1234567890", host: "asdf")
   
-  static var interactiveCredentials = Credentials(user: MockCredentials.user, password: MockCredentials.password, host: MockCredentials.host)
+  static var interactiveCredentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
   static var noneCredentials = Credentials(user: "no-password", password: "", host: MockCredentials.host)
   
-  static var passwordCredentials = Credentials(user: MockCredentials.user, password: MockCredentials.password, host: MockCredentials.host)
+  static var passwordCredentials = Credentials(
+    user: MockCredentials.user,
+    password: MockCredentials.password,
+    host: MockCredentials.host
+  )
   
-  static var partialAuthenticationCredentials = Credentials(user: "partial", password: "partial", host: MockCredentials.host)
+  static var partialAuthenticationCredentials = Credentials(
+    user: "partial",
+    password: "partial",
+    host: MockCredentials.host
+  )
   
-  static var publicKeyAuthentication = Credentials(user: MockCredentials.user, password: "", host: MockCredentials.host)
-
-    static let wrongPrivateKey: String = """
+  static var publicKeyAuthentication = Credentials(
+    user: MockCredentials.user,
+    password: "",
+    host: MockCredentials.host
+  )
+  
+  static let wrongPrivateKey: String = """
     -----BEGIN OPENSSH PRIVATE KEY-----
     b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
     NhAAAAAwEAAQAAAgEAs8R5HjuE2nNbTx6qon0uA86o1Yy/2CYRT2Ws1Jr0p1zXudYWHPzW
@@ -113,13 +137,11 @@ public struct MockCredentials {
     SICtSpn+cO6WdcV9+sLyZZE6CfAelb2+uMrD4kFx74g32xj60TepEQfOti+pCZThkpzW7M
     qV3uhOrt6O0AAAAeamF2aWVyZGVtYXJ0aW5AbWFjYm9vay1wcm8ubGFuAQIDBAU=
     -----END OPENSSH PRIVATE KEY-----
-
     """
-
-    /**
-     This should be a private key that's not copied to the server hence the authentication should fail if used.
-     */
-
+  
+  /**
+   This should be a private key that's not copied to the server hence the authentication should fail if used.
+   */
   static let notCopiedPrivateKey: String = """
     -----BEGIN OPENSSH PRIVATE KEY-----
     b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAACFwAAAAdzc2gtcn
@@ -170,7 +192,6 @@ public struct MockCredentials {
     SICtSpn+cO6WdcV9+sLyZZE6CfAelb2+uMrD4kFx74g32xj60TepEQfOti+pCZThkpzW7M
     qV3uhOrt6O0AAAAeamF2aWVyZGVtYXJ0aW5AbWFjYm9vay1wcm8ubGFuAQIDBAU=
     -----END OPENSSH PRIVATE KEY-----
-
     """
   
   static let privateKey: String = """
@@ -223,9 +244,9 @@ public struct MockCredentials {
         vLD+RTOTkZTZz4YkvfsX7+GyeEuP3yYwkGQ7f8/+GYsV0GbBqHrUxDFNXps+7VZihECgcP
         UahnNu8JW6xfBwAAAB5qYXZpZXJkZW1hcnRpbkBtYWNib29rLXByby5sYW4BAgM=
         -----END OPENSSH PRIVATE KEY-----
-
         """
-    static let curvePrivateKey: String = """
+  
+  static let curvePrivateKey: String = """
     -----BEGIN OPENSSH PRIVATE KEY-----
     b3BlbnNzaC1rZXktdjEAAAAABG5vbmUAAAAEbm9uZQAAAAAAAAABAAAAaAAAABNlY2RzYS
     1zaGEyLW5pc3RwMjU2AAAACG5pc3RwMjU2AAAAQQTaVgu9iAzo1RGgJ+TVdp67x3n42ZAK

@@ -46,18 +46,6 @@ extension Digest {
 // Test different PKCS types? Just to make sure we are using the
 // right functions the right way?
 class AgentTests: XCTestCase {
-  func testSignature() throws {
-    continueAfterFailure = false
-    let key = try SSHKey(fromFile: "/Users/carloscabanero/.ssh/id_ecdsa")
-
-    // SHA256 hash
-    let helloWorld = Data("Hello World".utf8)
-    let helloWorldHash = SHA256.hash(data: helloWorld).data
-    let sig = try key.sign(helloWorldHash)
-    let isValid = try key.verify(signature: sig, of: helloWorldHash)
-
-    XCTAssertTrue(isValid)
-  }
 
   // Test the Signatures happen properly with RSA Keys, as those may include special algorithms
   func testAgentAuthenticationWithRSAKey() throws {

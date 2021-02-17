@@ -101,6 +101,7 @@ NSNumber * _parse_distance(NSString *str) {
   return @(str.doubleValue * scale);
 }
 
+__attribute__ ((visibility("default")))
 int geo_main(int argc, char *argv[]) {
   
   NSString *usage = @"Usage: geo track | geo lock Nm | stop | authorize | current | last N";

@@ -37,7 +37,7 @@ import Dispatch
 import ios_system
 
 @_cdecl("blink_ssh_main")
-func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
+public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdin, nil, _IONBF, 0)
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
@@ -83,6 +83,10 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
     let originalRawMode = device.rawMode
+    
+    defer {
+      device.rawMode = originalRawMode
+    }
 
     let cmd: SSHCommand
     let options: ConfigFileOptions
@@ -174,7 +178,6 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       SSHPool.deregister(runningCommand: cmd, on: conn)
     }
 
-    device.rawMode = originalRawMode
     return exitCode
   }
 
@@ -340,14 +343,13 @@ func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
   @objc public func sigwinch() {
     var c: AnyCancellable?
-    c = stream?.resizePty(rows: Int32(device.rows), columns: Int32(device.cols))
+    c = stream?
+      .resizePty(rows: Int32(device.rows), columns: Int32(device.cols))
       .sink(receiveCompletion: { completion in
-        switch completion {
-        case .failure(let error):
+        if case .failure(let error) = completion {
           print(error)
-        default:
-          c = nil
         }
+        c?.cancel()
       }, receiveValue: {})
   }
 

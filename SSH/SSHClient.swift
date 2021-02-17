@@ -73,8 +73,8 @@ public enum VerifyHost {
 }
 
 public struct SSHClientConfig {
-  let user: String?
-  let port: String?
+  let user: String
+  let port: String
   
   public typealias RequestVerifyHostCallback = (VerifyHost) -> AnyPublisher<InteractiveResponse, Error>
   
@@ -112,7 +112,7 @@ public struct SSHClientConfig {
   /**
    - Parameters:
    - user:
-   - port: Default will be `22`.
+   - port: Default will be `22`
    - authMethods: Different authentication methods to try
    - loggingVerbosity: Default LibSSH logging shown is `SSH_LOG_NOLOG`
    - verifyHostCallback:
@@ -121,7 +121,7 @@ public struct SSHClientConfig {
    - keepAliveInterval: if `nil` it won't send KeepAlive packages from Client to the Server
    */
   public init(user: String,
-              port: String? = "22",
+              port: String = "22",
               proxyJump: String? = nil,
               proxyCommand: String? = nil,
               authMethods: [AuthMethod]? = nil,
@@ -154,13 +154,11 @@ public struct SSHClientConfig {
     // that may come back from the server.
     // self.keepAliveInterval = keepAliveInterval
     
-    if let methods = authMethods {
-      methods.forEach({ auth in
-        if let auth = (auth as? Authenticator) {
-          self.authenticators.append(auth)
-        }
-      })
-    }
+    authMethods?.forEach({ auth in
+      if let auth = (auth as? Authenticator) {
+        self.authenticators.append(auth)
+      }
+    })
   }
 }
 
@@ -180,7 +178,7 @@ public class SSHClient {
   var keepAliveTimer: Timer?
   
   var isConnected: Bool {
-    get { ssh_is_connected(session) == 1 ? true : false }
+    ssh_is_connected(session) == 1 ? true : false
   }
   
   public struct PTY {
@@ -229,13 +227,13 @@ public class SSHClient {
     
     self.callbacks = ssh_callbacks_struct()
     
-    if setupCallbacks() != SSH_OK {
+    guard setupCallbacks() == SSH_OK else {
       throw SSHError(title: "Could not setup callbacks for session")
     }
     
     ssh_set_log_callback(loggingCallback)
     
-    var verbosity = options.loggingVerbosity
+    var verbosity = options.loggingVerbosity.rawValue
     ssh_options_set(session, SSH_OPTIONS_HOST, host)
     ssh_options_set(session, SSH_OPTIONS_USER, opts.user)
     ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
@@ -245,9 +243,7 @@ public class SSHClient {
     ssh_options_set(session, SSH_OPTIONS_COMPRESSION, &compression)
     ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, &level)
     
-    if (options.port != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port!)
-    }
+    ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port)
     
     if (options.proxyJump != nil) {
       ssh_options_set(session, SSH_OPTIONS_PROXYJUMP, options.proxyJump)
@@ -276,7 +272,7 @@ public class SSHClient {
   }
   
   @objc private func onServerKeepAlive() {
-    if !isConnected {
+    guard isConnected else {
       return
     }
     
@@ -318,7 +314,7 @@ public class SSHClient {
   }
   
   func connection() -> SSHConnection {
-    return Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
+    Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
@@ -558,7 +554,7 @@ public class SSHClient {
       }
       
       let method = methods.first!
-      log.message("Trying \(method.name())...", SSH_LOG_INFO)
+      log.message("Trying \(method.displayName)...", SSH_LOG_INFO)
       
       return method
         .auth(connection())

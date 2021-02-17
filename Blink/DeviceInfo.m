@@ -61,7 +61,7 @@
     NSString *marketingName = self.marketingName;
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"];
-    _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"];
+    _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [marketingName hasPrefix:@"Mac"];
     
   }
   return self;
@@ -172,7 +172,11 @@
   NSString *value = codes[_machine];
   if (value) {
     if ([value isEqualToString:@"Simulator"]) {
+#ifdef TARGET_OS_MACCATALYST
+      return @"Mac";
+#else
       return [UIDevice currentDevice].name;
+#endif
     }
     return value;
   }

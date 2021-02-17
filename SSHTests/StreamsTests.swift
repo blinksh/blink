@@ -38,7 +38,7 @@ import LibSSH
 
 extension SSHTests {
   func testStreamConnect() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    
     let cmd = "dd if=/dev/urandom bs=1024 count=10000 2> /dev/null"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -48,7 +48,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: false)
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -88,8 +88,12 @@ extension SSHTests {
     // Trigger windowed writes and continous usage of active windows.
     // Use data from the previous stdout to do stdin. Handle writes at different rates with the Buffer.
     // We can adjust the windows on buffer as we see it here.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
-                                 loggingVerbosity: .debug)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      loggingVerbosity: .debug
+    )
     let expectation = self.expectation(description: "Buffer Written")
     let cmd = "cat"
     
@@ -124,7 +128,11 @@ extension SSHTests {
   
   func testErrStream() throws {
     // Read on Error Stream, while nothing is received on stdout.
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     let cmd = "dd if=/dev/urandom bs=1024 count=1000 status=none 1>&2"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -157,7 +165,6 @@ extension SSHTests {
   // an operation. If we then tried to perform another operation on it,
   // it should fail.
   func testOutStreamStop() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
     let cmd = "du /"
     
     let expectCancel = self.expectation(description: "Operation Cancelled")
@@ -168,7 +175,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial("localhost", with: config)
+    let cancellable = SSHClient.dial("localhost", with: .testConfig)
       //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
@@ -182,13 +189,13 @@ extension SSHTests {
       }
     
     DispatchQueue.global(qos: .background)
-      .asyncAfter(deadline: .now() + 1,
+      .asyncAfter(deadline: .now() + 3,
                   execute: {
                     print("=== Cancel stream")
                     stream!.cancel()
                     expectCancel.fulfill()
                   })
-    wait(for: [expectCancel], timeout: 4)
+    wait(for: [expectCancel], timeout: 6)
     
     let channel = stream!.channel
     weak var s = stream
@@ -197,11 +204,11 @@ extension SSHTests {
     connection?.rloop.run(until: Date(timeIntervalSinceNow: 1))
     sleep(1)
     XCTAssertTrue(ssh_channel_is_closed(channel) != 0)
+    cancellable.cancel()
   }
   
   // Random input from a stream to a file that will be stopped right in the middle.
   func testInStreamStop() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
     let cmd = "cat > /tmp/asdf"
     
     let expectCancel = self.expectation(description: "Operation Cancelled")
@@ -212,7 +219,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial("localhost", with: config)
+    let cancellable = SSHClient.dial("localhost", with: .testConfig)
       //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
@@ -229,12 +236,12 @@ extension SSHTests {
       }
     
     DispatchQueue.global(qos: .background)
-      .asyncAfter(deadline: .now() + 2,
+      .asyncAfter(deadline: .now() + 5,
                   execute: {
                     cancellable.cancel()
                     expectCancel.fulfill()
                   })
-    wait(for: [expectCancel], timeout: 4)
+    wait(for: [expectCancel], timeout: 20)
     
     let channel = stream!.channel
     weak var s = stream
@@ -244,10 +251,11 @@ extension SSHTests {
     connection?.rloop.run(until: Date(timeIntervalSinceNow: 1))
     sleep(1)
     XCTAssertTrue(ssh_channel_is_closed(channel) != 0)
+    cancellable.cancel()
   }
   
   func testStreamEOF() throws {
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
+    
     let cmd = "cat"
     
     let expectCancel = self.expectation(description: "Operation Cancelled")
@@ -258,7 +266,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial("localhost", with: config)
+    var cancellable = SSHClient.dial(MockCredentials.host, with: .testConfig)
       //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
@@ -273,7 +281,7 @@ extension SSHTests {
       }
     
     DispatchQueue.global(qos: .background)
-      .asyncAfter(deadline: .now() + 2,
+      .asyncAfter(deadline: .now() + 5,
                   execute: {
                     stream?.sendEOF().assertNoFailure()
                       .sink {}.store(in: &self.cancellableBag)
@@ -284,7 +292,7 @@ extension SSHTests {
   func testInstreamClose() throws {
     // This is similar to the EOF test, but finishing writes from the connected
     // stream should have the same effect.
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
+    
     let cmd = "cat"
     
     let expectCancel = self.expectation(description: "Operation Cancelled")
@@ -295,7 +303,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial("localhost", with: config)
+    var cancellable = SSHClient.dial("localhost", with: .testConfig)
       //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
@@ -310,17 +318,21 @@ extension SSHTests {
       }
     
     DispatchQueue.global(qos: .background)
-      .asyncAfter(deadline: .now() + 2,
+      .asyncAfter(deadline: .now() + 4,
                   execute: {
                     stream?.sendEOF().assertNoFailure()
                       .sink {}.store(in: &self.cancellableBag)
                   })
-    wait(for: [expectCancel], timeout: 4)
+    wait(for: [expectCancel], timeout: 14)
   }
   
   
   func testStreamCloseRemote() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+    )
     
     var connection: SSHClient?
     var stream: SSH.Stream?
@@ -331,8 +343,8 @@ extension SSHTests {
     
     let expectKill = self.expectation(description: "Session killed from remote")
     
-    var cancellable = SSHClient.dial("192.170.1.100", with: config)
-      //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+//    var cancellable = SSHClient.dial("192.170.1.100", with: config)
+    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -379,7 +391,12 @@ extension SSHTests {
   // In this case the stream is connected to a pipe. In case the pipe closes, the stream needs to finalize.
   // This tries to imitate what happens at the terminal level with a proxy connection.
   func testStreamToPipe() throws {
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)], loggingVerbosity: .trace)
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      loggingVerbosity: .trace
+    )
     
     var connection: SSHClient?
     var stream: SSH.Stream?

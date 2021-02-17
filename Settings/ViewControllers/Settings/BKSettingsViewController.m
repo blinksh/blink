@@ -81,7 +81,7 @@
 {
   [super viewWillAppear:animated];
   
-  self.userNameLabel.text = [BKDefaults defaultUserName];;
+  self.userNameLabel.text = [BKDefaults defaultUserName];
   self.iCloudSyncStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud] ? @"On" : @"Off";
   self.autoLockStatusLabel.text = [BKUserConfigurationManager userSettingsValueForKey:BKUserConfigAutoLock] ? @"On" : @"Off";
   self.xCallbackStatusLabel.text = [BKDefaults isXCallBackURLEnabled] ? @"On" : @"Off";

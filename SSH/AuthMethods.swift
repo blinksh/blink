@@ -37,6 +37,11 @@ import LibSSH
 public protocol AuthMethod {
   // Standard name used to compare the auth method with the available ones from the server.
   func name() -> String
+  var displayName: String { get }
+}
+
+extension AuthMethod {
+  public var displayName: String { get { return name() } }
 }
 
 protocol Authenticator: AuthMethod {
@@ -77,11 +82,11 @@ public class AuthPassword: AuthMethod, Authenticator {
   }
   
   func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
-    return conn.tryAuth { try self.auth($0) }
+    conn.tryAuth { try self.auth($0) }
   }
   
   public func name() -> String {
-    return "password"
+    "password"
   }
 }
 
@@ -108,11 +113,11 @@ public class AuthNone: AuthMethod, Authenticator {
   }
   
   internal func auth(_ connection: SSHConnection) -> AnyPublisher<AuthState, Error> {
-    return connection.tryAuth { try self.auth($0) }
+    connection.tryAuth { try self.auth($0) }
   }
   
   public func name() -> String {
-    return "none"
+    "none"
   }
 }
 
@@ -157,7 +162,6 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
       case SSH_AUTH_PARTIAL.rawValue:
         return .Partial
       case SSH_AUTH_DENIED.rawValue:
-        
         self.wrongRetriesLeft -= 1
         
         if self.wrongRetriesLeft >= 0 {
@@ -216,7 +220,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
   }
   
   public func name() -> String {
-    return "keyboard-interactive"
+    "keyboard-interactive"
   }
 }
 
@@ -233,16 +237,19 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
  5. Clean up memory using `ssh_key_free()`
  */
 public class AuthPublicKey: AuthMethod, Authenticator {
-  
+  public var displayName: String { get { "\(name()) \(keyName)"  } }
   let privateKey: String
   var key: ssh_key?
+  var keyName: String
   // Blink only works with no passphrase keys
   // let callback: ssh_auth_callback?
   
   // Constructor from a String already, we assume content is obtained somewhere else.
-  public init(privateKey: String) {
+  // Pass the privateKey in blob format, and optionally the name for the key, to identify on logs.
+  public init(privateKey: String, keyName: String = "") {
     // We could import here, but prefer to do it somewhere else outside the configuration.
     self.privateKey = privateKey
+    self.keyName = keyName
   }
   
   func publicKeyNegotiation(_ session: ssh_session) throws -> AuthState {
@@ -300,7 +307,7 @@ public class AuthPublicKey: AuthMethod, Authenticator {
   }
   
   public func name() -> String {
-    return "publickey"
+    "publickey"
   }
   
   deinit {

@@ -36,6 +36,7 @@
 #include "MCPSession.h"
 #include <Blink-Swift.h>
 
+__attribute__ ((visibility("default")))
 int history_main(int argc, char *argv[]) {
   NSString *args = @"";
   if (argc == 2) {

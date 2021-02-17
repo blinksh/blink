@@ -36,55 +36,51 @@ import Dispatch
 
 @testable import SSH
 
+extension SSHClientConfig {
+  static let testConfig = SSHClientConfig(
+    user: MockCredentials.noneCredentials.user,
+    port: MockCredentials.port,
+    authMethods: []
+  )
+}
+
+extension SSHClient {
+  static func dialWithTestConfig() -> AnyPublisher<SSHClient, Error> {
+    dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+  }
+}
 
 class SFTPTests: XCTestCase {
   var cancellableBag: [AnyCancellable] = []
   
-  override func setUpWithError() throws {
-    // Put setup code here. This method is called before the invocation of each test method in the class.
+  override class func setUp() {
     SSHInit()
   }
   
-  override func tearDownWithError() throws {
-    // Put teardown code here. This method is called after the invocation of each test method in the class.
-  }
-  
   func testRequest() throws {
-    // TODO Share credentials between tests
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
-    let expectation = self.expectation(description: "Buffer Written")
-    
-    var connection: SSHClient?
-    var sftp: SFTPClient?
-    let cancellable = SSHClient.dial("localhost", with: config)
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        // We should throw immediately
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<[[FileAttributeKey : Any]], Error> in
-        sftp = client
-        return client.directoryFilesAndAttributes()
-      }.assertNoFailure()
-      .sink { list in
-        dump(list)
-        expectation.fulfill()
+    let list = SSHClient
+      .dialWithTestConfig()
+      .flatMap() { connection -> AnyPublisher<SFTPClient, Error> in
+        connection.requestSFTP()
       }
+      .flatMap() { client -> AnyPublisher<[[FileAttributeKey : Any]], Error> in
+        client.directoryFilesAndAttributes()
+      }
+      .assertNoFailure()
+      .exactOneOutput(test: self)
     
-    waitForExpectations(timeout: 15, handler: nil)
+    dump(list)
+    XCTAssertNotNil(list)
+    XCTAssertFalse(list!.isEmpty)
   }
   
   func testRead() throws {
-    // TODO Share credentials between tests
-    let config = SSHClientConfig(user: "carlos", authMethods: [AuthPassword(with: "")])
-    
     let expectation = self.expectation(description: "Buffer Written")
     
     var connection: SSHClient?
     var sftp: SFTPClient?
     
-    let cancellable = SSHClient.dial("localhost", with: config)
+    let cancellable = SSHClient.dial("localhost", with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
