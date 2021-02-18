@@ -58,8 +58,10 @@ public enum SSHAgentMessageType: UInt8 {
 fileprivate let errorData = Data(bytes: [0x05], count: MemoryLayout<CChar>.size)
 
 public class SSHAgent {
-  var ring: [Signer] = []
+  public private(set) var ring: [Signer] = []
 
+  public init() {}
+  
   public func attachTo(client: SSHClient) {
     let ctxt = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
     let cb: ssh_agent_callback = { (req, len, reply, userdata) in
@@ -88,7 +90,7 @@ public class SSHAgent {
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer) throws {
+  public func loadKey(_ key: Signer) {
     ring.append(key)
   }
 

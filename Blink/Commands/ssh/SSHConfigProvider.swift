@@ -71,6 +71,11 @@ class SSHClientConfigProvider {
     // TODO Apply connection options, that is different than config.
     // The config helps in the pool, but then you can connect there in many ways.
     let proxy: String? = options?.proxyCommand ?? proxyCommand(from: cmd.host)
+    let agent = prov.agent()
+    
+    let availableAuthMethods: [AuthMethod] =
+      [AuthAgent(agent)] +
+      prov.passwordAuthMethods()
     
     return SSHClientConfig(
       // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
@@ -79,7 +84,8 @@ class SSHClientConfigProvider {
       port: cmd.port.map(String.init) ?? options?.port ?? "22",
       proxyJump: cmd.proxyJump,
       proxyCommand: proxy,
-      authMethods: prov.availableAuthMethods(),
+      authMethods: availableAuthMethods,
+      agent: agent,
       loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
       verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
       sshDirectory: BlinkPaths.ssh()!,
@@ -89,26 +95,28 @@ class SSHClientConfigProvider {
 }
 
 extension SSHClientConfigProvider {
-  fileprivate func availableAuthMethods() -> [AuthMethod] {
+  fileprivate func keyAuthMethods() -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
-    
+
     // Explicit identity
-    if let identityFile = command.identityFile {
-      if let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
-        authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
-      }
+    if let identityFile = command.identityFile,
+       let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
+      authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
+    } else if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+      authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
     } else {
-      // Host key
-      if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
-        authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
-      } else {
-        // All default keys
-        for (defaultKey, name) in Self.defaultKeys() {
-          authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
-        }
+      // All default keys
+      for (defaultKey, name) in Self.defaultKeys() {
+        authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
       }
     }
     
+    return authMethods
+  }
+
+  fileprivate func passwordAuthMethods() -> [AuthMethod] {
+    var authMethods: [AuthMethod] = []
+
     // Host password
     if let password = Self.password(fromHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
@@ -116,8 +124,40 @@ extension SSHClientConfigProvider {
       // Interactive
       authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
     }
-    
+
     return authMethods
+  }
+  
+  fileprivate func agent() -> SSHAgent {
+    let agent = SSHAgent()
+    
+    if let identityFile = command.identityFile,
+       let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
+      // NOTE We could also keep the reference and just read the key at the proper time.
+      // TODO Errors. Either pass or log here, or if we create a different
+      // type of key, then let the Agent fail.
+      // TODO Need to pass name.
+      // TODO It would make sense for the constructor to sanitize directly. But that would also mean
+      // we would have to pass a Data, or work with Strings in another convenience init.
+      if let blob = SSHKey.sanitize(key: identityKey).data(using: .utf8),
+         let key = try? SSHKey(fromBlob: blob) {
+        agent.loadKey(key)
+      }
+    } else if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+      if let blob = SSHKey.sanitize(key: hostKey).data(using: .utf8),
+         let key = try? SSHKey(fromBlob: blob) {
+        agent.loadKey(key)
+      }
+    } else {
+      for (defaultKey, name) in Self.defaultKeys() {
+        if let blob = SSHKey.sanitize(key: defaultKey).data(using: .utf8),
+           let key = try? SSHKey(fromBlob: blob) {
+          agent.loadKey(key)
+        }
+      }
+    }
+    
+    return agent
   }
   
   fileprivate func authPrompt(_ prompt: Prompt) -> AnyPublisher<[String], Error> {
@@ -209,8 +249,6 @@ extension SSHClientConfigProvider {
       messageToShow = String(format: HostKeyChangedUnknownRequestMessage, serverFingerprint)
     case .notFound(serverFingerprint: let serverFingerprint):
       messageToShow = String(format: HostKeyChangedNotFoundRequestMessage, serverFingerprint)
-    @unknown default:
-      break
     }
 
     let readAnswer = self.device.readline(messageToShow, secure: false)
