@@ -128,11 +128,6 @@ extension SSHTests {
   
   func testErrStream() throws {
     // Read on Error Stream, while nothing is received on stdout.
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
     let cmd = "dd if=/dev/urandom bs=1024 count=1000 status=none 1>&2"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -143,7 +138,7 @@ extension SSHTests {
     let buffer = MemoryBuffer(fast: true)
     let errBuffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -154,7 +149,7 @@ extension SSHTests {
         stream = s
         s.handleCompletion = { expectation.fulfill() }
         s.connect(stdout: buffer, stderr: errBuffer)
-      }
+      }.store(in: &cancellableBag)
     
     wait(for: [expectation], timeout: 15)
     XCTAssertTrue(buffer.count == 0, "Buffer does not match. Got \(buffer.count)")

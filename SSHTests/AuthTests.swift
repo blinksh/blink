@@ -277,6 +277,37 @@ class AuthTests: XCTestCase {
     XCTAssertNotNil(connection)
   }
   
+  /**
+   We expect to be kicked out by the server before we get a chance to try all.
+   */
+  func testExhaustRetries() throws {
+    let config = SSHClientConfig(
+      user: MockCredentials.passwordCredentials.user,
+      port: MockCredentials.port,
+      authMethods: [
+        AuthPassword(with: MockCredentials.wrongCredentials.password),
+        AuthPassword(with: MockCredentials.wrongCredentials.password),
+        AuthPassword(with: MockCredentials.wrongCredentials.password),
+        AuthPassword(with: MockCredentials.wrongCredentials.password),
+        AuthPassword(with: MockCredentials.passwordCredentials.password)
+      ]
+    )
+    
+    var completion: Any? = nil
+    
+    SSHClient
+      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .sink(
+        test: self,
+        timeout: 30,
+        receiveCompletion: {
+          completion = $0
+        }
+      )
+    
+    assertCompletionFailure(completion, withError: .connError(msg: ""))
+  }
+  
   // MARK: Public Key Authentication
   
   /**
@@ -360,6 +391,7 @@ class AuthTests: XCTestCase {
       .dial(MockCredentials.interactiveCredentials.host, with: config)
       .exactOneOutput(
         test: self,
+        timeout: 10,
         receiveCompletion: { completion in
           switch completion {
           case .finished:
@@ -374,7 +406,6 @@ class AuthTests: XCTestCase {
         }
       )
     
-    waitForExpectations(timeout: 5, handler: nil)
     XCTAssertNotNil(connection)
   }
 }

@@ -25,3 +25,8 @@ usermod -aG sudo regular
 chown -R regular:regular /home/regular
 chown root:root /home/regular
 echo "regular:regular" | chpasswd
+
+# Download files for SFTP tests
+curl -X GET https://cdn.kernel.org/pub/linux/kernel/v5.x/linux-5.4.99.tar.xz --output /home/no-password/linux.tar.xz
+chown no-password:no-password /home/no-password/linux.tar.xz
+chown -R no-password:no-password /home/no-password/copy_test

@@ -8,4 +8,4 @@ fi
 
 docker build -t sshd .
 echo Starting sshd on port $SSHD_PORT
-docker run --rm --init --name sshd -p $SSHD_PORT:22 sshd $@
+docker run --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $SSHD_PORT:22 sshd $@
