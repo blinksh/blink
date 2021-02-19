@@ -302,7 +302,7 @@ class SFTPTests: XCTestCase {
   // }
   // }
   
-  func testCopyAsASource() throws {
+  func testCopyAsASource() {
     continueAfterFailure = false
 
     var connection: SSHClient?
@@ -339,39 +339,35 @@ class SFTPTests: XCTestCase {
     wait(for: [copied], timeout: 30)
   }
  
-  func testCopyAsDest() throws {
-    continueAfterFailure = false
-    
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+  func testCopyAsDest() {    
     let local = Local()
     
-    let copied = self.expectation(description: "Copied structure")
-    SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        sftp = client
-        // TODO Create a random file first, or use one from a previous test.
-        return client.walkTo("/home/no-password")
-      }.flatMap() { f -> CopyProgressInfo in
-        return local.walkTo("/tmp/test").flatMap { f.copy(from: [$0]) }.eraseToAnyPublisher()
-      }.sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          print("done")
-          copied.fulfill()
-        case .failure(let error):
-          XCTFail("\(error)")
-        }
-      }, receiveValue: { result in
-        dump(result)
-        //totalWritten += result[1]
-      }).store(in: &cancellableBag)
+    let connection = SSHClient
+      .dialWithTestConfig()
+      .exactOneOutput(test: self)
+      
+    connection?
+      .requestExec(command: "rm -rf ~/test")
+      .sink(test: self)
     
-    wait(for: [copied], timeout: 500)
+    let sftp = connection?
+      .requestSFTP()
+      .exactOneOutput(test: self)
+    
+    var completion: Any? = nil
+    
+    sftp?
+      .walkTo("/home/no-password")
+      .flatMap() { f -> CopyProgressInfo in
+        local.walkTo("/tmp/test").flatMap { f.copy(from: [$0]) }.eraseToAnyPublisher()
+      }.sink(
+        test: self,
+        receiveCompletion: {
+          completion = $0
+        }
+      )
+    
+    assertCompletionFinished(completion)
   }
   
   // Write and read a stat

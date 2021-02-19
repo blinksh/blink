@@ -341,11 +341,6 @@ class SSHTests: XCTestCase {
   }
   
   func testExecChannel() throws {
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
     let cmd = "dd if=/dev/urandom bs=1024 count=10000 2> /dev/null"
     let expectation = self.expectation(description: "Buffer Written")
     
@@ -354,7 +349,7 @@ class SSHTests: XCTestCase {
     var output: DispatchData?
     
     print("=====First read")
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
