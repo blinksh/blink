@@ -93,8 +93,11 @@ public class Stream : Reader, Writer, WriterTo {
             self.handleFailure?(error)
             self.cancel()
           default:
-            self.log.message("Stdout complete", SSH_LOG_INFO)
+            // The channel is complete when both stdout and stderr have received all data.
+            self.log.message("Channel complete", SSH_LOG_INFO)
             self.handleCompletion?()
+            self.handleCompletion = nil
+            self.cancel()
             break
           }
         }, receiveValue: { written in
@@ -139,7 +142,11 @@ public class Stream : Reader, Writer, WriterTo {
               self.handleFailure?(error)
               self.cancel()
             default:
-              break
+              // The channel is complete when both stdout and stderr have received all data.
+              self.log.message("Channel complete", SSH_LOG_INFO)
+              self.handleCompletion?()
+              self.handleCompletion = nil
+              self.cancel()
             }
           }, receiveValue: { written in
             self.stderrBytes += written
