@@ -53,7 +53,7 @@ class SSHPool {
     guard let conn = connection(for: host, with: config) else {
       return shared.startConnection(host, with: config, proxy: proxy)
     }
-    return Just(conn).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(conn)
   }
 
   private func startConnection(_ host: String, with config: SSHClientConfig,

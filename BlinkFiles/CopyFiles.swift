@@ -74,7 +74,7 @@ extension Translator {
           return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
             .flatMap { f -> CopyProgressInfo in
               if size == 0 {
-                return Just((name, 0, 0)).mapError { $0 as Error }.eraseToAnyPublisher()
+                return Just((name, 0, 0)).setFailureType(to: Error.self).eraseToAnyPublisher()
               }
               return f.copyFile(from: t, name: name, size: size)
             }.eraseToAnyPublisher()
@@ -117,7 +117,8 @@ extension File {
           print("File Copied bytes \(totalWritten)")
           totalWritten += written
           let report = Just((name, fileSize, written))
-            .mapError { $0 as Error }.eraseToAnyPublisher()
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
           
           if totalWritten == fileSize {
             // Close and send the final report
@@ -134,7 +135,9 @@ extension File {
         .tryCatch { error -> CopyProgressInfo in
           // Closing the file while reading may provoke an error. Capture it here and if we are done, we ignore it.
           if totalWritten == fileSize {
-            return Just((name, fileSize, 0)).mapError {$0 as Error}.eraseToAnyPublisher()
+            return Just((name, fileSize, 0))
+              .setFailureType(to: Error.self)
+              .eraseToAnyPublisher()
           } else {
             throw error
           }

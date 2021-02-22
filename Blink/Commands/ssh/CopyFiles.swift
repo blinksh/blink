@@ -217,7 +217,7 @@ public class BlinkCopy: NSObject {
   }
 
   func localTranslator(to path: String) -> AnyPublisher<Translator, Error> {
-    return Just(BlinkFiles.Local()).mapError {$0 as Error}.eraseToAnyPublisher()
+    return .just(BlinkFiles.Local())
   }
 
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
@@ -236,7 +236,7 @@ public class BlinkCopy: NSObject {
       sshOptions = try sshCommand.connectionOptions.get()
     } catch {
       let message = SSHCommand.message(for: error)
-      return Fail(error: CommandError(message: message)).eraseToAnyPublisher()
+      return .fail(error: CommandError(message: message))
     }
 
     let config = SSHClientConfigProvider.config(command: sshCommand, config: sshOptions, using: device)

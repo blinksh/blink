@@ -49,7 +49,7 @@ class AuthTests: XCTestCase {
     
   func testPasswordAuthenticationWithCallback() {
     let requestAnswers: SSHClientConfig.RequestVerifyHostCallback = { prompt in
-      Just(InteractiveResponse.affirmative).setFailureType(to: Error.self).eraseToAnyPublisher()
+      .just(InteractiveResponse.affirmative)
     }
     
     let config = SSHClientConfig(
@@ -378,7 +378,7 @@ class AuthTests: XCTestCase {
         answers = []
       }
       
-      return Just(answers).setFailureType(to: Error.self).eraseToAnyPublisher()
+      return .just(answers)
     }
     
     let config = SSHClientConfig(

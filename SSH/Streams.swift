@@ -171,14 +171,16 @@ public class Stream : Reader, Writer, WriterTo {
   }
   
   public func sendEOF() -> AnyPublisher<Void, Error> {
-    return Just(channel).mapError { $0 as Error }.eraseToAnyPublisher()
+    return AnyPublisher
+      .just(channel)
       .tryChannel { chan in
         let rc = ssh_channel_send_eof(self.channel)
         if rc != SSH_OK {
           throw SSHError(rc, forSession: self.client.session)
         }
         self.stdinCancellable?.cancel()
-      }.subscribe(on: client.rloop)
+      }
+      .subscribe(on: client.rloop)
       .eraseToAnyPublisher()
   }
   
@@ -186,14 +188,16 @@ public class Stream : Reader, Writer, WriterTo {
    * Resize the current stream.
    */
   public func resizePty(rows: Int32, columns: Int32) -> AnyPublisher<Void, Error> {
-    return Just(channel).mapError { $0 as Error }.eraseToAnyPublisher()
+    return AnyPublisher
+      .just(channel)
       .tryChannel { chan in
         self.log.message("Resizing PTY: \(rows)x\(columns)", SSH_LOG_INFO)
         let rc = ssh_channel_change_pty_size(self.channel, columns, rows)
         if rc != SSH_OK {
           throw SSHError(rc, forSession: self.client.session)
         }
-      }.subscribe(on: client.rloop)
+      }
+      .subscribe(on: client.rloop)
       .eraseToAnyPublisher()
   }
   

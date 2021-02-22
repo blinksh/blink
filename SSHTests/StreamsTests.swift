@@ -69,7 +69,7 @@ extension SSHTests {
     
     print("FAST WRITE===")
     cancellable = Just(connection!)
-      .mapError {$0 as Error}
+      .setFailureType(to: Error.self)
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         return conn.requestExec(command: cmd)
       }.assertNoFailure()

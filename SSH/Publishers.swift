@@ -181,6 +181,17 @@ extension AnyPublisher where Output == ssh_session, Failure == Error {
   }
 }
 
+// TODO: Move to own module?
+public extension AnyPublisher {
+  @inlinable static func just(_ output: Output) -> Self {
+    .init(Just(output).setFailureType(to: Failure.self))
+  }
+  
+  @inlinable static func fail(error: Failure) -> Self {
+    .init(Fail(error: error))
+  }
+}
+
 fileprivate class UnfairLock {
   private var pLock: UnsafeMutablePointer<os_unfair_lock>
   

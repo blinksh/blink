@@ -326,7 +326,7 @@ extension SSHTests {
             //RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
             s.connect(stdout: output, stdin: input)
           })
-        self.wait(for: [expectExecFinished], timeout: 5)
+        self.wait(for: [expectExecFinished], timeout: 10)
         
         // Now we await here for the main connection to close.
         // Closing the main connection should close the proxy as well.

@@ -34,7 +34,6 @@ import Foundation
 import Network
 import LibSSH
 
-
 typealias SSHConnection = AnyPublisher<ssh_session, Error>
 typealias SSHChannel = AnyPublisher<ssh_channel, Error>
 
@@ -311,16 +310,16 @@ public class SSHClient {
   }
   
   func connection() -> SSHConnection {
-    Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
+    AnyPublisher.just(self.session).subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
   func newChannel() -> SSHChannel {
     guard let channel = ssh_channel_new(self.session) else {
-      return Fail(error: SSHError(title: "Could not create channel")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not create channel"))
     }
     ssh_channel_set_blocking(channel, 0)
-    return Just(channel).mapError { $0 as Error }.subscribe(on: rloop)
+    return AnyPublisher.just(channel).subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
@@ -331,7 +330,7 @@ public class SSHClient {
     do {
       c = try SSHClient(to: host, with: opts, proxyCb: proxyCb)
     } catch {
-      return Fail(error: error).eraseToAnyPublisher()
+      return .fail(error: error)
     }
     
     // Done this way we don't have to handle cancellations here.
@@ -345,14 +344,14 @@ public class SSHClient {
         if client.options.requestVerifyHostCallback != nil {
           return client.verifyKnownHost()
         }
-        return Just(client).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(client)
       }
       .flatMap{ $0.auth() }
       .flatMap{ client -> AnyPublisher<SSHClient, Error> in
         if client.options.keepAliveInterval != nil {
           client.startKeepAliveTimer()
         }
-        return Just(client).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(client)
       }
       // If cancelled, the connection will be closed without being passed to the user or
       // once the command is dumped.
@@ -401,13 +400,12 @@ public class SSHClient {
     // None of the calls here require to contact the server, so we can do them without wrapping.
     let rc = ssh_get_server_publickey(session, &serverPublicKey)
     if rc < 0 {
-      return Fail(error: SSHError(title: "Could not get server publickey")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not get server publickey"))
     }
     
     let state = ssh_get_publickey_hash(serverPublicKey, SSH_PUBLICKEY_HASH_SHA256, &hash, &hlen)
     if state < 0 {
-      return Fail(error: SSHError(title: "Could not get server publickey hash"))
-        .eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not get server publickey hash"))
     }
     
     let hexString = String(cString: ssh_get_hexa(hash, hlen))
@@ -416,20 +414,19 @@ public class SSHClient {
     let rc3 = ssh_session_is_known_server(session)
     switch rc3 {
     case SSH_KNOWN_HOSTS_OK:
-      return Just(self).mapError { $0 as Error }.eraseToAnyPublisher()
+      return .just(self)
       
     case SSH_KNOWN_HOSTS_CHANGED:
       return self.options.requestVerifyHostCallback!(.changed(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
         if answer == .affirmative {
           let rc = ssh_session_update_known_hosts(self.session)
           if rc != SSH_OK {
-            return Fail(error: SSHError(title: "Could not update known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Could not update known_hosts file."))
           }
-          
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
     case SSH_KNOWN_HOSTS_UNKNOWN:
@@ -438,23 +435,23 @@ public class SSHClient {
           let rc = ssh_session_update_known_hosts(self.session)
           
           if rc < 0 {
-            return Fail(error: SSHError(title: "Error updating known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Error updating known_hosts file."))
           }
           
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
       
     /// The server gave use a key of a type while we had an other type recorded. It is a possible attack.
     case SSH_KNOWN_HOSTS_OTHER:
       // Stop connection because we could not verify the authenticity. And we could make the other side dispaly it.
-      return Fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack."))
     /// There had been an eror checking the host.
     case SSH_KNOWN_HOSTS_ERROR:
-      return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not verify host authenticity."))
     /// The known host file does not exist. The host is thus unknown. File will be created if host key is accepted
     case SSH_KNOWN_HOSTS_NOT_FOUND:
       return self.options.requestVerifyHostCallback!(.notFound(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
@@ -462,17 +459,17 @@ public class SSHClient {
           let rc = ssh_session_update_known_hosts(self.session)
           
           if rc != SSH_OK {
-            return Fail(error: SSHError(title: "Error updating known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Error updating known_hosts file."))
           }
           
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
     default:
-      return Fail(error: SSHError(title: "Unknown code received during host key exchange. Possible library error.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Unknown code received during host key exchange. Possible library error."))
     }
   }
   
@@ -488,7 +485,8 @@ public class SSHClient {
           withTimeInterval: Double(timeout),
           repeats: false) {_ in timerFired = true }
         return conn
-      }.eraseToAnyPublisher()
+      }
+      .eraseToAnyPublisher()
       .tryOperation { session in
         if timerFired {
           throw SSHError(title: "Connection to \(self.host) timed out.")
@@ -543,7 +541,7 @@ public class SSHClient {
     // Return the Client if any method worked, otherwise return an error
     func tryAuth(_ methods: [Authenticator],  tried: [Authenticator]) -> AnyPublisher<SSHClient, Error> {
       if methods.count == 0 {
-        return Fail(error: SSHError.authError(msg: "Could not authenticate, no valid methods to try.")).eraseToAnyPublisher()
+        return .fail(error: SSHError.authError(msg: "Could not authenticate, no valid methods to try."))
       }
       
       let method = methods.first!
@@ -554,7 +552,7 @@ public class SSHClient {
         .flatMap { result -> AnyPublisher<SSHClient, Error> in
           switch result {
           case .Success:
-            return Just(self).mapError { $0 as Error }.eraseToAnyPublisher()
+            return .just(self)
           case .Partial:
             return tryAuth(self.validAuthMethods(), tried: tried)
           default:
@@ -570,7 +568,7 @@ public class SSHClient {
               tried.append(methods.removeFirst())
               
               // Return a failure and close the connection that's still open
-              return Fail(error: SSHError.authFailed(methods: tried)).eraseToAnyPublisher()
+              return .fail(error: SSHError.authFailed(methods: tried))
             }
             
             tried.append(methods.removeFirst())
@@ -721,8 +719,7 @@ public class SSHClient {
   public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<Stream, Error> {
     if port == 0 {
       // TODO Passing 0 will allocate an available port, and be returned at the last param on listen
-      return Fail(error: SSHError(title: "Ask server to allocate a bound port not allowed"))
-        .eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Ask server to allocate a bound port not allowed"))
     }
     
     self.log.message("REVERSE Forward requested to address \(address) on port \(port)", SSH_LOG_INFO)
@@ -775,7 +772,7 @@ public class SSHClient {
     return vars.enumerated().publisher
       .flatMap { (_, arg1) -> AnyPublisher<ssh_channel, Error> in
         let (key, value) = arg1
-        return Just(channel).mapError {$0 as Error}.eraseToAnyPublisher()
+        return .just(channel)
           .tryChannel { channel in
             self.log.message("Requesting Env Var \(key)", SSH_LOG_INFO)
             let rc = ssh_channel_request_env(channel, key, value)
