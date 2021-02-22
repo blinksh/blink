@@ -49,10 +49,10 @@ protocol Authenticator: AuthMethod {
 }
 
 public enum AuthState {
-  case Success
-  case Denied
-  case Continue(auth: AnyPublisher<AuthState, Error>)
-  case Partial
+  case success
+  case denied
+  case `continue`(auth: AnyPublisher<AuthState, Error>)
+  case partial
 }
 
 // MARK: Password Authentication Method
@@ -66,18 +66,13 @@ public class AuthPassword: AuthMethod, Authenticator {
   
   func auth(_ session: ssh_session) throws -> AuthState {
     let rc = ssh_userauth_password(session, nil, password)
-    
-    switch rc {
-    case SSH_AUTH_SUCCESS.rawValue:
-      return .Success
-    case SSH_AUTH_DENIED.rawValue:
-      return .Denied
-    case SSH_AUTH_PARTIAL.rawValue:
-      return .Partial
-    case SSH_AUTH_AGAIN.rawValue:
-      throw SSHError(auth: ssh_auth_e(rawValue: rc), forSession: session)
-    default:
-      throw SSHError(auth: ssh_auth_e(rawValue: rc), forSession: session)
+    let auth = ssh_auth_e(rc)
+    switch auth {
+    case SSH_AUTH_SUCCESS: return .success
+    case SSH_AUTH_DENIED:  return .denied
+    case SSH_AUTH_PARTIAL: return .partial
+    case SSH_AUTH_AGAIN:   throw SSHError(auth: auth, forSession: session)
+    default:               throw SSHError(auth: auth, forSession: session)
     }
   }
   
@@ -102,14 +97,13 @@ public class AuthNone: AuthMethod, Authenticator {
   
   func auth(_ session: ssh_session) throws -> AuthState {
     let rc = ssh_userauth_none(session, nil)
+    let auth = ssh_auth_e(rc)
     
-    switch rc {
-    case SSH_AUTH_SUCCESS.rawValue:
-      return .Success
-    case SSH_AUTH_DENIED.rawValue:
-      return .Denied
+    switch auth {
+    case SSH_AUTH_SUCCESS: return .success
+    case SSH_AUTH_DENIED:  return .denied
     default:
-      throw SSHError(auth: ssh_auth_e(rawValue: rc), forSession: session)
+      throw SSHError(auth: auth, forSession: session)
     }
   }
   
@@ -157,24 +151,25 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
   func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
     return conn.tryAuth { session in
       let rc = ssh_userauth_kbdint(session, nil, nil)
-      switch rc {
-      case SSH_AUTH_SUCCESS.rawValue:
-        return .Success
-      case SSH_AUTH_PARTIAL.rawValue:
-        return .Partial
-      case SSH_AUTH_DENIED.rawValue:
+      let auth = ssh_auth_e(rc)
+      switch auth {
+      case SSH_AUTH_SUCCESS:
+        return .success
+      case SSH_AUTH_PARTIAL:
+        return .partial
+      case SSH_AUTH_DENIED:
         self.wrongRetriesLeft -= 1
         
         if self.wrongRetriesLeft >= 0 {
           throw SSHError(auth: SSH_AUTH_AGAIN, forSession: session)
         }
         
-        return .Denied
-      case SSH_AUTH_INFO.rawValue:
+        return .denied
+      case SSH_AUTH_INFO:
         // Get prompt info
         let p = self.prompts(session)
         
-        return AuthState.Continue(
+        return AuthState.continue(
           auth: self.requestAnswers(p)
             .tryMap { answers in
               _ = try answers.enumerated().map { (idx, answer) in
@@ -193,7 +188,7 @@ public class AuthKeyboardInteractive: AuthMethod, Authenticator {
             .eraseToAnyPublisher()
         )
       default:
-        throw SSHError(auth: ssh_auth_e(rawValue: rc), forSession: session)
+        throw SSHError(auth: auth, forSession: session)
       }
     }
   }
@@ -257,16 +252,13 @@ public class AuthPublicKey: AuthMethod, Authenticator {
     try importPrivateKey()
     
     let rc = ssh_userauth_try_publickey(session, nil, self.key)
+    let auth = ssh_auth_e(rc)
     
-    switch rc {
-    case SSH_AUTH_SUCCESS.rawValue:
-      return .Success
-    case SSH_AUTH_PARTIAL.rawValue:
-      return .Partial
-    case SSH_AUTH_DENIED.rawValue:
-      return .Denied
-    default:
-      throw SSHError(auth: ssh_auth_e(rc), forSession: session)
+    switch auth {
+    case SSH_AUTH_SUCCESS: return .success
+    case SSH_AUTH_PARTIAL: return .partial
+    case SSH_AUTH_DENIED:  return .denied
+    default: throw SSHError(auth: auth, forSession: session)
     }
   }
   
@@ -281,17 +273,14 @@ public class AuthPublicKey: AuthMethod, Authenticator {
   
   func privateKeyAuthentication(_ session: ssh_session) throws -> AuthState {
     let rc = ssh_userauth_publickey(session, nil, self.key)
+    let auth = ssh_auth_e(rc)
     
-    switch rc {
-    case SSH_AUTH_SUCCESS.rawValue:
-      return .Success
+    switch auth {
+    case SSH_AUTH_SUCCESS: return .success
     /// You've been partially authenticated, you still have to use another method
-    case SSH_AUTH_PARTIAL.rawValue:
-      return .Partial
-    case SSH_AUTH_DENIED.rawValue:
-      return .Denied
-    default:
-      throw SSHError(auth: ssh_auth_e(rc), forSession: session)
+    case SSH_AUTH_PARTIAL: return .partial
+    case SSH_AUTH_DENIED:  return .denied
+    default: throw SSHError(auth: auth, forSession: session)
     }
   }
   
@@ -299,8 +288,8 @@ public class AuthPublicKey: AuthMethod, Authenticator {
     return conn.tryAuth { session in
       let state = try self.publicKeyNegotiation(session)
       switch state {
-      case .Success:
-        return AuthState.Continue(auth: conn.tryAuth { try self.privateKeyAuthentication($0) })
+      case .success:
+        return AuthState.continue(auth: conn.tryAuth { try self.privateKeyAuthentication($0) })
       default:
         return state
       }

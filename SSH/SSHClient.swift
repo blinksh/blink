@@ -583,9 +583,9 @@ public class SSHClient {
         .auth(connection())
         .flatMap { result -> AnyPublisher<SSHClient, Error> in
           switch result {
-          case .Success:
+          case .success:
             return .just(self)
-          case .Partial:
+          case .partial:
             return tryAuth(self.validAuthMethods(), tried: tried)
           default:
             var tried = tried

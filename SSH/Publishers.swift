@@ -169,10 +169,10 @@ extension AnyPublisher where Output == ssh_session, Failure == Error {
       // If Auth needs to continue, use the provided
       // Publisher
       switch state {
-      case .Continue(let pub):
+      case .continue(let pub):
         return pub
       default:
-        return Just(state).setFailureType(to: Error.self).eraseToAnyPublisher()
+        return .just(state)
       }
     }.handleEvents(receiveCancel: {
       lock.spinLock()
