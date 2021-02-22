@@ -252,7 +252,8 @@ public class SSHClient {
     try _setSessionOption(SSH_OPTIONS_USER, opts.user)
     try _setSessionOption(SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
     
-    try _setSessionOption(SSH_OPTIONS_COMPRESSION, opts.compression ? "yes" : "no")
+    let compression = opts.compression ? "yes" : "no"
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION, compression)
     var compressionLevel = opts.compressionLevel
     try _setSessionOption(SSH_OPTIONS_COMPRESSION_LEVEL, &compressionLevel)
     
@@ -804,7 +805,7 @@ public class SSHClient {
     return vars.enumerated().publisher
       .flatMap { (_, arg1) -> AnyPublisher<ssh_channel, Error> in
         let (key, value) = arg1
-        return .just(channel)
+        return AnyPublisher.just(channel)
           .tryChannel { channel in
             self.log.message("Requesting Env Var \(key)", SSH_LOG_INFO)
             let rc = ssh_channel_request_env(channel, key, value)
