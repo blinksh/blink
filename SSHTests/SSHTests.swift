@@ -286,56 +286,35 @@ class SSHTests: XCTestCase {
     // Create an interactive shell and close it. Note it is not enough to just
     // send an exit on the input, because otherwise we may be missing output. We
     // need to process all the output before the EOF and close are triggered.
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
-    let expectPty = self.expectation(description: "PTY")
+    
     let expectClose = self.expectation(description: "PTY Closed")
     
-    var connection: SSHClient?
-    var stream: SSH.Stream?
+    let connection = SSHClient
+      .dialWithTestConfig()
+      .exactOneOutput(test: self)!
     
-    SSHClient
-      .dial(MockCredentials.passwordCredentials.host, with: config)
-      .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestInteractiveShell(withPTY: SSHClient.PTY(rows: 80, columns: 42))
-      }
+    let stream = connection
+      .requestInteractiveShell(withPTY: SSHClient.PTY(rows: 80, columns: 42))
       .assertNoFailure()
-      .sink { pty in
-        pty.handleCompletion = { expectClose.fulfill() }
-        stream = pty
-        expectPty.fulfill()
-      }
-      .store(in: &cancellableBag)
+      .exactOneOutput(test: self)!
     
-    wait(for:[expectPty], timeout: 500)
+    stream.handleCompletion = expectClose.fulfill
     
     // Exit the remote session manually. Could also send a signal.
-    let data = "exit\n".data(using: .utf8)!
-    let dd = data.withUnsafeBytes({ ptr in
-      return DispatchData(bytes: ptr)
-    })
+    let data = "exit\n".data(using: .utf8)!.withUnsafeBytes { DispatchData(bytes: $0) }
+
+    var writeCompletion: Any? = nil
+    stream.write(data, max: 20)
+      .sink(
+        test: self,
+        receiveCompletion: {
+          writeCompletion = $0
+        }
+      )
     
-    let expectWrite = self.expectation(description: "Write complete")
-    stream!.write(dd, max: 20).sink(receiveCompletion: { comp in
-      switch comp {
-      case .finished:
-        print("Finished writing")
-        connection!.rloop.run(until: Date(timeIntervalSinceNow: 2))
-        expectWrite.fulfill()
-      case .failure(let error):
-        dump(error)
-        XCTFail("Failed \(error.localizedDescription)")
-      }
-    }, receiveValue: { _ in }).store(in: &cancellableBag)
-    wait(for: [expectWrite], timeout: 5)
+    assertCompletionFinished(writeCompletion)
     
-    let buffer = MemoryBuffer(fast: true)
-    stream!.connect(stdout: buffer)
+    stream.connect(stdout: MemoryBuffer(fast: true))
     
     wait(for: [expectClose], timeout: 5)
   }
