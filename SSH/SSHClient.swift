@@ -41,6 +41,24 @@ public func SSHInit() {
   ssh_init()
 }
 
+// TODO: check libssh api for string values
+fileprivate extension ssh_options_e {
+  var name: String {
+    switch self {
+    case SSH_OPTIONS_HOST:              return "SSH_OPTIONS_HOST"
+    case SSH_OPTIONS_USER:              return "SSH_OPTIONS_USER"
+    case SSH_OPTIONS_LOG_VERBOSITY:     return "SSH_OPTIONS_LOG_VERBOSITY"
+    case SSH_OPTIONS_COMPRESSION:       return "SSH_OPTIONS_COMPRESSION"
+    case SSH_OPTIONS_COMPRESSION_LEVEL: return "SSH_OPTIONS_COMPRESSION_LEVEL"
+    case SSH_OPTIONS_PORT_STR:          return "SSH_OPTIONS_PORT_STR"
+    case SSH_OPTIONS_PROXYJUMP:         return "SSH_OPTIONS_PROXYJUMP"
+    case SSH_OPTIONS_PROXYCOMMAND:      return "SSH_OPTIONS_PROXYCOMMAND"
+    case SSH_OPTIONS_SSH_DIR:           return "SSH_OPTIONS_SSH_DIR"
+    default:                            return "raw: \(rawValue)"
+    }
+  }
+}
+
 // This is a macro in libssh, so we redefine it here
 // https://stackoverflow.com/questions/24662864/swift-how-to-use-sizeof
 func ssh_init_callbacks(_ cb: inout ssh_callbacks_struct) {
@@ -174,7 +192,7 @@ public class SSHClient {
   var keepAliveTimer: Timer?
   
   var isConnected: Bool {
-    ssh_is_connected(session) == 1 ? true : false
+    ssh_is_connected(session) == 1
   }
   
   public struct PTY {
@@ -230,33 +248,43 @@ public class SSHClient {
     ssh_set_log_callback(loggingCallback)
     
     var verbosity = options.loggingVerbosity.rawValue
-    ssh_options_set(session, SSH_OPTIONS_HOST, host)
-    ssh_options_set(session, SSH_OPTIONS_USER, opts.user)
-    ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
+    try _setSessionOption(SSH_OPTIONS_HOST, host)
+    try _setSessionOption(SSH_OPTIONS_USER, opts.user)
+    try _setSessionOption(SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
     
-    var compression = opts.compression
-    var level = opts.compressionLevel
-    ssh_options_set(session, SSH_OPTIONS_COMPRESSION, &compression)
-    ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, &level)
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION, opts.compression ? "yes" : "no")
+    var compressionLevel = opts.compressionLevel
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION_LEVEL, &compressionLevel)
     
-    ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port)
+    try _setSessionOption(SSH_OPTIONS_PORT_STR, options.port)
     
-    if (options.proxyJump != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PROXYJUMP, options.proxyJump)
-    } else if (options.proxyCommand != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PROXYCOMMAND, options.proxyCommand)
+    if let proxyJump = options.proxyJump, !proxyJump.isEmpty {
+      try _setSessionOption(SSH_OPTIONS_PROXYJUMP, options.proxyJump)
+    }
+    else if let proxyCommand = options.proxyCommand, !proxyCommand.isEmpty {
+      try _setSessionOption(SSH_OPTIONS_PROXYCOMMAND, options.proxyCommand)
     }
     
     /// If `nil` it uses the default `.ssh` directory
     if options.sshDirectory != nil {
-      ssh_options_set(session, SSH_OPTIONS_SSH_DIR, options.sshDirectory)
+      try _setSessionOption(SSH_OPTIONS_SSH_DIR, options.sshDirectory)
     }
     
     /// Parse `~/.ssh/config` file.
     /// This should be the last call of all options, it may overwrite options which are already set.
     /// It requires that the host name is already set with ssh_options_set_host().
-    if ssh_options_parse_config(session, self.options.sshClientConfigPath) != SSH_OK {
-      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath) for session")
+    guard
+      ssh_options_parse_config(session, options.sshClientConfigPath) == SSH_OK
+    else {
+      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
+    }
+  }
+  
+  private func _setSessionOption(_ option: ssh_options_e, _ value: UnsafeRawPointer!) throws {
+    guard
+      ssh_options_set(session, option, value) == SSH_OK
+    else {
+      throw SSHError(title: "Failed to set option '\(option.name)'");
     }
   }
   
@@ -310,7 +338,9 @@ public class SSHClient {
   }
   
   func connection() -> SSHConnection {
-    AnyPublisher.just(self.session).subscribe(on: rloop)
+    AnyPublisher
+      .just(self.session)
+      .subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
@@ -319,7 +349,9 @@ public class SSHClient {
       return .fail(error: SSHError(title: "Could not create channel"))
     }
     ssh_channel_set_blocking(channel, 0)
-    return AnyPublisher.just(channel).subscribe(on: rloop)
+    return Just(channel)
+      .setFailureType(to: Error.self)
+      .subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   

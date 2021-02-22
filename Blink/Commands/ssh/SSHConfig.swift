@@ -234,7 +234,7 @@ struct ConfigFileOptions {
         guard let level = UInt(option[1]) else {
           throw ValidationError("Compression level is not a number")
         }
-        if !(level > 0 && level < 10) {
+        guard (1...9).contains(level) else {
           throw ValidationError("Compression level must be between 1-9")
         }
         compressionLevel = level

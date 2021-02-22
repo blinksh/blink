@@ -83,7 +83,9 @@ class SSHClientConfigProvider {
       loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
       verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
       sshDirectory: BlinkPaths.ssh()!,
-      logger: prov.logger
+      logger: prov.logger,
+      compression: options?.compression ?? true,
+      compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
     )
   }
 }
