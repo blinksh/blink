@@ -48,7 +48,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: false)
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -89,9 +89,9 @@ extension SSHTests {
     // Use data from the previous stdout to do stdin. Handle writes at different rates with the Buffer.
     // We can adjust the windows on buffer as we see it here.
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      user: Credentials.password.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.password.password)],
       loggingVerbosity: .debug
     )
     let expectation = self.expectation(description: "Buffer Written")
@@ -108,7 +108,7 @@ extension SSHTests {
     
     // TODO Maybe we have to read too, so that the flow continuous moving.
     // It may not be enough with writing only if things are accumulating.
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -138,7 +138,7 @@ extension SSHTests {
     let buffer = MemoryBuffer(fast: true)
     let errBuffer = MemoryBuffer(fast: true)
     
-    SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -261,8 +261,7 @@ extension SSHTests {
     
     let buffer = MemoryBuffer(fast: true)
     
-    var cancellable = SSHClient.dial(MockCredentials.host, with: .testConfig)
-      //var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -323,12 +322,6 @@ extension SSHTests {
   
   
   func testStreamCloseRemote() throws {
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
-    
     var connection: SSHClient?
     var stream: SSH.Stream?
     
@@ -339,7 +332,7 @@ extension SSHTests {
     let expectKill = self.expectation(description: "Session killed from remote")
     
 //    var cancellable = SSHClient.dial("192.170.1.100", with: config)
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -387,9 +380,9 @@ extension SSHTests {
   // This tries to imitate what happens at the terminal level with a proxy connection.
   func testStreamToPipe() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      user: Credentials.password.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.password.password)],
       loggingVerbosity: .trace
     )
     
@@ -412,7 +405,7 @@ extension SSHTests {
     }
     
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn

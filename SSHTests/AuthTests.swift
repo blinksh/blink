@@ -35,11 +35,6 @@ import Dispatch
 
 @testable import SSH
 
-struct Credentials {
-  let user: String
-  let password: String
-  let host: String
-}
 
 class AuthTests: XCTestCase {
   
@@ -53,15 +48,15 @@ class AuthTests: XCTestCase {
     }
     
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)],
+      user: Credentials.password.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.password.password)],
       verifyHostCallback: requestAnswers
     )
     
     var completion: Any? = nil
     let connection = SSHClient
-      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .dial(Credentials.password.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -75,15 +70,15 @@ class AuthTests: XCTestCase {
   
   func testPasswordAuthentication() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
+      user: Credentials.password.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.password.password)]
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.host, with: config)
+      .dial(Credentials.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -100,18 +95,18 @@ class AuthTests: XCTestCase {
    */
   func testPartialAuthenticationFailingFirst() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.partialAuthenticationCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.partialAuthentication.user,
+      port: Credentials.port,
       authMethods: [
-        AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey),
-        AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password),
-        AuthPublicKey(privateKey: MockCredentials.privateKey)
+        AuthPublicKey(privateKey: Credentials.notCopiedPrivateKey),
+        AuthPassword(with: Credentials.partialAuthentication.password),
+        AuthPublicKey(privateKey: Credentials.privateKey)
       ])
     
     var completion: Any? = nil
 
     let connection = SSHClient
-      .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
+      .dial(Credentials.partialAuthentication.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -128,15 +123,15 @@ class AuthTests: XCTestCase {
    */
   func testFailingPartialAuthentication() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.partialAuthenticationCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPublicKey(privateKey: MockCredentials.notCopiedPrivateKey)]
+      user: Credentials.partialAuthentication.user,
+      port: Credentials.port,
+      authMethods: [AuthPublicKey(privateKey: Credentials.notCopiedPrivateKey)]
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
+      .dial(Credentials.partialAuthentication.host, with: config)
       .lastOutput(
         test: self,
         receiveCompletion: {
@@ -153,18 +148,18 @@ class AuthTests: XCTestCase {
    */
   func testPartialAuthentication() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.partialAuthenticationCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.partialAuthentication.user,
+      port: Credentials.port,
       authMethods: [
-        AuthPublicKey(privateKey: MockCredentials.privateKey),
-        AuthPassword(with: MockCredentials.partialAuthenticationCredentials.password)
+        AuthPublicKey(privateKey: Credentials.privateKey),
+        AuthPassword(with: Credentials.partialAuthentication.password)
       ]
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.partialAuthenticationCredentials.host, with: config)
+      .dial(Credentials.partialAuthentication.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -179,15 +174,15 @@ class AuthTests: XCTestCase {
   // This test should fail before the timeout expecation is consumed
   func testFailWithWrongCredentials() {
     let config = SSHClientConfig(
-      user: MockCredentials.wrongCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.wrongCredentials.password)]
+      user: Credentials.wrongPassword.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.wrongPassword.password)]
     )
     
     var completion: Any? = nil
     
     SSHClient
-      .dial(MockCredentials.wrongCredentials.host, with: config)
+      .dial(Credentials.wrongPassword.host, with: config)
       .noOutput(
         test: self,
         timeout: 10,
@@ -206,15 +201,15 @@ class AuthTests: XCTestCase {
    */
   func testEmptyAuthMethods() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.noneCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.none.user,
+      port: Credentials.port,
       authMethods: []
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.noneCredentials.host, with: config)
+      .dial(Credentials.none.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -228,15 +223,15 @@ class AuthTests: XCTestCase {
   
   func testNoneAuthentication() {
     let config = SSHClientConfig(
-      user: MockCredentials.noneCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.none.user,
+      port: Credentials.port,
       authMethods: [AuthNone()]
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.noneCredentials.host, with: config)
+      .dial(Credentials.none.host, with: config)
       .exactOneOutput(
         test: self,
         receiveCompletion: {
@@ -253,18 +248,18 @@ class AuthTests: XCTestCase {
    */
   func testFirstFailingThenSucceeding() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.password.user,
+      port: Credentials.port,
       authMethods: [
-        AuthPassword(with: MockCredentials.wrongCredentials.password),
-        AuthPassword(with: MockCredentials.passwordCredentials.password)
+        AuthPassword(with: Credentials.wrongPassword.password),
+        AuthPassword(with: Credentials.password.password)
       ]
     )
     
     var completion: Any? = nil
     
     let connection = SSHClient
-      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .dial(Credentials.password.host, with: config)
       .lastOutput(
         test: self,
         timeout: 10,
@@ -282,21 +277,21 @@ class AuthTests: XCTestCase {
    */
   func testExhaustRetries() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.password.user,
+      port: Credentials.port,
       authMethods: [
-        AuthPassword(with: MockCredentials.wrongCredentials.password),
-        AuthPassword(with: MockCredentials.wrongCredentials.password),
-        AuthPassword(with: MockCredentials.wrongCredentials.password),
-        AuthPassword(with: MockCredentials.wrongCredentials.password),
-        AuthPassword(with: MockCredentials.passwordCredentials.password)
+        AuthPassword(with: Credentials.wrongPassword.password),
+        AuthPassword(with: Credentials.wrongPassword.password),
+        AuthPassword(with: Credentials.wrongPassword.password),
+        AuthPassword(with: Credentials.wrongPassword.password),
+        AuthPassword(with: Credentials.password.password)
       ]
     )
     
     var completion: Any? = nil
     
     SSHClient
-      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .dial(Credentials.password.host, with: config)
       .sink(
         test: self,
         timeout: 30,
@@ -316,15 +311,15 @@ class AuthTests: XCTestCase {
   func testImportingIncorrectPrivateKey() {
     
     let config = SSHClientConfig(
-      user: MockCredentials.publicKeyAuthentication.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPublicKey(privateKey: MockCredentials.wrongPrivateKey)]
+      user: Credentials.publicKeyAuthentication.user,
+      port: Credentials.port,
+      authMethods: [AuthPublicKey(privateKey: Credentials.wrongPrivateKey)]
     )
   
     var completion: Any? = nil
     
     SSHClient
-      .dial(MockCredentials.publicKeyAuthentication.host, with: config)
+      .dial(Credentials.publicKeyAuthentication.host, with: config)
       .sink(
         test: self,
         receiveCompletion: {
@@ -338,14 +333,14 @@ class AuthTests: XCTestCase {
   func testPubKeyAuthentication() {
     
     let config = SSHClientConfig(
-      user: MockCredentials.publicKeyAuthentication.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPublicKey(privateKey: MockCredentials.privateKey)]
+      user: Credentials.publicKeyAuthentication.user,
+      port: Credentials.port,
+      authMethods: [AuthPublicKey(privateKey: Credentials.privateKey)]
     )
     
     var completion: Any? = nil
     
-    let connection = SSHClient.dial(MockCredentials.publicKeyAuthentication.host, with: config)
+    let connection = SSHClient.dial(Credentials.publicKeyAuthentication.host, with: config)
       .lastOutput(
         test: self,
         receiveCompletion: {
@@ -369,7 +364,7 @@ class AuthTests: XCTestCase {
       if prompt.userPrompts.count > 0 {
         // Fail on first retry
         if retry > 0 {
-          answers = [MockCredentials.interactiveCredentials.password]
+          answers = [Credentials.interactive.password]
         } else {
           retry += 1
           answers = []
@@ -382,13 +377,13 @@ class AuthTests: XCTestCase {
     }
     
     let config = SSHClientConfig(
-      user: MockCredentials.interactiveCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.interactive.user,
+      port: Credentials.port,
       authMethods: [AuthKeyboardInteractive(requestAnswers: requestAnswers)]
     )
     
     let connection = SSHClient
-      .dial(MockCredentials.interactiveCredentials.host, with: config)
+      .dial(Credentials.interactive.host, with: config)
       .exactOneOutput(
         test: self,
         timeout: 10,

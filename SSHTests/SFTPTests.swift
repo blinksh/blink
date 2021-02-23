@@ -38,8 +38,8 @@ import Dispatch
 
 extension SSHClientConfig {
   static let testConfig = SSHClientConfig(
-    user: MockCredentials.noneCredentials.user,
-    port: MockCredentials.port,
+    user: Credentials.none.user,
+    port: Credentials.port,
     authMethods: [],
     loggingVerbosity: .info
   )
@@ -47,7 +47,7 @@ extension SSHClientConfig {
 
 extension SSHClient {
   static func dialWithTestConfig() -> AnyPublisher<SSHClient, Error> {
-    dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    dial(Credentials.none.host, with: .testConfig)
   }
 }
 
@@ -81,7 +81,7 @@ class SFTPTests: XCTestCase {
     var connection: SSHClient?
     var sftp: SFTPClient?
     
-    let cancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    let cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -112,7 +112,7 @@ class SFTPTests: XCTestCase {
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
-    let cancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    let cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -153,7 +153,7 @@ class SFTPTests: XCTestCase {
     
     let gen = RandomInputGenerator(fast: true)
     
-    let cancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    let cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -196,7 +196,7 @@ class SFTPTests: XCTestCase {
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
-    let cancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    let cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -238,7 +238,7 @@ class SFTPTests: XCTestCase {
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
-    let cancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    let cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn
@@ -313,7 +313,7 @@ class SFTPTests: XCTestCase {
     try? FileManager.default.createDirectory(atPath: "/tmp/test", withIntermediateDirectories: true, attributes: nil)
     
     let copied = self.expectation(description: "Copied structure")
-    SSHClient.dial(MockCredentials.noneCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         print("Received connection")
         connection = conn

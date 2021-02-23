@@ -128,7 +128,7 @@ class SSHTests: XCTestCase {
     
     
     var connection: SSHClient?
-    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    let c = SSHClient.dialWithTestConfig()
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -152,7 +152,7 @@ class SSHTests: XCTestCase {
     // TODO We need to let the runloop run to close everything down?
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
     
-    let c2 = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    let c2 = SSHClient.dialWithTestConfig()
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -176,15 +176,15 @@ class SSHTests: XCTestCase {
     // Dial an unknown host on same network, so it should timeout.
     // Note the result may be a bit unreliable.
     let config = SSHClientConfig(
-      user: MockCredentials.timeoutHost.user,
-      authMethods: [AuthPassword(with: MockCredentials.timeoutHost.password)],
+      user: Credentials.timeoutHost.user,
+      authMethods: [AuthPassword(with: Credentials.timeoutHost.password)],
       connectionTimeout: 3
     )
     
     let expectFail = self.expectation(description: "Time out")
     
     let connection = SSHClient
-      .dial(MockCredentials.timeoutHost.host, with: config)
+      .dial(Credentials.timeoutHost.host, with: config)
       .lastOutput(
         test: self,
         receiveCompletion: { completion in
@@ -213,11 +213,6 @@ class SSHTests: XCTestCase {
   func testGetConnectedIp() throws {
     // The connection pool should be maintained by the pool itself.
     // Restarting sessions though when required, should be done by the one using the sessions as a preference.
-    let config = SSHClientConfig(
-      user: MockCredentials.passwordCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)]
-    )
     
     // TODO Figure out errors better here, because otherwise this will be painful
     // TODO Maybe print the error during a catch, because that's really how errors will have to be processed.
@@ -225,7 +220,7 @@ class SSHTests: XCTestCase {
     // fail, but not be properly closed.
     // TODO: How does OpenSSH finish gracefully while connecting?
     let connection = SSHClient
-      .dial(MockCredentials.passwordCredentials.host, with: config)
+      .dialWithTestConfig()
       .lastOutput(
         test: self,
         receiveCompletion: { completion in
@@ -378,7 +373,7 @@ class SSHTests: XCTestCase {
     var stream: SSH.Stream?
     var output: DispatchData?
     
-    var cancellable = SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    var cancellable = SSHClient.dialWithTestConfig()
       .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
         print("Received Connection")
         connection = conn
@@ -414,7 +409,7 @@ class SSHTests: XCTestCase {
     let buffer = MemoryBuffer(fast: true)
     let expectConn = self.expectation(description: "Connection established")
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .assertNoFailure()
       .sink { conn in
         print("Received Connection")
@@ -474,7 +469,7 @@ class SSHTests: XCTestCase {
     }, receiveValue: {_ in }).store(in: &cancellableBag)
     
     let newConnectionExpected = self.expectation(description: "New connection")
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .assertNoFailure()
       .sink { conn in
         print("Received Connection")

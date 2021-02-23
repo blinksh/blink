@@ -31,60 +31,50 @@
 
 import Foundation
 
-public struct MockCredentials {
-  static let user: String = "regular"
-  static let password: String = "regular"
+struct Credentials {
+  let user: String
+  let password: String
+  let host: String
   
-  // TODO: check host
+  static let regularUser: String = "regular"
+  static let regularUserPassword: String = "regular"
+  
   static let port: String = "2222"
   static let host: String = "localhost"
   static let incorrectIpHost: String = "256.8.4.2"
-  
-  static let pathWithFile = "/Users/javierdemartin/TestSftpFile.dat"
-  static let folderPath = "/Users/javierdemartin"
-  
-  //    let user: String = "vagrant"
-  //    let password: String = "vagrant"
-  //    let host: String = "192.168.1.100"
-  
-  static var credentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
-  )
-  
+    
   /// This one assumes another nonexistent machine on the same network, so it cannot be resolved.
   static let timeoutHost = Credentials(user: "asdf", password: "zxcv", host: "192.168.1.155")
   
   /// Incorrect credentials for a server to test failure
-  static var wrongCredentials = Credentials(user: MockCredentials.user, password: "1234567890", host: MockCredentials.host)
+  static let wrongPassword = Credentials(user: Self.regularUser, password: "1234567890", host: Self.host)
   
-  static var wrongHost = Credentials(user: MockCredentials.user, password: "1234567890", host: "asdf")
+  static let wrongHost = Credentials(user: Self.regularUser, password: "1234567890", host: "asdf")
   
-  static var interactiveCredentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
+  static let interactive = Credentials(
+    user: Self.regularUser,
+    password: Self.regularUserPassword,
+    host: Self.host
   )
   
-  static var noneCredentials = Credentials(user: "no-password", password: "", host: MockCredentials.host)
+  static let none = Credentials(user: "no-password", password: "", host: Self.host)
   
-  static var passwordCredentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
+  static let password = Credentials(
+    user: Self.regularUser,
+    password: Self.regularUserPassword,
+    host: Self.host
   )
   
-  static var partialAuthenticationCredentials = Credentials(
+  static let partialAuthentication = Credentials(
     user: "partial",
     password: "partial",
-    host: MockCredentials.host
+    host: Self.host
   )
   
-  static var publicKeyAuthentication = Credentials(
-    user: MockCredentials.user,
+  static let publicKeyAuthentication = Credentials(
+    user: Self.regularUser,
     password: "",
-    host: MockCredentials.host
+    host: Self.host
   )
   
   static let wrongPrivateKey: String = """
@@ -195,54 +185,54 @@ public struct MockCredentials {
     """
   
   static let privateKey: String = """
-        -----BEGIN OPENSSH PRIVATE KEY-----
-        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
-        -----END OPENSSH PRIVATE KEY-----
-        """
+    -----BEGIN OPENSSH PRIVATE KEY-----
+    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
+    -----END OPENSSH PRIVATE KEY-----
+    """
 }

@@ -158,7 +158,7 @@ extension SSHTests {
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .tryMap() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -223,7 +223,7 @@ extension SSHTests {
     
     var client: SSHPortForwardClient?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    SSHClient.dial(Credentials.password.host, with: .testConfig)
       .tryMap() { conn -> SSHPortForwardClient in
         print("Received Connection")
         connection = conn
@@ -270,13 +270,13 @@ extension SSHTests {
   
   func testProxyCommand() throws {
     // Connect to the proxy on the exposed port.
-    let configProxy = SSHClientConfig(user: MockCredentials.noneCredentials.user,
-                                      port: MockCredentials.port,
+    let configProxy = SSHClientConfig(user: Credentials.none.user,
+                                      port: Credentials.port,
                                       authMethods: [])
     
     // The proxy connects to itself on default port, so this should go through.
-    let config = SSHClientConfig(user: MockCredentials.noneCredentials.user,
-                                 proxyJump: "\(MockCredentials.noneCredentials.host):\(MockCredentials.port)",
+    let config = SSHClientConfig(user: Credentials.none.user,
+                                 proxyJump: "\(Credentials.none.host):\(Credentials.port)",
                                  //proxyCommand: "ssh -W %h:%p localhost",
                                  authMethods: [])
     
@@ -294,7 +294,7 @@ extension SSHTests {
       // If running a command, we would just map stdio and run the command.
       let t = Thread(block: {
         // We should be parsing the command, but assume it is ok
-        let destination = MockCredentials.noneCredentials.host
+        let destination = Credentials.none.host
         let destinationPort = 22
         var stream: SSH.Stream?
         
@@ -302,7 +302,7 @@ extension SSHTests {
         let input = DispatchInputStream(stream: sockIn)
         var connection: SSHClient?
         
-        proxyCancellable = SSHClient.dial(MockCredentials.noneCredentials.host, with: configProxy)
+        proxyCancellable = SSHClient.dial(Credentials.none.host, with: configProxy)
           .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
             connection = conn
             return conn.requestForward(to: destination, port: Int32(destinationPort), from: "localhost", localPort: 22)
@@ -430,11 +430,11 @@ extension SSHTests {
     // chain should make everything else receive a close as well, probably
     // at the session level.
     // This test may be necessary to see how the flow of errors would work.
-    let config = SSHClientConfig(user: MockCredentials.user,
-                                 port: MockCredentials.port,
+    let config = SSHClientConfig(user: Credentials.regularUser,
+                                 port: Credentials.port,
                                  proxyJump: "localhost",
                                  proxyCommand: "ssh -W %h:%p localhost",
-                                 authMethods: [AuthPassword(with: MockCredentials.password)],
+                                 authMethods: [AuthPassword(with: Credentials.regularUserPassword)],
                                  loggingVerbosity: .debug)
     
     let destination = "localhost"
