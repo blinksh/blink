@@ -683,13 +683,16 @@ public class SSHClient {
         return channel
       }.tryChannel { channel -> SFTPClient in
         self.log.message("SFTP Start", SSH_LOG_INFO)
-        
+
         guard let sftp = sftp else {
           // This should never happen. But Combine...
           throw SSHError(title: "Does not have SFTP session")
         }
+
+        // SFTP implementation needs to poll, except for files
+        ssh_channel_set_blocking(channel, 1)
         try sftp.start()
-        
+
         return sftp
       }
       .eraseToAnyPublisher()

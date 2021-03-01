@@ -270,16 +270,11 @@ class OutStream : Reader, WriterTo {
       if demand == .none || cancelled == true {
         return
       }
-      
-      stopCallbacks()
-      
-      // Read available window
+            
+      // Read max window size or data left
       let size = UInt32(min(bytesLeft, 1280000))
-      
       let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: Int(size), alignment: MemoryLayout<CUnsignedChar>.alignment)
       
-      // In our dispatch implementation, this may block and run the rloop.
-      // Other blocks, like the
       let rc = ssh_channel_read_nonblocking(self.channel, buf.baseAddress, size, parent.isStderr)
       log.message("Read \(rc) async", SSH_LOG_DEBUG)
       if rc == SSH_EOF || (rc == 0 && ssh_channel_is_eof(channel) != 0) {
@@ -294,8 +289,7 @@ class OutStream : Reader, WriterTo {
         buf.deallocate()
         pb.send(completion: .failure(SSHError(title: "Error while reading", forSession: self.session)))
         return
-      }
-      else if rc > 0 {
+      } else if rc > 0 {
         // We may have received a smaller size than max
         let shrk = buf[0..<Int(rc)]
         let buffer = UnsafeRawBufferPointer(rebasing: shrk)
@@ -306,22 +300,22 @@ class OutStream : Reader, WriterTo {
         send(data)
       }
       
+      // If we are already on EOF after that read, then complete.
       // If we still need to gather data, start the callbacks.
       // If the demand is unlimited, we assume this is a type of read that
       // won't be waiting for data, so we reschedule.
-      // If we are already on EOF after that read, then complete.
       if ssh_channel_is_eof(channel) != 0 {
         self.complete()
         return
-      } else if bytesLeft > 0 && demand == .unlimited {
-        RunLoop.current.perform { self.async() }
-        
-        // As mentioned before due to the rloop running before, we may
-        // be cancelled and hence, we should not load callbacks again.
-      } else if !cancelled && bytesLeft > 0 && callbacks == nil {
-        if startCallbacks() != SSH_OK {
-          pb.send(completion: .failure(SSHError(title: "Could not initialize callbacks.", forSession: session)))
+      } else if bytesLeft > 0 {
+        if demand == .unlimited {
+          RunLoop.current.perform { self.async() }
           return
+        } else if callbacks == nil {
+          if startCallbacks() != SSH_OK {
+            pb.send(completion: .failure(SSHError(title: "Could not initialize callbacks.", forSession: session)))
+            return
+          }
         }
       }
     }
@@ -335,6 +329,7 @@ class OutStream : Reader, WriterTo {
       callbacks!.userdata = ctxt
       callbacks!.channel_data_function = self.hasDataCallback
       callbacks!.channel_close_function = self.channelClosingCallback
+      callbacks!.channel_eof_function = self.channelEOFCallback
       
       return ssh_add_channel_callbacks(channel, &callbacks!)
     }
@@ -381,21 +376,25 @@ class OutStream : Reader, WriterTo {
     
     let channelClosingCallback: ssh_channel_close_callback = { (s, chan, userdata) in
       let ctxt = Unmanaged<Reading>.fromOpaque(userdata!).takeUnretainedValue()
+
+      // Cannot change the state of the channel in this pass, as we are inside a callback.
+      // Schedule another read and figure out what to do with the channel there.
+      ctxt.log.message("Received channel close event callback", SSH_LOG_INFO)
+      RunLoop.current.perform { ctxt.async() }
+    }
+    
+    let channelEOFCallback: ssh_channel_eof_callback = { (s, chan, userdata) in
+      let ctxt = Unmanaged<Reading>.fromOpaque(userdata!).takeUnretainedValue()
       
-      // If there is data still to read, we do not close the channel yet.
-      // If you are not interested in the data left, you can close explicitely.
-      ctxt.log.message("Received channel close event callback", SSH_LOG_DEBUG)
-      if ssh_channel_is_closed(ctxt.channel) != 0 {
-        ctxt.log.message("Channel has no data on close event. Finishing Stream...", SSH_LOG_DEBUG)
-        ctxt.pb.send(completion: .finished)
-      }
+      // Cannot change the state of the channel in this pass, as we are inside a callback.
+      // Schedule another read and figure out what to do with the channel there.
+      ctxt.log.message("Received channel EOF event callback", SSH_LOG_INFO)
+      RunLoop.current.perform { ctxt.async() }
     }
     
     func send(_ data: DispatchData) {
       pb.send(data)
-      
-      let sent = UInt32(data.count)
-      
+            
       bytesRead += data.count
       log.message("Bytes Read \(bytesRead)", SSH_LOG_DEBUG)
       
@@ -414,16 +413,16 @@ class OutStream : Reader, WriterTo {
     }
     
     func complete() {
-      cancel()
       log.message("Reading complete", SSH_LOG_DEBUG)
       pb.send(completion: .finished)
     }
     
     func cancel() {
-      // To stop reading, we just stop callbacks, because other
-      // demand based input will stop with the flow.
-      stopCallbacks()
       cancelled = true
+    }
+    
+    deinit {
+      stopCallbacks()
     }
   }
   
@@ -477,7 +476,11 @@ class OutStream : Reader, WriterTo {
   }
   
   deinit {
-    log.message("Outstream deinit", SSH_LOG_DEBUG)
+    if self.isStderr == 1 {
+      log.message("Errstream deinit", SSH_LOG_DEBUG)
+    } else {
+      log.message("Outstream deinit", SSH_LOG_DEBUG)
+    }
   }
 }
 

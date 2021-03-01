@@ -391,7 +391,7 @@ class SSHTests: XCTestCase {
         expectation.fulfill()
       }
     
-    wait(for: [expectation], timeout: 2000)
+    wait(for: [expectation], timeout: 20)
     let str = String(decoding: output as AnyObject as! Data, as: UTF8.self)
     XCTAssertTrue(str == (val + "\n"))
   }
