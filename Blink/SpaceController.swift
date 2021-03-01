@@ -525,7 +525,7 @@ extension SpaceController {
       return
     }
 
-    input.reportStateReset()
+//    input.reportStateReset()
     switch cmd.bindingAction {
     case .hex(let hex, comment: _):
       input.reportHex(hex)
