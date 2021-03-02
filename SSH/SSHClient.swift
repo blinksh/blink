@@ -89,7 +89,7 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-public struct SSHClientConfig {
+public struct SSHClientConfig: CustomStringConvertible {
   let user: String
   let port: String
   
@@ -125,6 +125,16 @@ public struct SSHClientConfig {
   let compression: Bool
   let compressionLevel: Int
   
+  public var description: String { """
+  user: \(user)
+  port: \(port)
+  authenticators: \(authenticators.map { $0.displayName }.joined(separator: ", "))
+  proxyJump: \(proxyJump)
+  proxyCommand: \(proxyCommand)
+  compression: \(compression)
+  compressionLevel: \(compressionLevel)
+  """}
+
   /**
    - Parameters:
    - user:

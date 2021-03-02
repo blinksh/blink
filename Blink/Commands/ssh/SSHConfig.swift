@@ -111,12 +111,11 @@ struct SSHCommand: ParsableCommand {
           help: "Secondary connection options in config file format.")
   var options: [String] = []
   var connectionOptions: Result<ConfigFileOptions, Error> {
-    get { Result { try ConfigFileOptions(options) } }
+    Result { try ConfigFileOptions(options) }
   }
 
   // TODO Constraint things like port. Perform some validation
   // TODO Special -o commands - send env variables, etc...
-  // TODO -G print configuration
   // TODO -F customize config file
   // TODO Disable host key check
   @Flag(name: [.customShort("T")],
@@ -128,7 +127,7 @@ struct SSHCommand: ParsableCommand {
   var forceTTY: Bool
 
   @Flag(name: [.customShort("G")],
-        help: "Print configuration for host.")
+        help: "Print configuration for host and exit.")
   var printConfiguration: Bool
 
   // SSH Port

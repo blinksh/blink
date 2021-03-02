@@ -101,12 +101,13 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return -1
     }
 
+    let (hostName, config) = SSHClientConfigProvider.config(command: cmd, using: device)
     if cmd.printConfiguration {
-      print("Configuration is", to: &stdout)
+      print("Configuration for \(cmd.host) as \(hostName)", to: &stdout)
+      print("\(config.description)", to: &stdout)
       return 0
     }
 
-    let (hostName, config) = SSHClientConfigProvider.config(command: cmd, using: device)
 
     if let control = cmd.control {
       guard
