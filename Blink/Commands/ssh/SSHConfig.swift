@@ -204,6 +204,7 @@ struct ConfigFileOptions {
   var proxyCommand: String?
   var compression: Bool?
   var compressionLevel: UInt?
+  var connectionTimeout: Int?
   var controlMaster: Bool = true
   var sendEnv: [String: String] = [:]
   var strictHostChecking: Bool = true
@@ -238,6 +239,8 @@ struct ConfigFileOptions {
           throw ValidationError("Compression level must be between 1-9")
         }
         compressionLevel = level
+      case "connectiontimeout":
+        connectionTimeout = Int(option[1])
       case "controlmaster":
         controlMaster = try ConfigFileOptions.yesNoValue(option[1], name: "controlmaster")
       case "sendenv":

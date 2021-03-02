@@ -93,9 +93,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let options: ConfigFileOptions
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
-      options = try cmd.connectionOptions.get()
-
       command = cmd
+      options = try cmd.connectionOptions.get()
     } catch {
       let message = SSHCommand.message(for: error)
       print("\(message)", to: &stderr)
@@ -107,11 +106,11 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return 0
     }
 
-    let config = SSHClientConfigProvider.config(command: cmd, config: options, using: device)
+    let (hostName, config) = SSHClientConfigProvider.config(command: cmd, using: device)
 
     if let control = cmd.control {
       guard
-        let conn = SSHPool.connection(for: cmd.host, with: config)
+        let conn = SSHPool.connection(for: hostName, with: config)
       else {
         print("No connection for \(cmd.host) to control", to: &stderr)
         return -1
@@ -132,7 +131,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }
 
     SSHPool.dial(
-      cmd.host,
+      hostName,
       with: config,
       connectionOptions: options,
       withProxy: { [weak self] in

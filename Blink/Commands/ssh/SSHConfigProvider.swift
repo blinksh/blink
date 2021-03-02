@@ -65,28 +65,96 @@ class SSHClientConfigProvider {
     logCancel = logger.sink { [weak self] in self?.printLn($0, err: true) }
   }
   
-  static func config(command cmd: SSHCommand, config options: ConfigFileOptions?, using device: TermDevice) -> SSHClientConfig {
+  // Return HostName, SSHClientConfig for the server and Options for the Connection
+  static func config(command cmd: SSHCommand, using device: TermDevice) -> (String, SSHClientConfig) {
+    let host = cmd.host
     let prov = SSHClientConfigProvider(command: cmd, using: device)
+    let options = try? cmd.connectionOptions.get()
     
-    // TODO Apply connection options, that is different than config.
-    // The config helps in the pool, but then you can connect there in many ways.
-    let proxy: String? = options?.proxyCommand ?? proxyCommand(from: cmd.host)
-    
-    return SSHClientConfig(
-      // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
-      user: options?.user ?? cmd.user ?? BKDefaults.defaultUserName() ?? "root",
-      // first use `port` from command, then from options and defaults to 22
-      port: cmd.port.map(String.init) ?? options?.port ?? "22",
-      proxyJump: cmd.proxyJump,
-      proxyCommand: proxy,
-      authMethods: prov.availableAuthMethods(),
-      loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-      verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
-      sshDirectory: BlinkPaths.ssh()!,
-      logger: prov.logger,
-      compression: options?.compression ?? true,
-      compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
+    return (
+      BKConfig.hostName(forHost: host) ?? cmd.host,
+      SSHClientConfig(
+        // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
+        user: options?.user ?? cmd.user ?? BKDefaults.defaultUserName() ?? "root",
+        // first use `port` from command, then from options and defaults to 22
+        port: options?.port ?? cmd.port.map(String.init) ?? "22",
+        proxyJump: cmd.proxyJump,
+        proxyCommand: options?.proxyCommand ?? BKConfig.proxyCommand(forHost: host),
+        authMethods: prov.availableAuthMethods(),
+        loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
+        verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
+        connectionTimeout: options?.connectionTimeout ?? 30,
+        sshDirectory: BlinkPaths.ssh()!,
+        logger: prov.logger,
+        compression: options?.compression ?? true,
+        compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
+      )
     )
+  }
+}
+
+enum BKConfig {
+  static func privateKey(forIdentifier identifier: String) -> (String, String)? {
+    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
+      return nil
+    }
+    
+    guard let privateKey = publicKeys.first(where: { $0.id == identifier }) else {
+      return nil
+    }
+    
+    return (privateKey.privateKey, identifier)
+  }
+  
+  static private func host(_ host: String) -> BKHosts? {
+    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
+      return nil
+    }
+
+    return hosts.first(where: { $0.host == host })
+  }
+  
+  static func privateKey(forHost host: String) -> (String, String)? {
+    guard let host = Self.host(host) else {
+      return nil
+    }
+
+    guard let keyIdentifier = host.key, let privateKey = privateKey(forIdentifier: keyIdentifier) else {
+      return nil
+    }
+
+    return privateKey
+  }
+  
+  static func defaultKeys() -> [(String, String)] {
+    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
+      return []
+    }
+    
+    let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
+    let keys: [(String, String)] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? ($0.privateKey, $0.id) : nil }
+    
+    return keys.count > 0 ? keys : []
+  }
+  
+  static func password(forHost host: String) -> String? {
+    Self.host(host)?.password
+  }
+
+  static func hostName(forHost host: String) -> String? {
+    Self.host(host)?.hostName
+  }
+  
+  static func proxyCommand(forHost host: String) -> String? {
+    Self.host(host)?.proxyCmd
+  }
+  
+  static func user(forHost host: String) -> String? {
+    Self.host(host)?.user
+  }
+  
+  static func port(forHost host: String) -> String? {
+    Self.host(host)?.port.stringValue
   }
 }
 
@@ -96,23 +164,23 @@ extension SSHClientConfigProvider {
     
     // Explicit identity
     if let identityFile = command.identityFile {
-      if let (identityKey, name) = Self.privateKey(fromIdentifier: identityFile) {
+      if let (identityKey, name) = BKConfig.privateKey(forIdentifier: identityFile) {
         authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
       }
     } else {
       // Host key
-      if let (hostKey, name) = Self.privateKey(fromHost: command.host) {
+      if let (hostKey, name) = BKConfig.privateKey(forHost: command.host) {
         authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
       } else {
         // All default keys
-        for (defaultKey, name) in Self.defaultKeys() {
+        for (defaultKey, name) in BKConfig.defaultKeys() {
           authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
         }
       }
     }
     
     // Host password
-    if let password = Self.password(fromHost: command.host), !password.isEmpty {
+    if let password = BKConfig.password(forHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
     } else {
       // Interactive
@@ -130,70 +198,6 @@ extension SSHClientConfigProvider {
       return input
     }.collect()
     .eraseToAnyPublisher()
-  }
-  
-  fileprivate static func privateKey(fromIdentifier identifier: String) -> (String, String)? {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
-      return nil
-    }
-    
-    guard let privateKey = publicKeys.first(where: { $0.id == identifier }) else {
-      return nil
-    }
-    
-    return (privateKey.privateKey, identifier)
-  }
-  
-  fileprivate static func privateKey(fromHost host: String) -> (String, String)? {
-
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-
-    guard let host = hosts.first(where: { $0.host == host }) else {
-      return nil
-    }
-
-    guard let keyIdentifier = host.key, let privateKey = privateKey(fromIdentifier: keyIdentifier) else {
-      return nil
-    }
-
-    return privateKey
-  }
-  
-  fileprivate static func defaultKeys() -> [(String, String)] {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
-      return []
-    }
-    
-    let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    let keys: [(String, String)] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? ($0.privateKey, $0.id) : nil }
-    
-    return keys.count > 0 ? keys : []
-  }
-  
-  fileprivate static func password(fromHost host: String) -> String? {
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-    
-    guard let host = hosts.first(where: { $0.host == host }) else {
-      return nil
-    }
-    
-    return host.password
-  }
-  
-  fileprivate static func proxyCommand(from host: String) -> String? {
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-
-    guard let host = hosts.first(where: { $0.host == host }) else {
-      return nil
-    }
-    
-    return host.proxyCmd
   }
 }
 
