@@ -80,41 +80,17 @@ public class SSHPortForwardListener {
   }
   
   func start() {
+    let listener: NWListener
     do {
-      let lis = try NWListener(using: .tcp, on: self.localPort)
-      self.listener = lis
+      listener = try NWListener(using: .tcp, on: self.localPort)
     } catch {
       self.status.send(completion: .failure(SSHPortForwardError(title: "Could not initialize listener", error)))
       return
     }
-    
-    let listener = self.listener!
-    listener.newConnectionHandler = handleConnection
-    
-    listener.stateUpdateHandler = { newState in
-      self.log.message("State Updated \(newState)", SSH_LOG_INFO)
-      self.isReady = false
-      switch newState {
-      case .ready:
-        self.status.send(PortForwardState.ready)
-        self.isReady = true
-      case .failed(let error):
-        // If the listener fails, re-start. This is an untested path.
-        if error == NWError.dns(DNSServiceErrorType(kDNSServiceErr_DefunctConnection)) {
-          self.log.message("Restarting listener.", SSH_LOG_WARN)
-          self.status.send(PortForwardState.waiting(error))
-          listener.cancel()
-          self.start()
-        } else {
-          self.log.message("Listener failed with \(error), stopping", SSH_LOG_WARN)
-          self.status.send(completion: .failure(SSHPortForwardError(title: "Listener State Failed, stopping.", error)))
-          self.close()
-        }
-      default:
-        break
-      }
-      
-    }
+
+    self.listener = listener
+    listener.newConnectionHandler = { [weak self] in self?.handleConnectionUpdates($0) }
+    listener.stateUpdateHandler = { [weak self] in self?.handleListenerUpdates($0) }
     
     listener.start(queue: self.queue)
   }
@@ -123,13 +99,43 @@ public class SSHPortForwardListener {
     return status.eraseToAnyPublisher()
   }
   
-  func handleConnection(_ conn: NWConnection) {
+  func handleListenerUpdates(_ newState: NWListener.State) {
+    self.log.message("State Updated \(newState)", SSH_LOG_INFO)
+    // self.isReady = false
+    
+    switch newState {
+    case .ready:
+      self.status.send(PortForwardState.ready)
+      self.isReady = true
+    case .failed(let error):
+      // If the listener fails, re-start. This is an untested path.
+      if error == NWError.dns(DNSServiceErrorType(kDNSServiceErr_DefunctConnection)) {
+        self.log.message("Restarting listener.", SSH_LOG_WARN)
+        self.status.send(PortForwardState.waiting(error))
+        self.isReady = false
+        listener!.cancel()
+        self.start()
+      } else {
+        self.log.message("Listener failed with \(error), stopping", SSH_LOG_WARN)
+        self.status.send(completion: .failure(SSHPortForwardError(title: "Listener State Failed, stopping.", error)))
+        self.close()
+      }
+    default:
+      break
+    }
+  }
+  
+  func handleConnectionUpdates(_ conn: NWConnection) {
     log.message("Received connection for tunnel", SSH_LOG_INFO)
     var stream: Stream?
     var cancellable: AnyCancellable?
     
     // Handle connection status, and tie the Stream to the connection.
-    conn.stateUpdateHandler = { state in
+    conn.stateUpdateHandler = { [weak self] state in
+      guard let self = self else {
+        return
+      }
+      
       self.log.message("Forward connection received \(state)", SSH_LOG_DEBUG)
       
       switch state {
@@ -199,7 +205,7 @@ public class SSHPortForwardListener {
   }
   
   func closeConnection(_ conn: NWConnection) {
-    log.message("Closing Listener", SSH_LOG_DEBUG)
+    log.message("Closing Port Forwarded Connection", SSH_LOG_INFO)
     conn.cancel()
     for (idx, c) in connections.enumerated() {
       if c === conn {

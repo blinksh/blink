@@ -89,7 +89,7 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-public struct SSHClientConfig {
+public struct SSHClientConfig: CustomStringConvertible {
   let user: String
   let port: String
   
@@ -125,6 +125,16 @@ public struct SSHClientConfig {
   let compression: Bool
   let compressionLevel: Int
   
+  public var description: String { """
+  user: \(user)
+  port: \(port)
+  authenticators: \(authenticators.map { $0.displayName }.joined(separator: ", "))
+  proxyJump: \(proxyJump)
+  proxyCommand: \(proxyCommand)
+  compression: \(compression)
+  compressionLevel: \(compressionLevel)
+  """}
+
   /**
    - Parameters:
    - user:
@@ -683,13 +693,16 @@ public class SSHClient {
         return channel
       }.tryChannel { channel -> SFTPClient in
         self.log.message("SFTP Start", SSH_LOG_INFO)
-        
+
         guard let sftp = sftp else {
           // This should never happen. But Combine...
           throw SSHError(title: "Does not have SFTP session")
         }
+
+        // SFTP implementation needs to poll, except for files
+        ssh_channel_set_blocking(channel, 1)
         try sftp.start()
-        
+
         return sftp
       }
       .eraseToAnyPublisher()
