@@ -233,7 +233,7 @@ extension SSHClientConfigProvider {
   }
   
   fileprivate func printLn(_ string: String, err: Bool = false) {
-    let line = string.appending("\n")
+    let line = string.appending("\r\n")
     let s = err ? device.stream.err : device.stream.out
     fwrite(line, line.lengthOfBytes(using: .utf8), 1, s)
   }
