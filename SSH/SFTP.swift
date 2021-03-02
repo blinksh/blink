@@ -165,7 +165,7 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func directoryFilesAndAttributes() -> AnyPublisher<[FileAttributes], Error> {
     if fileType != .typeDirectory {
-      return Fail(error: FileError(title: "Not a directory.", in: session)).eraseToAnyPublisher()
+      return .fail(error: FileError(title: "Not a directory.", in: session))
     }
     
     return connection().trySFTP { sftp -> [FileAttributes] in
@@ -193,7 +193,7 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func open(flags: Int32) -> AnyPublisher<File, Error> {
     if fileType != .typeRegular {
-      return Fail(error: FileError(title: "Not a file.", in: session)).eraseToAnyPublisher()
+      return .fail(error: FileError(title: "Not a file.", in: session))
     }
     
     return connection().trySFTP { sftp -> SFTPFile in
@@ -207,7 +207,7 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func create(name: String, flags: Int32, mode: mode_t = S_IRWXU) -> AnyPublisher<BlinkFiles.File, Error> {
     if fileType != .typeDirectory {
-      return Fail(error: FileError(title: "Not a directory.", in: session)).eraseToAnyPublisher()
+      return .fail(error: FileError(title: "Not a directory.", in: session))
     }
     
     return connection().trySFTP { sftp -> SFTPFile in

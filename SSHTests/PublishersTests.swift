@@ -41,10 +41,10 @@ class PublishersTests: XCTestCase {
   func testTryOperation() throws {
     func session() -> SSHConnection {
       guard let session = ssh_new() else {
-        return Fail(error: SSHError(title: "Could not create session object.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not create session object."))
       }
       
-      return Just(session).mapError {$0 as Error}.eraseToAnyPublisher()
+      return .just(session)
     }
     
     var tries = 0
@@ -68,7 +68,7 @@ class PublishersTests: XCTestCase {
         return Fail(error: SSHError(title: "Could not create session object.")).eraseToAnyPublisher()
       }
       
-      return Just(session).mapError {$0 as Error}.eraseToAnyPublisher()
+      return .just(session)
     }
     
     var triesFirstLoop = 0
@@ -144,7 +144,8 @@ class PublishersTests: XCTestCase {
     
     let c = pub
       .flatMap { conn -> AnyPublisher<Void, Error> in
-        return Just(conn).mapError { $0 as Error }.eraseToAnyPublisher()
+        return AnyPublisher
+          .just(conn)
           .tryOperation { conn in
             print("Retrying")
             if tries < 3 {

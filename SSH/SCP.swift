@@ -87,9 +87,9 @@ public class SCPClient: CopierFrom, CopierTo {
   public static func execute(using ssh: SSHClient,
                              as mode: SCPMode,
                              root quotedPath: String) -> AnyPublisher<SCPClient, Error> {
-    guard let scp = ssh_scp_new(ssh.session, Int32(mode.scpMode()), quotedPath) else {
-      return Fail(error: SSHError(-1, forSession: ssh.session))
-        .eraseToAnyPublisher()
+    guard let scp = ssh_scp_new(ssh.session, Int32(mode.scpMode()), quotedPath)
+    else {
+      return .fail(error: SSHError(-1, forSession: ssh.session))
     }
     
     let client = SCPClient(scp, client: ssh)
@@ -130,7 +130,7 @@ public class SCPClient: CopierFrom, CopierTo {
   
   // Wrap each scp call so we are sure it is running in the proper place.
   func connection() -> AnyPublisher<ssh_scp, Error> {
-    return Just(scp).subscribe(on: self.ssh.rloop).mapError { $0 as Error }.eraseToAnyPublisher()
+    AnyPublisher.just(scp).subscribe(on: self.ssh.rloop).eraseToAnyPublisher()
   }
 }
 
@@ -191,7 +191,7 @@ extension SCPClient {
           }.flatMap { t -> CopyProgressInfo in
             // On empty file, just report, nothing to copy
             if size == 0 {
-              return Just((name, 0, 0)).mapError { $0 as Error }.eraseToAnyPublisher()
+              return .just((name, 0, 0))
             }
             return self.copyFileFrom(t, name: name, size: size)
           }
@@ -335,9 +335,9 @@ extension SCPClient {
         case SSH_SCP_REQUEST_ENDDIR:
           currentDir = dirsFifo[0]
           dirsFifo.removeFirst()
-          return Just(req).mapError { $0 as Error }.eraseToAnyPublisher()
+          return .just(req)
         default:
-          return Just(req).mapError { $0 as Error }.eraseToAnyPublisher()
+          return .just(req)
         }
       }
       .filter { $0 == SSH_SCP_REQUEST_NEWFILE }
@@ -448,7 +448,7 @@ extension SCPClient {
     })
     .flatMap(maxPublishers: .max(1)) { data -> AnyPublisher<Int, Error> in
       if data.count == 0 {
-        return Just(0).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(0)
       }
       return t.write(data, max: data.count)
     }

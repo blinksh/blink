@@ -14,7 +14,7 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "libssh",
-    "648eaacfaf67e4d7765b26af8d723fabf571a2121cf0aef587d8265595d62ef8",
+    "cc82eab3cc727336901d4891dbaa4d7e7016bcc47863b7f6fb032e62432cb18e",
     "https://github.com/blinksh/libssh-apple/releases/download/v0.9.4/LibSSH-static.xcframework.zip"
   ),
   (

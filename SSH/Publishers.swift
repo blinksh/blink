@@ -169,15 +169,26 @@ extension AnyPublisher where Output == ssh_session, Failure == Error {
       // If Auth needs to continue, use the provided
       // Publisher
       switch state {
-      case .Continue(let pub):
+      case .continue(let pub):
         return pub
       default:
-        return Just(state).setFailureType(to: Error.self).eraseToAnyPublisher()
+        return .just(state)
       }
     }.handleEvents(receiveCancel: {
       lock.spinLock()
       stop = true
     }).eraseToAnyPublisher()
+  }
+}
+
+// TODO: Move to own module?
+public extension AnyPublisher {
+  @inlinable static func just(_ output: Output) -> Self {
+    .init(Just(output).setFailureType(to: Failure.self))
+  }
+  
+  @inlinable static func fail(error: Failure) -> Self {
+    .init(Fail(error: error))
   }
 }
 

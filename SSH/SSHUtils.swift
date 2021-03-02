@@ -29,31 +29,19 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-import Foundation
-import Network
+import struct Network.IPv4Address
+import struct Network.IPv6Address
 
-struct SSHUtils {
+enum SSHUtils {
   static func isValidIPv4(address: String) -> Bool {
-    if let _ = IPv4Address(address) {
-      return true
-    }
-    
-    return false
+    IPv4Address(address) != nil
   }
   
   static func isValidIPv6(address: String) -> Bool {
-    if let _ = IPv6Address(address) {
-      return true
-    }
-    
-    return false
+    IPv6Address(address) != nil
   }
   
   static func isValidIP(address: String) -> Bool {
-    if isValidIPv4(address: address) || isValidIPv6(address: address) {
-      return true
-    }
-    
-    return false
+    isValidIPv4(address: address) || isValidIPv6(address: address)
   }
 }

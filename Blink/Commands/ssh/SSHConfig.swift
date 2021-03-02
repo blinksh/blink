@@ -111,12 +111,11 @@ struct SSHCommand: ParsableCommand {
           help: "Secondary connection options in config file format.")
   var options: [String] = []
   var connectionOptions: Result<ConfigFileOptions, Error> {
-    get { Result { try ConfigFileOptions(options) } }
+    Result { try ConfigFileOptions(options) }
   }
 
   // TODO Constraint things like port. Perform some validation
   // TODO Special -o commands - send env variables, etc...
-  // TODO -G print configuration
   // TODO -F customize config file
   // TODO Disable host key check
   @Flag(name: [.customShort("T")],
@@ -128,7 +127,7 @@ struct SSHCommand: ParsableCommand {
   var forceTTY: Bool
 
   @Flag(name: [.customShort("G")],
-        help: "Print configuration for host.")
+        help: "Print configuration for host and exit.")
   var printConfiguration: Bool
 
   // SSH Port
@@ -204,6 +203,7 @@ struct ConfigFileOptions {
   var proxyCommand: String?
   var compression: Bool?
   var compressionLevel: UInt?
+  var connectionTimeout: Int?
   var controlMaster: Bool = true
   var sendEnv: [String: String] = [:]
   var strictHostChecking: Bool = true
@@ -234,10 +234,12 @@ struct ConfigFileOptions {
         guard let level = UInt(option[1]) else {
           throw ValidationError("Compression level is not a number")
         }
-        if !(level > 0 && level < 10) {
+        guard (1...9).contains(level) else {
           throw ValidationError("Compression level must be between 1-9")
         }
         compressionLevel = level
+      case "connectiontimeout":
+        connectionTimeout = Int(option[1])
       case "controlmaster":
         controlMaster = try ConfigFileOptions.yesNoValue(option[1], name: "controlmaster")
       case "sendenv":

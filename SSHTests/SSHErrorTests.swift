@@ -51,15 +51,15 @@ class SSHErrorTests: XCTestCase {
    */
   func testAuthError() {
     let config = SSHClientConfig(
-      user: MockCredentials.wrongCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.wrongPassword.user,
+      port: Credentials.port,
       authMethods: []
     )
     
     var completion: Any? = nil
 
     SSHClient
-      .dial(MockCredentials.wrongCredentials.host, with: config)
+      .dial(Credentials.wrongPassword.host, with: config)
       .noOutput(
         test: self,
         receiveCompletion: {
@@ -72,14 +72,14 @@ class SSHErrorTests: XCTestCase {
   
   func testConnectionError() {
     let config = SSHClientConfig(
-      user: MockCredentials.wrongHost.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.wrongHost.password)]
+      user: Credentials.wrongHost.user,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.wrongHost.password)]
     )
 
     var completion: Any? = nil
 
-    SSHClient.dial(MockCredentials.wrongHost.host, with: config)
+    SSHClient.dial(Credentials.wrongHost.host, with: config)
       .noOutput(
         test: self,
         receiveCompletion: {
@@ -94,17 +94,17 @@ class SSHErrorTests: XCTestCase {
    Trying to authenticate against a host with either incorrect username or password credentials
    */
   func testAuthFailed() {
-    let authMethods = [AuthPassword(with: MockCredentials.wrongCredentials.password)]
+    let authMethods = [AuthPassword(with: Credentials.wrongPassword.password)]
     
     let config = SSHClientConfig(
-      user: MockCredentials.wrongCredentials.user,
-      port: MockCredentials.port,
+      user: Credentials.wrongPassword.user,
+      port: Credentials.port,
       authMethods: authMethods
     )
     
     var completion: Any? = nil
 
-    SSHClient.dial(MockCredentials.wrongCredentials.host, with: config)
+    SSHClient.dial(Credentials.wrongPassword.host, with: config)
       .noOutput(
         test: self,
         receiveCompletion: {
@@ -119,14 +119,14 @@ class SSHErrorTests: XCTestCase {
    */
   func testCouldntResolveHostAddress() throws {
     let config = SSHClientConfig(
-      user: MockCredentials.user,
-      port: MockCredentials.port,
-      authMethods: [AuthPassword(with: MockCredentials.password)]
+      user: Credentials.regularUser,
+      port: Credentials.port,
+      authMethods: [AuthPassword(with: Credentials.regularUserPassword)]
     )
     
     var completion: Any? = nil
     
-    SSHClient.dial(MockCredentials.incorrectIpHost, with: config)
+    SSHClient.dial(Credentials.incorrectIpHost, with: config)
       .noOutput(
         test: self,
         receiveCompletion: {

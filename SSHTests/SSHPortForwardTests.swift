@@ -158,7 +158,7 @@ extension SSHTests {
     var connection: SSHClient?
     var lis: SSHPortForwardListener?
     
-    SSHClient.dial(MockCredentials.passwordCredentials.host, with: .testConfig)
+    SSHClient.dialWithTestConfig()
       .tryMap() { conn -> SSHPortForwardListener in
         print("Received Connection")
         connection = conn
@@ -193,7 +193,6 @@ extension SSHTests {
     let expectFailure = self.expectation(description: "Connected")
     
     let lis2 = SSHPortForwardListener(on: 8080, toDestination: "www.google.com", on: 80, using: connection!)
-    //lis2.start()
     lis2.connect().tryMap { event in
       print("Listener sent \(event)")
     }.sink (receiveCompletion: {completion in
@@ -217,15 +216,14 @@ extension SSHTests {
     // curl -o /dev/null -s -w "%{http_code}\n" http://localhost
     self.continueAfterFailure = false
     
-    let config = SSHClientConfig(user: MockCredentials.passwordCredentials.user, authMethods: [AuthPassword(with: MockCredentials.passwordCredentials.password)])
-    let expectConnection = self.expectation(description: "Connected")
+    let expectForward = self.expectation(description: "Forward ready")
     let expectStream = self.expectation(description: "Stream received")
     
     var connection: SSHClient?
     
     var client: SSHPortForwardClient?
     
-    let c = SSHClient.dial(MockCredentials.passwordCredentials.host, with: config)
+    SSHClient.dial(Credentials.password.host, with: .testConfig)
       .tryMap() { conn -> SSHPortForwardClient in
         print("Received Connection")
         connection = conn
@@ -239,18 +237,20 @@ extension SSHTests {
         print("Received \(event)")
         switch event {
         case .ready:
-          expectConnection.fulfill()
+          expectForward.fulfill()
         case .error(let error):
           XCTFail("\(error)")
         default:
           break
         }
-      }
+      }.store(in: &cancellableBag)
     
-    wait(for: [expectConnection], timeout: 5000)
+    wait(for: [expectForward], timeout: 15)
     
     var cmd: SSH.Stream?
-    let cancelRequest = connection!.requestExec(command: "curl -o /dev/null -s -w \"%{http_code}\n\" localhost:8080")
+    // We put a small delay as sometimes if it happens too close, the machine won't be able to resolve it.
+    let curl = "sleep 1 && curl -o /dev/null -H \"Host: www.guimp.com\" -s -w \"%{http_code}\n\" localhost:8080"
+    let cancelRequest = connection!.requestExec(command: curl)
       .flatMap { stream -> AnyPublisher<DispatchData, Error> in
         cmd = stream
         return stream.read(max: SSIZE_MAX)
@@ -262,20 +262,23 @@ extension SSHTests {
         XCTAssert(output == "200\n")
         expectStream.fulfill()
       }
-    wait(for: [expectStream], timeout: 500)
+    wait(for: [expectStream], timeout: 15)
     
     // Closing up stuff. Sometimes there may be a callback or error of some kind because we got rid of some object.
     client!.close()
   }
   
   func testProxyCommand() throws {
-    let config = SSHClientConfig(user: "carlos",
-                                 proxyJump: "localhost",
-                                 //proxyCommand: "ssh -W %h:%p localhost",
-                                 authMethods: [AuthPassword(with: "")])
+    // Connect to the proxy on the exposed port.
+    let configProxy = SSHClientConfig(user: Credentials.none.user,
+                                      port: Credentials.port,
+                                      authMethods: [])
     
-    let configProxy = SSHClientConfig(user: "carlos",
-                                      authMethods: [AuthPassword(with: "")])
+    // The proxy connects to itself on default port, so this should go through.
+    let config = SSHClientConfig(user: Credentials.none.user,
+                                 proxyJump: "\(Credentials.none.host):\(Credentials.port)",
+                                 //proxyCommand: "ssh -W %h:%p localhost",
+                                 authMethods: [])
     
     let expectConnection = self.expectation(description: "Connected")
     let expectExecFinished = self.expectation(description: "Exec finished")
@@ -290,7 +293,8 @@ extension SSHTests {
       // The tunnel is then mapped to the socket.
       // If running a command, we would just map stdio and run the command.
       let t = Thread(block: {
-        let destination = "localhost"
+        // We should be parsing the command, but assume it is ok
+        let destination = Credentials.none.host
         let destinationPort = 22
         var stream: SSH.Stream?
         
@@ -298,7 +302,7 @@ extension SSHTests {
         let input = DispatchInputStream(stream: sockIn)
         var connection: SSHClient?
         
-        proxyCancellable = SSHClient.dial("localhost", with: configProxy)
+        proxyCancellable = SSHClient.dial(Credentials.none.host, with: configProxy)
           .flatMap() { conn -> AnyPublisher<SSH.Stream, Error> in
             connection = conn
             return conn.requestForward(to: destination, port: Int32(destinationPort), from: "localhost", localPort: 22)
@@ -322,7 +326,7 @@ extension SSHTests {
             //RunLoop.current.run(until: Date(timeIntervalSinceNow: 2))
             s.connect(stdout: output, stdin: input)
           })
-        self.wait(for: [expectExecFinished], timeout: 5)
+        self.wait(for: [expectExecFinished], timeout: 10)
         
         // Now we await here for the main connection to close.
         // Closing the main connection should close the proxy as well.
@@ -359,13 +363,13 @@ extension SSHTests {
         output = buf
       })
     
-    wait(for: [expectConnection], timeout: 500)
+    wait(for: [expectConnection], timeout: 15)
     expectExecFinished.fulfill()
     
     // Properly wrapping things up, simulating what an app would do.
     // Just closing the main connection should close the proxy.
     connection = nil
-    wait(for: [expectThreadExit], timeout: 500)
+    wait(for: [expectThreadExit], timeout: 15)
     
     XCTAssertTrue(output?.count == 6, "Not received all bytes for 'hello\n'")
   }
@@ -426,11 +430,11 @@ extension SSHTests {
     // chain should make everything else receive a close as well, probably
     // at the session level.
     // This test may be necessary to see how the flow of errors would work.
-    let config = SSHClientConfig(user: MockCredentials.user,
-                                 port: MockCredentials.port,
+    let config = SSHClientConfig(user: Credentials.regularUser,
+                                 port: Credentials.port,
                                  proxyJump: "localhost",
                                  proxyCommand: "ssh -W %h:%p localhost",
-                                 authMethods: [AuthPassword(with: MockCredentials.password)],
+                                 authMethods: [AuthPassword(with: Credentials.regularUserPassword)],
                                  loggingVerbosity: .debug)
     
     let destination = "localhost"

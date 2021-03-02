@@ -59,7 +59,7 @@
 		07FABBF425C9AF7A00E1CC2C /* PublishersTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */; };
 		07FABBF525C9AF7A00E1CC2C /* SCPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */; };
 		07FABBF625C9AF7A00E1CC2C /* StreamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEE25C9AF7A00E1CC2C /* StreamsTests.swift */; };
-		07FABBF725C9AF7A00E1CC2C /* MockCredentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEF25C9AF7A00E1CC2C /* MockCredentials.swift */; };
+		07FABBF725C9AF7A00E1CC2C /* Credentials.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */; };
 		07FABBF825C9AF7A00E1CC2C /* SFTPTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */; };
 		07FABBF925C9AF7A00E1CC2C /* SSHErrorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBF125C9AF7A00E1CC2C /* SSHErrorTests.swift */; };
 		07FABBFA25C9AF7A00E1CC2C /* AuthTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07FABBF225C9AF7A00E1CC2C /* AuthTests.swift */; };
@@ -502,7 +502,7 @@
 		07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PublishersTests.swift; sourceTree = "<group>"; };
 		07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SCPTests.swift; sourceTree = "<group>"; };
 		07FABBEE25C9AF7A00E1CC2C /* StreamsTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StreamsTests.swift; sourceTree = "<group>"; };
-		07FABBEF25C9AF7A00E1CC2C /* MockCredentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MockCredentials.swift; sourceTree = "<group>"; };
+		07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Credentials.swift; sourceTree = "<group>"; };
 		07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SFTPTests.swift; sourceTree = "<group>"; };
 		07FABBF125C9AF7A00E1CC2C /* SSHErrorTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHErrorTests.swift; sourceTree = "<group>"; };
 		07FABBF225C9AF7A00E1CC2C /* AuthTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AuthTests.swift; sourceTree = "<group>"; };
@@ -1045,8 +1045,8 @@
 				BD8D898025DC535600E55D9E /* keys */,
 				BD8D893025DC429500E55D9E /* AgentTests.swift */,
 				07FABBF225C9AF7A00E1CC2C /* AuthTests.swift */,
+				07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */,
 				BD8D893125DC429500E55D9E /* KeysTests.swift */,
-				07FABBEF25C9AF7A00E1CC2C /* MockCredentials.swift */,
 				07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */,
 				07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */,
 				07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */,
@@ -1924,8 +1924,8 @@
 				07FABB9425C9AEC100E1CC2C /* SSHTests.swift in Sources */,
 				07FABBFB25C9AF7A00E1CC2C /* SSHPortForwardTests.swift in Sources */,
 				BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */,
-				07FABBF725C9AF7A00E1CC2C /* MockCredentials.swift in Sources */,
 				BD8D893325DC429500E55D9E /* KeysTests.swift in Sources */,
+				07FABBF725C9AF7A00E1CC2C /* Credentials.swift in Sources */,
 				07FABBF625C9AF7A00E1CC2C /* StreamsTests.swift in Sources */,
 				07FABBFA25C9AF7A00E1CC2C /* AuthTests.swift in Sources */,
 			);

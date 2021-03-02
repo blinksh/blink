@@ -34,12 +34,29 @@ import Foundation
 import Network
 import LibSSH
 
-
 typealias SSHConnection = AnyPublisher<ssh_session, Error>
 typealias SSHChannel = AnyPublisher<ssh_channel, Error>
 
 public func SSHInit() {
   ssh_init()
+}
+
+// TODO: check libssh api for string values
+fileprivate extension ssh_options_e {
+  var name: String {
+    switch self {
+    case SSH_OPTIONS_HOST:              return "SSH_OPTIONS_HOST"
+    case SSH_OPTIONS_USER:              return "SSH_OPTIONS_USER"
+    case SSH_OPTIONS_LOG_VERBOSITY:     return "SSH_OPTIONS_LOG_VERBOSITY"
+    case SSH_OPTIONS_COMPRESSION:       return "SSH_OPTIONS_COMPRESSION"
+    case SSH_OPTIONS_COMPRESSION_LEVEL: return "SSH_OPTIONS_COMPRESSION_LEVEL"
+    case SSH_OPTIONS_PORT_STR:          return "SSH_OPTIONS_PORT_STR"
+    case SSH_OPTIONS_PROXYJUMP:         return "SSH_OPTIONS_PROXYJUMP"
+    case SSH_OPTIONS_PROXYCOMMAND:      return "SSH_OPTIONS_PROXYCOMMAND"
+    case SSH_OPTIONS_SSH_DIR:           return "SSH_OPTIONS_SSH_DIR"
+    default:                            return "raw: \(rawValue)"
+    }
+  }
 }
 
 // This is a macro in libssh, so we redefine it here
@@ -72,7 +89,7 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-public struct SSHClientConfig {
+public struct SSHClientConfig: CustomStringConvertible {
   let user: String
   let port: String
   
@@ -109,6 +126,16 @@ public struct SSHClientConfig {
   let compression: Bool
   let compressionLevel: Int
   
+  public var description: String { """
+  user: \(user)
+  port: \(port)
+  authenticators: \(authenticators.map { $0.displayName }.joined(separator: ", "))
+  proxyJump: \(proxyJump)
+  proxyCommand: \(proxyCommand)
+  compression: \(compression)
+  compressionLevel: \(compressionLevel)
+  """}
+
   /**
    - Parameters:
    - user:
@@ -178,7 +205,7 @@ public class SSHClient {
   var keepAliveTimer: Timer?
   
   var isConnected: Bool {
-    ssh_is_connected(session) == 1 ? true : false
+    ssh_is_connected(session) == 1
   }
   
   public struct PTY {
@@ -234,33 +261,44 @@ public class SSHClient {
     ssh_set_log_callback(loggingCallback)
     
     var verbosity = options.loggingVerbosity.rawValue
-    ssh_options_set(session, SSH_OPTIONS_HOST, host)
-    ssh_options_set(session, SSH_OPTIONS_USER, opts.user)
-    ssh_options_set(session, SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
+    try _setSessionOption(SSH_OPTIONS_HOST, host)
+    try _setSessionOption(SSH_OPTIONS_USER, opts.user)
+    try _setSessionOption(SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
     
-    var compression = opts.compression
-    var level = opts.compressionLevel
-    ssh_options_set(session, SSH_OPTIONS_COMPRESSION, &compression)
-    ssh_options_set(session, SSH_OPTIONS_COMPRESSION_LEVEL, &level)
+    let compression = opts.compression ? "yes" : "no"
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION, compression)
+    var compressionLevel = opts.compressionLevel
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION_LEVEL, &compressionLevel)
     
-    ssh_options_set(session, SSH_OPTIONS_PORT_STR, options.port)
+    try _setSessionOption(SSH_OPTIONS_PORT_STR, options.port)
     
-    if (options.proxyJump != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PROXYJUMP, options.proxyJump)
-    } else if (options.proxyCommand != nil) {
-      ssh_options_set(session, SSH_OPTIONS_PROXYCOMMAND, options.proxyCommand)
+    if let proxyJump = options.proxyJump, !proxyJump.isEmpty {
+      try _setSessionOption(SSH_OPTIONS_PROXYJUMP, options.proxyJump)
+    }
+    else if let proxyCommand = options.proxyCommand, !proxyCommand.isEmpty {
+      try _setSessionOption(SSH_OPTIONS_PROXYCOMMAND, options.proxyCommand)
     }
     
     /// If `nil` it uses the default `.ssh` directory
     if options.sshDirectory != nil {
-      ssh_options_set(session, SSH_OPTIONS_SSH_DIR, options.sshDirectory)
+      try _setSessionOption(SSH_OPTIONS_SSH_DIR, options.sshDirectory)
     }
     
     /// Parse `~/.ssh/config` file.
     /// This should be the last call of all options, it may overwrite options which are already set.
     /// It requires that the host name is already set with ssh_options_set_host().
-    if ssh_options_parse_config(session, self.options.sshClientConfigPath) != SSH_OK {
-      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath) for session")
+    guard
+      ssh_options_parse_config(session, options.sshClientConfigPath) == SSH_OK
+    else {
+      throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
+    }
+  }
+  
+  private func _setSessionOption(_ option: ssh_options_e, _ value: UnsafeRawPointer!) throws {
+    guard
+      ssh_options_set(session, option, value) == SSH_OK
+    else {
+      throw SSHError(title: "Failed to set option '\(option.name)'");
     }
   }
   
@@ -314,16 +352,20 @@ public class SSHClient {
   }
   
   func connection() -> SSHConnection {
-    Just(self.session).mapError{ $0 as Error}.subscribe(on: rloop)
+    AnyPublisher
+      .just(self.session)
+      .subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
   func newChannel() -> SSHChannel {
     guard let channel = ssh_channel_new(self.session) else {
-      return Fail(error: SSHError(title: "Could not create channel")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not create channel"))
     }
     ssh_channel_set_blocking(channel, 0)
-    return Just(channel).mapError { $0 as Error }.subscribe(on: rloop)
+    return Just(channel)
+      .setFailureType(to: Error.self)
+      .subscribe(on: rloop)
       .eraseToAnyPublisher()
   }
   
@@ -334,7 +376,7 @@ public class SSHClient {
     do {
       c = try SSHClient(to: host, with: opts, proxyCb: proxyCb)
     } catch {
-      return Fail(error: error).eraseToAnyPublisher()
+      return .fail(error: error)
     }
     
     if let agent = opts.agent {
@@ -352,14 +394,14 @@ public class SSHClient {
         if client.options.requestVerifyHostCallback != nil {
           return client.verifyKnownHost()
         }
-        return Just(client).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(client)
       }
       .flatMap{ $0.auth() }
       .flatMap{ client -> AnyPublisher<SSHClient, Error> in
         if client.options.keepAliveInterval != nil {
           client.startKeepAliveTimer()
         }
-        return Just(client).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(client)
       }
       // If cancelled, the connection will be closed without being passed to the user or
       // once the command is dumped.
@@ -408,13 +450,12 @@ public class SSHClient {
     // None of the calls here require to contact the server, so we can do them without wrapping.
     let rc = ssh_get_server_publickey(session, &serverPublicKey)
     if rc < 0 {
-      return Fail(error: SSHError(title: "Could not get server publickey")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not get server publickey"))
     }
     
     let state = ssh_get_publickey_hash(serverPublicKey, SSH_PUBLICKEY_HASH_SHA256, &hash, &hlen)
     if state < 0 {
-      return Fail(error: SSHError(title: "Could not get server publickey hash"))
-        .eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not get server publickey hash"))
     }
     
     let hexString = String(cString: ssh_get_hexa(hash, hlen))
@@ -423,20 +464,19 @@ public class SSHClient {
     let rc3 = ssh_session_is_known_server(session)
     switch rc3 {
     case SSH_KNOWN_HOSTS_OK:
-      return Just(self).mapError { $0 as Error }.eraseToAnyPublisher()
+      return .just(self)
       
     case SSH_KNOWN_HOSTS_CHANGED:
       return self.options.requestVerifyHostCallback!(.changed(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
         if answer == .affirmative {
           let rc = ssh_session_update_known_hosts(self.session)
           if rc != SSH_OK {
-            return Fail(error: SSHError(title: "Could not update known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Could not update known_hosts file."))
           }
-          
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
     case SSH_KNOWN_HOSTS_UNKNOWN:
@@ -445,23 +485,23 @@ public class SSHClient {
           let rc = ssh_session_update_known_hosts(self.session)
           
           if rc < 0 {
-            return Fail(error: SSHError(title: "Error updating known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Error updating known_hosts file."))
           }
           
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
       
     /// The server gave use a key of a type while we had an other type recorded. It is a possible attack.
     case SSH_KNOWN_HOSTS_OTHER:
       // Stop connection because we could not verify the authenticity. And we could make the other side dispaly it.
-      return Fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack."))
     /// There had been an eror checking the host.
     case SSH_KNOWN_HOSTS_ERROR:
-      return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Could not verify host authenticity."))
     /// The known host file does not exist. The host is thus unknown. File will be created if host key is accepted
     case SSH_KNOWN_HOSTS_NOT_FOUND:
       return self.options.requestVerifyHostCallback!(.notFound(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
@@ -469,17 +509,17 @@ public class SSHClient {
           let rc = ssh_session_update_known_hosts(self.session)
           
           if rc != SSH_OK {
-            return Fail(error: SSHError(title: "Error updating known_hosts file.")).eraseToAnyPublisher()
+            return .fail(error: SSHError(title: "Error updating known_hosts file."))
           }
           
-          return Just(self).mapError({ $0 as Error }).eraseToAnyPublisher()
+          return .just(self)
         }
         
-        return Fail(error: SSHError(title: "Could not verify host authenticity.")).eraseToAnyPublisher()
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
       }.eraseToAnyPublisher()
       
     default:
-      return Fail(error: SSHError(title: "Unknown code received during host key exchange. Possible library error.")).eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Unknown code received during host key exchange. Possible library error."))
     }
   }
   
@@ -495,7 +535,8 @@ public class SSHClient {
           withTimeInterval: Double(timeout),
           repeats: false) {_ in timerFired = true }
         return conn
-      }.eraseToAnyPublisher()
+      }
+      .eraseToAnyPublisher()
       .tryOperation { session in
         if timerFired {
           throw SSHError(title: "Connection to \(self.host) timed out.")
@@ -550,7 +591,7 @@ public class SSHClient {
     // Return the Client if any method worked, otherwise return an error
     func tryAuth(_ methods: [Authenticator],  tried: [Authenticator]) -> AnyPublisher<SSHClient, Error> {
       if methods.count == 0 {
-        return Fail(error: SSHError.authError(msg: "Could not authenticate, no valid methods to try.")).eraseToAnyPublisher()
+        return .fail(error: SSHError.authError(msg: "Could not authenticate, no valid methods to try."))
       }
       
       let method = methods.first!
@@ -560,9 +601,9 @@ public class SSHClient {
         .auth(connection())
         .flatMap { result -> AnyPublisher<SSHClient, Error> in
           switch result {
-          case .Success:
-            return Just(self).mapError { $0 as Error }.eraseToAnyPublisher()
-          case .Partial:
+          case .success:
+            return .just(self)
+          case .partial:
             return tryAuth(self.validAuthMethods(), tried: tried)
           default:
             var tried = tried
@@ -577,7 +618,7 @@ public class SSHClient {
               tried.append(methods.removeFirst())
               
               // Return a failure and close the connection that's still open
-              return Fail(error: SSHError.authFailed(methods: tried)).eraseToAnyPublisher()
+              return .fail(error: SSHError.authFailed(methods: tried))
             }
             
             tried.append(methods.removeFirst())
@@ -659,13 +700,16 @@ public class SSHClient {
         return channel
       }.tryChannel { channel -> SFTPClient in
         self.log.message("SFTP Start", SSH_LOG_INFO)
-        
+
         guard let sftp = sftp else {
           // This should never happen. But Combine...
           throw SSHError(title: "Does not have SFTP session")
         }
+
+        // SFTP implementation needs to poll, except for files
+        ssh_channel_set_blocking(channel, 1)
         try sftp.start()
-        
+
         return sftp
       }
       .eraseToAnyPublisher()
@@ -728,8 +772,7 @@ public class SSHClient {
   public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<Stream, Error> {
     if port == 0 {
       // TODO Passing 0 will allocate an available port, and be returned at the last param on listen
-      return Fail(error: SSHError(title: "Ask server to allocate a bound port not allowed"))
-        .eraseToAnyPublisher()
+      return .fail(error: SSHError(title: "Ask server to allocate a bound port not allowed"))
     }
     
     self.log.message("REVERSE Forward requested to address \(address) on port \(port)", SSH_LOG_INFO)
@@ -782,7 +825,7 @@ public class SSHClient {
     return vars.enumerated().publisher
       .flatMap { (_, arg1) -> AnyPublisher<ssh_channel, Error> in
         let (key, value) = arg1
-        return Just(channel).mapError {$0 as Error}.eraseToAnyPublisher()
+        return AnyPublisher.just(channel)
           .tryChannel { channel in
             self.log.message("Requesting Env Var \(key)", SSH_LOG_INFO)
             let rc = ssh_channel_request_env(channel, key, value)

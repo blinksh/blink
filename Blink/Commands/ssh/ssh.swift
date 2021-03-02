@@ -43,12 +43,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-  let cmd = BlinkSSH()
-  session.registerSSHClient(cmd)
-  let rc = cmd.start(argc, argv: argv.args(count: argc))
-  session.unregisterSSHClient(cmd)
-
-  return rc
+  let cmd = BlinkSSH(mcp: session)
+  return cmd.start(argc, argv: argv.args(count: argc))
 }
 
 @objc public class BlinkSSH: NSObject {
@@ -58,6 +54,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var isTTY: Bool
   var stdout = StdoutOutputStream()
   var stderr = StderrOutputStream()
+  private var _mcp: MCPSession;
 
   var exitCode: Int32 = 0
   var cancellableBag: Set<AnyCancellable> = []
@@ -73,18 +70,22 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
   
-  override init() {
+  init(mcp: MCPSession) {
+    
+    _mcp = mcp;
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)
     self.device = tty()
     self.isTTY = ios_isatty(self.instream) != 0
     self.currentRunLoop = RunLoop.current
+    super.init()
   }
 
   @objc public func start(_ argc: Int32, argv: [String]) -> Int32 {
+    _mcp.registerSSHClient(self)
     let originalRawMode = device.rawMode
-    
     defer {
+      _mcp.unregisterSSHClient(self)
       device.rawMode = originalRawMode
     }
 
@@ -92,24 +93,26 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let options: ConfigFileOptions
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
-      options = try cmd.connectionOptions.get()
-
       command = cmd
+      options = try cmd.connectionOptions.get()
     } catch {
       let message = SSHCommand.message(for: error)
       print("\(message)", to: &stderr)
       return -1
     }
 
+    let (hostName, config) = SSHClientConfigProvider.config(command: cmd, using: device)
     if cmd.printConfiguration {
-      print("Configuration is", to: &stdout)
+      print("Configuration for \(cmd.host) as \(hostName)", to: &stdout)
+      print("\(config.description)", to: &stdout)
       return 0
     }
 
-    let config = SSHClientConfigProvider.config(command: cmd, config: options, using: device)
 
     if let control = cmd.control {
-      guard let conn = SSHPool.connection(for: cmd.host, with: config) else {
+      guard
+        let conn = SSHPool.connection(for: hostName, with: config)
+      else {
         print("No connection for \(cmd.host) to control", to: &stderr)
         return -1
       }
@@ -128,8 +131,18 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return 0
     }
 
-    SSHPool.dial(cmd.host, with: config, connectionOptions: options,
-                 withProxy: { [weak self] in self?.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2) })
+    SSHPool.dial(
+      hostName,
+      with: config,
+      connectionOptions: options,
+      withProxy: { [weak self] in
+        guard let self = self
+        else {
+          return
+        }
+        self._mcp.setActiveSession()
+        self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
+      })
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):

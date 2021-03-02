@@ -1,3 +1,5 @@
+MaxAuthTries 3
+
 UsePAM yes
 ChallengeResponseAuthentication yes
 PermitEmptyPasswords yes
@@ -7,7 +9,6 @@ PasswordAuthentication yes
 AcceptEnv LANG LC_* TEST
 ClientAliveInterval 300
 Subsystem sftp internal-sftp
-MaxAuthTries 3
 
 Match User partial
 	AuthenticationMethods publickey,password
