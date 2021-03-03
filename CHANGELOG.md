@@ -1,3 +1,8 @@
+# Version 13.5.12
+
+- Fixed ctrl-space combos. #1033
+- Treat DEC mode 1003 as 1002. Emacs (on master branch) tries to set this mode that is not supported by hterm. Thanks to @nan! PR #1202
+
 # Version 13.5.11
 
 - Pass LANG env by default to ssh connections
