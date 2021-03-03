@@ -29,6 +29,8 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Combine
+import Dispatch
 import Foundation
 import LibSSH
 import OpenSSH
@@ -57,11 +59,34 @@ public enum SSHAgentMessageType: UInt8 {
 
 fileprivate let errorData = Data(bytes: [0x05], count: MemoryLayout<CChar>.size)
 
-public class SSHAgent {
-  public private(set) var ring: [Signer] = []
+public enum SSHAgentConstraint {
+  case confirm
+  case lifetime
+}
 
-  public init() {}
+public class SSHAgentKey {
+//  let constraints: [SSHAgentConstraint]
+//  var expiration: Int
+  let signer: Signer
+  let name: String
   
+  init(_ key: Signer, named: String) {
+    self.signer = key
+    self.name = named
+  }
+}
+
+public class SSHAgent {
+  public private(set) var ring: [SSHAgentKey] = []
+  // 
+  var trustConnection = false
+  // NOTE Instead of the Agent tracking the constraints, we could have a delegate for that.
+  // NOTE The Agent name won't be relevant when doing Jumps between hosts, but at least you will know the first originator.
+  
+  public var constraintsPublisher: ((_ keyName: String) -> AnyPublisher<InteractiveResponse, Error>)?
+  
+  public init() {}
+    
   public func attachTo(client: SSHClient) {
     let ctxt = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
     let cb: ssh_agent_callback = { (req, len, reply, userdata) in
@@ -81,17 +106,19 @@ public class SSHAgent {
         replyLength = errorData.count
       }
 
-      replyData.withUnsafeMutableBytes { ptr in
+      _ = replyData.withUnsafeMutableBytes { ptr in
         ssh_buffer_add_data(reply, ptr.baseAddress!, UInt32(replyLength))
       }
 
       return Int32(replyData.count)
     }
+    
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer) {
-    ring.append(key)
+  public func loadKey(_ key: Signer, aka name: String) {
+    let cKey = SSHAgentKey(key, named: name)
+    ring.append(cKey)
   }
 
   func request(_ message: Data, context: SSHAgentMessageType) -> Data {
@@ -117,7 +144,7 @@ public class SSHAgent {
     var preamble = Data(bytes: &respType, count: MemoryLayout<CChar>.size)
     preamble.append(Data(bytes: &keys, count: MemoryLayout<UInt32>.size))
 
-    return try ring.map { try $0.publicKey.encode() }
+    return try ring.map { try $0.signer.publicKey.encode() }
       .reduce(preamble) { (res, val) in
         var data = res
         data.append(val)
@@ -136,11 +163,25 @@ public class SSHAgent {
     guard let key = lookupKey(blob: keyBlob) else {
       throw SSHKeyError(title: "Could not find proposed key")
     }
-    let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key)
+    let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
 
-    // TODO: Enforce constraints. The agent may require the user to accept the operation.
+    let response: InteractiveResponse = try await {
+      if trustConnection {
+        return .just(.affirmative)
+      }
+      
+      guard let pub = constraintsPublisher else {
+        return .just(.negative)
+      }
 
-    let signature = try key.sign(data, algorithm: algorithm)
+      return pub(key.name)
+    }
+
+    if response == .negative {
+      throw SSHKeyError(title: "User denied operation")
+    }
+    
+    let signature = try key.signer.sign(data, algorithm: algorithm)
     // Wire format signature
     var sigLength: UInt32 = UInt32(signature.count).bigEndian
     var sigString = Data(bytes: &sigLength, count: MemoryLayout<UInt32>.size)
@@ -152,9 +193,9 @@ public class SSHAgent {
     return d
   }
 
-  fileprivate func lookupKey(blob: Data) -> Signer? {
+  fileprivate func lookupKey(blob: Data) -> SSHAgentKey? {
     // NOTE LibSSH reencodes the accepted public key, so we cannot depend on the bytes.
-    ring.first { $0.publicKey.equals(blob) }
+    ring.first { $0.signer.publicKey.equals(blob) }
   }
 
   fileprivate func sshString(_ bytes: inout Data) -> String? {
@@ -232,3 +273,20 @@ fileprivate struct SigDecodingAlgorithm: OptionSet {
     return nil
   }
 }
+
+fileprivate func await<U>(_ call: ()->(AnyPublisher<U, Error>)) throws -> U {
+  let semaphore = DispatchSemaphore(value: 0)
+  var val: U?
+
+  let _ = call().sink(receiveCompletion: { _ in semaphore.signal() },
+            receiveValue: { val = $0 })
+
+  _ = semaphore.wait(wallTimeout: .distantFuture)
+  
+  guard let response = val else {
+    throw SSHKeyError(title: "Error executing async callback")
+  }
+  
+  return response
+}
+

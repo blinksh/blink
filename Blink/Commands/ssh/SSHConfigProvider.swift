@@ -69,7 +69,7 @@ class SSHClientConfigProvider {
   static func config(command cmd: SSHCommand, using device: TermDevice) -> (String, SSHClientConfig) {
     let host = cmd.host
     let prov = SSHClientConfigProvider(command: cmd, using: device)
-    let agent = prov.agent()
+    let agent = prov.agent(forHost: host)
     let availableAuthMethods: [AuthMethod] = [AuthAgent(agent)] + prov.passwordAuthMethods()
 
     let options = try? cmd.connectionOptions.get()
@@ -205,8 +205,13 @@ extension SSHClientConfigProvider {
     .eraseToAnyPublisher()
   }
 
-  fileprivate func agent() -> SSHAgent {
+  fileprivate func agent(forHost host: String) -> SSHAgent {
     let agent = SSHAgent()
+    agent.constraintsPublisher = { (keyName) in
+      // NOTE The Agent is attached to the host here, so we can potentially print information about the host itself.
+      print(keyName)
+      return Just(.affirmative).mapError { $0 as Error }.eraseToAnyPublisher()
+    }
     
     if let identityFile = command.identityFile,
        let (identityKey, name) = BKConfig.privateKey(forIdentifier: identityFile) {
@@ -218,18 +223,18 @@ extension SSHClientConfigProvider {
       // we would have to pass a Data, or work with Strings in another convenience init.
       if let blob = SSHKey.sanitize(key: identityKey).data(using: .utf8),
          let key = try? SSHKey(fromBlob: blob) {
-        agent.loadKey(key)
+        agent.loadKey(key, aka: name)
       }
     } else if let (hostKey, name) = BKConfig.privateKey(forHost: command.host) {
       if let blob = SSHKey.sanitize(key: hostKey).data(using: .utf8),
          let key = try? SSHKey(fromBlob: blob) {
-        agent.loadKey(key)
+        agent.loadKey(key, aka: name)
       }
     } else {
       for (defaultKey, name) in BKConfig.defaultKeys() {
         if let blob = SSHKey.sanitize(key: defaultKey).data(using: .utf8),
            let key = try? SSHKey(fromBlob: blob) {
-          agent.loadKey(key)
+          agent.loadKey(key, aka: name)
         }
       }
     }
