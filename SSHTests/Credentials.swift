@@ -31,60 +31,50 @@
 
 import Foundation
 
-public struct MockCredentials {
-  static let user: String = "regular"
-  static let password: String = "regular"
+struct Credentials {
+  let user: String
+  let password: String
+  let host: String
   
-  // TODO: check host
+  static let regularUser: String = "regular"
+  static let regularUserPassword: String = "regular"
+  
   static let port: String = "2222"
   static let host: String = "localhost"
   static let incorrectIpHost: String = "256.8.4.2"
-  
-  static let pathWithFile = "/Users/javierdemartin/TestSftpFile.dat"
-  static let folderPath = "/Users/javierdemartin"
-  
-  //    let user: String = "vagrant"
-  //    let password: String = "vagrant"
-  //    let host: String = "192.168.1.100"
-  
-  static var credentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
-  )
-  
+    
   /// This one assumes another nonexistent machine on the same network, so it cannot be resolved.
   static let timeoutHost = Credentials(user: "asdf", password: "zxcv", host: "192.168.1.155")
   
   /// Incorrect credentials for a server to test failure
-  static var wrongCredentials = Credentials(user: MockCredentials.user, password: "1234567890", host: MockCredentials.host)
+  static let wrongPassword = Credentials(user: Self.regularUser, password: "1234567890", host: Self.host)
   
-  static var wrongHost = Credentials(user: MockCredentials.user, password: "1234567890", host: "asdf")
+  static let wrongHost = Credentials(user: Self.regularUser, password: "1234567890", host: "asdf")
   
-  static var interactiveCredentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
+  static let interactive = Credentials(
+    user: Self.regularUser,
+    password: Self.regularUserPassword,
+    host: Self.host
   )
   
-  static var noneCredentials = Credentials(user: "no-password", password: "", host: MockCredentials.host)
+  static let none = Credentials(user: "no-password", password: "", host: Self.host)
   
-  static var passwordCredentials = Credentials(
-    user: MockCredentials.user,
-    password: MockCredentials.password,
-    host: MockCredentials.host
+  static let password = Credentials(
+    user: Self.regularUser,
+    password: Self.regularUserPassword,
+    host: Self.host
   )
   
-  static var partialAuthenticationCredentials = Credentials(
+  static let partialAuthentication = Credentials(
     user: "partial",
     password: "partial",
-    host: MockCredentials.host
+    host: Self.host
   )
   
-  static var publicKeyAuthentication = Credentials(
-    user: MockCredentials.user,
+  static let publicKeyAuthentication = Credentials(
+    user: Self.regularUser,
     password: "",
-    host: MockCredentials.host
+    host: Self.host
   )
   
   static let wrongPrivateKey: String = """

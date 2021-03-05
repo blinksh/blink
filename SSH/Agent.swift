@@ -35,18 +35,6 @@ import Foundation
 import LibSSH
 import OpenSSH
 
-public protocol PublicKey {
-  // We may need this one for the Authorized key format
-  var type: SSHKeyType { get }
-  func encode() throws -> Data
-  func verify(signature bytes: Data, of data: Data) throws -> Bool
-  func equals(_ blob: Data) -> Bool
-}
-
-public protocol Signer {
-  var publicKey: PublicKey { get }
-  func sign(_ message: Data, algorithm: String?) throws -> Data
-}
 
 public enum SSHAgentMessageType: UInt8 {
   case failure = 5
@@ -144,7 +132,7 @@ public class SSHAgent {
     var preamble = Data(bytes: &respType, count: MemoryLayout<CChar>.size)
     preamble.append(Data(bytes: &keys, count: MemoryLayout<UInt32>.size))
 
-    return try ring.map { try $0.signer.publicKey.encode() }
+    return try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.signer.comment ?? "") }
       .reduce(preamble) { (res, val) in
         var data = res
         data.append(val)
@@ -194,8 +182,8 @@ public class SSHAgent {
   }
 
   fileprivate func lookupKey(blob: Data) -> SSHAgentKey? {
-    // NOTE LibSSH reencodes the accepted public key, so we cannot depend on the bytes.
-    ring.first { $0.signer.publicKey.equals(blob) }
+    // Get rid of the blob size from encode before comparing.
+    ring.first { (try? $0.signer.publicKey.encode()[4...]) == blob }
   }
 
   fileprivate func sshString(_ bytes: inout Data) -> String? {
@@ -255,7 +243,7 @@ fileprivate struct SigDecodingAlgorithm: OptionSet {
   public static let RsaSha2512 = SigDecodingAlgorithm(rawValue: 1 << 2)
 
   func algorithm(for key: Signer) -> String? {
-    let type = key.publicKey.type
+    let type = key.sshKeyType
 
     if type.rawValue == KEY_RSA.rawValue {
       if self.contains(.RsaSha2256) {
@@ -290,3 +278,17 @@ fileprivate func await<U>(_ call: ()->(AnyPublisher<U, Error>)) throws -> U {
   return response
 }
 
+public enum SSHEncode {
+  public static func data(from str: String) -> Data {
+    self.data(from: UInt32(str.count)) + (str.data(using: .utf8) ?? Data())
+  }
+  
+  public static func data(from int: UInt32) -> Data {
+    var length: UInt32 = UInt32(int).bigEndian
+    return Data(bytes: &length, count: MemoryLayout<UInt32>.size)
+  }
+  
+  public static func data(from bytes: Data) -> Data {
+    self.data(from: UInt32(bytes.count)) + bytes
+  }
+}

@@ -222,18 +222,18 @@ extension SSHClientConfigProvider {
       // TODO It would make sense for the constructor to sanitize directly. But that would also mean
       // we would have to pass a Data, or work with Strings in another convenience init.
       if let blob = SSHKey.sanitize(key: identityKey).data(using: .utf8),
-         let key = try? SSHKey(fromBlob: blob) {
+         let key = try? SSHKey(fromFileBlob: blob) {
         agent.loadKey(key, aka: name)
       }
     } else if let (hostKey, name) = BKConfig.privateKey(forHost: command.host) {
       if let blob = SSHKey.sanitize(key: hostKey).data(using: .utf8),
-         let key = try? SSHKey(fromBlob: blob) {
+         let key = try? SSHKey(fromFileBlob: blob) {
         agent.loadKey(key, aka: name)
       }
     } else {
       for (defaultKey, name) in BKConfig.defaultKeys() {
         if let blob = SSHKey.sanitize(key: defaultKey).data(using: .utf8),
-           let key = try? SSHKey(fromBlob: blob) {
+           let key = try? SSHKey(fromFileBlob: blob) {
           agent.loadKey(key, aka: name)
         }
       }

@@ -51,8 +51,8 @@ class AgentTests: XCTestCase {
   func testAgentAuthenticationWithRSAKey() throws {
     let agent = SSHAgent()
     //try agent.loadKey(fromBlob: MockCredentials.notCopiedPrivateKey.data(using: .utf8)!)
-    let key = try SSHKey(fromBlob: MockCredentials.privateKey.data(using: .utf8)!)
-    try agent.loadKey(key)
+    let key = try SSHKey(fromFileBlob: Credentials.privateKey.data(using: .utf8)!)
+    try agent.loadKey(key, aka: "testKey")
 
     let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
 
@@ -84,8 +84,8 @@ class AgentTests: XCTestCase {
   // Curve keys have another headers during construction. We test here that we are still doing it properly.
   func testAgentAuthenticationWithCurveKey() throws {
     let agent = SSHAgent()
-    let key = try SSHKey(fromBlob: MockCredentials.curvePrivateKey.data(using: .utf8)!)
-    try agent.loadKey(key)
+    let key = try SSHKey(fromFileBlob: Credentials.curvePrivateKey.data(using: .utf8)!)
+    try agent.loadKey(key, aka: "test")
 
     let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
 
@@ -118,9 +118,9 @@ class AgentTests: XCTestCase {
     let bundle = Bundle(for: type(of: self))
     let privPath = bundle.path(forResource: "user_key", ofType: nil)
     let pubPath  = bundle.path(forResource: "user_key-cert", ofType: "pub")
-    let key = try SSHKey(fromFile: privPath!, withPublicCert: pubPath!)
+    let key = try SSHKey(fromFile: privPath!, withPublicFileCert: pubPath!)
     
-    try agent.loadKey(key)
+    try agent.loadKey(key, aka: "keyTest")
     
     let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
     
@@ -152,4 +152,3 @@ class AgentTests: XCTestCase {
 // Encoding PKCS12. PFX is rarely used, and we can say we do not accept it.
 // PKCS8 or PKCS1 version. When we generate and export we should use PKCS8, but
 // otherwise we can just store the blob as is.
-
