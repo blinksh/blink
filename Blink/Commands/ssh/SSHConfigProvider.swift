@@ -151,7 +151,8 @@ enum BKConfig {
   }
   
   static func user(forHost host: String) -> String? {
-    Self.host(host)?.user.isEmpty ? nil : Self.host(host)?.user
+    let user = Self.host(host)?.user ?? ""
+    return user.isEmpty ? nil : user
   }
   
   static func port(forHost host: String) -> String? {
