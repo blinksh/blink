@@ -94,6 +94,7 @@ class SSHClientConfigProvider {
 }
 
 enum BKConfig {
+
   static func privateKey(forIdentifier identifier: String) -> (String, String)? {
     guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
       return nil
@@ -150,7 +151,7 @@ enum BKConfig {
   }
   
   static func user(forHost host: String) -> String? {
-    Self.host(host)?.user
+    Self.host(host)?.user.isEmpty ? nil : Self.host(host)?.user
   }
   
   static func port(forHost host: String) -> String? {
