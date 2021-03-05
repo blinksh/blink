@@ -70,14 +70,14 @@ class SSHClientConfigProvider {
     let host = cmd.host
     let prov = SSHClientConfigProvider(command: cmd, using: device)
     let options = try? cmd.connectionOptions.get()
-    
+
     return (
       BKConfig.hostName(forHost: host) ?? cmd.host,
       SSHClientConfig(
-        // first use 'user' from options, then from cmd and last defaultUserName and fallback to `root`
-        user: options?.user ?? cmd.user ?? BKDefaults.defaultUserName() ?? "root",
-        // first use `port` from command, then from options and defaults to 22
-        port: options?.port ?? cmd.port.map(String.init) ?? "22",
+        // first use 'user' from options, then from cmd, then from configured host, then from defaultUserName, and fallback to `root`
+        user: options?.user ?? cmd.user ?? BKConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
+        // first use `port` from options, then from cmd, then from configured host, and fallback to 22
+        port: options?.port ?? cmd.port.map(String.init) ?? BKConfig.port(forHost: host) ?? "22",
         proxyJump: cmd.proxyJump,
         proxyCommand: options?.proxyCommand ?? BKConfig.proxyCommand(forHost: host),
         authMethods: prov.availableAuthMethods(),
@@ -154,7 +154,11 @@ enum BKConfig {
   }
   
   static func port(forHost host: String) -> String? {
-    Self.host(host)?.port.stringValue
+    if let port = Self.host(host)?.port {
+      return port.stringValue
+    } else {
+      return nil
+    }
   }
 }
 
