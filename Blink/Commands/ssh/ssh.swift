@@ -71,7 +71,6 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var inStream: DispatchInputStream?
   
   init(mcp: MCPSession) {
-    
     _mcp = mcp;
     self.outstream = fileno(thread_stdout)
     self.instream = fileno(thread_stdin)

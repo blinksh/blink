@@ -341,7 +341,7 @@ class SSHTests: XCTestCase {
         expectation.fulfill()
       }
     
-    wait(for: [expectation], timeout: 500)
+    wait(for: [expectation], timeout: 20)
     XCTAssertTrue(output?.count == 1024)
     
     print("======Second read")
