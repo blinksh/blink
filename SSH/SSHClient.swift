@@ -48,6 +48,8 @@ fileprivate extension ssh_options_e {
     case SSH_OPTIONS_HOST:              return "SSH_OPTIONS_HOST"
     case SSH_OPTIONS_USER:              return "SSH_OPTIONS_USER"
     case SSH_OPTIONS_LOG_VERBOSITY:     return "SSH_OPTIONS_LOG_VERBOSITY"
+    case SSH_OPTIONS_COMPRESSION_C_S:   return "SSH_OPTIONS_COMPRESSION_C_S"
+    case SSH_OPTIONS_COMPRESSION_S_C:   return "SSH_OPTIONS_COMPRESSION_S_C"
     case SSH_OPTIONS_COMPRESSION:       return "SSH_OPTIONS_COMPRESSION"
     case SSH_OPTIONS_COMPRESSION_LEVEL: return "SSH_OPTIONS_COMPRESSION_LEVEL"
     case SSH_OPTIONS_PORT_STR:          return "SSH_OPTIONS_PORT_STR"
@@ -262,8 +264,17 @@ public class SSHClient {
     try _setSessionOption(SSH_OPTIONS_USER, opts.user)
     try _setSessionOption(SSH_OPTIONS_LOG_VERBOSITY, &verbosity)
     
-    let compression = opts.compression ? "yes" : "no"
-    try _setSessionOption(SSH_OPTIONS_COMPRESSION, compression)
+  
+    // NOTE: libssh SSH_OPTIONS_COMPRESSION yes/no differs from OpenSSH:
+    // - OpenSSH keeps 'none' value in the list, just change it's position
+    // - LibSSH removes 'none'
+    let preferredCompressionAlgoList = opts.compression
+      ? "zlib@openssh.com,zlib,none"
+      : "none,zlib@openssh.com,zlib"
+    
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION_C_S, preferredCompressionAlgoList)
+    try _setSessionOption(SSH_OPTIONS_COMPRESSION_S_C, preferredCompressionAlgoList)
+
     var compressionLevel = opts.compressionLevel
     try _setSessionOption(SSH_OPTIONS_COMPRESSION_LEVEL, &compressionLevel)
     
