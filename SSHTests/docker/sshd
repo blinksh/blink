@@ -2,10 +2,14 @@
 
 cd "${0%/*}"
 
-if [[ -z "${SSHD_PORT}" ]]; then
-    SSHD_PORT=2222
+if [[ -z "${OPENSSH_PORT}" ]]; then
+    OPENSSH_PORT=2222
+fi
+
+if [[ -z "${DROPBEAR_PORT}" ]]; then
+    DROPBEAR_PORT=2223
 fi
 
 docker build -t sshd .
-echo Starting sshd on port $SSHD_PORT
-docker run --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $SSHD_PORT:22 sshd $@
+echo Starting openssh server on port $OPENSSH_PORT and dropbear on port $DROPBEAR_PORT
+docker run --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@
