@@ -87,6 +87,20 @@
 		B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */; };
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
+		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
+		BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
+		BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
+		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
+		BD8D892225DC428300E55D9E /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D891D25DC428300E55D9E /* Agent.swift */; };
+		BD8D892325DC428300E55D9E /* SSHKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D892125DC428300E55D9E /* SSHKeys.swift */; };
+		BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D893025DC429500E55D9E /* AgentTests.swift */; };
+		BD8D893325DC429500E55D9E /* SSHKeysTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D893125DC429500E55D9E /* SSHKeysTests.swift */; };
+		BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; };
+		BD8D895025DC528A00E55D9E /* OpenSSH.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BD8D897225DC534F00E55D9E /* id_ecdsa in Resources */ = {isa = PBXBuildFile; fileRef = BD8D896E25DC534F00E55D9E /* id_ecdsa */; };
+		BD8D897325DC534F00E55D9E /* user_key in Resources */ = {isa = PBXBuildFile; fileRef = BD8D896F25DC534F00E55D9E /* user_key */; };
+		BD8D897425DC534F00E55D9E /* id_ecdsa.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897025DC534F00E55D9E /* id_ecdsa.pub */; };
+		BD8D897525DC534F00E55D9E /* user_key-cert.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897125DC534F00E55D9E /* user_key-cert.pub */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		C94437651D838ABF0096F84E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
@@ -196,7 +210,6 @@
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
-		D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -399,6 +412,17 @@
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BD8D895125DC528A00E55D9E /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				BD8D895025DC528A00E55D9E /* OpenSSH.xcframework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D218069F25CC27C100B98902 /* Embed PlugIns */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
@@ -516,6 +540,17 @@
 		B7D4503B1DD4706000CE0DBE /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
+		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
+		BD8BBFAF25F947710084705F /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
+		BD8D891D25DC428300E55D9E /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
+		BD8D892125DC428300E55D9E /* SSHKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHKeys.swift; sourceTree = "<group>"; };
+		BD8D893025DC429500E55D9E /* AgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentTests.swift; sourceTree = "<group>"; };
+		BD8D893125DC429500E55D9E /* SSHKeysTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHKeysTests.swift; sourceTree = "<group>"; };
+		BD8D896E25DC534F00E55D9E /* id_ecdsa */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = id_ecdsa; sourceTree = "<group>"; };
+		BD8D896F25DC534F00E55D9E /* user_key */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user_key; sourceTree = "<group>"; };
+		BD8D897025DC534F00E55D9E /* id_ecdsa.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = id_ecdsa.pub; sourceTree = "<group>"; };
+		BD8D897125DC534F00E55D9E /* user_key-cert.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "user_key-cert.pub"; sourceTree = "<group>"; };
+		BDB713D425F133EF00129A55 /* SEKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SEKey.swift; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
 		C944375F1D831CD30096F84E /* Themes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Themes; sourceTree = "<group>"; };
@@ -636,7 +671,6 @@
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkTests.swift; sourceTree = "<group>"; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
@@ -736,6 +770,7 @@
 				D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */,
 				D218074C25CD4B3D00B98902 /* libz.tbd in Frameworks */,
 				07FABC4825C9B08100E1CC2C /* BlinkFiles.framework in Frameworks */,
+				BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */,
 				D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -976,6 +1011,7 @@
 		07FAB8E925C8E6C500E1CC2C /* ssh */ = {
 			isa = PBXGroup;
 			children = (
+				BDB713D425F133EF00129A55 /* SEKey.swift */,
 				07FAB8EA25C8E6C500E1CC2C /* Helpers.swift */,
 				07FAB8EB25C8E6C500E1CC2C /* CopyFiles.swift */,
 				07FAB8EC25C8E6C500E1CC2C /* ssh.swift */,
@@ -989,14 +1025,17 @@
 		07FABB8525C9AEC000E1CC2C /* SSH */ = {
 			isa = PBXGroup;
 			children = (
+				BD8D891D25DC428300E55D9E /* Agent.swift */,
 				07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */,
 				07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */,
+				BD8BBFAF25F947710084705F /* Keys.swift */,
 				07FABBD425C9AF5F00E1CC2C /* Publishers.swift */,
 				07FABBD825C9AF5F00E1CC2C /* SCP.swift */,
 				07FABBD625C9AF5F00E1CC2C /* SFTP.swift */,
 				07FABBD325C9AF5F00E1CC2C /* SSHClient.swift */,
 				07FABBD925C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift */,
 				07FABBD225C9AF5F00E1CC2C /* SSHError.swift */,
+				BD8D892125DC428300E55D9E /* SSHKeys.swift */,
 				07FABBDB25C9AF5F00E1CC2C /* SSHPortForward.swift */,
 				07FABBD125C9AF5F00E1CC2C /* SSHUtils.swift */,
 				07FABBD525C9AF5F00E1CC2C /* Streams.swift */,
@@ -1010,8 +1049,11 @@
 		07FABB9225C9AEC100E1CC2C /* SSHTests */ = {
 			isa = PBXGroup;
 			children = (
+				BD8D898025DC535600E55D9E /* keys */,
+				BD8D893025DC429500E55D9E /* AgentTests.swift */,
 				07FABBF225C9AF7A00E1CC2C /* AuthTests.swift */,
 				07FABBEF25C9AF7A00E1CC2C /* Credentials.swift */,
+				BD8D893125DC429500E55D9E /* SSHKeysTests.swift */,
 				07FABBEC25C9AF7A00E1CC2C /* PublishersTests.swift */,
 				07FABBED25C9AF7A00E1CC2C /* SCPTests.swift */,
 				07FABBF025C9AF7A00E1CC2C /* SFTPTests.swift */,
@@ -1100,6 +1142,17 @@
 				D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */,
 			);
 			path = Security;
+			sourceTree = "<group>";
+		};
+		BD8D898025DC535600E55D9E /* keys */ = {
+			isa = PBXGroup;
+			children = (
+				BD8D896E25DC534F00E55D9E /* id_ecdsa */,
+				BD8D897025DC534F00E55D9E /* id_ecdsa.pub */,
+				BD8D896F25DC534F00E55D9E /* user_key */,
+				BD8D897125DC534F00E55D9E /* user_key-cert.pub */,
+			);
+			name = keys;
 			sourceTree = "<group>";
 		};
 		C989E53B1D6CC488003E0079 /* BKHosts */ = {
@@ -1299,9 +1352,9 @@
 			isa = PBXGroup;
 			children = (
 				D265FBBE2317DD3C0017EAC4 /* Info.plist */,
-				D265FBBC2317DD3C0017EAC4 /* BlinkTests.swift */,
 				D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */,
 				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
+				BD8BBF0825F819970084705F /* SEKeyTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -1489,6 +1542,7 @@
 				07FABB8025C9AEC000E1CC2C /* Sources */,
 				07FABB8125C9AEC000E1CC2C /* Frameworks */,
 				07FABB8225C9AEC000E1CC2C /* Resources */,
+				BD8D895125DC528A00E55D9E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1762,6 +1816,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8D897525DC534F00E55D9E /* user_key-cert.pub in Resources */,
+				BD8D897425DC534F00E55D9E /* id_ecdsa.pub in Resources */,
+				BD8D897225DC534F00E55D9E /* id_ecdsa in Resources */,
+				BD8D897325DC534F00E55D9E /* user_key in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1848,12 +1906,15 @@
 				07FABBE425C9AF5F00E1CC2C /* SSHClient+KnownHostsHelpers.swift in Sources */,
 				07FABBDF25C9AF5F00E1CC2C /* Publishers.swift in Sources */,
 				07FABBE625C9AF5F00E1CC2C /* SSHPortForward.swift in Sources */,
+				BD8BBFB025F947710084705F /* Keys.swift in Sources */,
 				07FABC2225C9AFC500E1CC2C /* String+Extension.swift in Sources */,
+				BD8D892225DC428300E55D9E /* Agent.swift in Sources */,
 				07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */,
 				07FABBDC25C9AF5F00E1CC2C /* SSHUtils.swift in Sources */,
 				07FABBDE25C9AF5F00E1CC2C /* SSHClient.swift in Sources */,
 				07FABBDD25C9AF5F00E1CC2C /* SSHError.swift in Sources */,
 				07FABBE225C9AF5F00E1CC2C /* DispatchStreams.swift in Sources */,
+				BD8D892325DC428300E55D9E /* SSHKeys.swift in Sources */,
 				07FABBE525C9AF5F00E1CC2C /* AuthMethods.swift in Sources */,
 				07FABBE025C9AF5F00E1CC2C /* Streams.swift in Sources */,
 			);
@@ -1870,6 +1931,8 @@
 				07FABBF525C9AF7A00E1CC2C /* SCPTests.swift in Sources */,
 				07FABB9425C9AEC100E1CC2C /* SSHTests.swift in Sources */,
 				07FABBFB25C9AF7A00E1CC2C /* SSHPortForwardTests.swift in Sources */,
+				BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */,
+				BD8D893325DC429500E55D9E /* SSHKeysTests.swift in Sources */,
 				07FABBF725C9AF7A00E1CC2C /* Credentials.swift in Sources */,
 				07FABBF625C9AF7A00E1CC2C /* StreamsTests.swift in Sources */,
 				07FABBFA25C9AF7A00E1CC2C /* AuthTests.swift in Sources */,
@@ -1909,9 +1972,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
-				D265FBBD2317DD3C0017EAC4 /* BlinkTests.swift in Sources */,
+				BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */,
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
@@ -1972,6 +2036,7 @@
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
+				BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */,
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,

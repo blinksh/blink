@@ -90,7 +90,6 @@ public class AuthPassword: AuthMethod, Authenticator {
 /// This method allows to get the available authentication methods. It also gives the server a chance to authenticate the user with just
 /// his/her login. Some old hardware use this feature to fallback the user on a "telnet over SSH" style of login.
 public class AuthNone: AuthMethod, Authenticator {
-  
   public init() {
     
   }
@@ -303,6 +302,38 @@ public class AuthPublicKey: AuthMethod, Authenticator {
   deinit {
     if let key = key {
       ssh_key_free(key)
+    }
+  }
+}
+
+// Gives a chance to any key hold by the Agent
+public class AuthAgent: AuthMethod, Authenticator {
+  public func name() -> String { "publickey" }
+  
+  let agent: SSHAgent
+  
+  public init(_ agent: SSHAgent) {
+    self.agent = agent
+  }
+  
+  internal func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+    return conn.tryAuth { try self.auth($0) }
+  }
+  
+  func auth(_ session: ssh_session) throws -> AuthState {
+    agent.trustConnection = true
+    let rc = ssh_userauth_agent(session, nil)
+    agent.trustConnection = false
+    
+    switch rc {
+    case SSH_AUTH_SUCCESS.rawValue:
+      return .success
+    case SSH_AUTH_DENIED.rawValue:
+      return .denied
+    default:
+      // NOTE This may return a completely different error because the failure may not be tied
+      // to the status of the agent.
+      throw SSHError(auth: ssh_auth_e(rawValue: rc), forSession: session)
     }
   }
 }

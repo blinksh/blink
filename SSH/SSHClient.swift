@@ -105,7 +105,8 @@ public struct SSHClientConfig: CustomStringConvertible {
    4. Hostbased
    */
   var authenticators: [Authenticator] = []
-  
+  var agent: SSHAgent?
+
   /// `.ssh` path location
   let sshDirectory: String?
   /// Path to config file
@@ -153,6 +154,7 @@ public struct SSHClientConfig: CustomStringConvertible {
               proxyJump: String? = nil,
               proxyCommand: String? = nil,
               authMethods: [AuthMethod]? = nil,
+              agent: SSHAgent? = nil,
               loggingVerbosity: SSHLogLevel = .none,
               verifyHostCallback: RequestVerifyHostCallback? = nil,
               connectionTimeout: Int = 30,
@@ -167,6 +169,7 @@ public struct SSHClientConfig: CustomStringConvertible {
     self.port = port
     self.proxyCommand = proxyCommand
     self.proxyJump = proxyJump
+    self.agent = agent
     self.loggingVerbosity = loggingVerbosity
     self.requestVerifyHostCallback = verifyHostCallback
     self.sshDirectory = sshDirectory
@@ -387,6 +390,10 @@ public class SSHClient {
       return .fail(error: error)
     }
     
+    if let agent = opts.agent {
+      agent.attachTo(client: c)
+    }
+
     // Done this way we don't have to handle cancellations here.
     
     // A maybe better option is to let these handle the Client, and then let the internal
