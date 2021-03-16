@@ -29,8 +29,6 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-import Combine
-import Dispatch
 import Foundation
 import LibSSH
 import OpenSSH
@@ -47,46 +45,55 @@ public enum SSHAgentMessageType: UInt8 {
 
 fileprivate let errorData = Data(bytes: [0x05], count: MemoryLayout<CChar>.size)
 
-public enum SSHAgentConstraint {
-  case confirm
-  case lifetime
-}
-
 public class SSHAgentKey {
-//  let constraints: [SSHAgentConstraint]
+  let constraints: [SSHAgentConstraint]?
 //  var expiration: Int
   let signer: Signer
   let name: String
   
-  init(_ key: Signer, named: String) {
+  init(_ key: Signer, named: String, constraints: [SSHAgentConstraint]? = nil) {
     self.signer = key
     self.name = named
+    self.constraints = constraints
   }
 }
 
 public class SSHAgent {
   public private(set) var ring: [SSHAgentKey] = []
-  // 
-  var trustConnection = false
   // NOTE Instead of the Agent tracking the constraints, we could have a delegate for that.
   // NOTE The Agent name won't be relevant when doing Jumps between hosts, but at least you will know the first originator.
-  
-  public var constraintsPublisher: ((_ keyName: String) -> AnyPublisher<InteractiveResponse, Error>)?
-  
+
   public init() {}
+
+  private var contexts: [AgentCtxt] = []
+  private class AgentCtxt {
+    let agent: SSHAgent
+    weak var client: SSHClient?
     
+    init(agent: SSHAgent, client: SSHClient) {
+      self.agent = agent
+      self.client = client
+    }
+  }
+
   public func attachTo(client: SSHClient) {
-    let ctxt = UnsafeMutableRawPointer(Unmanaged.passUnretained(self).toOpaque())
+    let agentCtxt = AgentCtxt(agent: self, client: client)
+    contexts.append(agentCtxt)
+    let ctxt = UnsafeMutableRawPointer(Unmanaged.passUnretained(agentCtxt).toOpaque())
     let cb: ssh_agent_callback = { (req, len, reply, userdata) in
       // Transform to Swift types and call the request.
-      let ctxt = Unmanaged<SSHAgent>.fromOpaque(userdata!).takeUnretainedValue()
-      var payload = Data(bytesNoCopy: req!, count: Int(len), deallocator: .none) // req!.advanced(by: 0)//by: MemoryLayout<UInt32>.size)
-      let typeValue = ctxt.sshU8(&payload)
+      let ctxt = Unmanaged<AgentCtxt>.fromOpaque(userdata!).takeUnretainedValue()
+      var payload = Data(bytesNoCopy: req!, count: Int(len), deallocator: .none)
+      let typeValue = SSHDecode.uint8(&payload)
 
       var replyData: Data
       let replyLength: Int
+      // Fix types. Cannot be nil as the callback is called by the client
+      guard let client = ctxt.client else {
+        return 0
+      }
       if let type = SSHAgentMessageType(rawValue: typeValue) {
-        replyData = ctxt.request(payload, context: type)
+        replyData = ctxt.agent.request(payload, context: type, client: client)
         replyLength = replyData.count
       } else {
         // Return error if type is unknown
@@ -104,18 +111,18 @@ public class SSHAgent {
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer, aka name: String) {
-    let cKey = SSHAgentKey(key, named: name)
+  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) {
+    let cKey = SSHAgentKey(key, named: name, constraints: constraints)
     ring.append(cKey)
   }
 
-  func request(_ message: Data, context: SSHAgentMessageType) -> Data {
+  func request(_ message: Data, context: SSHAgentMessageType, client: SSHClient) -> Data {
     do {
       switch context {
       case .requestIdentities:
         return try encodedRing()
       case .requestSignature:
-        return try sign(message)
+        return try sign(message, for: client)
       default:
         throw SSHKeyError(title: "Invalid request received")
       }
@@ -140,35 +147,24 @@ public class SSHAgent {
       }
   }
 
-  func sign(_ message: Data) throws -> Data {
+  func sign(_ message: Data, for client: SSHClient) throws -> Data {
     var respType = SSHAgentMessageType.responseSignature.rawValue
 
     var msg = message
-    let keyBlob = sshData(&msg)
-    let data = sshData(&msg)
-    let flags = sshU32(&msg)
+    let keyBlob = SSHDecode.bytes(&msg)
+    let data = SSHDecode.bytes(&msg)
+    let flags = SSHDecode.uint32(&msg)
 
     guard let key = lookupKey(blob: keyBlob) else {
       throw SSHKeyError(title: "Could not find proposed key")
     }
     let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
 
-    let response: InteractiveResponse = try await {
-      if trustConnection {
-        return .just(.affirmative)
-      }
-      
-      guard let pub = constraintsPublisher else {
-        return .just(.negative)
-      }
-
-      return pub(key.name)
+    // Enforce constraints
+    try key.constraints?.forEach {
+      if !$0.enforce(useOf: key, by: client) { throw SSHKeyError(title: "Denied operation by constraint: \($0.name).") }
     }
 
-    if response == .negative {
-      throw SSHKeyError(title: "User denied operation")
-    }
-    
     let signature = try key.signer.sign(data, algorithm: algorithm)
     // Wire format signature
     var sigLength: UInt32 = UInt32(signature.count).bigEndian
@@ -184,52 +180,6 @@ public class SSHAgent {
   fileprivate func lookupKey(blob: Data) -> SSHAgentKey? {
     // Get rid of the blob size from encode before comparing.
     ring.first { (try? $0.signer.publicKey.encode()[4...]) == blob }
-  }
-
-  fileprivate func sshString(_ bytes: inout Data) -> String? {
-    let length = sshU32(&bytes)
-    guard let str = String(data: bytes[0..<length], encoding: .utf8) else {
-      return nil
-    }
-    bytes = bytes.advanced(by: Int(length))
-    return str
-  }
-
-  fileprivate func sshData(_ bytes: inout Data) -> Data {
-    let length = sshU32(&bytes)
-    let d = bytes.subdata(in: 0..<Int(length))
-    bytes = bytes.advanced(by: Int(length))
-    return d
-  }
-
-  fileprivate func sshU8(_ bytes: inout Data) -> UInt8 {
-    let length = MemoryLayout<UInt8>.size
-    let d = bytes.subdata(in: 0..<length)
-    let value = UInt8(bigEndian: d.withUnsafeBytes { ptr in
-      ptr.load(as: UInt8.self)
-    })
-
-    if bytes.count == Int(length) {
-      bytes = Data()
-    } else {
-      bytes = bytes.advanced(by: Int(length))
-    }
-    return value
-  }
-
-  fileprivate func sshU32(_ bytes: inout Data) -> UInt32 {
-    let length = MemoryLayout<UInt32>.size
-    let d = bytes.subdata(in: 0..<Int(length))
-    let value = UInt32(bigEndian: d.withUnsafeBytes { ptr in
-      ptr.load(as: UInt32.self)
-    })
-
-    if bytes.count == Int(length) {
-      bytes = Data()
-    } else {
-      bytes = bytes.advanced(by: Int(length))
-    }
-    return value
   }
 }
 
@@ -262,22 +212,6 @@ fileprivate struct SigDecodingAlgorithm: OptionSet {
   }
 }
 
-fileprivate func await<U>(_ call: ()->(AnyPublisher<U, Error>)) throws -> U {
-  let semaphore = DispatchSemaphore(value: 0)
-  var val: U?
-
-  let _ = call().sink(receiveCompletion: { _ in semaphore.signal() },
-            receiveValue: { val = $0 })
-
-  _ = semaphore.wait(wallTimeout: .distantFuture)
-  
-  guard let response = val else {
-    throw SSHKeyError(title: "Error executing async callback")
-  }
-  
-  return response
-}
-
 public enum SSHEncode {
   public static func data(from str: String) -> Data {
     self.data(from: UInt32(str.count)) + (str.data(using: .utf8) ?? Data())
@@ -290,5 +224,53 @@ public enum SSHEncode {
   
   public static func data(from bytes: Data) -> Data {
     self.data(from: UInt32(bytes.count)) + bytes
+  }
+}
+
+public enum SSHDecode {
+  static func string(_ bytes: inout Data) -> String? {
+    let length = SSHDecode.uint32(&bytes)
+    guard let str = String(data: bytes[0..<length], encoding: .utf8) else {
+      return nil
+    }
+    bytes = bytes.advanced(by: Int(length))
+    return str
+  }
+
+  static func bytes(_ bytes: inout Data) -> Data {
+    let length = SSHDecode.uint32(&bytes)
+    let d = bytes.subdata(in: 0..<Int(length))
+    bytes = bytes.advanced(by: Int(length))
+    return d
+  }
+
+  static func uint8(_ bytes: inout Data) -> UInt8 {
+    let length = MemoryLayout<UInt8>.size
+    let d = bytes.subdata(in: 0..<length)
+    let value = UInt8(bigEndian: d.withUnsafeBytes { ptr in
+      ptr.load(as: UInt8.self)
+    })
+
+    if bytes.count == Int(length) {
+      bytes = Data()
+    } else {
+      bytes = bytes.advanced(by: Int(length))
+    }
+    return value
+  }
+
+  static func uint32(_ bytes: inout Data) -> UInt32 {
+    let length = MemoryLayout<UInt32>.size
+    let d = bytes.subdata(in: 0..<Int(length))
+    let value = UInt32(bigEndian: d.withUnsafeBytes { ptr in
+      ptr.load(as: UInt32.self)
+    })
+
+    if bytes.count == Int(length) {
+      bytes = Data()
+    } else {
+      bytes = bytes.advanced(by: Int(length))
+    }
+    return value
   }
 }

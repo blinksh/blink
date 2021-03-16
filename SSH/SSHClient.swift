@@ -209,6 +209,10 @@ public class SSHClient {
   var isConnected: Bool {
     ssh_is_connected(session) == 1
   }
+
+  // When a connection is local, we consider it trusted and we use this flag to indicate that
+  // to the agent. On an untrusted connection, the Agent may decide not to use specific keys.
+  var trustAgentConnection: Bool = true
   
   public struct PTY {
     let rows: Int32
@@ -409,6 +413,9 @@ public class SSHClient {
       }
       .flatMap{ $0.auth() }
       .flatMap{ client -> AnyPublisher<SSHClient, Error> in
+        // If we logged in to the remote, agent requests may be remote and cannot be trusted
+        client.trustAgentConnection = false
+
         if client.options.keepAliveInterval != nil {
           client.startKeepAliveTimer()
         }
