@@ -274,7 +274,7 @@ public class SSHClient {
     let preferredCompressionAlgoList = opts.compression
       ? "zlib@openssh.com,zlib,none"
       : "none,zlib@openssh.com,zlib"
-    
+
     try _setSessionOption(SSH_OPTIONS_COMPRESSION_C_S, preferredCompressionAlgoList)
     try _setSessionOption(SSH_OPTIONS_COMPRESSION_S_C, preferredCompressionAlgoList)
 

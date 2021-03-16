@@ -32,6 +32,7 @@
 import XCTest
 import Combine
 import Dispatch
+import LibSSH
 
 @testable import SSH
 
@@ -126,7 +127,6 @@ class SSHTests: XCTestCase {
     
     let expectConn = self.expectation(description: "Connection")
     
-    
     var connection: SSHClient?
     let c = SSHClient.dialWithTestConfig()
       .sink(receiveCompletion: { completion in
@@ -170,6 +170,30 @@ class SSHTests: XCTestCase {
     c2.cancel()
     // Check connection has been closed?
     // connection?.close()
+  }
+  
+  func testCompressionNegotiation() {
+    for compression in [false, true] {
+      let config = SSHClientConfig(
+        user: Credentials.regularUser,
+        port: Credentials.dropBearPort,
+        authMethods: [AuthPassword(with: Credentials.regularUserPassword)],
+        compression: compression
+      )
+      var completion: Any? = nil
+      
+      let connection = SSHClient
+        .dial(Credentials.host, with: config)
+        .lastOutput(
+          test: self,
+          receiveCompletion: {
+            completion = $0
+          }
+        )
+      
+      assertCompletionFinished(completion)
+      XCTAssertNotNil(connection)
+    }
   }
   
   func testConnectionTimeout() throws {

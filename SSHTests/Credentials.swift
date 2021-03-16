@@ -40,6 +40,7 @@ struct Credentials {
   static let regularUserPassword: String = "regular"
   
   static let port: String = "2222"
+  static let dropBearPort: String = "2223"
   static let host: String = "localhost"
   static let incorrectIpHost: String = "256.8.4.2"
     
