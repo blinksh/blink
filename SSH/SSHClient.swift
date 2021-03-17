@@ -651,9 +651,10 @@ public class SSHClient {
   }
   
   public func requestInteractiveShell(withPTY pty: PTY? = PTY(),
-                                      withEnvVars vars: [String: String] = [:]) -> AnyPublisher<Stream, Error> {
+                                      withEnvVars vars: [String: String] = [:],
+                                      withAgentForwarding forwardAgent: Bool = false) -> AnyPublisher<Stream, Error> {
     return newChannel()
-      .tryChannel { channel in
+      .tryChannel { channel -> ssh_channel in
         self.log.message("SHELL Opening channel", SSH_LOG_INFO)
         let rc = ssh_channel_open_session(channel)
         if rc != SSH_OK {
@@ -661,6 +662,13 @@ public class SSHClient {
         }
         return channel
       }
+      .flatMap { channel -> AnyPublisher<ssh_channel, Error> in
+        if !forwardAgent {
+          return AnyPublisher.just(channel)
+        }
+        
+        return self.requestAgentForward(on: channel)
+      }.eraseToAnyPublisher()
       .tryChannel { channel in
         guard let pty = pty else {
           return channel
@@ -735,10 +743,11 @@ public class SSHClient {
   
   public func requestExec(command cmd: String,
                           withPTY pty: PTY? = nil,
-                          withEnvVars vars: [String: String] = [:]) -> AnyPublisher<Stream, Error> {
+                          withEnvVars vars: [String: String] = [:],
+                          withAgentForwarding forwardAgent: Bool = false) -> AnyPublisher<Stream, Error> {
     log.message("Executing on remote: \(cmd)", SSH_LOG_INFO)
     return newChannel()
-      .tryChannel { channel in
+      .tryChannel { channel -> ssh_channel in
         self.log.message("EXEC Opening channel", SSH_LOG_INFO)
         let rc = ssh_channel_open_session(channel)
         if rc != SSH_OK {
@@ -746,6 +755,13 @@ public class SSHClient {
         }
         return channel
       }
+      .flatMap { channel -> AnyPublisher<ssh_channel, Error> in
+        if !forwardAgent {
+          return AnyPublisher.just(channel)
+        }
+        
+        return self.requestAgentForward(on: channel)
+      }.eraseToAnyPublisher()
       .tryChannel { channel in
         guard let pty = pty else {
           return channel
@@ -839,6 +855,40 @@ public class SSHClient {
       }.eraseToAnyPublisher()
   }
   
+  func requestAgentForward(on channel: ssh_channel) -> AnyPublisher<ssh_channel, Error> {
+    let cb: ssh_channel_open_request_auth_agent_callback = { (session, userdata) in
+      let ctxt = Unmanaged<SSHClient>.fromOpaque(userdata!).takeUnretainedValue()
+
+      ctxt.log.message("AUTH AGENT callback", SSH_LOG_INFO)
+      guard let agent = ctxt.options.agent,
+            let channel = ssh_channel_new(ctxt.session) else {
+        return nil
+      }
+      ssh_channel_set_blocking(channel, 0)
+
+      // Forward the agent through the channel
+      let stream = Stream(channel, on: ctxt)
+      agent.forward(to: stream)
+
+      return channel
+    }
+
+    return AnyPublisher.just(channel)
+      .tryChannel { channel in
+        let rc = ssh_channel_request_auth_agent(channel)
+        if rc != SSH_OK {
+          throw SSHError(rc, forSession: self.session)
+        }
+
+        if self.callbacks.channel_open_request_auth_agent_function == nil {
+          self.callbacks.channel_open_request_auth_agent_function = cb
+          ssh_set_callbacks(self.session, &self.callbacks)
+        }
+
+        return channel
+      }.eraseToAnyPublisher()
+  }
+
   func requestEnvVars(channel: ssh_channel, vars: [String:String] = [:]) -> AnyPublisher<ssh_channel, Error> {
     return vars.enumerated().publisher
       .flatMap { (_, arg1) -> AnyPublisher<ssh_channel, Error> in
@@ -856,7 +906,7 @@ public class SSHClient {
           }
       }.reduce(channel) { $1 }.eraseToAnyPublisher()
   }
-  
+
   func closeChannel(_ channel: ssh_channel) {
     self.rloop.perform {
       // Keep self so the Session is always deinited after the channels are closed.

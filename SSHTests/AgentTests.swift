@@ -50,34 +50,24 @@ class AgentTests: XCTestCase {
   // Test the Signatures happen properly with RSA Keys, as those may include special algorithms
   func testAgentAuthenticationWithRSAKey() throws {
     let agent = SSHAgent()
-    //try agent.loadKey(fromBlob: MockCredentials.notCopiedPrivateKey.data(using: .utf8)!)
     let key = try SSHKey(fromFileBlob: Credentials.privateKey.data(using: .utf8)!)
-    try agent.loadKey(key, aka: "testKey")
+    agent.loadKey(key, aka: "testKey")
 
-    let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
+    let config = SSHClientConfig(user: Credentials.publicKeyAuthentication.user,
+                                 port: Credentials.port,
+                                 authMethods: [AuthAgent(agent)],
+                                 agent: agent)
 
-    let expectation = self.expectation(description: "SSH connected")
+    var completion: Any? = nil
 
-    var connection: SSHClient?
+    let connection = SSHClient.dial(Credentials.publicKeyAuthentication.host, with: config)
+      .lastOutput(
+      test: self,
+        receiveCompletion: {
+          completion = $0
+        })
 
-    let c = SSHClient.dial("localhost", with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          break
-        case .failure(let error):
-          if let error = error as? SSHError {
-            XCTFail(error.description)
-            break
-          }
-          XCTFail("Unknown error")
-        }
-      }, receiveValue: { conn in
-        connection = conn
-        expectation.fulfill()
-      })
-
-    waitForExpectations(timeout: 3, handler: nil)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
 
@@ -85,34 +75,27 @@ class AgentTests: XCTestCase {
   func testAgentAuthenticationWithCurveKey() throws {
     let agent = SSHAgent()
     let key = try SSHKey(fromFileBlob: Credentials.curvePrivateKey.data(using: .utf8)!)
-    try agent.loadKey(key, aka: "test")
+    agent.loadKey(key, aka: "test")
 
-    let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
+    let config = SSHClientConfig(user: Credentials.publicKeyAuthentication.user,
+                                 port: Credentials.port,
+                                 authMethods: [AuthAgent(agent)],
+                                 agent: agent)
 
-    let expectation = self.expectation(description: "SSH connected")
+    var completion: Any? = nil
 
-    var connection: SSHClient?
-    let c = SSHClient.dial("localhost", with: config)
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          break
-        case .failure(let error):
-          if let error = error as? SSHError {
-            XCTFail(error.description)
-            break
-          }
-          XCTFail("Unknown error")
-        }
-      }, receiveValue: { conn in
-        connection = conn
-        expectation.fulfill()
-      })
+    let connection = SSHClient.dial(Credentials.publicKeyAuthentication.host, with: config)
+      .lastOutput(
+      test: self,
+        receiveCompletion: {
+          completion = $0
+        })
 
-    waitForExpectations(timeout: 3, handler: nil)
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
   }
-
+  
+  // https://goteleport.com/blog/how-to-ssh-properly/
   func testAgentAuthenticationWithCertificate() throws {
     let agent = SSHAgent()
     let bundle = Bundle(for: type(of: self))
@@ -120,35 +103,57 @@ class AgentTests: XCTestCase {
     let pubPath  = bundle.path(forResource: "user_key-cert", ofType: "pub")
     let key = try SSHKey(fromFile: privPath!, withPublicFileCert: pubPath!)
     
-    try agent.loadKey(key, aka: "keyTest")
+    agent.loadKey(key, aka: "certTest")
     
-    let config = SSHClientConfig(user: "carloscabanero", authMethods: [AuthAgent(agent)], agent: agent, loggingVerbosity: .debug)
-    
-    let expectation = self.expectation(description: "SSH connected")
+    let config = SSHClientConfig(user: Credentials.publicKeyAuthentication.user,
+                                 port: Credentials.port,
+                                 authMethods: [AuthAgent(agent)],
+                                 agent: agent)
 
-    var connection: SSHClient?
-    let c = SSHClient.dial("localhost", with: config)
-      .sink(receiveCompletion: { completion in
-              switch completion {
-              case .finished:
-                break
-              case .failure(let error):
-                if let error = error as? SSHError {
-                  XCTFail(error.description)
-                  break
-                }
-                XCTFail("Unknown error")
-              }
-            }, receiveValue: { conn in
-                 connection = conn
-                 expectation.fulfill()
-               })
+    var completion: Any? = nil
 
-    waitForExpectations(timeout: 3, handler: nil)
+    let connection = SSHClient.dial(Credentials.publicKeyAuthentication.host, with: config)
+      .lastOutput(
+      test: self,
+        receiveCompletion: {
+          completion = $0
+        })
+
+    assertCompletionFinished(completion)
     XCTAssertNotNil(connection)
+  }
+  
+  func testAgentForwarding() throws {
+    // Do a second session to itself by using the forwarded agent.
+    let cmd = "ssh -o StrictHostKeyChecking=no localhost -- echo hola"
+    let agent = SSHAgent()
+    let key = try SSHKey(fromFileBlob: Credentials.privateKey.data(using: .utf8)!)
+    agent.loadKey(key, aka: "testKey")
+
+    let config = SSHClientConfig(user: Credentials.publicKeyAuthentication.user,
+                                 port: Credentials.port,
+                                 authMethods: [AuthAgent(agent)],
+                                 agent: agent)
+
+    var completion: Any? = nil
+
+    let read = SSHClient.dial(Credentials.publicKeyAuthentication.host, with: config)
+      .flatMap { $0.requestExec(command: cmd, withAgentForwarding: true) }
+      .flatMap { $0.read(max: SSIZE_MAX) }
+      .exactOneOutput(
+      test: self,
+        timeout: 15,
+        receiveCompletion: {
+          completion = $0
+        })
+
+    assertCompletionFinished(completion)
+    guard let data: DispatchData = read else {
+      XCTFail()
+      return
+    }
+    let output = String(bytes: data, encoding: .utf8)
+    XCTAssertTrue(output == "hola\n")
   }
 }
 
-// Encoding PKCS12. PFX is rarely used, and we can say we do not accept it.
-// PKCS8 or PKCS1 version. When we generate and export we should use PKCS8, but
-// otherwise we can just store the blob as is.

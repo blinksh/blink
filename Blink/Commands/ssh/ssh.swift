@@ -225,10 +225,14 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let opts = try? command.connectionOptions.get()
     
     if command.command.isEmpty {
-      session = conn.requestInteractiveShell(withPTY: pty, withEnvVars: opts?.sendEnv ?? [:])
+      session = conn.requestInteractiveShell(withPTY: pty,
+                                             withEnvVars: opts?.sendEnv ?? [:],
+                                             withAgentForwarding: command.agentForward)
     } else {
       let exec = command.command.joined(separator: " ")
-      session = conn.requestExec(command: exec, withPTY: pty, withEnvVars: opts?.sendEnv ?? [:])
+      session = conn.requestExec(command: exec, withPTY: pty,
+                                 withEnvVars: opts?.sendEnv ?? [:],
+                                 withAgentForwarding: command.agentForward)
     }
 
     session

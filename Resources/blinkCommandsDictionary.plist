@@ -40,7 +40,7 @@
 	<key>ssh-add</key>
 	<array>
 		<string>MAIN</string>
-		<string>ssh_add_main</string>
+		<string>blink_ssh_add</string>
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
 		<string>no</string>
 	</array>
