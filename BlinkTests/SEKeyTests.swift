@@ -39,6 +39,9 @@ class SEKeyTests: XCTestCase {
   var key: SEKey!
   
   override func setUpWithError() throws {
+    #if targetEnvironment(simulator)
+      throw XCTSkip("No Secure Enclave on simulator")
+    #endif
     // Put setup code here. This method is called before the invocation of each test method in the class.
     try? SEKey.delete(tag: testKeyTag)
     key = try SEKey.create(tagged: testKeyTag)
