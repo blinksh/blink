@@ -91,6 +91,7 @@
 		BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
 		BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
 		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
+		BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFF426001B020084705F /* AgentConstraints.swift */; };
 		BD8D892225DC428300E55D9E /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D891D25DC428300E55D9E /* Agent.swift */; };
 		BD8D892325DC428300E55D9E /* SSHKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D892125DC428300E55D9E /* SSHKeys.swift */; };
 		BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D893025DC429500E55D9E /* AgentTests.swift */; };
@@ -530,6 +531,7 @@
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
 		BD8BBFAF25F947710084705F /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
+		BD8BBFF426001B020084705F /* AgentConstraints.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentConstraints.swift; sourceTree = "<group>"; };
 		BD8D891D25DC428300E55D9E /* Agent.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Agent.swift; sourceTree = "<group>"; };
 		BD8D892125DC428300E55D9E /* SSHKeys.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHKeys.swift; sourceTree = "<group>"; };
 		BD8D893025DC429500E55D9E /* AgentTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentTests.swift; sourceTree = "<group>"; };
@@ -1014,6 +1016,7 @@
 			isa = PBXGroup;
 			children = (
 				BD8D891D25DC428300E55D9E /* Agent.swift */,
+				BD8BBFF426001B020084705F /* AgentConstraints.swift */,
 				07FABBDA25C9AF5F00E1CC2C /* AuthMethods.swift */,
 				07FABBD725C9AF5F00E1CC2C /* DispatchStreams.swift */,
 				BD8BBFAF25F947710084705F /* Keys.swift */,
@@ -1897,6 +1900,7 @@
 				07FABC2225C9AFC500E1CC2C /* String+Extension.swift in Sources */,
 				BD8D892225DC428300E55D9E /* Agent.swift in Sources */,
 				07FABBE325C9AF5F00E1CC2C /* SCP.swift in Sources */,
+				BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */,
 				07FABBDC25C9AF5F00E1CC2C /* SSHUtils.swift in Sources */,
 				07FABBDE25C9AF5F00E1CC2C /* SSHClient.swift in Sources */,
 				07FABBDD25C9AF5F00E1CC2C /* SSHError.swift in Sources */,

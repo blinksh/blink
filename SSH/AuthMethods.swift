@@ -321,9 +321,7 @@ public class AuthAgent: AuthMethod, Authenticator {
   }
   
   func auth(_ session: ssh_session) throws -> AuthState {
-    agent.trustConnection = true
     let rc = ssh_userauth_agent(session, nil)
-    agent.trustConnection = false
     
     switch rc {
     case SSH_AUTH_SUCCESS.rawValue:
