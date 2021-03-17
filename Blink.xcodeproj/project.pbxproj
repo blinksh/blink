@@ -96,7 +96,6 @@
 		BD8D893225DC429500E55D9E /* AgentTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D893025DC429500E55D9E /* AgentTests.swift */; };
 		BD8D893325DC429500E55D9E /* SSHKeysTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D893125DC429500E55D9E /* SSHKeysTests.swift */; };
 		BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; };
-		BD8D895025DC528A00E55D9E /* OpenSSH.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD8D897225DC534F00E55D9E /* id_ecdsa in Resources */ = {isa = PBXBuildFile; fileRef = BD8D896E25DC534F00E55D9E /* id_ecdsa */; };
 		BD8D897325DC534F00E55D9E /* user_key in Resources */ = {isa = PBXBuildFile; fileRef = BD8D896F25DC534F00E55D9E /* user_key */; };
 		BD8D897425DC534F00E55D9E /* id_ecdsa.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897025DC534F00E55D9E /* id_ecdsa.pub */; };
@@ -124,8 +123,6 @@
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
-		D209C79B25D2937700E75A86 /* Protobuf_C_.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; };
-		D209C79C25D2937700E75A86 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
 		D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA592360324100D93301 /* CompleteUtils.swift */; };
@@ -227,6 +224,8 @@
 		D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29D6C3022DB9CA700A84173 /* TermController.swift */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
 		D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE549208DC860004679D0 /* extraCommandsDictionary.plist */; };
+		D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; };
+		D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
@@ -404,21 +403,10 @@
 				D2334F0525C1C28F00385378 /* tar.xcframework in Embed Frameworks */,
 				D2334F0325C1C28F00385378 /* ssh_cmd.xcframework in Embed Frameworks */,
 				D2334EEF25C1C28F00385378 /* awk.xcframework in Embed Frameworks */,
-				D209C79C25D2937700E75A86 /* Protobuf_C_.xcframework in Embed Frameworks */,
+				D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */,
 				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
 				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 				07FABBC525C9AECF00E1CC2C /* BlinkFiles.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BD8D895125DC528A00E55D9E /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				BD8D895025DC528A00E55D9E /* OpenSSH.xcframework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -826,7 +814,7 @@
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
 				D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
-				D209C79B25D2937700E75A86 /* Protobuf_C_.xcframework in Frameworks */,
+				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
 				D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
@@ -1542,7 +1530,6 @@
 				07FABB8025C9AEC000E1CC2C /* Sources */,
 				07FABB8125C9AEC000E1CC2C /* Frameworks */,
 				07FABB8225C9AEC000E1CC2C /* Resources */,
-				BD8D895125DC528A00E55D9E /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -2771,7 +2758,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 267;
+				CURRENT_PROJECT_VERSION = 269;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -2795,10 +2782,10 @@
 				RUN_CLANG_STATIC_ANALYZER = YES;
 				STRIP_STYLE = "non-global";
 				STRIP_SWIFT_SYMBOLS = NO;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
 		};
@@ -2810,7 +2797,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 267;
+				CURRENT_PROJECT_VERSION = 269;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
@@ -2828,9 +2815,9 @@
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				STRIP_STYLE = "non-global";
 				STRIP_SWIFT_SYMBOLS = NO;
-				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MACCATALYST = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
-				TARGETED_DEVICE_FAMILY = "1,2,6";
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};

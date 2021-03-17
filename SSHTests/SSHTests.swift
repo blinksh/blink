@@ -32,7 +32,6 @@
 import XCTest
 import Combine
 import Dispatch
-import LibSSH
 
 @testable import SSH
 
