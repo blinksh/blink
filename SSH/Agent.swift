@@ -124,7 +124,7 @@ public class SSHAgent {
       case .requestSignature:
         return try sign(message, for: client)
       default:
-        throw SSHKeyError(title: "Invalid request received")
+        throw SSHKeyError.general(title: "Invalid request received")
       }
     } catch {
       // TODO Log error
@@ -156,13 +156,13 @@ public class SSHAgent {
     let flags = SSHDecode.uint32(&msg)
 
     guard let key = lookupKey(blob: keyBlob) else {
-      throw SSHKeyError(title: "Could not find proposed key")
+      throw SSHKeyError.general(title: "Could not find proposed key")
     }
     let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
 
     // Enforce constraints
     try key.constraints?.forEach {
-      if !$0.enforce(useOf: key, by: client) { throw SSHKeyError(title: "Denied operation by constraint: \($0.name).") }
+      if !$0.enforce(useOf: key, by: client) { throw SSHKeyError.general(title: "Denied operation by constraint: \($0.name).") }
     }
 
     let signature = try key.signer.sign(data, algorithm: algorithm)

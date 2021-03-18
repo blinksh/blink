@@ -82,18 +82,18 @@ class SSHKeysTests: XCTestCase {
     let keyPath = bundle.path(forResource: "id_ed25519-passphrase", ofType: nil)!
     XCTAssertNotNil(keyPath)
     
-    var readerCalled = 0
-    func passphraseReader() -> String? {
-      readerCalled += 1
-      
-      return readerCalled == 1 ? "wrong" : "passphrase"
-    }
+    let key = try SSHKey(fromFile: keyPath, passphrase: "passphrase")
+    XCTAssertEqual(key.comment, "comment")
+    XCTAssertEqual(key.sshKeyType, SSHKeyType.KEY_ED25519)
     
-    let key = try? SSHKey(fromFile: keyPath, passphraseReader: passphraseReader)
-    XCTAssertNotNil(key)
-    XCTAssert(readerCalled == 2)
-    XCTAssertEqual(key!.comment, "comment")
-    XCTAssertEqual(key!.sshKeyType, SSHKeyType.KEY_ED25519)
+    do {
+      _ = try SSHKey(fromFile: keyPath, passphrase: "wrong passphrase")
+      XCTFail("Expected SSHKeyError.wrongPassphrase")
+    } catch SSHKeyError.wrongPassphrase {
+      
+    } catch {
+      XCTFail("Wrong error")
+    }
   }
 
   func testCertificates() throws {
@@ -134,11 +134,8 @@ class SSHKeysTests: XCTestCase {
     let privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
     let key = try SSHKey(fromFile: privPath!)
     
-    guard let pubAuthKey = key.authorizedKey(withComment: key.comment) else {
-      XCTFail("Could not generate AuthorizedKey")
-      return
-    }
-    guard let pubPath = bundle?.path(forResource: "id_ecdsa.pub", ofType: nil) else {
+    let pubAuthKey = try key.authorizedKey(withComment: key.comment ?? "")
+    guard let pubPath = bundle.path(forResource: "id_ecdsa.pub", ofType: nil) else {
       XCTFail("Could not build bundle path")
       return
     }
@@ -164,10 +161,7 @@ class SSHKeysTests: XCTestCase {
     let pubPath = bundle?.path(forResource: "user_key-cert", ofType: "pub")
 
     let key = try SSHKey(fromFile: privPath!, withPublicFileCert: pubPath!)
-    guard let pubAuthKey = key.authorizedKey(withComment: key.comment) else {
-      XCTFail("Could not generate AuthorizedKey")
-      return
-    }
+    let pubAuthKey = try key.authorizedKey(withComment: key.comment ?? "")
     let readAuthKey = try String(contentsOfFile: pubPath!).replacingOccurrences(of: "\n", with: "")
     
     XCTAssertTrue(pubAuthKey == readAuthKey)

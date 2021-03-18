@@ -55,4 +55,18 @@ import UIKit
       nav: nav
     )
   }
+  
+  @objc static func createKeysWith(nav: UINavigationController?) -> UIViewController {
+    _createWith(
+      view: KeysView(),
+      nav: nav
+    )
+  }
+  
+  @objc static func createNewKeyWith(nav: UINavigationController?, newKeyDelegate: NewKeyViewDelegate) -> UIViewController {
+    _createWith(
+      view: NewKeyView(delegate: newKeyDelegate),
+      nav: nav
+    )
+  }
 }

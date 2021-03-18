@@ -33,13 +33,12 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 
 #import "BKPubKey.h"
-#import "BKPubKeyCreateViewController.h"
 #import "BKPubKeyDetailsViewController.h"
 #import "BKPubKeyViewController.h"
 #import "Blink-Swift.h"
 
 
-@interface BKPubKeyViewController () <BKPubKeyCreateViewControllerDelegate, UIDocumentPickerDelegate>
+@interface BKPubKeyViewController () <UIDocumentPickerDelegate, NewKeyViewDelegate>
 
 @end
 
@@ -87,25 +86,25 @@ enum SshKeyImportOrigin {
     keyString = [keyString stringByAppendingString:@"\n"];
   }
   
-  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
-    if (key == nil) {
-      UIAlertController *alertCtrl = [UIAlertController
-                                      alertControllerWithTitle:@"Invalid key"
-                                      message:errorImportingKeyMessage
-                                      preferredStyle:UIAlertControllerStyleAlert];
-      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
-      
-      [self presentViewController:alertCtrl animated:YES completion:nil];
-      return;
-    }
-    
-    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    ctrl.importMode = YES;
-    ctrl.key = key;
-    ctrl.comment = comment;
-    ctrl.createKeyDelegate = self;
-    [self.navigationController pushViewController:ctrl animated:YES];
-  }];
+//  [Pki importPrivateKey:keyString controller:self andCallback:^(Pki *key, NSString *comment) {
+//    if (key == nil) {
+//      UIAlertController *alertCtrl = [UIAlertController
+//                                      alertControllerWithTitle:@"Invalid key"
+//                                      message:errorImportingKeyMessage
+//                                      preferredStyle:UIAlertControllerStyleAlert];
+//      [alertCtrl addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil]];
+//
+//      [self presentViewController:alertCtrl animated:YES completion:nil];
+//      return;
+//    }
+//
+//    BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
+//    ctrl.importMode = YES;
+//    ctrl.key = key;
+//    ctrl.comment = comment;
+//    ctrl.createKeyDelegate = self;
+//    [self.navigationController pushViewController:ctrl animated:YES];
+//  }];
 }
 
 - (void)viewDidLoad
@@ -237,9 +236,8 @@ enum SshKeyImportOrigin {
 }
 
 - (void)createKey {
-  BKPubKeyCreateViewController *ctrl = [[BKPubKeyCreateViewController alloc] initWithStyle:UITableViewStyleGrouped];
-  ctrl.createKeyDelegate = self;
-  [self.navigationController pushViewController:ctrl animated:YES];
+  UIViewController *vc = [SettingsHostingController createNewKeyWithNav:self.navigationController newKeyDelegate:self];
+  [self.navigationController pushViewController:vc animated:YES];
 }
 
 /*!
@@ -263,17 +261,6 @@ enum SshKeyImportOrigin {
   NSString *keyString = [UIPasteboard generalPasteboard].string;
   
   [self _importKeyFromString:keyString importOrigin:(FROM_CLIPBOARD)];
-}
-
-- (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller {
-  [self.navigationController popViewControllerAnimated:YES];
-  NSIndexPath *newIdx;
-  if (_selectable) {
-    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
-  } else {
-    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
-  }
-  [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 #pragma mark - Navigation
@@ -374,6 +361,17 @@ enum SshKeyImportOrigin {
     [self _importKeyFromString:keyString importOrigin:(FROM_FILE)];
     
   }
+}
+
+- (void)newKeyGenerated {
+  [self.navigationController popViewControllerAnimated:YES];
+  NSIndexPath *newIdx;
+  if (_selectable) {
+    newIdx = [NSIndexPath indexPathForRow:BKPubKey.count inSection:0];
+  } else {
+    newIdx = [NSIndexPath indexPathForRow:(BKPubKey.count - 1) inSection:0];
+  }
+  [self.tableView insertRowsAtIndexPaths:@[ newIdx ] withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 @end

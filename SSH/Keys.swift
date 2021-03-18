@@ -32,7 +32,6 @@
 
 import Foundation
 
-
 public protocol PublicKey {
   // Authorized key format
   var type: String { get }
@@ -49,16 +48,16 @@ public protocol Signer {
 }
 
 extension PublicKey {
-  public func authorizedKey(withComment comment: String?) -> String? {
-    guard let blob = try? encode() else {
-      return nil
-    }
+  public func authorizedKey(withComment comment: String) throws -> String {
+    let blob = try encode()
     
     // Trim the size from wire encoding
-    if let comment = comment {
-      return [type, blob[4...].base64EncodedString(), comment].joined(separator: " ")
-    } else {
-      return [type, blob[4...].base64EncodedString()].joined(separator: " ")
+    var parts = [type, blob[4...].base64EncodedString()]
+    
+    if !comment.isEmpty {
+      parts.append(comment)
     }
+    
+    return parts.joined(separator: " ")
   }
 }

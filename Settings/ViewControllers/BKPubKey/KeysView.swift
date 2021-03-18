@@ -30,37 +30,55 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-#ifndef Blink_bridge_h
-#define Blink_bridge_h
+import SwiftUI
 
-#include <stdio.h>
-#include <pthread.h>
+struct KeysView: View {
+  @StateObject private var state = KeysObservable()
+  
+  var body: some View {
+    List {
+      ForEach(state.list, id: \.id) { key in
+        Row(
+          content: {
+            HStack {
+              Text("KE")
+              VStack(alignment: .leading) {
+                Text(key.id)
+                Text(key.typeStr)
+              }
+            }
+          },
+          details: {EmptyView()}
+        )
+      }.onDelete(perform: { indexSet in
+        
+      })
+    }
+    .navigationBarItems(
+      trailing: Button(
+        action: {
+            
+        },
+        label: {
+          Image(systemName: "plus")
+        }
+      )
+    )
+    .navigationBarTitle("Keys")
+  }
+}
 
-// Thread-local input and output streams
-// Note we could not import ios_system
-extern __thread FILE* thread_stdin;
-extern __thread FILE* thread_stdout;
-extern __thread FILE* thread_stderr;
-extern __thread void* thread_context;
+fileprivate class KeysObservable: ObservableObject {
+  @Published var list: [BKPubKey] = Array<BKPubKey>(_immutableCocoaArray: BKPubKey.all())
+  
+  init() {
+    
+  }
+}
 
-typedef int socket_t;
-extern void __thread_ssh_execute_command(const char *command, socket_t in, socket_t out);
-extern int ios_dup2(int fd1, int fd2);
-extern void ios_exit(int errorCode) __dead2; // set error code and exits from the thread.
-
-#import "BKDefaults.h"
-#import "UIDevice+DeviceName.h"
-#import "BKHosts.h"
-#import "BlinkPaths.h"
-#import "DeviceInfo.h"
-#import "LayoutManager.h"
-#import "BKUserConfigurationManager.h"
-#import "Session.h"
-#import "MCPSession.h"
-#import "TermDevice.h"
-#import "KBWebViewBase.h"
-#import "openurl.h"
-#import "BKPubKey.h"
-#import "BKHosts.h"
-
-#endif /* Blink_bridge_h */
+fileprivate extension BKPubKey {
+  var typeStr: String {
+    var parts = (self.publicKey ?? "").split(separator: " ", maxSplits: 1, omittingEmptySubsequences: true)
+    return String(parts.first ?? "")
+  }
+}

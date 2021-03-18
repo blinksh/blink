@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,25 +29,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
-#import "BKPubKey.h"
+import Foundation
+import SSH
 
-@class BKPubKeyCreateViewController;
-
-@protocol BKPubKeyCreateViewControllerDelegate <NSObject>
-- (void)viewControllerDidCreateKey:(BKPubKeyCreateViewController *)controller;
-@end
-
-@interface BKPubKeyCreateViewController : UITableViewController
-
-@property (nonatomic, weak) id<BKPubKeyCreateViewControllerDelegate> createKeyDelegate;
-
-@property bool importMode;
-
-@property BKPubKey *pubkey;
-@property NSString *name;
-@property NSString *comment;
-@property Pki *key;
-
-@end
+class KeyImporter {
+//  + (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki * , NSString *))callback;
+  
+  static func importKey(privateKey: String, controller: UIViewController, callback: (SSHKey) -> Void) {
+    DispatchQueue.global().async {
+      let privateKey = SSHKey.sanitize(key: privateKey)
+      
+      do {
+        let key = try SSHKey(fromFileBlob: privateKey.data(using: .utf8)!)
+      } catch {
+        
+      }
+    }
+//    dispatch_async(dispatch_get_global_queue(0, 0), ^{
+//    }
+    
+    
+    
+  }
+}
