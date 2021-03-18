@@ -39,7 +39,7 @@ import CryptoKit
 @testable import SSH
 
 class SSHKeysTests: XCTestCase {
-  var bundle: Bundle? = nil
+  var bundle: Bundle! = nil
   
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -77,15 +77,34 @@ class SSHKeysTests: XCTestCase {
     bkey = try? SSHKey(fromFileBlob: SSHKey.sanitize(key: keyIndented).data(using: .utf8)!)
     XCTAssertNotNil(bkey)
   }
+  
+  func testLoadFromPathWithPassphrase() throws {
+    let keyPath = bundle.path(forResource: "id_ed25519-passphrase", ofType: nil)!
+    XCTAssertNotNil(keyPath)
+    
+    var readerCalled = 0
+    func passphraseReader() -> String? {
+      readerCalled += 1
+      
+      return readerCalled == 1 ? "wrong" : "passphrase"
+    }
+    
+    let key = try? SSHKey(fromFile: keyPath, passphraseReader: passphraseReader)
+    XCTAssertNotNil(key)
+    XCTAssert(readerCalled == 2)
+    XCTAssertEqual(key!.comment, "comment")
+    XCTAssertEqual(key!.sshKeyType, SSHKeyType.KEY_ED25519)
+  }
 
   func testCertificates() throws {
-    var privPath = bundle?.path(forResource: "id_ecdsa", ofType: nil)
-    let pubPath = bundle?.path(forResource: "user_key-cert", ofType: "pub")
-    var key = try? SSHKey(fromFile: privPath!, withPublicFileCert: pubPath!)
+    var privPath = bundle.path(forResource: "id_ecdsa", ofType: nil)!
+    let pubPath = bundle.path(forResource: "user_key-cert", ofType: "pub")!
+    
+    var key = try? SSHKey(fromFile: privPath, withPublicFileCert: pubPath)
     XCTAssertNil(key)
     
-    privPath = bundle?.path(forResource: "user_key", ofType: nil)
-    key = try? SSHKey(fromFile: privPath!, withPublicFileCert: pubPath!)
+    privPath = bundle.path(forResource: "user_key", ofType: nil)!
+    key = try? SSHKey(fromFile: privPath, withPublicFileCert: pubPath)
     XCTAssertNotNil(key)
   }
   
