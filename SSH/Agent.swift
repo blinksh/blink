@@ -195,16 +195,16 @@ fileprivate struct SigDecodingAlgorithm: OptionSet {
   func algorithm(for key: Signer) -> String? {
     let type = key.sshKeyType
 
-    if type.rawValue == KEY_RSA.rawValue {
+    if type == .KEY_RSA {
       if self.contains(.RsaSha2256) {
         return "rsa-sha2-256"
-      } else {
+      } else if self.contains(.RsaSha2512) {
         return "rsa-sha2-512"
       }
-    } else if type.rawValue == KEY_RSA_CERT.rawValue {
+    } else if type == .KEY_RSA_CERT {
       if self.contains(.RsaSha2256) {
         return "rsa-sha2-256-cert-v01@openssh.com"
-      } else {
+      } else if self.contains(.RsaSha2512) {
         return "rsa-sha2-512-cert-v01@openssh.com"
       }
     }
