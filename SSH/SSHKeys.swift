@@ -102,8 +102,10 @@ public class SSHKey: Signer, PublicKey {
     defer {
       try? f.close()
     }
-    var blob: psshbuf? = nil
-    guard sshbuf_load_fd(f.rawValue, &blob) == 0
+    var blob: psshbuf! = nil
+    guard
+      sshbuf_load_fd(f.rawValue, &blob) == 0,
+      blob != nil
     else {
       throw SSHKeyError.general(title: "Could not load key blob")
     }
@@ -111,13 +113,16 @@ public class SSHKey: Signer, PublicKey {
       sshbuf_free(blob)
     }
 
-    try self.init(fileBlob: blob!, passphrase: passphrase)
+    try self.init(fileBlob: blob, passphrase: passphrase)
 
     if let publicCertPath = publicCertPath {
-      var pubkey: psshkey?
+      var pubkey: psshkey!
       let rc = sshkey_load_public(publicCertPath, &pubkey, &pcomment)
-      if rc != 0 {
+      guard rc == 0, pubkey != nil else {
         throw SSHKeyError.general(title: "Error parsing certificate file.", rc: rc)
+      }
+      defer {
+        sshkey_free(pubkey)
       }
       
       if sshkey_equal_public(self.pkey, pubkey) == 0 {
@@ -128,7 +133,6 @@ public class SSHKey: Signer, PublicKey {
       if sshkey_to_certified(self.pkey) != 0 || sshkey_cert_copy(pubkey, self.pkey) != 0 {
         throw SSHKeyError.general(title: "Error processing certificate")
       }
-      sshkey_free(pubkey)
     }
   }
 
@@ -140,33 +144,33 @@ public class SSHKey: Signer, PublicKey {
   ) throws {
     // We need to retain Data as the key object is empty
 
-    let blob: psshbuf = try privateKey.withUnsafeBytes { bytes in
-      guard let b = sshbuf_from(bytes.baseAddress, privateKey.count) else {
-        throw SSHKeyError.general(title: "Could not initiate buffer")
-      }
-      return b
+    let b: psshbuf? = privateKey.withUnsafeBytes {
+      sshbuf_from($0.baseAddress, $0.count)
     }
-    
+    guard let blob = b else {
+      throw SSHKeyError.general(title: "Could not initiate buffer")
+    }
     defer {
       sshbuf_free(blob)
     }
 
     try self.init(fileBlob: blob, passphrase: passphrase)
 
-    if publicCert != nil {
+    if var publicCert = publicCert {
       // Unlike the private case, there is no function to read a public key from a file blob.
       // OpenSSH performs some cleanup, we will assume data has been cleaned beforehand.
-      let pubkey = sshkey_new(Int32(KEY_UNSPEC.rawValue))
+      guard let pubkey = sshkey_new(Int32(KEY_UNSPEC.rawValue)) else {
+        throw SSHKeyError.general(title: "Could not initiate key")
+      }
       defer {
         sshkey_free(pubkey)
       }
-      var publicCert = publicCert
-      try publicCert?.withUnsafeMutableBytes { buffer in
-        var b = buffer.baseAddress?.assumingMemoryBound(to: Int8.self)
-        let rc = sshkey_read(pubkey, &b)
-        guard rc == 0 else {
-          throw SSHKeyError.general(title: "Error parsing public key.", rc: rc)
-        }
+      let rc: Int32 = publicCert.withUnsafeMutableBytes { buffer in
+        var b = buffer.baseAddress?.assumingMemoryBound(to: CChar.self)
+        return sshkey_read(pubkey, &b)
+      }
+      guard rc == 0 else {
+        throw SSHKeyError.general(title: "Error parsing public key.", rc: rc)
       }
       
       if sshkey_equal_public(self.pkey, pubkey) == 0 {
@@ -180,55 +184,55 @@ public class SSHKey: Signer, PublicKey {
   }
 
   fileprivate init(fileBlob blob: psshbuf, passphrase: String = "") throws {
-    var pkey: psshkey?
+    var pkey: psshkey!
 
     let rc = sshkey_parse_private_fileblob(blob, passphrase, &pkey, &self.pcomment)
+    
     if rc == SSH_ERR_KEY_WRONG_PASSPHRASE {
       throw SSHKeyError.wrongPassphrase
     }
 
-    if rc != 0 || pkey == nil {
+    guard rc == 0, pkey != nil else {
       throw SSHKeyError.general(title: "Error parsing private key.", rc: rc)
     }
-    self.pkey = pkey!
-    self.keyType = try SSHKeyType(for: pkey!)
+    self.pkey = pkey
+    self.keyType = try SSHKeyType(for: pkey)
   }
 
   // Wire public representation for key
   public init(fromPublicBlob data: Data) throws {
-    let length = data.count
-    var pkey: psshkey?
-    try data.withUnsafeBytes { buffer in
-      let p: UnsafePointer<u_char>? = buffer.baseAddress!.assumingMemoryBound(to: u_char.self)
-      let rc = sshkey_from_blob(p, length, &pkey)
-      if rc != 0 || pkey == nil {
-        throw SSHKeyError.general(title: "Error parsing public key.", rc: rc)
-      }
+    var pkey: psshkey!
+    let rc: Int32 = data.withUnsafeBytes { buffer in
+      let p = buffer.baseAddress?.assumingMemoryBound(to: u_char.self)
+      return sshkey_from_blob(p, buffer.count, &pkey)
     }
-    self.pkey = pkey!
-    self.keyType = try SSHKeyType(for: pkey!)
+    guard rc == 0, pkey != nil else {
+      throw SSHKeyError.general(title: "Error parsing public key.", rc: rc)
+    }
+    self.pkey = pkey
+    self.keyType = try SSHKeyType(for: pkey)
   }
 
   public init(fromPublicKeyFile path: String) throws {
-    var pkey: psshkey?
+    var pkey: psshkey!
 
     // NOTE There is no function to read the file as a blob on OpenSSH.
     let rc = sshkey_load_public(path, &pkey, &pcomment)
-    if rc != 0 {
+    guard rc == 0, pkey != nil else {
       throw SSHKeyError.general(title: "Error parsing public key file.", rc: rc)
     }
-    self.pkey = pkey!
-    self.keyType = try SSHKeyType(for: pkey!)
+    self.pkey = pkey
+    self.keyType = try SSHKeyType(for: pkey)
   }
 
   public init(type: SSHKeyType, bits: UInt32) throws {
-    var pkey: psshkey?
+    var pkey: psshkey!
 
     let rc = sshkey_generate(type.rawValue, bits, &pkey)
-    if rc != 0 || pkey == nil {
+    guard rc == 0, pkey != nil else {
       throw SSHKeyError.general(title: "Error generating key.", rc: rc)
     }
-    self.pkey = pkey!
+    self.pkey = pkey
     self.keyType = type
   }
 
@@ -237,12 +241,13 @@ public class SSHKey: Signer, PublicKey {
     var pSig: UnsafeMutablePointer<CUnsignedChar>? = nil
     var sigLen: Int = 0
 
-    try message.withUnsafeBytes { buffer in
-      let p: UnsafePointer<UInt8>? = buffer.baseAddress!.assumingMemoryBound(to: UInt8.self)
-      let rc = sshkey_sign(pkey, &pSig, &sigLen, p, message.count, algorithm, nil, nil, 0)
-      if rc != 0 {
-        throw SSHKeyError.general(title: "Couldn't sign message", rc: rc)
-      }
+    let rc: Int32 = message.withUnsafeBytes { buffer in
+      let p = buffer.baseAddress?.assumingMemoryBound(to: UInt8.self)
+      return sshkey_sign(pkey, &pSig, &sigLen, p, buffer.count, algorithm, nil, nil, 0)
+    }
+    
+    guard rc == 0 else {
+      throw SSHKeyError.general(title: "Couldn't sign message", rc: rc)
     }
 
     // The signature is an ssh signature already, with the p and s parameters set, etc...
@@ -253,16 +258,18 @@ public class SSHKey: Signer, PublicKey {
   }
 
   public func verify(signature bytes: Data, of data: Data) throws -> Bool {
-    try bytes.withUnsafeBytes { buffer in
-      let b: UnsafePointer<UInt8>? = buffer.baseAddress!.assumingMemoryBound(to: UInt8.self)
+    let rc: Int32 = bytes.withUnsafeBytes { buffer in
+      let b = buffer.baseAddress?.assumingMemoryBound(to: UInt8.self)
 
-      try data.withUnsafeBytes { data in
-        let d: UnsafePointer<UInt8>? = data.baseAddress!.assumingMemoryBound(to: UInt8.self)
-        let rc = sshkey_verify(pkey, b, bytes.count, d, data.count, nil, 0, nil)
-        if rc < 0 {
-          throw SSHKeyError.general(title: "Signature Verification failed", rc: rc)
-        }
+      return data.withUnsafeBytes { data in
+        let d = data.baseAddress?.assumingMemoryBound(to: UInt8.self)
+        return sshkey_verify(pkey, b, bytes.count, d, data.count, nil, 0, nil)
       }
+    }
+    
+    // ssh_key_verify returns 0 for a correct signature  and < 0 on error.
+    if rc < 0 {
+      throw SSHKeyError.general(title: "Signature Verification failed", rc: rc)
     }
 
     return true
@@ -281,7 +288,7 @@ public class SSHKey: Signer, PublicKey {
     }
 
     let rc = sshkey_puts_opts(pkey, blob, SSHKEY_SERIALIZE_INFO)
-    if rc != 0 {
+    guard rc == 0 else {
       throw SSHKeyError.general(title: "Could not encode key.", rc: rc)
     }
 
@@ -303,7 +310,7 @@ public class SSHKey: Signer, PublicKey {
     
     // No special cipher and no rounds
     let rc = sshkey_private_to_fileblob(pkey, blob, passphrase, comment, Int32(format.rawValue), nil, 0)
-    if rc != 0 {
+    guard rc == 0 else {
       throw SSHKeyError.general(title: "Error exporting private key to file blob", rc: rc)
     }
     
