@@ -81,13 +81,18 @@ We made a ton easier to build and install Blink yourself on your iOS devices thr
 git clone --recursive https://github.com/blinksh/blink.git && \
     cd blink && ./get_frameworks.sh && \
     rm -rf Blink.xcodeproj/project.xcworkspace/xcshareddata/
-```
-2. Open the project in XCode
-3. Before doing anything else, go into the capabilities for the project and turn off Push Notifications, iCloud, and Keychain Sharing
-4. Go to the General tab and change the bundle identifier to something that will work for your team
-5. Stay in the general tab and select your team under the "Signing" section
-6. Connect the device you want to build for and select it in Product -> Destination
-7. Build and run on the device
+
+2. Do the following
+cd blink
+cp template_setup.xcconfig developer_setup.xcconfig
+edit developer_setup.xcconfig (change apple developer id etc).
+
+3. Open the project in XCode
+
+3a. If you want to build without iCloud, Push Notificationa and/or Keychain sharing, Before doing anything else, go into the capabilities for the project and turn off Push Notifications, iCloud, and Keychain Sharing
+
+4. Connect the device you want to build for and select it in Product -> Destination
+5. Build and run on the device
 
 This will download Blink and the associated frameworks: `libssh2`, `OpenSSL`, `libmoshios`, `protobuf` and `ios_system`. 
 

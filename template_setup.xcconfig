@@ -1,0 +1,24 @@
+//
+//  template_setup.xcconfig
+//     --> copied to developer_setup.xcconfig
+//
+//  Created by Jan Iversen on 20/03/2021.
+//
+
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+// update TEAM_ID with your apple developer id
+TEAM_ID = HV2S48975V
+
+// BUNDLE_ID is used as name for BUNDLE_IDENTIFIER
+BUNDLE_ID = Com.CarlosCabanero.BlinkShell
+
+// CLOUD_ID is used as name for iCloud (prefix icloud. is added)
+CLOUD_ID = com.carloscabanero.blinkshell
+// if you want to build without iCloud, please remove the section in xCode
+
+// KEYCHAIN_ID is used as name for keychain
+KEYCHAIN_ID1 = Com.carloscabanero.blink
+KEYCHAIN_ID2 = Com.carloscabanero.blinkshell
+// if you want to build without keychain, please remove the section in xCode
