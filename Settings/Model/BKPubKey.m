@@ -260,6 +260,10 @@ static UICKeyChainStore *__get_keychain() {
   [keychain setString:privateKey forKey:[self _privateKeyKeychainRef]];
 }
 
+- (nullable NSString *)privateKey {
+  return [self loadPrivateKey];
+}
+
 - (nullable NSString *)loadPrivateKey
 {
   // Legacy access via privateKeyRef

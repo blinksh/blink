@@ -72,4 +72,7 @@ typedef enum: NSUInteger {
 - (BOOL)isEncrypted;
 - (void)removeCard;
 
+// Deprecated. Use loadPrivateKey
+- (nullable NSString *)privateKey DEPRECATED_ATTRIBUTE;
+
 @end
