@@ -111,8 +111,6 @@
 		C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
 		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
 		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
-		C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */; };
-		C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */; };
 		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
 		C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
 		C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
@@ -153,6 +151,11 @@
 		D21A3FE521943BE200269705 /* dark-spotlight-iphone-40pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FD421943BE200269705 /* dark-spotlight-iphone-40pt@2x.png */; };
 		D21A3FE621943BE200269705 /* dark-spotlight-iphone-40pt@3x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FD521943BE200269705 /* dark-spotlight-iphone-40pt@3x.png */; };
 		D21A3FE721943BE200269705 /* dark-app-ipad-76pt@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = D21A3FD621943BE200269705 /* dark-app-ipad-76pt@2x.png */; };
+		D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE40260C9A3D00D8E640 /* ImportKeyView.swift */; };
+		D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE45260CB03900D8E640 /* PassphraseView.swift */; };
+		D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */; };
+		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
+		D21DEE51260E1DCF00D8E640 /* KeysPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */; };
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
@@ -179,8 +182,8 @@
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
-		D23EA94326036D1700BCF1FF /* KeyImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA94226036D1700BCF1FF /* KeyImporter.swift */; };
-		D23EA945260379EB00BCF1FF /* KeysView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeysView.swift */; };
+		D23EA945260379EB00BCF1FF /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeysListView.swift */; };
+		D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */; };
 		D240806120BC8DF800F30099 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = D240806020BC8DF800F30099 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I Frameworks/ios_system/curl/curl/include/ -I Frameworks/ios_system/curl/curl/lib/ -I Frameworks/ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I Frameworks/ios_system/"; }; };
 		D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */; };
 		D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */; };
@@ -213,6 +216,7 @@
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
+		D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269BF812608792A00ECEDF8 /* BKPubKey.swift */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
@@ -564,10 +568,6 @@
 		C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFontCreateViewController.m; sourceTree = "<group>"; };
 		C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKThemeCreateViewController.h; sourceTree = "<group>"; };
 		C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKThemeCreateViewController.m; sourceTree = "<group>"; };
-		C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyDetailsViewController.h; sourceTree = "<group>"; };
-		C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyDetailsViewController.m; sourceTree = "<group>"; };
-		C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKeyViewController.h; sourceTree = "<group>"; };
-		C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKeyViewController.m; sourceTree = "<group>"; };
 		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
 		C9B2E0071D6B612300B89F69 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
 		C9B2E0081D6B612300B89F69 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
@@ -614,6 +614,11 @@
 		D21A3FD421943BE200269705 /* dark-spotlight-iphone-40pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-spotlight-iphone-40pt@2x.png"; sourceTree = "<group>"; };
 		D21A3FD521943BE200269705 /* dark-spotlight-iphone-40pt@3x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-spotlight-iphone-40pt@3x.png"; sourceTree = "<group>"; };
 		D21A3FD621943BE200269705 /* dark-app-ipad-76pt@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dark-app-ipad-76pt@2x.png"; sourceTree = "<group>"; };
+		D21DEE40260C9A3D00D8E640 /* ImportKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImportKeyView.swift; sourceTree = "<group>"; };
+		D21DEE45260CB03900D8E640 /* PassphraseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassphraseView.swift; sourceTree = "<group>"; };
+		D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSEKeyView.swift; sourceTree = "<group>"; };
+		D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsView.swift; sourceTree = "<group>"; };
+		D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysPickerView.swift; sourceTree = "<group>"; };
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
@@ -637,8 +642,8 @@
 		D23D258723438B15002850CA /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		D23E142920A970C3000FCF5C /* BlinkPaths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkPaths.h; sourceTree = "<group>"; };
 		D23E142A20A970C3000FCF5C /* BlinkPaths.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlinkPaths.m; sourceTree = "<group>"; };
-		D23EA94226036D1700BCF1FF /* KeyImporter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyImporter.swift; sourceTree = "<group>"; };
-		D23EA944260379EB00BCF1FF /* KeysView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysView.swift; sourceTree = "<group>"; };
+		D23EA944260379EB00BCF1FF /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+		D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedTextField.swift; sourceTree = "<group>"; };
 		D240806020BC8DF800F30099 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = Frameworks/ios_system/curl/curl/src/tool_main.c; sourceTree = SOURCE_ROOT; };
 		D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewFlexible.swift; sourceTree = "<group>"; };
 		D241CBBF23040732003D64A5 /* KBKeyViewArrows.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewArrows.swift; sourceTree = "<group>"; };
@@ -669,6 +674,7 @@
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
+		D269BF812608792A00ECEDF8 /* BKPubKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKPubKey.swift; sourceTree = "<group>"; };
 		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
 		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
@@ -898,6 +904,7 @@
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
+				D269BF812608792A00ECEDF8 /* BKPubKey.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1186,13 +1193,13 @@
 		C989E55E1D6CC95A003E0079 /* BKPubKey */ = {
 			isa = PBXGroup;
 			children = (
-				C989E5611D6CC95A003E0079 /* BKPubKeyDetailsViewController.h */,
-				C989E5621D6CC95A003E0079 /* BKPubKeyDetailsViewController.m */,
-				C989E5631D6CC95A003E0079 /* BKPubKeyViewController.h */,
-				C989E5641D6CC95A003E0079 /* BKPubKeyViewController.m */,
 				D2DE0DDD260331F300A69B6F /* NewKeyView.swift */,
-				D23EA94226036D1700BCF1FF /* KeyImporter.swift */,
-				D23EA944260379EB00BCF1FF /* KeysView.swift */,
+				D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */,
+				D21DEE40260C9A3D00D8E640 /* ImportKeyView.swift */,
+				D23EA944260379EB00BCF1FF /* KeysListView.swift */,
+				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
+				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
+				D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */,
 			);
 			path = BKPubKey;
 			sourceTree = "<group>";
@@ -1440,6 +1447,7 @@
 				D2C24409238E44AB0082C69C /* Checkmark.swift */,
 				D2C2440A238E44AB0082C69C /* Row.swift */,
 				D2C2440B238E44AB0082C69C /* Chevron.swift */,
+				D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -2018,7 +2026,6 @@
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
 				D2F64CBD25CABEFB00F2225D /* UICKeyChainStore.m in Sources */,
-				D23EA94326036D1700BCF1FF /* KeyImporter.swift in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -2068,6 +2075,7 @@
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */,
+				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
@@ -2078,9 +2086,10 @@
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
-				D23EA945260379EB00BCF1FF /* KeysView.swift in Sources */,
+				D23EA945260379EB00BCF1FF /* KeysListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
+				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
 				07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
@@ -2095,6 +2104,7 @@
 				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
+				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
 				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
@@ -2103,7 +2113,6 @@
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
-				C989E5671D6CC95A003E0079 /* BKPubKeyViewController.m in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
@@ -2116,6 +2125,7 @@
 				B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */,
 				D2C24413238E44AB0082C69C /* KeyConfigPair.swift in Sources */,
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
+				D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2C24420238E44AB0082C69C /* Chevron.swift in Sources */,
@@ -2125,15 +2135,17 @@
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
-				C989E5661D6CC95A003E0079 /* BKPubKeyDetailsViewController.m in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
+				D21DEE51260E1DCF00D8E640 /* KeysPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
+				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				D2C2441A238E44AB0082C69C /* KeySection.swift in Sources */,

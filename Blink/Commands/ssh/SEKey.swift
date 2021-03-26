@@ -54,7 +54,7 @@ public class SEKey: Signer {
   fileprivate static let signatureType = SecKeyAlgorithm.ecdsaSignatureMessageX962SHA256
   
   public var comment: String? { nil }
-  public var sshKeyType: SSHKeyType { .KEY_ECDSA }
+  public var sshKeyType: SSHKeyType { .ecdsa }
   
   let privateKey: SecKey
   public var publicKey: PublicKey { SEPublicKey(from: self)! }
@@ -89,7 +89,9 @@ public class SEKey: Signer {
     ]
 
     var error: Unmanaged<CFError>?
-    guard SecKeyCreateRandomKey(attributes as CFDictionary, &error) != nil else {
+    guard
+      SecKeyCreateRandomKey(attributes as CFDictionary, &error) != nil
+    else {
       throw error!.takeRetainedValue() as Error
     }
     
@@ -99,15 +101,25 @@ public class SEKey: Signer {
   static public func delete(tag: String) throws {
     let query = SEKey.keyQuery(withTag: tag)
     let status = SecItemDelete(query as CFDictionary)
-    guard status == errSecSuccess || status == errSecItemNotFound else { throw KeychainError.unhandledError(status: status) }
+    guard
+      status == errSecSuccess || status == errSecItemNotFound
+    else {
+      throw KeychainError.unhandledError(status: status)
+    }
   }
 
   init?(tagged tag: String) {
     let query = SEKey.keyQuery(withTag: tag)
 
-    var item: CFTypeRef?
+    var item: CFTypeRef!
     let status = SecItemCopyMatching(query as CFDictionary, &item)
-    guard status == errSecSuccess else { return nil }
+    guard
+      status == errSecSuccess,
+      item != nil
+    else {
+      return nil
+      
+    }
 
     self.privateKey = item as! SecKey
   }
@@ -141,17 +153,21 @@ public class SEKey: Signer {
   
   func signDER(_ message: Data) throws -> Data {
     var error: Unmanaged<CFError>?
-    guard let signature = SecKeyCreateSignature(self.privateKey, SEKey.signatureType,
-                                                message as CFData, &error) as Data? else {
+    guard
+      let signature = SecKeyCreateSignature(self.privateKey, SEKey.signatureType,
+                                                message as CFData, &error) as Data?
+    else {
       throw error!.takeRetainedValue()
     }
     return signature
   }
   
   private static func keyQuery(withTag tag: String) -> [String: Any] {
-    return [kSecClass as String: kSecClassKey,
-            kSecAttrApplicationTag as String: tag,
-            kSecReturnRef as String: true]
+    return [
+      kSecClass as String: kSecClassKey,
+      kSecAttrApplicationTag as String: tag,
+      kSecReturnRef as String: true
+    ]
   }
 }
 
@@ -164,7 +180,9 @@ public class SEPublicKey: PublicKey {
   fileprivate init?(from key: SEKey) {
     // This could return an optional, which we guess it would be a coding error (not passing a proper Private Key).
     // What we will do is enforce the "coding error" ourselves, as that should never happen.
-    guard let publicKey = SecKeyCopyPublicKey(key.privateKey) else {
+    guard
+      let publicKey = SecKeyCopyPublicKey(key.privateKey)
+    else {
       return nil
     }
     self.publicKey = publicKey
@@ -186,7 +204,9 @@ public class SEPublicKey: PublicKey {
   public func encode() throws -> Data {
     var error: Unmanaged<CFError>?
     // For ECDSA, this outputs the proper key point encoded as octet (04||X||Y)
-    guard let data = SecKeyCopyExternalRepresentation(publicKey, &error) as Data? else {
+    guard
+      let data = SecKeyCopyExternalRepresentation(publicKey, &error) as Data?
+    else {
       throw error!.takeRetainedValue() as Error
     }
     

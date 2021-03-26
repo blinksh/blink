@@ -44,11 +44,3 @@ struct NavButton<Details: View>: View {
       }, label: { EmptyView() })
   }
 }
-
-struct NavButton_Previews: PreviewProvider {
-  static var previews: some View {
-    NavButton {
-      Text("Nice")
-    }
-  }
-}

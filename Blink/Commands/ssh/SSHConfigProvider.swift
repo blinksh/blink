@@ -104,11 +104,13 @@ enum BKConfig {
       return nil
     }
     
-    guard let privateKey = publicKeys.first(where: { $0.id == identifier }) else {
+    guard
+      let privateKey = publicKeys.first(where: { $0.id == identifier })?.loadPrivateKey()
+    else {
       return nil
     }
     
-    return (privateKey.privateKey, identifier)
+    return (privateKey, identifier)
   }
   
   static private func host(_ host: String) -> BKHosts? {
@@ -132,14 +134,28 @@ enum BKConfig {
   }
   
   static func defaultKeys() -> [(String, String)] {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
+    guard
+      let publicKeys = (BKPubKey.all() as? [BKPubKey])
+    else {
       return []
     }
     
     let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    let keys: [(String, String)] = publicKeys.compactMap { defaultKeyNames.contains($0.id) ? ($0.privateKey, $0.id) : nil }
-    
-    return keys.count > 0 ? keys : []
+    return publicKeys
+      .filter {
+        defaultKeyNames.contains($0.id)
+      }
+      .map {
+        ($0.loadPrivateKey(), $0.id)
+      }
+      .compactMap {
+        guard
+          let privateKey = $0.0
+        else {
+          return nil
+        }
+        return (privateKey, $0.1)
+      }
   }
   
   static func password(forHost host: String) -> String? {

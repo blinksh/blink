@@ -62,7 +62,7 @@ class SEKeyTests: XCTestCase {
   func testSEPubKey() throws {
     continueAfterFailure = false
     
-    guard let pubAuthKey = key.publicKey.authorizedKey(withComment: nil) else {
+    guard let pubAuthKey = try? key.publicKey.authorizedKey(withComment: "") else {
       XCTFail("No authorizedkey representation for SEKey.")
       return
     }
@@ -84,7 +84,7 @@ class SEKeyTests: XCTestCase {
     var cancellableBag: Set<AnyCancellable> = []
     
     // First install the SEKey on authorized keys for access.
-    guard let authorizedKey = key.publicKey.authorizedKey(withComment: "sekey") else {
+    guard let authorizedKey = try? key.publicKey.authorizedKey(withComment: "sekey") else {
       XCTFail("No authorizedKey representation for SEKey.")
       return
     }

@@ -32,45 +32,44 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
-extern const NSString *BK_KEYTYPE_RSA;
-extern const NSString *BK_KEYTYPE_DSA;
-extern const NSString *BK_KEYTYPE_ECDSA;
-extern const NSString *BK_KEYTYPE_Ed25519;
-
-@interface Pki : NSObject
-
-- (Pki *)initRSAWithLength:(int)bits;
-- (Pki *)initWithType:(NSString *)type andBits:(int)bits;
-- (NSString *)privateKey;
-- (NSString *)publicKeyWithComment:(NSString*)comment;
-- (const NSString *)keyTypeName;
-
-+ (NSArray<NSString *> *)supportedKeyTypes;
-+ (void)importPrivateKey:(NSString *)privateKey controller:(UIViewController *)controller andCallback: (void(^)(Pki * , NSString *))callback;
-
-@end
+typedef enum: NSUInteger {
+  BKPubKeyStorageTypeKeyChain = 0,
+  BKPubKeyStorageTypeSecureEnclave,
+  BKPubKeyStorageTypeiCloudKeyChain,
+  BKPubKeyStorageTypeYubiKey,
+  BKPubKeyStorageTypeDistributed, // Bunkr master key
+} BKPubKeyStorageType;
 
 @interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
 
-@property NSString *ID;
-@property (readonly) NSString *privateKey;
-@property (readonly) NSString *publicKey;
+@property (nonnull) NSString *ID; // unique name of the key
+@property (nonnull) NSString *tag; // unique name of the key
+@property (readonly, nonnull)  NSString *publicKey;
+@property (readonly, nullable) NSString *keyType;
+@property (readonly, nullable) NSString *certType;
+@property (readonly) BKPubKeyStorageType storageType;
+
+- (nullable NSString *)loadPrivateKey;
+- (nullable NSString *)loadCertificate;
 
 + (void)initialize;
-+ (instancetype)withID:(NSString *)ID;
++ (nullable instancetype)withID:(nullable NSString *)ID;
+
+- (nullable instancetype)initWithID:(nonnull NSString *)ID
+                                tag:(nonnull NSString *)tag
+                          publicKey:(nonnull NSString *)publicKey
+                            keyType:(nonnull NSString *)keyType
+                           certType:(nullable NSString *)certType
+                        storageType:(BKPubKeyStorageType)storageType;
+
 + (void)loadIDS;
 + (BOOL)saveIDS;
-+ (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey;
-+ (NSMutableArray *)all;
++ (void)addCard:(nonnull BKPubKey *)pubKey;
+- (void)storePrivateKeyInKeychain:(nonnull NSString *) privateKey;
++ (nullable id)saveInKeychainWithID:(nonnull NSString *)ID privateKey:(nonnull NSString *)privateKey publicKey:(nonnull NSString *)publicKey;
++ (nonnull NSArray<BKPubKey *> *)all;
 + (NSInteger)count;
 - (BOOL)isEncrypted;
-
-- (NSString *)publicKey;
-- (NSString *)privateKey;
+- (void)removeCard;
 
 @end
-
-// Responsible of the lifecycle of the IDCards within the system.
-// Offers a directory to the rest, in the same way that you wouldn't offer everything in a file interface.
-// Class methods can give us this, then we can connect the TableViewController for rendering, extending them with
-// a Decorator (or in this case maybe a custom View that represents the Cell)

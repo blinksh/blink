@@ -33,16 +33,16 @@
 import SwiftUI
 import SSH
 
-struct NewKeyView: View {
+struct NewSEKeyView: View {
   @EnvironmentObject var nav: Nav
-  @StateObject fileprivate var state = NewKeyObservable()
+  @StateObject fileprivate var state = NewSEKeyObservable()
   var onCancel: () -> Void
   var onSuccess: () -> Void
   
   var body: some View {
     List {
       Section(header: Text("NAME"),
-              footer: Text("Default key must be named `id_\(state.keyType.shortName.lowercased())`")) {
+              footer: Text("Default key must be named `id_ecdsa`")) {
         HStack {
           FixedTextField(
             "Enter a name for the key",
@@ -52,33 +52,6 @@ struct NewKeyView: View {
             autocorrectionType: .no,
             autocapitalizationType: .none
           )
-        }
-      }
-      
-      Section(header: Text("KEY TYPE"),
-              footer: Text(state.keyType.keyHint)) {
-        HStack {
-          Picker("", selection: $state.keyType) {
-            Text(SSHKeyType.dsa.shortName).tag(SSHKeyType.dsa)
-            Text(SSHKeyType.rsa.shortName).tag(SSHKeyType.rsa)
-            Text(SSHKeyType.ecdsa.shortName).tag(SSHKeyType.ecdsa)
-            Text(SSHKeyType.ed25519.shortName).tag(SSHKeyType.ed25519)
-          }
-          .pickerStyle(SegmentedPickerStyle())
-        }
-        if state.keyType.possibleBitsValues.count > 1 {
-          HStack {
-            Text("Bits").layoutPriority(1)
-            Spacer().layoutPriority(1)
-            VStack {
-              Picker("", selection: $state.keyBits) {
-                ForEach(state.keyType.possibleBitsValues, id: \.self) { bits in
-                  Text("\(bits)").tag(bits)
-                }
-              }
-              .pickerStyle(SegmentedPickerStyle())
-            }.layoutPriority(1)
-          }
         }
       }
       
@@ -101,7 +74,7 @@ struct NewKeyView: View {
       }
       
       Section(header: Text("INFORMATION"),
-              footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
+              footer: Text("Hint about SE KEY.")
       ) {
         
       }
@@ -118,7 +91,7 @@ struct NewKeyView: View {
       }
       .disabled(!state.isValid)
     )
-    .navigationBarTitle("New \(state.keyType.shortName) Key")
+    .navigationBarTitle("New ECDSA Key")
     .alert(isPresented: $state.errorAlertVisible) {
       Alert(title: Text("Error"), message: Text(state.errorMessage), dismissButton: .default(Text("Ok")))
     }
@@ -129,32 +102,12 @@ struct NewKeyView: View {
   }
 }
 
-fileprivate class NewKeyObservable: ObservableObject {
-  enum KeyError: Error, LocalizedError {
-    case emptyName
-    case duplicateName(name: String)
-    case authKeyGenerationFailed
-    case saveCardFailed
-    case generationFailed
-    
-    var errorDescription: String? {
-      switch self {
-      case .emptyName: return "Key name can't be empty."
-      case .duplicateName(let name): return "Key with name `\(name)` already exists."
-      case .authKeyGenerationFailed: return "Could not generate public key."
-      case .saveCardFailed: return "Can't save key."
-      case .generationFailed: return "Generation failed"
-      }
-    }
-  }
+
+fileprivate class NewSEKeyObservable: ObservableObject {
   
-  @Published var keyType: SSHKeyType = .rsa {
-    didSet {
-      keyBits = keyType.possibleBitsValues.last ?? 0
-    }
-  }
+  
+  
   @Published var keyName: String = ""
-  @Published var keyBits: UInt32 = 4096
   @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorAlertVisible: Bool = false
@@ -172,16 +125,14 @@ fileprivate class NewKeyObservable: ObservableObject {
     
     do {
       if keyID.isEmpty {
-        throw KeyError.emptyName
+        throw KeyUIError.emptyName
       }
       
       if BKPubKey.withID(keyID) != nil {
-        throw KeyError.duplicateName(name: keyID)
+        throw KeyUIError.duplicateName(name: keyID)
       }
       
-      let key = try SSHKey(type: keyType, bits: keyBits)
-      try BKPubKey.addKeychainKey(id: keyID, key: key, comment: comment)
-      
+      try BKPubKey.addSEKey(id: keyID, comment: comment)
     } catch {
       errorMessage = error.localizedDescription
       errorAlertVisible = true
@@ -189,27 +140,5 @@ fileprivate class NewKeyObservable: ObservableObject {
     }
 
     return true
-  }
-}
-
-fileprivate extension SSHKeyType {
-  var possibleBitsValues: [UInt32] {
-    switch self {
-    case .dsa:     return [1024]
-    case .rsa:     return [2048, 4096]
-    case .ecdsa:   return [256, 384, 521]
-    case .ed25519: return []
-    default:           return []
-    }
-  }
-  
-  var keyHint: String {
-    switch self {
-    case .dsa: return "DSA keys must be exactly 1024 bits as specified by FIPS 186-2."
-    case .rsa: return "Generally, 2048 bits is considered sufficient."
-    case .ecdsa: return "For ECDSA keys size determines key length by selecting from one of three elliptic curve sizes: 256, 384 or 521 bits."
-    case .ed25519: return "Ed25519 keys have a fixed length."
-    default: return ""
-    }
   }
 }

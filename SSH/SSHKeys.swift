@@ -54,15 +54,29 @@ public enum SSHKeyError: Error, LocalizedError {
 }
 
 public enum SSHKeyType: Int32 {
-  case KEY_RSA = 0
-  case KEY_DSA
-  case KEY_ECDSA
-  case KEY_ED25519
-  case KEY_RSA_CERT
-  case KEY_DSA_CERT
-  case KEY_ECDSA_CERT
-  case KEY_ED25519_CERT
+  case rsa = 0
+  case dsa
+  case ecdsa
+  case ed25519
+  case rsaCert
+  case dsaCert
+  case ecdsaCert
+  case ed25519Cert
+  
+  public var shortName: String {
+    switch self {
+    case .rsa: return "RSA"
+    case .dsa: return "DSA"
+    case .ecdsa: return "ECDSA"
+    case .ed25519: return "ED25519"
+    case .rsaCert: return "RSA-CERT"
+    case .dsaCert: return "DSA-CERT"
+    case .ecdsaCert: return "ECDSA-CERT"
+    case .ed25519Cert: return "ED25519-CERT"
+    }
+  }
 }
+
 
 extension SSHKeyType {
   fileprivate init(for key: psshkey) throws {

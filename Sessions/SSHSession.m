@@ -566,7 +566,7 @@ static void kbd_callback(const char *name, int name_len,
     [self debugMsg:@"Attempting authentication with publickey."];
     int rc = 0;
     const char *pub = [pk.publicKey UTF8String];
-    const char *priv = [pk.privateKey UTF8String];
+    const char *priv = [[pk loadPrivateKey] UTF8String];
     
     if (!priv || !pub) {
       [self debugMsg:@"Could not find public key files."];

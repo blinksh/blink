@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,14 +29,50 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
+import SwiftUI
 
-@interface BKPubKeyViewController : UITableViewController
+fileprivate struct CardRow: View {
+  var key: BKPubKey
+  let currentKey: String
+  
+  var body: some View {
+    HStack {
+      VStack(alignment: .leading) {
+        Text(key.id)
+        Text(key.keyType ?? "").font(.footnote)
+      }
+      Checkmark(checked: key.id == currentKey)
+    }
+  }
+}
 
-@property NSIndexPath *currentSelectionIdx;
+@objc public protocol KeysPickerViewDelegate {
+  @objc func didPickKey(key: String)
+}
 
-- (void)makeSelectable:(BOOL)selectable initialSelection:(NSString *)selectionID;
-- (id)selectedObject;
-
-@end
+struct KeysPickerView: View {
+  var currentKey: String
+  var delegate: KeysPickerViewDelegate
+  
+  @State private var list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
+  
+  var body: some View {
+    List {
+      HStack {
+        Text("None")
+      }
+      .contentShape(Rectangle())
+      .onTapGesture {
+        delegate.didPickKey(key: "")
+      }
+      ForEach(list, id: \.tag) { key in
+        CardRow(key: key, currentKey: currentKey)
+          .contentShape(Rectangle())
+          .onTapGesture {
+            delegate.didPickKey(key: key.id)
+          }
+      }
+    }
+  }
+}

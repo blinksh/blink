@@ -34,11 +34,11 @@
 #import "BKHosts.h"
 #import "BKPredictionViewController.h"
 #import "BKPubKey.h"
-#import "BKPubKeyViewController.h"
 #import "BKiCloudSyncHandler.h"
+#import <Blink-Swift.h>
 
 
-@interface BKHostsDetailViewController () <UITextFieldDelegate>
+@interface BKHostsDetailViewController () <UITextFieldDelegate, KeysPickerViewDelegate>
 
 - (IBAction)textFieldDidChange:(id)sender;
 
@@ -109,6 +109,16 @@
   // Dispose of any resources that can be recreated.
 }
 
+- (void)didPickKeyWithKey:(NSString *)key {
+  if (key.length) {
+    self.hostKeyDetail.text = key;
+  } else {
+    self.hostKeyDetail.text = @"None";
+  }
+  
+  [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark - Navigation
 
 // In a storyboard-based application, you will often want to do a little preparation before navigation
@@ -121,26 +131,27 @@
   //   [predictionMode setDelegate:self];
   // }
   if ([[segue identifier] isEqualToString:@"keysSegue"]) {
+    // TODO:
     // TODO: Name as "enableMarkOnSelect"
-    BKPubKeyViewController *keys = segue.destinationViewController;
+//    BKPubKeyViewController *keys = segue.destinationViewController;
     // The host understands the ID, because it is its domain, what it saves.
-    [keys makeSelectable:YES initialSelection:self.hostKeyDetail.text];
+//    [keys makeSelectable:YES initialSelection:self.hostKeyDetail.text];
   } else if ([[segue identifier] isEqualToString:@"predictionModeSegue"]) {
     BKPredictionViewController *prediction = segue.destinationViewController;
     [prediction performInitialSelection:_predictionDetail.text];
   }
 }
 
-- (IBAction)unwindFromKeys:(UIStoryboardSegue *)sender
-{
-  BKPubKeyViewController *controller = sender.sourceViewController;
-  BKPubKey *pk = [controller selectedObject];
-  if (pk == nil) {
-    self.hostKeyDetail.text = @"None";
-  } else {
-    self.hostKeyDetail.text = pk.ID;
-  }
-}
+//- (IBAction)unwindFromKeys:(UIStoryboardSegue *)sender
+//{
+////  BKPubKeyViewController *controller = sender.sourceViewController;
+//  BKPubKey *pk = nil;// [controller selectedObject];
+//  if (pk == nil) {
+//    self.hostKeyDetail.text = @"None";
+//  } else {
+//    self.hostKeyDetail.text = pk.ID;
+//  }
+//}
 
 - (IBAction)unwindFromPrediction:(UIStoryboardSegue *)sender
 {
@@ -301,6 +312,10 @@
       [[BKiCloudSyncHandler sharedHandler] checkForReachabilityAndSync:nil];
       [self.navigationController popViewControllerAnimated:YES];
     }
+
+  } else if (indexPath.section == 2 && indexPath.row == 4) {
+    UIViewController * ctrl = [SettingsHostingController createKeyPickerWithNav:self.navigationController keyID:self.hostKeyDetail.text delegate:self];
+    [self.navigationController pushViewController:ctrl animated:YES];
   }
 }
 

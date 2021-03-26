@@ -46,6 +46,16 @@
 #import <sys/un.h>
 #import <arpa/inet.h>
 
+const NSString *BK_KEYTYPE_RSA = @"RSA";
+const NSString *BK_KEYTYPE_DSA = @"DSA";
+const NSString *BK_KEYTYPE_ECDSA = @"ECDSA";
+const NSString *BK_KEYTYPE_ECDSA_P256 = @"ECDSA P256";
+const NSString *BK_KEYTYPE_ECDSA_P384 = @"ECDSA P384";
+const NSString *BK_KEYTYPE_ECDSA_P521 = @"ECDSA P521";
+
+const NSString *BK_KEYTYPE_Ed25519 = @"Ed25519";
+
+
 
 void __write(dispatch_fd_t fd, NSString *message) {
   if (message == nil) {
@@ -502,7 +512,7 @@ int __ssh_auth_fn(const char *prompt, char *buf, size_t len,
     // we have this identity in
     if (secureKey) {
       [self _log_verbose:[NSString stringWithFormat:@"import key %@\n", identityfile]];
-      rc =  ssh_pki_import_privkey_base64(secureKey.privateKey.UTF8String,
+      rc =  ssh_pki_import_privkey_base64([secureKey loadPrivateKey].UTF8String,
                                          NULL, /* TODO: get stored */
                                          __ssh_auth_fn,
                                          (__bridge void *) self,
