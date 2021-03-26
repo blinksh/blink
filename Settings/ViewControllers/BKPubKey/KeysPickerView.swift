@@ -41,9 +41,10 @@ fileprivate struct CardRow: View {
       VStack(alignment: .leading) {
         Text(key.id)
         Text(key.keyType ?? "").font(.footnote)
-      }
+      }.contentShape(Rectangle())
+      Spacer()
       Checkmark(checked: key.id == currentKey)
-    }
+    }.contentShape(Rectangle())
   }
 }
 
@@ -68,11 +69,11 @@ struct KeysPickerView: View {
       }
       ForEach(list, id: \.tag) { key in
         CardRow(key: key, currentKey: currentKey)
-          .contentShape(Rectangle())
           .onTapGesture {
             delegate.didPickKey(key: key.id)
           }
       }
     }
+    .navigationTitle("Select Key")
   }
 }

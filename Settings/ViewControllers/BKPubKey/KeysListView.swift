@@ -44,7 +44,12 @@ struct KeyRow: View {
           VStack(alignment: .leading) {
             Text(key.id)
             Text(key.keyType ?? "").font(.footnote)
+              .foregroundColor(.secondary)
           }
+          Spacer()
+          Text(key.storageType == BKPubKeyStorageTypeKeyChain ? "Keychain" : "SE")
+            .font(.system(.subheadline))
+            
         }
       },
       details: {

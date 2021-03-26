@@ -51,7 +51,7 @@ struct KeyDetailsView: View {
     UIPasteboard.general.string = card.publicKey
   }
   
-  private func _sharePublicKey() {
+  private func _sharePublicKey(frame: CGRect) {
     let activityController = UIActivityViewController(activityItems: [card], applicationActivities: nil);
   
     activityController.excludedActivityTypes = [
@@ -60,9 +60,9 @@ struct KeyDetailsView: View {
       .addToReadingList, .postToFlickr,
       .postToVimeo, .postToWeibo
     ]
-    
 
     activityController.popoverPresentationController?.sourceView = nav.navController.view
+    activityController.popoverPresentationController?.sourceRect = frame
     nav.navController.present(activityController, animated: true, completion: nil)
   }
   
@@ -136,9 +136,13 @@ struct KeyDetailsView: View {
         Button(action: _copyPublicKey, label: {
           Label("Copy", systemImage: "doc.on.doc")
         })
-        Button(action: _sharePublicKey, label: {
-          Label("Share", systemImage: "square.and.arrow.up")
+        GeometryReader(content: { geometry in
+          let frame = geometry.frame(in: .global)
+          Button(action: { _sharePublicKey(frame: frame) }, label: {
+            Label("Share", systemImage: "square.and.arrow.up")
+          })
         })
+        
       }
      
       if card.storageType == BKPubKeyStorageTypeKeyChain {
