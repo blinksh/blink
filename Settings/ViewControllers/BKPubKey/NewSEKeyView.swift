@@ -38,6 +38,12 @@ struct NewSEKeyView: View {
   var onCancel: () -> Void
   var onSuccess: () -> Void
   
+  func _createKey() {
+    if state.createKey() {
+      onSuccess()
+    }
+  }
+  
   var body: some View {
     List {
       Section(
@@ -63,11 +69,7 @@ struct NewSEKeyView: View {
             text: $state.keyComment,
             id: "keyComment",
             returnKeyType: .continue,
-            onReturn: {
-              if state.createKey() {
-                onSuccess()
-              }
-            },
+            onReturn: _createKey,
             autocorrectionType: .no,
             autocapitalizationType: .none
           )
@@ -84,11 +86,7 @@ struct NewSEKeyView: View {
     .listStyle(GroupedListStyle())
     .navigationBarItems(
       leading: Button("Cancel", action: onCancel),
-      trailing: Button("Create") {
-        if state.createKey() {
-          onSuccess()
-        }
-      }
+      trailing: Button("Create", action: _createKey)
       .disabled(!state.isValid)
     )
     .navigationBarTitle("New ECDSA Key")
