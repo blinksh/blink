@@ -29,17 +29,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Combine
 import Foundation
+
 import LibSSH
 import OpenSSH
 
 
-public enum SSHAgentMessageType: UInt8 {
+public enum SSHAgentRequestType: UInt8 {
+  case requestIdentities = 11
+  case requestSignature = 13
+}
+
+public enum SSHAgentResponseType: UInt8 {
   case failure = 5
   case success = 6
-  case requestIdentities = 11
   case answerIdentities = 12
-  case requestSignature = 13
   case responseSignature = 14
 }
 
@@ -62,6 +67,8 @@ public class SSHAgent {
   public private(set) var ring: [SSHAgentKey] = []
   // NOTE Instead of the Agent tracking the constraints, we could have a delegate for that.
   // NOTE The Agent name won't be relevant when doing Jumps between hosts, but at least you will know the first originator.
+  var superAgent: SSHAgent? = nil
+  var agentForward: Set<AnyCancellable> = []
 
   public init() {}
 
@@ -76,6 +83,10 @@ public class SSHAgent {
     }
   }
 
+  public func linkTo(agent: SSHAgent) {
+    self.superAgent = agent
+  }
+  
   public func attachTo(client: SSHClient) {
     let agentCtxt = AgentCtxt(agent: self, client: client)
     contexts.append(agentCtxt)
@@ -92,8 +103,8 @@ public class SSHAgent {
       guard let client = ctxt.client else {
         return 0
       }
-      if let type = SSHAgentMessageType(rawValue: typeValue) {
-        replyData = ctxt.agent.request(payload, context: type, client: client)
+      if let type = SSHAgentRequestType(rawValue: typeValue) {
+        replyData = (try? ctxt.agent.request(payload, context: type, client: client)) ?? errorData
         replyLength = replyData.count
       } else {
         // Return error if type is unknown
@@ -115,71 +126,119 @@ public class SSHAgent {
     let cKey = SSHAgentKey(key, named: name, constraints: constraints)
     ring.append(cKey)
   }
-
-  func request(_ message: Data, context: SSHAgentMessageType, client: SSHClient) -> Data {
-    do {
-      switch context {
-      case .requestIdentities:
-        return try encodedRing()
-      case .requestSignature:
-        return try sign(message, for: client)
-      default:
-        throw SSHKeyError.general(title: "Invalid request received")
-      }
-    } catch {
-      // TODO Log error
-      return errorData
+  
+  public func removeKey(_ name: String) -> Signer? {
+    if let idx = ring.firstIndex(where: { $0.name == name }) {
+      let key = ring.remove(at: idx)
+      return key.signer
+    } else {
+      return nil
     }
   }
 
-  func encodedRing() throws -> Data {
-    var respType = SSHAgentMessageType.answerIdentities.rawValue
-
-    var keys: UInt32 = UInt32(ring.count).bigEndian
-    var preamble = Data(bytes: &respType, count: MemoryLayout<CChar>.size)
-    preamble.append(Data(bytes: &keys, count: MemoryLayout<UInt32>.size))
-
-    return try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.signer.comment ?? "") }
-      .reduce(preamble) { (res, val) in
-        var data = res
-        data.append(val)
-        return data
+  func request(_ message: Data, context: SSHAgentRequestType, client: SSHClient) throws -> Data {
+      switch context {
+        case .requestIdentities:
+          let ring = try encodedRing()
+          var keys: UInt32 = UInt32(ring.count).bigEndian
+          var respType = SSHAgentResponseType.answerIdentities.rawValue
+          let preamble = Data(bytes: &respType, count: MemoryLayout<CChar>.size) +
+            Data(bytes: &keys, count: MemoryLayout<UInt32>.size)
+          
+          return ring.reduce(preamble) { $0 + $1 }
+        case .requestSignature:
+          let signature = try encodedSignature(message, for: client)
+          var respType = SSHAgentResponseType.responseSignature.rawValue
+          
+          return Data(bytes: &respType, count: MemoryLayout<CChar>.size)
+            + signature
+        default:
+          throw SSHKeyError.general(title: "Invalid request received")
       }
   }
 
-  func sign(_ message: Data, for client: SSHClient) throws -> Data {
-    var respType = SSHAgentMessageType.responseSignature.rawValue
+  func encodedRing() throws -> [Data] {
+    (try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.signer.comment ?? "") }) +
+      (try superAgent?.encodedRing() ?? [])
+  }
+
+  func encodedSignature(_ message: Data, for client: SSHClient) throws -> Data {
 
     var msg = message
     let keyBlob = SSHDecode.bytes(&msg)
     let data = SSHDecode.bytes(&msg)
     let flags = SSHDecode.uint32(&msg)
 
-    guard let key = lookupKey(blob: keyBlob) else {
-      throw SSHKeyError.general(title: "Could not find proposed key")
+    do {
+      guard let key = lookupKey(blob: keyBlob) else {
+        throw SSHKeyError.general(title: "Could not find proposed key")
+      }
+      
+      let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
+
+      // Enforce constraints
+      try key.constraints?.forEach {
+        if !$0.enforce(useOf: key, by: client) { throw SSHKeyError.general(title: "Denied operation by constraint: \($0.name).") }
+      }
+
+      let signature = try key.signer.sign(data, algorithm: algorithm)
+      
+      return SSHEncode.data(from: signature)
+    } catch {
+      guard let superAgent = self.superAgent else {
+        throw error
+      }
+      return try superAgent.encodedSignature(message, for: client)
     }
-    let algorithm: String? = SigDecodingAlgorithm(rawValue: Int8(flags)).algorithm(for: key.signer)
-
-    // Enforce constraints
-    try key.constraints?.forEach {
-      if !$0.enforce(useOf: key, by: client) { throw SSHKeyError.general(title: "Denied operation by constraint: \($0.name).") }
-    }
-
-    let signature = try key.signer.sign(data, algorithm: algorithm)
-    // Wire format signature
-    var sigLength: UInt32 = UInt32(signature.count).bigEndian
-    var sigString = Data(bytes: &sigLength, count: MemoryLayout<UInt32>.size)
-    sigString.append(signature)
-
-    var d = Data(bytes: &respType, count: MemoryLayout<CChar>.size)
-    d.append(sigString)
-
-    return d
   }
 
   fileprivate func lookupKey(blob: Data) -> SSHAgentKey? {
     // Get rid of the blob size from encode before comparing.
     ring.first { (try? $0.signer.publicKey.encode()[4...]) == blob }
+  }
+}
+
+extension SSHAgent {
+  func forward(to stream: Stream) {
+    // Read, process and write
+    // Reads up to max - it may read less if the channel closes before.
+    stream.read(max: 4)
+      .flatMap { data -> AnyPublisher<DispatchData, Error> in
+        var payloadSizeData = data as AnyObject as! Data
+        if data.count < 4 {
+          return .fail(error: SSHError(title: "Agent Channel closed before read could complete"))
+        }
+        let payloadSize = Int(SSHDecode.uint32(&payloadSizeData))
+        return stream.read(max: payloadSize)
+      }
+      .flatMap { data -> AnyPublisher<Int, Error> in
+        var payload = data as AnyObject as! Data
+        if data.count < 1 {
+          return .fail(error: SSHError(title: "Agent Channel closed before read could complete"))
+        }
+
+        let typeValue = SSHDecode.uint8(&payload)
+
+        var replyData: Data
+        if let type = SSHAgentRequestType(rawValue: typeValue) {
+          replyData = (try? self.request(payload, context: type, client: stream.client)) ?? errorData
+        } else {
+          replyData = errorData
+        }
+
+        let reply = SSHEncode.data(from: UInt32(replyData.count)) + replyData
+        let dd = reply.withUnsafeBytes { DispatchData(bytes: $0) }
+        
+        return stream.write(dd, max: dd.count)
+      }.sink(
+        receiveCompletion: { c in
+          // Completion. Log errors and escape
+          if ssh_channel_is_eof(stream.channel) == 0 {
+            self.forward(to: stream)
+          } else {
+            self.agentForward = []
+          }
+        }, receiveValue: { _ in }).store(in: &agentForward)
   }
 }
 

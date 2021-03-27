@@ -27,5 +27,7 @@ chown root:root /home/regular
 echo "regular:regular" | sudo chpasswd
 
 # Copy keys
-cat /id_rsa.pub >> /home/partial/.ssh/authorized_keys
-cat /id_rsa.pub >> /home/regular/.ssh/authorized_keys
+# cat /id_rsa.pub >> /home/partial/.ssh/authorized_keys
+# cat /id_rsa.pub >> /home/regular/.ssh/authorized_keys
+# cat /id_ecdsa.pub >> /home/regular/.ssh/authorized_keys
+# cat /user_key-cert.pub >> /home/regular/.ssh/authorized_keys

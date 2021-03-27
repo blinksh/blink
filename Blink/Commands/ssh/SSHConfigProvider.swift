@@ -230,16 +230,13 @@ extension SSHClientConfigProvider {
   fileprivate func agent(forHost host: String) -> SSHAgent {
     let agent = SSHAgent()
     
-    let consts = [SSHConstraintTrustedConnectionOnly()]
+    let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
     if let identityFile = command.identityFile,
        let (identityKey, name) = BKConfig.privateKey(forIdentifier: identityFile) {
       // NOTE We could also keep the reference and just read the key at the proper time.
       // TODO Errors. Either pass or log here, or if we create a different
       // type of key, then let the Agent fail.
-      // TODO Need to pass name.
-      // TODO It would make sense for the constructor to sanitize directly. But that would also mean
-      // we would have to pass a Data, or work with Strings in another convenience init.      
       if let blob = SSHKey.sanitize(key: identityKey).data(using: .utf8),
          let key = try? SSHKey(fromFileBlob: blob) {
         agent.loadKey(key, aka: name, constraints: consts)
@@ -257,6 +254,9 @@ extension SSHClientConfigProvider {
         }
       }
     }
+    
+    // Link to Default Agent
+    agent.linkTo(agent: SSHAgentPool.defaultAgent)
     return agent
   }
 

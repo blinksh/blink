@@ -276,7 +276,7 @@ class OutStream : Reader, WriterTo {
       let buf = UnsafeMutableRawBufferPointer.allocate(byteCount: Int(size), alignment: MemoryLayout<CUnsignedChar>.alignment)
       
       let rc = ssh_channel_read_nonblocking(self.channel, buf.baseAddress, size, parent.isStderr)
-      log.message("Read \(rc) async", SSH_LOG_DEBUG)
+      log.message("Read \(rc) async from \(channel)", SSH_LOG_DEBUG)
       if rc == SSH_EOF || (rc == 0 && ssh_channel_is_eof(channel) != 0) {
         log.message("Received EOF on Channel", SSH_LOG_DEBUG)
         buf.deallocate()

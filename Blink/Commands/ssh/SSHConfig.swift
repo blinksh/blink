@@ -129,6 +129,10 @@ struct SSHCommand: ParsableCommand {
   @Flag(name: [.customShort("G")],
         help: "Print configuration for host and exit.")
   var printConfiguration: Bool
+  
+  @Flag(name: [.customShort("A")],
+        help: "Forward Agent.")
+  var agentForward: Bool
 
   // SSH Port
   @Option(name: [.customLong("port"), .customShort("p")],

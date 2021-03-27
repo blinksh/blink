@@ -10,6 +10,8 @@ AcceptEnv LANG LC_* TEST
 ClientAliveInterval 300
 Subsystem sftp internal-sftp
 
+TrustedUserCAKeys /etc/ssh/user_ca.pub
+
 Match User partial
 	AuthenticationMethods publickey,password
 
