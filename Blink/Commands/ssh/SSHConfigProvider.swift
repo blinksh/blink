@@ -190,14 +190,18 @@ extension SSHClientConfigProvider {
   
   fileprivate func passwordAuthMethods() -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
+
     // Host password
     if let password = BKConfig.password(forHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
     } else {
       // Interactive
-      authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 3))
+      authMethods.append(AuthPasswordInteractive(requestAnswers: self.authPrompt,
+          wrongRetriesAllowed: 2))
     }
-    
+
+    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 2))
+
     return authMethods
   }
   
