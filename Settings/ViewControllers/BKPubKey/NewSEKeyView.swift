@@ -34,15 +34,16 @@ import SwiftUI
 import SSH
 
 struct NewSEKeyView: View {
-  @EnvironmentObject var nav: Nav
   @StateObject fileprivate var state = NewSEKeyObservable()
   var onCancel: () -> Void
   var onSuccess: () -> Void
   
   var body: some View {
     List {
-      Section(header: Text("NAME"),
-              footer: Text("Default key must be named `id_ecdsa`")) {
+      Section(
+        header: Text("NAME"),
+        footer: Text("Default key must be named `id_ecdsa`")
+      ) {
         HStack {
           FixedTextField(
             "Enter a name for the key",
@@ -82,9 +83,7 @@ struct NewSEKeyView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarItems(
-      leading: Button("Cancel") {
-        onCancel()
-      },
+      leading: Button("Cancel", action: onCancel),
       trailing: Button("Create") {
         if state.createKey() {
           onSuccess()
@@ -105,8 +104,6 @@ struct NewSEKeyView: View {
 
 
 fileprivate class NewSEKeyObservable: ObservableObject {
-  
-  
   
   @Published var keyName: String = ""
   @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
