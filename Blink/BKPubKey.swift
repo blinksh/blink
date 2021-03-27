@@ -93,4 +93,12 @@ extension BKPubKey {
     card.removeCard()
   }
   
+  open override func isEqual(_ object: Any?) -> Bool {
+    guard let other = object as? BKPubKey else {
+      return false
+    }
+    
+    return id == other.id && publicKey == other.publicKey && storageType == other.storageType
+  }
+  
 }

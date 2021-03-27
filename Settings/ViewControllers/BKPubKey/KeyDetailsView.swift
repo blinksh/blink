@@ -105,6 +105,7 @@ struct KeyDetailsView: View {
       
       BKPubKey.saveIDS()
       nav.navController.popViewController(animated: true)
+      self.reloadCards()
     } catch {
       errorMessage = error.localizedDescription
       errorAlertIsPresented = true
@@ -140,7 +141,7 @@ struct KeyDetailsView: View {
           let frame = geometry.frame(in: .global)
           Button(action: { _sharePublicKey(frame: frame) }, label: {
             Label("Share", systemImage: "square.and.arrow.up")
-          })
+          }).frame(width: frame.width, height: frame.height, alignment: .leading)
         })
         
       }

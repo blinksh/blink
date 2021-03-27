@@ -73,8 +73,9 @@ struct NewSEKeyView: View {
         }
       }
       
-      Section(header: Text("INFORMATION"),
-              footer: Text("Hint about SE KEY.")
+      Section(
+        header: Text("INFORMATION"),
+        footer: Text("A Secure Enclave key is a hardware stored key that is isolated from the rest of the system. Note this type of private key cannot be read or copied, making it more difficult to become compromised.")
       ) {
         
       }
