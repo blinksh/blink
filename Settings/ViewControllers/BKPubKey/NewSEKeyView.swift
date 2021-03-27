@@ -34,15 +34,10 @@ import SwiftUI
 import SSH
 
 struct NewSEKeyView: View {
-  @StateObject fileprivate var state = NewSEKeyObservable()
   var onCancel: () -> Void
   var onSuccess: () -> Void
   
-  func _createKey() {
-    if state.createKey() {
-      onSuccess()
-    }
-  }
+  @StateObject private var _state = NewSEKeyObservable()
   
   var body: some View {
     List {
@@ -53,7 +48,7 @@ struct NewSEKeyView: View {
         HStack {
           FixedTextField(
             "Enter a name for the key",
-            text: $state.keyName,
+            text: $_state.keyName,
             id: "keyName",
             nextId: "keyComment",
             autocorrectionType: .no,
@@ -66,7 +61,7 @@ struct NewSEKeyView: View {
         HStack {
           FixedTextField(
             "Comment for your key",
-            text: $state.keyComment,
+            text: $_state.keyComment,
             id: "keyComment",
             returnKeyType: .continue,
             onReturn: _createKey,
@@ -79,34 +74,40 @@ struct NewSEKeyView: View {
       Section(
         header: Text("INFORMATION"),
         footer: Text("A Secure Enclave key is a hardware stored key that is isolated from the rest of the system. Note this type of private key cannot be read or copied, making it more difficult to become compromised.")
-      ) {
-        
-      }
+      ) { }
     }
     .listStyle(GroupedListStyle())
     .navigationBarItems(
       leading: Button("Cancel", action: onCancel),
       trailing: Button("Create", action: _createKey)
-      .disabled(!state.isValid)
+      .disabled(!_state.isValid)
     )
     .navigationBarTitle("New ECDSA Key")
-    .alert(isPresented: $state.errorAlertVisible) {
-      Alert(title: Text("Error"), message: Text(state.errorMessage), dismissButton: .default(Text("Ok")))
+    .alert(isPresented: $_state.errorAlertVisible) {
+      Alert(
+        title: Text("Error"),
+        message: Text(_state.errorMessage),
+        dismissButton: .default(Text("Ok"))
+      )
     }
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")
     })
-
+  }
+  
+  private func _createKey() {
+    if _state.createKey() {
+      onSuccess()
+    }
   }
 }
 
-
 fileprivate class NewSEKeyObservable: ObservableObject {
   
-  @Published var keyName: String = ""
-  @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+  @Published var keyName = ""
+  @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
-  @Published var errorAlertVisible: Bool = false
+  @Published var errorAlertVisible = false
   
   var errorMessage = ""
   
