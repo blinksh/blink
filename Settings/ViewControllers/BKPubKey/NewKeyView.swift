@@ -104,11 +104,10 @@ struct NewKeyView: View {
         }
       }
       
-      Section(header: Text("INFORMATION"),
-              footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
-      ) {
-        
-      }
+      Section(
+        header: Text("INFORMATION"),
+        footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
+      ) { }
     }
     .listStyle(GroupedListStyle())
     .navigationBarItems(
@@ -138,24 +137,7 @@ struct NewKeyView: View {
 }
 
 fileprivate class NewKeyObservable: ObservableObject {
-  enum KeyError: Error, LocalizedError {
-    case emptyName
-    case duplicateName(name: String)
-    case authKeyGenerationFailed
-    case saveCardFailed
-    case generationFailed
-    
-    var errorDescription: String? {
-      switch self {
-      case .emptyName: return "Key name can't be empty."
-      case .duplicateName(let name): return "Key with name `\(name)` already exists."
-      case .authKeyGenerationFailed: return "Could not generate public key."
-      case .saveCardFailed: return "Can't save key."
-      case .generationFailed: return "Generation failed"
-      }
-    }
-  }
-  
+
   @Published var keyType: SSHKeyType = .rsa {
     didSet {
       keyBits = keyType.possibleBitsValues.last ?? 0
@@ -180,11 +162,11 @@ fileprivate class NewKeyObservable: ObservableObject {
     
     do {
       if keyID.isEmpty {
-        throw KeyError.emptyName
+        throw KeyUIError.emptyName
       }
       
       if BKPubKey.withID(keyID) != nil {
-        throw KeyError.duplicateName(name: keyID)
+        throw KeyUIError.duplicateName(name: keyID)
       }
       
       let key = try SSHKey(type: keyType, bits: keyBits)
@@ -207,7 +189,7 @@ fileprivate extension SSHKeyType {
     case .rsa:     return [2048, 4096]
     case .ecdsa:   return [256, 384, 521]
     case .ed25519: return []
-    default:           return []
+    default:       return []
     }
   }
   
