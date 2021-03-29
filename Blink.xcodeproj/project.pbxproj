@@ -157,7 +157,7 @@
 		D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE45260CB03900D8E640 /* PassphraseView.swift */; };
 		D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */; };
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
-		D21DEE51260E1DCF00D8E640 /* KeysPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */; };
+		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
@@ -622,7 +622,7 @@
 		D21DEE45260CB03900D8E640 /* PassphraseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PassphraseView.swift; sourceTree = "<group>"; };
 		D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSEKeyView.swift; sourceTree = "<group>"; };
 		D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsView.swift; sourceTree = "<group>"; };
-		D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysPickerView.swift; sourceTree = "<group>"; };
+		D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPickerView.swift; sourceTree = "<group>"; };
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
@@ -1205,7 +1205,7 @@
 				D23EA944260379EB00BCF1FF /* KeysListView.swift */,
 				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
 				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
-				D21DEE50260E1DCF00D8E640 /* KeysPickerView.swift */,
+				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
 			);
 			path = BKPubKey;
 			sourceTree = "<group>";
@@ -2144,7 +2144,7 @@
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
-				D21DEE51260E1DCF00D8E640 /* KeysPickerView.swift in Sources */,
+				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */,

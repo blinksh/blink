@@ -63,9 +63,9 @@ import UIKit
     )
   }
   
-  @objc static func createKeyPickerWith(nav: UINavigationController?, keyID: String, delegate: KeysPickerViewDelegate) -> UIViewController {
+  @objc static func createKeyPickerWith(nav: UINavigationController?, keyID: String, delegate: KeyPickerViewDelegate) -> UIViewController {
     _createWith(
-      view: KeysPickerView(currentKey: keyID, delegate: delegate),
+      view: KeyPickerView(currentKey: keyID, delegate: delegate),
       nav: nav
     )
   }

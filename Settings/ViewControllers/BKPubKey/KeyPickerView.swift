@@ -48,15 +48,15 @@ fileprivate struct CardRow: View {
   }
 }
 
-@objc public protocol KeysPickerViewDelegate {
+@objc public protocol KeyPickerViewDelegate {
   @objc func didPickKey(key: String)
 }
 
-struct KeysPickerView: View {
+struct KeyPickerView: View {
   var currentKey: String
-  var delegate: KeysPickerViewDelegate
+  var delegate: KeyPickerViewDelegate
   
-  @State private var list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
+  @State private var _list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
   
   var body: some View {
     List {
@@ -67,7 +67,7 @@ struct KeysPickerView: View {
       .onTapGesture {
         delegate.didPickKey(key: "")
       }
-      ForEach(list, id: \.tag) { key in
+      ForEach(_list, id: \.tag) { key in
         CardRow(key: key, currentKey: currentKey)
           .onTapGesture {
             delegate.didPickKey(key: key.id)

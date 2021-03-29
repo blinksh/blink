@@ -38,7 +38,7 @@
 #import <Blink-Swift.h>
 
 
-@interface BKHostsDetailViewController () <UITextFieldDelegate, KeysPickerViewDelegate>
+@interface BKHostsDetailViewController () <UITextFieldDelegate, KeyPickerViewDelegate>
 
 - (IBAction)textFieldDidChange:(id)sender;
 
