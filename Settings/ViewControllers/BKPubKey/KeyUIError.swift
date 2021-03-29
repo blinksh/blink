@@ -38,6 +38,7 @@ enum KeyUIError: Error, LocalizedError {
   case authKeyGenerationFailed
   case saveCardFailed
   case generationFailed
+  case noReadAccess
   
   var errorDescription: String? {
     switch self {
@@ -45,7 +46,8 @@ enum KeyUIError: Error, LocalizedError {
     case .duplicateName(let name): return "Key with name `\(name)` already exists."
     case .authKeyGenerationFailed: return "Could not generate public key."
     case .saveCardFailed: return "Can't save key."
-    case .generationFailed: return "Generation failed"
+    case .generationFailed: return "Generation failed."
+    case .noReadAccess: return "Can't get read access to file."
     }
   }
 }

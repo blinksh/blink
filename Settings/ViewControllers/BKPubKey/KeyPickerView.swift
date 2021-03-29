@@ -33,7 +33,7 @@
 import SwiftUI
 
 fileprivate struct CardRow: View {
-  var key: BKPubKey
+  let key: BKPubKey
   let currentKey: String
   
   var body: some View {
@@ -53,8 +53,8 @@ fileprivate struct CardRow: View {
 }
 
 struct KeyPickerView: View {
-  var currentKey: String
-  var delegate: KeyPickerViewDelegate
+  let currentKey: String
+  let delegate: KeyPickerViewDelegate
   
   @State private var _list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
   

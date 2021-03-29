@@ -88,11 +88,7 @@ struct NewKeyView: View {
           text: $_state.keyComment,
           id: "keyComment",
           returnKeyType: .continue,
-          onReturn: {
-            if _state.createKey() {
-              onSuccess()
-            }
-          },
+          onReturn: _createKey,
           autocorrectionType: .no,
           autocapitalizationType: .none
         )
@@ -105,14 +101,8 @@ struct NewKeyView: View {
     }
     .listStyle(GroupedListStyle())
     .navigationBarItems(
-      leading: Button("Cancel") {
-        onCancel()
-      },
-      trailing: Button("Create") {
-        if _state.createKey() {
-          onSuccess()
-        }
-      }
+      leading: Button("Cancel", action: onCancel),
+      trailing: Button("Create", action: _createKey)
       .disabled(!_state.isValid)
     )
     .navigationBarTitle("New \(_state.keyType.shortName) Key")
@@ -127,6 +117,12 @@ struct NewKeyView: View {
       FixedTextField.becomeFirstReponder(id: "keyName")
     })
 
+  }
+  
+  private func _createKey() {
+    if _state.createKey() {
+      onSuccess()
+    }
   }
 }
 

@@ -91,7 +91,7 @@ struct KeyDetailsView: View {
       guard
         url.startAccessingSecurityScopedResource()
       else {
-        return _showError(message: "Can't read get access to read file.")
+        throw KeyUIError.noReadAccess
       }
       defer {
         url.stopAccessingSecurityScopedResource()
