@@ -190,16 +190,14 @@ struct KeyDetailsView: View {
         header: Text("NAME"),
         footer: Text("Default key must be named `id_\(card.keyType?.lowercased() ?? "")`")
       ) {
-        HStack {
-          FixedTextField(
-            "Enter a name for the key",
-            text: $_keyName,
-            id: "keyName",
-            nextId: "keyComment",
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Enter a name for the key",
+          text: $_keyName,
+          id: "keyName",
+          nextId: "keyComment",
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(header: Text("Public Key")) {

@@ -63,7 +63,6 @@ struct KeyRow: View {
           Spacer()
           Text(card.key.storageType == BKPubKeyStorageTypeKeyChain ? "Keychain" : "SE")
             .font(.system(.subheadline))
-            
         }
       },
       details: {
@@ -73,7 +72,6 @@ struct KeyRow: View {
   }
 }
 
-
 struct KeyListView: View {
   @StateObject private var _state = KeysObservable()
   
@@ -81,9 +79,7 @@ struct KeyListView: View {
     List {
       ForEach(_state.list, id: \.name) {
         KeyRow(card: $0, reloadCards: _state.reloadCards)
-      }.onDelete(perform: { indexSet in
-        _state.deleteKeys(indexSet: indexSet)
-      })
+      }.onDelete(perform: _state.deleteKeys)
     }
     .navigationBarItems(
       trailing: Button(

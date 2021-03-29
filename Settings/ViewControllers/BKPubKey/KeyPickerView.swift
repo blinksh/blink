@@ -74,6 +74,6 @@ struct KeyPickerView: View {
           }
       }
     }
-    .navigationTitle("Select Key")
+    .navigationTitle("Select a Key")
   }
 }

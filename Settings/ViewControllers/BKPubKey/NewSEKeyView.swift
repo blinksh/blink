@@ -45,30 +45,26 @@ struct NewSEKeyView: View {
         header: Text("NAME"),
         footer: Text("Default key must be named `id_ecdsa`")
       ) {
-        HStack {
-          FixedTextField(
-            "Enter a name for the key",
-            text: $_state.keyName,
-            id: "keyName",
-            nextId: "keyComment",
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Enter a name for the key",
+          text: $_state.keyName,
+          id: "keyName",
+          nextId: "keyComment",
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(header: Text("COMMENT (OPTIONAL)")) {
-        HStack {
-          FixedTextField(
-            "Comment for your key",
-            text: $_state.keyComment,
-            id: "keyComment",
-            returnKeyType: .continue,
-            onReturn: _createKey,
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Comment for your key",
+          text: $_state.keyComment,
+          id: "keyComment",
+          returnKeyType: .continue,
+          onReturn: _createKey,
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(

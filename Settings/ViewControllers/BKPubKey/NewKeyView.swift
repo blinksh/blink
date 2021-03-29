@@ -45,31 +45,27 @@ struct NewKeyView: View {
         header: Text("NAME"),
         footer: Text("Default key must be named `id_\(_state.keyType.shortName.lowercased())`")
       ) {
-        HStack {
-          FixedTextField(
-            "Enter a name for the key",
-            text: $_state.keyName,
-            id: "keyName",
-            nextId: "keyComment",
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Enter a name for the key",
+          text: $_state.keyName,
+          id: "keyName",
+          nextId: "keyComment",
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(
         header: Text("KEY TYPE"),
         footer: Text(_state.keyType.keyHint)
       ) {
-        HStack {
-          Picker("", selection: $_state.keyType) {
-            Text(SSHKeyType.dsa.shortName).tag(SSHKeyType.dsa)
-            Text(SSHKeyType.rsa.shortName).tag(SSHKeyType.rsa)
-            Text(SSHKeyType.ecdsa.shortName).tag(SSHKeyType.ecdsa)
-            Text(SSHKeyType.ed25519.shortName).tag(SSHKeyType.ed25519)
-          }
-          .pickerStyle(SegmentedPickerStyle())
+        Picker("", selection: $_state.keyType) {
+          Text(SSHKeyType.dsa.shortName).tag(SSHKeyType.dsa)
+          Text(SSHKeyType.rsa.shortName).tag(SSHKeyType.rsa)
+          Text(SSHKeyType.ecdsa.shortName).tag(SSHKeyType.ecdsa)
+          Text(SSHKeyType.ed25519.shortName).tag(SSHKeyType.ed25519)
         }
+        .pickerStyle(SegmentedPickerStyle())
         if _state.keyType.possibleBitsValues.count > 1 {
           HStack {
             Text("Bits").layoutPriority(1)
@@ -87,21 +83,19 @@ struct NewKeyView: View {
       }
       
       Section(header: Text("COMMENT (OPTIONAL)")) {
-        HStack {
-          FixedTextField(
-            "Comment for your key",
-            text: $_state.keyComment,
-            id: "keyComment",
-            returnKeyType: .continue,
-            onReturn: {
-              if _state.createKey() {
-                onSuccess()
-              }
-            },
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Comment for your key",
+          text: $_state.keyComment,
+          id: "keyComment",
+          returnKeyType: .continue,
+          onReturn: {
+            if _state.createKey() {
+              onSuccess()
+            }
+          },
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(

@@ -45,42 +45,36 @@ struct ImportKeyView: View {
         header: Text("NAME"),
         footer: Text("Default key must be named `id_\(state.keyType.lowercased())`")
       ) {
-        HStack {
-          FixedTextField(
-            "Enter a name for the key",
-            text: $state.keyName,
-            id: "keyName",
-            nextId: "keyComment",
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Enter a name for the key",
+          text: $state.keyName,
+          id: "keyName",
+          nextId: "keyComment",
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(header: Text("COMMENT (OPTIONAL)")) {
-        HStack {
-          FixedTextField(
-            "Comment for your key",
-            text: $state.keyComment,
-            id: "keyComment",
-            returnKeyType: .continue,
-            onReturn: {
-              if state.saveKey() {
-                onSuccess()
-              }
-            },
-            autocorrectionType: .no,
-            autocapitalizationType: .none
-          )
-        }
+        FixedTextField(
+          "Comment for your key",
+          text: $state.keyComment,
+          id: "keyComment",
+          returnKeyType: .continue,
+          onReturn: {
+            if state.saveKey() {
+              onSuccess()
+            }
+          },
+          autocorrectionType: .no,
+          autocapitalizationType: .none
+        )
       }
       
       Section(
         header: Text("INFORMATION"),
         footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
-      ) {
-        
-      }
+      ) { }
     }
     .listStyle(GroupedListStyle())
     .navigationBarItems(
