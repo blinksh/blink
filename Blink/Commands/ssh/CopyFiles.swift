@@ -123,7 +123,7 @@ public class BlinkCopy: NSObject {
   let currentRunLoop: RunLoop
   var stdout = StdoutOutputStream()
   var stderr = StderrOutputStream()
-  var command: BlinkCopyCommand?
+  var command: BlinkCopyCommand!
 
   override init() {
     self.currentRunLoop = RunLoop.current
@@ -147,22 +147,20 @@ public class BlinkCopy: NSObject {
     do {
       command = try BlinkCopyCommand.parse(Array(argv[1...]))
     } catch {
-      let message = SSHCommand.message(for: error)
+      let message = BlinkCopyCommand.message(for: error)
       print(message, to: &stderr)
       return -1
     }
 
-    let cmd = command!
-
     // Connect to the destination first, as it will be the one driving the operation.
-    let destProtocol = cmd.destination.proto ?? defaultRemoteProtocol
+    let destProtocol = command.destination.proto ?? defaultRemoteProtocol
 
-    let destTranslator = (destProtocol == .local) ? localTranslator(to: cmd.destination.filePath) :
-      remoteTranslator(toFilePath: cmd.destination.filePath, atHost: cmd.destination.hostPath!, using: destProtocol, isSource: false)
+    let destTranslator = (destProtocol == .local) ? localTranslator(to: command.destination.filePath) :
+      remoteTranslator(toFilePath: command.destination.filePath, atHost: command.destination.hostPath!, using: destProtocol, isSource: false)
 
-    let sourceProtocol = cmd.source.proto ?? defaultRemoteProtocol
-    let sourceTranslator = (sourceProtocol == .local) ? localTranslator(to: cmd.source.filePath) :
-      remoteTranslator(toFilePath: cmd.source.filePath, atHost: cmd.source.hostPath!, using: sourceProtocol)
+    let sourceProtocol = command.source.proto ?? defaultRemoteProtocol
+    let sourceTranslator = (sourceProtocol == .local) ? localTranslator(to: command.source.filePath) :
+      remoteTranslator(toFilePath: command.source.filePath, atHost: command.source.hostPath!, using: sourceProtocol)
 
     // TODO Output object for reports
     var rc: Int32 = 0
@@ -173,7 +171,7 @@ public class BlinkCopy: NSObject {
     var lastElapsed = 0
     copyCancellable = destTranslator.flatMap { d -> CopyProgressInfo in
       return sourceTranslator.flatMap {
-        $0.translatorsMatching(path: cmd.source.filePath)
+        $0.translatorsMatching(path: self.command.source.filePath)
       }
         .reduce([] as [Translator]) { (all, t) in
           var new = all
@@ -224,12 +222,12 @@ public class BlinkCopy: NSObject {
     // At the moment everything is just SSH. At some point we should have a factory.
     let sshCommand: SSHCommand
     let sshOptions: ConfigFileOptions
-    let cmd = command!
     var params = [hostPath]
+    
     do {
       // Pass verbosity
-      if cmd.verbose > 0 {
-        let v = String(format: "-%@", String(repeating: "v", count: cmd.verbose))
+      if command.verbose > 0 {
+        let v = String(format: "-%@", String(repeating: "v", count: command.verbose))
         params.append(v)
       }
       sshCommand = try SSHCommand.parse(params)
