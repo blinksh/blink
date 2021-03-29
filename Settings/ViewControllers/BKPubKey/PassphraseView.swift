@@ -34,9 +34,9 @@ import SwiftUI
 import SSH
 
 struct PassphraseView: View {
-  @State var passphrase: String = ""
-  @State var errorMessage: String = ""
-  @State var errorAlertIsPresented: Bool = false
+  @State private var _passphrase: String = ""
+  @State private var _errorMessage: String = ""
+  @State private var _errorAlertIsPresented: Bool = false
   
   var keyBlob: Data
   var keyProposedName: String
@@ -45,9 +45,9 @@ struct PassphraseView: View {
   
   @State var importKeyObservable: ImportKeyObservable? = nil
   
-  private func _onUnlock() {
+  private func _unlock() {
     do {
-      let key = try SSHKey(fromFileBlob: keyBlob, passphrase: passphrase)
+      let key = try SSHKey(fromFileBlob: keyBlob, passphrase: _passphrase)
       importKeyObservable = ImportKeyObservable(key: key, keyName: keyProposedName, keyComment: key.comment ?? "")
     } catch {
       return _showError(message: error.localizedDescription)
@@ -55,8 +55,8 @@ struct PassphraseView: View {
   }
     
   private func _showError(message: String) {
-    errorMessage = message
-    errorAlertIsPresented = true
+    _errorMessage = message
+    _errorAlertIsPresented = true
   }
   
   var body: some View {
@@ -65,15 +65,16 @@ struct PassphraseView: View {
       Text("This key is protected with passphrase").padding()
       FixedTextField(
         "Passphrase",
-        text: $passphrase,
+        text: $_passphrase,
         id: "passphrase",
+        onReturn: _unlock,
         secureTextEntry: true,
         autocorrectionType: .no,
         autocapitalizationType: .none
       )
       .frame(maxHeight: 50)
       .padding()
-      Button("Unlock", action: _onUnlock).disabled(passphrase.isEmpty)
+      Button("Unlock", action: _unlock).disabled(_passphrase.isEmpty)
       
       Spacer()
       
@@ -91,10 +92,10 @@ struct PassphraseView: View {
     .onAppear() {
       FixedTextField.becomeFirstReponder(id: "passphrase")
     }
-    .alert(isPresented: $errorAlertIsPresented) {
+    .alert(isPresented: $_errorAlertIsPresented) {
       Alert(
         title: Text("Error"),
-        message: Text(errorMessage),
+        message: Text(_errorMessage),
         dismissButton: .default(Text("Ok"))
       )
     }
