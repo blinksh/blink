@@ -56,7 +56,7 @@ struct KeyPickerView: View {
   let currentKey: String
   let delegate: KeyPickerViewDelegate
   
-  @State private var _list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
+  @State private var _list: [BKPubKey] = BKPubKey.all()
   
   var body: some View {
     List {
