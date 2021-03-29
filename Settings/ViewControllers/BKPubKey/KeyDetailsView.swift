@@ -50,12 +50,37 @@ struct KeyDetailsView: View {
   @State private var _errorAlertIsPresented = false
   @State private var _errorMessage = ""
   
+  @State private var _publicKeyCopied = false
+  @State private var _certificateCopied = false
+  @State private var _privateKeyCopied = false
+  
   private func _copyPublicKey() {
+    _publicKeyCopied = false
+    
     UIPasteboard.general.string = card.publicKey
+    withAnimation {
+      _publicKeyCopied = true
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+      withAnimation {
+        _publicKeyCopied = false
+      }
+    }
   }
   
   private func _copyCertificate() {
+    _certificateCopied = false
     UIPasteboard.general.string = _certificate ?? ""
+    withAnimation {
+      _certificateCopied = true
+    }
+    
+    DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+      withAnimation {
+        _certificateCopied = false
+      }
+    }
   }
   
   private var _saveIsDisabled: Bool {
@@ -134,6 +159,7 @@ struct KeyDetailsView: View {
   }
   
   private func _copyPrivateKey() {
+    _privateKeyCopied = false
     LocalAuth.shared.authenticate(callback: { success in
       guard
         success,
@@ -142,7 +168,15 @@ struct KeyDetailsView: View {
         return
       }
       UIPasteboard.general.string = privateKey
+      withAnimation {
+        _privateKeyCopied = true
+      }
       
+      DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+        withAnimation {
+          _privateKeyCopied = false
+        }
+      }
     }, reason: "to copy private key to clipboard.")
   }
   
@@ -206,8 +240,13 @@ struct KeyDetailsView: View {
         }.onTapGesture {
           _pubkeyLines = _pubkeyLines == 1 ? 100 : 1
         }
+        
         Button(action: _copyPublicKey, label: {
-          Label("Copy", systemImage: "doc.on.doc")
+          HStack {
+            Label("Copy", systemImage: "doc.on.doc")
+            Spacer()
+            Text("Copied").opacity(_publicKeyCopied ? 1.0 : 0.0)
+          }
         })
         GeometryReader(content: { geometry in
           let frame = geometry.frame(in: .global)
@@ -226,7 +265,11 @@ struct KeyDetailsView: View {
               _certificateLines = _certificateLines == 1 ? 100 : 1
             }
             Button(action: _copyCertificate, label: {
-              Label("Copy", systemImage: "doc.on.doc")
+              HStack {
+                Label("Copy", systemImage: "doc.on.doc")
+                Spacer()
+                Text("Copied").opacity(_certificateCopied ? 1.0 : 0.0)
+              }
             })
             Button(action: _removeCertificate, label: {
               Label("Remove", systemImage: "minus.circle")
@@ -255,7 +298,11 @@ struct KeyDetailsView: View {
         
         Section() {
           Button(action: _copyPrivateKey, label: {
-            Label("Copy private key", systemImage: "doc.on.doc")
+            HStack {
+              Label("Copy private key", systemImage: "doc.on.doc")
+              Spacer()
+              Text("Copied").opacity(_privateKeyCopied ? 1.0 : 0.0)
+            }
           })
         }
       }
