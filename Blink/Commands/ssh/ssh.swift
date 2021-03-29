@@ -158,7 +158,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         if let addr = conn.clientAddressIP() {
           print("Connected to \(addr)", to: &self.stdout)
         }
-
+        
+        if cmd.startsSession {
+          self.startInteractiveSessions(conn, command: cmd)
+        }
         // A tunnel may still be running in the background if we wish, like this one. The thread should only
         // not block if we have a specific flag (like just starting a tunnel, control command or the specific flag).
         self.startStdioTunnel(conn, command: cmd)
@@ -166,9 +169,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         self.startForwardTunnels(conn, command: cmd)
         self.startReverseTunnels(conn, command: cmd)
 
-        if cmd.startsSession {
-          self.startInteractiveSessions(conn, command: cmd)
-        }
+        
       }).store(in: &cancellableBag)
 
     if cmd.blocks {
@@ -216,8 +217,9 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     let rows = Int32(self.device.rows)
     let cols = Int32(self.device.cols)
     var pty: SSH.SSHClient.PTY? = nil
-    if command.forceTTY || (self.isTTY && !command.disableTTY) {
+    if command.forceTTY || (self.isTTY && !command.disableTTY && command.command.isEmpty) {
       pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
+      self.device.rawMode = true
     }
     
     let session: AnyPublisher<SSH.Stream, Error>
@@ -249,7 +251,6 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }, receiveValue: { s in
         let outs = DispatchOutputStream(stream: self.outstream)
         let ins = DispatchInputStream(stream: self.instream)
-        self.device.rawMode = true
 
         s.handleCompletion = {
           // Once finished, exit.
@@ -328,8 +329,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     if let tunnel = command.reversePortForward {
       let client: SSHPortForwardClient
       client = SSHPortForwardClient(forward: tunnel.bindAddress,
-                                    onPort: tunnel.localPort,
-                                    toRemotePort: tunnel.remotePort,
+                                    onPort: tunnel.remotePort,
+                                    toRemotePort: tunnel.localPort,
                                     using: conn)
       reverseTunnels.append(client)
 

@@ -804,9 +804,8 @@ public class SSHClient {
   }
   
   public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<Stream, Error> {
-    if port == 0 {
-      // TODO Passing 0 will allocate an available port, and be returned at the last param on listen
-      return .fail(error: SSHError(title: "Ask server to allocate a bound port not allowed"))
+    if let _ = self.reversePorts[port] {
+      return .fail(error: SSHError(title: "Reverse forward already exits for that port."))
     }
     
     self.log.message("REVERSE Forward requested to address \(address) on port \(port)", SSH_LOG_INFO)
@@ -816,8 +815,16 @@ public class SSHClient {
       
       ctxt.log.message("REVERSE Forward callback", SSH_LOG_INFO)
       
-      guard let pub = ctxt.reversePorts[Int32(port)] else {
-        // Should never happen
+      let port = Int32(port)
+
+      // If there is no associated port, check if it may be on 0
+      if ctxt.reversePorts[port] == nil {
+        if let _ = ctxt.reversePorts[0] {
+          ctxt.reversePorts[port] = ctxt.reversePorts.removeValue(forKey: 0)
+        }
+      }
+      
+      guard let pub = ctxt.reversePorts[port] else {
         return nil
       }
       
@@ -836,6 +843,7 @@ public class SSHClient {
       .tryOperation { session -> Int32 in
         self.log.message("REVERSE Starting listener to forward on remote", SSH_LOG_INFO)
         
+        // We could pass the callback here, and then have somewhere on the libssh side a way to map
         let rc = ssh_channel_listen_forward(session, address, port, nil)
         if rc != SSH_OK {
           throw SSHError(rc, forSession: session)

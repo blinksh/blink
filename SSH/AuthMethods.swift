@@ -128,6 +128,50 @@ public struct Prompt {
   public var userPrompts: [Question]
 }
 
+public class AuthPasswordInteractive: AuthMethod, Authenticator {
+  public func name() -> String {
+    "password"
+  }
+  
+  public typealias RequestAnswersCb = (Prompt) -> AnyPublisher<[String], Error>
+  
+  let requestAnswers: RequestAnswersCb
+  
+  /// Authentication will be tried this number of times prior to failing.
+  /// If there are retries left it returns a `SSH_AUTH_AGAIN`
+  var wrongRetriesLeft: Int
+  
+  public init(requestAnswers f: @escaping RequestAnswersCb, wrongRetriesAllowed: Int = 1) {
+    self.requestAnswers = f
+    
+    self.wrongRetriesLeft = wrongRetriesAllowed
+  }
+  
+  func auth(_ conn: SSHConnection) -> AnyPublisher<AuthState, Error> {
+    let p = Prompt(name: "password", instruction: "password", userPrompts: [Prompt.Question(prompt: "password:", echo: false)])
+
+    return self.requestAnswers(p)
+        .flatMap { answers -> AnyPublisher<AuthState, Error> in
+          return conn.tryAuth { session in
+            let password = answers[0]
+            let rc = ssh_userauth_password(session, nil, password)
+            let val = ssh_auth_e(rc)
+            switch val {
+            case SSH_AUTH_SUCCESS: return .success
+            case SSH_AUTH_DENIED:
+              self.wrongRetriesLeft -= 1
+              if self.wrongRetriesLeft >= 0 {
+                return .continue(auth: self.auth(conn))
+              }
+              return .denied
+            case SSH_AUTH_PARTIAL: return .partial
+            case SSH_AUTH_AGAIN:   throw SSHError(auth: val, forSession: session)
+            default:               throw SSHError(auth: val, forSession: session)
+            }
+          }
+        }.eraseToAnyPublisher()
+  }
+}
 // Try Authentication in phases. So you can return the state of the authentication,
 // and whether or not there is another step or phase that needs to be called right after.
 // Let TryAuth understand Success or Denied, and let it work through the details in

@@ -217,44 +217,75 @@ public class SSHPortForwardListener {
 
 public class SSHPortForwardClient {
   let client: SSHClient
-  let conn: NWConnection
+  let forwardHost: NWEndpoint.Host
+  let localPort: NWEndpoint.Port
   let queue: DispatchQueue
   let remotePort: NWEndpoint.Port
-  
+  let bindAddress: String?
+
   var log: SSHLogger { get { client.log } }
   
   let status = CurrentValueSubject<PortForwardState, Error>(.starting)
   var isReady = false
   
   var reverseForward: AnyCancellable?
+  var streams: [Stream] = []
   
-  // The listener is on the other side, here we just connect to a local port
   public init(forward address: String, onPort localPort: UInt16,
-              toRemotePort remotePort: UInt16, using client: SSHClient) {
-    let p = NWEndpoint.Port(integerLiteral: localPort)
-    let host = NWEndpoint.Host(address)
-    self.conn = NWConnection(host: host, port: p, using: .tcp)
+              toRemotePort remotePort: UInt16, bindAddress: String? = nil, using client: SSHClient) {
+    self.localPort = NWEndpoint.Port(integerLiteral: localPort)
+    self.forwardHost = NWEndpoint.Host(address)
     self.remotePort = NWEndpoint.Port(integerLiteral: remotePort)
     self.queue = DispatchQueue(label: "r-fwd-\(localPort)")
+    self.bindAddress = bindAddress
     self.client = client
   }
   
   public func connect() -> AnyPublisher<PortForwardState, Error> {
-    // TODO Expose address to bind to on remote server
     // This is a different case than regular forward,
     // because here we serve the requests from the other side,
     // so the streams are received instead of generated here.
-    var stream: Stream?
-    
-    self.conn.stateUpdateHandler = { state in
-      self.log.message("Listener state Updated \(state)", SSH_LOG_INFO)
+    reverseForward = self.client.requestReverseForward(bindTo: bindAddress, port: Int32(remotePort.rawValue))
+      .sink(
+        receiveCompletion: { completion in
+          switch completion {
+            // If the Reverse Forward is closed, then close the connection.
+          case .finished:
+            return self.close()
+          case .failure(let error):
+            self.status.send(completion: .failure(error))
+            self.isReady = false
+            self.close()
+          }
+        },
+        receiveValue: receive)
+
+    return status.eraseToAnyPublisher()
+  }
+  
+  public func close() {
+    log.message("Closing Reverse Forward", SSH_LOG_INFO)
+    if isReady {
+      // Note we are not cancelling the already open connections
+      reverseForward?.cancel()
+      self.status.send(completion: .finished)
+    }
+  }
+  
+  private func receive(stream: Stream) {
+    self.log.message("Reverse stream received. Establishing connection and piping stream", SSH_LOG_INFO)
+
+    self.streams.append(stream)
+    let conn = NWConnection(host: self.forwardHost, port: self.localPort, using: .tcp)
+    conn.stateUpdateHandler = { (state: NWConnection.State) in
+      self.log.message("Connection state Updated \(state)", SSH_LOG_INFO)
       self.isReady = false
       
       switch state {
       case .ready:
+        // Notify that a connection has been established.
         self.status.send(PortForwardState.ready)
         self.isReady = true
-        startReverse()
       case .waiting(let error):
         // Just notify, the connection itself will be reopened after a wait.
         self.status.send(PortForwardState.waiting(error))
@@ -264,46 +295,21 @@ public class SSHPortForwardClient {
         break
       }
     }
-    
-    func startReverse() {
-      reverseForward = self.client.requestReverseForward(bindTo: nil, port: Int32(remotePort.rawValue))
-        .sink(receiveCompletion: { completion in
-          switch completion {
-          // If the Reverse Forward is closed, then close the connection.
-          case .finished:
-            return self.close()
-          case .failure(let error):
-            self.status.send(completion: .failure(error))
-            self.isReady = false
-            self.close()
-          }
-        }, receiveValue: { s in
-          self.log.message("Reverse stream received. Connecting stream", SSH_LOG_INFO)
-          stream = s
-          s.connect(stdout: self.conn, stdin: self.conn)
-          s.handleCompletion = {
-            stream = nil
-          }
-          s.handleFailure = { error in
-            stream = nil
-            self.status.send(.error(error))
-          }
-        })
+    conn.start(queue: self.queue)
+    stream.connect(stdout: conn, stdin: conn)
+
+    func removeStream() {
+      if let idx = self.streams.firstIndex(where: { stream === $0 }) {
+        self.streams.remove(at: idx)
+      }
     }
-    
-    self.conn.start(queue: queue)
-    
-    return status.eraseToAnyPublisher()
-  }
-  
-  public func close() {
-    log.message("Closing Reverse Forward", SSH_LOG_INFO)
-    if isReady {
-      reverseForward?.cancel()
-      self.status.send(completion: .finished)
+    stream.handleCompletion = {
+      removeStream()
     }
-    
-    self.conn.cancel()
+    stream.handleFailure = { error in
+      removeStream()
+      self.status.send(.error(error))
+    }
   }
 }
 
