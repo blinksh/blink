@@ -184,7 +184,7 @@
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
 		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
-		D23EA945260379EB00BCF1FF /* KeysListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeysListView.swift */; };
+		D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeyListView.swift */; };
 		D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */; };
 		D240806120BC8DF800F30099 /* tool_main.c in Sources */ = {isa = PBXBuildFile; fileRef = D240806020BC8DF800F30099 /* tool_main.c */; settings = {COMPILER_FLAGS = "-DHAVE_CONFIG_H -I Frameworks/ios_system/curl/curl/include/ -I Frameworks/ios_system/curl/curl/lib/ -I Frameworks/ios_system/curl/config_iphone/ -DBUILDING_LIBCURL -I Settings/Model/ -I Frameworks/libssh2.framework/Headers/ -DBLINKSHELL -I Frameworks/ios_system/"; }; };
 		D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */ = {isa = PBXBuildFile; fileRef = D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */; };
@@ -646,7 +646,7 @@
 		D23D258723438B15002850CA /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
 		D23E142920A970C3000FCF5C /* BlinkPaths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkPaths.h; sourceTree = "<group>"; };
 		D23E142A20A970C3000FCF5C /* BlinkPaths.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlinkPaths.m; sourceTree = "<group>"; };
-		D23EA944260379EB00BCF1FF /* KeysListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeysListView.swift; sourceTree = "<group>"; };
+		D23EA944260379EB00BCF1FF /* KeyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyListView.swift; sourceTree = "<group>"; };
 		D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedTextField.swift; sourceTree = "<group>"; };
 		D240806020BC8DF800F30099 /* tool_main.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = tool_main.c; path = Frameworks/ios_system/curl/curl/src/tool_main.c; sourceTree = SOURCE_ROOT; };
 		D241CBBE23040732003D64A5 /* KBKeyViewFlexible.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KBKeyViewFlexible.swift; sourceTree = "<group>"; };
@@ -1202,7 +1202,7 @@
 				D2DE0DDD260331F300A69B6F /* NewKeyView.swift */,
 				D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */,
 				D21DEE40260C9A3D00D8E640 /* ImportKeyView.swift */,
-				D23EA944260379EB00BCF1FF /* KeysListView.swift */,
+				D23EA944260379EB00BCF1FF /* KeyListView.swift */,
 				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
 				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
 				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
@@ -2093,7 +2093,7 @@
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
-				D23EA945260379EB00BCF1FF /* KeysListView.swift in Sources */,
+				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,

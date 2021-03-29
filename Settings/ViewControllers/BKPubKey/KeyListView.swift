@@ -48,8 +48,8 @@ fileprivate struct KeyCard {
 }
 
 struct KeyRow: View {
-  fileprivate var card: KeyCard
-  var reloadCards: () -> ()
+  fileprivate let card: KeyCard
+  let reloadCards: () -> ()
   
   var body: some View {
     Row(
@@ -74,106 +74,85 @@ struct KeyRow: View {
 }
 
 
-struct KeysListView: View {
-  @EnvironmentObject var nav: Nav
-  @StateObject private var state = KeysObservable()
+struct KeyListView: View {
+  @EnvironmentObject private var _nav: Nav
+  @StateObject private var _state = KeysObservable()
   
   var body: some View {
     List {
-      ForEach(state.list, id: \.name) {
-        KeyRow(card: $0, reloadCards: state.reloadCards)
+      ForEach(_state.list, id: \.name) {
+        KeyRow(card: $0, reloadCards: _state.reloadCards)
       }.onDelete(perform: { indexSet in
-        state.deleteKeys(indexSet: indexSet)
+        _state.deleteKeys(indexSet: indexSet)
       })
     }
     .navigationBarItems(
       trailing: Button(
         action: {
-          state.actionSheetIsPresented = true
+          _state.actionSheetIsPresented = true
         },
         label: {
           Image(systemName: "plus")
         }
       )
-      .actionSheet(isPresented: $state.actionSheetIsPresented) {
+      .actionSheet(isPresented: $_state.actionSheetIsPresented) {
           ActionSheet(
             title: Text("Add key"),
             buttons: [
-              .default(Text("Generate New")) { state.modal = .newKey },
-              .default(Text("Generate New in SE")) { state.modal = .newSEKey },
-              .default(Text("Import from clipboard")) { state.importFromClipboard() },
-              .default(Text("Import from a file")) { state.filePickerIsPresented = true },
+              .default(Text("Generate New")) { _state.modal = .newKey },
+              .default(Text("Generate New in SE")) { _state.modal = .newSEKey },
+              .default(Text("Import from clipboard")) { _state.importFromClipboard() },
+              .default(Text("Import from a file")) { _state.filePickerIsPresented = true },
               .cancel()
             ]
           )
       }
     )
     .navigationBarTitle("Keys")
-    
     .fileImporter(
-      isPresented: $state.filePickerIsPresented,
+      isPresented: $_state.filePickerIsPresented,
       allowedContentTypes: [.text, .data, .item],
-      onCompletion: state.importFromFile
+      onCompletion: _state.importFromFile
     )
-    .sheet(item: $state.modal, onDismiss: {
-      
-    }) { modal in
+    .sheet(item: $_state.modal) { modal in
       switch (modal) {
       case .passphrasePrompt(let keyBlob, let proposedName):
         NavigationView {
           PassphraseView(
             keyBlob: keyBlob,
             keyProposedName: proposedName,
-            onCancel: {
-              self.state.modal = nil
-            },
-            onSuccess: {
-              self.state.modal = nil
-              self.state.reloadCards()
-            }
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
           )
         }
       case .saveImportedKey(let observable):
         NavigationView {
           ImportKeyView(
             state: observable,
-            onCancel: { state.modal = nil },
-            onSuccess: {
-              state.modal = nil
-              state.reloadCards()
-            }
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
           )
         }
       case .newKey:
         NavigationView {
           NewKeyView(
-            onCancel: {
-              state.modal = nil
-            },
-            onSuccess: {
-              state.modal = nil
-              state.reloadCards()
-            }
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
           )
         }
       case .newSEKey:
         NavigationView {
           NewSEKeyView(
-            onCancel: {
-              state.modal = nil
-            },
-            onSuccess: {
-              state.modal = nil
-              state.reloadCards()
-            }
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
           )
         }
       }
     }
-    .alert(isPresented: $state.errorAlertIsPresented) {
+    .alert(isPresented: $_state.errorAlertIsPresented) {
       Alert(
         title: Text("Error"),
-        message: Text(state.errorMessage),
+        message: Text(_state.errorMessage),
         dismissButton: .default(Text("Ok"))
       )
     }
@@ -182,7 +161,7 @@ struct KeysListView: View {
 
 fileprivate class KeysObservable: ObservableObject {
   
-  @Published var list: [KeyCard] = BKPubKey.all().map( {KeyCard(key: $0 )} )
+  @Published var list: [KeyCard] = BKPubKey.all().map(KeyCard.init(key:))
   @Published var actionSheetIsPresented: Bool = false
   @Published var errorAlertIsPresented: Bool = false
   @Published var filePickerIsPresented: Bool = false
@@ -196,7 +175,7 @@ fileprivate class KeysObservable: ObservableObject {
   }
   
   func reloadCards() {
-    self.list = BKPubKey.all().map( {KeyCard(key: $0 )} )
+    self.list = BKPubKey.all().map(KeyCard.init(key:))
   }
   
   func removeKey(card: BKPubKey) {
@@ -257,6 +236,15 @@ fileprivate class KeysObservable: ObservableObject {
     }
     
     _importKeyFromBlob(blob: blob, proposedKeyName: "")
+  }
+  
+  func onModalCancel() {
+    self.modal = nil
+  }
+  
+  func onModalSuccess() {
+    self.modal = nil
+    reloadCards()
   }
   
   private func _importKeyFromBlob(blob: Data, proposedKeyName: String) {

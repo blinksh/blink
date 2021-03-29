@@ -34,21 +34,21 @@ import SwiftUI
 import SSH
 
 struct PassphraseView: View {
+  let keyBlob: Data
+  let keyProposedName: String
+  let onCancel: () -> ()
+  let onSuccess: () -> ()
+  
   @State private var _passphrase: String = ""
   @State private var _errorMessage: String = ""
   @State private var _errorAlertIsPresented: Bool = false
   
-  var keyBlob: Data
-  var keyProposedName: String
-  var onCancel: () -> ()
-  var onSuccess: () -> ()
-  
-  @State var importKeyObservable: ImportKeyObservable? = nil
+  @State private var _importKeyObservable: ImportKeyObservable? = nil
   
   private func _unlock() {
     do {
       let key = try SSHKey(fromFileBlob: keyBlob, passphrase: _passphrase)
-      importKeyObservable = ImportKeyObservable(key: key, keyName: keyProposedName, keyComment: key.comment ?? "")
+      _importKeyObservable = ImportKeyObservable(key: key, keyName: keyProposedName, keyComment: key.comment ?? "")
     } catch {
       return _showError(message: error.localizedDescription)
     }
@@ -79,12 +79,12 @@ struct PassphraseView: View {
       Spacer()
       
       Group {
-        if let importObservable = self.importKeyObservable {
+        if let importObservable = _importKeyObservable {
           ImportKeyView(state: importObservable, onCancel: onCancel, onSuccess: onSuccess)
         }
       }
       .navigationBarBackButtonHidden(true)
-      .navigatePush(whenPresent: $importKeyObservable)
+      .navigatePush(whenPresent: $_importKeyObservable)
     }
     .navigationBarItems(
       leading: Button("Cancel", action: onCancel)

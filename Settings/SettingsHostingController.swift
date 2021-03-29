@@ -58,7 +58,7 @@ import UIKit
   
   @objc static func createKeysWith(nav: UINavigationController?) -> UIViewController {
     _createWith(
-      view: KeysListView(),
+      view: KeyListView(),
       nav: nav
     )
   }
