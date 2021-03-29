@@ -34,7 +34,6 @@ import SwiftUI
 import SSH
 
 struct ImportKeyView: View {
-  @EnvironmentObject var nav: Nav
   @ObservedObject var state: ImportKeyObservable
   
   var onCancel: () -> Void
@@ -42,8 +41,10 @@ struct ImportKeyView: View {
   
   var body: some View {
     List {
-      Section(header: Text("NAME"),
-              footer: Text("Default key must be named `id_\(state.keyType.lowercased())`")) {
+      Section(
+        header: Text("NAME"),
+        footer: Text("Default key must be named `id_\(state.keyType.lowercased())`")
+      ) {
         HStack {
           FixedTextField(
             "Enter a name for the key",
@@ -74,8 +75,9 @@ struct ImportKeyView: View {
         }
       }
       
-      Section(header: Text("INFORMATION"),
-              footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
+      Section(
+        header: Text("INFORMATION"),
+        footer: Text("Blink creates PKCS#8 public and private keys, with AES 256 bit encryption. Use \"ssh-copy-id [name]\" to copy the public key to the server.")
       ) {
         
       }
@@ -92,7 +94,11 @@ struct ImportKeyView: View {
     )
     .navigationBarTitle("Import \(state.keyType) Key")
     .alert(isPresented: $state.errorAlertVisible) {
-      Alert(title: Text("Error"), message: Text(state.errorMessage), dismissButton: .default(Text("Ok")))
+      Alert(
+        title: Text("Error"),
+        message: Text(state.errorMessage),
+        dismissButton: .default(Text("Ok"))
+      )
     }
   }
 }

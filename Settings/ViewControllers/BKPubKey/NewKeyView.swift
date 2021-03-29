@@ -34,19 +34,21 @@ import SwiftUI
 import SSH
 
 struct NewKeyView: View {
-  @EnvironmentObject var nav: Nav
-  @StateObject fileprivate var state = NewKeyObservable()
   var onCancel: () -> Void
   var onSuccess: () -> Void
   
+  @StateObject private var _state = NewKeyObservable()
+  
   var body: some View {
     List {
-      Section(header: Text("NAME"),
-              footer: Text("Default key must be named `id_\(state.keyType.shortName.lowercased())`")) {
+      Section(
+        header: Text("NAME"),
+        footer: Text("Default key must be named `id_\(_state.keyType.shortName.lowercased())`")
+      ) {
         HStack {
           FixedTextField(
             "Enter a name for the key",
-            text: $state.keyName,
+            text: $_state.keyName,
             id: "keyName",
             nextId: "keyComment",
             autocorrectionType: .no,
@@ -55,10 +57,12 @@ struct NewKeyView: View {
         }
       }
       
-      Section(header: Text("KEY TYPE"),
-              footer: Text(state.keyType.keyHint)) {
+      Section(
+        header: Text("KEY TYPE"),
+        footer: Text(_state.keyType.keyHint)
+      ) {
         HStack {
-          Picker("", selection: $state.keyType) {
+          Picker("", selection: $_state.keyType) {
             Text(SSHKeyType.dsa.shortName).tag(SSHKeyType.dsa)
             Text(SSHKeyType.rsa.shortName).tag(SSHKeyType.rsa)
             Text(SSHKeyType.ecdsa.shortName).tag(SSHKeyType.ecdsa)
@@ -66,13 +70,13 @@ struct NewKeyView: View {
           }
           .pickerStyle(SegmentedPickerStyle())
         }
-        if state.keyType.possibleBitsValues.count > 1 {
+        if _state.keyType.possibleBitsValues.count > 1 {
           HStack {
             Text("Bits").layoutPriority(1)
             Spacer().layoutPriority(1)
             VStack {
-              Picker("", selection: $state.keyBits) {
-                ForEach(state.keyType.possibleBitsValues, id: \.self) { bits in
+              Picker("", selection: $_state.keyBits) {
+                ForEach(_state.keyType.possibleBitsValues, id: \.self) { bits in
                   Text("\(bits)").tag(bits)
                 }
               }
@@ -86,11 +90,11 @@ struct NewKeyView: View {
         HStack {
           FixedTextField(
             "Comment for your key",
-            text: $state.keyComment,
+            text: $_state.keyComment,
             id: "keyComment",
             returnKeyType: .continue,
             onReturn: {
-              if state.createKey() {
+              if _state.createKey() {
                 onSuccess()
               }
             },
@@ -112,15 +116,19 @@ struct NewKeyView: View {
         onCancel()
       },
       trailing: Button("Create") {
-        if state.createKey() {
+        if _state.createKey() {
           onSuccess()
         }
       }
-      .disabled(!state.isValid)
+      .disabled(!_state.isValid)
     )
-    .navigationBarTitle("New \(state.keyType.shortName) Key")
-    .alert(isPresented: $state.errorAlertVisible) {
-      Alert(title: Text("Error"), message: Text(state.errorMessage), dismissButton: .default(Text("Ok")))
+    .navigationBarTitle("New \(_state.keyType.shortName) Key")
+    .alert(isPresented: $_state.errorAlertVisible) {
+      Alert(
+        title: Text("Error"),
+        message: Text(_state.errorMessage),
+        dismissButton: .default(Text("Ok"))
+      )
     }
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")

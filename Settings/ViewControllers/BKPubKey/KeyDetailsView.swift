@@ -58,7 +58,7 @@ struct KeyDetailsView: View {
     UIPasteboard.general.string = _certificate ?? ""
   }
   
-  var _saveIsDisabled: Bool {
+  private var _saveIsDisabled: Bool {
     (card.id == _keyName && _certificate == _originalCertificate) || _keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
   
@@ -159,7 +159,6 @@ struct KeyDetailsView: View {
       }
     }, reason: "to delete key.")
   }
-  
   
   private func _saveCard() {
     let keyID = _keyName.trimmingCharacters(in: .whitespacesAndNewlines)
@@ -285,7 +284,6 @@ struct KeyDetailsView: View {
       _certificate = card.loadCertificate()
       _originalCertificate = _certificate
     })
-    
     .alert(isPresented: $_errorAlertIsPresented) {
       Alert(
         title: Text("Error"),
