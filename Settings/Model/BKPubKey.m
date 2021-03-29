@@ -126,48 +126,6 @@ static UICKeyChainStore *__get_keychain() {
   [BKPubKey saveIDS];
 }
 
-+ (nullable id)saveInKeychainWithID:(nonnull NSString *)ID
-                         privateKey:(nonnull NSString *)privateKey
-                          publicKey:(nonnull NSString *)publicKey
-{
-  if (!ID || !privateKey || !publicKey) {
-    return nil;
-  }
-  
-  UICKeyChainStore *keychain = __get_keychain();
-
-  NSError *error;
-  
-  BKPubKey *card = [BKPubKey withID:ID];
-  if (card) {
-    card->_publicKey = publicKey;
-    card->_storageType = BKPubKeyStorageTypeKeyChain;
-    NSString *privateKeyRef = [card _privateKeyKeychainRef];
-
-    if (![keychain setString:privateKey forKey:privateKeyRef error:&error]) {
-      return nil;
-    }
-  } else {
-    card = [[BKPubKey alloc] initWithID:ID publicKey:publicKey];
-    card->_storageType = BKPubKeyStorageTypeKeyChain;
-    
-    NSString *privateKeyRef = [card _privateKeyKeychainRef];
-    
-    if (![keychain setString:privateKey forKey:privateKeyRef error:&error]) {
-      return nil;
-    }
-    
-    [Identities addObject:card];
-  }
-
-  if (![BKPubKey saveIDS]) {
-    // This should never fail, but it is kept for testing purposes.
-    return nil;
-  }
-
-  return card;
-}
-
 + (NSInteger)count
 {
   return [Identities count];

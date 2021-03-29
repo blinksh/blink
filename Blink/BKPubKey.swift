@@ -36,13 +36,11 @@ import SSH
 extension BKPubKey {
   
   @objc public static func saveDefaultKey() -> Bool {
-    guard
-      let key = try? SSHKey(type: .rsa, bits: 4096),
-      let privKey = try? key.privateKeyFileBlob(comment: nil, passphrase: nil),
-      let privKeyStr = String(data: privKey, encoding: .utf8),
-      let pubKey = try? key.authorizedKey(withComment: "blink"),
-      let _ = saveInKeychain(withID: "id_rsa", privateKey: privKeyStr, publicKey: pubKey)
-    else {
+    do {
+      let key = try SSHKey(type: .rsa, bits: 4096)
+      try addKeychainKey(id: "id_rsa", key: key, comment: "blink")
+    } catch {
+      debugPrint(error)
       return false
     }
     
