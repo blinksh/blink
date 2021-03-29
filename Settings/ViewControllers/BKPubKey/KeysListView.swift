@@ -33,8 +33,22 @@
 import SwiftUI
 import SSH
 
+fileprivate struct KeyCard {
+  let key: BKPubKey
+  let name: String
+  let keyType: String?
+  let certType: String?
+  
+  init(key: BKPubKey) {
+    self.key = key
+    self.name = key.id
+    self.keyType = key.keyType
+    self.certType = key.certType
+  }
+}
+
 struct KeyRow: View {
-  var key: BKPubKey
+  fileprivate var card: KeyCard
   var reloadCards: () -> ()
   
   var body: some View {
@@ -42,18 +56,18 @@ struct KeyRow: View {
       content: {
         HStack {
           VStack(alignment: .leading) {
-            Text(key.id)
-            Text(key.keyType ?? "").font(.footnote)
+            Text(card.name)
+            Text([card.keyType, card.certType].compactMap({$0}).joined(separator: " + ")).font(.footnote)
               .foregroundColor(.secondary)
           }
           Spacer()
-          Text(key.storageType == BKPubKeyStorageTypeKeyChain ? "Keychain" : "SE")
+          Text(card.key.storageType == BKPubKeyStorageTypeKeyChain ? "Keychain" : "SE")
             .font(.system(.subheadline))
             
         }
       },
       details: {
-        KeyDetailsView(card: key, reloadCards: reloadCards)
+        KeyDetailsView(card: card.key, reloadCards: reloadCards)
       }
     )
   }
@@ -66,8 +80,8 @@ struct KeysListView: View {
   
   var body: some View {
     List {
-      ForEach(state.list, id: \.tag) {
-        KeyRow(key: $0, reloadCards: state.reloadCards)
+      ForEach(state.list, id: \.name) {
+        KeyRow(card: $0, reloadCards: state.reloadCards)
       }.onDelete(perform: { indexSet in
         state.deleteKeys(indexSet: indexSet)
       })
@@ -168,12 +182,11 @@ struct KeysListView: View {
 
 fileprivate class KeysObservable: ObservableObject {
   
-  @Published var list: [BKPubKey] = Array<BKPubKey>(BKPubKey.all())
+  @Published var list: [KeyCard] = BKPubKey.all().map( {KeyCard(key: $0 )} )
   @Published var actionSheetIsPresented: Bool = false
   @Published var errorAlertIsPresented: Bool = false
   @Published var filePickerIsPresented: Bool = false
   @Published var modal: KeyModals? = nil
-  private var _keyToDelete: BKPubKey? = nil
   var addKeyObservable: ImportKeyObservable? = nil
   var errorMessage = ""
   var proposedKeyName = ""
@@ -183,29 +196,27 @@ fileprivate class KeysObservable: ObservableObject {
   }
   
   func reloadCards() {
-    self.list = Array<BKPubKey>(BKPubKey.all())
+    self.list = BKPubKey.all().map( {KeyCard(key: $0 )} )
   }
   
   func removeKey(card: BKPubKey) {
     BKPubKey.removeCard(card: card)
     list.removeAll { k in
-      k.tag == card.tag
+      k.key.tag == card.tag
     }
   }
   
   func deleteKeys(indexSet: IndexSet) {
-    _keyToDelete = nil
     guard let index = indexSet.first else {
       return
     }
     
     let card = list[index]
-    _keyToDelete = card
     self.list.remove(atOffsets: indexSet)
     
     LocalAuth.shared.authenticate(callback: { success in
       if success {
-        BKPubKey.removeCard(card: card)
+        BKPubKey.removeCard(card: card.key)
       } else {
         self.reloadCards()
       }

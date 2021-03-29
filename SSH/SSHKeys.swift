@@ -341,6 +341,7 @@ extension SSHKey {
   // Method to cleanup a key, useful when received from a clipboard or a potentially malformed source.
   // Makes sure first character will be a dash.
   // Makes sure the final character is a newline.
+
   public static func sanitize(key str: String) -> String {
     var key = str
     if let r = key.range(of: "-----BEGIN") {
@@ -353,5 +354,21 @@ extension SSHKey {
     
     key = key.replacingOccurrences(of: "(?m)^\\s+", with: "", options: .regularExpression)
     return key
+  }
+  
+  public static func sanitize(key blob: Data) -> Data {
+    guard
+      let str = String(data: blob, encoding: .utf8)
+    else {
+      return blob
+    }
+    
+    guard
+      let res = Self.sanitize(key: str).data(using: .utf8)
+    else {
+      return blob
+    }
+    
+    return res
   }
 }

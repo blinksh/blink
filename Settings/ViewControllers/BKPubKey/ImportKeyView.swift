@@ -130,14 +130,8 @@ class ImportKeyObservable: ObservableObject {
         throw KeyUIError.duplicateName(name: keyID)
       }
       
-      let privateKey = try key.privateKeyFileBlob(comment: comment, passphrase: nil).base64EncodedString()
-      let authKey    = try key.authorizedKey(withComment: comment)
+      try BKPubKey.addKeychainKey(id: keyID, key: key, comment: comment)
       
-      guard
-        let _ = BKPubKey.saveInKeychain(withID: keyID, privateKey: privateKey, publicKey: authKey)
-      else {
-        throw KeyUIError.saveCardFailed
-      }
     } catch {
       errorMessage = error.localizedDescription
       errorAlertVisible = true

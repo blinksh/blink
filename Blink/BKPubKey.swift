@@ -52,8 +52,16 @@ extension BKPubKey {
   static func addKeychainKey(id: String, key: SSHKey, comment: String) throws {
     let tag = ProcessInfo().globallyUniqueString
     let publicKey = try key.authorizedKey(withComment: comment)
-    guard let card = BKPubKey(id: id, tag: tag, publicKey: publicKey, keyType: key.sshKeyType.shortName, certType: nil, storageType: BKPubKeyStorageTypeKeyChain),
-        let privateKey = String(data: try key.privateKeyFileBlob(), encoding: .utf8)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: key.sshKeyType.shortName,
+        certType: nil,
+        storageType: BKPubKeyStorageTypeKeyChain
+      ),
+      let privateKey = String(data: try key.privateKeyFileBlob(), encoding: .utf8)
     else {
       return
     }
@@ -69,7 +77,15 @@ extension BKPubKey {
     
     let keyType = key.sshKeyType
     let publicKey = try key.publicKey.authorizedKey(withComment: comment)
-    guard let card = BKPubKey(id: id, tag: tag, publicKey: publicKey, keyType: keyType.shortName, certType: nil, storageType: BKPubKeyStorageTypeSecureEnclave)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: keyType.shortName,
+        certType: nil,
+        storageType: BKPubKeyStorageTypeSecureEnclave
+      )
     else {
       return
     }
@@ -91,41 +107,18 @@ extension BKPubKey {
       else {
         return nil
       }
-      return try? SSHKey(fromFileBlob: privateKeyBlob)
+      
+      let certBlob = card.loadCertificate()?.data(using: .utf8)
+      return try? SSHKey(fromFileBlob: privateKeyBlob, withPublicFileCertBlob: certBlob)
     }
     
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {
+      // TODO: Certs fro SEKey?
       return SEKey(tagged: card.tag)
     }
     
     return nil
   }
-  
-//  static func seKeyWithID(_ id: String) -> SEKey? {
-//    guard
-//      let card = BKPubKey.withID(id)
-//    else {
-//      return nil
-//    }
-//
-//    return SEKey(tagged: card.tag)
-//  }
-//
-//  static func keyWithID(_ id: String) -> SSHKey? {
-//    guard
-//      let card = BKPubKey.withID(id),
-//      let privateKey = card.loadPrivateKey(),
-//      let privateKeyBlob = SSHKey.sanitize(key: privateKey).data(using: .utf8)
-//    else {
-//      return nil
-//    }
-//
-//    return try? SSHKey(fromFileBlob: privateKeyBlob)
-//  }
-  
-//  static func signerWithID(_ id: String) -> Signer {
-//
-//  }
   
   static func removeCard(card: BKPubKey) {
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {
@@ -133,14 +126,6 @@ extension BKPubKey {
     }
     
     card.removeCard()
-  }
-  
-  open override func isEqual(_ object: Any?) -> Bool {
-    guard let other = object as? BKPubKey else {
-      return false
-    }
-    
-    return id == other.id && publicKey == other.publicKey && storageType == other.storageType
   }
   
 }

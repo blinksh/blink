@@ -31,6 +31,7 @@
 
 
 import SwiftUI
+import SSH
 
 struct KeyDetailsView: View {
   @EnvironmentObject var nav: Nav
@@ -40,7 +41,13 @@ struct KeyDetailsView: View {
   @State var shareCard: BKPubKey? = nil
   
   @State var keyName: String = ""
+  @State var certificate: String? = nil
+  @State var origianalCertificate: String? = nil
   @State var pubkeyLines = 1
+  @State var certificateLines = 1
+  
+  @State var actionSheetIsPresented = false
+  @State var filePickerIsPresented = false
   
   @State var errorAlertIsPresented = false
   @State var errorMessage = ""
@@ -49,6 +56,70 @@ struct KeyDetailsView: View {
   
   private func _copyPublicKey() {
     UIPasteboard.general.string = card.publicKey
+  }
+  
+  private func _copyCertificate() {
+    UIPasteboard.general.string = certificate ?? ""
+  }
+  
+  var _saveIsDisabled: Bool {
+    (card.id == keyName && certificate == origianalCertificate) || keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+  }
+  
+  private func _showError(message: String) {
+    errorMessage = message
+    errorAlertIsPresented = true
+  }
+  
+  private func _importCertificateFromClipboard() {
+    do {
+      guard
+        let str = UIPasteboard.general.string,
+        !str.isEmpty
+      else {
+        return _showError(message: "Pasteboard is empty")
+      }
+      
+      guard let blob = str.data(using: .utf8) else {
+        return _showError(message: "Can't convert to string with UTF8 encoding")
+      }
+      try _importCertificateFromBlob(blob)
+    } catch {
+      _showError(message: error.localizedDescription)
+    }
+  }
+  
+  private func _importCertificateFromFile(result: Result<URL, Error>) {
+    do {
+      let url = try result.get()
+      guard
+        url.startAccessingSecurityScopedResource()
+      else {
+        return _showError(message: "Can't read get access to read file.")
+      }
+      defer {
+        url.stopAccessingSecurityScopedResource()
+      }
+      
+      let blob = try Data(contentsOf: url, options: .alwaysMapped)
+      
+      try _importCertificateFromBlob(blob)
+    } catch {
+      _showError(message: error.localizedDescription)
+    }
+  }
+  
+  private func _importCertificateFromBlob(_ certBlob: Data) throws {
+    guard
+      let privateKey = card.loadPrivateKey(),
+      let privateKeyBlob = privateKey.data(using: .utf8)
+    else {
+      return _showError(message: "Can't load private key")
+    }
+    
+    _ = try SSHKey(fromFileBlob: privateKeyBlob, passphrase: "", withPublicFileCertBlob: SSHKey.sanitize(key: certBlob))
+    
+    certificate = String(data: certBlob, encoding: .utf8)
   }
   
   private func _sharePublicKey(frame: CGRect) {
@@ -79,6 +150,10 @@ struct KeyDetailsView: View {
     }, reason: "to copy private key to clipboard.")
   }
   
+  private func _removeCertificate() {
+    certificate = nil
+  }
+  
   private func _deleteCard() {
     LocalAuth.shared.authenticate(callback: { success in
       if success {
@@ -97,25 +172,29 @@ struct KeyDetailsView: View {
         throw KeyUIError.emptyName
       }
       
-      if BKPubKey.withID(keyID) != nil {
-        throw KeyUIError.duplicateName(name: keyID)
+      if let oldKey = BKPubKey.withID(keyID) {
+        if oldKey !== _card.wrappedValue {
+          throw KeyUIError.duplicateName(name: keyID)
+        }
       }
       
       _card.wrappedValue.id = keyID
+      _card.wrappedValue.storeCertificate(inKeychain: certificate)
       
       BKPubKey.saveIDS()
       nav.navController.popViewController(animated: true)
       self.reloadCards()
     } catch {
-      errorMessage = error.localizedDescription
-      errorAlertIsPresented = true
+      _showError(message: error.localizedDescription)
     }
   }
   
   var body: some View {
     List {
-      Section(header: Text("NAME"),
-              footer: Text("Default key must be named `id_\(card.keyType?.lowercased() ?? "")`")) {
+      Section(
+        header: Text("NAME"),
+        footer: Text("Default key must be named `id_\(card.keyType?.lowercased() ?? "")`")
+      ) {
         HStack {
           FixedTextField(
             "Enter a name for the key",
@@ -143,21 +222,49 @@ struct KeyDetailsView: View {
             Label("Share", systemImage: "square.and.arrow.up")
           }).frame(width: frame.width, height: frame.height, alignment: .leading)
         })
-        
       }
      
       if card.storageType == BKPubKeyStorageTypeKeyChain {
+        if let certificate = certificate {
+          Section(header: Text("Certificate")) {
+            HStack {
+              Text(certificate).lineLimit(certificateLines)
+            }.onTapGesture {
+              self.certificateLines = self.certificateLines == 1 ? 100 : 1
+            }
+            Button(action: _copyCertificate, label: {
+              Label("Copy", systemImage: "doc.on.doc")
+            })
+            Button(action: _removeCertificate, label: {
+              Label("Remove", systemImage: "minus.circle")
+            }).accentColor(.red)
+          }
+        } else {
+          Section() {
+            Button(
+              action: { actionSheetIsPresented = true },
+              label: {
+                Label("Add Certificate", systemImage: "plus.circle")
+              }
+            )
+            .actionSheet(isPresented: $actionSheetIsPresented) {
+                ActionSheet(
+                  title: Text("Add Certificate"),
+                  buttons: [
+                    .default(Text("Import from clipboard")) { _importCertificateFromClipboard() },
+                    .default(Text("Import from a file")) { filePickerIsPresented = true },
+                    .cancel()
+                  ]
+                )
+            }
+          }
+        }
+        
         Section() {
           Button(action: _copyPrivateKey, label: {
             Label("Copy private key", systemImage: "doc.on.doc")
           })
         }
-      }
-      
-      Section() {
-        Button(action: _copyPrivateKey, label: {
-          Label("Add Certificate", systemImage: "plus")
-        })
       }
       
       Section() {
@@ -170,11 +277,19 @@ struct KeyDetailsView: View {
     .navigationTitle("Key Info")
     .navigationBarItems(
       trailing: Button("Save", action: _saveCard)
-      .disabled(card.id == keyName || keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
+      .disabled(_saveIsDisabled)
+    )
+    .fileImporter(
+      isPresented: $filePickerIsPresented,
+      allowedContentTypes: [.text, .data, .item],
+      onCompletion: _importCertificateFromFile
     )
     .onAppear(perform: {
       keyName = card.id
+      certificate = card.loadCertificate()
+      origianalCertificate = certificate
     })
+    
     .alert(isPresented: $errorAlertIsPresented) {
       Alert(
         title: Text("Error"),

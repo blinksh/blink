@@ -260,6 +260,18 @@ static UICKeyChainStore *__get_keychain() {
   [keychain setString:privateKey forKey:[self _privateKeyKeychainRef]];
 }
 
+- (void)storeCertificateInKeychain:(nullable NSString *) certificate {
+  UICKeyChainStore *keychain = __get_keychain();
+  NSString *certRef = [self _certificateKeychainRef];
+  if (certificate) {
+    _certType = [BKPubKey _shortKeyTypeNameFromSshKeyTypeName:[[certificate componentsSeparatedByString:@" "] firstObject]];
+    [keychain setString:certificate forKey: certRef];
+  } else {
+    [keychain removeItemForKey:certRef];
+    _certType = nil;
+  }
+}
+
 - (nullable NSString *)privateKey {
   return [self loadPrivateKey];
 }
