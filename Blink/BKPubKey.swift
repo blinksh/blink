@@ -77,13 +77,55 @@ extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
-  static func seKeyWithID(_ id: String) -> SEKey? {
-    guard let card = BKPubKey.withID(id) else {
+  static func signerWithID(_ id: String) -> Signer? {
+    guard
+      let card = BKPubKey.withID(id)
+    else {
       return nil
     }
-  
-    return SEKey(tagged: card.tag)
+
+    if card.storageType == BKPubKeyStorageTypeKeyChain {
+      guard
+        let privateKey = card.loadPrivateKey(),
+        let privateKeyBlob = SSHKey.sanitize(key: privateKey).data(using: .utf8)
+      else {
+        return nil
+      }
+      return try? SSHKey(fromFileBlob: privateKeyBlob)
+    }
+    
+    if card.storageType == BKPubKeyStorageTypeSecureEnclave {
+      return SEKey(tagged: card.tag)
+    }
+    
+    return nil
   }
+  
+//  static func seKeyWithID(_ id: String) -> SEKey? {
+//    guard
+//      let card = BKPubKey.withID(id)
+//    else {
+//      return nil
+//    }
+//
+//    return SEKey(tagged: card.tag)
+//  }
+//
+//  static func keyWithID(_ id: String) -> SSHKey? {
+//    guard
+//      let card = BKPubKey.withID(id),
+//      let privateKey = card.loadPrivateKey(),
+//      let privateKeyBlob = SSHKey.sanitize(key: privateKey).data(using: .utf8)
+//    else {
+//      return nil
+//    }
+//
+//    return try? SSHKey(fromFileBlob: privateKeyBlob)
+//  }
+  
+//  static func signerWithID(_ id: String) -> Signer {
+//
+//  }
   
   static func removeCard(card: BKPubKey) {
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {

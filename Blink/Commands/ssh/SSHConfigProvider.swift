@@ -121,6 +121,27 @@ enum BKConfig {
     return hosts.first(where: { $0.host == host })
   }
   
+  static func signer(forIdentity identity: String) -> (Signer, String)? {
+    guard
+      let signer = BKPubKey.signerWithID(identity)
+    else {
+      return nil
+    }
+    
+    return (signer, identity)
+  }
+  
+  static func signer(forHost host: String) -> (Signer, String)? {
+    guard
+      let host = Self.host(host),
+      let keyName = host.key
+    else {
+      return nil
+    }
+    
+    return signer(forIdentity: keyName)
+  }
+  
   static func privateKey(forHost host: String) -> (String, String)? {
     guard let host = Self.host(host) else {
       return nil
@@ -134,11 +155,7 @@ enum BKConfig {
   }
   
   static func defaultKeys() -> [(String, String)] {
-    guard
-      let publicKeys = (BKPubKey.all() as? [BKPubKey])
-    else {
-      return []
-    }
+    let publicKeys = BKPubKey.all()
     
     let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
     return publicKeys
@@ -233,24 +250,17 @@ extension SSHClientConfigProvider {
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
     if let identityFile = command.identityFile,
-       let (identityKey, name) = BKConfig.privateKey(forIdentifier: identityFile) {
+       let (signer, name) = BKConfig.signer(forIdentity: identityFile) {
       // NOTE We could also keep the reference and just read the key at the proper time.
       // TODO Errors. Either pass or log here, or if we create a different
       // type of key, then let the Agent fail.
-      if let blob = SSHKey.sanitize(key: identityKey).data(using: .utf8),
-         let key = try? SSHKey(fromFileBlob: blob) {
-        agent.loadKey(key, aka: name, constraints: consts)
-      }
-    } else if let (hostKey, name) = BKConfig.privateKey(forHost: command.host) {
-      if let blob = SSHKey.sanitize(key: hostKey).data(using: .utf8),
-         let key = try? SSHKey(fromFileBlob: blob) {
-        agent.loadKey(key, aka: name, constraints: consts)
-      }
+      agent.loadKey(signer, aka: name, constraints: consts)
+    } else if let (signer, name) = BKConfig.signer(forHost: command.host) {
+      agent.loadKey(signer, aka: name, constraints: consts)
     } else {
-      for (defaultKey, name) in BKConfig.defaultKeys() {
-        if let blob = SSHKey.sanitize(key: defaultKey).data(using: .utf8),
-           let key = try? SSHKey(fromFileBlob: blob) {
-          agent.loadKey(key, aka: name, constraints: consts)
+      for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
+        if let (signer, name) = BKConfig.signer(forIdentity: identity) {
+          agent.loadKey(signer, aka: name, constraints: consts)
         }
       }
     }
