@@ -36,8 +36,8 @@ import SSH
 struct ImportKeyView: View {
   @ObservedObject var state: ImportKeyObservable
   
-  var onCancel: () -> Void
-  var onSuccess: () -> Void
+  let onCancel: () -> Void
+  let onSuccess: () -> Void
   
   var body: some View {
     List {

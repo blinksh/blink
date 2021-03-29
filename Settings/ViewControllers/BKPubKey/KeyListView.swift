@@ -75,7 +75,6 @@ struct KeyRow: View {
 
 
 struct KeyListView: View {
-  @EnvironmentObject private var _nav: Nav
   @StateObject private var _state = KeysObservable()
   
   var body: some View {
@@ -91,9 +90,7 @@ struct KeyListView: View {
         action: {
           _state.actionSheetIsPresented = true
         },
-        label: {
-          Image(systemName: "plus")
-        }
+        label: { Image(systemName: "plus") }
       )
       .actionSheet(isPresented: $_state.actionSheetIsPresented) {
           ActionSheet(
@@ -115,33 +112,27 @@ struct KeyListView: View {
       onCompletion: _state.importFromFile
     )
     .sheet(item: $_state.modal) { modal in
-      switch (modal) {
-      case .passphrasePrompt(let keyBlob, let proposedName):
-        NavigationView {
+      NavigationView {
+        switch (modal) {
+        case .passphrasePrompt(let keyBlob, let proposedName):
           PassphraseView(
             keyBlob: keyBlob,
             keyProposedName: proposedName,
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
           )
-        }
-      case .saveImportedKey(let observable):
-        NavigationView {
+        case .saveImportedKey(let observable):
           ImportKeyView(
             state: observable,
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
           )
-        }
-      case .newKey:
-        NavigationView {
+        case .newKey:
           NewKeyView(
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
           )
-        }
-      case .newSEKey:
-        NavigationView {
+        case .newSEKey:
           NewSEKeyView(
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
@@ -171,7 +162,6 @@ fileprivate class KeysObservable: ObservableObject {
   var proposedKeyName = ""
   
   init() {
-    
   }
   
   func reloadCards() {
@@ -265,7 +255,7 @@ fileprivate class KeysObservable: ObservableObject {
 }
 
 
-enum KeyModals: Identifiable {
+fileprivate enum KeyModals: Identifiable {
   case passphrasePrompt(keyBlob: Data, proposedKeyName: String)
   case saveImportedKey(ImportKeyObservable)
   case newKey
@@ -300,24 +290,5 @@ extension View {
         }
       )
     )
-  }
-}
-
-
-enum KeyUIError: Error, LocalizedError {
-  case emptyName
-  case duplicateName(name: String)
-  case authKeyGenerationFailed
-  case saveCardFailed
-  case generationFailed
-  
-  var errorDescription: String? {
-    switch self {
-    case .emptyName: return "Key name can't be empty."
-    case .duplicateName(let name): return "Key with name `\(name)` already exists."
-    case .authKeyGenerationFailed: return "Could not generate public key."
-    case .saveCardFailed: return "Can't save key."
-    case .generationFailed: return "Generation failed"
-    }
   }
 }

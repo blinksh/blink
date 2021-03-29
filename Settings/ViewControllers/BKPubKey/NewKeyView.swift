@@ -34,8 +34,8 @@ import SwiftUI
 import SSH
 
 struct NewKeyView: View {
-  var onCancel: () -> Void
-  var onSuccess: () -> Void
+  let onCancel: () -> Void
+  let onSuccess: () -> Void
   
   @StateObject private var _state = NewKeyObservable()
   
