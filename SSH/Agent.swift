@@ -74,7 +74,7 @@ public class SSHAgent {
 
   private var contexts: [AgentCtxt] = []
   private class AgentCtxt {
-    let agent: SSHAgent
+    weak var agent: SSHAgent?
     weak var client: SSHClient?
     
     init(agent: SSHAgent, client: SSHClient) {
@@ -104,7 +104,7 @@ public class SSHAgent {
         return 0
       }
       if let type = SSHAgentRequestType(rawValue: typeValue) {
-        replyData = (try? ctxt.agent.request(payload, context: type, client: client)) ?? errorData
+        replyData = (try? ctxt.agent?.request(payload, context: type, client: client)) ?? errorData
         replyLength = replyData.count
       } else {
         // Return error if type is unknown
