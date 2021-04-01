@@ -59,6 +59,7 @@ class SpaceController: UIViewController {
   
   private var _overlay = UIView()
   private var _spaceControllerAnimating: Bool = false
+  private weak var _termViewToFocus: TermView? = nil
   var stuckKeyCode: KeyCode? = nil
   
   public override func viewDidLayoutSubviews() {
@@ -198,6 +199,8 @@ class SpaceController: UIViewController {
                    name: UIWindow.didBecomeKeyNotification,
                    object: nil)
     
+    nc.addObserver(self, selector:#selector(_didBecomeKeyWindow), name: UIApplication.didBecomeActiveNotification, object: nil)
+    
     nc.addObserver(self, selector: #selector(_relayout),
                    name: NSNotification.Name(rawValue: LayoutManagerBottomInsetDidUpdate),
                    object: nil)
@@ -205,6 +208,9 @@ class SpaceController: UIViewController {
     nc.addObserver(self, selector: #selector(_setupAppearance),
                    name: NSNotification.Name(rawValue: BKAppearanceChanged),
                    object: nil)
+    
+    
+    nc.addObserver(self, selector: #selector(_termViewIsReady(n:)), name: NSNotification.Name(TermViewReadyNotificationKey), object: nil)
     
   }
   
@@ -306,22 +312,37 @@ class SpaceController: UIViewController {
     _attachInputToCurrentTerm()
   }
   
+  @objc private func _termViewIsReady(n: Notification) {
+    
+    guard let term = _termViewToFocus,
+          term == (n.object as? TermView)
+    else {
+      return
+    }
+    
+    _termViewToFocus = nil
+    _attachInputToCurrentTerm()
+  }
+  
   private func _attachInputToCurrentTerm() {
     guard let device = currentDevice else {
+      return
+    }
+    
+    _termViewToFocus = nil
+    
+    guard device.view.isReady else {
+      _termViewToFocus = device.view
       return
     }
 
     let input = KBTracker.shared.input
     KBTracker.shared.attach(input: device.view?.webView)
 
-    if !device.view.isReady {
-      return
-    }
-    
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
     device.focus()
-    if input != KBTracker.shared.input { //&& input?.window != KBTracker.shared.input?.window {
+    if input != KBTracker.shared.input {
       input?.reportFocus(false)
     }
   }

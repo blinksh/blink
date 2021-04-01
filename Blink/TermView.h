@@ -37,6 +37,7 @@
 @class TermInput;
 @class MCPParams;
 
+extern NSString * TermViewReadyNotificationKey;
 
 @protocol TermViewDeviceProtocol
 

@@ -39,6 +39,8 @@
 
 #import "Blink-Swift.h"
 
+NSString * TermViewReadyNotificationKey = @"TermViewReadyNotificationKey";
+
 struct winsize __winSizeFromJSON(NSDictionary *json) {
   struct winsize res;
   res.ws_col = [json[@"cols"] integerValue];
@@ -379,12 +381,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _isReady = YES;
   [_device viewIsReady];
+  [[NSNotificationCenter defaultCenter] postNotificationName:TermViewReadyNotificationKey object:self];
     
-  if (_gestureInteraction.focused) {
-    [_webView evaluateJavaScript:term_focus() completionHandler:nil];
-  } else {
-    [_webView evaluateJavaScript:term_blur() completionHandler:nil];
-  }
+//  if (_gestureInteraction.focused) {
+//    [_webView evaluateJavaScript:term_focus() completionHandler:nil];
+//  } else {
+//    [_webView evaluateJavaScript:term_blur() completionHandler:nil];
+//  }
   
   [UIView transitionFromView:_coverView toView:_webView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve completion:^(BOOL finished) {
     [_coverView removeFromSuperview];
