@@ -31,6 +31,7 @@
 
 
 import Foundation
+import GameController
 import UIKit
 
 class KBTracker {
@@ -126,18 +127,8 @@ class KBTracker {
         return
     }
     
-    let mainScreen   = UIScreen.main
-    let screenHeight = mainScreen.bounds.height
     let isIPad       = UIDevice.current.userInterfaceIdiom == .pad
-    
-    
-    var isOnScreenKB = isIPad ? kbFrameEnd.size.height > 116 : screenHeight >= kbFrameEnd.maxY
-    
-    // External screen kb workaround
-    if isOnScreenKB && isIPad && input?.window?.screen !== mainScreen {
-      isOnScreenKB = kbFrameEnd.origin.y < screenHeight - 140
-    }
-    
+    let isOnScreenKB = GCKeyboard.coalesced == nil;
     let isFloatingKB = isIPad && kbFrameEnd.origin.x > 0 && kbFrameEnd.origin.y > 0
     
     defer {
