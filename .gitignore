@@ -30,6 +30,7 @@ Frameworks/openssl.framework
 ## Other
 *.moved-aside
 *.xcuserstate
+developer_setup.xcconfig
 
 ## Obj-C/Swift specific
 *.hmap
