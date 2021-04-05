@@ -244,6 +244,8 @@ public class BlinkCopy: NSObject {
       }.eraseToAnyPublisher()
   }
 
+  @objc func sigwinch() { }
+  
   // Make signals objc funcs so we can duck type them.
   @objc func kill() {
     copyCancellable?.cancel()
