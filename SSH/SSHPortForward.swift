@@ -99,6 +99,26 @@ public class SSHPortForwardListener {
     return status.eraseToAnyPublisher()
   }
   
+  // Await until the listener is binded and ready.
+  public func ready() -> AnyPublisher<Void, Error> {
+    return Future { promise in
+      var c: AnyCancellable? = nil
+      c = self.connect().sink(receiveCompletion: { completion in
+        switch completion {
+        case .failure(let error):
+          promise(.failure(error))
+        case .finished:
+          promise(.failure(SSHError(title: "Listener finished before bind.")))
+        }
+      }, receiveValue: { event in
+        if case .ready = event {
+          promise(.success(Void()))
+          c?.cancel()
+        }
+      })
+    }.eraseToAnyPublisher()
+  }
+  
   func handleListenerUpdates(_ newState: NWListener.State) {
     self.log.message("State Updated \(newState)", SSH_LOG_INFO)
     // self.isReady = false
@@ -241,7 +261,7 @@ public class SSHPortForwardClient {
     self.client = client
   }
   
-  public func connect() -> AnyPublisher<PortForwardState, Error> {
+  public func ready() -> AnyPublisher<Void, Error> {
     // This is a different case than regular forward,
     // because here we serve the requests from the other side,
     // so the streams are received instead of generated here.
@@ -259,7 +279,26 @@ public class SSHPortForwardClient {
           }
         },
         receiveValue: receive)
-
+    
+    return Future { promise in
+      var c: AnyCancellable? = nil
+      c = self.connect().sink(receiveCompletion: { completion in
+        switch completion {
+        case .failure(let error):
+          promise(.failure(error))
+        case .finished:
+          promise(.failure(SSHError(title: "Client finished before bind.")))
+        }
+      }, receiveValue: { event in
+        if case .ready = event {
+          promise(.success(Void()))
+          c?.cancel()
+        }
+      })
+    }.eraseToAnyPublisher()
+  }
+  
+  public func connect() -> AnyPublisher<PortForwardState, Error> {
     return status.eraseToAnyPublisher()
   }
   
