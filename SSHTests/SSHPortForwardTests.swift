@@ -231,10 +231,10 @@ extension SSHTests {
         client = SSHPortForwardClient(forward: "www.guimp.com", onPort: 80,
                                       toRemotePort: 8080, using: conn)
         return client!
-      }.flatMap { c -> AnyPublisher<PortForwardState, Error> in
+      }.flatMap { c -> AnyPublisher<Void, Error> in
         expectForward.fulfill()
-        return c.connect()
-      }
+        return c.ready()
+      }.flatMap { client!.connect() }
       .assertNoFailure()
       .sink { event in
         print("Received \(event)")

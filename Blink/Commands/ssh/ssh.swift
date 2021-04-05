@@ -48,6 +48,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 }
 
 @objc public class BlinkSSH: NSObject {
+  private typealias SSHConnection = AnyPublisher<SSH.SSHClient, Error>
+  
   var outstream: Int32
   var instream: Int32
   let device: TermDevice
@@ -107,7 +109,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return 0
     }
 
-
+    let connect: SSHConnection
     if let control = cmd.control {
       guard
         let conn = SSHPool.connection(for: hostName, with: config)
@@ -118,6 +120,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       switch control {
       case .stop:
         SSHPool.deregister(runningCommand: cmd, on: conn)
+        return 0
+      case .forward:
+        connect = .just(conn)
+        break
 //      case .cancel:
 //        SSHPool.deregister(allTunnelsFor: connection)
 //      case .exit:
@@ -127,55 +133,52 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         print("Unknown control parameter \(control)", to: &stderr)
         return -1
       }
-      return 0
+    } else {
+      connect = SSHPool.dial(
+        hostName,
+        with: config,
+        connectionOptions: options,
+        withProxy: { [weak self] in
+          guard let self = self
+          else {
+            return
+          }
+          self._mcp.setActiveSession()
+          self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
+        })
     }
 
-    SSHPool.dial(
-      hostName,
-      with: config,
-      connectionOptions: options,
-      withProxy: { [weak self] in
-        guard let self = self
-        else {
-          return
-        }
-        self._mcp.setActiveSession()
-        self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
-      })
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .failure(let error):
-          print("Error connecting to \(cmd.host). \(error)", to: &self.stderr)
-          self.kill()
-        default:
-          // Connection OK
-          break
-        }
-      }, receiveValue: { conn in
-        self.connection = conn
-
-        // Print connected address to pickup by mosh command
-        if let addr = conn.clientAddressIP() {
-          print("Connected to \(addr)", to: &self.stdout)
-        }
-        
-        if cmd.startsSession {
-          self.startInteractiveSessions(conn, command: cmd)
-        }
-        // A tunnel may still be running in the background if we wish, like this one. The thread should only
-        // not block if we have a specific flag (like just starting a tunnel, control command or the specific flag).
-        self.startStdioTunnel(conn, command: cmd)
-        // NOTE Cannot implement ExitOnForwardFailure with this flow.
-        self.startForwardTunnels(conn, command: cmd)
-        self.startReverseTunnels(conn, command: cmd)
-
-        
-      }).store(in: &cancellableBag)
-
-    if cmd.blocks {
-      await(runLoop: currentRunLoop)
-      print("Thread woke")
+    connect.flatMap { conn -> SSHConnection in
+      if cmd.startsSession {
+        return self.startInteractiveSessions(conn, command: cmd)
+      }
+      return .just(conn)
     }
+    .flatMap { self.startStdioTunnel($0, command: cmd) }
+    // TODO In order to support ExitOnForwardFailure, we will have to become a bit smarter here.
+    // ExitOnForwardFailure only closes if the bind for -L/-R fails
+    .flatMap { self.startForwardTunnels($0, command: cmd) }
+    .flatMap { self.startReverseTunnels($0, command: cmd) }
+    .sink(receiveCompletion: { completion in
+      switch completion {
+      case .failure(let error):
+        print("Error connecting to \(cmd.host). \(error)", to: &self.stderr)
+        self.exitCode = -1
+        self.kill()
+      default:
+        // Connection OK
+        break
+      }
+    }, receiveValue: { conn in
+      self.connection = conn
+      
+      if !cmd.blocks {
+        self.kill()
+      }
+    })
+    .store(in: &cancellableBag)
+
+    await(runLoop: currentRunLoop)
 
     stream?.cancel()
     outStream?.close()
@@ -187,16 +190,14 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     self.stream = nil
     // The channel is responsibility of the other thread, so this runloop is not need atm.
     //RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
-    if let conn = self.connection, cmd.stdioHostAndPort == nil {
+    if let conn = self.connection, cmd.blocks {
       SSHPool.deregister(runningCommand: cmd, on: conn)
     }
 
     return exitCode
   }
 
-  func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
-    // Tried to run it through objc, but no luck.
-    //__thread_ssh_execute_command(command, sockIn, sockOut)
+  private func executeProxyCommand(command: String, sockIn: Int32, sockOut: Int32) {
     /* Prepare /dev/null socket for the stderr redirection */
     let devnull = open("/dev/null", O_WRONLY);
     if devnull == -1 {
@@ -213,7 +214,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     ios_system(cmd);
   }
 
-  func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) {
+  private func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
     let rows = Int32(self.device.rows)
     let cols = Int32(self.device.cols)
     var pty: SSH.SSHClient.PTY? = nil
@@ -237,125 +238,90 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
                                  withAgentForwarding: command.agentForward)
     }
 
-    session
-      .sink(receiveCompletion: { completion in
-        switch completion {
-        case .failure(let error):
-          print(error)
-          self.kill()
-          return
-        default:
-          // Interactive OK
-          break
-        }
-      }, receiveValue: { s in
-        let outs = DispatchOutputStream(stream: self.outstream)
-        let ins = DispatchInputStream(stream: self.instream)
+    return session.tryMap { s in
+      let outs = DispatchOutputStream(stream: self.outstream)
+      let ins = DispatchInputStream(stream: self.instream)
 
-        s.handleCompletion = {
-          // Once finished, exit.
-          self.kill()
-          return
-        }
-        s.handleFailure = { error in
-          self.exitCode = -1
-          print("Error starting Interactive Shell. \(error)", to: &self.stderr)
-          self.kill()
-          return
-        }
+      s.handleCompletion = {
+        // Once finished, exit.
+        self.kill()
+        return
+      }
+      s.handleFailure = { error in
+        self.exitCode = -1
+        print("Error starting Interactive Shell. \(error)", to: &self.stderr)
+        self.kill()
+        return
+      }
 
-        s.connect(stdout: outs, stdin: ins)
-        self.outStream = outs
-        self.inStream = ins
-        SSHPool.register(shellOn: conn)
-        self.stream = s
-      }).store(in: &cancellableBag)
+      s.connect(stdout: outs, stdin: ins)
+      self.outStream = outs
+      self.inStream = ins
+      SSHPool.register(shellOn: conn)
+      self.stream = s
+      return conn
+    }.eraseToAnyPublisher()
   }
 
-  func startStdioTunnel(_ conn: SSH.SSHClient, command: SSHCommand) {
-    if let tunnel = command.stdioHostAndPort {
-      conn.requestForward(to: tunnel.bindAddress, port: Int32(tunnel.remotePort),
+  private func startStdioTunnel(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+    guard let tunnel = command.stdioHostAndPort else {
+      return .just(conn)
+    }
+    
+    return conn.requestForward(to: tunnel.bindAddress, port: Int32(tunnel.remotePort),
                           // Just informative.
                           from: "stdio", localPort: 22)
-        .sink(receiveCompletion: { completion in
-          if case .failure(let error) = completion {
-            print("Error creating stdio tunnel. \(error)", to: &self.stderr)
-            self.exitCode = -1
-            self.kill()
-          }
-        },
-        receiveValue: { s in
-          SSHPool.register(stdioStream: s, runningCommand: command, on: conn)
-          let outStream = DispatchOutputStream(stream: dup(self.outstream))
-          let inStream = DispatchInputStream(stream: dup(self.instream))
-          s.connect(stdout: outStream, stdin: inStream)
+      .tryMap { s in
+        SSHPool.register(stdioStream: s, runningCommand: command, on: conn)
+        let outStream = DispatchOutputStream(stream: dup(self.outstream))
+        let inStream = DispatchInputStream(stream: dup(self.instream))
+        s.connect(stdout: outStream, stdin: inStream)
 
-          s.handleCompletion = {
-            SSHPool.deregister(runningCommand: command, on: conn)
-          }
-          s.handleFailure = { error in
-            SSHPool.deregister(runningCommand: command, on: conn)
-          }
-          // The tunnel is already stored, so we can close the process.
-          self.kill()
-        }).store(in: &cancellableBag)
-    }
+        s.handleCompletion = {
+          SSHPool.deregister(runningCommand: command, on: conn)
+        }
+        s.handleFailure = { error in
+          SSHPool.deregister(runningCommand: command, on: conn)
+        }
+        
+        // TODO Check this out again. The tunnel is already stored, so we can close the process.
+        self.kill()
+        return conn
+      }.eraseToAnyPublisher()
   }
 
-  func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
-    if let tunnel = command.localPortForward {
-      let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
-      //tunnels.append(lis)
-      // TODO Only register with the pool once the event is 'ready'.
-      //SSHPool.register(lis, runningCommand: command, on: conn)
-
-      lis.connect().sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          print("Tunnel finished")
-        case .failure(let error):
-          print("Error starting tunnel. \(error)", to: &self.stderr)
-        }
-      }, receiveValue: { event in
-        print("Tunnel received \(event)")
-        if case .ready = event {
-          SSHPool.register(lis, runningCommand: command, on: conn)
-        }
-      }).store(in: &cancellableBag)
+  private func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+    guard let tunnel = command.localPortForward else {
+      return .just(conn)
     }
+    
+    let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
+    
+    // Await for Listener to bind and be ready.
+    return lis.ready().map {
+      SSHPool.register(lis, runningCommand: command, on: conn)
+      return conn
+    }.eraseToAnyPublisher()
   }
 
-  func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) {
-    if let tunnel = command.reversePortForward {
-      let client: SSHPortForwardClient
-      client = SSHPortForwardClient(forward: tunnel.bindAddress,
-                                    onPort: tunnel.remotePort,
-                                    toRemotePort: tunnel.localPort,
-                                    using: conn)
-      reverseTunnels.append(client)
-
-      client.connect().sink(receiveCompletion: { completion in
-        switch completion {
-        case .finished:
-          print("Reverse tunnel finished")
-        case .failure(let error):
-          print("Error starting reverse tunnel. \(error)", to: &self.stderr)
-        }
-      }, receiveValue: { event in
-        print("Reverse tunnel event \(event)")
-        switch event {
-        case .ready:
-          // Mark to dashboard
-          SSHPool.register(client, runningCommand: command, on: conn)
-          break
-        case .error(let error):
-          // Capture on dashboard.
-          print("Error on reverse tunnel \(error)")
-        default:
-          break
-        }
-      }).store(in: &self.cancellableBag)
+  private func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+    guard let tunnel = command.reversePortForward else {
+      return .just(conn)
     }
+     
+    let client: SSHPortForwardClient
+    client = SSHPortForwardClient(forward: tunnel.bindAddress,
+                                  onPort: tunnel.remotePort,
+                                  toRemotePort: tunnel.localPort,
+                                  using: conn)
+    reverseTunnels.append(client)
+    
+    // Await for Client to be setup and ready.
+    return client.ready().map {
+      // Mark to dashboard
+      SSHPool.register(client, runningCommand: command, on: conn)
+      return conn
+    }.eraseToAnyPublisher()
   }
 
   @objc public func sigwinch() {

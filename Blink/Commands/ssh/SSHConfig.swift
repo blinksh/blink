@@ -81,7 +81,7 @@ struct SSHCommand: ParsableCommand {
     control == nil && !noRemoteCommand && stdioHostAndPort == nil
   }}
   var blocks: Bool { get {
-    !noRemoteCommand || stdioHostAndPort != nil
+    stdioHostAndPort != nil || control == nil
   }}
 //  var startsSession: Bool { get {
 //    // A session is started if there is no "noCommands" flag, or if the command is not a control one.
