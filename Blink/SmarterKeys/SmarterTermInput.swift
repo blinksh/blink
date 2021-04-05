@@ -280,7 +280,6 @@ class CaretHider {
     }
     item.leadingBarButtonGroups = []
     item.trailingBarButtonGroups = []
-    setNeedsLayout()
   }
   
   override func _keyboardDidChangeFrame(_ notification: Notification) {
