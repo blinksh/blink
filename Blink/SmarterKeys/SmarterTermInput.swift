@@ -113,7 +113,7 @@ class CaretHider {
   }
   
   func reset() {
-    
+    self._refreshInputViews()
   }
   
   func reportLang() {
