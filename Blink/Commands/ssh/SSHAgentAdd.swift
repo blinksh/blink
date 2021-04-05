@@ -109,15 +109,8 @@ public class BlinkSSHAgentAdd: NSObject {
     // TODO Can we have the same key under different constraints?
     
     // Default case: add key
-    if let (blob, name) = BKConfig.privateKey(forIdentifier: command.keyName) {
-      // TODO We should create a Keychain Signer instead of keeping it in memory
-      guard let keyBlob = blob.data(using: .utf8),
-            let key = try? SSHKey(fromFileBlob: keyBlob) else {
-        print("Invalid key cannot be added to Agent.", to: &stderr)
-        return -1
-      }
-      
-      SSHAgentPool.addKey(key, named: name)
+    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName) {
+      SSHAgentPool.addKey(signer, named: name)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0
     } else {
