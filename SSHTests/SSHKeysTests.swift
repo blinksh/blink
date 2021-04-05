@@ -87,7 +87,7 @@ class SSHKeysTests: XCTestCase {
     
     let key = try SSHKey(fromFile: keyPath, passphrase: "passphrase")
     XCTAssertEqual(key.comment, "comment")
-    XCTAssertEqual(key.sshKeyType, SSHKeyType.KEY_ED25519)
+    XCTAssertEqual(key.sshKeyType, SSHKeyType.ed25519)
     
     do {
       _ = try SSHKey(fromFile: keyPath, passphrase: "wrong passphrase")
