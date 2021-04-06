@@ -19,6 +19,6 @@ CLOUD_ID = com.carloscabanero.blinkshell
 // if you want to build without iCloud, please remove the section in xCode
 
 // KEYCHAIN_ID is used as name for keychain
-KEYCHAIN_ID1 = Com.carloscabanero.blink
-KEYCHAIN_ID2 = Com.carloscabanero.blinkshell
+KEYCHAIN_ID1 = Com.CarlosCabanero.Blink
+KEYCHAIN_ID2 = Com.CarlosCabanero.BlinkShell
 // if you want to build without keychain, please remove the section in xCode
