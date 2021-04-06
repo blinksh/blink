@@ -150,6 +150,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
     connect.flatMap { conn -> SSHConnection in
       if cmd.startsSession {
+        if let addr = conn.clientAddressIP() {
+          print("Connected to \(addr)", to: &self.stdout)
+        }
+
         return self.startInteractiveSessions(conn, command: cmd)
       }
       return .just(conn)
