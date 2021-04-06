@@ -15,6 +15,9 @@ jobs:
     - name: xcode-select
       run: sudo xcode-select -s /Applications/Xcode_12.2.app
 
+    - name: install docker
+      run: brew install docker
+
     - name: use cache
       id: cache
       uses: actions/cache@v2
