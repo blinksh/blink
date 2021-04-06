@@ -110,7 +110,17 @@
         return;
       }
     }
+    #if TARGET_OS_MACCATALYST
+      BKHosts *localhost = [BKHosts withHost:@"localhost"];
+      if (localhost) {
+        NSString *sshcmd = [NSString stringWithFormat: @"ssh -A %@", localhost.host];
+        [self enqueueCommand:sshcmd];
+      } else {
+        [_device prompt:@"blink> " secure:NO shell:YES];
+      }
+    #else
     [_device prompt:@"blink> " secure:NO shell:YES];
+    #endif
   });
 }
 

@@ -172,7 +172,7 @@
   NSString *value = codes[_machine];
   if (value) {
     if ([value isEqualToString:@"Simulator"]) {
-#ifdef TARGET_OS_MACCATALYST
+#if TARGET_OS_MACCATALYST
       return @"Mac";
 #else
       return [UIDevice currentDevice].name;

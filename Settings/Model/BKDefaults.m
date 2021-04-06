@@ -118,11 +118,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   if (!defaults.fontSize) {
+    #if TARGET_OS_MACCATALYST
+      [defaults setFontSize:[NSNumber numberWithInt:22]];
+    #else
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
       [defaults setFontSize:[NSNumber numberWithInt:18]];
     } else {
       [defaults setFontSize:[NSNumber numberWithInt:10]];
     }
+    #endif
   }
   if (!defaults.externalDisplayFontSize) {
     [defaults setExternalDisplayFontSize:[NSNumber numberWithInt:24]];
