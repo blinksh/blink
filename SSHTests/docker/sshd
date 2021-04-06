@@ -10,6 +10,12 @@ if [[ -z "${DROPBEAR_PORT}" ]]; then
     DROPBEAR_PORT=2223
 fi
 
+RUN_DETACHED="-d"
+
+if [[ -z "${DETACHED}" ]]; then
+    RUN_DETACHED=""
+fi
+
 docker build -t sshd .
 echo Starting openssh server on port $OPENSSH_PORT and dropbear on port $DROPBEAR_PORT
-docker run --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@
+docker run $RUN_DETACHED --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@
