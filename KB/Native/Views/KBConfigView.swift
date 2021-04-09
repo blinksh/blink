@@ -31,6 +31,8 @@
 
 
 import SwiftUI
+import Combine
+import GameController
 
 private func _row(_ key: KeyConfig) -> some View {
   DefaultRow(title: key.fullName, description: key.description) {
@@ -53,9 +55,17 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
   @State private var _enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
+  @State private var _keyboardConnectPublisher: AnyPublisher<NotificationCenter.Publisher.Output, Never>
+  @State private var _connectedKeyboardVendorName: String? = GCKeyboard.coalesced?.vendorName
   
   init(config: KBConfig) {
     self.config = config
+    
+    
+    let connectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)
+    let disconnectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)
+    
+    _keyboardConnectPublisher = connectPublisher.merge(with: disconnectPublisher).eraseToAnyPublisher()
   }
   
   var body: some View {
@@ -81,7 +91,10 @@ struct KBConfigView: View {
           Toggle("Custom Keyboards", isOn: customKeyboards)
         }
       }
-      Section(header: Text("Terminal")) {
+      Section(
+        header: Text("Terminal"),
+        footer: Text(_connectedKeyboardVendorName == nil ? "" : "Connected Keyboard: \(_connectedKeyboardVendorName ?? "")" )
+      ) {
         _row(config.capsLock)
         _pairRow(config.shift)
         _pairRow(config.control)
@@ -113,6 +126,9 @@ struct KBConfigView: View {
     )
     .onReceive(config.objectWillChange.debounce(for: 0.5, scheduler: RunLoop.main)) {
       KBTracker.shared.saveAndApply(config: self.config)
+    }
+    .onReceive(_keyboardConnectPublisher) { _ in
+      _connectedKeyboardVendorName = GCKeyboard.coalesced?.vendorName
     }
   }
 }
