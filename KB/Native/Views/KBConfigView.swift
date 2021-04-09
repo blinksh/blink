@@ -55,17 +55,18 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
   @State private var _enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
-  @State private var _keyboardConnectPublisher: AnyPublisher<NotificationCenter.Publisher.Output, Never>
+  @State private var _keyboardConnectPublisher = KBConfigView.keyboardPublisher
   @State private var _connectedKeyboardVendorName: String? = GCKeyboard.coalesced?.vendorName
+  
+  
+  static var keyboardPublisher: AnyPublisher<NotificationCenter.Publisher.Output, Never> {
+    let connectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)
+    let disconnectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)
+    return connectPublisher.merge(with: disconnectPublisher).eraseToAnyPublisher()
+  }
   
   init(config: KBConfig) {
     self.config = config
-    
-    
-    let connectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidConnect)
-    let disconnectPublisher = NotificationCenter.default.publisher(for: .GCKeyboardDidDisconnect)
-    
-    _keyboardConnectPublisher = connectPublisher.merge(with: disconnectPublisher).eraseToAnyPublisher()
   }
   
   var body: some View {
