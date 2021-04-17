@@ -364,7 +364,6 @@ extension NWConnection: WriterTo {
     
     func receiveData(data: Data?, ctxt: ContentContext?, isComplete: Bool, rcvError: NWError?) {
       if let data = data {
-        sema.wait()
         // Swift 5, Data is contiguous
         let dd = data.withUnsafeBytes {
           DispatchData(bytes: $0)
@@ -379,18 +378,11 @@ extension NWConnection: WriterTo {
       
       if let error = rcvError {
         pub.send(completion: .failure(SSHPortForwardError(title: "Connection Reading error", error)))
-      } else {
-        self.queue?.async {
-          receiveLoop()
-        }
       }
     }
     
     return pub.handleEvents(
-      receiveSubscription: { _ in receiveLoop() },
-      // Nothing special to do on Cancel as this is just another stream.
-      // receiveCancel: onCancel,
-      receiveRequest: { _ in sema.signal() }
+      receiveRequest: { _ in receiveLoop() }
     ).flatMap(maxPublishers: .max(1)) { data in
       return w.write(data, max: data.count)
     }.eraseToAnyPublisher()

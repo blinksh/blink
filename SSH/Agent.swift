@@ -277,8 +277,8 @@ public enum SSHEncode {
   }
   
   public static func data(from int: UInt32) -> Data {
-    var length: UInt32 = UInt32(int).bigEndian
-    return Data(bytes: &length, count: MemoryLayout<UInt32>.size)
+    var val: UInt32 = UInt32(int).bigEndian
+    return Data(bytes: &val, count: MemoryLayout<UInt32>.size)
   }
   
   public static func data(from bytes: Data) -> Data {
