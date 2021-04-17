@@ -139,6 +139,10 @@ struct SSHCommand: ParsableCommand {
           help: "Specifies the port to connect to on the remote host.")
   var customPort: UInt16?
 
+  @Option(name: [.customShort("D")],
+          help: "Dynamic port forwarding")
+  var dynamicForwardingPort: UInt16?
+  
   // Identity
   @Option(name: [.customShort("i")],
           help: """

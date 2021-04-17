@@ -68,6 +68,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var tunnelStream: SSH.Stream?
   var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
+  var socks: SOCKSServer? = nil
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
@@ -163,6 +164,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
     .flatMap { self.startForwardTunnels($0, command: cmd) }
     .flatMap { self.startReverseTunnels($0, command: cmd) }
+    .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
       switch completion {
       case .failure(let error):
@@ -328,6 +330,20 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }.eraseToAnyPublisher()
   }
 
+  private func startDynamicForwarding(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+    guard let port = command.dynamicForwardingPort else {
+      return .just(conn)
+    }
+    
+    do {
+      self.socks = try SOCKSServer(port, proxy: conn)
+    } catch {
+      return .fail(error: error)
+    }
+    
+    return .just(conn)
+  }
+  
   @objc public func sigwinch() {
     var c: AnyCancellable?
     c = stream?
