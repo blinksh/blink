@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13153" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="J6p-g8-CHO">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13133"/>
+        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Document Action View Controller-->
+        <scene sceneID="Q8I-MS-tKG">
+            <objects>
+                <viewController id="J6p-g8-CHO" customClass="DocumentActionViewController" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Vdh-Gp-eV6">
+                        <rect key="frame" x="0.0" y="0.0" width="350" height="400"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Type:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="g6k-sp-jtu">
+                                <rect key="frame" x="106" y="34" width="43" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="gdj-d0-nZ2">
+                                <rect key="frame" x="157" y="34" width="177" height="21"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionContentLabelIdentifier"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="177" id="56f-VY-qXp"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="252" verticalHuggingPriority="251" horizontalCompressionResistancePriority="749" text="Action name:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="lAh-Rn-dzR">
+                                <rect key="frame" x="49" y="80" width="100" height="21"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fwj-fa-AqO">
+                                <rect key="frame" x="157" y="80" width="177" height="21"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionTypeLabelIdentifier"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" relation="greaterThanOrEqual" constant="177" id="JPE-hi-Vng"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k6y-tY-87X">
+                                <rect key="frame" x="157" y="301" width="37" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionDoneButtonIdentifier"/>
+                                <state key="normal" title="Done"/>
+                                <connections>
+                                    <action selector="doneButtonTapped:" destination="J6p-g8-CHO" eventType="touchUpInside" id="1zB-YS-foT"/>
+                                </connections>
+                            </button>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3gV-2h-5zD">
+                                <rect key="frame" x="151" y="350" width="48" height="30"/>
+                                <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionCancelButtonIdentifier"/>
+                                <state key="normal" title="Cancel"/>
+                                <connections>
+                                    <action selector="cancelButtonTapped:" destination="J6p-g8-CHO" eventType="touchUpInside" id="rCq-0k-2gc"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <constraints>
+                            <constraint firstItem="g6k-sp-jtu" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="20" symbolic="YES" id="6bZ-zO-taJ"/>
+                            <constraint firstItem="lAh-Rn-dzR" firstAttribute="top" secondItem="g6k-sp-jtu" secondAttribute="bottom" constant="25" id="8eA-2P-54S"/>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="leading" secondItem="g6k-sp-jtu" secondAttribute="trailing" constant="8" id="9hE-J3-3O5"/>
+                            <constraint firstItem="lAh-Rn-dzR" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="20" symbolic="YES" id="Ded-HC-OcR"/>
+                            <constraint firstItem="zTo-CZ-ppy" firstAttribute="bottom" secondItem="3gV-2h-5zD" secondAttribute="bottom" constant="20" id="FPz-JC-wtu"/>
+                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="leading" secondItem="lAh-Rn-dzR" secondAttribute="trailing" constant="8" id="LJH-hs-IBG"/>
+                            <constraint firstItem="g6k-sp-jtu" firstAttribute="top" secondItem="zTo-CZ-ppy" secondAttribute="top" constant="34" id="MQg-cl-zCF"/>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="trailing" secondItem="Vdh-Gp-eV6" secondAttribute="trailingMargin" id="YW6-xe-IRG"/>
+                            <constraint firstItem="gdj-d0-nZ2" firstAttribute="baseline" secondItem="g6k-sp-jtu" secondAttribute="baseline" id="eGj-Jh-4QB"/>
+                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="width" secondItem="gdj-d0-nZ2" secondAttribute="width" id="gWx-d0-ASK"/>
+                            <constraint firstItem="k6y-tY-87X" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="kOA-Yz-GXs"/>
+                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="baseline" secondItem="lAh-Rn-dzR" secondAttribute="baseline" id="ms5-gI-BPI"/>
+                            <constraint firstItem="Fwj-fa-AqO" firstAttribute="trailing" secondItem="Vdh-Gp-eV6" secondAttribute="trailingMargin" id="o5I-zu-nnu"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="centerX" secondItem="zTo-CZ-ppy" secondAttribute="centerX" id="pcx-0T-WJc"/>
+                            <constraint firstItem="3gV-2h-5zD" firstAttribute="top" secondItem="k6y-tY-87X" secondAttribute="bottom" constant="19" id="zYE-Sl-0Xi"/>
+                        </constraints>
+                        <viewLayoutGuide key="safeArea" id="zTo-CZ-ppy"/>
+                    </view>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="350" height="400"/>
+                    <connections>
+                        <outlet property="actionTypeLabel" destination="Fwj-fa-AqO" id="cqr-bL-fOs"/>
+                        <outlet property="identifierLabel" destination="gdj-d0-nZ2" id="Gjq-Rr-4sd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="UoZ-ya-W3e" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="-80" y="63.868065967016499"/>
+        </scene>
+    </scenes>
+</document>
