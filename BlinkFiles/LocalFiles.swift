@@ -35,6 +35,9 @@ import Combine
 // Use as generic error for Translators.
 public struct LocalFileError: Error {
   public let msg: String
+  public var description: String {
+    return msg
+  }
 }
 
 public class Local : Translator {

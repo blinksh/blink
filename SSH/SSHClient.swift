@@ -368,8 +368,8 @@ public class SSHClient {
   
   func connection() -> SSHConnection {
     AnyPublisher
-      .just(self.session)
-      .subscribe(on: rloop)
+      .just(self.session).print("Before rloop")
+      .subscribe(on: rloop).print("After rloop")
       .eraseToAnyPublisher()
   }
   
