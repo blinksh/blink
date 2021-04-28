@@ -16,9 +16,9 @@
       "title": "Tips & Tricks",
       "heading": true,
       "routes": [
-	    { "title": "Basics", "path": "/docs/advanced/tips-and-tricks.md#basics" },
-	    { "title": "Advanced", "path": "/docs/advanced/tips-and-tricks.md#advanced" },
-	    { "title": "Editors", "path": "/docs/advanced/tips-and-tricks.md#editors" }
+	    { "title": "Basics", "path": "/docs/tips-and-tricks/tips-and-tricks.md#basics" },
+	    { "title": "Advanced", "path": "/docs/tips-and-tricks/tips-and-tricks.md#advanced" },
+	    { "title": "Editors", "path": "/docs/tips-and-tricks/tips-and-tricks.md#editors" }
       ]
     },
     {
