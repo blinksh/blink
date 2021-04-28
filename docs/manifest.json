@@ -13,23 +13,32 @@
       ]
     },
     {
+      "title": "Tips & Tricks",
+      "heading": true,
+      "routes": [
+	    { "title": "Basics", "path": "/docs/advanced/tips-and-tricks.md#basics" },
+	    { "title": "Advanced", "path": "/docs/advanced/tips-and-tricks.md#advanced" },
+	    { "title": "Editors", "path": "/docs/advanced/tips-and-tricks.md#editors" }
+      ]
+    },
+    {
       "title": "Advanced",
       "heading": true,
       "routes": [
-	{ "title": "Mosh", "path": "/docs/advanced/advanced-mosh.md" },
-	{ "title": "SSH", "path": "/docs/advanced/advanced-ssh.md" },
-	{ "title": "UNIX Commands", "path": "/docs/advanced/unix-roundup.md" }
+	    { "title": "Mosh", "path": "/docs/advanced/advanced-mosh.md" },
+	    { "title": "SSH", "path": "/docs/advanced/advanced-ssh.md" },
+	    { "title": "UNIX Commands", "path": "/docs/advanced/unix-roundup.md" }
       ]
     },
     {
       "title": "Cloud Providers",
       "heading": true,
       "routes": [
-	{ "title": "Amazon Web Services", "path": "/docs/cloud-providers/aws.md" },
-	{ "title": "Digital Ocean", "path": "/docs/cloud-providers/do.md" },
-	{ "title": "Hetzner", "path": "/docs/cloud-providers/hetzner.md" }
+	    { "title": "Amazon Web Services", "path": "/docs/cloud-providers/aws.md" },
+	    { "title": "Digital Ocean", "path": "/docs/cloud-providers/do.md" },
+	    { "title": "Hetzner", "path": "/docs/cloud-providers/hetzner.md" }
       ]
     }
-    
+
   ]
 }
