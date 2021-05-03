@@ -84,6 +84,12 @@
 		98271264262E4BDB00F883FA /* MainInterface.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 98271262262E4BDB00F883FA /* MainInterface.storyboard */; };
 		98271268262E4BDB00F883FA /* BlinkFileProviderUI.appex in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 9827125E262E4BDB00F883FA /* BlinkFileProviderUI.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		9827126B262E4BDB00F883FA /* BlinkFileProvider.appex in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 98271250262E4BDB00F883FA /* BlinkFileProvider.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		98DA49892630B8BF00732549 /* BlinkFileUtility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98DA49882630B8BF00732549 /* BlinkFileUtility.swift */; };
+		98E7D0B42638B3EA00758CF9 /* BlinkItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E7D0B32638B3EA00758CF9 /* BlinkItem.swift */; };
+		98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */; };
+		98E7D0D02638B64B00758CF9 /* FileProviderError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E7D0CF2638B64B00758CF9 /* FileProviderError.swift */; };
+		98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
+		98E7D0E5263971C000758CF9 /* BlinkFiles.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
@@ -387,6 +393,13 @@
 			remoteGlobalIDString = 9827124F262E4BDB00F883FA;
 			remoteInfo = BlinkFileProvider;
 		};
+		98E7D0E6263971C000758CF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABBAE25C9AECF00E1CC2C;
+			remoteInfo = BlinkFiles;
+		};
 		D218069D25CC27C100B98902 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -443,6 +456,17 @@
 				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
 				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 				07FABBC525C9AECF00E1CC2C /* BlinkFiles.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		98E7D0E8263971C000758CF9 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				98E7D0E5263971C000758CF9 /* BlinkFiles.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -557,6 +581,10 @@
 		98271260262E4BDB00F883FA /* DocumentActionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentActionViewController.swift; sourceTree = "<group>"; };
 		98271263262E4BDB00F883FA /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/MainInterface.storyboard; sourceTree = "<group>"; };
 		98271265262E4BDB00F883FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		98DA49882630B8BF00732549 /* BlinkFileUtility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkFileUtility.swift; sourceTree = "<group>"; };
+		98E7D0B32638B3EA00758CF9 /* BlinkItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkItem.swift; sourceTree = "<group>"; };
+		98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkItemReference.swift; sourceTree = "<group>"; };
+		98E7D0CF2638B64B00758CF9 /* FileProviderError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderError.swift; sourceTree = "<group>"; };
 		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
@@ -851,6 +879,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1167,11 +1196,12 @@
 		98271251262E4BDB00F883FA /* BlinkFileProvider */ = {
 			isa = PBXGroup;
 			children = (
+				98E7D0AF2638B3AE00758CF9 /* Models */,
 				98271252262E4BDB00F883FA /* FileProviderExtension.swift */,
-				98271254262E4BDB00F883FA /* FileProviderItem.swift */,
 				98271256262E4BDB00F883FA /* FileProviderEnumerator.swift */,
 				98271258262E4BDB00F883FA /* Info.plist */,
 				98271259262E4BDB00F883FA /* BlinkFileProvider.entitlements */,
+				98DA49882630B8BF00732549 /* BlinkFileUtility.swift */,
 			);
 			path = BlinkFileProvider;
 			sourceTree = "<group>";
@@ -1184,6 +1214,17 @@
 				98271265262E4BDB00F883FA /* Info.plist */,
 			);
 			path = BlinkFileProviderUI;
+			sourceTree = "<group>";
+		};
+		98E7D0AF2638B3AE00758CF9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				98271254262E4BDB00F883FA /* FileProviderItem.swift */,
+				98E7D0B32638B3EA00758CF9 /* BlinkItem.swift */,
+				98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */,
+				98E7D0CF2638B64B00758CF9 /* FileProviderError.swift */,
+			);
+			path = Models;
 			sourceTree = "<group>";
 		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
@@ -1714,10 +1755,12 @@
 				9827124C262E4BDB00F883FA /* Sources */,
 				9827124D262E4BDB00F883FA /* Frameworks */,
 				9827124E262E4BDB00F883FA /* Resources */,
+				98E7D0E8263971C000758CF9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				98E7D0E7263971C000758CF9 /* PBXTargetDependency */,
 			);
 			name = BlinkFileProvider;
 			productName = BlinkFileProvider;
@@ -2125,7 +2168,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				98E7D0D02638B64B00758CF9 /* FileProviderError.swift in Sources */,
+				98E7D0B42638B3EA00758CF9 /* BlinkItem.swift in Sources */,
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
+				98DA49892630B8BF00732549 /* BlinkFileUtility.swift in Sources */,
+				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
 				98271255262E4BDB00F883FA /* FileProviderItem.swift in Sources */,
 				98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */,
 			);
@@ -2372,6 +2419,11 @@
 			isa = PBXTargetDependency;
 			target = 9827124F262E4BDB00F883FA /* BlinkFileProvider */;
 			targetProxy = 98271269262E4BDB00F883FA /* PBXContainerItemProxy */;
+		};
+		98E7D0E7263971C000758CF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABBAE25C9AECF00E1CC2C /* BlinkFiles */;
+			targetProxy = 98E7D0E6263971C000758CF9 /* PBXContainerItemProxy */;
 		};
 		D218069E25CC27C100B98902 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

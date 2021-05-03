@@ -106,11 +106,29 @@ class LocalFilesTests: XCTestCase {
     let f = Local()
     let expectation = self.expectation(description: "Buffer Complete")
     
+//    let testPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("photosFolder")
+//
+//    if !FileManager.default.fileExists(atPath: testPath.absoluteString) {
+//      XCTAssertNoThrow(try FileManager.default.createDirectory(at: testPath, withIntermediateDirectories: true, attributes: nil))
+//    }
+    
+    if !FileManager.default.fileExists(atPath: Self.tempFolder) {
+      XCTAssertNoThrow(try FileManager.default.createDirectory(atPath: Self.tempFolder, withIntermediateDirectories: false))
+    }
+    
+    let filename = "\(Self.tempFolder)/\("filename.png")"
+    let buffer = self.createRandomBuffer(size: 202_400)
+    XCTAssertNoThrow(try buffer.write(to: URL(fileURLWithPath: filename)))
+        
+    //    XCTAssertNoThrow(try fileIO.write(buffer, toDocumentNamed: filename))
+    //    XCTAssertNoThrow(try fileIO.write(buffer2, toDocumentNamed: filename2))
+    
     // TODO Explicitely close the file or do it once it gets
     // dumped.
-    f.walkTo("/Users/carlos/mosh.pkg")
+    f.walkTo(filename)
       .flatMap { $0.open(flags: O_RDONLY) }
       .flatMap { $0.read(max: SSIZE_MAX) }
+      
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -129,6 +147,9 @@ class LocalFilesTests: XCTestCase {
     
     // TODO close file
     //file.close()
+    
+    XCTAssertNoThrow(try FileManager.default.removeItem(atPath: Self.tempFolder))
+
   }
   
   func testFileWriteTo() throws {
@@ -222,6 +243,118 @@ class LocalFilesTests: XCTestCase {
     
     waitForExpectations(timeout: 2, handler: nil)
   }
+  
+  static var rootPath: String {
+      return #file
+          .split(separator: "/", omittingEmptySubsequences: false)
+          .dropLast(3)
+          .map { String(describing: $0) }
+          .joined(separator: "/")
+  }
+  
+  static var tempFolder: String {
+      return rootPath.appending("/parentfolder")
+  }
+
+  func createRandomBuffer(size: Int) -> Data {
+      // create buffer
+      var data = Data(count: size)
+      for i in 0..<size {
+          data[i] = UInt8.random(in: 0...255)
+      }
+      return data
+  }
+  
+  func testFileReadWrite() throws {
+    self.continueAfterFailure = false
+    // For SFTP it will be useful to have the channel reachable, and then stop it through a timer to test the reconnect.
+    let f = Local()
+    
+//    let testPath = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0].appendingPathComponent("photosFolder")
+//
+//    if !FileManager.default.fileExists(atPath: testPath.absoluteString) {
+//      XCTAssertNoThrow(try FileManager.default.createDirectory(at: testPath, withIntermediateDirectories: true, attributes: nil))
+//    }
+    
+//    if !FileManager.default.fileExists(atPath: Self.tempFolder) {
+//      XCTAssertNoThrow(try FileManager.default.createDirectory(atPath: Self.tempFolder, withIntermediateDirectories: false))
+//    }
+    
+//    let filename = "\(Self.tempFolder)/\("filename.png")"
+//    let buffer = self.createRandomBuffer(size: 202_400)
+//    XCTAssertNoThrow(try buffer.write(to: URL(fileURLWithPath: filename)))
+        
+    //    XCTAssertNoThrow(try fileIO.write(buffer, toDocumentNamed: filename))
+    //    XCTAssertNoThrow(try fileIO.write(buffer2, toDocumentNamed: filename2))
+    
+    // blinkDick = [BlinkFilesAttributeKey : Any]
+    
+    let directoryFilesAndAttributesExpectation = self.expectation(description: "Local")
+    f.().flatMap {
+      $0.compactMap { i -> FileAttributes? in
+        print("walking the directory")
+        print(i[.name] as! String)
+        
+        let arr = Array(i.keys)
+        print("available keys")
+        print(arr)
+        print(i[.type] as! String)
+        
+        print("end keys")
+        if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+          return nil
+        } else { return i }
+        
+      }.publisher
+    }
+      .assertNoFailure()
+      .sink { items in
+        XCTAssertTrue(items.count > 0)
+        directoryFilesAndAttributesExpectation.fulfill()
+      }.store(in: &cancellableBag)
+
+    wait(for: [directoryFilesAndAttributesExpectation], timeout: 5)
+    
+    // Relative
+    let relativeWalk = self.expectation(description: "Relative walk")
+    f.walkTo("carlos")
+      .assertNoFailure()
+      .sink { dir in
+        XCTAssertTrue(dir.current == "/Users/carlos", "Current dir is \(dir.current)")
+        relativeWalk.fulfill()
+      }.store(in: &cancellableBag)
+
+    wait(for: [relativeWalk], timeout: 1)
+
+    
+    // TODO Explicitely close the file or do it once it gets
+    // dumped.
+//    let expectation = self.expectation(description: "Buffer Complete")
+//    f.walkTo(filename)
+//      .flatMap { $0.open(flags: O_RDONLY) }
+//      .flatMap { $0.read(max: SSIZE_MAX) }
+//      .sink(receiveCompletion: { completion in
+//        switch completion {
+//        case .finished:
+//          expectation.fulfill()
+//        case .failure(let error as LocalFileError):
+//          XCTFail(error.msg)
+//        case .failure(let error):
+//          XCTFail("Unknown error \(error)")
+//        }
+//      },
+//      receiveValue: { data in
+//        XCTAssertFalse(data.count <= 0, "Nothing received")
+//      }).store(in: &cancellableBag)
+//
+//    waitForExpectations(timeout: 15, handler: nil)
+    
+    // TODO close file
+    //file.close()
+    
+//    XCTAssertNoThrow(try FileManager.default.removeItem(atPath: Self.tempFolder))
+
+  }
 }
 
 class MemoryBuffer: Writer {
@@ -246,4 +379,54 @@ class MemoryBuffer: Writer {
       return val
     }.mapError { $0 as Error }.eraseToAnyPublisher()
   }
+}
+
+struct FileIOController {
+    var manager = FileManager.default
+  
+  static var rootPath: String {
+      return #file
+          .split(separator: "/", omittingEmptySubsequences: false)
+          .dropLast(3)
+          .map { String(describing: $0) }
+          .joined(separator: "/")
+  }
+  
+  static var tempFolder: String {
+      return rootPath.appending("/temp-folder")
+  }
+
+  func createRandomBuffer(size: Int) -> Data {
+      // create buffer
+      var data = Data(count: size)
+      for i in 0..<size {
+          data[i] = UInt8.random(in: 0...255)
+      }
+      return data
+  }
+
+    func write<T: Encodable>(
+        _ object: T,
+        toDocumentNamed documentName: String,
+        encodedUsing encoder: JSONEncoder = .init()
+    ) throws {
+        let rootFolderURL = try manager.url(
+            for: .documentDirectory,
+            in: .userDomainMask,
+            appropriateFor: nil,
+            create: false
+        )
+
+        let nestedFolderURL = rootFolderURL.appendingPathComponent("MyAppFiles")
+
+        try manager.createDirectory(
+            at: nestedFolderURL,
+            withIntermediateDirectories: false,
+            attributes: nil
+        )
+
+        let fileURL = nestedFolderURL.appendingPathComponent(documentName)
+        let data = try encoder.encode(object)
+        try data.write(to: fileURL)
+    }
 }

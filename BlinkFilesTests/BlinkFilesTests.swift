@@ -71,6 +71,9 @@ class BlinkFilesTests: XCTestCase {
         print(t.current)
       })
     
-    wait(for: [expectMatches], timeout: 3)
+    wait(for: [expectMatches], timeout: 5)
+    
   }
+  
 }
+

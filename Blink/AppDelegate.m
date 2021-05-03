@@ -117,7 +117,25 @@ void __setupProcessEnv() {
 //
 //  [clas performSelector:@selector(tuneStyle)];
 //#endif
+  
+  // Enable FileManager
+//#if !TARGET_OS_MACCATALYST
+  NSFileProviderDomain *domainOne = [[NSFileProviderDomain alloc]
+                                     initWithIdentifier:@"One"
+                                                                      displayName: @"One"
+                                                    pathRelativeToDocumentStorage: @"/"];
+  NSFileProviderDomain *domainTwo = [[NSFileProviderDomain alloc] initWithIdentifier: @"Two"
+                                                                         displayName: @"Two"
+                                                       pathRelativeToDocumentStorage: @"/"];
+  
+  [NSFileProviderManager addDomain:domainOne completionHandler:^(NSError * _Nullable error) {
+    NSLog(@"%@", error.description);
+  }];
+  [NSFileProviderManager addDomain:domainTwo completionHandler:^(NSError * _Nullable error) {
+    NSLog(@"%@", error.description);
+  }];
 
+//#endif
   return YES;
 }
 
