@@ -61,7 +61,7 @@ ssh -L 3000:localhost:3000 ssh-host
 ### Blink: Using screen corners
 Taping three fingers on the screen will bring a Blink menu in which you can set the Cover, Fill, and Fit setting, adapting Blink to different screens and devices.
 
-![img](Cover-Fill-Fit.png)
+![img](/tips-and-tricks/Cover-Fill-Fit.png)
 
 ### External Display: Apple TV
 You can use Apple TV as a second monitor, just start screen share on Apple TV and Blink will use it as second monitor, not just mirroring. This is really cool if you are doing a presentation, or if you are on the couch with your phone and want to have a bigger display!

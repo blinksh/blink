@@ -9,16 +9,8 @@
         { "title": "SSH Keys", "path": "/docs/basics/ssh-keys.md" },
         { "title": "Commands", "path": "/docs/commands/overview.md" },
         { "title": "Notifications", "path": "/docs/basics/notifications.md" },
-        { "title": "Known Issues", "path": "/docs/basics/known-issues.md" }
-      ]
-    },
-    {
-      "title": "Tips & Tricks",
-      "heading": true,
-      "routes": [
-	    { "title": "Basics", "path": "/docs/tips-and-tricks/tips-and-tricks.md#basics" },
-	    { "title": "Advanced", "path": "/docs/tips-and-tricks/tips-and-tricks.md#advanced" },
-	    { "title": "Editors", "path": "/docs/tips-and-tricks/tips-and-tricks.md#editors" }
+        { "title": "Known Issues", "path": "/docs/basics/known-issues.md" },
+        { "title": "Tips & Tricks", "path": "/docs/basics/tips-and-tricks.md" }
       ]
     },
     {
