@@ -199,6 +199,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     if let conn = self.connection, cmd.blocks {
       SSHPool.deregister(runningCommand: cmd, on: conn)
     }
+    
+    self.socks?.close()
 
     return exitCode
   }

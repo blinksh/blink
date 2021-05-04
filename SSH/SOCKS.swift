@@ -180,7 +180,7 @@ class SOCKSProtocol: NWProtocolFramerImplementation {
   static var label: String { "SOCKS5" }
   static let definition = NWProtocolFramer.Definition(implementation: SOCKSProtocol.self)
   var clientVersion = UInt8(0)
-  var bounded: Bool = false
+  var bound: Bool = false
 
   required init(framer: NWProtocolFramer.Instance) {}
   func wakeup(framer: NWProtocolFramer.Instance) { }
@@ -196,7 +196,7 @@ class SOCKSProtocol: NWProtocolFramerImplementation {
       if clientVersion == 0 {
         return handshake(framer: framer)
       }
-      if bounded {
+      if bound {
         return pipe(framer: framer)
       }
       
@@ -291,7 +291,7 @@ class SOCKSProtocol: NWProtocolFramerImplementation {
   }
   
   func handleOutput(framer: NWProtocolFramer.Instance, message: NWProtocolFramer.Message, messageLength: Int, isComplete: Bool) {
-    if bounded {
+    if bound {
       do {
         try framer.writeOutputNoCopy(length: messageLength)
       } catch let error {
@@ -316,7 +316,7 @@ class SOCKSProtocol: NWProtocolFramerImplementation {
     }
     
     if message.socksReply == .succeeded {
-      bounded = true
+      bound = true
     }
   }
 }
@@ -363,6 +363,7 @@ public class SOCKSServer {
   var listener: NWListener!
   let queue = DispatchQueue(label: "SOCKS")
   let port: NWEndpoint.Port
+  var connections: [NWConnection] = []
 
   public init(_ port: UInt16 = 1080, proxy client: SSHClient) throws {
     //listener.newConnectionHandler = { [weak self] in self?.handleConnectionUpdates($0) }
@@ -397,9 +398,15 @@ public class SOCKSServer {
       }
     }
     
+    connections.append(conn)
     conn.start(queue: queue)
   }
 
+  public func close() {
+    listener.cancel()
+    connections.forEach { $0.cancel() }
+  }
+  
   func receiveNextMessage(_ conn: NWConnection) {
     conn.receiveMessage { (content, context, isComplete, error) in
       if let message = context?.protocolMetadata(definition: SOCKSProtocol.definition) as? NWProtocolFramer.Message,
@@ -442,16 +449,27 @@ public class SOCKSServer {
             stream = s
             s.connect(stdout: conn, stdin: conn)
             s.handleCompletion = {
+              print("SOCKS forward completed - \(msg.address)")
               stream = nil
-              conn.cancel()
+              self.closeConnection(conn)
               cancellable = nil
             }
             s.handleFailure = { error in
               stream = nil
+              self.closeConnection(conn)
               conn.cancel()
               cancellable = nil
             }
           })
+      }
+    }
+  }
+  
+  func closeConnection(_ conn: NWConnection) {
+    conn.cancel()
+    for (idx, c) in connections.enumerated() {
+      if c === conn {
+        connections.remove(at: idx)
       }
     }
   }
