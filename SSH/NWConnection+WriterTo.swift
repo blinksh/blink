@@ -38,12 +38,17 @@ extension NWConnection: WriterTo {
   public func writeTo(_ w: Writer) -> AnyPublisher<Int, Error> {
     let pub = PassthroughSubject<DispatchData, Error>()
     
-    func receiveLoop() {
-      self.receive(minimumIncompleteLength: 1, maximumLength: Int(UINT32_MAX), completion: receiveData)
-      //self.receiveMessage(completion: receiveData)
+    func receiveData(demand: Subscribers.Demand) {
+      // TODO: handle demand?
+      
+      self.receive(
+        minimumIncompleteLength: 1,
+        maximumLength: Int(UINT32_MAX),
+        completion: receiveDataCompletion
+      )
     }
     
-    func receiveData(data: Data?, ctxt: ContentContext?, isComplete: Bool, rcvError: NWError?) {
+    func receiveDataCompletion(data: Data?, ctxt: ContentContext?, isComplete: Bool, rcvError: NWError?) {
       if let data = data {
         // Swift 5, Data is contiguous
         let dd = data.withUnsafeBytes {
@@ -63,7 +68,7 @@ extension NWConnection: WriterTo {
     }
     
     return pub.handleEvents(
-      receiveRequest: { _ in receiveLoop() }
+      receiveRequest: receiveData(demand:)
     ).flatMap(maxPublishers: .max(1)) { data in
       return w.write(data, max: data.count)
     }.eraseToAnyPublisher()
@@ -71,14 +76,14 @@ extension NWConnection: WriterTo {
 }
 
 extension Data {
-
-    init(copying dd: DispatchData) {
-        var result = Data(count: dd.count)
-        result.withUnsafeMutableBytes { buf in
-            _ = dd.copyBytes(to: buf)
-        }
-        self = result
+  
+  init(copying dd: DispatchData) {
+    var result = Data(count: dd.count)
+    result.withUnsafeMutableBytes { buf in
+      _ = dd.copyBytes(to: buf)
     }
+    self = result
+  }
 }
 
 extension NWConnection: Writer {

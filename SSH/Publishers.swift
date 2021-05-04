@@ -113,7 +113,7 @@ extension Publisher {
     
     return self.handleEvents(receiveCancel: {
       lock.unlock()
-    }).flatMap { loop ($0) }
+    }).flatMap(loop)
     .handleEvents(receiveCancel: {
       lock.spinLock()
       stop = true
