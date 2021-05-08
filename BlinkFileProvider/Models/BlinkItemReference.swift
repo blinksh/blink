@@ -34,34 +34,48 @@ import Foundation
 import FileProvider
 import MobileCoreServices
 
+import BlinkFiles
+
+
 struct BlinkItemReference {
   private let urlRepresentation: URL
+  let attributes: BlinkFiles.FileAttributes
   
   // TODO: Blink Translator Reference
   private var isRoot: Bool {
     return urlRepresentation.path == "/"
   }
   
-  private init(urlRepresentation: URL) {
+  private init(urlRepresentation: URL, attributes: BlinkFiles.FileAttributes) {
     self.urlRepresentation = urlRepresentation
+    self.attributes = attributes
   }
   
   // TODO: Blink Translator Reference
-  init(path: String, filename: String) {
-    let isDirectory = filename.components(separatedBy: ".").count == 1
-    let pathComponents = path.components(separatedBy: "/").filter {
-      !$0.isEmpty
-    } + [filename]
+  init(currentPath: String, attr: BlinkFiles.FileAttributes) {
     
-    var absolutePath = "/" + pathComponents.joined(separator: "/")
-    if isDirectory {
-      absolutePath.append("/")
+//    guard let type = attr[.type] as? FileAttributeType else {
+//
+//      return
+//    }
+    
+//    let isDirectory = type == .typeDirectory
+    var absPath = (currentPath as NSString).standardizingPath
+    if !currentPath.starts(with: "/") {
+      absPath = (currentPath as NSString).appendingPathComponent(absPath)
     }
-    absolutePath = absolutePath.addingPercentEncoding(
-      withAllowedCharacters: .urlPathAllowed
-    ) ?? absolutePath
     
-    self.init(urlRepresentation: URL(string: "itemReference://\(absolutePath)")!)
+//    let pathComponents = currentPath.pathComponents
+//
+//    var absolutePath = "/" + pathComponents.joined(separator: "/")
+//    if isDirectory {
+//      absolutePath.append("/")
+//    }
+//    absolutePath = absolutePath.addingPercentEncoding(
+//      withAllowedCharacters: .urlPathAllowed
+//    ) ?? absolutePath
+    
+    self.init(urlRepresentation: URL(string: "itemReference://\(absPath)")!, attributes: attr)
   }
   
   //1.
@@ -74,9 +88,9 @@ struct BlinkItemReference {
 
    For the other items, the URL representation is retrieved by converting the raw value of the identifier to base64-encoded data. The information in the URL comes from the network request that first enumerated the instance.
    */
-  init?(itemIdentifier: NSFileProviderItemIdentifier) {
+  init?(itemIdentifier: NSFileProviderItemIdentifier, attr: BlinkFiles.FileAttributes) {
     guard itemIdentifier != .rootContainer else {
-      self.init(urlRepresentation: URL(string: "itemReference:///")!)
+      self.init(urlRepresentation: URL(string: "itemReference:///")!, attributes: attr)
       return
     }
     
@@ -85,7 +99,7 @@ struct BlinkItemReference {
         return nil
     }
     
-    self.init(urlRepresentation: url)
+    self.init(urlRepresentation: url, attributes: attr)
   }
 
   var itemIdentifier: NSFileProviderItemIdentifier {
@@ -114,10 +128,32 @@ struct BlinkItemReference {
     return urlRepresentation.lastPathComponent
   }
 
+//  var typeIdentifier: String {
+//    guard !isDirectory else {
+//      return kUTTypeFolder as String
+//    }
+//
+//    let pathExtension = urlRepresentation.pathExtension
+//    let unmanaged = UTTypeCreatePreferredIdentifierForTag(
+//      kUTTagClassFilenameExtension,
+//      pathExtension as CFString,
+//      nil
+//    )
+//    let retained = unmanaged?.takeRetainedValue()
+//
+//    return (retained as String?) ?? ""
+//  }
+  
   var typeIdentifier: String {
-    guard !isDirectory else {
+    guard let type = attributes[.type] as? FileAttributeType else {
+      return ""
+    }
+    if type == .typeDirectory {
       return kUTTypeFolder as String
     }
+    
+//    let fileSplit = (attributes[.name] as! String).split(separator: ".")
+//    return String(fileSplit.count == 2 ? fileSplit[1] : "")
     
     let pathExtension = urlRepresentation.pathExtension
     let unmanaged = UTTypeCreatePreferredIdentifierForTag(
@@ -126,7 +162,7 @@ struct BlinkItemReference {
       nil
     )
     let retained = unmanaged?.takeRetainedValue()
-    
+
     return (retained as String?) ?? ""
   }
 
@@ -134,8 +170,10 @@ struct BlinkItemReference {
     guard !isRoot else {
       return nil
     }
+    
+    // convert between BlinkFile Attritubes and URL
     return BlinkItemReference(
-      urlRepresentation: urlRepresentation.deletingLastPathComponent()
+      urlRepresentation: urlRepresentation.deletingLastPathComponent(), attributes: attributes
     )
   }
 }

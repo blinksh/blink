@@ -36,44 +36,49 @@ import MobileCoreServices
 
 import BlinkFiles
 
-final class FileProviderItem: NSObject, NSFileProviderItem {
-//  let reference: BlinkItemReference
-  let attributes: BlinkFiles.FileAttributes
+final class FileProviderItem: NSObject {
+  let reference: BlinkItemReference
+  
+  init(reference: BlinkItemReference) {
+    self.reference = reference
+  }
 
-  init(attributes: BlinkFiles.FileAttributes) {
-    self.attributes = attributes
-  }
+//  let attributes: BlinkFiles.FileAttributes
+
+//  init(attributes: BlinkFiles.FileAttributes) {
+//    self.attributes = attributes
+//  }
   
-  var itemIdentifier: NSFileProviderItemIdentifier {
-    return NSFileProviderItemIdentifier(attributes[.name] as! String)
-  }
-  
-  var parentItemIdentifier: NSFileProviderItemIdentifier {
-    // It is important that parents match, otherwise we will receive it empty
-    return .rootContainer
-  }
-  
-  var capabilities: NSFileProviderItemCapabilities {
-    return .allowsAll
-  }
-  
-  var filename: String {
-    return attributes[.name] as! String
-  }
-  
-  // TODO We should do contentType too
-  var typeIdentifier: String {
-    guard let type = attributes[.type] as? FileAttributeType else {
-      return ""
-    }
-    if type == .typeDirectory {
-      return kUTTypeFolder as String
-    }
-    
-    let fileSplit = (attributes[.name] as! String).split(separator: ".")
-    return String(fileSplit.count == 2 ? fileSplit[1] : "")
-  }
-  
+//  var itemIdentifier: NSFileProviderItemIdentifier {
+//    return NSFileProviderItemIdentifier(attributes[.name] as! String)
+//  }
+//
+//  var parentItemIdentifier: NSFileProviderItemIdentifier {
+//    // It is important that parents match, otherwise we will receive it empty
+//    return .rootContainer
+//  }
+//
+//  var capabilities: NSFileProviderItemCapabilities {
+//    return .allowsAll
+//  }
+//
+//  var filename: String {
+//    return attributes[.name] as! String
+//  }
+//
+//  // TODO We should do contentType too
+//  var typeIdentifier: String {
+//    guard let type = attributes[.type] as? FileAttributeType else {
+//      return ""
+//    }
+//    if type == .typeDirectory {
+//      return kUTTypeFolder as String
+//    }
+//
+//    let fileSplit = (attributes[.name] as! String).split(separator: ".")
+//    return String(fileSplit.count == 2 ? fileSplit[1] : "")
+//  }
+//
 
 //  init(reference: BlinkItemReference) {
 //    self.reference = reference
@@ -83,35 +88,35 @@ final class FileProviderItem: NSObject, NSFileProviderItem {
 
 // MARK: - NSFileProviderItem
 
-//extension FileProviderItem: NSFileProviderItem {
-//
-//  var itemIdentifier: NSFileProviderItemIdentifier {
-////    return reference.itemIdentifier
-//  }
-//
-//  var parentItemIdentifier: NSFileProviderItemIdentifier {
-////    return reference.parentReference?.itemIdentifier ?? itemIdentifier
-//  }
-//
-//
-//  var filename: String {
-////    return reference.filename
-//  }
-//
-//  var typeIdentifier: String {
-////    return reference.typeIdentifier
-//  }
-//
-//  var capabilities: NSFileProviderItemCapabilities {
-//    if reference.isDirectory {
-//      return [.allowsReading, .allowsContentEnumerating]
-//    } else {
-//      return [.allowsReading]
-//    }
-//  }
-//
-//  var documentSize: NSNumber? {
-//    return nil
-//  }
-//
-//}
+extension FileProviderItem: NSFileProviderItem {
+
+  var itemIdentifier: NSFileProviderItemIdentifier {
+    return reference.itemIdentifier
+  }
+
+  var parentItemIdentifier: NSFileProviderItemIdentifier {
+    return reference.parentReference?.itemIdentifier ?? itemIdentifier
+  }
+
+
+  var filename: String {
+    return reference.filename
+  }
+
+  var typeIdentifier: String {
+    return reference.typeIdentifier
+  }
+
+  var capabilities: NSFileProviderItemCapabilities {
+    if reference.isDirectory {
+      return [.allowsReading, .allowsContentEnumerating]
+    } else {
+      return [.allowsReading]
+    }
+  }
+
+  var documentSize: NSNumber? {
+    return nil
+  }
+
+}

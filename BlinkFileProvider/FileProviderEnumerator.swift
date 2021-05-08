@@ -38,9 +38,12 @@ import FileProvider
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   var enumeratedItemIdentifier: NSFileProviderItemIdentifier
   var root = Local()
+  let path: String
+
   
-  init(enumeratedItemIdentifier: NSFileProviderItemIdentifier) {
+  init(enumeratedItemIdentifier: NSFileProviderItemIdentifier, path: String) {
     self.enumeratedItemIdentifier = enumeratedItemIdentifier
+    self.path = path
     super.init()
   }
   
@@ -61,18 +64,31 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
      - inform the observer about the items returned by the server (possibly multiple times)
      - inform the observer that you are finished with this page
      */
-
+    
     switch enumeratedItemIdentifier {
     case .rootContainer:
       // I am cross-referencing here the cancellable. Use .store instead
       var c: AnyCancellable? = nil
-      c = root.walkTo("/").flatMap { $0.directoryFilesAndAttributes() }
+      c = root.walkTo(self.path).flatMap { $0.directoryFilesAndAttributes() }
         .sink(receiveCompletion: { _ in
         // TODO Pass errors to the other side
         // fatalError
-        c = nil
+          print("@@@ receive completion")
+          c = nil
       }, receiveValue: { attrs in
-        let items = attrs.map { FileProviderItem(attributes: $0) }
+        print("@@@ receive receiveValue")
+        print("curr")
+        let curr = self.root.current
+        print(curr)
+//        let items = attrs.map { BlinkItemReference(currentPath: curr,
+//                                                   attr: $0) }
+        
+        let items = attrs.map { mediaItem -> FileProviderItem in
+          let ref = BlinkItemReference(currentPath: curr,
+                                      attr: mediaItem)
+          return FileProviderItem(reference: ref)
+        }
+
         observer.didEnumerate(items)
         observer.finishEnumerating(upTo: nil)
       })
@@ -80,6 +96,20 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     case .workingSet:
       return
     default:
+      // I am cross-referencing here the cancellable. Use .store instead
+//      var c: AnyCancellable? = nil
+//      c = root.walkTo(self.path).flatMap { $0.directoryFilesAndAttributes() }
+//        .sink(receiveCompletion: { _ in
+//        // TODO Pass errors to the other side
+//        // fatalError
+//          print("default @@@ receive completion")
+//          c = nil
+//      }, receiveValue: { attrs in
+//        print("default @@@ receive receiveValue")
+//        let items = attrs.map { FileProviderItem(attributes: $0) }
+//        observer.didEnumerate(items)
+//        observer.finishEnumerating(upTo: nil)
+//      })
       break
     }
   }

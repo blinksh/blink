@@ -42,11 +42,18 @@ class FileProviderExtension: NSFileProviderExtension {
     super.init()
   }
   
+//  override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
+//    // resolve the given identifier to a record in the model
+//
+//    // TODO: implement the actual lookup
+//    return FileProviderItem(attributes: [.name: identifier.rawValue])
+//  }
+  
   override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-    // resolve the given identifier to a record in the model
-    
-    // TODO: implement the actual lookup
-    return FileProviderItem(attributes: [.name: identifier.rawValue])
+    guard let reference = BlinkItemReference(itemIdentifier: identifier, attr: [.name: identifier.rawValue]) else {
+      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
+    }
+    return FileProviderItem(reference: reference)
   }
   
   override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
@@ -176,7 +183,7 @@ class FileProviderExtension: NSFileProviderExtension {
       // TODO: instantiate an enumerator for the container root
       // We should probably have a factory to create the proper translator, and
       // then pass that to the enumerator.
-      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier)
+      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: "/Users/don")
     }
     //        else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
     //            // TODO: instantiate an enumerator for the working set

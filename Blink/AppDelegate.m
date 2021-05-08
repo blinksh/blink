@@ -119,7 +119,7 @@ void __setupProcessEnv() {
 //#endif
   
   // Enable FileManager
-//#if !TARGET_OS_MACCATALYST
+#if !TARGET_OS_MACCATALYST
   NSFileProviderDomain *domainOne = [[NSFileProviderDomain alloc]
                                      initWithIdentifier:@"One"
                                                                       displayName: @"One"
@@ -129,13 +129,13 @@ void __setupProcessEnv() {
                                                        pathRelativeToDocumentStorage: @"/"];
   
   [NSFileProviderManager addDomain:domainOne completionHandler:^(NSError * _Nullable error) {
-    NSLog(@"%@", error.description);
+    NSLog(@"domain one error %@", error);
   }];
   [NSFileProviderManager addDomain:domainTwo completionHandler:^(NSError * _Nullable error) {
-    NSLog(@"%@", error.description);
+    NSLog(@"domain two error %@", error);
   }];
 
-//#endif
+#endif
   return YES;
 }
 
