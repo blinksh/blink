@@ -76,16 +76,12 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
           print("@@@ receive completion")
           c = nil
       }, receiveValue: { attrs in
-        print("@@@ receive receiveValue")
         print("curr")
         let curr = self.root.current
-        print(curr)
-//        let items = attrs.map { BlinkItemReference(currentPath: curr,
-//                                                   attr: $0) }
-        
-        let items = attrs.map { mediaItem -> FileProviderItem in
-          let ref = BlinkItemReference(currentPath: curr,
-                                      attr: mediaItem)
+        debugPrint(curr)
+        let items = attrs.map { blinkAttr -> FileProviderItem in
+          let ref = BlinkItemReference(rootPath: curr,
+                                       attributes: blinkAttr)
           return FileProviderItem(reference: ref)
         }
 
@@ -110,6 +106,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 //        observer.didEnumerate(items)
 //        observer.finishEnumerating(upTo: nil)
 //      })
+      print("@@@ default receiveValue")
+      print("curr")
+      let curr = self.root.current
+      print(curr)
       break
     }
   }

@@ -49,10 +49,15 @@ class FileProviderExtension: NSFileProviderExtension {
 //    return FileProviderItem(attributes: [.name: identifier.rawValue])
 //  }
   
+  // MARK: - BlinkItem Entry
   override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-    guard let reference = BlinkItemReference(itemIdentifier: identifier, attr: [.name: identifier.rawValue]) else {
-      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
+    
+    print("@@@ item BlinkItemReference entry... ")
+    print(identifier.rawValue)
+    guard let reference = BlinkItemReference(itemIdentifier: identifier) else {      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
     }
+    
+    print("... @@@ item exit")
     return FileProviderItem(reference: reference)
   }
   
@@ -183,7 +188,9 @@ class FileProviderExtension: NSFileProviderExtension {
       // TODO: instantiate an enumerator for the container root
       // We should probably have a factory to create the proper translator, and
       // then pass that to the enumerator.
-      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: "/Users/don")
+      print("@@@ enumerator rootContainer entry... ")
+      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: "/")
+      // /Users
     }
     //        else if (containerItemIdentifier == NSFileProviderItemIdentifier.workingSet) {
     //            // TODO: instantiate an enumerator for the working set
@@ -192,11 +199,25 @@ class FileProviderExtension: NSFileProviderExtension {
       // TODO: determine if the item is a directory or a file
       // - for a directory, instantiate an enumerator of its subitems
       // - for a file, instantiate an enumerator that observes changes to the file
+      
+      print("@@@ enumerator BlinkItemReference entry... ")
+      guard
+        let ref = BlinkItemReference(itemIdentifier: containerItemIdentifier),
+        ref.isDirectory
+        else {
+            guard let enumerator = maybeEnumerator else {
+              throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
+            }
+            return enumerator
+      }
+      
+      return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: ref.path)
+      
     }
-    guard let enumerator = maybeEnumerator else {
-      throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
-    }
-    return enumerator
+//    guard let enumerator = maybeEnumerator else {
+//      throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
+//    }
+//    return enumerator
   }
   
 }

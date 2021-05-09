@@ -119,7 +119,7 @@ void __setupProcessEnv() {
 //#endif
   
   // Enable FileManager
-#if !TARGET_OS_MACCATALYST
+//#if !TARGET_OS_MACCATALYST
   NSFileProviderDomain *domainOne = [[NSFileProviderDomain alloc]
                                      initWithIdentifier:@"One"
                                                                       displayName: @"One"
@@ -135,7 +135,7 @@ void __setupProcessEnv() {
     NSLog(@"domain two error %@", error);
   }];
 
-#endif
+//#endif
   return YES;
 }
 
