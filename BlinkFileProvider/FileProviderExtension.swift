@@ -42,22 +42,13 @@ class FileProviderExtension: NSFileProviderExtension {
     super.init()
   }
   
-//  override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-//    // resolve the given identifier to a record in the model
-//
-//    // TODO: implement the actual lookup
-//    return FileProviderItem(attributes: [.name: identifier.rawValue])
-//  }
-  
-  // MARK: - BlinkItem Entry
+
+  // MARK: - BlinkItem Entry : DB-GET query (using uniq NSFileProviderItemIdentifier ID)
   override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
     
-    print("@@@ item BlinkItemReference entry... ")
-    print(identifier.rawValue)
     guard let reference = BlinkItemReference(itemIdentifier: identifier) else {      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
     }
     
-    print("... @@@ item exit")
     return FileProviderItem(reference: reference)
   }
   
@@ -131,7 +122,6 @@ class FileProviderExtension: NSFileProviderExtension {
     completionHandler(NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:]))
   }
   
-  
   override func itemChanged(at url: URL) {
     // Called at some point after the file has changed; the provider may then trigger an upload
     
@@ -188,7 +178,6 @@ class FileProviderExtension: NSFileProviderExtension {
       // TODO: instantiate an enumerator for the container root
       // We should probably have a factory to create the proper translator, and
       // then pass that to the enumerator.
-      print("@@@ enumerator rootContainer entry... ")
       return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: "/")
       // /Users
     }
@@ -200,7 +189,6 @@ class FileProviderExtension: NSFileProviderExtension {
       // - for a directory, instantiate an enumerator of its subitems
       // - for a file, instantiate an enumerator that observes changes to the file
       
-      print("@@@ enumerator BlinkItemReference entry... ")
       guard
         let ref = BlinkItemReference(itemIdentifier: containerItemIdentifier),
         ref.isDirectory
@@ -214,114 +202,6 @@ class FileProviderExtension: NSFileProviderExtension {
       return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, path: ref.path)
       
     }
-//    guard let enumerator = maybeEnumerator else {
-//      throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
-//    }
-//    return enumerator
   }
   
 }
-
-
-//class FileProviderExtension: NSFileProviderExtension {
-//
-//  //1.
-//  /*
-//   system provides the identifier passed to this method, and you return a FileProviderItem for that identifier.
-//   */
-//  override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
-//
-//    guard let reference = BlinkItemReference(itemIdentifier: identifier) else {
-//      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
-//    }
-//    return FileProviderItem(reference: reference)
-//  }
-//
-//  //2.
-//  /*
-//
-//   */
-//  override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
-//
-//    // validate the item to ensure that the given identifier resolves to an instance of the extension’s model
-//    guard let item = try? item(for: identifier) else {
-//      return nil
-//    }
-//
-//
-//    /*
-//     return a file URL specifying where to store the item within the file manager’s document storage directory
-//     URL in the format <documentStorageURL>/<itemIdentifier>/<filename>,
-//     */
-//    return NSFileProviderManager.default.documentStorageURL
-//      .appendingPathComponent(identifier.rawValue, isDirectory: true)
-//      .appendingPathComponent(item.filename)
-//  }
-//
-//  //3.
-//  /*
-//   Each URL returned by urlForItem(withPersistentIdentifier:) needs to map back to the NSFileProviderItemIdentifier it was originally set out to represent.
-//   */
-//  override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
-//    // take the second to last path component as the item identifier.
-//    let identifier = url.deletingLastPathComponent().lastPathComponent
-//    return NSFileProviderItemIdentifier(identifier)
-//  }
-//
-//
-//  /*
-//   file placeholder URL that references a Blink file.
-//   */
-//  private func providePlaceholder(at url: URL) throws {
-//
-//    //4.1 you create an identifier and a reference from the provided URL.
-//    guard
-//      let identifier = persistentIdentifierForItem(at: url),
-//      let reference = BlinkItemReference(itemIdentifier: identifier)
-//      else {
-//        throw FileProviderError.unableToFindMetadataForPlaceholder
-//    }
-//
-//    //4.3. The url passed into this method is for the image to be displayed, not the placeholder. So you create a placeholder URL with placeholderURL(for:) and obtain the NSFileProviderItem that this placeholder will represent.
-//    let placeholderURL = NSFileProviderManager.placeholderURL(for: url)
-//    let item = FileProviderItem(reference: reference)
-//
-//    try NSFileProviderManager.writePlaceholder(
-//      at: placeholderURL,
-//      withMetadata: item
-//    )
-//  }
-//
-//  override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
-//    do {
-//      try providePlaceholder(at: url)
-//      completionHandler(nil)
-//    } catch {
-//      completionHandler(error)
-//    }
-//  }
-//
-//  // MARK: - Enumeration
-//
-//  override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-//
-//    print("containr identifier")
-//    print(containerItemIdentifier)
-//
-//    // TODO: - Point at which we define different ROOT items based on Translator
-//    if containerItemIdentifier == .rootContainer {
-//      return FileProviderEnumerator(path: "/")
-//    }
-//
-//    guard
-//      let ref = BlinkItemReference(itemIdentifier: containerItemIdentifier),
-//      ref.isDirectory
-//      else {
-//        throw FileProviderError.notAContainer
-//    }
-//
-//    return FileProviderEnumerator(path: ref.path)
-//  }
-//
-//
-//}

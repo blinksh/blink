@@ -39,11 +39,11 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   var enumeratedItemIdentifier: NSFileProviderItemIdentifier
   var root = Local()
   let path: String
+//  let domain: String
 
-  
   init(enumeratedItemIdentifier: NSFileProviderItemIdentifier, path: String) {
     self.enumeratedItemIdentifier = enumeratedItemIdentifier
-    self.path = path
+    self.path = path // this cannot be hardcoded!!
     super.init()
   }
   
@@ -67,53 +67,36 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     switch enumeratedItemIdentifier {
     case .rootContainer:
-      // I am cross-referencing here the cancellable. Use .store instead
-      var c: AnyCancellable? = nil
-      c = root.walkTo(self.path).flatMap { $0.directoryFilesAndAttributes() }
-        .sink(receiveCompletion: { _ in
-        // TODO Pass errors to the other side
-        // fatalError
-          print("@@@ receive completion")
-          c = nil
-      }, receiveValue: { attrs in
-        print("curr")
-        let curr = self.root.current
-        debugPrint(curr)
-        let items = attrs.map { blinkAttr -> FileProviderItem in
-          let ref = BlinkItemReference(rootPath: curr,
-                                       attributes: blinkAttr)
-          return FileProviderItem(reference: ref)
-        }
-
-        observer.didEnumerate(items)
-        observer.finishEnumerating(upTo: nil)
-      })
+      blinkLocalWorker(observer: observer)
       return
     case .workingSet:
       return
     default:
-      // I am cross-referencing here the cancellable. Use .store instead
-//      var c: AnyCancellable? = nil
-//      c = root.walkTo(self.path).flatMap { $0.directoryFilesAndAttributes() }
-//        .sink(receiveCompletion: { _ in
-//        // TODO Pass errors to the other side
-//        // fatalError
-//          print("default @@@ receive completion")
-//          c = nil
-//      }, receiveValue: { attrs in
-//        print("default @@@ receive receiveValue")
-//        let items = attrs.map { FileProviderItem(attributes: $0) }
-//        observer.didEnumerate(items)
-//        observer.finishEnumerating(upTo: nil)
-//      })
-      print("@@@ default receiveValue")
-      print("curr")
-      let curr = self.root.current
-      print(curr)
+      blinkLocalWorker(observer: observer)
       break
     }
   }
-  
+
+  private func blinkLocalWorker(observer: NSFileProviderEnumerationObserver) {
+    var c: AnyCancellable? = nil
+    c = root.walkTo(path).flatMap { $0.directoryFilesAndAttributes() }
+      .sink(receiveCompletion: { _ in
+      // TODO Pass errors to the other side
+      // fatalError
+        c = nil
+    }, receiveValue: { attrs in
+      let curr = self.root.current
+      let items = attrs.map { blinkAttr -> FileProviderItem in
+        let ref = BlinkItemReference(rootPath: curr,
+                                     attributes: blinkAttr)
+        return FileProviderItem(reference: ref)
+      }
+      observer.didEnumerate(items)
+      observer.finishEnumerating(upTo: nil)
+
+      })
+  }
+
   func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
     /* TODO:
      - query the server for updates since the passed-in sync anchor
@@ -127,52 +110,3 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   }
   
 }
-
-
-//class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
-//
-//  private let path: String
-//  private var cancellables = [AnyCancellable]()
-//
-//  init(path: String) {
-//    self.path = path
-//    super.init()
-//  }
-//
-//  func invalidate() {
-//
-//  }
-//
-//  func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
-//     var items = [FileProviderItem]()
-//
-//     let localBlinkfile = Local()
-//
-//
-//     localBlinkfile.directoryFilesAndAttributes().flatMap {
-//         $0.compactMap { i -> FileAttributes? in
-//
-//          let ref = BlinkItemReference(path: self.path, filename: i[.name] as! String)
-//          let item = FileProviderItem(reference: ref)
-//
-//           items.append(item)
-//
-//           if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
-//             return nil
-//           } else { return i }
-//
-//         }.publisher
-//       }.assertNoFailure()
-//         .sink { items in
-//
-//          print(items.count)
-//
-//      }.store(in: &cancellables)
-//
-//     observer.didEnumerate(items)
-//     observer.finishEnumerating(upTo: nil)
-//
-//
-//  }
-//
-//}

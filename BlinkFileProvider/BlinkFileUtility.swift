@@ -46,7 +46,6 @@ class BlinkFileUtility: NSObject {
   
   func getItemIdentifier() -> NSFileProviderItemIdentifier {
     
-  
     return NSFileProviderItemIdentifier("")
   }
   

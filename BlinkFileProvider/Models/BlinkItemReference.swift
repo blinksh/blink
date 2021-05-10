@@ -36,12 +36,11 @@ import MobileCoreServices
 
 import BlinkFiles
 
-
 struct BlinkItemReference {
   private let urlRepresentation: URL
   var attributes: BlinkFiles.FileAttributes? = nil
   
-  // TODO: Blink Translator Reference
+  // TODO: Blink Translator Reference for real root path
   private var isRoot: Bool {
     return urlRepresentation.path == "/"
   }
@@ -60,16 +59,12 @@ struct BlinkItemReference {
   // objective is to convert to URL representation
   // a Database model -> domain://root/path/name[.extension]
   init(rootPath: String, attributes: BlinkFiles.FileAttributes) {
-    print("@@@ currentPath entry... ")
-    
     let type = attributes[.type] as? FileAttributeType
     let isAttrDirectory = type == .typeDirectory
     let filename = attributes[.name] as! String
-    let nsrootPath = (rootPath as NSString).standardizingPath
-    print("...@@@ standardizingPath")
-    debugPrint(nsrootPath)
-    
-    let pathComponents = nsrootPath.components(separatedBy: "/").filter {
+    let nsRootPath = (rootPath as NSString).standardizingPath
+
+    let pathComponents = nsRootPath.components(separatedBy: "/").filter {
       !$0.isEmpty
     } + [filename]
     
@@ -78,31 +73,21 @@ struct BlinkItemReference {
     if isAttrDirectory {
       absolutePath.append("/")
     }
-    
-//    if !rootPath.starts(with: "/") {
-//      rootAbsPath = (rootPath as NSString).appendingPathComponent(rootAbsPath)
-//      print("...@@@ absPath")
-//      debugPrint(rootAbsPath)
-//    }
-    
+
     //take out spaces and characters
     absolutePath = absolutePath.addingPercentEncoding(
       withAllowedCharacters: .urlPathAllowed
     ) ?? absolutePath
-    
-    print("@@@ absolutePath...")
-    debugPrint(absolutePath)
-  
-    
-    print("...@@@ currentPath exit")
-    self.init(urlRepresentation: URL(string: "itemReference://\(absolutePath)")!, attributes: attributes)
+
+    self.init(urlRepresentation: URL(string: "blinkDomainReference://\(absolutePath)")!, attributes: attributes)
   }
   
+  // MARK: - DB Query Entry Point:
   //1.
   /*
    system provides the identifier passed to this method, and you return a FileProviderItem for that identifier.
    
-   scheme itemReference://.
+   scheme blinkDomainReference://.
    
    You handle the root container identifier separately to ensure its URL path is properly set.
 
@@ -110,12 +95,10 @@ struct BlinkItemReference {
    */
   init?(itemIdentifier: NSFileProviderItemIdentifier) {
     
-    // MARK: - Objective is to
-    print("@@@ itemIdentifier entry... ")
+    // MARK: - Objective is to ???
     guard itemIdentifier != .rootContainer else {
       
-      print("@@@ itemIdentifier itemReference")
-      self.init(urlRepresentation: URL(string: "itemReference:///")!)
+      self.init(urlRepresentation: URL(string: "blinkDomainReference:///")!)
       return
       
     }
@@ -125,7 +108,6 @@ struct BlinkItemReference {
         return nil
     }
     
-    print("@@@ exit... ")
     self.init(urlRepresentation: url)
   }
 
@@ -156,22 +138,6 @@ struct BlinkItemReference {
     return urlRepresentation.lastPathComponent
   }
 
-//  var typeIdentifier: String {
-//    guard !isDirectory else {
-//      return kUTTypeFolder as String
-//    }
-//
-//    let pathExtension = urlRepresentation.pathExtension
-//    let unmanaged = UTTypeCreatePreferredIdentifierForTag(
-//      kUTTagClassFilenameExtension,
-//      pathExtension as CFString,
-//      nil
-//    )
-//    let retained = unmanaged?.takeRetainedValue()
-//
-//    return (retained as String?) ?? ""
-//  }
-  
   var typeIdentifier: String {
     guard let type = attributes?[.type] as? FileAttributeType else {
       return ""
@@ -179,10 +145,7 @@ struct BlinkItemReference {
     if type == .typeDirectory {
       return kUTTypeFolder as String
     }
-    
-//    let fileSplit = (attributes[.name] as! String).split(separator: ".")
-//    return String(fileSplit.count == 2 ? fileSplit[1] : "")
-    
+     
     let pathExtension = urlRepresentation.pathExtension
     let unmanaged = UTTypeCreatePreferredIdentifierForTag(
       kUTTagClassFilenameExtension,
