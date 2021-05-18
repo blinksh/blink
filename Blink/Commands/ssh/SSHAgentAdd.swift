@@ -44,10 +44,13 @@ struct BlinkSSHAgentAddCommand: ParsableCommand {
     version: "1.0.0"
   )
   
-  // List
-  @Flag(name: [.customShort("l")],
+  @Flag(name: [.customShort("L")],
   help: "List keys stored on agent")
   var list: Bool = false
+  
+  @Flag(name: [.customShort("l")],
+  help: "Lists fingerprints of keys stored on agent")
+  var listFingerprints: Bool = false
   
   // Remove
   @Flag(name: [.customShort("d")],
@@ -111,10 +114,19 @@ public class BlinkSSHAgentAdd: NSObject {
     }
     
     if command.list {
+      for key in SSHAgentPool.get()?.ring ?? []  {
+        let str = BKPubKey.withID(key.name)?.publicKey ?? ""
+        print("\(str) \(key.name)", to: &stdout)
+      }
+      
+      return 0;
+    }
+    
+    if command.listFingerprints {
       guard
         let alg = SSHDigest(rawValue: command.hashAlgorithm)
       else {
-        print("Invalid hash algorithm \"\(command.hashAlgorithm)\"")
+        print("Invalid hash algorithm \"\(command.hashAlgorithm)\"", to: &stderr)
         return -1;
       }
       

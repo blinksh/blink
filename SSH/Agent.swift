@@ -122,9 +122,16 @@ public class SSHAgent {
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) {
+  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) -> Bool {
     let cKey = SSHAgentKey(key, named: name, constraints: constraints)
+    // TODO: check constraints
+    for k in ring {
+      if cKey.name == k.name {
+        return false
+      }
+    }
     ring.append(cKey)
+    return true
   }
   
   public func removeKey(_ name: String) -> Signer? {

@@ -36,10 +36,10 @@ public protocol SSHAgentConstraint {
 }
 
 public class SSHConstraintTrustedConnectionOnly: SSHAgentConstraint {
+  
   public var name: String { "Trusted Connection" }
   public init() {}
   public func enforce(useOf key: SSHAgentKey, by client: SSHClient) -> Bool {
     return client.trustAgentConnection
   }
 }
-
