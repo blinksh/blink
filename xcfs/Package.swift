@@ -14,12 +14,12 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "libssh",
-    "b3a2528a9eeeb6bff0a5cdf2c4c08d10b42458d7f706ec568ea4393e92bee5d3",
+    "61c522e3b20148eef891889cbd3dd88900bd96e9b72f3cd633cf13bcaece6f12",
     "https://github.com/blinksh/libssh-apple/releases/download/v0.9.4/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
-    "d8bcfc8e74d440975ae1fd2e47ba9447c6b46c8b5429ff93803526808cb2f4cb",
+    "18692d9545cb3c097a637bdd52f129d1f8956f43e92703099cc20ba7b9869e1f",
     "https://github.com/blinksh/openssh-apple/releases/download/v8.6.0/OpenSSH-static.xcframework.zip"
   ),
   (
@@ -34,7 +34,7 @@ var binaryTargets: [PackageDescription.Target] = [
 //  ),
   (
     "libssh2",
-    "bcf240b14e5b0d982bde81419dbdf45d9155aea7401669f0c4bfd74db976d50a",
+    "6a14c161ee389ef64dfd4f13eedbdf8628bbe430d686a08c4bf30a6484f07dcb",
     "https://github.com/blinksh/libssh2-apple/releases/download/v1.9.0/libssh2-static.xcframework.zip"
   ),
 
