@@ -54,8 +54,15 @@ struct BlinkSSHAgentAddCommand: ParsableCommand {
   help: "Remove key from agent")
   var remove: Bool = false
   
+  // Hash algorithm
+  @Option(
+    name: [.customShort("E")],
+    help: "Specify hash algorithm used for fingerprints"
+  )
+  var hashAlgorithm: String = "sha256"
+  
   @Argument(help: "Key name")
-  var keyName: String
+  var keyName: String?
   
   @Argument(help: "Agent name")
   var agentName: String?
@@ -93,8 +100,9 @@ public class BlinkSSHAgentAdd: NSObject {
     }
     
     if command.remove {
-      if let _ = SSHAgentPool.removeKey(named: command.keyName) {
-        print("Key \(command.keyName) removed.", to: &stdout)
+      let keyName = command.keyName ?? "id_rsa"
+      if let _ = SSHAgentPool.removeKey(named: keyName) {
+        print("Key \(keyName) removed.", to: &stdout)
         return 0
       } else {
         print("Key not found on Agent", to: &stderr)
@@ -103,13 +111,29 @@ public class BlinkSSHAgentAdd: NSObject {
     }
     
     if command.list {
+      guard
+        let alg = SSHDigest(rawValue: command.hashAlgorithm)
+      else {
+        print("Invalid hash algorithm \"\(command.hashAlgorithm)\"")
+        return -1;
+      }
+      
+      for key in SSHAgentPool.get()?.ring ?? [] {
+        if let blob = try? key.signer.publicKey.encode()[4...],
+           let sshkey = try? SSHKey(fromPublicBlob: blob)
+        {
+          let str = sshkey.fingerprint(digest: alg)
+          
+          print("\(sshkey.size) \(str) \(key.name) (\(sshkey.sshKeyType.shortName))", to: &stdout)
+        }
+      }
       return 0
     }
     
     // TODO Can we have the same key under different constraints?
     
     // Default case: add key
-    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName) {
+    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName ?? "id_rsa") {
       SSHAgentPool.addKey(signer, named: name)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0

@@ -53,8 +53,8 @@ fileprivate let errorData = Data(bytes: [0x05], count: MemoryLayout<CChar>.size)
 public class SSHAgentKey {
   let constraints: [SSHAgentConstraint]?
 //  var expiration: Int
-  let signer: Signer
-  let name: String
+  public let signer: Signer
+  public let name: String
   
   init(_ key: Signer, named: String, constraints: [SSHAgentConstraint]? = nil) {
     self.signer = key
@@ -152,8 +152,8 @@ public class SSHAgent {
           
           return Data(bytes: &respType, count: MemoryLayout<CChar>.size)
             + signature
-        default:
-          throw SSHKeyError.general(title: "Invalid request received")
+//        default:
+//          throw SSHKeyError.general(title: "Invalid request received")
       }
   }
 
