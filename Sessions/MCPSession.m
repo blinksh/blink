@@ -153,6 +153,8 @@
 
 - (BOOL)_runCommand:(NSString *)cmdline {
   
+  cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+  
   [HistoryObj appendIfNeededWithCommand:cmdline];
   
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
