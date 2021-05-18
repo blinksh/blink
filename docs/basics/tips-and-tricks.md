@@ -59,15 +59,22 @@ Forwards connections from a port on a local system to a port on a remote host:
 ssh -L 3000:localhost:3000 ssh-host
 ```
 ### Blink: Using screen corners
+
 Taping three fingers on the screen will bring a Blink menu in which you can set the Cover, Fill, and Fit setting, adapting Blink to different screens and devices.
 
 ![img](tips-and-tricks/Cover-Fill-Fit.png)
 
 ### External Display: Apple TV
+
 You can use Apple TV as a second monitor, just start screen share on Apple TV and Blink will use it as second monitor, not just mirroring. This is really cool if you are doing a presentation, or if you are on the couch with your phone and want to have a bigger display!
 
 ### External Display: Split View
+
 For the external display to work, Blink needs to be an active window on the iPad. A very cool way to do this is to use Split View on the iPad, giving Blink ½ or ¼ of the screen, while the rest can be taken by Safari or anything else you need!
+
+### Keyboard: Separate Keys
+
+By switching off the "Same for both sides" option in Config > Keyboard > ⌥ Option you can use one key as a `Meta` and the second as a normal `⌥ Option/Alt`. It's particularly helpful for users that use languages containing diacritic letters.
 
 ## Advanced
 
@@ -123,6 +130,23 @@ And enable this setting:
 ```vim
 set clipboard& clipboard^=unnamed,unnamedplus
 ```
+
+### Emacs: Copy/Paste using OSC52
+
+To enable copy/paste on Emacs you need to install [osc52.el](https://chromium.googlesource.com/apps/libapps/+/master/hterm/etc/osc52.el) and add this to your config:
+
+```emacs
+(require 'osc52)
+(osc52-set-cut-function)')
+```
+
+### Emacs: Custom Presses
+
+Using the Config > Keyboard > Custom Presses settings you can add new shortcuts. For instance, sending `ctrl-space` when hitting `ctrl-space`, as opposed to bringing up iPadOS's emoji menu. Now Emacs cut & paste doesn't need to rely on `ALT - x set-mark-command`.
+
+### Emacs: Change ALT to Meta
+
+Change "Prss and send" to **None** and "As modifier" to **ESC** option in Config > Keyboard > ⌥ Option so you can use it as `Meta`. From now on `⌥ Option/Alt - x` will work as `Meta - x`.
 
 ### VIM: Exit insert mode without ESC key
 
