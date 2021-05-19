@@ -119,4 +119,4 @@ Our UI is very straightforward and optimizes the experience on touch devices for
 - This product includes software developed by the OpenSSL Project
 for use in the OpenSSL Toolkit. (https://www.openssl.org/).
 - [Libssh2](https://www.libssh2.org)
-- Entypo pictograms by Bruce Daniel www.entypo.com.
+- Phosphor icons by Helena Zhang and Toby Fried [https://phosphoricons.com](https://phosphoricons.com)
