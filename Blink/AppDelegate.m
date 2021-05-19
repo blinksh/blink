@@ -68,7 +68,7 @@ void __setupProcessEnv() {
   setenv("PATH_LOCALE", locales_path.UTF8String, forceOverwrite);
   setlocale(LC_ALL, "UTF-8");
   setenv("TERM", "xterm-256color", forceOverwrite);
-  setenv("LANG", "en_us.UTF-8", forceOverwrite);
+  setenv("LANG", "en_US.UTF-8", forceOverwrite);
   
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
   ssh_init();
