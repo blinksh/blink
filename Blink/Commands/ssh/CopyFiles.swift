@@ -37,6 +37,7 @@ import Foundation
 import ArgumentParser
 import BlinkFiles
 import SSH
+import NonStdIO
 
 
 // TODO Wildcards on source will be matched by the shell, and throw No Match if there are none.
@@ -120,14 +121,10 @@ class FileLocationPath {
 public class BlinkCopy: NSObject {
   var copyCancellable: AnyCancellable?
   let device: TermDevice = tty()
-  let currentRunLoop: RunLoop
-  var stdout = StdoutOutputStream()
-  var stderr = StderrOutputStream()
+  let currentRunLoop = RunLoop.current
+  var stdout = OutputStream(file: thread_stdout)
+  var stderr = OutputStream(file: thread_stderr)
   var command: BlinkCopyCommand!
-
-  override init() {
-    self.currentRunLoop = RunLoop.current
-  }
 
   public func start(_ argc: Int32, argv: [String]) -> Int32 {
     // We can use the same command for different default protocols.
@@ -209,7 +206,7 @@ public class BlinkCopy: NSObject {
       }
     })
 
-    await(runLoop: currentRunLoop)
+    awaitRunLoop(currentRunLoop)
 
     return rc
   }

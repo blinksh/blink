@@ -34,6 +34,7 @@ import Foundation
 
 import ArgumentParser
 import SSH
+import NonStdIO
 
 
 struct BlinkSSHAgentAddCommand: ParsableCommand {
@@ -85,13 +86,9 @@ public func blink_ssh_add(argc: Int32, argv: Argv) -> Int32 {
 public class BlinkSSHAgentAdd: NSObject {
   var command: BlinkSSHAgentAddCommand!
   
-  var stdout = StdoutOutputStream()
-  var stderr = StderrOutputStream()
-  let currentRunLoop: RunLoop
-  
-  override init() {
-    self.currentRunLoop = RunLoop.current
-  }
+  var stdout = OutputStream(file: thread_stdout)
+  var stderr = OutputStream(file: thread_stderr)
+  let currentRunLoop = RunLoop.current
   
   public func start(_ argc: Int32, argv: [String]) -> Int32 {
     do {

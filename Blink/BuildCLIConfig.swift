@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,29 +29,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
+import Foundation
+import Machines
+import BuildCLI
 
-#import "Session.h"
-#import "SSHClient.h"
-
-
-@class MCPParams;
-@class BlinkSSH;
-
-@interface MCPSession : Session
-
-@property (strong) MCPParams *sessionParams;
-@property (readonly) dispatch_queue_t cmdQueue;
-
-- (void)registerSSHClient:(id __weak)sshClient;
-- (void)unregisterSSHClient:(id __weak)sshClient;
-
-- (void)enqueueCommand:(NSString *)cmd;
-- (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord;
-- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
-- (bool)isRunningCmd;
-
-- (void)updateAllowedPaths;
-
-@end
+extension BuildCLIConfig {
+  static let blinkConfig: BuildCLIConfig = {
+    let cfg = BuildCLIConfig.shared
+//    let storage = FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
+    let storage = UserDefaultsTokenStorage(ud: UserDefaults.suite, tokenKey: "machinesToken") //FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
+    cfg.tokenProvider = AuthTokenProvider(auth0: cfg.auth0, storage: storage)
+//    cfg.tokenProvider = UserDefaultsAuthTokenProvider(auth0: cfg.auth0, ud: UserDefaults.suite)
+    return cfg
+  }()
+}

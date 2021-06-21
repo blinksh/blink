@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,29 +29,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
+import Foundation
 
-#import "Session.h"
-#import "SSHClient.h"
+enum UDKeys: String {
+  case machinesToken
+}
 
-
-@class MCPParams;
-@class BlinkSSH;
-
-@interface MCPSession : Session
-
-@property (strong) MCPParams *sessionParams;
-@property (readonly) dispatch_queue_t cmdQueue;
-
-- (void)registerSSHClient:(id __weak)sshClient;
-- (void)unregisterSSHClient:(id __weak)sshClient;
-
-- (void)enqueueCommand:(NSString *)cmd;
-- (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord;
-- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
-- (bool)isRunningCmd;
-
-- (void)updateAllowedPaths;
-
-@end
+extension UserDefaults {
+  static let suiteName = "group.Com.CarlosCabanero.BlinkShell"
+  static let suite = UserDefaults(suiteName: suiteName)!
+  
+  var machinesToken: [String: Any]? {
+    get {
+      object(forKey: UDKeys.machinesToken.rawValue) as? [String: Any]
+    }
+    set {
+      if let token = newValue {
+        setValue(token, forKey: UDKeys.machinesToken.rawValue)
+      } else {
+        setValue(nil, forKey: UDKeys.machinesToken.rawValue)
+      }
+    }
+  }
+}

@@ -74,7 +74,7 @@ class SSHPool {
                 pb.send(conn)
         })
 
-      await(runLoop: runLoop!)
+      awaitRunLoop(runLoop!)
       RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
       print("Pool Thread out")
     }

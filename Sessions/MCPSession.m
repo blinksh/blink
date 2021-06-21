@@ -55,7 +55,7 @@
   Session *_childSession;
   NSString *_currentCmd;
   NSMutableArray *_sshClients;
-  dispatch_queue_t _cmdQueue;
+//  dispatch_queue_t _cmdQueue;
   dispatch_queue_t _sshQueue;
   TermStream *_cmdStream;
   NSString *_currentCmdLine;
@@ -140,22 +140,28 @@
 }
 
 - (void)enqueueCommand:(NSString *)cmd {
+  [self enqueueCommand:cmd skipHistoryRecord:NO];
+}
+
+- (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord {
   if (_cmdStream) {
     [_device writeInDirectly:[NSString stringWithFormat: @"%@\n", cmd]];
     return;
   }
   dispatch_async(_cmdQueue, ^{
     self->_currentCmdLine = cmd;
-    [self _runCommand:cmd];
+    [self _runCommand:cmd skipHistoryRecord:skipHistoryRecord];
     self->_currentCmdLine = nil;
   });
 }
 
-- (BOOL)_runCommand:(NSString *)cmdline {
+- (BOOL)_runCommand:(NSString *)cmdline skipHistoryRecord: (BOOL) skipHistoryRecord {
   
   cmdline = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
   
-  [HistoryObj appendIfNeededWithCommand:cmdline];
+  if (!skipHistoryRecord) {
+    [HistoryObj appendIfNeededWithCommand:cmdline];
+  }
   
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
   NSString *cmd = arr[0];
@@ -286,7 +292,11 @@
   MoshSession *mosh = [[MoshSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
   mosh.mcpSession = self;
   _childSession = mosh;
-  [_childSession executeAttachedWithArgs:args];
+  
+  // duplicate args
+  NSString *str = [NSString stringWithFormat:@"%@", args];
+  [_childSession executeAttachedWithArgs:str];
+  
   _childSession = nil;
 }
 
