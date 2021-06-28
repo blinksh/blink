@@ -140,6 +140,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self blink] stringByAppendingPathComponent:@"hosts"];
 }
 
++ (NSURL *)blinkSSHConfigFileURL
+{
+  return [[self blinkURL] URLByAppendingPathComponent:@"ssh_config"];
+}
+
+
 + (NSString *)blinkSyncItemsFile
 {
   return [[self blink] stringByAppendingPathComponent:@"syncItems"];

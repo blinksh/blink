@@ -33,6 +33,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "UICKeyChainStore.h"
 #import "BlinkPaths.h"
+#import "Blink-Swift.h"
 
 NSMutableArray *Hosts;
 
@@ -144,6 +145,11 @@ static UICKeyChainStore *__get_keychain() {
   return Hosts;
 }
 
++ (NSArray<BKHosts *> *)allHosts
+{
+  return [Hosts copy];
+}
+
 + (NSInteger)count
 {
   return [Hosts count];
@@ -151,6 +157,7 @@ static UICKeyChainStore *__get_keychain() {
 
 + (BOOL)saveHosts
 {
+  [self saveAllToSSHConfig];
   // Save IDs to file
   return [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
 }

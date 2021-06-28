@@ -47,6 +47,7 @@
 + (NSURL *) blinkURL;
 + (NSString *)blinkKeysFile;
 + (NSString *)blinkHostsFile;
++ (NSURL *)blinkSSHConfigFileURL;
 + (NSString *)blinkSyncItemsFile;
 + (NSString *)blinkProfileFile;
 + (NSURL *)blinkKBConfigURL;

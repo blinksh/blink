@@ -65,6 +65,15 @@
         }
       },
       {
+        "package": "SSHConfig",
+        "repositoryURL": "https://github.com/yury/SSHConfig",
+        "state": {
+          "branch": null,
+          "revision": "860b85ba04a0704f4b58e3b8fab029d6818132e3",
+          "version": "0.0.1"
+        }
+      },
+      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
