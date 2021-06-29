@@ -65,7 +65,7 @@ struct BuildImageBuildCommand: NonStdIOCommand {
   }
   
   func run() throws {
-    let ip = try BuildCLIConfig.shared.machine().ip().awaitOutput()!
+    let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
     let url = GitURL.from(url: URL(string: gitURL)!)
     var cmd = [
       "ssh", "-t",
@@ -126,12 +126,15 @@ struct BuildSSH: NonStdIOCommand {
   }
   
   func run() throws {
-    let ip = try BuildCLIConfig.shared.machine().ip().awaitOutput()!
+    let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
+    let user = BuildCLIConfig.shared.sshUser
+    let port = BuildCLIConfig.shared.sshPort
     var cmd = [
       "ssh", "-t",
+      "-p", String(port),
       verboseOptions.verbose ? "-v" : "",
       agent ? "-A" : "",
-      "\(BuildCLIConfig.shared.sshUser)@\(ip)",
+      "\(user)@\(ip)",
       "--", containerName ] + command
     
     cmd = cmd.filter { !$0.isEmpty }
@@ -162,10 +165,12 @@ struct BuildMOSH: NonStdIOCommand {
   
   func run() throws {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-    let ip = try BuildCLIConfig.shared.machine().ip().awaitOutput()!
+    let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
     print("Starting mosh connection...")
+    let user = BuildCLIConfig.shared.sshUser
+    let port = BuildCLIConfig.shared.sshPort
     session.cmdQueue.async {
-      session.enqueueCommand("mosh \(BuildCLIConfig.shared.sshUser)@\(ip) \(containerName)", skipHistoryRecord: true)
+      session.enqueueCommand("mosh -P \(port) \(user)@\(ip) \(containerName)", skipHistoryRecord: true)
     }
   }
 }
@@ -194,7 +199,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
     printDebug("Searching for key in keychain...")
     if let key = BKPubKey.withID(identity)?.publicKey {
       printDebug("Key found in keychain")
-      let _ = try BuildCLIConfig.shared.machine().sshKeys.add(sshKey: key).awaitOutput()
+      let _ = try BuildCLIConfig.shared.machine(io: io).sshKeys.add(sshKey: key).awaitOutput()
       print("Key is added.")
       return
     }
@@ -219,7 +224,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
       throw ValidationError("Can't read pub key at path: \(path)")
     }
     
-    let _ = try BuildCLIConfig.shared.machine().sshKeys.add(sshKey: key).awaitOutput()
+    let _ = try BuildCLIConfig.shared.machine(io: io).sshKeys.add(sshKey: key).awaitOutput()
     print("Key is added.")
   }
 }

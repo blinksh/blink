@@ -33,6 +33,7 @@
 import Intents
 import Machines
 import Promise
+import NonStdIO
 
 
 fileprivate let url = "https://api-staging.blink.build";
@@ -49,8 +50,8 @@ fileprivate let tokenProvider = AuthTokenProvider(
   storage: UserDefaultsTokenStorage(ud: .suite, tokenKey: "machinesToken")
 )
 
-func machine() -> Machines.Machine {
-  Machines.machine(baseURL: url, auth: .bearer(tokenProvider))
+func machine(io: NonStdIO = .standart) -> Machines.Machine {
+  Machines.machine(baseURL: url, auth: .bearer(tokenProvider), io: io)
 }
 
 class IntentHandler: INExtension {
