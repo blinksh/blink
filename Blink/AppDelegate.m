@@ -89,6 +89,10 @@ void __setupProcessEnv() {
       __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   });
 
+  NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.Com.CarlosCabanero.BlinkShell"];
+  
+  //[defaults setObject:BlinkPaths.blinkSSHConfigFileURL forKey:@"SSHConfigFile"];
+  
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
          selector:@selector(_onSceneDidEnterBackground:)
@@ -145,7 +149,9 @@ void __setupProcessEnv() {
 //  NSString *local = @"local";
 //  NSString *domainID2 = [NSString stringWithFormat:@"%@", local, uuid2String];
 
-  NSString *rootPath = [NSString stringWithFormat:@"%@:%@", @"local", @"/"];
+  // Identifiers <encodedRootPath>/path/to/files
+  // sftp:hostinfo:home_root_path
+  NSString *rootPath = [NSString stringWithFormat:@"%@:%@:@", @"sftp", @"l", @"/"];
   NSData *rootData = [rootPath dataUsingEncoding:NSUTF8StringEncoding];
   NSString *encodedRootPath = [rootData base64EncodedStringWithOptions:NO];
   

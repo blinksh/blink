@@ -30,9 +30,12 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import FileProvider
-import BlinkFiles
 import Combine
+
+import BlinkFiles
+import FileProvider
+import SSH
+import SSHConfig
 
 // TODO Provide proper error subclassing. BlinkFilesProviderError
 extension String: Error {}
@@ -47,8 +50,18 @@ class FileTranslatorPool {
   static let shared = FileTranslatorPool()
   private var translators: [String: AnyPublisher<Translator, Error>] = [:]
   private var references: [String: BlinkItemReference] = [:]
+  private var backgroundThread: Thread? = nil
+  private var backgroundRunLoop: RunLoop = RunLoop.current
   
-  private init() {}
+  private init() {
+    self.backgroundThread = Thread {
+      self.backgroundRunLoop = RunLoop.current
+      
+      RunLoop.current.run()
+    }
+    
+    self.backgroundThread!.start()
+  }
   
   static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
     guard let rootData = Data(base64Encoded: encodedRootPath),
@@ -80,6 +93,29 @@ class FileTranslatorPool {
       let translatorPub = Local().walkTo(pathAtFiles)
       shared.translators[encodedRootPath] = translatorPub
       return translatorPub
+    case .sftp:
+      // TODO host should not be nil for sftp
+      // TODO If runloop does not exist, due to some weird race condition
+      
+//      let configURL = try! BlinkPaths.sshConfigFile()
+//      let config = try! SSHConfig.parse(url: configURL)
+//      let hostConfigOptions = try! config.resolve(alias: host!)
+//
+//      let agent = SSHAgent()
+      
+      let hostConfig = SSHClientConfig(user: "carloscabanero", authMethods: [AuthPassword(with: "asdfzxcv")], loggingVerbosity: .info)
+      
+      return SSHClient
+        .dial("localhost", with: hostConfig)
+        .print("Dialing...")
+        .receive(on: RunLoop.main)
+        .flatMap { $0.requestSFTP() }.print("SFTP")
+        .flatMap { sftp -> AnyPublisher<Translator, Error> in
+          let translatorPub = sftp.walkTo(pathAtFiles)
+          shared.translators[encodedRootPath] = translatorPub
+          return translatorPub
+        }.eraseToAnyPublisher()
+      
     default:
       return Fail(error: "Not implemented").eraseToAnyPublisher()
     }
@@ -437,4 +473,22 @@ class FileProviderExtension: NSFileProviderExtension {
   deinit {
     print("OOOOUUUTTTTT!!!!!")
   }
+}
+
+class BlinkPaths {
+  static let suiteName = "group.Com.CarlosCabanero.BlinkShell"
+  static let suite = UserDefaults(suiteName: suiteName)!
+  
+  static func sshConfigFile() throws -> URL {
+    guard let fileKey = suite.object(forKey: "SSHConfigFile") as? URL else {
+      throw NSError()
+    }
+    
+    // TODO Check file exists?
+    return fileKey
+  }
+}
+
+class SSHClientConfigProvider {
+  
 }
