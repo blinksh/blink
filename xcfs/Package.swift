@@ -14,13 +14,13 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "libssh",
-    "61c522e3b20148eef891889cbd3dd88900bd96e9b72f3cd633cf13bcaece6f12",
+    "3853a96fdcb37bd843ccd4fd00f760b9cf3def1260befda1ecb34e65b904e08c",
     "https://github.com/blinksh/libssh-apple/releases/download/v0.9.4/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
-    "2748159e38052f8e072f97ad75d57bc3f9075be95f382a2ecf8e70101a2fe6d9",
-    "https://github.com/blinksh/openssh-apple/releases/download/v8.4.0/OpenSSH-static.xcframework.zip"
+    "cf74b2265618df037096dc3c013af84854e901097fc6304a22c1c5a0f781a7d5",
+    "https://github.com/blinksh/openssh-apple/releases/download/v8.6.0/OpenSSH-static.xcframework.zip"
   ),
   (
     "openssl",
@@ -85,12 +85,14 @@ _ = Package(
   platforms: [.macOS("11")],
   dependencies: [
     .package(url: "https://github.com/yury/FMake", from: "0.0.15"),
-    .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.3.0"))
+    .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
+    .package(url: "https://github.com/yury/BlinkMachines", from: "0.0.3"),
+    .package(url: "https://github.com/yury/SSHConfig", from: "0.0.1"),
   ],
   
   targets: binaryTargets + [
     .target(
-      name: "build",
+      name: "build-project",
       dependencies: ["FMake"]
     ),
   ]

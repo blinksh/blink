@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,35 +29,27 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
-@interface BlinkPaths : NSObject
+import Foundation
 
+enum UDKeys: String {
+  case machinesToken
+}
 
-+ (NSString *) documents;
-+ (NSURL *) documentsURL;
-
-+ (NSString *) iCloudDriveDocuments;
-
-// ~/.blink
-+ (NSString *) blink;
-// ~/.ssh
-+ (NSString *) ssh;
-
-+ (NSURL *) blinkURL;
-+ (NSString *)blinkKeysFile;
-+ (NSString *)blinkHostsFile;
-+ (NSURL *)blinkSSHConfigFileURL;
-+ (NSString *)blinkSyncItemsFile;
-+ (NSString *)blinkProfileFile;
-+ (NSURL *)blinkKBConfigURL;
-
-+ (NSString *) historyFile;
-+ (NSURL *)historyURL;
-+ (NSString *) knownHostsFile;
-+ (NSString *) defaultsFile;
-
-+ (void)linkICloudDriveIfNeeded;
-
-
-@end
+extension UserDefaults {
+  static let suiteName = "group.Com.CarlosCabanero.BlinkShell"
+  static let suite = UserDefaults(suiteName: suiteName)!
+  
+  var machinesToken: [String: Any]? {
+    get {
+      object(forKey: UDKeys.machinesToken.rawValue) as? [String: Any]
+    }
+    set {
+      if let token = newValue {
+        setValue(token, forKey: UDKeys.machinesToken.rawValue)
+      } else {
+        setValue(nil, forKey: UDKeys.machinesToken.rawValue)
+      }
+    }
+  }
+}

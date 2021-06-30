@@ -34,6 +34,7 @@ import Foundation
 
 import ArgumentParser
 import SSH
+import NonStdIO
 
 
 struct BlinkSSHAgentAddCommand: ParsableCommand {
@@ -44,18 +45,28 @@ struct BlinkSSHAgentAddCommand: ParsableCommand {
     version: "1.0.0"
   )
   
-  // List
-  @Flag(name: [.customShort("l")],
+  @Flag(name: [.customShort("L")],
   help: "List keys stored on agent")
   var list: Bool = false
+  
+  @Flag(name: [.customShort("l")],
+  help: "Lists fingerprints of keys stored on agent")
+  var listFingerprints: Bool = false
   
   // Remove
   @Flag(name: [.customShort("d")],
   help: "Remove key from agent")
   var remove: Bool = false
   
+  // Hash algorithm
+  @Option(
+    name: [.customShort("E")],
+    help: "Specify hash algorithm used for fingerprints"
+  )
+  var hashAlgorithm: String = "sha256"
+  
   @Argument(help: "Key name")
-  var keyName: String
+  var keyName: String?
   
   @Argument(help: "Agent name")
   var agentName: String?
@@ -75,13 +86,9 @@ public func blink_ssh_add(argc: Int32, argv: Argv) -> Int32 {
 public class BlinkSSHAgentAdd: NSObject {
   var command: BlinkSSHAgentAddCommand!
   
-  var stdout = StdoutOutputStream()
-  var stderr = StderrOutputStream()
-  let currentRunLoop: RunLoop
-  
-  override init() {
-    self.currentRunLoop = RunLoop.current
-  }
+  var stdout = OutputStream(file: thread_stdout)
+  var stderr = OutputStream(file: thread_stderr)
+  let currentRunLoop = RunLoop.current
   
   public func start(_ argc: Int32, argv: [String]) -> Int32 {
     do {
@@ -93,8 +100,9 @@ public class BlinkSSHAgentAdd: NSObject {
     }
     
     if command.remove {
-      if let _ = SSHAgentPool.removeKey(named: command.keyName) {
-        print("Key \(command.keyName) removed.", to: &stdout)
+      let keyName = command.keyName ?? "id_rsa"
+      if let _ = SSHAgentPool.removeKey(named: keyName) {
+        print("Key \(keyName) removed.", to: &stdout)
         return 0
       } else {
         print("Key not found on Agent", to: &stderr)
@@ -103,13 +111,38 @@ public class BlinkSSHAgentAdd: NSObject {
     }
     
     if command.list {
+      for key in SSHAgentPool.get()?.ring ?? []  {
+        let str = BKPubKey.withID(key.name)?.publicKey ?? ""
+        print("\(str) \(key.name)", to: &stdout)
+      }
+      
+      return 0;
+    }
+    
+    if command.listFingerprints {
+      guard
+        let alg = SSHDigest(rawValue: command.hashAlgorithm)
+      else {
+        print("Invalid hash algorithm \"\(command.hashAlgorithm)\"", to: &stderr)
+        return -1;
+      }
+      
+      for key in SSHAgentPool.get()?.ring ?? [] {
+        if let blob = try? key.signer.publicKey.encode()[4...],
+           let sshkey = try? SSHKey(fromPublicBlob: blob)
+        {
+          let str = sshkey.fingerprint(digest: alg)
+          
+          print("\(sshkey.size) \(str) \(key.name) (\(sshkey.sshKeyType.shortName))", to: &stdout)
+        }
+      }
       return 0
     }
     
     // TODO Can we have the same key under different constraints?
     
     // Default case: add key
-    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName) {
+    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName ?? "id_rsa") {
       SSHAgentPool.addKey(signer, named: name)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0

@@ -93,38 +93,7 @@ func tty() -> TermDevice {
   return session.device
 }
 
-enum iOSStd {
-  static func print(_ items: Any...) {
-    var out = StdoutOutputStream()
-    Swift.print(items, to: &out)
-  }
-}
-
-func printBlink(_ items: Any..., separator: String = " ", terminator: String = "\n") {
-  var out = StdoutOutputStream()
-  print(items, separator: separator, terminator: terminator, to: &out)
-}
-
-struct StdoutOutputStream: TextOutputStream {
-  let out = thread_stdout
-  let stdout = fileno(thread_stdout)
-
-  public func write(_ string: String) {
-    // Use write to ensure it is unbuffered. Sample code used fputs.
-    Darwin.write(stdout, string, string.count)
-  }
-}
-
-struct StderrOutputStream: TextOutputStream {
-  let out = thread_stderr
-  let stderr = fileno(thread_stderr)
-
-  public func write(_ string: String) {
-    Darwin.write(stderr, string, string.count)
-  }
-}
-
-func await(runLoop: RunLoop) {
+func awaitRunLoop(_ runLoop: RunLoop) {
   let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
     print("timer")
   }

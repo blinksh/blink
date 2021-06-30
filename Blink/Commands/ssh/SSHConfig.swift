@@ -64,14 +64,13 @@ struct SSHCommand: ParsableCommand {
   @Flag(name: .shortAndLong)
   var verbose: Int
 
-  @Option(name: [.customShort("O")],
-          help: "Control an active connection multiplexing master process",
-          transform: {
-            try SSHControlCommands(rawValue: $0) ?? {
-              throw ArgumentParser.ValidationError("Unknown control command.")
-            }()
-
-  } )
+  @Option(
+    name: [.customShort("O", allowingJoined: true)],
+    help: .init(
+      "Control an active connection multiplexing master process. Valid commands: (\(SSHControlCommands.allCases.map(\.rawValue).joined(separator: ", ")))",
+     valueName: "ctl_cmd"
+   )
+  )
   var control: SSHControlCommands?
 
   @Flag(name: [.customShort("N")],
@@ -92,23 +91,41 @@ struct SSHCommand: ParsableCommand {
 //  }}
 
   // Login name
-  @Option(name: [.customShort("l")],
-          help: "Login name. This option can also be specified at the host")
+  @Option(
+    name: [.customShort("l", allowingJoined: true)],
+    help: .init(
+      "Login name. This option can also be specified at the host",
+      valueName: "login_name"
+    )
+  )
   var loginName: String?
 
   // Jumps
-  @Option(name:  [.customShort("J")],
-          help: "Jump Hosts in a comma separated list")
+  @Option(
+    name: [.customShort("J")],
+    help: .init(
+      "Jump Hosts in a comma separated list",
+      valueName: "destination"
+    )
+  )
   var proxyJump: String?
 
   // Stdio forward
   @Option(name: [.customShort("W")],
-          help: "Forward stdio to the specified destination",
+          help: .init(
+            "Forward stdio to the specified destination",
+            valueName: "host:port"
+          ),
           transform: { try StdioForwardInfo($0) })
   var stdioHostAndPort: StdioForwardInfo?
 
-  @Option(name: [.customShort("o")],
-          help: "Secondary connection options in config file format.")
+  @Option(
+    name: [.customShort("o", allowingJoined: true)],
+    help: .init(
+      "Secondary connection options in config file format.",
+      valueName: "option"
+      )
+  )
   var options: [String] = []
   var connectionOptions: Result<ConfigFileOptions, Error> {
     Result { try ConfigFileOptions(options) }
@@ -120,30 +137,48 @@ struct SSHCommand: ParsableCommand {
   // TODO Disable host key check
   @Flag(name: [.customShort("T")],
         help: "Disable pseudo-tty allocation")
-  var disableTTY: Bool
+  var disableTTY: Bool = false
 
   @Flag(name: [.customShort("t")],
         help: "Force pseudo-tty allocation.")
-  var forceTTY: Bool
+  var forceTTY: Bool = false
 
   @Flag(name: [.customShort("G")],
         help: "Print configuration for host and exit.")
-  var printConfiguration: Bool
+  var printConfiguration: Bool = false
   
-  @Flag(name: [.customShort("A")],
-        help: "Forward Agent.")
-  var agentForward: Bool
+  @Flag(name: [.customShort("A")], help: "Forward Agent.")
+  var agentForward: Bool = false
 
   // SSH Port
-  @Option(name: [.customLong("port"), .customShort("p")],
-          help: "Specifies the port to connect to on the remote host.")
+  @Option(
+    name: [.customShort("p", allowingJoined: true)],
+    help: .init(
+      "Specifies the port to connect to on the remote host.",
+      valueName: "port"
+    )
+  )
   var customPort: UInt16?
 
+  @Option(
+    name: [.customShort("D", allowingJoined: true)],
+    help: .init(
+      "Dynamic port forwarding",
+      valueName: "port"
+    )
+  )
+  var dynamicForwardingPort: UInt16?
+  
   // Identity
-  @Option(name: [.customShort("i")],
-          help: """
-  Selects a file from which the identity (private key) for public key authentication is read. The default is ~/.ssh/id_dsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ed25519 and ~/.ssh/id_rsa.  Identity files may also be specified on a per-host basis in the configuration pane in the Settings of Blink.
-  """)
+  @Option(
+    name: [.customShort("i")],
+    help: .init(
+      """
+      Selects a file from which the identity (private key) for public key authentication is read. The default is ~/.ssh/id_dsa, ~/.ssh/id_ecdsa, ~/.ssh/id_ed25519 and ~/.ssh/id_rsa.  Identity files may also be specified on a per-host basis in the configuration pane in the Settings of Blink.
+      """,
+      valueName: "identity"
+    )
+  )
   var identityFile: String?
 
   // Connect to User at Host
@@ -177,9 +212,13 @@ struct SSHCommand: ParsableCommand {
     }
   }
 
-  @Argument(parsing: .unconditionalRemaining,
-            help: "command")
-  //@Argument(help: "command")
+  @Argument(
+    parsing: .unconditionalRemaining,
+    help: .init(
+      "If a <command> is specified, it is executed on the remote host instead of a login shell",
+      valueName: "command"
+    )
+  )
   fileprivate var cmd: [String] = []
   var command: [String] {
     get {
@@ -213,7 +252,7 @@ struct ConfigFileOptions {
   var controlMaster: Bool = true
   var sendEnv: [String: String] = [:]
   var strictHostChecking: Bool = true
-
+  
   init(_ options: [String]) throws {
     let lang = String(cString: getenv("LANG"))
     let term = String(cString: getenv("TERM"))
@@ -324,7 +363,7 @@ struct StdioForwardInfo: Equatable {
   }
 }
 
-enum SSHControlCommands: String {
+enum SSHControlCommands: String, CaseIterable, ExpressibleByArgument {
   case forward = "forward"
   case exit = "exit"
   case cancel = "cancel"

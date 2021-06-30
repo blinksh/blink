@@ -30,6 +30,13 @@
 		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
 		<string>no</string>
 	</array>
+	<key>build</key>
+	<array>
+		<string>MAIN</string>
+		<string>build_main</string>
+		<string>qv</string>
+		<string>no</string>
+	</array>
 	<key>cssh</key>
 	<array>
 		<string>MAIN</string>

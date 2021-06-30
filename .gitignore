@@ -52,3 +52,5 @@ developer_setup.xcconfig
 ## Fonts
 Resources/Fonts/Pragmata*
 .swiftpm
+
+Blink.xcodeproj/project.xcworkspace/xcshareddata

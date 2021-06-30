@@ -75,6 +75,7 @@ struct Complete {
     case host
     case blinkHost
     case blinkGeo
+    case blinkBuild
     case no
   }
   
@@ -187,7 +188,8 @@ struct Complete {
       "whois": "Internet domain name and network number directory service.", // fish
 
       "open": "open url of file (Experimental). 📤",
-      "link-files": "link folders from Files.app (Experimental)."
+      "link-files": "link folders from Files.app (Experimental).",
+      "build": "Access to Blink dev machines. ⚒ "
     ]
     
     __commandHintsCache = result
@@ -202,6 +204,7 @@ struct Complete {
     case "ls": return .directory
     case "file": return .file
     case "geo": return .blinkGeo
+    case "build": return .blinkBuild
     case "help", "exit", "whoami", "config", "clear", "history", "link-files":
       return .no
     default:
@@ -254,7 +257,7 @@ struct Complete {
     guard let cmd = token.cmd else {
       let kind: Kind = token.isRedirect ? .file : .command
       let commands = _complete(kind: kind, input: token.query)
-      let filtered = commands.filter({$0.hasPrefix(token.query)}).sorted().map { CompleteUtils.encode(str: $0, quote: token.quote) }
+      let filtered = commands.filter({$0.hasPrefix(token.query)}).map { CompleteUtils.encode(str: $0, quote: token.quote) }
       let hint = token.canShowHint ? _hint(kind: kind, candidates: filtered) : ""
       
       return (
@@ -280,7 +283,7 @@ struct Complete {
     }
     
     let kind = _completionKind(cmd)
-    let result = _complete(kind: kind, input: token.query).sorted().map { CompleteUtils.encode(str: $0, quote: token.quote) }
+    let result = _complete(kind: kind, input: token.query).map { CompleteUtils.encode(str: $0, quote: token.quote) }
     let hint = !token.canShowHint ? "" : _hint(kind: kind, candidates: Array(result.prefix(5)))
     
     return (
@@ -344,6 +347,9 @@ struct Complete {
     case .host: src = _allHosts();
     case .blinkHost: src = _allBlinkHosts();
     case .blinkGeo: src = ["track", "lock", "stop", "current", "authorize", "last"]
+    case .blinkBuild:
+//      src = ["machine", "up", "down", "ssh-keys", "containers", "device", "ps", "ssh", "mosh", "balance"]
+      return src.filter( {$0.hasPrefix(input)} )
     default: break
     }
     

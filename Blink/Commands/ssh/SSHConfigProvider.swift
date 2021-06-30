@@ -100,9 +100,7 @@ class SSHClientConfigProvider {
 enum BKConfig {
 
   static func privateKey(forIdentifier identifier: String) -> (String, String)? {
-    guard let publicKeys = (BKPubKey.all() as? [BKPubKey]) else {
-      return nil
-    }
+    let publicKeys = BKPubKey.all()
     
     guard
       let privateKey = publicKeys.first(where: { $0.id == identifier })?.loadPrivateKey()
@@ -302,7 +300,7 @@ extension SSHClientConfigProvider {
       printLn("Cannot read input.", err: true)
     }
 
-    return Just(response).setFailureType(to: Error.self).eraseToAnyPublisher()
+    return .just(response)
   }
   
   fileprivate func printLn(_ string: String, err: Bool = false) {

@@ -2,6 +2,24 @@
   "object": {
     "pins": [
       {
+        "package": "BlinkMachines",
+        "repositoryURL": "https://github.com/yury/BlinkMachines",
+        "state": {
+          "branch": null,
+          "revision": "da83e5ccd4f01dfb9bd4471b43ebb0cb961c327f",
+          "version": "0.0.3"
+        }
+      },
+      {
+        "package": "Signals",
+        "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
+        "state": {
+          "branch": null,
+          "revision": "1f6c49e186c8a4eeef87ba14f2f97b8646559d13",
+          "version": "1.0.200"
+        }
+      },
+      {
         "package": "FMake",
         "repositoryURL": "https://github.com/yury/FMake",
         "state": {
@@ -11,12 +29,57 @@
         }
       },
       {
+        "package": "Nanoseconds",
+        "repositoryURL": "https://github.com/dominicegginton/Nanoseconds",
+        "state": {
+          "branch": null,
+          "revision": "d874aa99470f12f38a1b9315c0a481adfaacc8b5",
+          "version": "1.1.1"
+        }
+      },
+      {
+        "package": "Promise",
+        "repositoryURL": "https://github.com/yury/Promise",
+        "state": {
+          "branch": null,
+          "revision": "ab6c034681c996e550d9001b752825de08a57076",
+          "version": "3.0.0"
+        }
+      },
+      {
+        "package": "Rainbow",
+        "repositoryURL": "https://github.com/onevcat/Rainbow",
+        "state": {
+          "branch": null,
+          "revision": "626c3d4b6b55354b4af3aa309f998fae9b31a3d9",
+          "version": "3.2.0"
+        }
+      },
+      {
+        "package": "Spinner",
+        "repositoryURL": "https://github.com/yury/Spinner",
+        "state": {
+          "branch": null,
+          "revision": "f53a7fde0f3155b7fc49b1a2a672600b0bfd3820",
+          "version": "1.3.6"
+        }
+      },
+      {
+        "package": "SSHConfig",
+        "repositoryURL": "https://github.com/yury/SSHConfig",
+        "state": {
+          "branch": null,
+          "revision": "860b85ba04a0704f4b58e3b8fab029d6818132e3",
+          "version": "0.0.1"
+        }
+      },
+      {
         "package": "swift-argument-parser",
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "9564d61b08a5335ae0a36f789a7d71493eacadfc",
-          "version": "0.3.2"
+          "revision": "986d191f94cec88f6350056da59c2e59e83d1229",
+          "version": "0.4.3"
         }
       }
     ]

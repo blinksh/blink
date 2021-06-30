@@ -2,7 +2,7 @@
 //
 // B L I N K
 //
-// Copyright (C) 2016-2021 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -30,16 +30,48 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-public protocol SSHAgentConstraint {
-  var name: String { get }
-  func enforce(useOf key: SSHAgentKey, by client: SSHClient) -> Bool
-}
+import Foundation
+//import SSH
+import SSHConfig
 
-public class SSHConstraintTrustedConnectionOnly: SSHAgentConstraint {
-  
-  public var name: String { "Trusted Connection" }
-  public init() {}
-  public func enforce(useOf key: SSHAgentKey, by client: SSHClient) -> Bool {
-    return client.trustAgentConnection
+extension BKHosts {
+  @objc public static func saveAllToSSHConfig() {
+    do {
+      let config = SSHConfig()
+      let hosts = BKHosts.allHosts() ?? []
+      for h in hosts {
+        var cfg: [(String, Any)] = []
+        if let user = h.user, !user.isEmpty {
+          cfg.append(("User", user))
+        }
+        if let port = h.port {
+          cfg.append(("Port", port.intValue))
+        }
+        if let hostName = h.hostName, !hostName.isEmpty {
+          cfg.append(("HostName", hostName))
+        }
+        if let key = h.key, !key.isEmpty, key != "None" {
+          cfg.append(("IdentityFile", key))
+        }
+        if let proxyCmd = h.proxyCmd, !proxyCmd.isEmpty {
+          cfg.append(("ProxyCommand", proxyCmd))
+        }
+        
+        try config.add(alias: h.host, cfg: cfg)
+      }
+      
+      guard
+        let data = config.string().data(using: .utf8),
+        let url = BlinkPaths.blinkSSHConfigFileURL()
+      else {
+        print("can't convert to data")
+        return
+      }
+      
+      try data.write(to: url)
+      
+    } catch {
+      print(error)
+    }
   }
 }

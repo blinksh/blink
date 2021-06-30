@@ -35,6 +35,7 @@ import SSH
 import Combine
 import Dispatch
 import ios_system
+import NonStdIO
 
 @_cdecl("blink_ssh_main")
 public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
@@ -54,13 +55,13 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var instream: Int32
   let device: TermDevice
   var isTTY: Bool
-  var stdout = StdoutOutputStream()
-  var stderr = StderrOutputStream()
+  var stdout = OutputStream(file: thread_stdout)
+  var stderr = OutputStream(file: thread_stderr)
   private var _mcp: MCPSession;
 
   var exitCode: Int32 = 0
   var cancellableBag: Set<AnyCancellable> = []
-  let currentRunLoop: RunLoop
+  let currentRunLoop = RunLoop.current
   var command: SSHCommand?
   var stream: SSH.Stream?
   var connection: SSH.SSHClient?
@@ -68,6 +69,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var tunnelStream: SSH.Stream?
   var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
+  var socks: SOCKSServer? = nil
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
@@ -78,7 +80,6 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     self.instream = fileno(thread_stdin)
     self.device = tty()
     self.isTTY = ios_isatty(self.instream) != 0
-    self.currentRunLoop = RunLoop.current
     super.init()
   }
 
@@ -97,6 +98,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       command = cmd
       options = try cmd.connectionOptions.get()
     } catch {
+      
       let message = SSHCommand.message(for: error)
       print("\(message)", to: &stderr)
       return -1
@@ -163,6 +165,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
     .flatMap { self.startForwardTunnels($0, command: cmd) }
     .flatMap { self.startReverseTunnels($0, command: cmd) }
+    .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
       switch completion {
       case .failure(let error):
@@ -182,7 +185,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     })
     .store(in: &cancellableBag)
 
-    await(runLoop: currentRunLoop)
+    awaitRunLoop(currentRunLoop)
 
     stream?.cancel()
     outStream?.close()
@@ -197,6 +200,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     if let conn = self.connection, cmd.blocks {
       SSHPool.deregister(runningCommand: cmd, on: conn)
     }
+    
+    self.socks?.close()
 
     return exitCode
   }
@@ -328,6 +333,20 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }.eraseToAnyPublisher()
   }
 
+  private func startDynamicForwarding(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+    guard let port = command.dynamicForwardingPort else {
+      return .just(conn)
+    }
+    
+    do {
+      self.socks = try SOCKSServer(port, proxy: conn)
+    } catch {
+      return .fail(error: error)
+    }
+    
+    return .just(conn)
+  }
+  
   @objc public func sigwinch() {
     var c: AnyCancellable?
     c = stream?

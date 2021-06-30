@@ -41,7 +41,7 @@ extension SSHClientConfig {
     user: Credentials.none.user,
     port: Credentials.port,
     authMethods: [],
-    loggingVerbosity: .info
+    loggingVerbosity: .debug
   )
 }
 

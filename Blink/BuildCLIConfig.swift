@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,35 +29,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
-@interface BlinkPaths : NSObject
+import Foundation
+import Machines
+import BuildCLI
 
-
-+ (NSString *) documents;
-+ (NSURL *) documentsURL;
-
-+ (NSString *) iCloudDriveDocuments;
-
-// ~/.blink
-+ (NSString *) blink;
-// ~/.ssh
-+ (NSString *) ssh;
-
-+ (NSURL *) blinkURL;
-+ (NSString *)blinkKeysFile;
-+ (NSString *)blinkHostsFile;
-+ (NSURL *)blinkSSHConfigFileURL;
-+ (NSString *)blinkSyncItemsFile;
-+ (NSString *)blinkProfileFile;
-+ (NSURL *)blinkKBConfigURL;
-
-+ (NSString *) historyFile;
-+ (NSURL *)historyURL;
-+ (NSString *) knownHostsFile;
-+ (NSString *) defaultsFile;
-
-+ (void)linkICloudDriveIfNeeded;
-
-
-@end
+extension BuildCLIConfig {
+  static let blinkConfig: BuildCLIConfig = {
+    let cfg = BuildCLIConfig.shared
+//    let storage = FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
+    let storage = UserDefaultsTokenStorage(ud: UserDefaults.suite, tokenKey: "machinesToken") //FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
+    cfg.tokenProvider = AuthTokenProvider(auth0: cfg.auth0, storage: storage)
+//    cfg.tokenProvider = UserDefaultsAuthTokenProvider(auth0: cfg.auth0, ud: UserDefaults.suite)
+    return cfg
+  }()
+}

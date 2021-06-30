@@ -106,6 +106,7 @@ public class SSHKey: Signer, PublicKey {
   public var publicKey: PublicKey { get { self } }
   public var type: String { get { String(cString: sshkey_ssh_name(pkey)) } }
   public var sshKeyType: SSHKeyType { get { keyType } }
+  public var size: UInt32 { sshkey_size(pkey) }
 
   convenience public init(
     fromFile privateKeyPath: String,
@@ -301,6 +302,7 @@ public class SSHKey: Signer, PublicKey {
       sshbuf_free(blob)
     }
 
+    
     let rc = sshkey_puts_opts(pkey, blob, SSHKEY_SERIALIZE_INFO)
     guard rc == 0 else {
       throw SSHKeyError.general(title: "Could not encode key.", rc: rc)
@@ -335,6 +337,7 @@ public class SSHKey: Signer, PublicKey {
     sshkey_free(pkey)
     pcomment?.deallocate()
   }
+
 }
 
 extension SSHKey {
@@ -370,5 +373,34 @@ extension SSHKey {
     }
     
     return res
+  }
+}
+
+// fingerprints
+
+public enum SSHDigest: Int32 {
+  case md5 = 0
+  case sha1, sha256, sha384, sha512
+  
+  public init?(rawValue: String) {
+    self.init(rawValue: ssh_digest_alg_by_name(rawValue))
+  }
+}
+
+/* Fingerprint representation formats */
+public enum FingerPrintType: UInt32 {
+  case `default` = 0
+  case hex, base64, bubbleabble, randomart
+}
+
+extension SSHKey {
+  public func fingerprint(
+    digest: SSHDigest = .sha512,
+    type: FingerPrintType = .base64
+  ) -> String {
+    if let cc = sshkey_fingerprint(pkey, digest.rawValue, sshkey_fp_rep(type.rawValue)) {
+      return String(cString: cc)
+    }
+    return ""
   }
 }

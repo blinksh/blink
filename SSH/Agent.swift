@@ -53,8 +53,8 @@ fileprivate let errorData = Data(bytes: [0x05], count: MemoryLayout<CChar>.size)
 public class SSHAgentKey {
   let constraints: [SSHAgentConstraint]?
 //  var expiration: Int
-  let signer: Signer
-  let name: String
+  public let signer: Signer
+  public let name: String
   
   init(_ key: Signer, named: String, constraints: [SSHAgentConstraint]? = nil) {
     self.signer = key
@@ -122,9 +122,16 @@ public class SSHAgent {
     ssh_set_agent_callback(client.session, cb, ctxt)
   }
 
-  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) {
+  public func loadKey(_ key: Signer, aka name: String, constraints: [SSHAgentConstraint]? = nil) -> Bool {
     let cKey = SSHAgentKey(key, named: name, constraints: constraints)
+    // TODO: check constraints
+    for k in ring {
+      if cKey.name == k.name {
+        return false
+      }
+    }
     ring.append(cKey)
+    return true
   }
   
   public func removeKey(_ name: String) -> Signer? {
@@ -152,8 +159,8 @@ public class SSHAgent {
           
           return Data(bytes: &respType, count: MemoryLayout<CChar>.size)
             + signature
-        default:
-          throw SSHKeyError.general(title: "Invalid request received")
+//        default:
+//          throw SSHKeyError.general(title: "Invalid request received")
       }
   }
 
@@ -277,8 +284,8 @@ public enum SSHEncode {
   }
   
   public static func data(from int: UInt32) -> Data {
-    var length: UInt32 = UInt32(int).bigEndian
-    return Data(bytes: &length, count: MemoryLayout<UInt32>.size)
+    var val: UInt32 = UInt32(int).bigEndian
+    return Data(bytes: &val, count: MemoryLayout<UInt32>.size)
   }
   
   public static func data(from bytes: Data) -> Data {
