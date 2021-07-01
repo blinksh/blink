@@ -48,7 +48,23 @@ NSString *__documentsPath = nil;
   return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
 }
 
++ (NSString *)groupContainerPath {
+  NSFileManager *fm = [NSFileManager defaultManager];
+  return [fm containerURLForSecurityApplicationGroupIdentifier:@"group.Com.CarlosCabanero.BlinkShell"].path;
+}
+
++ (NSString *)groupHostsFilePath {
+  return [[self groupContainerPath] stringByAppendingPathComponent:@"hosts"];
+}
+
+
++ (NSString *)groupKeysFilePath {
+  return [[self groupContainerPath] stringByAppendingPathComponent:@"keys"];
+}
+
+
 NSString *__iCloudsDriveDocumentsPath = nil;
+
 
 + (NSString *)iCloudDriveDocuments
 {

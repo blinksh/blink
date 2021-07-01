@@ -91,6 +91,7 @@ public class BlinkSSHAgentAdd: NSObject {
   let currentRunLoop = RunLoop.current
   
   public func start(_ argc: Int32, argv: [String]) -> Int32 {
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
     do {
       command = try BlinkSSHAgentAddCommand.parse(Array(argv[1...]))
     } catch {
@@ -142,7 +143,7 @@ public class BlinkSSHAgentAdd: NSObject {
     // TODO Can we have the same key under different constraints?
     
     // Default case: add key
-    if let (signer, name) = BKConfig.signer(forIdentity: command.keyName ?? "id_rsa") {
+    if let (signer, name) = bkConfig.signer(forIdentity: command.keyName ?? "id_rsa") {
       SSHAgentPool.addKey(signer, named: name)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0

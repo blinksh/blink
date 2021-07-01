@@ -35,6 +35,11 @@ import SSH
 
 extension BKPubKey {
   
+  @objc public static func copyKeysFileToGroupContainer() {
+    let fm = FileManager.default
+    try? fm.copyItem(atPath: BlinkPaths.blinkKeysFile(), toPath: BlinkPaths.groupKeysFilePath())
+  }
+  
   @objc public static func saveDefaultKey() -> Bool {
     do {
       let key = try SSHKey(type: .rsa, bits: 4096)
@@ -47,7 +52,7 @@ extension BKPubKey {
     return  true
   }
   
-  static func addKeychainKey(id: String, key: SSHKey, comment: String) throws {
+  public static func addKeychainKey(id: String, key: SSHKey, comment: String) throws {
     let tag = ProcessInfo().globallyUniqueString
     let publicKey = try key.authorizedKey(withComment: comment)
     guard
@@ -69,7 +74,7 @@ extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
-  static func addSEKey(id: String, comment: String) throws {
+  public static func addSEKey(id: String, comment: String) throws {
     let tag = ProcessInfo().globallyUniqueString
     let key = try SEKey.create(tagged: tag)
     
@@ -91,9 +96,21 @@ extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
-  static func signerWithID(_ id: String) -> Signer? {
+  public static func removeCard(card: BKPubKey) {
+    if card.storageType == BKPubKeyStorageTypeSecureEnclave {
+      try? SEKey.delete(tag: card.tag)
+    }
+    
+    card.removeCard()
+  }
+  
+}
+
+
+extension Collection where Element == BKPubKey {
+  public func signerWithID(_ id: String) -> Signer? {
     guard
-      let card = BKPubKey.withID(id)
+      let card = self.first(where: { $0.id == id }) //BKPubKey.withID(id)
     else {
       return nil
     }
@@ -118,12 +135,5 @@ extension BKPubKey {
     return nil
   }
   
-  static func removeCard(card: BKPubKey) {
-    if card.storageType == BKPubKeyStorageTypeSecureEnclave {
-      try? SEKey.delete(tag: card.tag)
-    }
-    
-    card.removeCard()
-  }
-  
+
 }

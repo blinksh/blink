@@ -31,10 +31,13 @@
 
 
 import Foundation
-//import SSH
 import SSHConfig
 
 extension BKHosts {
+  @objc public static func copyHostsFileToGroupContainer() {
+    let fm = FileManager.default
+    try? fm.copyItem(atPath: BlinkPaths.blinkHostsFile(), toPath: BlinkPaths.groupHostsFilePath())
+  }
   @objc public static func saveAllToSSHConfig() {
     do {
       let config = SSHConfig()

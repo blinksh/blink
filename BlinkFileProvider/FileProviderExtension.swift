@@ -32,6 +32,7 @@
 
 import Combine
 
+import BlinkConfig
 import BlinkFiles
 import FileProvider
 import SSH
@@ -46,7 +47,7 @@ enum BlinkFilesProtocol: String {
   case sftp = "sftp"
 }
 
-class FileTranslatorPool {
+final class FileTranslatorPool {
   static let shared = FileTranslatorPool()
   private var translators: [String: AnyPublisher<Translator, Error>] = [:]
   private var references: [String: BlinkItemReference] = [:]
@@ -94,29 +95,28 @@ class FileTranslatorPool {
       shared.translators[encodedRootPath] = translatorPub
       return translatorPub
     case .sftp:
-      // TODO host should not be nil for sftp
-      // TODO If runloop does not exist, due to some weird race condition
       
-//      let configURL = try! BlinkPaths.sshConfigFile()
-//      let config = try! SSHConfig.parse(url: configURL)
-//      let hostConfigOptions = try! config.resolve(alias: host!)
-//
-//      let agent = SSHAgent()
-      
-      let hostConfig = SSHClientConfig(user: "carloscabanero", authMethods: [AuthPassword(with: "asdfzxcv")], loggingVerbosity: .info)
-      
-      return Just(hostConfig).receive(on: DispatchQueue.main).flatMap {
+      let (host, config) = SSHClientConfigProvider.config(host: host!)
+            
+      return Just(config).receive(on: DispatchQueue.main).flatMap {
         SSHClient
-        .dial("localhost", with: $0)
+        .dial(host, with: $0)
         .print("Dialing...")
-        .receive(on: RunLoop.main)
+        .receive(on: FileTranslatorPool.shared.backgroundRunLoop)
         .flatMap { $0.requestSFTP() }.print("SFTP")
         .flatMap { sftp -> AnyPublisher<Translator, Error> in
           let translatorPub = sftp.walkTo(pathAtFiles)
           shared.translators[encodedRootPath] = translatorPub
           return translatorPub
         }
-      }.eraseToAnyPublisher()
+      }
+      .eraseToAnyPublisher()
+      .handleEvents(receiveCompletion: { c in
+        
+        var y = c
+        
+      })
+      .eraseToAnyPublisher()
     default:
       return Fail(error: "Not implemented").eraseToAnyPublisher()
     }
@@ -476,20 +476,49 @@ class FileProviderExtension: NSFileProviderExtension {
   }
 }
 
-class BlinkPaths {
-  static let suiteName = "group.Com.CarlosCabanero.BlinkShell"
-  static let suite = UserDefaults(suiteName: suiteName)!
-  
-  static func sshConfigFile() throws -> URL {
-    guard let fileKey = suite.object(forKey: "SSHConfigFile") as? URL else {
-      throw NSError()
-    }
-    
-    // TODO Check file exists?
-    return fileKey
-  }
-}
-
 class SSHClientConfigProvider {
   
+  static func config(host: String) -> (String, SSHClientConfig) {
+    
+    let bkConfig = BKConfig(allHosts: BKHosts.groupContainerHosts(), allIdentities: BKPubKey.groupContainerKeys())
+    let agent = SSHAgent()
+    
+    let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
+    
+    if let (signer, name) = bkConfig.signer(forHost: host) {
+      _ = agent.loadKey(signer, aka: name, constraints: consts)
+    } else {
+      for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
+        if let (signer, name) = bkConfig.signer(forIdentity: identity) {
+          _ = agent.loadKey(signer, aka: name, constraints: consts)
+        }
+      }
+    }
+    
+    var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
+    if let password = bkConfig.password(forHost: host), !password.isEmpty {
+      availableAuthMethods.append(AuthPassword(with: password))
+    }
+    
+    let logger = PassthroughSubject<String, Never>()
+    
+    return (
+      bkConfig.hostName(forHost: host)!,
+      SSHClientConfig(
+        user: bkConfig.user(forHost: host) ?? "root",
+        port: bkConfig.port(forHost: host) ?? "22",
+        proxyJump: nil,
+        proxyCommand: bkConfig.proxyCommand(forHost: host),
+        authMethods: availableAuthMethods,
+        agent: agent,
+        loggingVerbosity: SSHLogLevel.debug,
+        verifyHostCallback: nil,
+        connectionTimeout: 300,
+        sshDirectory: BlinkPaths.ssh()!,
+        logger: logger,
+        compression: false,
+        compressionLevel: 6
+      )
+    )
+  }
 }

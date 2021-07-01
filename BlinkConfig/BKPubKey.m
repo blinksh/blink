@@ -29,18 +29,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <libssh/callbacks.h>
+//#include <libssh/callbacks.h>
 
 #import <Foundation/Foundation.h>
 #import "BKPubKey.h"
 #import "UICKeyChainStore.h"
 
+#import <BlinkConfig/BlinkConfig-Swift.h>
+
 #import "BlinkPaths.h"
-#import <openssl/rsa.h>
-#import <OpenSSH/sshbuf.h>
-#import <OpenSSH/sshkey.h>
-#import <OpenSSH/ssherr.h>
-#import "Blink-Swift.h"
+//#import <openssl/rsa.h>
+//#import <OpenSSH/sshbuf.h>
+//#import <OpenSSH/sshkey.h>
+//#import <OpenSSH/ssherr.h>
+//#import "Blink-Swift.h"
 
 NSMutableArray *Identities;
 
@@ -85,7 +87,13 @@ static UICKeyChainStore *__get_keychain() {
 + (BOOL)saveIDS
 {
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
+  BOOL result =  [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
+  [self copyKeysFileToGroupContainer];
+  return result;
+}
+
++ (NSArray<BKPubKey *> *)groupContainerKeys {
+  return [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths groupKeysFilePath]];
 }
 
 + (void)loadIDS

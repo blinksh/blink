@@ -33,7 +33,7 @@
 #import "BKiCloudSyncHandler.h"
 #import "UICKeyChainStore.h"
 #import "BlinkPaths.h"
-#import "Blink-Swift.h"
+#import <BlinkConfig/BlinkConfig-Swift.h>
 
 NSMutableArray *Hosts;
 
@@ -147,6 +147,9 @@ static UICKeyChainStore *__get_keychain() {
 
 + (NSArray<BKHosts *> *)allHosts
 {
+  if (Hosts == nil) {
+    [BKHosts loadHosts];
+  }
   return [Hosts copy];
 }
 
@@ -159,7 +162,12 @@ static UICKeyChainStore *__get_keychain() {
 {
   [self saveAllToSSHConfig];
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
+  
+  BOOL result = [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
+  
+  [self copyHostsFileToGroupContainer];
+  
+  return result;
 }
 
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPortRange:(NSString *)moshPortRange startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
@@ -241,6 +249,10 @@ static UICKeyChainStore *__get_keychain() {
     // Initialize the structure if it doesn't exist
     Hosts = [[NSMutableArray alloc] init];
   }
+}
+
++ (NSArray<BKHosts *> *)groupContainerHosts {
+  return [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths groupHostsFilePath]];
 }
 
 + (NSString *)predictionStringForRawValue:(int)rawValue

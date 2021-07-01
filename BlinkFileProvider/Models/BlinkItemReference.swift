@@ -187,27 +187,14 @@ struct BlinkItemReference {
   }
 
   var creationDate: Date? {
-
-    guard let date = attributes[.creationDate] as? Date else {
-      return nil
-    }
-
-    return date
+    attributes[.creationDate] as? Date
   }
 
   var contentModificationDate: Date? {
-    guard let date  = attributes[.modificationDate] as? Date else {
-      return nil
-    }
-
-    return date
+    attributes[.modificationDate] as? Date
   }
 
   var documentSize: NSNumber? {
-    guard let size = attributes[.size] as? NSNumber else {
-      return nil
-    }
-
-    return size
+    attributes[.size] as? NSNumber
   }
 }

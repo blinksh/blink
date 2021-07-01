@@ -83,7 +83,6 @@
 		9827126B262E4BDB00F883FA /* BlinkFileProvider.appex in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 98271250262E4BDB00F883FA /* BlinkFileProvider.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */; };
 		98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
-		98E7D0E5263971C000758CF9 /* BlinkFiles.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
@@ -96,8 +95,6 @@
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
-		BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
-		BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
 		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
 		BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFF426001B020084705F /* AgentConstraints.swift */; };
 		BD8D892225DC428300E55D9E /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D891D25DC428300E55D9E /* Agent.swift */; };
@@ -114,8 +111,6 @@
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
 		BD9BF7E9262A6B0F00B02074 /* SOCKSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */; };
 		BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
-		BDF471BB268CD17B00A7A41B /* SSH.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		BDF471C3268CD25F00A7A41B /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		BDF47238268CD50300A7A41B /* SSHConfig in Frameworks */ = {isa = PBXBuildFile; productRef = BDF47237268CD50300A7A41B /* SSHConfig */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
@@ -128,10 +123,8 @@
 		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
 		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
 		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
 		C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
 		C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
-		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
@@ -197,7 +190,6 @@
 		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
-		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeyListView.swift */; };
 		D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */; };
 		D23FFC6A261C2D46003E9227 /* template_setup.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D23FFC69261C2D46003E9227 /* template_setup.xcconfig */; };
@@ -235,7 +227,6 @@
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2673734265BD77B002036FF /* BuildCLIConfig.swift */; };
-		D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269BF812608792A00ECEDF8 /* BKPubKey.swift */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
@@ -256,6 +247,22 @@
 		D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
+		D2A656FB268D9E23002E6ED7 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
+		D2A656FC268D9EA2002E6ED7 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */; };
+		D2A656FD268D9EB6002E6ED7 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
+		D2A656FE268D9ED9002E6ED7 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */; };
+		D2A656FF268D9ED9002E6ED7 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269BF812608792A00ECEDF8 /* BKPubKey.swift */; };
+		D2A65705268D9FCB002E6ED7 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2FD57E2268D9C420033996F /* BlinkConfig.framework */; };
+		D2A65706268D9FCB002E6ED7 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2FD57E2268D9C420033996F /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2A6570B268DA01E002E6ED7 /* SSHConfig in Frameworks */ = {isa = PBXBuildFile; productRef = D2A6570A268DA01E002E6ED7 /* SSHConfig */; };
+		D2A6570C268DA0DC002E6ED7 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
+		D2A65711268DA4C4002E6ED7 /* BKHosts.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B2E00D1D6B612300B89F69 /* BKHosts.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2A65712268DA4E9002E6ED7 /* BKPubKey.h in Headers */ = {isa = PBXBuildFile; fileRef = C9B2E0071D6B612300B89F69 /* BKPubKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2A65713268DA51D002E6ED7 /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
+		D2A65714268DA522002E6ED7 /* BlinkPaths.h in Headers */ = {isa = PBXBuildFile; fileRef = D23E142920A970C3000FCF5C /* BlinkPaths.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2A65715268DA84E002E6ED7 /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
+		D2A65719268DABC0002E6ED7 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2FD57E2268D9C420033996F /* BlinkConfig.framework */; };
+		D2A6571E268DAE2A002E6ED7 /* BKConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6571D268DAE2A002E6ED7 /* BKConfig.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
 		D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611D23AB5ACD00BE6585 /* UIApplication+Version.m */; };
@@ -311,7 +318,6 @@
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
-		D2DE9AC62689DBC1005BBB7A /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */; };
 		D2EC7B4C25DBC922008B6B3C /* XCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */; };
 		D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */; };
 		D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EFE1EE20B7FAFC0087888B /* link_files.m */; };
@@ -326,8 +332,10 @@
 		D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9525CA99AD00F2225D /* libssh2.xcframework */; };
 		D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
 		D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
-		D2F64CBD25CABEFB00F2225D /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */; };
 		D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */; };
+		D2FD57E5268D9C420033996F /* BlinkConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D2FD57E4268D9C420033996F /* BlinkConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D2FD57E8268D9C420033996F /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2FD57E2268D9C420033996F /* BlinkConfig.framework */; };
+		D2FD57E9268D9C420033996F /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2FD57E2268D9C420033996F /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -443,6 +451,27 @@
 			remoteGlobalIDString = 1777D3DF1D757AF50037C7F1;
 			remoteInfo = "MBProgressHUD Framework tvOS";
 		};
+		D2A65707268D9FCB002E6ED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2FD57E1268D9C420033996F;
+			remoteInfo = BlinkConfig;
+		};
+		D2A6570E268DA0DC002E6ED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABB8325C9AEC000E1CC2C;
+			remoteInfo = SSH;
+		};
+		D2A6571B268DABC0002E6ED7 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2FD57E1268D9C420033996F;
+			remoteInfo = BlinkConfig;
+		};
 		D2BF5F712659522C0070F839 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -457,6 +486,13 @@
 			remoteGlobalIDString = 2219DFCF1FD73AF500675252;
 			remoteInfo = curl_ios_static;
 		};
+		D2FD57E6268D9C420033996F /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = D2FD57E1268D9C420033996F;
+			remoteInfo = BlinkConfig;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -468,6 +504,7 @@
 			files = (
 				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
 				07FABB9A25C9AEC100E1CC2C /* SSH.framework in Embed Frameworks */,
+				D2FD57E9268D9C420033996F /* BlinkConfig.framework in Embed Frameworks */,
 				D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */,
 				D2334F0725C1C28F00385378 /* text.xcframework in Embed Frameworks */,
 				D2334EF525C1C28F00385378 /* ios_system.xcframework in Embed Frameworks */,
@@ -478,18 +515,6 @@
 				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
 				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 				07FABBC525C9AECF00E1CC2C /* BlinkFiles.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		98E7D0E8263971C000758CF9 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				98E7D0E5263971C000758CF9 /* BlinkFiles.framework in Embed Frameworks */,
-				BDF471BB268CD17B00A7A41B /* SSH.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -505,6 +530,17 @@
 				D2BF5F732659522C0070F839 /* BlinkIntents.appex in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2A65709268D9FCB002E6ED7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				D2A65706268D9FCB002E6ED7 /* BlinkConfig.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -789,6 +825,7 @@
 		D2A0C63E20AAD98D001CF38F /* ios_error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_error.h; sourceTree = "<group>"; };
 		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
 		D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGestureRecognizer.swift; sourceTree = "<group>"; };
+		D2A6571D268DAE2A002E6ED7 /* BKConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKConfig.swift; sourceTree = "<group>"; };
 		D2A86D6720EB86F2000DF1DA /* SSHClientOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientOptions.h; sourceTree = "<group>"; };
 		D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientOptions.m; sourceTree = "<group>"; };
 		D2A90ADB20D277DF0073BF3D /* ssh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ssh.m; sourceTree = "<group>"; };
@@ -867,6 +904,8 @@
 		D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
 		D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
+		D2FD57E2268D9C420033996F /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		D2FD57E4268D9C420033996F /* BlinkConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkConfig.h; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -915,6 +954,7 @@
 				BDF47238268CD50300A7A41B /* SSHConfig in Frameworks */,
 				98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */,
 				BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */,
+				D2A65719268DABC0002E6ED7 /* BlinkConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -937,7 +977,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2B9E220268084F10084B2C4 /* Machines in Frameworks */,
+				D2A65705268D9FCB002E6ED7 /* BlinkConfig.framework in Frameworks */,
 				D2BF5F6C2659522C0070F839 /* Intents.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2FD57DF268D9C420033996F /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2A6570B268DA01E002E6ED7 /* SSHConfig in Frameworks */,
+				D2A6570C268DA0DC002E6ED7 /* SSH.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -952,6 +1002,7 @@
 				07FABB9925C9AEC100E1CC2C /* SSH.framework in Frameworks */,
 				D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */,
 				D248EC562689EAFE009FD817 /* SSHConfig in Frameworks */,
+				D2FD57E8268D9C420033996F /* BlinkConfig.framework in Frameworks */,
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
 				D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
@@ -999,8 +1050,6 @@
 				D2D6D78520527651003CBEC4 /* TermDevice.m */,
 				D27BBA1A20529FFF00AEA303 /* TermStream.h */,
 				D27BBA1B20529FFF00AEA303 /* TermStream.m */,
-				D23E142920A970C3000FCF5C /* BlinkPaths.h */,
-				D23E142A20A970C3000FCF5C /* BlinkPaths.m */,
 				D2060A5220E2644400CF5122 /* SSHClient.h */,
 				D2060A5320E2644400CF5122 /* SSHClient.m */,
 				D2C0F30E20E64FAD00E48F3A /* SSHClientConnectedChannel.h */,
@@ -1030,10 +1079,8 @@
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
-				D269BF812608792A00ECEDF8 /* BKPubKey.swift */,
 				D2BF5F7B265953090070F839 /* Intents.intentdefinition */,
 				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
-				D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1150,7 +1197,6 @@
 		07FAB8E925C8E6C500E1CC2C /* ssh */ = {
 			isa = PBXGroup;
 			children = (
-				BDB713D425F133EF00129A55 /* SEKey.swift */,
 				07FAB8EA25C8E6C500E1CC2C /* Helpers.swift */,
 				07FAB8EB25C8E6C500E1CC2C /* CopyFiles.swift */,
 				07FAB8EC25C8E6C500E1CC2C /* ssh.swift */,
@@ -1369,8 +1415,6 @@
 			isa = PBXGroup;
 			children = (
 				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
-				D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */,
-				D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */,
 				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
 				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
 				B7B3FC3A1DF5E96900B3D37C /* Security */,
@@ -1387,14 +1431,10 @@
 			children = (
 				C94437551D8311960096F84E /* BKResource.h */,
 				C94437561D8311960096F84E /* BKResource.m */,
-				C9B2E0071D6B612300B89F69 /* BKPubKey.h */,
-				C9B2E0081D6B612300B89F69 /* BKPubKey.m */,
 				C9B2E0091D6B612300B89F69 /* BKDefaults.h */,
 				C9B2E00A1D6B612300B89F69 /* BKDefaults.m */,
 				C9B2E00B1D6B612300B89F69 /* BKFont.h */,
 				C9B2E00C1D6B612300B89F69 /* BKFont.m */,
-				C9B2E00D1D6B612300B89F69 /* BKHosts.h */,
-				C9B2E00E1D6B612300B89F69 /* BKHosts.m */,
 				C9B2E00F1D6B612300B89F69 /* BKTheme.h */,
 				C9B2E0101D6B612300B89F69 /* BKTheme.m */,
 			);
@@ -1658,6 +1698,26 @@
 			path = Commands;
 			sourceTree = "<group>";
 		};
+		D2FD57E3268D9C420033996F /* BlinkConfig */ = {
+			isa = PBXGroup;
+			children = (
+				D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */,
+				D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */,
+				C9B2E00D1D6B612300B89F69 /* BKHosts.h */,
+				C9B2E00E1D6B612300B89F69 /* BKHosts.m */,
+				C9B2E0071D6B612300B89F69 /* BKPubKey.h */,
+				C9B2E0081D6B612300B89F69 /* BKPubKey.m */,
+				D2FD57E4268D9C420033996F /* BlinkConfig.h */,
+				D269BF812608792A00ECEDF8 /* BKPubKey.swift */,
+				D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */,
+				BDB713D425F133EF00129A55 /* SEKey.swift */,
+				D23E142920A970C3000FCF5C /* BlinkPaths.h */,
+				D23E142A20A970C3000FCF5C /* BlinkPaths.m */,
+				D2A6571D268DAE2A002E6ED7 /* BKConfig.swift */,
+			);
+			path = BlinkConfig;
+			sourceTree = "<group>";
+		};
 		EA0BA1821C0CC57B00719C1A = {
 			isa = PBXGroup;
 			children = (
@@ -1673,6 +1733,7 @@
 				D218068825CC277900B98902 /* AppKitBridge */,
 				98271251262E4BDB00F883FA /* BlinkFileProvider */,
 				D2BF5F6D2659522C0070F839 /* BlinkIntents */,
+				D2FD57E3268D9C420033996F /* BlinkConfig */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
 				074F30781D062A2800A73445 /* main.m */,
@@ -1697,6 +1758,7 @@
 				D218068725CC277900B98902 /* AppKitBridge.bundle */,
 				98271250262E4BDB00F883FA /* BlinkFileProvider.appex */,
 				D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */,
+				D2FD57E2268D9C420033996F /* BlinkConfig.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1717,6 +1779,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				07FABBC125C9AECF00E1CC2C /* BlinkFiles.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2FD57DD268D9C420033996F /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2FD57E5268D9C420033996F /* BlinkConfig.h in Headers */,
+				D2A65712268DA4E9002E6ED7 /* BKPubKey.h in Headers */,
+				D2A65714268DA522002E6ED7 /* BlinkPaths.h in Headers */,
+				D2A65711268DA4C4002E6ED7 /* BKHosts.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1805,13 +1878,13 @@
 				9827124C262E4BDB00F883FA /* Sources */,
 				9827124D262E4BDB00F883FA /* Frameworks */,
 				9827124E262E4BDB00F883FA /* Resources */,
-				98E7D0E8263971C000758CF9 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 				98E7D0E7263971C000758CF9 /* PBXTargetDependency */,
 				BDF471BD268CD17B00A7A41B /* PBXTargetDependency */,
+				D2A6571C268DABC0002E6ED7 /* PBXTargetDependency */,
 			);
 			name = BlinkFileProvider;
 			packageProductDependencies = (
@@ -1863,10 +1936,12 @@
 				D2BF5F662659522C0070F839 /* Sources */,
 				D2BF5F672659522C0070F839 /* Frameworks */,
 				D2BF5F682659522C0070F839 /* Resources */,
+				D2A65709268D9FCB002E6ED7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D2A65708268D9FCB002E6ED7 /* PBXTargetDependency */,
 			);
 			name = BlinkIntents;
 			packageProductDependencies = (
@@ -1875,6 +1950,28 @@
 			productName = BlinkIntents;
 			productReference = D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */;
 			productType = "com.apple.product-type.app-extension";
+		};
+		D2FD57E1268D9C420033996F /* BlinkConfig */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D2FD57EC268D9C420033996F /* Build configuration list for PBXNativeTarget "BlinkConfig" */;
+			buildPhases = (
+				D2FD57DD268D9C420033996F /* Headers */,
+				D2FD57DE268D9C420033996F /* Sources */,
+				D2FD57DF268D9C420033996F /* Frameworks */,
+				D2FD57E0268D9C420033996F /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				D2A6570F268DA0DC002E6ED7 /* PBXTargetDependency */,
+			);
+			name = BlinkConfig;
+			packageProductDependencies = (
+				D2A6570A268DA01E002E6ED7 /* SSHConfig */,
+			);
+			productName = BlinkConfig;
+			productReference = D2FD57E2268D9C420033996F /* BlinkConfig.framework */;
+			productType = "com.apple.product-type.framework";
 		};
 		EA0BA18A1C0CC57B00719C1A /* Blink */ = {
 			isa = PBXNativeTarget;
@@ -1895,6 +1992,7 @@
 				D218069E25CC27C100B98902 /* PBXTargetDependency */,
 				9827126A262E4BDB00F883FA /* PBXTargetDependency */,
 				D2BF5F722659522C0070F839 /* PBXTargetDependency */,
+				D2FD57E7268D9C420033996F /* PBXTargetDependency */,
 			);
 			name = Blink;
 			packageProductDependencies = (
@@ -1947,6 +2045,9 @@
 					};
 					D2BF5F692659522C0070F839 = {
 						CreatedOnToolsVersion = 12.5;
+					};
+					D2FD57E1268D9C420033996F = {
+						CreatedOnToolsVersion = 13.0;
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
@@ -2014,6 +2115,7 @@
 				D218068625CC277900B98902 /* AppKitBridge */,
 				9827124F262E4BDB00F883FA /* BlinkFileProvider */,
 				D2BF5F692659522C0070F839 /* BlinkIntents */,
+				D2FD57E1268D9C420033996F /* BlinkConfig */,
 			);
 		};
 /* End PBXProject section */
@@ -2106,6 +2208,13 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D2BF5F682659522C0070F839 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2FD57E0268D9C420033996F /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2234,7 +2343,6 @@
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
 				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
 				98271255262E4BDB00F883FA /* FileProviderItem.swift in Sources */,
-				BDF471C3268CD25F00A7A41B /* BlinkPaths.m in Sources */,
 				98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2251,7 +2359,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
@@ -2269,6 +2376,21 @@
 				D2BF5F7D265953090070F839 /* Intents.intentdefinition in Sources */,
 				D2BF5F6F2659522C0070F839 /* IntentHandler.swift in Sources */,
 				D2BF5F80265BA0A80070F839 /* UserDefaults.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2FD57DE268D9C420033996F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2A656FB268D9E23002E6ED7 /* BKPubKey.m in Sources */,
+				D2A65715268DA84E002E6ED7 /* SEKey.swift in Sources */,
+				D2A656FD268D9EB6002E6ED7 /* BKHosts.m in Sources */,
+				D2A656FE268D9ED9002E6ED7 /* BKHosts.swift in Sources */,
+				D2A6571E268DAE2A002E6ED7 /* BKConfig.swift in Sources */,
+				D2A656FF268D9ED9002E6ED7 /* BKPubKey.swift in Sources */,
+				D2A656FC268D9EA2002E6ED7 /* UICKeyChainStore.m in Sources */,
+				D2A65713268DA51D002E6ED7 /* BlinkPaths.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2300,10 +2422,8 @@
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
-				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
-				D2F64CBD25CABEFB00F2225D /* UICKeyChainStore.m in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -2331,7 +2451,6 @@
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
-				BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */,
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
@@ -2367,7 +2486,6 @@
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
-				D2DE9AC62689DBC1005BBB7A /* BKHosts.swift in Sources */,
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
@@ -2380,12 +2498,10 @@
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
-				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
-				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
@@ -2424,7 +2540,6 @@
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
-				D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
@@ -2509,10 +2624,30 @@
 			target = EA0BA18A1C0CC57B00719C1A /* Blink */;
 			targetProxy = D265FBBF2317DD3C0017EAC4 /* PBXContainerItemProxy */;
 		};
+		D2A65708268D9FCB002E6ED7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2FD57E1268D9C420033996F /* BlinkConfig */;
+			targetProxy = D2A65707268D9FCB002E6ED7 /* PBXContainerItemProxy */;
+		};
+		D2A6570F268DA0DC002E6ED7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABB8325C9AEC000E1CC2C /* SSH */;
+			targetProxy = D2A6570E268DA0DC002E6ED7 /* PBXContainerItemProxy */;
+		};
+		D2A6571C268DABC0002E6ED7 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2FD57E1268D9C420033996F /* BlinkConfig */;
+			targetProxy = D2A6571B268DABC0002E6ED7 /* PBXContainerItemProxy */;
+		};
 		D2BF5F722659522C0070F839 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = D2BF5F692659522C0070F839 /* BlinkIntents */;
 			targetProxy = D2BF5F712659522C0070F839 /* PBXContainerItemProxy */;
+		};
+		D2FD57E7268D9C420033996F /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = D2FD57E1268D9C420033996F /* BlinkConfig */;
+			targetProxy = D2FD57E6268D9C420033996F /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -3150,6 +3285,101 @@
 			};
 			name = Release;
 		};
+		D2FD57EA268D9C420033996F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Carlos Cabañero Projects SL. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		D2FD57EB268D9C420033996F /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "Copyright © 2021 Carlos Cabañero Projects SL. All rights reserved.";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
 		EA0BA1AB1C0CC57C00719C1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D27D01232615F1BD00128C23 /* developer_setup.xcconfig */;
@@ -3405,6 +3635,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		D2FD57EC268D9C420033996F /* Build configuration list for PBXNativeTarget "BlinkConfig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				D2FD57EA268D9C420033996F /* Debug */,
+				D2FD57EB268D9C420033996F /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		EA0BA1861C0CC57B00719C1A /* Build configuration list for PBXProject "Blink" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3435,6 +3674,10 @@
 			productName = SSHConfig;
 		};
 		D248EC552689EAFE009FD817 /* SSHConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SSHConfig;
+		};
+		D2A6570A268DA01E002E6ED7 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SSHConfig;
 		};

@@ -52,6 +52,10 @@
 + (NSString *)blinkProfileFile;
 + (NSURL *)blinkKBConfigURL;
 
++ (NSString *)groupContainerURL;
++ (NSString *)groupHostsFilePath;
++ (NSString *)groupKeysFilePath;
+
 + (NSString *) historyFile;
 + (NSURL *)historyURL;
 + (NSString *) knownHostsFile;

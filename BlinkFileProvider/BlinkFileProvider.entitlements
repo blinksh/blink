@@ -10,5 +10,10 @@
 	</array>
 	<key>com.apple.security.network.client</key>
 	<true/>
+	<key>keychain-access-groups</key>
+	<array>
+		<string>$(AppIdentifierPrefix)$(KEYCHAIN_ID1)</string>
+		<string>$(AppIdentifierPrefix)$(KEYCHAIN_ID2)</string>
+	</array>
 </dict>
 </plist>

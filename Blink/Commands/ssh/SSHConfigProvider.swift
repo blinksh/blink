@@ -33,6 +33,7 @@
 import Foundation
 import SSH
 import Combine
+import BlinkConfig
 
 
 fileprivate let HostKeyChangedWarningMessage = """
@@ -73,16 +74,18 @@ class SSHClientConfigProvider {
     let availableAuthMethods: [AuthMethod] = [AuthAgent(agent)] + prov.passwordAuthMethods()
 
     let options = try? cmd.connectionOptions.get()
+    
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
 
     return (
-      BKConfig.hostName(forHost: host) ?? cmd.host,
+      bkConfig.hostName(forHost: host) ?? cmd.host,
       SSHClientConfig(
         // first use 'user' from options, then from cmd, then from configured host, then from defaultUserName, and fallback to `root`
-        user: options?.user ?? cmd.user ?? BKConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
+        user: options?.user ?? cmd.user ?? bkConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
         // first use `port` from options, then from cmd, then from configured host, and fallback to 22
-        port: options?.port ?? cmd.port.map(String.init) ?? BKConfig.port(forHost: host) ?? "22",
+        port: options?.port ?? cmd.port.map(String.init) ?? bkConfig.port(forHost: host) ?? "22",
         proxyJump: cmd.proxyJump,
-        proxyCommand: options?.proxyCommand ?? BKConfig.proxyCommand(forHost: host),
+        proxyCommand: options?.proxyCommand ?? bkConfig.proxyCommand(forHost: host),
         authMethods: availableAuthMethods,
         agent: agent,
         loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
@@ -97,121 +100,21 @@ class SSHClientConfigProvider {
   }
 }
 
-enum BKConfig {
-
-  static func privateKey(forIdentifier identifier: String) -> (String, String)? {
-    let publicKeys = BKPubKey.all()
-    
-    guard
-      let privateKey = publicKeys.first(where: { $0.id == identifier })?.loadPrivateKey()
-    else {
-      return nil
-    }
-    
-    return (privateKey, identifier)
-  }
-  
-  static private func host(_ host: String) -> BKHosts? {
-    guard let hosts = (BKHosts.all() as? [BKHosts]) else {
-      return nil
-    }
-
-    return hosts.first(where: { $0.host == host })
-  }
-  
-  static func signer(forIdentity identity: String) -> (Signer, String)? {
-    guard
-      let signer = BKPubKey.signerWithID(identity)
-    else {
-      return nil
-    }
-    
-    return (signer, identity)
-  }
-  
-  static func signer(forHost host: String) -> (Signer, String)? {
-    guard
-      let host = Self.host(host),
-      let keyName = host.key
-    else {
-      return nil
-    }
-    
-    return signer(forIdentity: keyName)
-  }
-  
-  static func privateKey(forHost host: String) -> (String, String)? {
-    guard let host = Self.host(host) else {
-      return nil
-    }
-
-    guard let keyIdentifier = host.key, let privateKey = privateKey(forIdentifier: keyIdentifier) else {
-      return nil
-    }
-
-    return privateKey
-  }
-  
-  static func defaultKeys() -> [(String, String)] {
-    let publicKeys = BKPubKey.all()
-    
-    let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    return publicKeys
-      .filter {
-        defaultKeyNames.contains($0.id)
-      }
-      .map {
-        ($0.loadPrivateKey(), $0.id)
-      }
-      .compactMap {
-        guard
-          let privateKey = $0.0
-        else {
-          return nil
-        }
-        return (privateKey, $0.1)
-      }
-  }
-  
-  static func password(forHost host: String) -> String? {
-    Self.host(host)?.password
-  }
-
-  static func hostName(forHost host: String) -> String? {
-    Self.host(host)?.hostName
-  }
-  
-  static func proxyCommand(forHost host: String) -> String? {
-    Self.host(host)?.proxyCmd
-  }
-  
-  static func user(forHost host: String) -> String? {
-    let user = Self.host(host)?.user ?? ""
-    return user.isEmpty ? nil : user
-  }
-  
-  static func port(forHost host: String) -> String? {
-    if let port = Self.host(host)?.port {
-      return port.stringValue
-    } else {
-      return nil
-    }
-  }
-}
 
 extension SSHClientConfigProvider {
   fileprivate func keyAuthMethods() -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
     
     // Explicit identity
     if let identityFile = command.identityFile,
-       let (identityKey, name) = BKConfig.privateKey(forIdentifier: identityFile) {
+       let (identityKey, name) = bkConfig.privateKey(forIdentifier: identityFile) {
       authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
-    } else if let (hostKey, name) = BKConfig.privateKey(forHost: command.host) {
+    } else if let (hostKey, name) = bkConfig.privateKey(forHost: command.host) {
       authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
     } else {
       // All default keys
-      for (defaultKey, name) in BKConfig.defaultKeys() {
+      for (defaultKey, name) in bkConfig.defaultKeys() {
         authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
       }
     }
@@ -221,9 +124,10 @@ extension SSHClientConfigProvider {
   
   fileprivate func passwordAuthMethods() -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
 
     // Host password
-    if let password = BKConfig.password(forHost: command.host), !password.isEmpty {
+    if let password = bkConfig.password(forHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
     } else {
       // Interactive
@@ -249,19 +153,20 @@ extension SSHClientConfigProvider {
   fileprivate func agent(forHost host: String) -> SSHAgent {
     let agent = SSHAgent()
     
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
     if let identityFile = command.identityFile,
-       let (signer, name) = BKConfig.signer(forIdentity: identityFile) {
+       let (signer, name) = bkConfig.signer(forIdentity: identityFile) {
       // NOTE We could also keep the reference and just read the key at the proper time.
       // TODO Errors. Either pass or log here, or if we create a different
       // type of key, then let the Agent fail.
       agent.loadKey(signer, aka: name, constraints: consts)
-    } else if let (signer, name) = BKConfig.signer(forHost: command.host) {
+    } else if let (signer, name) = bkConfig.signer(forHost: command.host) {
       agent.loadKey(signer, aka: name, constraints: consts)
     } else {
       for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
-        if let (signer, name) = BKConfig.signer(forIdentity: identity) {
+        if let (signer, name) = bkConfig.signer(forIdentity: identity) {
           agent.loadKey(signer, aka: name, constraints: consts)
         }
       }

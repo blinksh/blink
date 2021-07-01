@@ -88,10 +88,6 @@ void __setupProcessEnv() {
     addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
       __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   });
-
-  NSUserDefaults *defaults = [[NSUserDefaults alloc] initWithSuiteName: @"group.Com.CarlosCabanero.BlinkShell"];
-  
-  //[defaults setObject:BlinkPaths.blinkSSHConfigFileURL forKey:@"SSHConfigFile"];
   
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
@@ -151,7 +147,7 @@ void __setupProcessEnv() {
 
   // Identifiers <encodedRootPath>/path/to/files
   // sftp:hostinfo:home_root_path
-  NSString *rootPath = [NSString stringWithFormat:@"%@:%@:@", @"sftp", @"l", @"/"];
+  NSString *rootPath = [NSString stringWithFormat:@"%@:%@:%@", @"sftp", @"l", @"/"];
   NSData *rootData = [rootPath dataUsingEncoding:NSUTF8StringEncoding];
   NSString *encodedRootPath = [rootData base64EncodedStringWithOptions:NO];
   
@@ -159,6 +155,19 @@ void __setupProcessEnv() {
                                                                          displayName: @"sftp"
                                      // The path of the domain's subdirectory relative to the file provider's shared container. "<ssh:host:path>/asdfasdf/"
                                                        pathRelativeToDocumentStorage: @"/"];
+  
+  NSString *fpRootPath = [NSString stringWithFormat:@"%@:%@:%@", @"sftp", @"fp", @"/"];
+  NSData *fpRootData = [fpRootPath dataUsingEncoding:NSUTF8StringEncoding];
+  NSString *fpEncodedRootPath = [fpRootData base64EncodedStringWithOptions:NO];
+  
+  NSFileProviderDomain *fpDomain = [[NSFileProviderDomain alloc] initWithIdentifier: fpEncodedRootPath
+                                                                         displayName: @"fp"
+                                     // The path of the domain's subdirectory relative to the file provider's shared container. "<ssh:host:path>/asdfasdf/"
+                                                       pathRelativeToDocumentStorage: @"/"];
+  
+  [NSFileProviderManager addDomain:fpDomain completionHandler:^(NSError * _Nullable error) {
+//    NSLog(@"domainID2 %@ two error %@", domainID2, error);
+  }];
   
   NSString *rootPathDomainThree = [NSString stringWithFormat:@"%@:%@", @"local", @"/"];
   NSData *rootDataDomainThree = [rootPathDomainThree dataUsingEncoding:NSUTF8StringEncoding];
