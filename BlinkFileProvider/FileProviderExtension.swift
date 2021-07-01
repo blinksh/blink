@@ -53,7 +53,9 @@ final class FileTranslatorPool {
   private var references: [String: BlinkItemReference] = [:]
   private var backgroundThread: Thread? = nil
   private var backgroundRunLoop: RunLoop = RunLoop.current
-  
+  private var connection: SSHClient? = nil
+  private var sftpClient: SFTPClient? = nil
+
   private init() {
     self.backgroundThread = Thread {
       self.backgroundRunLoop = RunLoop.current
@@ -97,14 +99,18 @@ final class FileTranslatorPool {
     case .sftp:
       
       let (host, config) = SSHClientConfigProvider.config(host: host!)
-            
+      
       return Just(config).receive(on: DispatchQueue.main).flatMap {
         SSHClient
         .dial(host, with: $0)
         .print("Dialing...")
-        .receive(on: FileTranslatorPool.shared.backgroundRunLoop)
-        .flatMap { $0.requestSFTP() }.print("SFTP")
+        //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
+        .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
+          Self.shared.connection = conn
+          return conn.requestSFTP()
+        }.print("SFTP")
         .flatMap { sftp -> AnyPublisher<Translator, Error> in
+          Self.shared.sftpClient = sftp
           let translatorPub = sftp.walkTo(pathAtFiles)
           shared.translators[encodedRootPath] = translatorPub
           return translatorPub
@@ -112,9 +118,7 @@ final class FileTranslatorPool {
       }
       .eraseToAnyPublisher()
       .handleEvents(receiveCompletion: { c in
-        
         var y = c
-        
       })
       .eraseToAnyPublisher()
     default:

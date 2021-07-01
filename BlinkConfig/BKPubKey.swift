@@ -37,7 +37,8 @@ extension BKPubKey {
   
   @objc public static func copyKeysFileToGroupContainer() {
     let fm = FileManager.default
-    try? fm.copyItem(atPath: BlinkPaths.blinkKeysFile(), toPath: BlinkPaths.groupKeysFilePath())
+    try? fm.removeItem(atPath: BlinkPaths.groupKeysFilePath())
+    try! fm.copyItem(atPath: BlinkPaths.blinkKeysFile(), toPath: BlinkPaths.groupKeysFilePath())
   }
   
   @objc public static func saveDefaultKey() -> Bool {

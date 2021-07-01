@@ -33,6 +33,7 @@ import BlinkFiles
 import FileProvider
 import Combine
 
+import SSH
 
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   let identifier: BlinkItemIdentifier
@@ -89,25 +90,22 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     // TODO page can be a Sorted by name or sorted by Date page, and we will have to return the items based on this.
     // This could be easily achieved from our Cache, requesting a specific path references, adding a sorter and then an "index".
     
-    // // NSFileProviderItemIdentifier(_rawValue: bG9jYWw6Lw==)
     print("\(self.identifier.path) - enumeration requested")
 
-    // TODO We may be able to skip this as "directoryFilesAndAttributes" could return all items.
-    translator.flatMap { $0.stat() }.sink(receiveCompletion: { completion in
-      switch completion {
-      case .failure(let error):
-        print("ERROR \(error.localizedDescription)")
-      default:
-        break
+    var containerTranslator: Translator!
+    translator
+      .flatMap { t -> AnyPublisher<FileAttributes, Error> in
+          containerTranslator = t
+          return t.stat()
       }
-    }, receiveValue: { blinkAttr in
-      let ref = BlinkItemReference(self.identifier,
-                                   attributes: blinkAttr)
-      // Store the reference in the internal DB for later usage.
-      FileTranslatorPool.store(reference: ref)
-    }).store(in: &cancellableBag)
-
-    translator.flatMap { $0.directoryFilesAndAttributes() }
+      .map { containerAttrs -> Translator in
+        // TODO We may be able to skip this if stat would return '.'
+        let ref = BlinkItemReference(self.identifier,
+                                     attributes: containerAttrs)
+        FileTranslatorPool.store(reference: ref)
+        return containerTranslator
+      }
+      .flatMap { $0.directoryFilesAndAttributes() }
       .sink(
         receiveCompletion: { completion in
           switch completion {
