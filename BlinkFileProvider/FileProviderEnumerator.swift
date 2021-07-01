@@ -32,7 +32,6 @@
 import BlinkFiles
 import FileProvider
 import Combine
-import SSH
 
 
 class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
@@ -93,59 +92,44 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     // // NSFileProviderItemIdentifier(_rawValue: bG9jYWw6Lw==)
     print("\(self.identifier.path) - enumeration requested")
 
-    let hostConfig = SSHClientConfig(user: "carloscabanero", authMethods: [AuthPassword(with: "asdfzxcv")], loggingVerbosity: .info)
-
-    let translator = SSHClient
-      .dial("localhost", with: hostConfig)
-      .print("Dialing...")
-      .flatMap {
-        $0.requestSFTP()
-        
-      }.print("SFTP")
-      .flatMap { sftp -> AnyPublisher<Translator, Error> in
-        return sftp.walkTo("/")
-        //shared.translators[encodedRootPath] = translatorPub
-      }
-    
     // TODO We may be able to skip this as "directoryFilesAndAttributes" could return all items.
-//    translator.flatMap { $0.stat() }.sink(receiveCompletion: { completion in
-//      switch completion {
-//      case .failure(let error):
-//        print("ERROR \(error.localizedDescription)")
-//      default:
-//        break
-//      }
-//    }, receiveValue: { blinkAttr in
-//      let ref = BlinkItemReference(self.identifier,
-//                                   attributes: blinkAttr)
-//      // Store the reference in the internal DB for later usage.
-//      FileTranslatorPool.store(reference: ref)
-//    }).store(in: &cancellableBag)
-    DispatchQueue.main.async {
-      translator.flatMap { $0.directoryFilesAndAttributes() }
-        .sink(
-          receiveCompletion: { completion in
-            switch completion {
-            case .failure(let error):
-              print("ERROR \(error.localizedDescription)")
-              observer.finishEnumeratingWithError(error)
-            case .finished:
-              observer.finishEnumerating(upTo: nil)
-            }
-          },
-          receiveValue: { attrs in
-            let items = attrs.map { blinkAttr -> FileProviderItem in
-              let fileIdentifier = BlinkItemIdentifier(parentItemIdentifier: self.identifier,
-                                                       filename: blinkAttr[.name] as! String)
-              let ref = BlinkItemReference(fileIdentifier,
-                                           attributes: blinkAttr)
-              // Store the reference in the internal DB for later usage.
-              FileTranslatorPool.store(reference: ref)
-              return FileProviderItem(reference: ref)
-            }
-            observer.didEnumerate(items)
-          }).store(in: &self.cancellableBag)
-    }
+    translator.flatMap { $0.stat() }.sink(receiveCompletion: { completion in
+      switch completion {
+      case .failure(let error):
+        print("ERROR \(error.localizedDescription)")
+      default:
+        break
+      }
+    }, receiveValue: { blinkAttr in
+      let ref = BlinkItemReference(self.identifier,
+                                   attributes: blinkAttr)
+      // Store the reference in the internal DB for later usage.
+      FileTranslatorPool.store(reference: ref)
+    }).store(in: &cancellableBag)
+
+    translator.flatMap { $0.directoryFilesAndAttributes() }
+      .sink(
+        receiveCompletion: { completion in
+          switch completion {
+          case .failure(let error):
+            print("ERROR \(error.localizedDescription)")
+            observer.finishEnumeratingWithError(error)
+          case .finished:
+            observer.finishEnumerating(upTo: nil)
+          }
+        },
+        receiveValue: { attrs in
+          let items = attrs.map { blinkAttr -> FileProviderItem in
+            let fileIdentifier = BlinkItemIdentifier(parentItemIdentifier: self.identifier,
+                                                     filename: blinkAttr[.name] as! String)
+            let ref = BlinkItemReference(fileIdentifier,
+                                         attributes: blinkAttr)
+            // Store the reference in the internal DB for later usage.
+            FileTranslatorPool.store(reference: ref)
+            return FileProviderItem(reference: ref)
+          }
+          observer.didEnumerate(items)
+        }).store(in: &cancellableBag)
   }
 
 //  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {

@@ -105,8 +105,9 @@ class FileTranslatorPool {
       
       let hostConfig = SSHClientConfig(user: "carloscabanero", authMethods: [AuthPassword(with: "asdfzxcv")], loggingVerbosity: .info)
       
-      return SSHClient
-        .dial("localhost", with: hostConfig)
+      return Just(hostConfig).receive(on: DispatchQueue.main).flatMap {
+        SSHClient
+        .dial("localhost", with: $0)
         .print("Dialing...")
         .receive(on: RunLoop.main)
         .flatMap { $0.requestSFTP() }.print("SFTP")
@@ -114,8 +115,8 @@ class FileTranslatorPool {
           let translatorPub = sftp.walkTo(pathAtFiles)
           shared.translators[encodedRootPath] = translatorPub
           return translatorPub
-        }.eraseToAnyPublisher()
-      
+        }
+      }.eraseToAnyPublisher()
     default:
       return Fail(error: "Not implemented").eraseToAnyPublisher()
     }
