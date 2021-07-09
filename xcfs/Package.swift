@@ -86,7 +86,7 @@ _ = Package(
   dependencies: [
     .package(url: "https://github.com/yury/FMake", from: "0.0.15"),
     .package(url: "https://github.com/apple/swift-argument-parser", .upToNextMinor(from: "0.4.0")),
-    .package(url: "https://github.com/yury/BlinkMachines", from: "0.0.5"),
+    .package(url: "https://github.com/yury/BlinkMachines", from: "0.0.6"),
     .package(url: "https://github.com/yury/SSHConfig", from: "0.0.1"),
   ],
   
