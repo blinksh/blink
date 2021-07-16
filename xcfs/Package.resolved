@@ -6,17 +6,8 @@
         "repositoryURL": "https://github.com/yury/BlinkMachines",
         "state": {
           "branch": null,
-          "revision": "c050709ba38c9afe6f3c664abf5c36b7a3e9f737",
-          "version": "0.0.6"
-        }
-      },
-      {
-        "package": "Signals",
-        "repositoryURL": "https://github.com/IBM-Swift/BlueSignals.git",
-        "state": {
-          "branch": null,
-          "revision": "1f6c49e186c8a4eeef87ba14f2f97b8646559d13",
-          "version": "1.0.200"
+          "revision": "b4bffdf2fbddaea0953da238c3cdcbe6826ed6d6",
+          "version": "0.0.8"
         }
       },
       {
@@ -60,8 +51,8 @@
         "repositoryURL": "https://github.com/yury/Spinner",
         "state": {
           "branch": null,
-          "revision": "f53a7fde0f3155b7fc49b1a2a672600b0bfd3820",
-          "version": "1.3.6"
+          "revision": "8ad7b4fd5c6810ec0db55b01c5d4f5c5b6ebdd96",
+          "version": "1.3.7"
         }
       },
       {

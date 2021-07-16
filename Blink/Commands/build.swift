@@ -237,6 +237,7 @@ public func build_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
   let io = NonStdIO.standart
+  io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
   
