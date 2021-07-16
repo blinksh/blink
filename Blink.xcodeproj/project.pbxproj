@@ -225,6 +225,8 @@
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2673734265BD77B002036FF /* BuildCLIConfig.swift */; };
 		D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269BF812608792A00ECEDF8 /* BKPubKey.swift */; };
+		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
+		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
@@ -713,6 +715,8 @@
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
 		D2673734265BD77B002036FF /* BuildCLIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildCLIConfig.swift; sourceTree = "<group>"; };
 		D269BF812608792A00ECEDF8 /* BKPubKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKPubKey.swift; sourceTree = "<group>"; };
+		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
+		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
 		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
 		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
@@ -972,6 +976,7 @@
 				D2BF5F7B265953090070F839 /* Intents.intentdefinition */,
 				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
 				D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */,
+				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1571,6 +1576,7 @@
 				D27AD9BB222FDD3D00379872 /* xcall.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
 				D2DDD70A2657E35C00DAB52A /* build.swift */,
+				D26A37EF26A0AB7000534A4D /* facecam.swift */,
 			);
 			path = Commands;
 			sourceTree = "<group>";
@@ -2153,6 +2159,7 @@
 				803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */,
 				D2C2441C238E44AB0082C69C /* NavButton.swift in Sources */,
 				0716B5721CFFAB9300268B5B /* AppDelegate.m in Sources */,
+				D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */,
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
@@ -2239,6 +2246,7 @@
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
+				D26A37F026A0AB7000534A4D /* facecam.swift in Sources */,
 				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
 				07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */,

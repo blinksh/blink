@@ -31,6 +31,7 @@
 
 
 import MBProgressHUD
+import SwiftUI
 
 class SpaceController: UIViewController {
   
@@ -62,6 +63,10 @@ class SpaceController: UIViewController {
   private weak var _termViewToFocus: TermView? = nil
   var stuckKeyCode: KeyCode? = nil
   
+  var safeFrame: CGRect {
+    _overlay.frame
+  }
+  
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
@@ -79,6 +84,8 @@ class SpaceController: UIViewController {
     }
     
     _commandsHUD.setNeedsLayout()
+    
+    FaceCamManager.update(in: self)
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -140,6 +147,7 @@ class SpaceController: UIViewController {
     _viewportsController.dataSource = self
     _viewportsController.delegate = self
     
+    
     addChild(_viewportsController)
     
     if let v = _viewportsController.view {
@@ -167,6 +175,8 @@ class SpaceController: UIViewController {
       _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
     
+//    view.addSubview(_faceCam)
+//    addChild(_faceCam.controller)
   }
   
 

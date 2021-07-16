@@ -34,9 +34,16 @@
 	<array>
 		<string>MAIN</string>
 		<string>build_main</string>
-		<string>qv</string>
+		<string></string>
 		<string>no</string>
 	</array>
+  <key>facecam</key>
+  <array>
+    <string>MAIN</string>
+    <string>facecam_main</string>
+    <string></string>
+    <string>no</string>
+  </array>
 	<key>cssh</key>
 	<array>
 		<string>MAIN</string>
