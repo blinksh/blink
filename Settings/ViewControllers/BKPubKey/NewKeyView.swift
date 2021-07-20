@@ -106,13 +106,7 @@ struct NewKeyView: View {
       .disabled(!_state.isValid)
     )
     .navigationBarTitle("New \(_state.keyType.shortName) Key")
-    .alert(isPresented: $_state.errorAlertVisible) {
-      Alert(
-        title: Text("Error"),
-        message: Text(_state.errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $_state.errorMessage)
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")
     })
@@ -137,9 +131,7 @@ fileprivate class NewKeyObservable: ObservableObject {
   @Published var keyBits: UInt32 = 4096
   @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
-  @Published var errorAlertVisible: Bool = false
-  
-  var errorMessage = ""
+  @Published var errorMessage = ""
   
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -164,7 +156,6 @@ fileprivate class NewKeyObservable: ObservableObject {
       
     } catch {
       errorMessage = error.localizedDescription
-      errorAlertVisible = true
       return false
     }
 

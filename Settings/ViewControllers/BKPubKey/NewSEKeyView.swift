@@ -79,13 +79,7 @@ struct NewSEKeyView: View {
       .disabled(!_state.isValid)
     )
     .navigationBarTitle("New ECDSA Key")
-    .alert(isPresented: $_state.errorAlertVisible) {
-      Alert(
-        title: Text("Error"),
-        message: Text(_state.errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $_state.errorMessage)
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")
     })
@@ -103,9 +97,7 @@ fileprivate class NewSEKeyObservable: ObservableObject {
   @Published var keyName = ""
   @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
-  @Published var errorAlertVisible = false
-  
-  var errorMessage = ""
+  @Published var errorMessage = ""
   
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -128,7 +120,6 @@ fileprivate class NewSEKeyObservable: ObservableObject {
       try BKPubKey.addSEKey(id: keyID, comment: comment)
     } catch {
       errorMessage = error.localizedDescription
-      errorAlertVisible = true
       return false
     }
 

@@ -35,12 +35,6 @@ import SSH
 
 extension BKPubKey {
   
-  @objc public static func copyKeysFileToGroupContainer() {
-    let fm = FileManager.default
-    try? fm.removeItem(atPath: BlinkPaths.groupKeysFilePath())
-    try! fm.copyItem(atPath: BlinkPaths.blinkKeysFile(), toPath: BlinkPaths.groupKeysFilePath())
-  }
-  
   @objc public static func saveDefaultKey() -> Bool {
     do {
       let key = try SSHKey(type: .rsa, bits: 4096)

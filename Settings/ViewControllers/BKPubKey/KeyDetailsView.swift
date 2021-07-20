@@ -35,6 +35,7 @@ import SSH
 
 struct KeyDetailsView: View {
   @State var card: BKPubKey
+  
   let reloadCards: () -> ()
   
   @EnvironmentObject private var _nav: Nav
@@ -47,7 +48,6 @@ struct KeyDetailsView: View {
   @State private var _actionSheetIsPresented = false
   @State private var _filePickerIsPresented = false
   
-  @State private var _errorAlertIsPresented = false
   @State private var _errorMessage = ""
   
   @State private var _publicKeyCopied = false
@@ -89,7 +89,6 @@ struct KeyDetailsView: View {
   
   private func _showError(message: String) {
     _errorMessage = message
-    _errorAlertIsPresented = true
   }
   
   private func _importCertificateFromClipboard() {
@@ -308,9 +307,8 @@ struct KeyDetailsView: View {
       }
       
       Section() {
-        Button(action: _deleteCard, label: {
-          Label("Delete", systemImage: "trash")
-        }).accentColor(.red)
+        Button(action: _deleteCard, label: { Label("Delete", systemImage: "trash")})
+          .accentColor(.red)
       }
     }
     .listStyle(GroupedListStyle())
@@ -329,12 +327,6 @@ struct KeyDetailsView: View {
       _certificate = card.loadCertificate()
       _originalCertificate = _certificate
     })
-    .alert(isPresented: $_errorAlertIsPresented) {
-      Alert(
-        title: Text("Error"),
-        message: Text(_errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $_errorMessage)
   }
 }

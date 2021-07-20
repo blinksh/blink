@@ -87,13 +87,7 @@ struct ImportKeyView: View {
       .disabled(!state.isValid)
     )
     .navigationBarTitle("Import \(state.keyType) Key")
-    .alert(isPresented: $state.errorAlertVisible) {
-      Alert(
-        title: Text("Error"),
-        message: Text(state.errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $state.errorMessage)
   }
 }
 
@@ -102,8 +96,7 @@ class ImportKeyObservable: ObservableObject {
   let keyType: String
   @Published var keyName: String
   @Published var keyComment: String
-  @Published var errorAlertVisible: Bool = false
-  var errorMessage = ""
+  @Published var errorMessage = ""
   
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -134,7 +127,6 @@ class ImportKeyObservable: ObservableObject {
       
     } catch {
       errorMessage = error.localizedDescription
-      errorAlertVisible = true
       return false
     }
 

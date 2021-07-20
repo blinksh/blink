@@ -29,53 +29,58 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 import SwiftUI
 
-fileprivate struct CardRow: View {
-  let key: BKPubKey
-  let currentKey: String
+extension BKMoshPrediction: Hashable {
+  var label: String {
+    switch self {
+    case BKMoshPredictionAdaptive: return "Adaptive"
+    case BKMoshPredictionAlways: return "Always"
+    case BKMoshPredictionNever: return "Never"
+    case BKMoshPredictionExperimental: return "Experimental"
+    case _: return ""
+    }
+  }
   
-  var body: some View {
-    HStack {
-      VStack(alignment: .leading) {
-        Text(key.id)
-        Text(key.keyType ?? "").font(.footnote)
-      }.contentShape(Rectangle())
-      Spacer()
-      Checkmark(checked: key.id == currentKey)
-    }.contentShape(Rectangle())
+  var hint: String {
+    switch self {
+    case BKMoshPredictionAdaptive: return "Local echo for slower links [default]"
+    case BKMoshPredictionAlways: return "Use local echo even on fast links"
+    case BKMoshPredictionNever: return "Never use local echo"
+    case BKMoshPredictionExperimental: return "Aggressively echo even when incorrect"
+    case _: return ""
+    }
+  }
+
+  static var all: [BKMoshPrediction] {
+    [
+      BKMoshPredictionAdaptive,
+      BKMoshPredictionAlways,
+      BKMoshPredictionNever,
+      BKMoshPredictionExperimental
+    ]
   }
 }
 
-struct KeyPickerView: View {
-  @Binding var currentKey: String
-  @EnvironmentObject private var _nav: Nav
-  @State private var _list: [BKPubKey] = BKPubKey.all()
+struct MoshPredictionPickerView: View {
+  @Binding var currentValue: BKMoshPrediction
   
   var body: some View {
     List {
-      HStack {
-        Text("None")
-        Spacer()
-        Checkmark(checked: currentKey.isEmpty || currentKey == "None")
-      }
-      .contentShape(Rectangle())
-      .onTapGesture {
-        _selectKey("")
-      }
-      ForEach(_list, id: \.tag) { key in
-        CardRow(key: key, currentKey: currentKey)
-          .onTapGesture {
-            _selectKey(key.id)
+      Section(footer: Text(currentValue.hint)) {
+        ForEach(BKMoshPrediction.all, id: \.self) { value in
+          HStack {
+            Text(value.label).tag(value)
+            Spacer()
+            Checkmark(checked: currentValue == value)
           }
+          .contentShape(Rectangle())
+          .onTapGesture { currentValue = value }
+        }
       }
     }
     .listStyle(InsetGroupedListStyle())
-    .navigationTitle("Select a Key")
-  }
-  
-  private func _selectKey(_ key: String) {
-    currentKey = key
-    _nav.navController.popViewController(animated: true)
+    .navigationTitle("Mosh Prediction")
   }
 }

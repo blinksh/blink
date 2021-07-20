@@ -39,9 +39,3 @@ struct Chevron: View {
       .font(Font.subheadline.weight(Font.Weight.semibold))
   }
 }
-
-struct Chevron_Previews: PreviewProvider {
-  static var previews: some View {
-    Chevron()
-  }
-}

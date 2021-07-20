@@ -48,7 +48,6 @@ NSString *BKiCloudZoneName = @"DefaultZone";
 static NSMutableDictionary *syncItems = nil;
 static BKiCloudSyncHandler *sharedHandler = nil;
 
-
 @interface BKiCloudSyncHandler ()
 @property (nonatomic, strong) NSMutableArray *deletedHosts;
 @property (nonatomic, strong) NSMutableArray *updatedHosts;
@@ -57,7 +56,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 
 @implementation BKiCloudSyncHandler
 
-+ (id)sharedHandler
++ (instancetype)sharedHandler
 {
   if ([BKUserConfigurationManager userSettingsValueForKey:BKUserConfigiCloud]) {
     if (sharedHandler == nil) {
@@ -110,6 +109,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       [database saveSubscription:subscripton
 	       completionHandler:^(CKSubscription *_Nullable subscription, NSError *_Nullable error) {
 		 if (error) {
+       NSLog(@"iCloud Error: %@", error);
 		   //Reset shared handler so that init is called again.
 		 }
 	       }];
@@ -181,7 +181,6 @@ static BKiCloudSyncHandler *sharedHandler = nil;
              NSLog(@"Error fetching pubkeys from icloud: %@", error);
              return;
            }
-	   [self mergeKeys:results];
 	 }];
   }
 }
@@ -260,12 +259,12 @@ static BKiCloudSyncHandler *sharedHandler = nil;
   NSMutableArray *itemsDeletedFromiCloud = [NSMutableArray array];
   //Save all local records to iCloud
   for (BKHosts *hosts in [BKHosts all]) {
-    if (hosts.iCloudRecordId == nil && (!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])) {
+    if (hosts.iCloudRecordId == nil && (!hosts.iCloudConflictDetected || !hosts.iCloudConflictDetected.boolValue)) {
       [self createNewHost:hosts];
     } else {
       NSLog(@"Conflict detected Hence not saving to iCloud");
       //Find items deleted from iCloud
-      if ((!hosts.iCloudConflictDetected || hosts.iCloudConflictDetected == [NSNumber numberWithBool:NO])) {
+      if ((!hosts.iCloudConflictDetected || !hosts.iCloudConflictDetected.boolValue)) {
         NSPredicate *deletedPredicate = [NSPredicate predicateWithFormat:@"SELF.recordID.recordName contains %@", hosts.iCloudRecordId.recordName];
         NSArray *filteredAray = [hostRecords filteredArrayUsingPredicate:deletedPredicate];
         if (filteredAray.count <= 0) {
@@ -310,27 +309,16 @@ static BKiCloudSyncHandler *sharedHandler = nil;
       moshPortRange:moshPortRange
          startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue
            proxyCmd:updatedHost.proxyCmd
+          proxyJump:updatedHost.proxyJump
+sshConfigAttachment:updatedHost.sshConfigAttachment
+      fpDomainsJSON:updatedHost.fpDomainsJSON
    ];
   [BKHosts updateHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
-}
-
-#pragma mark - Keys Method
-
-- (void)mergeKeys:(NSArray *)keys
-{
 }
 
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
-
-//- (void)createNewKey:(BKPubKey*)key{
-//  CKDatabase *database = [[CKContainer containerWithIdentifier:@"iCloud.com.carloscabanero.blinkshell"]privateCloudDatabase];
-//  CKRecord *keyRecord = [BKPubKey recordFromHost:key];
-//  [database saveRecord:hostRecord completionHandler:^(CKRecord * _Nullable record, NSError * _Nullable error) {
-//    [BKHosts saveHost:host.host withiCloudId:record.recordID andLastModifiedTime:record.modificationDate];
-//  }];
-//}
 
 @end

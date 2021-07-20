@@ -45,7 +45,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
        domain: NSFileProviderDomain) {
     // TODO An enumerator may be requested for an open file, in order to enumerate changes to it.
     if enumeratedItemIdentifier == .rootContainer {
-      self.identifier = BlinkItemIdentifier(domain.identifier.rawValue)
+      self.identifier = BlinkItemIdentifier(domain.pathRelativeToDocumentStorage)
     } else {
       self.identifier = BlinkItemIdentifier(enumeratedItemIdentifier)
     }
@@ -53,7 +53,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let path = self.identifier.path
     print("\(path) - Initialized enumerator ")
 
-    self.translator = FileTranslatorPool.translator(for: domain.identifier.rawValue)
+    self.translator = FileTranslatorPool.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
         if !path.isEmpty {
           return t.cloneWalkTo(path)

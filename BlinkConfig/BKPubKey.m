@@ -88,7 +88,12 @@ static UICKeyChainStore *__get_keychain() {
 {
   // Save IDs to file
   BOOL result =  [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
-  [self copyKeysFileToGroupContainer];
+  return result;
+}
+
++ (BOOL)saveGroupContainerKeys:(NSArray<BKPubKey *> *)keys {
+  // Save IDs to file
+  BOOL result =  [NSKeyedArchiver archiveRootObject:keys toFile:[BlinkPaths groupKeysFilePath]];
   return result;
 }
 

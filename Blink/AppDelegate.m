@@ -109,88 +109,9 @@ void __setupProcessEnv() {
 //  [nc addObserver:self selector:@selector(_active) name:@"UIApplicationSystemNavigationActionChangedNotification" object:nil];
 
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
+ 
+  [NSFileProviderManager syncWithBKHosts];
   
-//#ifdef TARGET_OS_MACCATALYST
-//  NSURL * bundleURL = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"AppKitBridge.bundle"];
-//  [[NSBundle bundleWithURL:bundleURL] load];
-//  NSObject *clas = (NSObject *)NSClassFromString(@"AppBridge");
-//
-//  [clas performSelector:@selector(tuneStyle)];
-//#endif
-  
-  // Enable FileManager
-//#if !TARGET_OS_MACCATALYST
-  
-  // protocol://server/uuid/
-
-  [NSFileProviderManager removeAllDomainsWithCompletionHandler:^(NSError * _Nullable error) {
-    //nul
-  }];
-
-  // TODO: Not used
-//  NSUUID *uuid = [NSUUID UUID];
-//  NSString *uuidString = @"uuid";
-//  NSString *sshProtocol = @"ssh";
-  // protocol://
-//  NSString *domainID1 = [NSString stringWithFormat:@"%@://%@/", sshProtocol, uuidString];
-//
-//  NSFileProviderDomain *domainOne = [[NSFileProviderDomain alloc]
-//                                     initWithIdentifier:domainID1
-//                                                                      displayName: @"ssh"
-//                                                    pathRelativeToDocumentStorage: uuidString];
-
-//
-//  NSUUID *uuid2 = [NSUUID UUID];
-//  NSString *uuid2String = @"uuid2";
-//  NSString *local = @"local";
-//  NSString *domainID2 = [NSString stringWithFormat:@"%@", local, uuid2String];
-
-  // Identifiers <encodedRootPath>/path/to/files
-  // sftp:hostinfo:home_root_path
-  NSString *rootPath = [NSString stringWithFormat:@"%@:%@:%@", @"sftp", @"l", @"/"];
-  NSData *rootData = [rootPath dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *encodedRootPath = [rootData base64EncodedStringWithOptions:NO];
-  
-  NSFileProviderDomain *domainTwo = [[NSFileProviderDomain alloc] initWithIdentifier: encodedRootPath
-                                                                         displayName: @"sftp"
-                                     // The path of the domain's subdirectory relative to the file provider's shared container. "<ssh:host:path>/asdfasdf/"
-                                                       pathRelativeToDocumentStorage: @"/"];
-  
-  NSString *fpRootPath = [NSString stringWithFormat:@"%@:%@:%@", @"sftp", @"fp", @"/"];
-  NSData *fpRootData = [fpRootPath dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *fpEncodedRootPath = [fpRootData base64EncodedStringWithOptions:NO];
-  
-  NSFileProviderDomain *fpDomain = [[NSFileProviderDomain alloc] initWithIdentifier: fpEncodedRootPath
-                                                                         displayName: @"fp"
-                                     // The path of the domain's subdirectory relative to the file provider's shared container. "<ssh:host:path>/asdfasdf/"
-                                                       pathRelativeToDocumentStorage: @"/"];
-  
-  [NSFileProviderManager addDomain:fpDomain completionHandler:^(NSError * _Nullable error) {
-//    NSLog(@"domainID2 %@ two error %@", domainID2, error);
-  }];
-  
-  NSString *rootPathDomainThree = [NSString stringWithFormat:@"%@:%@", @"local", @"/"];
-  NSData *rootDataDomainThree = [rootPathDomainThree dataUsingEncoding:NSUTF8StringEncoding];
-  NSString *encodedRootPathDomainThree = [rootDataDomainThree base64EncodedStringWithOptions:NO];
-  NSFileProviderDomain *domainThree = [[NSFileProviderDomain alloc] initWithIdentifier: encodedRootPathDomainThree
-                                                                         displayName: @"local"
-                                     // The path of the domain's subdirectory relative to the file provider's shared container. "<ssh:host:path>/asdfasdf/"
-                                                       pathRelativeToDocumentStorage: @"/"];
-
-//  [NSFileProviderManager addDomain:domainOne completionHandler:^(NSError * _Nullable error) {
-//    NSLog(@"domainID1 %@ one error %@", domainID1, error);
-//  }];
-
-  [NSFileProviderManager addDomain:domainTwo completionHandler:^(NSError * _Nullable error) {
-//    NSLog(@"domainID2 %@ two error %@", domainID2, error);
-  }];
-  
-  [NSFileProviderManager addDomain:domainThree completionHandler:^(NSError * _Nullable error) {
-//    NSLog(@"domainID2 %@ two error %@", domainID2, error);
-  }];
-
-
-//#endif
   return YES;
 }
 

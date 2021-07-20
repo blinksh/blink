@@ -34,46 +34,25 @@ import UIKit
 
 @objc class SettingsHostingController: NSObject {
   private static func _createWith<T: View>(view: T, nav: UINavigationController?) -> UIViewController {
-    guard
-      let nav = nav
-    else {
+    guard let nav = nav else {
       return UIHostingController(rootView: view)
     }
     return UIHostingController(rootView: NavView(navController: nav)  { view } )
   }
   
   @objc static func createKeyboardControllerWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(
-      view: KBConfigView(config: KBTracker.shared.loadConfig()),
-      nav: nav
-    )
+    _createWith(view: KBConfigView(config: KBTracker.shared.loadConfig()), nav: nav)
   }
   
   @objc static func createNotificationsWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(
-      view: BKNotificationsView(),
-      nav: nav
-    )
+    _createWith(view: BKNotificationsView(), nav: nav)
   }
   
   @objc static func createKeysWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(
-      view: KeyListView(),
-      nav: nav
-    )
+    _createWith(view: KeyListView(), nav: nav)
   }
   
-  @objc static func createKeyPickerWith(nav: UINavigationController?, keyID: String, delegate: KeyPickerViewDelegate) -> UIViewController {
-    _createWith(
-      view: KeyPickerView(currentKey: keyID, delegate: delegate),
-      nav: nav
-    )
-  }
-  
-//  @objc static func createNewKeyWith(nav: UINavigationController?, newKeyDelegate: NewKeyViewDelegate) -> UIViewController {
-//    _createWith(
-//      view: NewKeyView(delegate: newKeyDelegate),
-//      nav: nav
-//    )
-//  }
+  @objc static func createHostsWith(nav: UINavigationController?) -> UIViewController {
+    _createWith(view: HostListView(), nav: nav)
+  }  
 }

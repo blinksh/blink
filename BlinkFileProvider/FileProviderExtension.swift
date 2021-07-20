@@ -153,7 +153,7 @@ class FileProviderExtension: NSFileProviderExtension {
     var queryableIdentifier: BlinkItemIdentifier!
     
     if identifier == .rootContainer {
-      queryableIdentifier = BlinkItemIdentifier(domain!.identifier.rawValue)
+      queryableIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
     } else {
       queryableIdentifier = BlinkItemIdentifier(identifier)
     }
@@ -348,7 +348,7 @@ class FileProviderExtension: NSFileProviderExtension {
     let localParentIdentifier: BlinkItemIdentifier!
 
     if parentItemIdentifier == .rootContainer {
-      localParentIdentifier = BlinkItemIdentifier(domain!.identifier.rawValue)
+      localParentIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
     } else {
       localParentIdentifier = BlinkItemIdentifier(parentItemIdentifier)
     }
