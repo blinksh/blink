@@ -59,7 +59,7 @@ final class FileTranslatorPool {
   private init() {
     self.backgroundThread = Thread {
       self.backgroundRunLoop = RunLoop.current
-      
+      // TODO Probably need a timer. This may exit immediately
       RunLoop.current.run()
     }
     
@@ -100,6 +100,8 @@ final class FileTranslatorPool {
       
       let (host, config) = SSHClientConfigProvider.config(host: host!)
       
+      // NOTE We use main queue as this is an extension. Should move it to a different one though,
+      // in case of future changes.
       return Just(config).receive(on: DispatchQueue.main).flatMap {
         SSHClient
         .dial(host, with: $0)
@@ -117,8 +119,7 @@ final class FileTranslatorPool {
         }
       }
       .eraseToAnyPublisher()
-      .handleEvents(receiveCompletion: { c in
-        var y = c
+      .handleEvents(receiveCompletion: { _ in
       })
       .eraseToAnyPublisher()
     default:
@@ -271,48 +272,22 @@ class FileProviderExtension: NSFileProviderExtension {
     //
     
     // 1 - From URL we get the identifier.
-    
-    //    guard let identifier = persistentIdentifierForItem(at: url) else {
-    //      completionHandler(NSFileProviderError(.noSuchItem))
-    //      return
-    //    }
     let blinkIdentifier = BlinkItemIdentifier(url: url)
     print("\(blinkIdentifier.path) - Start Providing item")
-    //let filename = url.lastPathComponent
     
-    // SRC                --> DEST
-    // remote             --> local
-    // FileTranslatorPool --> Local()
-    
-    // local
+    // 2 local translator
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
     
-    // 2 remote - From the identifier, we get the translator, and we can walk to the remote file
+    // 3 remote - From the identifier, we get the translator and walk to the remote.
     let srcTranslator = FileTranslatorPool.translator(for: blinkIdentifier.encodedRootPath)
     srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
       .flatMap { fileTranslator in
+        // 4 - Start the copy
         return destTranslator.flatMap { $0.copy(from: [fileTranslator]) }
       }.sink(receiveCompletion: { completion in
         print(completion)
         completionHandler(nil)
       }, receiveValue: { _ in }).store(in: &cancellableBag)
-    // 3 - On local, the path is already the URL, so we walk to the local file path to provide there.
-    // 4 - Copy from one to the other, and call the completionHandler once done.
-    
-    // file://
-  }
-  
-  override func itemChanged(at url: URL) {
-    print("itemChanged ITEM at \(url)")
-    
-    // Called at some point after the file has changed; the provider may then trigger an upload
-    
-    /* TODO:
-     - mark file at <url> as needing an update in the model
-     - if there are existing NSURLSessionTasks uploading this file, cancel them
-     - create a fresh background NSURLSessionTask and schedule it to upload the current modifications
-     - register the NSURLSessionTask with NSFileProviderManager to provide progress updates
-     */
   }
   
   override func stopProvidingItem(at url: URL) {
@@ -408,6 +383,20 @@ class FileProviderExtension: NSFileProviderExtension {
       } receiveValue: { _ in
         // When working with directories, we can use it to update the cache.
       }.store(in: &cancellableBag)
+    
+  }
+  
+  override func itemChanged(at url: URL) {
+    print("\(url) - itemChanged")
+    
+    // Called at some point after the file has changed; the provider may then trigger an upload
+    
+    /* TODO:
+     - mark file at <url> as needing an update in the model
+     - if there are existing NSURLSessionTasks uploading this file, cancel them
+     - create a fresh background NSURLSessionTask and schedule it to upload the current modifications
+     - register the NSURLSessionTask with NSFileProviderManager to provide progress updates
+     */
     
   }
   
