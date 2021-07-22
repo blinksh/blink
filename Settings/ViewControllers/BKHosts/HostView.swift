@@ -242,7 +242,7 @@ struct HostView: View {
   @State private var _sshKeyName: String = ""
   @State private var _proxyCmd: String = ""
   @State private var _proxyJump: String = ""
-  @State private var _sshConfigAttachment: String = ""
+  @State private var _sshConfigAttachment: String = HostView.__sshConfigAttachmentExample
   
   @State private var _moshServer: String = ""
   @State private var _moshPort: String = ""
@@ -379,7 +379,7 @@ struct HostView: View {
     
   }
   
-  private let _sshConfigAttachmentExample = "# Compression no"
+  private static var __sshConfigAttachmentExample: String { "# Compression no" }
   
   func loadHost() {
     if let host = _host {
@@ -393,7 +393,7 @@ struct HostView: View {
       _proxyJump = host.proxyJump ?? ""
       _sshConfigAttachment = host.sshConfigAttachment ?? ""
       if _sshConfigAttachment.isEmpty {
-        _sshConfigAttachment = _sshConfigAttachmentExample
+        _sshConfigAttachment = HostView.__sshConfigAttachmentExample
       }
       if let moshPort = host.moshPort {
         if let moshPortEnd = host.moshPortEnd {
@@ -464,7 +464,7 @@ struct HostView: View {
       prediction: _moshPrediction,
       proxyCmd: _proxyCmd,
       proxyJump: _proxyJump,
-      sshConfigAttachment: _sshConfigAttachment == _sshConfigAttachmentExample ? "" : _sshConfigAttachment,
+      sshConfigAttachment: _sshConfigAttachment == HostView.__sshConfigAttachmentExample ? "" : _sshConfigAttachment,
       fpDomainsJSON: FileProviderDomain.toJson(list: _domains)
     )
     
