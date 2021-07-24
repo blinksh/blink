@@ -37,10 +37,9 @@ import BuildCLI
 extension BuildCLIConfig {
   static let blinkConfig: BuildCLIConfig = {
     let cfg = BuildCLIConfig.shared
-//    let storage = FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
-    let storage = UserDefaultsTokenStorage(ud: UserDefaults.suite, tokenKey: "machinesToken") //FileTokenStorage(tokenFilePath: BlinkPaths.blink() + "/.build.token")
+    cfg.openURL = blink_openurl
+    let storage = UserDefaultsTokenStorage(ud: UserDefaults.suite, tokenKey: "machinesToken")
     cfg.tokenProvider = AuthTokenProvider(auth0: cfg.auth0, storage: storage)
-//    cfg.tokenProvider = UserDefaultsAuthTokenProvider(auth0: cfg.auth0, ud: UserDefaults.suite)
     return cfg
   }()
 }

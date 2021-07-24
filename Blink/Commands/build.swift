@@ -274,13 +274,6 @@ public func build_main(argc: Int32, argv: Argv) -> Int32 {
   BuildCommands.customSSHCopyCommand = BuildSSHCopyID.self
   ImageCommands.customImageBuildCommand = BuildImageBuildCommand.self
   
-//  let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-//  let rawMode = session.device.rawMode
-//  defer {
-//    session.device.rawMode = rawMode
-//  }
-//  session.device.rawMode = true
-  
   return BuildCLI.BuildCommands.main(Array(argv.args(count: argc)[1...]), io: io)
 }
 
