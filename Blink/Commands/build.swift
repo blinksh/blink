@@ -159,11 +159,11 @@ struct BuildSSH: NonStdIOCommand {
       "-p", String(port),
       "-i", identity
       ]
-    for b in localPortForwards {
+    for b in BuildCommands.unwrapSSH(ports: localPortForwards, forContainer: containerName) {
       cmd.append("-L")
       cmd.append(b)
     }
-    for b in reversePortForwards {
+    for b in BuildCommands.unwrapSSH(ports: reversePortForwards, forContainer: containerName) {
       cmd.append("-R")
       cmd.append(b)
     }
@@ -207,6 +207,25 @@ struct BuildMOSH: NonStdIOCommand {
   )
   var containerName: String
   
+  @Argument(
+    parsing: .unconditionalRemaining,
+    help: .init(
+      "If a <command> is specified, it is executed on the container instead of a login shell",
+      valueName: "command"
+    )
+  )
+  fileprivate var cmd: [String] = []
+  
+  var command: [String] {
+    get {
+      if cmd.first == "--" {
+        return Array(cmd.dropFirst())
+      } else {
+        return cmd
+      }
+    }
+  }
+  
   func validate() throws {
     try validateContainerName(containerName)
   }
@@ -220,8 +239,9 @@ struct BuildMOSH: NonStdIOCommand {
     print("Starting mosh connection...")
     let user = BuildCLIConfig.shared.sshUser
     let port = BuildCLIConfig.shared.sshPort
+    
     session.cmdQueue.async {
-      session.enqueueCommand("mosh -I \(identity) -P \(port) \(user)@\(ip) \(containerName)", skipHistoryRecord: true)
+      session.enqueueCommand("mosh -I \(identity) -P \(port) \(user)@\(ip) \(containerName) \(command.joined(separator: " "))", skipHistoryRecord: true)
     }
   }
 }
@@ -240,7 +260,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
     name: .shortAndLong,
     help: "Idenity name"
   )
-  var identity: String?
+  var identity: String = BuildCLIConfig.shared.sshIdentity
 
 
   func validate() throws {
@@ -249,8 +269,8 @@ struct BuildSSHCopyID: NonStdIOCommand {
   
   func run() throws {
     if identity == "blink-build" && BuildCLIConfig.shared.blinkBuildPubKey() == nil {
-      _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
-      return
+      io.print("No blink-build key is found. Generating new one.")
+      BuildCLIConfig.shared.blinkBuildKeyGenerator()
     }
     
     printDebug("Searching for key in keychain...")
@@ -263,7 +283,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
     
     printDebug("No key is found in keychain. Fallback to file system.")
     var keyPath = ""
-    if let identity = identity {
+    if !identity.isEmpty {
       keyPath = identity.hasSuffix(".pub") ? keyPath : identity + ".pub"
     } else {
       keyPath = "~/.ssh/id_rsa.pub"
