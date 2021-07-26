@@ -146,7 +146,7 @@ struct BuildSSH: NonStdIOCommand {
   }
   
   func run() throws {
-    let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
+    let ip = try BuildCLIConfig.shared.cachedMachineIP(io: io)
     
     if identity == "blink-build" {
       _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
@@ -232,7 +232,7 @@ struct BuildMOSH: NonStdIOCommand {
   
   func run() throws {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-    let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
+    let ip = try BuildCLIConfig.shared.cachedMachineIP(io: io)
     if identity == "blink-build" {
       _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
     }
