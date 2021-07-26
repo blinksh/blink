@@ -40,6 +40,14 @@ extension BuildCLIConfig {
     cfg.openURL = blink_openurl
     let storage = UserDefaultsTokenStorage(ud: UserDefaults.suite, tokenKey: "machinesToken")
     cfg.tokenProvider = AuthTokenProvider(auth0: cfg.auth0, storage: storage)
+    cfg.sshIdentity = "blink-build"
+    cfg.blinkBuildPubKey = {
+      BKPubKey.withID(cfg.sshIdentity)?.publicKey
+    }
+    cfg.blinkBuildKeyGenerator = {
+      let comment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+      try? BKPubKey.addSEKey(id: cfg.sshIdentity, comment: comment)
+    }
     return cfg
   }()
 }

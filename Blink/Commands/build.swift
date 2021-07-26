@@ -91,6 +91,12 @@ struct BuildSSH: NonStdIOCommand {
   @OptionGroup var verboseOptions: VerboseOptions
   var io = NonStdIO.standart
   
+  @Option(
+    name: .shortAndLong,
+    help: "Idenity. Default blink-build"
+  )
+  var identity: String = BuildCLIConfig.shared.sshIdentity
+  
   @Flag(
     name: .customShort("A"),
     help: "Enables forwarding of the authentication agent connection"
@@ -139,11 +145,17 @@ struct BuildSSH: NonStdIOCommand {
   
   func run() throws {
     let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
+    
+    if identity == "blink-build" {
+      _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
+    }
+    
     let user = BuildCLIConfig.shared.sshUser
     let port = BuildCLIConfig.shared.sshPort
     var cmd = [
       "ssh", "-t",
-      "-p", String(port)
+      "-p", String(port),
+      "-i", identity
       ]
     for b in localPortForwards {
       cmd.append("-L")
@@ -156,6 +168,7 @@ struct BuildSSH: NonStdIOCommand {
     if agent {
       cmd.append("-A")
     }
+
     if verboseOptions.verbose {
       cmd.append("-v")
     }
@@ -180,6 +193,12 @@ struct BuildMOSH: NonStdIOCommand {
   @OptionGroup var verboseOptions: VerboseOptions
   var io = NonStdIO.standart
   
+  @Option(
+    name: .customShort("I"),
+    help: "ssh authentication identity name"
+  )
+  var identity: String = BuildCLIConfig.shared.sshIdentity
+  
   @Argument(
     help: "name of the container"
   )
@@ -192,11 +211,14 @@ struct BuildMOSH: NonStdIOCommand {
   func run() throws {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     let ip = try BuildCLIConfig.shared.machine(io: io).ip().awaitOutput()!
+    if identity == "blink-build" {
+      _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
+    }
     print("Starting mosh connection...")
     let user = BuildCLIConfig.shared.sshUser
     let port = BuildCLIConfig.shared.sshPort
     session.cmdQueue.async {
-      session.enqueueCommand("mosh -P \(port) \(user)@\(ip) \(containerName)", skipHistoryRecord: true)
+      session.enqueueCommand("mosh -I \(identity) -P \(port) \(user)@\(ip) \(containerName)", skipHistoryRecord: true)
     }
   }
 }
@@ -212,7 +234,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
   
   @Option(
     name: .shortAndLong,
-    help: "Idenity file"
+    help: "Idenity name"
   )
   var identity: String?
 
@@ -222,6 +244,11 @@ struct BuildSSHCopyID: NonStdIOCommand {
   }
   
   func run() throws {
+    if identity == "blink-build" && BuildCLIConfig.shared.blinkBuildPubKey() == nil {
+      _ = try BuildCommands.createAndAddBlinkBuildKeyIfNeeded(io: io).awaitOutput()
+      return
+    }
+    
     printDebug("Searching for key in keychain...")
     if let key = BKPubKey.withID(identity)?.publicKey {
       printDebug("Key found in keychain")
