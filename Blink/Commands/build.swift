@@ -40,7 +40,8 @@ import ArgumentParser
 struct BuildImageBuildCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "build",
-    abstract: "Build images"
+    abstract: "Build images",
+    shouldDisplay: false
   )
   
   @OptionGroup var verboseOptions: VerboseOptions
@@ -85,7 +86,8 @@ struct BuildImageBuildCommand: NonStdIOCommand {
 struct BuildSSH: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "ssh",
-    abstract: "SSH to container"
+    abstract: "SSH to container",
+    shouldDisplay: false
   )
   
   @OptionGroup var verboseOptions: VerboseOptions
@@ -187,7 +189,8 @@ struct BuildSSH: NonStdIOCommand {
 struct BuildMOSH: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "mosh",
-    abstract: "MOSH to container"
+    abstract: "MOSH to container",
+    shouldDisplay: false
   )
   
   @OptionGroup var verboseOptions: VerboseOptions
@@ -226,7 +229,8 @@ struct BuildMOSH: NonStdIOCommand {
 struct BuildSSHCopyID: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "ssh-copy-id",
-    abstract: "Add public key to build machine authorized_keys file"
+    abstract: "Add public key to build machine authorized_keys file",
+    shouldDisplay: false
   )
   
   @OptionGroup var verboseOptions: VerboseOptions
