@@ -84,7 +84,6 @@ enum BKMoshPrediction {
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
 + (NSMutableArray<BKHosts *> *)all;
-+ (void)loadHosts;
 + (NSArray<BKHosts *> *)allHosts;
 + (NSInteger)count;
 + (CKRecord *)recordFromHost:(BKHosts *)host;
