@@ -106,29 +106,43 @@ struct HostListView: View {
   @EnvironmentObject private var _nav: Nav
   
   var body: some View {
-    List {
-      ForEach(_state.list, id: \.alias) {
-        HostRow(card: $0, reloadList: _state.reloadHosts)
-      }.onDelete(perform: _state.deleteHosts)
-    }
-    .listStyle(InsetGroupedListStyle())
-    .onAppear(perform: _state.startSync)
-    .navigationBarItems(
-      trailing: HStack {
-        Menu {
-          Section(header: Text("Order")) {
-            SortButton(label: "Alias",    sortType: $_state.sortType, asc: .aliasAsc, desc: .aliasDesc)
-            SortButton(label: "HostName", sortType: $_state.sortType, asc: .hostNameAsc, desc: .hostNameDesc)
+    Group {
+      if _state.list.isEmpty {
+        Button(
+          action: _addHost,
+          label: { Label("Add new host", systemImage: "plus") }
+        )
+      } else {
+        List {
+          ForEach(_state.list, id: \.alias) {
+            HostRow(card: $0, reloadList: _state.reloadHosts)
+          }.onDelete(perform: _state.deleteHosts)
+        }
+        .listStyle(InsetGroupedListStyle())
+        .navigationBarItems(
+          trailing: HStack {
+            Menu {
+              Section(header: Text("Order")) {
+                SortButton(label: "Alias",    sortType: $_state.sortType, asc: .aliasAsc, desc: .aliasDesc)
+                SortButton(label: "HostName", sortType: $_state.sortType, asc: .hostNameAsc, desc: .hostNameDesc)
+              }
+            } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
+            Button(
+              action: _addHost,
+              label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) }
+            )
           }
-        } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
-        Button(action: {
-          let rootView = HostView(host: nil, reloadList: _state.reloadHosts).environmentObject(_nav)
-          let vc = UIHostingController(rootView: rootView)
-          _nav.navController.pushViewController(vc, animated: true)
-        }, label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) })
+        )
       }
-    )
+    }
+    .onAppear(perform: _state.startSync)
     .navigationBarTitle("Hosts")
+  }
+  
+  private func _addHost() {
+    let rootView = HostView(host: nil, reloadList: _state.reloadHosts).environmentObject(_nav)
+    let vc = UIHostingController(rootView: rootView)
+    _nav.navController.pushViewController(vc, animated: true)
   }
 }
 
