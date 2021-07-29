@@ -44,7 +44,7 @@
 //#import <OpenSSH/ssherr.h>
 //#import "Blink-Swift.h"
 
-NSMutableArray *Identities;
+NSMutableArray *__identities;
 
 const NSString * __keychainService = @"sh.blink.pkcard";
 
@@ -70,7 +70,7 @@ static UICKeyChainStore *__get_keychain() {
 + (instancetype)withID:(NSString *)ID
 {
   // Find the ID and return it.
-  for (BKPubKey *i in Identities) {
+  for (BKPubKey *i in __identities) {
     if ([i->_ID isEqualToString:ID]) {
       return i;
     }
@@ -81,32 +81,25 @@ static UICKeyChainStore *__get_keychain() {
 
 + (NSArray *)all
 {
-  return [Identities copy];
+  if (!__identities) {
+    [self loadIDS];
+  }
+  return [__identities copy];
 }
 
 + (BOOL)saveIDS
 {
   // Save IDs to file
-  BOOL result =  [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
+  BOOL result =  [NSKeyedArchiver archiveRootObject:__identities toFile:[BlinkPaths blinkKeysFile]];
   return result;
-}
-
-+ (BOOL)saveGroupContainerKeys:(NSArray<BKPubKey *> *)keys {
-  // Save IDs to file
-  BOOL result =  [NSKeyedArchiver archiveRootObject:keys toFile:[BlinkPaths groupKeysFilePath]];
-  return result;
-}
-
-+ (NSArray<BKPubKey *> *)groupContainerKeys {
-  return [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths groupKeysFilePath]];
 }
 
 + (void)loadIDS
 {
   // Load IDs from file
-  if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
+  if ((__identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
     // Initialize the structure if it doesn't exist, with a default id_rsa key
-    Identities = [[NSMutableArray alloc] init];
+    __identities = [[NSMutableArray alloc] init];
     
     // Create default key in next main queue step in order to speedup app start.
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -135,13 +128,13 @@ static UICKeyChainStore *__get_keychain() {
 }
 
 + (void)addCard:(BKPubKey *)pubKey {
-  [Identities addObject:pubKey];
+  [__identities addObject:pubKey];
   [BKPubKey saveIDS];
 }
 
 + (NSInteger)count
 {
-  return [Identities count];
+  return [__identities count];
 }
 
 - (id)initWithCoder:(NSCoder *)coder
@@ -301,7 +294,7 @@ static UICKeyChainStore *__get_keychain() {
     [kc removeItemForKey:[self _certificateKeychainRef]];
     [kc removeItemForKey:[self _privateKeyKeychainRef]];
   }
-  [Identities removeObject:self];
+  [__identities removeObject:self];
   [BKPubKey saveIDS];
 }
 

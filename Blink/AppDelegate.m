@@ -75,10 +75,20 @@ void __setupProcessEnv() {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  signal(SIGPIPE, __on_pipebroken_signal);
   
+  [BlinkPaths migrateToHomeAtGroupContainer];
+  
+  [BKDefaults loadDefaults];
+  [BKPubKey loadIDS];
+  [BKHosts loadHosts];
+  [self _loadProfileVars];
+  [[UIView appearance] setTintColor:[UIColor blinkTint]];
+  
+  signal(SIGPIPE, __on_pipebroken_signal);
+ 
   dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
   dispatch_async(bgQueue, ^{
+    [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
   });
 
@@ -109,6 +119,8 @@ void __setupProcessEnv() {
 //  [nc addObserver:self selector:@selector(_active) name:@"UIApplicationSystemNavigationActionChangedNotification" object:nil];
 
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
+  
+  
  
   [NSFileProviderManager syncWithBKHosts];
   
@@ -158,17 +170,6 @@ void __setupProcessEnv() {
     setenv(varName.UTF8String, varValue.UTF8String, forceOverwrite);
   }];
 }
-
-- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  [BKDefaults loadDefaults];
-  [BKPubKey loadIDS];
-  [BKHosts loadHosts];
-  [self _loadProfileVars];
-  [[UIView appearance] setTintColor:[UIColor blinkTint]];
-  return YES;
-}
-
-
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
   [[BKiCloudSyncHandler sharedHandler]checkForReachabilityAndSync:nil];

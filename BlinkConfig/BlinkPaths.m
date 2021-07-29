@@ -33,51 +33,43 @@
 
 @implementation BlinkPaths
 
+NSString *__homePath = nil;
 NSString *__documentsPath = nil;
+NSString *__iCloudsDriveDocumentsPath = nil;
 
-+ (NSString *)documents
++ (NSString *)homePath {
+  if (__homePath == nil) {
+    __homePath = [[self groupContainerPath] stringByAppendingPathComponent:@"home"];
+  }
+  
+  return __homePath;
+}
+
++ (NSString *)documentsPath
 {
   if (__documentsPath == nil) {
     __documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) firstObject];
+    // Linked and resolved files has prefix /private
+    if (![__documentsPath hasPrefix:@"/private"]) {
+      __documentsPath = [@"/private" stringByAppendingString:__documentsPath];
+    }
   }
   return __documentsPath;
 }
 
-+ (NSURL *)documentsURL
-{
-  return [[[NSFileManager defaultManager] URLsForDirectory:NSDocumentDirectory inDomains:NSUserDomainMask] firstObject];
-}
-
 + (NSString *)groupContainerPath {
+  NSString *groupID = @"group.Com.CarlosCabanero.BlinkShell";
   NSFileManager *fm = [NSFileManager defaultManager];
-  return [fm containerURLForSecurityApplicationGroupIdentifier:@"group.Com.CarlosCabanero.BlinkShell"].path;
+  return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
 }
-
-+ (NSString *)groupHostsFilePath {
-  return [[self groupContainerPath] stringByAppendingPathComponent:@"hosts"];
-}
-
-
-+ (NSString *)groupKeysFilePath {
-  return [[self groupContainerPath] stringByAppendingPathComponent:@"keys"];
-}
-
-
-NSString *__iCloudsDriveDocumentsPath = nil;
-
 
 + (NSString *)iCloudDriveDocuments
 {
   if (__iCloudsDriveDocumentsPath == nil) {
+    NSString *iCloudID = @"iCloud.com.carloscabanero.blinkshell";
     NSFileManager *fm = [NSFileManager defaultManager];
-    NSString *path = [[fm URLForUbiquityContainerIdentifier:@"iCloud.com.carloscabanero.blinkshell"] URLByAppendingPathComponent:@"Documents"].path;
-    BOOL isDir = NO;
-    if (![fm fileExistsAtPath:path isDirectory:&isDir]) {
-      NSError *error = nil;
-      if (![fm createDirectoryAtPath:path withIntermediateDirectories:YES attributes:nil error:&error]) {
-        NSLog(@"Error: %@", error);
-      }
-    }
+    NSString *path = [[fm URLForUbiquityContainerIdentifier:iCloudID] URLByAppendingPathComponent:@"Documents"].path;
+    [self _ensureFolderAtPath:path];
     __iCloudsDriveDocumentsPath = path;
   }
   
@@ -86,52 +78,55 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 
 + (void)linkICloudDriveIfNeeded
 {
+  [self _linkAtPath:[[self homePath] stringByAppendingPathComponent:@"iCloud"]
+    destinationPath:[self iCloudDriveDocuments]];
+}
+
++ (void)linkDocumentsIfNeeded {
+  [self _linkAtPath:[[self homePath] stringByAppendingPathComponent:@"Documents"]
+    destinationPath:[self documentsPath]];
+}
+
++ (void)_linkAtPath:(NSString *)atPath destinationPath:(NSString *)destinationPath {
   NSFileManager *fm = [NSFileManager defaultManager];
-  NSString *icloudPath = [[self documents] stringByAppendingPathComponent:@"iCloud"];
-  if ([fm fileExistsAtPath:icloudPath isDirectory:nil]) {
+  if ([fm fileExistsAtPath:atPath]) {
     return;
   }
   
   NSError *error = nil;
+  
+  BOOL ok = [fm createSymbolicLinkAtPath:atPath
+                     withDestinationPath:destinationPath
+                                   error:&error];
 
-  if (
-      ![fm createSymbolicLinkAtPath:icloudPath withDestinationPath:[self iCloudDriveDocuments] error:&error]
-      ) {
+  if (!ok) {
     NSLog(@"Error: %@", error);
   };
 }
 
-+ (NSString *)blink
-{
-  NSString *dotBlink = [[self documents] stringByAppendingPathComponent:@".blink"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
-  BOOL isDir = NO;
-  if ([fileManager fileExistsAtPath:dotBlink isDirectory:&isDir]) {
-    if (isDir) {
-      return dotBlink;
-    }
-    
-    [fileManager removeItemAtPath:dotBlink error:nil];
-  }
-  
-  [fileManager createDirectoryAtPath:dotBlink withIntermediateDirectories:YES attributes:@{} error:nil];
++ (NSString *)blink {
+  NSString *dotBlink = [[self homePath] stringByAppendingPathComponent:@".blink"];
+  [self _ensureFolderAtPath:dotBlink];
   return dotBlink;
 }
 
-+ (NSString *)ssh
-{
-  NSString *dotSSH = [[self documents] stringByAppendingPathComponent:@".ssh"];
-  NSFileManager *fileManager = [NSFileManager defaultManager];
++ (NSString *)ssh {
+  NSString *dotSSH = [[self homePath] stringByAppendingPathComponent:@".ssh"];
+  [self _ensureFolderAtPath:dotSSH];
+  return dotSSH;
+}
+
++ (void)_ensureFolderAtPath:(NSString *)path {
   BOOL isDir = NO;
-  if ([fileManager fileExistsAtPath:dotSSH isDirectory:&isDir]) {
+  NSFileManager *fm = [NSFileManager defaultManager];
+  if ([fm fileExistsAtPath:path isDirectory:&isDir]) {
     if (isDir) {
-      return dotSSH;
+      return;
     }
     
-    [fileManager removeItemAtPath:dotSSH error:nil];
+    [fm removeItemAtPath:path error:nil];
   }
-  [fileManager createDirectoryAtPath:dotSSH withIntermediateDirectories:YES attributes:@{} error:nil];
-  return dotSSH;
+  [fm createDirectoryAtPath:path withIntermediateDirectories:YES attributes:@{} error:nil];
 }
 
 
@@ -149,7 +144,6 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 {
   return [[self blinkURL] URLByAppendingPathComponent:@"kb.json"];
 }
-
 
 + (NSString *)blinkHostsFile
 {
@@ -172,7 +166,6 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self blink] stringByAppendingPathComponent:@"profile"];
 }
 
-
 + (NSString *)historyFile
 {
   return [[self blink] stringByAppendingPathComponent:@"history.txt"];
@@ -192,5 +185,70 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 {
   return [[self blink] stringByAppendingPathComponent:@"defaults"];
 }
+
++ (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory
+{
+  NSFileManager *fm = [NSFileManager defaultManager];
+  NSMutableArray<NSString *> *allowedPaths = [[NSMutableArray alloc] init];
+  
+  NSString *homePath = [BlinkPaths homePath];
+  NSArray<NSString *> * files = [fm contentsOfDirectoryAtPath:homePath error:nil];
+  
+  for (NSString *path in files) {
+    NSString *filePath = [homePath stringByAppendingPathComponent:path];
+    NSDictionary * attrs = [fm attributesOfItemAtPath:filePath error:nil];
+    if (attrs[NSFileType] != NSFileTypeSymbolicLink) {
+      continue;
+    }
+      
+    NSString *destPath = [fm destinationOfSymbolicLinkAtPath:filePath error:nil];
+    if (!destPath) {
+      continue;
+    }
+    
+    if (![fm isReadableFileAtPath:destPath]) {
+      
+      // We lost access. Remove that symlink
+      [fm removeItemAtPath:filePath error:nil];
+      continue;
+    }
+    
+    [allowedPaths addObject:destPath];
+  }
+  return allowedPaths;
+}
+
++ (void)migrateToHomeAtGroupContainer {
+  [self cleanedSymlinksInHomeDirectory];
+  NSFileManager *fm = NSFileManager.defaultManager;
+  //[fm removeItemAtPath:[self homePath] error:nil];
+  
+  NSString *homePath = [self homePath];
+ 
+  if ([fm fileExistsAtPath:homePath]) {
+    return;
+  }
+  NSError *error = nil;
+  BOOL ok = [fm createDirectoryAtPath:homePath withIntermediateDirectories:YES attributes:nil error:nil];
+  
+  if (!ok) {
+    NSLog(@"Failed to create home folder :%@.", error);
+    return;
+  }
+
+  NSString *documentsPath = [self documentsPath];
+  NSArray<NSString *> *foldersToMove = @[@".blink", @".ssh"];
+  
+  for (NSString * folder in foldersToMove) {
+    NSString *folderDocumentsPath = [documentsPath stringByAppendingPathComponent:folder];
+    NSString *folderHomePath = [homePath stringByAppendingPathComponent:folder];
+    
+    ok = [fm copyItemAtPath:folderDocumentsPath toPath:folderHomePath error:&error];
+    if (!ok) {
+      NSLog(@"Failed to copy folder %@ :%@.", folder, error);
+    }
+  }
+}
+
 
 @end

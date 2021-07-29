@@ -117,10 +117,6 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
       }
     }
 
-    BKHosts.saveGroupContainerHosts(Array(hostsMap.values))
-    BKPubKey.saveGroupContainerKeys(Array(keysMap.values))
-    
-    
     var domainsToRemove: [NSFileProviderDomain] = []
     for d in nsDomains {
       if let blinkDomain = domainsMap.removeValue(forKey: d.identifier.rawValue) {

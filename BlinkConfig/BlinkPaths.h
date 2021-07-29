@@ -33,10 +33,9 @@
 
 @interface BlinkPaths : NSObject
 
++ (NSString *)homePath;
 
-+ (NSString *) documents;
-+ (NSURL *) documentsURL;
-
++ (NSString *) documentsPath;
 + (NSString *) iCloudDriveDocuments;
 
 // ~/.blink
@@ -52,16 +51,16 @@
 + (NSString *)blinkProfileFile;
 + (NSURL *)blinkKBConfigURL;
 
-+ (NSString *)groupContainerURL;
-+ (NSString *)groupHostsFilePath;
-+ (NSString *)groupKeysFilePath;
-
 + (NSString *) historyFile;
 + (NSURL *)historyURL;
 + (NSString *) knownHostsFile;
 + (NSString *) defaultsFile;
 
 + (void)linkICloudDriveIfNeeded;
++ (void)linkDocumentsIfNeeded;
+
++ (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
++ (void)migrateToHomeAtGroupContainer;
 
 
 @end

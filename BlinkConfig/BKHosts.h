@@ -63,10 +63,8 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSString *fpDomainsJSON;
 
 + (instancetype)withHost:(NSString *)ID;
-+ (void)loadHosts;
++ (void)loadHosts NS_SWIFT_NAME(loadHosts());
 + (BOOL)saveHosts;
-+ (BOOL)saveGroupContainerHosts:(NSArray<BKHosts *> *)hosts;
-+ (NSArray<BKHosts *> *)groupContainerHosts;
 + (instancetype)saveHost:(NSString *)host
              withNewHost:(NSString *)newHost
                 hostName:(NSString *)hostName
@@ -86,6 +84,7 @@ enum BKMoshPrediction {
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
 + (NSMutableArray<BKHosts *> *)all;
++ (void)loadHosts;
 + (NSArray<BKHosts *> *)allHosts;
 + (NSInteger)count;
 + (CKRecord *)recordFromHost:(BKHosts *)host;

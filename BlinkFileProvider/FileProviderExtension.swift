@@ -483,8 +483,11 @@ class FileProviderExtension: NSFileProviderExtension {
 class SSHClientConfigProvider {
   
   static func config(host: String) -> (String, SSHClientConfig) {
+   
+    BKHosts.loadHosts()
+    BKPubKey.loadIDS()
     
-    let bkConfig = BKConfig(allHosts: BKHosts.groupContainerHosts(), allIdentities: BKPubKey.groupContainerKeys())
+    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
     let agent = SSHAgent()
     
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]

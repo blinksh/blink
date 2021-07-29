@@ -394,7 +394,7 @@ struct Complete {
   
   private static func _allPaths(prefix: String, skipFiles: Bool) -> [String] {
     var pref = prefix
-    let home = BlinkPaths.documents()!
+    let home = BlinkPaths.homePath()!
     var cleanup = false
     if pref.hasPrefix("~") {
       pref = pref.replacingOccurrences(of: "~", with: home)

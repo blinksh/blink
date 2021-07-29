@@ -35,7 +35,7 @@
 #import "BlinkPaths.h"
 #import <BlinkConfig/BlinkConfig-Swift.h>
 
-NSMutableArray *Hosts;
+NSMutableArray *__hosts;
 
 static UICKeyChainStore *__get_keychain() {
   return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
@@ -144,7 +144,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 
 + (instancetype)withHost:(NSString *)aHost
 {
-  for (BKHosts *host in Hosts) {
+  for (BKHosts *host in __hosts) {
     if ([host->_host isEqualToString:aHost]) {
       return host;
     }
@@ -154,7 +154,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 
 + (instancetype)withiCloudId:(CKRecordID *)record
 {
-  for (BKHosts *host in Hosts) {
+  for (BKHosts *host in __hosts) {
     if ([host->_iCloudRecordId isEqual:record]) {
       return host;
     }
@@ -164,36 +164,38 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 
 + (NSMutableArray<BKHosts *> *)all
 {
-  return Hosts;
+  if (__hosts == nil) {
+    [BKHosts loadHosts];
+  }
+  return __hosts;
 }
 
 + (NSArray<BKHosts *> *)allHosts
 {
-  if (Hosts == nil) {
+  if (__hosts == nil) {
     [BKHosts loadHosts];
   }
-  return [Hosts copy];
+  return [__hosts copy];
 }
 
 + (NSInteger)count
 {
-  return [Hosts count];
+  return [[self all] count];
 }
 
 + (BOOL)saveHosts
 {
+  if (!__hosts) {
+    return NO;
+  }
+  
   [self saveAllToSSHConfig];
   // Save IDs to file
   
-  BOOL result = [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
+  BOOL result = [NSKeyedArchiver archiveRootObject:__hosts toFile:[BlinkPaths blinkHostsFile]];
   
   return result;
 }
-
-+ (BOOL)saveGroupContainerHosts:(NSArray<BKHosts *> *)hosts {
-  return [NSKeyedArchiver archiveRootObject:hosts toFile:[BlinkPaths groupHostsFilePath]];
-}
-
 
 + (instancetype)saveHost:(NSString *)host
              withNewHost:(NSString *)newHost
@@ -235,7 +237,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                         sshConfigAttachment:sshConfigAttachment
                               fpDomainsJSON:fpDomainsJSON
     ];
-    [Hosts addObject:bkHost];
+    [__hosts addObject:bkHost];
   } else {
     bkHost.host = newHost;
     bkHost.hostName = hostName;
@@ -301,14 +303,10 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 + (void)loadHosts
 {
   // Load IDs from file
-  if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkHostsFile]]) == nil) {
+  if ((__hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkHostsFile]]) == nil) {
     // Initialize the structure if it doesn't exist
-    Hosts = [[NSMutableArray alloc] init];
+    __hosts = [[NSMutableArray alloc] init];
   }
-}
-
-+ (NSArray<BKHosts *> *)groupContainerHosts {
-  return [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths groupHostsFilePath]];
 }
 
 + (CKRecord *)recordFromHost:(BKHosts *)host

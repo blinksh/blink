@@ -66,7 +66,6 @@ typedef enum: NSUInteger {
 + (void)loadIDS;
 + (BOOL)saveIDS;
 + (BOOL)saveGroupContainerKeys:(NSArray<BKPubKey *> *)keys;
-+ (NSArray<BKPubKey *> *)groupContainerKeys;
 + (void)addCard:(nonnull BKPubKey *)pubKey;
 - (void)storePrivateKeyInKeychain:(nonnull NSString *) privateKey;
 - (void)storeCertificateInKeychain:(nullable NSString *) certificate;
