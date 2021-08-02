@@ -263,9 +263,10 @@ extension SuspendableSession {
   
 	private func _createIndexFileIfNotExists(_ fileURL: URL) {
 		let fm = FileManager.default
-		if !fm.fileExists(atPath: fileURL.path) {
-			fm.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
+		if fm.fileExists(atPath: fileURL.path) {
+			return
 		}
+		fm.createFile(atPath: fileURL.path, contents: nil, attributes: nil)
 	}
   
   private func _fsReadMetaIndex() {
