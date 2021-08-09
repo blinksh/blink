@@ -6,8 +6,8 @@
         "repositoryURL": "https://github.com/blinksh/BlinkBuild",
         "state": {
           "branch": null,
-          "revision": "b857a67c8bbe6e15c7492c522997b6ba955aa12f",
-          "version": "0.0.19"
+          "revision": "c37deb7a36e59c990f3798f1c78e14d04a7a1cfa",
+          "version": "0.0.20"
         }
       },
       {
@@ -69,8 +69,8 @@
         "repositoryURL": "https://github.com/apple/swift-argument-parser",
         "state": {
           "branch": null,
-          "revision": "986d191f94cec88f6350056da59c2e59e83d1229",
-          "version": "0.4.3"
+          "revision": "83b23d940471b313427da226196661856f6ba3e0",
+          "version": "0.4.4"
         }
       }
     ]
