@@ -39,7 +39,7 @@ enum BKMoshPrediction {
   BKMoshPredictionUnknown
 };
 
-@interface BKHosts : NSObject <NSCoding>
+@interface BKHosts : NSObject <NSSecureCoding>
 
 @property (nonatomic, strong) NSString *host;
 @property (nonatomic, strong) NSString *hostName;

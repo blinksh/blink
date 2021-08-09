@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKHosts.h"
+#import "BKMiniLog.h"
 #import "BKiCloudSyncHandler.h"
 #import "UICKeyChainStore.h"
 #import "BlinkPaths.h"
@@ -43,23 +44,31 @@ static UICKeyChainStore *__get_keychain() {
 
 @implementation BKHosts
 
++ (BOOL) supportsSecureCoding {
+  return YES;
+}
+
 - (id)initWithCoder:(NSCoder *)coder
 {
-  _host = [coder decodeObjectForKey:@"host"];
-  _hostName = [coder decodeObjectForKey:@"hostName"];
-  _port = [coder decodeObjectForKey:@"port"];
-  _user = [coder decodeObjectForKey:@"user"];
-  _passwordRef = [coder decodeObjectForKey:@"passwordRef"];
-  _key = [coder decodeObjectForKey:@"key"];
-  _moshServer = [coder decodeObjectForKey:@"moshServer"];
-  _moshPort = [coder decodeObjectForKey:@"moshPort"];
-  _moshPortEnd = [coder decodeObjectForKey:@"moshPortEnd"];
-  _moshStartup = [coder decodeObjectForKey:@"moshStartup"];
-  _prediction = [coder decodeObjectForKey:@"prediction"];
-  _lastModifiedTime = [coder decodeObjectForKey:@"lastModifiedTime"];
-  _iCloudRecordId = [coder decodeObjectForKey:@"iCloudRecordId"];
-  _iCloudConflictDetected = [coder decodeObjectForKey:@"iCloudConflictDetected"];
-  _proxyCmd = [coder decodeObjectForKey:@"proxyCmd"];
+  NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
+  NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
+  
+  
+  _host = [coder decodeObjectOfClasses:strings forKey:@"host"];
+  _hostName = [coder decodeObjectOfClasses:strings forKey:@"hostName"];
+  _port = [coder decodeObjectOfClasses:numbers forKey:@"port"];
+  _user = [coder decodeObjectOfClasses:strings forKey:@"user"];
+  _passwordRef = [coder decodeObjectOfClasses:strings forKey:@"passwordRef"];
+  _key = [coder decodeObjectOfClasses:strings forKey:@"key"];
+  _moshServer = [coder decodeObjectOfClasses:strings forKey:@"moshServer"];
+  _moshPort = [coder decodeObjectOfClasses:numbers forKey:@"moshPort"];
+  _moshPortEnd = [coder decodeObjectOfClasses:numbers forKey:@"moshPortEnd"];
+  _moshStartup = [coder decodeObjectOfClasses:strings forKey:@"moshStartup"];
+  _prediction = [coder decodeObjectOfClasses:numbers forKey:@"prediction"];
+  _lastModifiedTime = [coder decodeObjectOfClass:[NSDate class] forKey:@"lastModifiedTime"];
+  _iCloudRecordId = [coder decodeObjectOfClass:[CKRecordID class] forKey:@"iCloudRecordId"];
+  _iCloudConflictDetected = [coder decodeObjectOfClasses:numbers forKey:@"iCloudConflictDetected"];
+  _proxyCmd = [coder decodeObjectOfClasses:strings forKey:@"proxyCmd"];
   return self;
 }
 
@@ -158,8 +167,37 @@ static UICKeyChainStore *__get_keychain() {
 + (BOOL)saveHosts
 {
   [self saveAllToSSHConfig];
+
+  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.hosts.save.txt"];
   // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Hosts toFile:[BlinkPaths blinkHostsFile]];
+  NSError *error = nil;
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:Hosts requiringSecureCoding:YES error:&error];
+  if (error) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to archive hosts to data: %@", error]];
+  }
+  
+  if (!data) {
+    [miniLog log: @"Archived data is nil"];
+    [miniLog save];
+    return NO;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths blinkHostsFile] options:NSDataWritingAtomic error:&error];
+  
+  if (error) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to write data to file: %@", error]];
+    [miniLog save];
+    return NO;
+  }
+  
+  if (result) {
+    [miniLog log:@"Write success"];
+  } else {
+    [miniLog log:@"Failed to write data to file without error"];
+  }
+  [miniLog save];
+  
+  return result;
 }
 
 + (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPortRange:(NSString *)moshPortRange startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
@@ -236,11 +274,32 @@ static UICKeyChainStore *__get_keychain() {
 
 + (void)loadHosts
 {
-  // Load IDs from file
-  if ((Hosts = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkHostsFile]]) == nil) {
-    // Initialize the structure if it doesn't exist
+  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.hosts.load.txt"];
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkHostsFile] options:NSDataReadingMappedIfSafe error:&error];
+  
+  if (error || !data) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to load data: %@", error]];
+    [miniLog save];
+    
     Hosts = [[NSMutableArray alloc] init];
+    return;
   }
+  
+  NSArray *result = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[BKHosts class] fromData:data error:&error];
+  
+  if (error || !result) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
+    [miniLog save];
+    
+    Hosts = [[NSMutableArray alloc] init];
+    return;
+  }
+  
+  [miniLog log:@"Loaded without errors."];
+  [miniLog save];
+  
+  Hosts = [result mutableCopy];
 }
 
 + (NSString *)predictionStringForRawValue:(int)rawValue

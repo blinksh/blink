@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKDefaults.h"
+#import "BKMiniLog.h"
 #import "BKFont.h"
 #import "UIDevice+DeviceName.h"
 #import "BlinkPaths.h"
@@ -45,11 +46,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-  _themeName = [coder decodeObjectForKey:@"themeName"];
-  _fontName = [coder decodeObjectForKey:@"fontName"];
-  _fontSize = [coder decodeObjectForKey:@"fontSize"];
-  _externalDisplayFontSize = [coder decodeObjectForKey:@"externalDisplayFontSize"];
-  _defaultUser = [coder decodeObjectForKey:@"defaultUser"];
+  NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
+  NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
+  
+
+  _themeName = [coder decodeObjectOfClasses:strings forKey:@"themeName"];
+  _fontName = [coder decodeObjectOfClasses:strings forKey:@"fontName"];
+  _fontSize = [coder decodeObjectOfClasses:numbers forKey:@"fontSize"];
+  _externalDisplayFontSize = [coder decodeObjectOfClasses:numbers forKey:@"externalDisplayFontSize"];
+  _defaultUser = [coder decodeObjectOfClasses:strings forKey:@"defaultUser"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
@@ -59,7 +64,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
   _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
-  _xCallBackURLKey = [coder decodeObjectForKey:@"xCallBackURLKey"];
+  _xCallBackURLKey = [coder decodeObjectOfClasses:strings forKey:@"xCallBackURLKey"];
   _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];
   _playSoundOnBell = [coder decodeBoolForKey:@"playSoundOnBell"];
   _notificationOnBellUnfocused = [coder decodeBoolForKey:@"notificationOnBellUnfocused"];
@@ -93,14 +98,38 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_oscNotifications forKey:@"oscNotifications"];
 }
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 + (void)loadDefaults
 {
+  BKMiniLog * miniLog = [[BKMiniLog alloc] initWithName:@"log.defaults.load.txt"];
+  
   // Load IDs from file
-  defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths defaultsFile]];
-  if (!defaults) {
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths defaultsFile] options:NSDataReadingMappedIfSafe error:&error];
+  if (error != nil) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to load data: %@", error]];
+  }
+  if (data) {
+    defaults = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class] fromData:data error:&error];
+    if (error != nil) {
+      [miniLog log:[NSString stringWithFormat:@"Failed to unarchivedObject: %@", error]];
+    }
+  } else {
+    [miniLog log: @"Data is nil"];
+  }
+
+  if (defaults) {
+    [miniLog log: @"Defaults are loaded without errors."];
+  } else {
+    [miniLog log: @"Createing new defaults"];
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
   }
+  
+  [miniLog save];
   
   if (defaults.layoutMode == BKLayoutModeDefault) {
     defaults.layoutMode = [LayoutManager deviceDefaultLayoutMode];
@@ -139,8 +168,38 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (BOOL)saveDefaults
 {
-  // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:defaults toFile:[BlinkPaths defaultsFile]];
+  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.defaults.save.txt"];
+  NSError *error = nil;
+  
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[BKDefaults class] requiringSecureCoding:YES error:&error];
+  
+  if (error) {
+    [miniLog log:[NSString stringWithFormat: @"Failed to archive: %@", error]];
+    [miniLog save];
+    return NO;
+  }
+  
+  if (data == nil) {
+    [miniLog log:@"Archived data is nil"];
+    [miniLog save];
+    return NO;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths defaultsFile] options:NSDataWritingAtomic error:&error];
+  
+  if (error) {
+    [miniLog log:[NSString stringWithFormat: @"Failed to save data to file: %@", error]];
+    [miniLog save];
+    return NO;
+  }
+  
+  if (!result) {
+    [miniLog log:@"Failed to save data without error"];
+  }
+  
+  [miniLog save];
+  
+  return result;
 }
 
 + (void)setCursorBlink:(BOOL)state

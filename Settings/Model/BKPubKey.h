@@ -40,7 +40,7 @@ typedef enum: NSUInteger {
   BKPubKeyStorageTypeDistributed, // Bunkr master key
 } BKPubKeyStorageType;
 
-@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
+@interface BKPubKey : NSObject <NSSecureCoding, UIActivityItemSource>
 
 @property (nonnull) NSString *ID; // unique name of the key
 @property (nonnull) NSString *tag; // unique name of the key

@@ -53,7 +53,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
   BKKeyboardStyleSystem,
 };
 
-@interface BKDefaults : NSObject <NSCoding>
+@interface BKDefaults : NSObject <NSSecureCoding>
 
 @property (nonatomic, strong) NSString *themeName;
 @property (nonatomic, strong) NSString *fontName;

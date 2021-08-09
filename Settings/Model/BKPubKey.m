@@ -33,6 +33,7 @@
 
 #import <Foundation/Foundation.h>
 #import "BKPubKey.h"
+#import "BKMiniLog.h"
 #import "UICKeyChainStore.h"
 
 #import "BlinkPaths.h"
@@ -54,6 +55,7 @@ static UICKeyChainStore *__get_keychain() {
   NSString *_privateKeyRef;
   NSString *_tag;
 }
+
 
 + (void)initialize
 {
@@ -84,22 +86,67 @@ static UICKeyChainStore *__get_keychain() {
 
 + (BOOL)saveIDS
 {
-  // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
+  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.save.txt"];
+  
+  NSError *error = nil;
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:Identities requiringSecureCoding:YES error:&error];
+  if (error || !data) {
+    [miniLog log: [NSString stringWithFormat: @"Failed to archive to data: %@", error]];
+    [miniLog save];
+    return FALSE;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths blinkKeysFile] options:NSDataWritingAtomic error:&error];
+  
+  if (error || !result) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to save data to file: %@", error]];
+  } else {
+    [miniLog log:@"Written wihtout errors."];
+  }
+  
+  [miniLog save];
+  
+  return result;
 }
 
 + (void)loadIDS
 {
-  // Load IDs from file
-  if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
+  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.load.txt"];
+  
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile] options:NSDataReadingMappedIfSafe error:&error];
+  if (error || !data) {
+    [miniLog log: [NSString stringWithFormat: @"Failed to read file: %@", error]];
+    Identities = [[NSMutableArray alloc] init];
+    
+    // Create default key in next main queue step in order to speedup app start.
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [self saveDefaultKey];
+      [miniLog log: @"New default key is generated"];
+      [miniLog save];
+    });
+    return;
+  }
+  
+  NSArray *result = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClasses:[NSSet setWithObjects:BKPubKey.class, nil] fromData:data error:&error];
+  
+  if (error || !result) {
+    [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
+    
     // Initialize the structure if it doesn't exist, with a default id_rsa key
     Identities = [[NSMutableArray alloc] init];
     
     // Create default key in next main queue step in order to speedup app start.
     dispatch_async(dispatch_get_main_queue(), ^{
       [self saveDefaultKey];
+      [miniLog log: @"New default key is generated"];
+      [miniLog save];
     });
+    return;
   }
+  [miniLog log:@"Loaded without errors."];
+  [miniLog save];
+  Identities = [result mutableCopy];
 }
 
 - (nullable instancetype)initWithID:(NSString *)ID
@@ -131,21 +178,28 @@ static UICKeyChainStore *__get_keychain() {
   return [Identities count];
 }
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 - (id)initWithCoder:(NSCoder *)coder
 {
-  self = [super init];
-  if (!self) {
-    return nil;
-  }
-  _ID = [coder decodeObjectForKey:@"ID"];
-  _tag = [coder decodeObjectForKey:@"tag"];
+//  self = [super init];
+//  if (!self) {
+//    return nil;
+//  }
+  NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
+//  NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
+  
+  _ID = [coder decodeObjectOfClasses:strings forKey:@"ID"];
+  _tag = [coder decodeObjectOfClasses:strings forKey:@"tag"];
   _storageType = [coder decodeInt64ForKey:@"storageType"];
   
-  _keyType = [coder decodeObjectForKey:@"keyType"];
-  _certType = [coder decodeObjectForKey:@"certType"];
+  _keyType = [coder decodeObjectOfClasses:strings forKey:@"keyType"];
+  _certType = [coder decodeObjectOfClasses:strings forKey:@"certType"];
   
-  _privateKeyRef = [coder decodeObjectForKey:@"privateKeyRef"];
-  _publicKey = [coder decodeObjectForKey:@"publicKey"];
+  _privateKeyRef = [coder decodeObjectOfClasses:strings forKey:@"privateKeyRef"];
+  _publicKey = [coder decodeObjectOfClasses:strings forKey:@"publicKey"];
   
   if (!_tag) {
     _tag = [NSProcessInfo processInfo].globallyUniqueString;
