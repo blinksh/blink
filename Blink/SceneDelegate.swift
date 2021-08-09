@@ -40,11 +40,18 @@ class ExternalWindow: UIWindow {
 }
 
 @objc class ShadowWindow: UIWindow {
-  private let _refWindow: UIWindow
+  private var _refWindow: UIWindow
   private let _spCtrl: SpaceController
   
   var spaceController: SpaceController { _spCtrl }
-  @objc var refWindow: UIWindow { _refWindow }
+  @objc var refWindow: UIWindow {
+    get {
+      _refWindow
+    }
+    set {
+      _refWindow = newValue
+    }
+  }
   
   init(windowScene: UIWindowScene, refWindow: UIWindow, spCtrl: SpaceController) {
     _refWindow = refWindow
@@ -86,7 +93,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if scene == ShadowWindow.shared?.refWindow.windowScene {
       ShadowWindow.shared?.layer.removeFromSuperlayer()
       ShadowWindow.shared?.windowScene = nil
-      ShadowWindow.shared = nil
+//      ShadowWindow.shared = nil
     } else if scene == ShadowWindow.shared?.windowScene {
       // We need to move it
       ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
@@ -142,9 +149,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
       let window = ExternalWindow(windowScene: windowScene)
       self.window = window
-    
-      let shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
-      defer { ShadowWindow.shared = shadowWin }
+      
+      let shadowWin: ShadowWindow
+      
+      if let win = ShadowWindow.shared {
+        win.refWindow = window
+        _spCtrl = win.spaceController
+        shadowWin = win
+      } else {
+        shadowWin = ShadowWindow(windowScene: mainScene, refWindow: window, spCtrl: _spCtrl)
+        ShadowWindow.shared = shadowWin
+      }
       
       window.shadowWindow = shadowWin
       
