@@ -50,9 +50,15 @@ class SSHPool {
       // For now we will not allow that situation.
       return shared.startConnection(host, with: config, proxy: proxy, exposeSocket: false)
     }
-    guard let conn = connection(for: host, with: config) else {
+    guard let ctrl = shared.control(for: host, with: config) else {
       return shared.startConnection(host, with: config, proxy: proxy)
     }
+    
+    guard let conn = ctrl.connection, conn.isConnected else {
+      shared.removeControl(ctrl)
+      return shared.startConnection(host, with: config, proxy: proxy)
+    }
+    
     return .just(conn)
   }
 
@@ -150,6 +156,17 @@ class SSHPool {
       controls.remove(at: idx)
     }
   }
+  
+  private func removeControl(_ control: SSHClientControl) {
+    awake(runLoop: control.runLoop)
+    guard
+      let idx = controls.firstIndex(where: { $0 === control })
+    else {
+      return
+    }
+    control.deregisterAll()
+    controls.remove(at: idx)
+  }
 }
 
 fileprivate class SSHClientControl {
@@ -186,6 +203,18 @@ fileprivate class SSHClientControl {
       return false
     }
     return self.host == host ? true : false
+  }
+  
+  func deregisterAll() {
+    streams.forEach { _, s in
+      s.cancel()
+    }
+    tunnelClients.forEach { _, cli in
+      cli.close()
+    }
+    tunnelListeners.forEach {_, lis in
+      lis.close()
+    }
   }
   
   func deregister(_ command: SSHCommand) {

@@ -206,7 +206,7 @@ public class SSHClient {
   
   var keepAliveTimer: Timer?
   
-  var isConnected: Bool {
+  public var isConnected: Bool {
     ssh_is_connected(session) == 1
   }
 
