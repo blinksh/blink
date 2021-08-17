@@ -55,10 +55,13 @@ static char customKey;
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-  _name = [coder decodeObjectForKey:@"title"];
-  _filename = [coder decodeObjectForKey:@"filename"];
-  // Only Custom is initialized with URL
-  _fileURL = [[self class] customResourcesLocation];
+  self = [super init];
+  if (self) {
+    _name = [coder decodeObjectForKey:@"title"];
+    _filename = [coder decodeObjectForKey:@"filename"];
+    // Only Custom is initialized with URL
+    _fileURL = [[self class] customResourcesLocation];
+  }
   return self;
 }
 

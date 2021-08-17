@@ -184,10 +184,10 @@ static UICKeyChainStore *__get_keychain() {
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-//  self = [super init];
-//  if (!self) {
-//    return nil;
-//  }
+  self = [super init];
+  if (!self) {
+    return self;
+  }
   NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
 //  NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
   

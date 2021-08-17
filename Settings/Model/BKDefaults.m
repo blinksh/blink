@@ -46,6 +46,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 - (id)initWithCoder:(NSCoder *)coder
 {
+  self = [super init];
+  if (!self) {
+    return self;
+  }
   NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
   NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
   
@@ -171,7 +175,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.defaults.save.txt"];
   NSError *error = nil;
   
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:[BKDefaults class] requiringSecureCoding:YES error:&error];
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:defaults requiringSecureCoding:YES error:&error];
   
   if (error) {
     [miniLog log:[NSString stringWithFormat: @"Failed to archive: %@", error]];

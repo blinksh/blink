@@ -86,7 +86,6 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (void)setXCallBackURLEnabled:(BOOL)state;
 + (void)setXCallBackURLKey:(NSString *)key;
 + (void)setDisableCustomKeyboards:(BOOL)state;
-+ (void)setTriggers:(NSArray *)triggers forFunction:(NSString *)func;
 + (void)setFontName:(NSString *)fontName;
 + (void)setThemeName:(NSString *)themeName;
 + (void)setFontSize:(NSNumber *)fontSize;
