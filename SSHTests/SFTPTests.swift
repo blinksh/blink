@@ -322,7 +322,7 @@ class SFTPTests: XCTestCase {
         sftp = client
         // TODO Create a random file first, or use one from a previous test.
         return client.walkTo("copy_test")
-      }.flatMap() { f -> CopyProgressInfo in
+      }.flatMap() { f -> CopyProgressInfoPublisher in
         return local.walkTo("/tmp/test").flatMap { $0.copy(from: [f]) }.eraseToAnyPublisher()
       }.sink(receiveCompletion: { completion in
         switch completion {
@@ -358,7 +358,7 @@ class SFTPTests: XCTestCase {
     
     sftp?
       .walkTo("/home/no-password")
-      .flatMap() { f -> CopyProgressInfo in
+      .flatMap() { f -> CopyProgressInfoPublisher in
         local.walkTo("/tmp/test").flatMap { f.copy(from: [$0]) }.eraseToAnyPublisher()
       }.sink(
         test: self,

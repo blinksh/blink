@@ -107,16 +107,36 @@ public protocol File: Reader, Writer {
 // As they are recursive, we provide information on what file is being reported.
 // Report progress as (name, total bytes written, length)
 // FileAttributeKey.Size is an NSNumber with a UInt64. It is the standard.
-public typealias CopyProgressInfo = AnyPublisher<(String, UInt64, UInt64), Error>
+public struct CopyProgressInfo {
+  public let name: String
+  public let written: UInt64
+  public let size: UInt64
+  
+  public init(name: String, written: UInt64, size: UInt64) {
+    self.name = name
+    self.written = written
+    self.size = size
+  }
+}
+public typealias CopyProgressInfoPublisher = AnyPublisher<CopyProgressInfo, Error>
 
 public protocol CopierFrom {
-  func copy(from ts: [Translator]) -> CopyProgressInfo
+  func copy(from ts: [Translator], args: CopyArguments) -> CopyProgressInfoPublisher
 }
 
 public protocol CopierTo {
-  func copy(to ts: Translator) -> CopyProgressInfo
+  func copy(to ts: Translator) -> CopyProgressInfoPublisher
 }
 
+extension AnyPublisher {
+  @inlinable static func just(_ output: Output) -> Self {
+    .init(Just(output).setFailureType(to: Failure.self))
+  }
+  
+  @inlinable static func fail(error: Failure) -> Self {
+    .init(Fail(error: error))
+  }
+}
 //
 //// Server side Copy and Rename are usually best when performing operations inside the Translator, but
 //// not all protocols support them.

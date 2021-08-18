@@ -258,7 +258,6 @@ public class SFTPClient : BlinkFiles.Translator {
     }
   }
   
-  // Change attributes
   public func stat() -> AnyPublisher<FileAttributes, Error> {
     return connection().trySFTP { sftp -> FileAttributes in
       let p = sftp_stat(sftp, self.path)
@@ -271,8 +270,10 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   public func wstat(_ attrs: FileAttributes) -> AnyPublisher<Bool, Error> {
+    // TODO Move
     return connection().trySFTP { sftp in
       var sftpAttrs = self.buildItemAttributes(attrs)
+      
       let rc = sftp_setstat(sftp, self.path, &sftpAttrs)
       if rc != SSH_OK {
         throw FileError(title: "Could not setstat file", in: self.session)
@@ -300,10 +301,19 @@ public class SFTPClient : BlinkFiles.Translator {
     
     item[.name] = attrs.name != nil ? String(cString: attrs.name, encoding: .utf8) : (self.path as NSString).lastPathComponent
     
-    item[.size] = attrs.size != nil ? NSNumber(value: attrs.size) : nil
+    if attrs.size > 0 {
+      item[.size] = NSNumber(value: attrs.size)
+    }
     
     // Get rid of the upper 4 bits (which are the file type)
     item[.posixPermissions] = Int16(attrs.permissions & 0x0FFF)
+    
+    if attrs.mtime > 0 {
+      item[.modificationDate] = NSDate(timeIntervalSince1970: Double(attrs.mtime))
+    }
+    if attrs.createtime > 0 {
+      item[.creationDate] = NSDate(timeIntervalSince1970: Double(attrs.createtime))
+    }
     
     return item
   }
@@ -311,13 +321,30 @@ public class SFTPClient : BlinkFiles.Translator {
   func buildItemAttributes(_ attrs: [FileAttributeKey: Any]) -> sftp_attributes_struct {
     var item = sftp_attributes_struct()
     
-    switch attrs[.type] as! FileAttributeType {
-    case .typeRegular:
-      item.type = UInt8(SSH_FILEXFER_TYPE_REGULAR)
-    case .typeDirectory:
-      item.type = UInt8(SSH_FILEXFER_TYPE_DIRECTORY)
-    default:
-      item.type = UInt8(SSH_FILEXFER_TYPE_UNKNOWN)
+    if let type = attrs[.type] as? FileAttributeType {
+      switch type {
+      case .typeRegular:
+        item.type = UInt8(SSH_FILEXFER_TYPE_REGULAR)
+      case .typeDirectory:
+        item.type = UInt8(SSH_FILEXFER_TYPE_DIRECTORY)
+      default:
+        item.type = UInt8(SSH_FILEXFER_TYPE_UNKNOWN)
+      }
+    }
+    
+    if let permissions = attrs[.posixPermissions] as? UInt32 {
+      item.permissions = permissions
+      item.flags |= UInt32(SSH_FILEXFER_ATTR_PERMISSIONS)
+    }
+    if let mtime = attrs[.modificationDate] as? NSDate {
+      item.mtime = UInt32(mtime.timeIntervalSince1970)
+      item.atime = UInt32(mtime.timeIntervalSince1970)
+      // Both flags need to be set for this to work.
+      item.flags |= UInt32(SSH_FILEXFER_ATTR_MODIFYTIME) | UInt32(SSH_FILEXFER_ATTR_ACCESSTIME)
+    }
+    if let createtime = attrs[.creationDate] as? NSDate {
+      item.createtime = UInt64(createtime.timeIntervalSince1970)
+      item.flags |= UInt32(SSH_FILEXFER_ATTR_CREATETIME)
     }
     
     return item

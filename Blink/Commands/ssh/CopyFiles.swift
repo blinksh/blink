@@ -166,7 +166,7 @@ public class BlinkCopy: NSObject {
     var currentSpeed: Double?
     var startTimestamp = 0
     var lastElapsed = 0
-    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfo in
+    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
       return sourceTranslator.flatMap {
         $0.translatorsMatching(path: self.command.source.filePath)
       }
@@ -181,16 +181,16 @@ public class BlinkCopy: NSObject {
         rc = -1
       }
       awake(runLoop: self.currentRunLoop)
-    }, receiveValue: { (file, size, written) in
+    }, receiveValue: { progress in //(file, size, written) in
       // ProgressReport object, which we can use here or at the Dashboard.
-      if currentFile != file {
-        currentFile = file
-        currentCopied = written
+      if currentFile != progress.name {
+        currentFile = progress.name
+        currentCopied = progress.written
         startTimestamp = Int(Date().timeIntervalSince1970)
         currentSpeed = nil
         lastElapsed = 0
       } else {
-        currentCopied += written
+        currentCopied += progress.written
         // Speed only updated by the second
         let elapsed = Int(Date().timeIntervalSince1970) - startTimestamp
         if elapsed > lastElapsed {
@@ -199,10 +199,10 @@ public class BlinkCopy: NSObject {
           currentSpeed = kbCopied / Double(elapsed)
         }
       }
-      if currentCopied == size {
-        print("\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", to: &self.stdout)
+      if currentCopied == progress.size {
+        print("\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? 0)kb/S", to: &self.stdout)
       } else {
-        print("\r\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", terminator: "", to: &self.stdout)
+        print("\r\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? 0)kb/S", terminator: "", to: &self.stdout)
       }
     })
 

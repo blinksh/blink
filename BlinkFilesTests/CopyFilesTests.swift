@@ -48,8 +48,8 @@ class CopyFilesTests: XCTestCase {
     var totalWritten: UInt64 = 0
     let expectFileCopied = self.expectation(description: "File Copied")
     
-    var c = Local().cloneWalkTo("/Users/carlos/tmp").flatMap { destDir -> CopyProgressInfo in
-      return Local().cloneWalkTo("/Users/carlos/Xcode_12.0.1.xip")
+    var c = Local().cloneWalkTo("/Users/carloscabanero/tmp").flatMap { destDir -> CopyProgressInfoPublisher in
+      return Local().cloneWalkTo("/Users/carloscabanero/iPad_Pro_Spring_2021_15.0.ipsw")
         .flatMap { destDir.copy(from: [$0]) }
         .eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
@@ -59,22 +59,22 @@ class CopyFilesTests: XCTestCase {
       case .failure(let error):
         XCTFail("Crash \(error)")
       }
-    }, receiveValue: { (_, _, written) in
-      totalWritten += written
+    }, receiveValue: { report in
+      totalWritten += report.written
     })
     
     
     wait(for: [expectFileCopied], timeout: 1000)
     
-    XCTAssertTrue(totalWritten == 11210638916)
+    XCTAssertTrue(totalWritten == 6191846351)
   }
   
   func testCopyFrom() throws {
     self.continueAfterFailure = false
     let expectStructureCopied = self.expectation(description: "Structure Copied")
     
-    var c = Local().cloneWalkTo("/tmp/test").flatMap { destDir -> CopyProgressInfo in
-      return Local().cloneWalkTo("/Users/carlos/tmp")
+    var c = Local().cloneWalkTo("/tmp/test").flatMap { destDir -> CopyProgressInfoPublisher in
+      return Local().cloneWalkTo("/Users/carloscabanero/tmp")
         .flatMap { destDir.copy(from: [$0]) }
         .eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
@@ -84,8 +84,8 @@ class CopyFilesTests: XCTestCase {
       case .failure(let error):
         XCTFail("Crash \(error)")
       }
-    }, receiveValue: { (name, copied, total) in
-      print("\(name) - \(copied) - \(total)")
+    }, receiveValue: { report in
+      print("\(report.name) - \(report.written) - \(report.size)")
     })
     
     wait(for: [expectStructureCopied], timeout: 1000)

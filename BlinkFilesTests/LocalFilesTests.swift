@@ -204,9 +204,10 @@ class LocalFilesTests: XCTestCase {
     let f = Local()
     let expectation = self.expectation(description: "Buffer Complete")
     
-    f.walkTo("/tmp/mosh.pkg")
+    f.walkTo("/tmp/file")
       .flatMap { file -> AnyPublisher<Bool, Error> in
-        var attrs: [FileAttributeKey:Any] = [.name: "/Users/carlos/mosh.pkg"]
+        let attrs: [FileAttributeKey:Any] = [.name: "/Users/carloscabanero/file_test",
+                                             .modificationDate: NSDate(timeIntervalSinceNow: -40000)]
         return file.wstat(attrs)
       }.sink(receiveCompletion: { completion in
         switch completion {

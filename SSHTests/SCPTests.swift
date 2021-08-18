@@ -92,8 +92,8 @@ class SCPTests: XCTestCase {
         // Problem here is we can have both SFTP and SSHError
         XCTFail("Crash \(error)")
       }
-    }, receiveValue: { (_, _, written) in
-      totalWritten += written
+    }, receiveValue: { report in
+      totalWritten += report.written
     })
     
     wait(for: [expectation2], timeout: 1000)
@@ -148,8 +148,8 @@ class SCPTests: XCTestCase {
           // Problem here is we can have both SFTP and SSHError
           XCTFail("Crash \(error)")
         }
-      }, receiveValue: { (name, size, progress) in
-        print("\(name) - \(progress) of \(size)")
+      }, receiveValue: { report in
+        print("\(report.name) - \(report.written) of \(report.size)")
       })
     
     wait(for: [expectation2], timeout: 1000)
@@ -197,8 +197,8 @@ class SCPTests: XCTestCase {
         // Problem here is we can have both SFTP and SSHError
         XCTFail("Crash \(error)")
       }
-    }, receiveValue: { (name, size, progress) in
-      print("\(name) - \(progress) of \(size)")
+    }, receiveValue: { report in
+      print("\(report.name) - \(report.written) of \(report.size)")
     })
     
     wait(for: [expectation2], timeout: 1000)

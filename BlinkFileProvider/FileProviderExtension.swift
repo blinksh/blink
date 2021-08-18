@@ -317,9 +317,6 @@ class FileProviderExtension: NSFileProviderExtension {
   
   override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
     
-    var myerror: NSError?
-    var error: NSError?
-    
     let localParentIdentifier: BlinkItemIdentifier!
 
     if parentItemIdentifier == .rootContainer {
@@ -367,7 +364,7 @@ class FileProviderExtension: NSFileProviderExtension {
       .flatMap { $0.cloneWalkTo(localParentIdentifier.path) }
     
     destTranslator.flatMap { remotePathTranslator in
-        return srcTranslator.flatMap{ localFileTranslator -> CopyProgressInfo in
+        return srcTranslator.flatMap{ localFileTranslator -> CopyProgressInfoPublisher in
           return remotePathTranslator.copy(from: [localFileTranslator])
         }
       }.sink  { completion in
