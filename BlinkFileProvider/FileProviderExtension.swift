@@ -31,112 +31,13 @@
 
 
 import Combine
-
-import BlinkConfig
-import BlinkFiles
 import FileProvider
-import SSH
-import SSHConfig
+
+import BlinkFiles
 
 // TODO Provide proper error subclassing. BlinkFilesProviderError
 extension String: Error {}
 
-enum BlinkFilesProtocol: String {
-  case ssh = "ssh"
-  case local = "local"
-  case sftp = "sftp"
-}
-
-final class FileTranslatorPool {
-  static let shared = FileTranslatorPool()
-  private var translators: [String: AnyPublisher<Translator, Error>] = [:]
-  private var references: [String: BlinkItemReference] = [:]
-  private var backgroundThread: Thread? = nil
-  private var backgroundRunLoop: RunLoop = RunLoop.current
-  private var connection: SSHClient? = nil
-  private var sftpClient: SFTPClient? = nil
-
-  private init() {
-    self.backgroundThread = Thread {
-      self.backgroundRunLoop = RunLoop.current
-      // TODO Probably need a timer. This may exit immediately
-      RunLoop.current.run()
-    }
-    
-    self.backgroundThread!.start()
-  }
-  
-  static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
-    guard let rootData = Data(base64Encoded: encodedRootPath),
-          let rootPath = String(data: rootData, encoding: .utf8) else {
-      return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
-    }
-    
-    // rootPath: ssh:host:root_folder
-    let components = rootPath.split(separator: ":")
-    
-    // TODO At least two components. Tweak for sftp
-    let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
-    let pathAtFiles: String
-    let host: String?
-    if components.count == 2 {
-      pathAtFiles = String(components[1])
-      host = nil
-    } else {
-      pathAtFiles = String(components[2])
-      host = String(components[1])
-    }
-    
-    if let translator = shared.translators[encodedRootPath] {
-      return translator
-    }
-    
-    switch remoteProtocol {
-    case .local:
-      let translatorPub = Local().walkTo(pathAtFiles)
-      shared.translators[encodedRootPath] = translatorPub
-      return translatorPub
-    case .sftp:
-      
-      let (host, config) = SSHClientConfigProvider.config(host: host!)
-      
-      // NOTE We use main queue as this is an extension. Should move it to a different one though,
-      // in case of future changes.
-      return Just(config).receive(on: DispatchQueue.main).flatMap {
-        SSHClient
-        .dial(host, with: $0)
-        .print("Dialing...")
-        //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
-        .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
-          Self.shared.connection = conn
-          return conn.requestSFTP()
-        }.print("SFTP")
-        .flatMap { sftp -> AnyPublisher<Translator, Error> in
-          Self.shared.sftpClient = sftp
-          let translatorPub = sftp.walkTo(pathAtFiles)
-          shared.translators[encodedRootPath] = translatorPub
-          return translatorPub
-        }
-      }
-      .eraseToAnyPublisher()
-      .handleEvents(receiveCompletion: { _ in
-      })
-      .eraseToAnyPublisher()
-    default:
-      return Fail(error: "Not implemented").eraseToAnyPublisher()
-    }
-  }
-  
-  static func store(reference: BlinkItemReference) {
-    print("storing File BlinkItemReference : \(reference.itemIdentifier.rawValue)")
-    shared.references[reference.itemIdentifier.rawValue] = reference
-  }
-
-  static func reference(identifier: BlinkItemIdentifier) -> BlinkItemReference? {
-    print("requiesting File BlinkItemReference : \(identifier.itemIdentifier.rawValue)")
-    return shared.references[identifier.itemIdentifier.rawValue]
-  }
-}
 
 class FileProviderExtension: NSFileProviderExtension {
   
@@ -159,7 +60,7 @@ class FileProviderExtension: NSFileProviderExtension {
       queryableIdentifier = BlinkItemIdentifier(identifier)
     }
     
-    guard let reference = FileTranslatorPool.reference(identifier: queryableIdentifier) else {
+    guard let reference = FileTranslatorCache.reference(identifier: queryableIdentifier) else {
       print("ITEM \(queryableIdentifier.path) REQUESTED with ERROR")
       throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: queryableIdentifier.itemIdentifier)
     }
@@ -271,6 +172,9 @@ class FileProviderExtension: NSFileProviderExtension {
     //    }
     //
     
+    // We will need a two way state for the file, to figure out if this is the new one,
+    // and it is uploading to the remote (so we do not have download).
+    // 
     // 1 - From URL we get the identifier.
     let blinkIdentifier = BlinkItemIdentifier(url: url)
     print("\(blinkIdentifier.path) - Start Providing item")
@@ -279,7 +183,7 @@ class FileProviderExtension: NSFileProviderExtension {
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
     
     // 3 remote - From the identifier, we get the translator and walk to the remote.
-    let srcTranslator = FileTranslatorPool.translator(for: blinkIdentifier.encodedRootPath)
+    let srcTranslator = FileTranslatorCache.translator(for: blinkIdentifier.encodedRootPath)
     srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
       .flatMap { fileTranslator in
         // 4 - Start the copy
@@ -351,7 +255,7 @@ class FileProviderExtension: NSFileProviderExtension {
     var blinkItemReference = BlinkItemReference(localBlinkIdentifier, attributes: attributes)
     blinkItemReference.isUploading = true
     let item = FileProviderItem(reference: blinkItemReference)
-    FileTranslatorPool.store(reference: blinkItemReference)
+    FileTranslatorCache.store(reference: blinkItemReference)
     
     completionHandler(item, nil)
 
@@ -360,7 +264,7 @@ class FileProviderExtension: NSFileProviderExtension {
     let srcTranslator = Local().cloneWalkTo(localFileURLPath)
 
     // 2. translator for remote target path
-    let destTranslator = FileTranslatorPool.translator(for: localParentIdentifier.encodedRootPath)
+    let destTranslator = FileTranslatorCache.translator(for: localParentIdentifier.encodedRootPath)
       .flatMap { $0.cloneWalkTo(localParentIdentifier.path) }
     
     destTranslator.flatMap { remotePathTranslator in
@@ -466,52 +370,3 @@ class FileProviderExtension: NSFileProviderExtension {
   }
 }
 
-class SSHClientConfigProvider {
-  
-  static func config(host: String) -> (String, SSHClientConfig) {
-   
-    BKHosts.loadHosts()
-    BKPubKey.loadIDS()
-    
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
-    let agent = SSHAgent()
-    
-    let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
-    
-    if let (signer, name) = bkConfig.signer(forHost: host) {
-      _ = agent.loadKey(signer, aka: name, constraints: consts)
-    } else {
-      for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
-        if let (signer, name) = bkConfig.signer(forIdentity: identity) {
-          _ = agent.loadKey(signer, aka: name, constraints: consts)
-        }
-      }
-    }
-    
-    var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
-    if let password = bkConfig.password(forHost: host), !password.isEmpty {
-      availableAuthMethods.append(AuthPassword(with: password))
-    }
-    
-    let logger = PassthroughSubject<String, Never>()
-    
-    return (
-      bkConfig.hostName(forHost: host)!,
-      SSHClientConfig(
-        user: bkConfig.user(forHost: host) ?? "root",
-        port: bkConfig.port(forHost: host) ?? "22",
-        proxyJump: nil,
-        proxyCommand: bkConfig.proxyCommand(forHost: host),
-        authMethods: availableAuthMethods,
-        agent: agent,
-        loggingVerbosity: SSHLogLevel.debug,
-        verifyHostCallback: nil,
-        connectionTimeout: 300,
-        sshDirectory: BlinkPaths.ssh()!,
-        logger: logger,
-        compression: false,
-        compressionLevel: 6
-      )
-    )
-  }
-}

@@ -65,31 +65,24 @@ struct BlinkItemIdentifier {
     let containerPath = manager.documentStorageURL.absoluteString
 
     // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
+    // file://<containerPath>/<encodedRootPath>/path/filename
+    // Remove containerPath, split and get encodedRootPath.
     var path = url.absoluteString
     path.removeFirst(containerPath.count)
 
     // <encodedRootPath>/<encodedPath>/filename
-
+    // <encodedRootPath>/<path>/<to>/filename
     let components = path.split(separator: "/")
-    let filename = components[2]
-
-    let encodedPath = String(components[1])
-    let dataPath = Data(base64Encoded: encodedPath)
-    let decodedString = String(data: dataPath!, encoding: .utf8)!
-
-    self.path = decodedString
     self.encodedRootPath = String(components[0])
+    self.path = "/\(components[1...].joined(separator: "/"))"
+    print(self.path)
   }
 
-  // <encodedRootPath>/<encodedPath>
+  // file://<containerPath>/<encodedRootPath>/path/to/filename
   var url: URL {
-    let data = self.path.data(using: .utf8)
-    let encodedPath = data!.base64EncodedString()
-
     let manager = NSFileProviderManager.default
-    let pathcomponents = "\(encodedRootPath)/\(encodedPath)/\(filename)"
-    let itemDirectory = manager.documentStorageURL.appendingPathComponent(pathcomponents)
-    return itemDirectory
+    let pathcomponents = "\(encodedRootPath)\(self.path)"
+    return manager.documentStorageURL.appendingPathComponent(pathcomponents)
   }
 
   var filename: String {
@@ -119,6 +112,8 @@ struct BlinkItemIdentifier {
 
 // Goal is to bridge the Identifier to the underlying BlinkFiles system, and to offer
 // Representations the item.
+
+// TODO Could the BlinkItemReference actually be the FileItem?
 struct BlinkItemReference {
   //private let encodedRootPath: String
   // TODO We could also work with a  URL that is not the URL representation,

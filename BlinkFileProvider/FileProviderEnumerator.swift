@@ -53,7 +53,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     let path = self.identifier.path
     print("\(path) - Initialized enumerator ")
 
-    self.translator = FileTranslatorPool.translator(for: domain.pathRelativeToDocumentStorage)
+    self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
         if !path.isEmpty {
           return t.cloneWalkTo(path)

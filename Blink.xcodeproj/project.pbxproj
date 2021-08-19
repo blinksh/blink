@@ -94,6 +94,7 @@
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
+		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
 		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
 		BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFF426001B020084705F /* AgentConstraints.swift */; };
@@ -662,6 +663,7 @@
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
+		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
 		BD8BBFAF25F947710084705F /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		BD8BBFF426001B020084705F /* AgentConstraints.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentConstraints.swift; sourceTree = "<group>"; };
@@ -1311,6 +1313,7 @@
 			children = (
 				98271254262E4BDB00F883FA /* FileProviderItem.swift */,
 				98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */,
+				BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -2347,6 +2350,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
+				BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */,
 				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
 				98271255262E4BDB00F883FA /* FileProviderItem.swift in Sources */,
 				98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */,
