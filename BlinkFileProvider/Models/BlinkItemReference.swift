@@ -123,6 +123,7 @@ struct BlinkItemReference {
 //  private let encodedRootPath: String
   //private let urlRepresentation: URL
   var attributes: BlinkFiles.FileAttributes
+  var local: BlinkFiles.FileAttributes?
   
   // Not sure how to handle the states properly yet
   // A better model may be to handle the correspondence when the file is local vs remote,
@@ -137,9 +138,11 @@ struct BlinkItemReference {
   // Requires attributes. If you only have the Identifier, you need to go to the DB.
   // Identifier format <encodedRootPath>/path/to/more/components/filename
   init(_ itemIdentifier: BlinkItemIdentifier,
-       attributes: BlinkFiles.FileAttributes) {
+       attributes: BlinkFiles.FileAttributes,
+       local: BlinkFiles.FileAttributes? = nil) {
     self.attributes = attributes
     self.identifier = itemIdentifier
+    self.local = local
   }
   
   var url: URL {

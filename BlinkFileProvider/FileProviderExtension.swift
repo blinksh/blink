@@ -214,6 +214,10 @@ class FileProviderExtension: NSFileProviderExtension {
       
       // write out a placeholder to facilitate future property lookups
       self.providePlaceholder(at: url, completionHandler: { error in
+        // TODO The placeholder will take into account the file, but we will need to make sure
+        // that the Reference know that the local file is actually empty.
+        // This means if mtime is a reference, the size should be too, in order to differentiate
+        // files we already have from those that need to be downloaded.
         // TODO: handle any error, do any necessary cleanup
       })
     }

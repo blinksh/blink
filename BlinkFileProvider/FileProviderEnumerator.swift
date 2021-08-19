@@ -92,20 +92,43 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     
     print("\(self.identifier.path) - enumeration requested")
 
+    // Request or warm up local database.
+    // The real list we return is the one from the remote.
+    // Having a cache for local files and one for remotes could help us take action in the future to consolidate.
     var containerTranslator: Translator!
     translator
       .flatMap { t -> AnyPublisher<FileAttributes, Error> in
-          containerTranslator = t
-          return t.stat()
+        containerTranslator = t
+        return t.stat()
       }
       .map { containerAttrs -> Translator in
         // TODO We may be able to skip this if stat would return '.'
         let ref = BlinkItemReference(self.identifier,
                                      attributes: containerAttrs)
-        FileTranslatorPool.store(reference: ref)
+        FileTranslatorCache.store(reference: ref)
         return containerTranslator
       }
-      .flatMap { $0.directoryFilesAndAttributes() }
+      .flatMap {
+        Publishers.Zip($0.directoryFilesAndAttributes(),
+                         Local().walkTo(self.identifier.url.path)
+                          .flatMap { $0.directoryFilesAndAttributes() }
+                          .catch { _ in AnyPublisher.just([]) })
+      }
+      .map { (remoteFilesAttributes, localFilesAttributes) -> [FileProviderItem] in
+        return remoteFilesAttributes.map { attrs -> FileProviderItem in
+          let fileIdentifier = BlinkItemIdentifier(parentItemIdentifier: self.identifier,
+                                                   filename: attrs[.name] as! String)
+          let localAttrs = localFilesAttributes.first(where: { $0[.name] as! String == fileIdentifier.filename })
+          
+          let ref = BlinkItemReference(fileIdentifier,
+                                       attributes: attrs,
+                                       local: localAttrs)
+          
+          // Store the reference in the internal DB for later usage.
+          FileTranslatorCache.store(reference: ref)
+          return FileProviderItem(reference: ref)
+        }
+      }
       .sink(
         receiveCompletion: { completion in
           switch completion {
@@ -116,18 +139,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
             observer.finishEnumerating(upTo: nil)
           }
         },
-        receiveValue: { attrs in
-          let items = attrs.map { blinkAttr -> FileProviderItem in
-            let fileIdentifier = BlinkItemIdentifier(parentItemIdentifier: self.identifier,
-                                                     filename: blinkAttr[.name] as! String)
-            let ref = BlinkItemReference(fileIdentifier,
-                                         attributes: blinkAttr)
-            // Store the reference in the internal DB for later usage.
-            FileTranslatorPool.store(reference: ref)
-            return FileProviderItem(reference: ref)
-          }
-          observer.didEnumerate(items)
-        }).store(in: &cancellableBag)
+        receiveValue: { observer.didEnumerate($0) }).store(in: &cancellableBag)
   }
 
 //  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
