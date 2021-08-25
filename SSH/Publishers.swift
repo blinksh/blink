@@ -35,148 +35,112 @@ import Foundation
 import LibSSH
 
 
-
+let libSSHBlockMode: RunLoop.Mode = RunLoop.Mode("LibSSHBlockRunLoop")
 // https://stackoverflow.com/questions/60624851/combine-framework-retry-after-delay
 // https://stackoverflow.com/questions/61557327/401-retry-mechanism-using-combine-publishers
 extension Publisher {
   func tryOperation<T, U>(_ operation: @escaping (U) throws -> T)
   -> AnyPublisher<T, Error> where Self == AnyPublisher<U, Error> {
-    let stop = ManagedAtomic<Bool>(false)
+    var doTry = true
     
-    func loop(_ session: U) -> AnyPublisher<T, Error> {
-      return Just(session).tryMap { session in
-        let val = try operation(session)
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
-        }
-        return val
+    Swift.print("Scheduling on: %p", String(format: "%p", RunLoop.current))
+    return self.tryMap { p -> T in
+      if RunLoop.current != RunLoop.main {
+        Swift.print(String(format: "%p", RunLoop.current))
       }
-      .tryCatch { error -> AnyPublisher<T, Error> in
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
+      while doTry {
+        do {
+          return try operation(p)
+        } catch SSHError.again {
+          // Run the other mode?
+          RunLoop.current.run(mode: libSSHBlockMode, before: Date(timeIntervalSinceNow: 0.5))
+          //CFRunLoopRunInMode(libSSHBlockMode, 0.5, true)
+          Swift.print("Retrying..")
+          continue
         }
-        switch error {
-        case SSHError.again:
-          Swift.print("tryOperation AGAIN")
-          // NOTE We let the RunLoop run, instead of using a Delayed publisher. The Delayed publisher
-          // will schedule another block, and the socket on libssh sometimes lets other blocks run as well.
-          // This makes Combine process the "finished" messages before the current block is done,
-          // slicing and stopping the flows.
-          RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.5))
-          if stop.load(ordering: .relaxed) {
-            throw SSHError(title: "Operation cancelled")
-          }
-          return loop(session)
-        default:
-          throw error
-        }
-      }.eraseToAnyPublisher()
+      }
+      throw SSHError(title: "Operation cancelled")
     }
-    
-    // Wrap in a loop so that only the specific operation is re-executed,
-    // otherwise the whole flow will get up and cancelled.
-    return self.flatMap { loop ($0) }.handleEvents(receiveCancel: {
-      stop.store(true, ordering: .relaxed)
-      usleep(505000)
-    }).eraseToAnyPublisher()
+    .handleEvents(receiveCancel: {
+      Swift.print("Cancelling on: %p", String(format: "%p", RunLoop.current))
+
+      if RunLoop.current != RunLoop.main {
+        Swift.print("?????????")
+      }
+      doTry = false
+    })
+    .eraseToAnyPublisher()
   }
   
   func tryChannel<T>(_ operation: @escaping (ssh_channel) throws -> T)
   -> AnyPublisher<T, Error> where Self == AnyPublisher<ssh_channel, Error> {
-    let stop = ManagedAtomic<Bool>(false)
-
-    func loop(_ channel: ssh_channel) -> AnyPublisher<T, Error> {
-      return Just(channel).tryMap { chan in
-        let val = try operation(chan)
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
-        }
-        return val
-      }
-      .tryCatch { error -> AnyPublisher<T, Error> in
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
-        }
-        switch error {
-        case SSHError.again:
-          Swift.print("tryChannel AGAIN")
-          RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.5))
-          if stop.load(ordering: .relaxed) {
-            throw SSHError(title: "Operation cancelled")
-          }
-          return loop(channel)
-        default:
-          return self.tryMap { chan in
-            ssh_channel_free(chan)
-            throw error
-          }.eraseToAnyPublisher()
-        }
-      }.eraseToAnyPublisher()
-    }
     
-    return self.flatMap { loop ($0) }.handleEvents(receiveCancel: {
-      stop.store(true, ordering: .relaxed)
-      usleep(505000)
-    }).eraseToAnyPublisher()
+    var doTry = true
+    
+    return tryMap { chan -> T in
+      
+      while doTry {
+        do {
+          return try operation(chan)
+        } catch SSHError.again {
+          RunLoop.current.run(mode: libSSHBlockMode, before: Date(timeIntervalSinceNow: 0.5))
+          continue
+        } catch {
+          ssh_channel_free(chan)
+          throw error
+        }
+      }
+      ssh_channel_free(chan)
+      throw SSHError(title: "Operation cancelled")
+    }
+    .handleEvents(receiveCancel: {
+      doTry = false
+    })
+    .eraseToAnyPublisher()
   }
   
   func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
   AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
-    return tryOperation(operation)
+    tryOperation(operation)
   }
 }
 
 extension AnyPublisher where Output == ssh_session, Failure == Error {
   func tryAuth(_ operation: @escaping (ssh_session) throws -> AuthState)
   -> AnyPublisher<AuthState, Error> {
-    let stop = ManagedAtomic<Bool>(false)
-
-    func loop(_ session: ssh_session) -> AnyPublisher<AuthState, Error> {
-      return Just(session).tryMap { session in
+    var doTry = true
+    
+    return tryMap { session -> AuthState in
+      while doTry {
         // Check we are still connected as sometimes authentication may close from one side.
-        if ssh_is_connected(session) == 0 {
+        if ssh_is_connected(session) == SSH_OK {
           throw SSHError(title: "Disconnected", forSession: session)
         }
-
-        let val = try operation(session)
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
+        
+        do {
+          return try operation(session)
+        } catch SSHError.again {
+          RunLoop.current.run(mode: libSSHBlockMode, before: Date(timeIntervalSinceNow: 0.5))
+          continue
         }
-        return val
       }
-      .tryCatch { error -> AnyPublisher<AuthState, Error> in
-        if stop.load(ordering: .relaxed) {
-          throw SSHError(title: "Operation cancelled")
-        }
-        switch error {
-        case SSHError.again:
-          Swift.print("tryAuth AGAIN")
-          RunLoop.current.run(mode: .default, before: Date(timeIntervalSinceNow: 0.5))
-          if stop.load(ordering: .relaxed) {
-            throw SSHError(title: "Operation cancelled")
-          }
-          return loop(session)
-        default:
-          throw error
-        }
-      }.eraseToAnyPublisher()
+      
+      throw SSHError(title: "Operation cancelled")
     }
-    
-    return self.flatMap(maxPublishers: .max(1)) { loop($0) }
-                .flatMap { state -> AnyPublisher<AuthState, Error> in
-                  // If Auth needs to continue, use the provided
-                  // Publisher
-                  switch state {
-                  case .continue(let pub):
-                    return pub
-                  default:
-                    return .just(state)
-                  }
-                }.handleEvents(receiveCancel: {
-                  stop.store(true, ordering: .relaxed)
-                  // The cancel process thread cannot move up, otherwise we get a recursive unfair_lock abort.
-                  usleep(505000)
-                }).eraseToAnyPublisher()
+    .flatMap(maxPublishers: .max(1)) { state -> AnyPublisher<AuthState, Error> in
+      // If Auth needs to continue, use the provided
+      // Publisher
+      switch state {
+      case .continue(let pub):
+        return pub
+      default:
+        return .just(state)
+      }
+    }
+    .handleEvents(receiveCancel: {
+      doTry = false
+    })
+    .eraseToAnyPublisher()
   }
 }
 

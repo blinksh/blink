@@ -61,7 +61,7 @@ class SSHPool {
                                exposeSocket exposed: Bool = true) -> AnyPublisher<SSH.SSHClient, Error> {
     let pb = PassthroughSubject<SSH.SSHClient, Error>()
     var cancel: AnyCancellable?
-    var runLoop: RunLoop?
+    var runLoop: RunLoop!
 
     let t = Thread {
       runLoop = RunLoop.current
@@ -69,12 +69,13 @@ class SSHPool {
       cancel = SSH.SSHClient.dial(host, with: config, withProxy: proxy)
         .sink(receiveCompletion: { pb.send(completion: $0) },
               receiveValue: { conn in
-                let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop!, exposed: exposed)
+                let control = SSHClientControl(for: conn, on: host, with: config, running: runLoop, exposed: exposed)
                 SSHPool.shared.controls.append(control)
                 pb.send(conn)
         })
 
-      awaitRunLoop(runLoop!)
+      awaitRunLoop(runLoop)
+      // Make another run on the loop to close extra stuff in blocks.
       RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
       print("Pool Thread out")
     }
