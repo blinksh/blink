@@ -94,6 +94,9 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   func start() throws {
+    ssh_channel_set_blocking(channel, 1)
+    defer { ssh_channel_set_blocking(channel, 0) }
+    
     let rc = sftp_init(sftp)
     if rc != SSH_OK {
       throw SSHError(rc, forSession: session)
@@ -112,6 +115,9 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   func canonicalize(_ path: String) throws -> (String, FileAttributeType) {
+    ssh_channel_set_blocking(channel, 1)
+    defer { ssh_channel_set_blocking(channel, 0) }
+    
     guard let canonicalPath = sftp_canonicalize_path(sftp, path.cString(using: .utf8)) else {
       throw FileError(title: "Could not canonicalize path", in: session)
     }
@@ -169,6 +175,9 @@ public class SFTPClient : BlinkFiles.Translator {
     }
     
     return connection().trySFTP { sftp -> [FileAttributes] in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       var contents: [FileAttributes] = []
       
       guard let dir = sftp_opendir(sftp, self.path) else {
@@ -197,6 +206,9 @@ public class SFTPClient : BlinkFiles.Translator {
     }
     
     return connection().trySFTP { sftp -> SFTPFile in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       guard let file = sftp_open(sftp, self.path, flags, S_IRWXU) else {
         throw(FileError(title: "Error opening file", in: self.session))
       }
@@ -211,6 +223,9 @@ public class SFTPClient : BlinkFiles.Translator {
     }
     
     return connection().trySFTP { sftp -> SFTPFile in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let filePath = (self.path as NSString).appendingPathComponent(name)
       guard let file = sftp_open(sftp, filePath, flags | O_CREAT, mode) else {
         throw FileError(in: self.session)
@@ -222,6 +237,9 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func remove() -> AnyPublisher<Bool, Error> {
     return connection().trySFTP { sftp -> Bool in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let rc = sftp_unlink(sftp, self.path)
       if rc != SSH_OK {
         throw FileError(title: "Could not delete file", in: self.session)
@@ -233,6 +251,9 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func rmdir() -> AnyPublisher<Bool, Error> {
     return connection().trySFTP { sftp -> Bool in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let rc = sftp_rmdir(sftp, self.path)
       if rc != SSH_OK {
         throw FileError(title: "Could not delete directory", in: self.session)
@@ -246,6 +267,9 @@ public class SFTPClient : BlinkFiles.Translator {
   // This is working well for filesystems, but everything else...
   public func mkdir(name: String, mode: mode_t = S_IRWXU | S_IRWXG | S_IRWXO) -> AnyPublisher<Translator, Error> {
     return connection().trySFTP { sftp -> Translator in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let dirPath = (self.path as NSString).appendingPathComponent(name)
       
       let rc = sftp_mkdir(sftp, dirPath, mode)
@@ -260,6 +284,9 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func stat() -> AnyPublisher<FileAttributes, Error> {
     return connection().trySFTP { sftp -> FileAttributes in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let p = sftp_stat(sftp, self.path)
       guard let attrs = p?.pointee else {
         throw FileError(title: "Could not stat file", in: self.session)
@@ -272,6 +299,9 @@ public class SFTPClient : BlinkFiles.Translator {
   public func wstat(_ attrs: FileAttributes) -> AnyPublisher<Bool, Error> {
     // TODO Move
     return connection().trySFTP { sftp in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       var sftpAttrs = self.buildItemAttributes(attrs)
       
       let rc = sftp_setstat(sftp, self.path, &sftpAttrs)
@@ -377,6 +407,9 @@ public class SFTPFile : BlinkFiles.File {
   
   public func close() -> AnyPublisher<Bool, Error> {
     return client.connection().trySFTP { _ in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
       let rc = sftp_close(self.file)
       
       if rc != SSH_OK {
@@ -433,6 +466,9 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
   func inflightReadsLoop() {
     var data: DispatchData?
     var isComplete = false
+    
+    ssh_channel_set_blocking(self.channel, 1)
+    defer { ssh_channel_set_blocking(self.channel, 0) }
     
     if inflightReads.count > 0 {
       do {
@@ -553,6 +589,9 @@ extension SFTPFile: BlinkFiles.Writer {
           pub.send(completion: .failure(error))
         }
       }
+      
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
       
       // Schedule more writes
       while inflightWrites.count < self.maxConcurrentOps && write.count > 0 {

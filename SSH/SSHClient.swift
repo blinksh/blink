@@ -733,7 +733,7 @@ public class SSHClient {
         }
 
         // SFTP implementation needs to poll, except for files
-        ssh_channel_set_blocking(channel, 1)
+        // ssh_channel_set_blocking(channel, 1)
         try sftp.start()
 
         return sftp
