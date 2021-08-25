@@ -65,7 +65,7 @@ class FileProviderExtension: NSFileProviderExtension {
       throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: queryableIdentifier.itemIdentifier)
     }
     
-    return FileProviderItem(reference: reference)
+    return reference
   }
   
   override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
@@ -224,6 +224,7 @@ class FileProviderExtension: NSFileProviderExtension {
   }
   
   override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
+    print("importDocument at \(fileURL)")
     
     let localParentIdentifier: BlinkItemIdentifier!
 
@@ -258,10 +259,9 @@ class FileProviderExtension: NSFileProviderExtension {
 
     var blinkItemReference = BlinkItemReference(localBlinkIdentifier, attributes: attributes)
     blinkItemReference.isUploading = true
-    let item = FileProviderItem(reference: blinkItemReference)
     FileTranslatorCache.store(reference: blinkItemReference)
     
-    completionHandler(item, nil)
+    completionHandler(blinkItemReference, nil)
 
     // 1. Translator for local target path
     let localFileURLPath = localBlinkIdentifier.url.path

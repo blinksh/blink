@@ -35,86 +35,13 @@ import MobileCoreServices
 
 import BlinkFiles
 
-struct BlinkItemIdentifier {
-  let path: String
-  let encodedRootPath: String
-
-  // <encodedRootPath>/path/to, name = filename. -> <encodedRootPath>/path/to/filename
-  init(parentItemIdentifier: BlinkItemIdentifier, filename: String) {
-    self.encodedRootPath = parentItemIdentifier.encodedRootPath
-    self.path = (parentItemIdentifier.path as NSString).appendingPathComponent(filename)
-  }
-
-  // <encodedRootPath>/path/to/filename
-  init(_ identifier: NSFileProviderItemIdentifier) {
-    self.encodedRootPath = (identifier.rawValue as NSString).pathComponents[0]
-    var path = (identifier.rawValue)
-    path.removeFirst(encodedRootPath.count)
-    if path.isEmpty {
-      path = "/"
-    }
-    self.path = path
-  }
-  
-  init(_ identifier: String) {
-    self.init(NSFileProviderItemIdentifier(identifier))
-  }
-  
-  init(url: URL) {
-    let manager = NSFileProviderManager.default
-    let containerPath = manager.documentStorageURL.absoluteString
-
-    // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
-    // file://<containerPath>/<encodedRootPath>/path/filename
-    // Remove containerPath, split and get encodedRootPath.
-    var path = url.absoluteString
-    path.removeFirst(containerPath.count)
-
-    // <encodedRootPath>/<encodedPath>/filename
-    // <encodedRootPath>/<path>/<to>/filename
-    let components = path.split(separator: "/")
-    self.encodedRootPath = String(components[0])
-    self.path = "/\(components[1...].joined(separator: "/"))"
-    print(self.path)
-  }
-
-  // file://<containerPath>/<encodedRootPath>/path/to/filename
-  var url: URL {
-    let manager = NSFileProviderManager.default
-    let pathcomponents = "\(encodedRootPath)\(self.path)"
-    return manager.documentStorageURL.appendingPathComponent(pathcomponents)
-  }
-
-  var filename: String {
-    return (path as NSString).lastPathComponent
-  }
-
-  var itemIdentifier: NSFileProviderItemIdentifier {
-    if path == "/" {
-      return .rootContainer
-    }
-    return NSFileProviderItemIdentifier(
-      rawValue: "\(encodedRootPath)\(path)"
-    )
-  }
-
-  var parentIdentifier: NSFileProviderItemIdentifier {
-    let parentPath = (path as NSString).deletingLastPathComponent
-    if parentPath == "/" {
-      return .rootContainer
-    } else {
-      return NSFileProviderItemIdentifier(
-        rawValue: "\(encodedRootPath)\(parentPath)"
-      )
-    }
-  }
-}
 
 // Goal is to bridge the Identifier to the underlying BlinkFiles system, and to offer
 // Representations the item.
 
 // TODO Could the BlinkItemReference actually be the FileItem?
-struct BlinkItemReference {
+// Make the reference work first, and then we can implement more structure around it.
+final class BlinkItemReference: NSObject {
   //private let encodedRootPath: String
   // TODO We could also work with a  URL that is not the URL representation,
   // but the URL Identifier. This way we would not have to transform from NSString all the time.
@@ -149,10 +76,6 @@ struct BlinkItemReference {
     identifier.url
   }
 
-  var itemIdentifier: NSFileProviderItemIdentifier {
-    identifier.itemIdentifier
-  }
-
   var isDirectory: Bool {
     return (attributes[.type] as? FileAttributeType) == .typeDirectory
   }
@@ -160,28 +83,74 @@ struct BlinkItemReference {
   var filename: String {
     return identifier.filename
   }
+  
+  var permissions: PosixPermissions? {
+    guard let perm = attributes[.posixPermissions] as? NSNumber else {
+      return nil
+    }
+    return PosixPermissions(rawValue: perm.int16Value)
+  }
+}
 
+// MARK: - NSFileProviderItem
+
+extension BlinkItemReference: NSFileProviderItem {
+  var itemIdentifier: NSFileProviderItemIdentifier { identifier.itemIdentifier }
+  var parentItemIdentifier: NSFileProviderItemIdentifier { identifier.parentIdentifier }
+
+  // iOS14
+  //  var contentType: UTType
+  
   var typeIdentifier: String {
     guard let type = attributes[.type] as? FileAttributeType else {
+      print("\(itemIdentifier) missing type")
       return ""
     }
-    if type == .typeDirectory {
+    if type == .typeDirectory || type == .typeSymbolicLink {
       return kUTTypeFolder as String
     }
-
+    
     let pathExtension = (filename as NSString).pathExtension
-    let unmanaged = UTTypeCreatePreferredIdentifierForTag(
+    guard let typeIdentifier = (UTTypeCreatePreferredIdentifierForTag(
       kUTTagClassFilenameExtension,
       pathExtension as CFString,
       nil
-    )
-    let retained = unmanaged?.takeRetainedValue()
-
-    return (retained as String?) ?? ""
+    )?.takeRetainedValue() as String?) else {
+      return kUTTypeItem as String
+    }
+    
+    if typeIdentifier.starts(with: "dyn") {
+      return kUTTypeItem as String
+    }
+    
+    return typeIdentifier
   }
 
-  var parentIdentifier: NSFileProviderItemIdentifier {
-    return identifier.parentIdentifier
+  var capabilities: NSFileProviderItemCapabilities {
+    guard let permissions = self.permissions else {
+      return []
+    }
+    
+    var c = NSFileProviderItemCapabilities()
+    
+    if isDirectory {
+      c.formUnion(.allowsAddingSubItems)
+      if permissions.contains(.ux) {
+        c.formUnion([.allowsContentEnumerating, .allowsReading])
+      }
+      if permissions.contains(.uw) {
+        c.formUnion([.allowsRenaming, .allowsDeleting])
+      }
+    } else {
+      if permissions.contains(.ur) {
+        c.formUnion(.allowsReading)
+      }
+      if permissions.contains(.uw) {
+        c.formUnion([.allowsWriting, .allowsDeleting, .allowsRenaming, .allowsReparenting])
+      }
+    }
+
+    return c
   }
 
   var creationDate: Date? {
@@ -193,6 +162,72 @@ struct BlinkItemReference {
   }
 
   var documentSize: NSNumber? {
-    attributes[.size] as? NSNumber
+    isMostRecentVersionDownloaded ? (self.local?[.size] as? NSNumber ?? nil) :
+      self.attributes[.size] as? NSNumber
   }
+
+  var childItemCount: NSNumber? {
+      return nil
+  }
+  
+  var isTrashed: Bool {
+      return false
+  }
+
+// TODO We can track from the action, which itself can be part of the reference
+//  var isUploading: Bool { reference.isUploading }
+//  var isUploaded: Bool { reference.isUploaded }
+//  var uploadingError: Error? {
+//    fatalError("uploadingError has not been implemented")
+//  }
+  var isDownloaded: Bool {
+    guard let local = self.local else {
+      return false
+    }
+    // TODO Compare local ts with remote
+    guard let localModificationDate = local[.modificationDate] as? Date else {
+      return false
+    }
+    guard let remoteModificationDate = self.attributes[.modificationDate] as? Date else {
+      return false
+    }
+    
+    return localModificationDate.timeIntervalSinceReferenceDate >= remoteModificationDate.timeIntervalSinceReferenceDate
+    //fatalError("isDownloaded has not been implemented")
+  }
+  
+  // TODO Update "local" after download
+  var isDownloading: Bool {
+    return false
+//    fatalError("isDownloading has not been implemented")
+  }
+  
+  var downloadingError: Error? {
+    return nil
+//    fatalError("downloadingError has not been implemented")
+  }
+  
+  // Indicates whether the item is the most recent version downloaded from the server.
+  // In our case, there is only one version, so if it is downloaded, it is the most recent
+  var isMostRecentVersionDownloaded: Bool { isDownloaded }
+}
+
+struct PosixPermissions: OptionSet {
+  let rawValue: Int16 // It is really a CShort
+
+  // rwx
+  // u[ser]
+  static let ur = PosixPermissions(rawValue: 1 << 8)
+  static let uw = PosixPermissions(rawValue: 1 << 7)
+  static let ux = PosixPermissions(rawValue: 1 << 6)
+
+  // g[roup]
+  static let gr = PosixPermissions(rawValue: 1 << 5)
+  static let gw = PosixPermissions(rawValue: 1 << 4)
+  static let gx = PosixPermissions(rawValue: 1 << 3)
+
+  // o[ther]
+  static let or = PosixPermissions(rawValue: 1 << 2)
+  static let ow = PosixPermissions(rawValue: 1 << 1)
+  static let ox = PosixPermissions(rawValue: 1 << 0)
 }
