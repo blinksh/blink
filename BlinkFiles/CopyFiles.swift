@@ -66,12 +66,19 @@ public struct CopyAttributesFlag: OptionSet {
 
 public struct CopyArguments {
   public let inplace: Bool
-  public let preserve: CopyAttributesFlag // attributes. Check how FileManager passes this.
+  public var preserve: CopyAttributesFlag // attributes. Check how FileManager passes this.
+  public let checkTimes: Bool
   
   public init(inplace: Bool = true,
-              preserve: CopyAttributesFlag = [.permissions]) {
+              preserve: CopyAttributesFlag = [.permissions],
+              checkTimes: Bool = false) {
     self.inplace = inplace
     self.preserve = preserve
+    self.checkTimes = checkTimes
+    
+    if checkTimes {
+      self.preserve.insert(.timestamp)
+    }
   }
 }
 
@@ -110,34 +117,57 @@ extension Translator {
         switch t.fileType {
         case .typeDirectory:
           let mode = passingAttributes[FileAttributeKey.posixPermissions] as? NSNumber ?? NSNumber(value: Int16(0o755))
-          return self.clone().mkdir(name: name, mode: mode_t(truncating: mode))
-            .flatMap { $0.copyDirectory(from: t) }
-            .eraseToAnyPublisher()
+          return self.copyDirectory(as: name, from: t, mode: mode)
         default:
-          return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
-            .flatMap { f -> CopyProgressInfoPublisher in
-              if size == 0 {
-                return .just(CopyProgressInfo(name: name, written: 0, size: 0))
-              }
-              return self.copyFile(from: t, name: name, size: size, attributes: passingAttributes)
-            }.eraseToAnyPublisher()
+          let copyFilePublisher = self.copyFile(from: t, name: name, size: size, attributes: passingAttributes)
+          
+          // When checkTimes, copy the file only if the modificationDate is different
+          if args.checkTimes {
+            return self.cloneWalkTo(name)
+              .flatMap { $0.stat() }
+              .catch { _ in Just([:]) }
+              .flatMap { localAttributes -> CopyProgressInfoPublisher in
+                if let localModificationDate = localAttributes[.modificationDate] as? NSDate,
+                   localModificationDate == (passingAttributes[.modificationDate] as? NSDate) {
+                  return .just(CopyProgressInfo(name: name, written: 0, size: size.uint64Value))
+                }
+                return copyFilePublisher
+              }.eraseToAnyPublisher()
+          }
+          
+          return copyFilePublisher
         }
       }.eraseToAnyPublisher()
   }
   
-  fileprivate func copyDirectory(from t: Translator) -> CopyProgressInfoPublisher {
+  fileprivate func copyDirectory(as name: String, from t: Translator, mode: NSNumber) -> CopyProgressInfoPublisher {
     print("Copying directory \(t.current)")
-    return t.directoryFilesAndAttributes().flatMap {
-      $0.compactMap { i -> FileAttributes? in
-        if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
-          return nil
-        } else {
-          return i
-        }
-      }.publisher
-    }.flatMap { t.cloneWalkTo($0[.name] as! String) }
-    .collect()
-    .flatMap { self.copy(from: $0) }.eraseToAnyPublisher()
+    return self.clone().mkdir(name: name, mode: mode_t(truncating: mode))
+      .flatMap { dir -> CopyProgressInfoPublisher in
+        t.directoryFilesAndAttributes().flatMap {
+          $0.compactMap { i -> FileAttributes? in
+            if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+              return nil
+            } else {
+              return i
+            }
+          }.publisher
+        }.flatMap { t.cloneWalkTo($0[.name] as! String) }
+        .collect()
+        .flatMap { dir.copy(from: $0) }.eraseToAnyPublisher()
+      }.eraseToAnyPublisher()
+    
+//    return t.directoryFilesAndAttributes().flatMap {
+//      $0.compactMap { i -> FileAttributes? in
+//        if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+//          return nil
+//        } else {
+//          return i
+//        }
+//      }.publisher
+//    }.flatMap { t.cloneWalkTo($0[.name] as! String) }
+//    .collect()
+//    .flatMap { self.copy(from: $0) }.eraseToAnyPublisher()
   }
   
   fileprivate func copyFile(from t: Translator,

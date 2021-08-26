@@ -29,6 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+import Combine
 import Foundation
 import FileProvider
 import MobileCoreServices
@@ -51,7 +52,10 @@ final class BlinkItemReference: NSObject {
   //private let urlRepresentation: URL
   var attributes: BlinkFiles.FileAttributes
   var local: BlinkFiles.FileAttributes?
-  
+
+  var downloadingTask: AnyCancellable? = nil
+  var downloadingError: Error? = nil
+
   // Not sure how to handle the states properly yet
   // A better model may be to handle the correspondence when the file is local vs remote,
   // and what is the status, when it is being read from the remote, or uploaded from it.
@@ -89,6 +93,22 @@ final class BlinkItemReference: NSObject {
       return nil
     }
     return PosixPermissions(rawValue: perm.int16Value)
+  }
+
+  func downloadStarted(_ c: AnyCancellable) {
+    downloadingTask = c
+    downloadingError = nil
+  }
+
+  func downloadCompleted(_ error: Error?) {
+    if let error = error {
+      downloadingError = error
+      downloadingTask = nil
+      return
+    }
+
+    local = attributes
+    downloadingTask = nil
   }
 }
 
@@ -198,15 +218,10 @@ extension BlinkItemReference: NSFileProviderItem {
   
   // TODO Update "local" after download
   var isDownloading: Bool {
-    return false
+    return downloadingTask != nil
 //    fatalError("isDownloading has not been implemented")
   }
-  
-  var downloadingError: Error? {
-    return nil
-//    fatalError("downloadingError has not been implemented")
-  }
-  
+
   // Indicates whether the item is the most recent version downloaded from the server.
   // In our case, there is only one version, so if it is downloaded, it is the most recent
   var isMostRecentVersionDownloaded: Bool { isDownloaded }

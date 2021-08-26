@@ -172,11 +172,32 @@ class FileProviderExtension: NSFileProviderExtension {
     //    }
     //
     
+    // Best way in this scenario is to use the CopyArguments. So based on modifiedTime,
+    // we decide if the file should go through or not. We can then expose this somewhere else.
+    
+    // If the file is already on local, stat to see if it is latest version.
+    // If the file is not local or is not the latest, then download
+    // Complete
+    // - We need to update the reference with the local file information. Surprise, it will be the same
+    // as the remote, so we could possibly just pass it.
+    // - While the download is taking place, the attributes are actually the remote ones.
+    //   - If a file is being downloaded, we should not update the local information in case there is another "list"
+    
     // We will need a two way state for the file, to figure out if this is the new one,
     // and it is uploading to the remote (so we do not have download).
-    // 
+    
+    let copyArguments = CopyArguments(inplace: true,
+                                      preserve: [.permissions],
+                                      checkTimes: true)
+
     // 1 - From URL we get the identifier.
     let blinkIdentifier = BlinkItemIdentifier(url: url)
+    guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
+      // TODO Proper error types (NSError)
+      completionHandler("Does not have a reference to copy")
+      return
+    }
+
     print("\(blinkIdentifier.path) - Start Providing item")
     
     // 2 local translator
@@ -184,14 +205,22 @@ class FileProviderExtension: NSFileProviderExtension {
     
     // 3 remote - From the identifier, we get the translator and walk to the remote.
     let srcTranslator = FileTranslatorCache.translator(for: blinkIdentifier.encodedRootPath)
-    srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
+    let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
       .flatMap { fileTranslator in
         // 4 - Start the copy
-        return destTranslator.flatMap { $0.copy(from: [fileTranslator]) }
+        return destTranslator.flatMap { $0.copy(from: [fileTranslator], args: copyArguments) }
       }.sink(receiveCompletion: { completion in
         print(completion)
-        completionHandler(nil)
-      }, receiveValue: { _ in }).store(in: &cancellableBag)
+        switch completion {
+        case .finished:
+          blinkItemReference.downloadCompleted(nil)
+          completionHandler(nil)
+        case .failure(let error):
+          completionHandler(error)
+        }
+      }, receiveValue: { _ in })
+
+    blinkItemReference.downloadStarted(downloadTask)
   }
   
   override func stopProvidingItem(at url: URL) {
