@@ -58,7 +58,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         if !path.isEmpty {
           return t.cloneWalkTo(path)
         } else {
-          return Just(t.clone()).mapError {$0 as Error}.eraseToAnyPublisher()
+          return .just(t.clone())
         }
       }.eraseToAnyPublisher()
 
