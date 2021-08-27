@@ -38,30 +38,20 @@ import BlinkFiles
 
 
 // Goal is to bridge the Identifier to the underlying BlinkFiles system, and to offer
-// Representations the item.
-
-// TODO Could the BlinkItemReference actually be the FileItem?
-// Make the reference work first, and then we can implement more structure around it.
+// Representations of the item.
 final class BlinkItemReference: NSObject {
-  //private let encodedRootPath: String
-  // TODO We could also work with a  URL that is not the URL representation,
-  // but the URL Identifier. This way we would not have to transform from NSString all the time.
   private let identifier: BlinkItemIdentifier
-//  private let path: String
-//  private let encodedRootPath: String
-  //private let urlRepresentation: URL
-  var attributes: BlinkFiles.FileAttributes
+  var remote: BlinkFiles.FileAttributes?
   var local: BlinkFiles.FileAttributes?
+  
+  var primary: BlinkFiles.FileAttributes = [:]
+  var replica: BlinkFiles.FileAttributes?
 
+  var isDownloaded: Bool = false
   var downloadingTask: AnyCancellable? = nil
   var downloadingError: Error? = nil
 
-  // Not sure how to handle the states properly yet
-  // A better model may be to handle the correspondence when the file is local vs remote,
-  // and what is the status, when it is being read from the remote, or uploaded from it.
-  // The state would try to solve the question of what file is the reference that we care about.
-  // If the remote is updated, we care about that one, if the local is the reference, then we care about that.
-  var isUploading: Bool = false
+  var uploadingTask: AnyCancellable? = nil
   var isUploaded: Bool = false
   var uploadingError: Error? = nil
 
@@ -69,19 +59,65 @@ final class BlinkItemReference: NSObject {
   // Requires attributes. If you only have the Identifier, you need to go to the DB.
   // Identifier format <encodedRootPath>/path/to/more/components/filename
   init(_ itemIdentifier: BlinkItemIdentifier,
-       attributes: BlinkFiles.FileAttributes,
+       remote: BlinkFiles.FileAttributes? = nil,
        local: BlinkFiles.FileAttributes? = nil) {
-    self.attributes = attributes
+    self.remote = remote
     self.identifier = itemIdentifier
     self.local = local
+
+    super.init()
+
+    evaluate()
+  }
+
+  func updateAttributes(remote: BlinkFiles.FileAttributes, local: BlinkFiles.FileAttributes? = nil) {
+    self.remote = remote
+    if let local = local {
+      self.local = local
+    }
+    evaluate()
   }
   
+  private func evaluate() {
+    guard let remoteModified = (remote?[.modificationDate] as? Date) else {
+      primary = local!
+      replica = nil
+      isDownloaded = false
+      return
+    }
+
+    guard let localModified = (local?[.modificationDate] as? Date) else {
+      primary = remote!
+      replica = nil
+      isDownloaded = false
+      return
+    }
+
+    if remoteModified > localModified {
+      primary = remote!
+      replica = local
+      isDownloaded = false
+      isUploaded = true
+    } else if remoteModified == localModified {
+      primary = remote!
+      replica = local
+      isDownloaded = true
+      isUploaded = true
+    } else {
+      primary = local!
+      replica = primary
+      // TODO Not sure in this case.
+      isDownloaded = true
+      isUploaded = false
+    }
+  }
+
   var url: URL {
     identifier.url
   }
 
   var isDirectory: Bool {
-    return (attributes[.type] as? FileAttributeType) == .typeDirectory
+    return (primary[.type] as? FileAttributeType) == .typeDirectory
   }
 
   var filename: String {
@@ -89,7 +125,7 @@ final class BlinkItemReference: NSObject {
   }
   
   var permissions: PosixPermissions? {
-    guard let perm = attributes[.posixPermissions] as? NSNumber else {
+    guard let perm = primary[.posixPermissions] as? NSNumber else {
       return nil
     }
     return PosixPermissions(rawValue: perm.int16Value)
@@ -107,22 +143,51 @@ final class BlinkItemReference: NSObject {
       return
     }
 
-    local = attributes
+    local = remote
+    evaluate()
     downloadingTask = nil
+  }
+
+  func uploadStarted(_ c: AnyCancellable) {
+    uploadingTask = c
+    uploadingError = nil
+  }
+  
+  func uploadCompleted(_ error: Error?) {
+    if let error = error {
+      uploadingError = error
+      uploadingTask = nil
+      return
+    }
+    
+    remote = local
+    evaluate()
+    uploadingTask = nil
   }
 }
 
 // MARK: - NSFileProviderItem
 
 extension BlinkItemReference: NSFileProviderItem {
-  var itemIdentifier: NSFileProviderItemIdentifier { identifier.itemIdentifier }
   var parentItemIdentifier: NSFileProviderItemIdentifier { identifier.parentIdentifier }
+  var childItemCount: NSNumber? { nil }
+  var creationDate: Date? { primary[.creationDate] as? Date }
+  var contentModificationDate: Date? { primary[.modificationDate] as? Date }
+  var documentSize: NSNumber? { primary[.size] as? NSNumber }
+  var itemIdentifier: NSFileProviderItemIdentifier { identifier.itemIdentifier }
+  var isDownloading: Bool { downloadingTask != nil }
+  // Indicates whether the item is the most recent version downloaded from the server.
+  // In our case, there is only one version, so if it is downloaded, it is the most recent
+  // TODO Not sure how this will play out when the local may be the most recent version.
+  var isMostRecentVersionDownloaded: Bool { isDownloaded }
+  var isTrashed: Bool { false }
+  var isUploading: Bool { uploadingTask != nil }
 
   // iOS14
   //  var contentType: UTType
   
   var typeIdentifier: String {
-    guard let type = attributes[.type] as? FileAttributeType else {
+    guard let type = primary[.type] as? FileAttributeType else {
       print("\(itemIdentifier) missing type")
       return ""
     }
@@ -172,59 +237,6 @@ extension BlinkItemReference: NSFileProviderItem {
 
     return c
   }
-
-  var creationDate: Date? {
-    attributes[.creationDate] as? Date
-  }
-
-  var contentModificationDate: Date? {
-    attributes[.modificationDate] as? Date
-  }
-
-  var documentSize: NSNumber? {
-    isMostRecentVersionDownloaded ? (self.local?[.size] as? NSNumber ?? nil) :
-      self.attributes[.size] as? NSNumber
-  }
-
-  var childItemCount: NSNumber? {
-      return nil
-  }
-  
-  var isTrashed: Bool {
-      return false
-  }
-
-// TODO We can track from the action, which itself can be part of the reference
-//  var isUploading: Bool { reference.isUploading }
-//  var isUploaded: Bool { reference.isUploaded }
-//  var uploadingError: Error? {
-//    fatalError("uploadingError has not been implemented")
-//  }
-  var isDownloaded: Bool {
-    guard let local = self.local else {
-      return false
-    }
-    // TODO Compare local ts with remote
-    guard let localModificationDate = local[.modificationDate] as? Date else {
-      return false
-    }
-    guard let remoteModificationDate = self.attributes[.modificationDate] as? Date else {
-      return false
-    }
-    
-    return localModificationDate.timeIntervalSinceReferenceDate >= remoteModificationDate.timeIntervalSinceReferenceDate
-    //fatalError("isDownloaded has not been implemented")
-  }
-  
-  // TODO Update "local" after download
-  var isDownloading: Bool {
-    return downloadingTask != nil
-//    fatalError("isDownloading has not been implemented")
-  }
-
-  // Indicates whether the item is the most recent version downloaded from the server.
-  // In our case, there is only one version, so if it is downloaded, it is the most recent
-  var isMostRecentVersionDownloaded: Bool { isDownloaded }
 }
 
 struct PosixPermissions: OptionSet {

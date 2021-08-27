@@ -55,11 +55,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
-        if path.isEmpty {
-          return Just(t.clone()).mapError {$0 as Error}.eraseToAnyPublisher()
-        } else {
-          return t.cloneWalkTo(path)
-        }
+        path.isEmpty ? .just(t.clone()) : t.cloneWalkTo(path)
       }.eraseToAnyPublisher()
 
     // TODO Schedule an interval enumeration (pull) from the server.
@@ -67,13 +63,14 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   }
 
   func invalidate() {
-    // TODO: perform invalidation of server connection if necessary
+    // TODO: perform invalidation of server connection if necessary?
     // Stop the enumeration
     print("\(self.identifier.path) - Invalidate enumerator")
+    cancellableBag = []
   }
 
   func enumerateItems(for observer: NSFileProviderEnumerationObserver, startingAt page: NSFileProviderPage) {
-    /* TODO:
+    /*
      - inspect the page to determine whether this is an initial or a follow-up request
 
      If this is an enumerator for a directory, the root container or all directories:
@@ -85,16 +82,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
      - inform the observer about the items returned by the server (possibly multiple times)
      - inform the observer that you are finished with this page
      */
-
-    // TODO We may have to enumerate an already returned item, but have not found when that is triggered yet.
-    // TODO page can be a Sorted by name or sorted by Date page, and we will have to return the items based on this.
-    // This could be easily achieved from our Cache, requesting a specific path references, adding a sorter and then an "index".
-
     print("\(self.identifier.path) - enumeration requested")
 
-    // Request or warm up local database.
-    // The real list we return is the one from the remote.
-    // Having a cache for local files and one for remotes could help us take action in the future to consolidate.
+    // We use the local files and the representation of the remotes to construct the view of the system.
+    // It is a simpler way to warm up the local cache without having a persistent representation.
     var containerTranslator: Translator!
     translator
       .flatMap { t -> AnyPublisher<FileAttributes, Error> in
@@ -102,32 +93,45 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         return t.stat()
       }
       .map { containerAttrs -> Translator in
+        // 1. Store the container reference
         // TODO We may be able to skip this if stat would return '.'
-        let ref = BlinkItemReference(self.identifier,
-                                     attributes: containerAttrs)
-        FileTranslatorCache.store(reference: ref)
+        if let reference = FileTranslatorCache.reference(identifier: self.identifier) {
+          reference.updateAttributes(remote: containerAttrs)
+        } else {
+          let ref = BlinkItemReference(self.identifier,
+                                       remote: containerAttrs)
+          FileTranslatorCache.store(reference: ref)
+        }
         return containerTranslator
       }
       .flatMap {
+        // 2. Stat both local and remote files.
         Publishers.Zip($0.directoryFilesAndAttributes(),
                          Local().walkTo(self.identifier.url.path)
                           .flatMap { $0.directoryFilesAndAttributes() }
                           .catch { _ in AnyPublisher.just([]) })
       }
       .map { (remoteFilesAttributes, localFilesAttributes) -> [BlinkItemReference] in
+        // 3.1 Collect all current file references
         return remoteFilesAttributes.map { attrs -> BlinkItemReference in
+          // 3.2 Match local and remote files, and upsert accordingly
           let fileIdentifier = BlinkItemIdentifier(parentItemIdentifier: self.identifier,
                                                    filename: attrs[.name] as! String)
-          print(fileIdentifier.filename)
+          // Find a local file that matches the remote.
           let localAttrs = localFilesAttributes.first(where: { $0[.name] as! String == fileIdentifier.filename })
 
-          let ref = BlinkItemReference(fileIdentifier,
-                                       attributes: attrs,
-                                       local: localAttrs)
+          if let reference = FileTranslatorCache.reference(identifier: fileIdentifier) {
+            reference.updateAttributes(remote: attrs, local: localAttrs)
+            return reference
+          } else {
+            let ref = BlinkItemReference(fileIdentifier,
+                                         remote: attrs,
+                                         local: localAttrs)
 
-          // Store the reference in the internal DB for later usage.
-          FileTranslatorCache.store(reference: ref)
-          return ref
+            // Store the reference in the internal DB for later usage.
+            FileTranslatorCache.store(reference: ref)
+            return ref
+          }
         }
       }
       .sink(
@@ -143,6 +147,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         receiveValue: { observer.didEnumerate($0) }).store(in: &cancellableBag)
   }
 
+  
 //  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
 //    /* TODO:
 //     - query the server for updates since the passed-in sync anchor
