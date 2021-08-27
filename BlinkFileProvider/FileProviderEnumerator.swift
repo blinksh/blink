@@ -55,10 +55,10 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
-        if !path.isEmpty {
-          return t.cloneWalkTo(path)
-        } else {
+        if path.isEmpty {
           return Just(t.clone()).mapError {$0 as Error}.eraseToAnyPublisher()
+        } else {
+          return t.cloneWalkTo(path)
         }
       }.eraseToAnyPublisher()
 
