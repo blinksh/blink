@@ -65,7 +65,10 @@ class SFTPTests: XCTestCase {
         connection.requestSFTP()
       }
       .flatMap() { client -> AnyPublisher<[[FileAttributeKey : Any]], Error> in
-        client.directoryFilesAndAttributes()
+        client
+          .walkTo("~/")
+          .flatMap { $0.directoryFilesAndAttributes() }
+          .eraseToAnyPublisher()
       }
       .assertNoFailure()
       .exactOneOutput(test: self)

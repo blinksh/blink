@@ -155,8 +155,13 @@ public class SFTPClient : BlinkFiles.Translator {
     // All paths on SFTP, even Windows ones, must start with a slash (/c:/whatever/)
     var absPath = path
     if !absPath.starts(with: "/") {
-      // NSString performs a cleanup of the path as well.
-      absPath = NSString(string: self.path).appendingPathComponent(path)
+      if absPath.starts(with: "~") {
+        absPath.removeFirst(2)
+        absPath = NSString(string: self.rootPath).appendingPathComponent(absPath)
+      } else {
+        // NSString performs a cleanup of the path as well.
+        absPath = NSString(string: self.path).appendingPathComponent(path)
+      }
     }
     
     return connection().trySFTP { sftp -> SFTPClient in
