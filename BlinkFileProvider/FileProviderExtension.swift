@@ -57,7 +57,10 @@ class FileProviderExtension: NSFileProviderExtension {
     var queryableIdentifier: BlinkItemIdentifier!
     
     if identifier == .rootContainer {
-      queryableIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
+      guard let encodedRootPath = domain?.pathRelativeToDocumentStorage else {
+        throw NSFileProviderError(.noSuchItem)
+      }
+      queryableIdentifier = BlinkItemIdentifier(encodedRootPath)
     } else {
       queryableIdentifier = BlinkItemIdentifier(identifier)
     }

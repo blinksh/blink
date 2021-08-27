@@ -156,7 +156,7 @@ public class SFTPClient : BlinkFiles.Translator {
     var absPath = path
     if !absPath.starts(with: "/") {
       if absPath.starts(with: "~") {
-        absPath.removeFirst(2)
+        absPath.removeFirst(absPath.starts(with: "~/") ? 2 : 1)
         absPath = NSString(string: self.rootPath).appendingPathComponent(absPath)
       } else {
         // NSString performs a cleanup of the path as well.
