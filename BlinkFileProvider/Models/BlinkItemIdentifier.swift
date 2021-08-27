@@ -45,13 +45,13 @@ struct BlinkItemIdentifier {
 
   // <encodedRootPath>/path/to/filename
   init(_ identifier: NSFileProviderItemIdentifier) {
-    self.encodedRootPath = (identifier.rawValue as NSString).pathComponents[0]
-    var path = (identifier.rawValue)
-    path.removeFirst(encodedRootPath.count)
-    if path.isEmpty {
-      path = "/"
+    let parts = identifier.rawValue.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+    self.encodedRootPath = parts[0]
+    if parts.count > 1 {
+      self.path = parts[1]
+    } else {
+      self.path = ""
     }
-    self.path = path
   }
   
   init(_ identifier: String) {
@@ -60,27 +60,32 @@ struct BlinkItemIdentifier {
   
   init(url: URL) {
     let manager = NSFileProviderManager.default
-    let containerPath = manager.documentStorageURL.absoluteString
+    let containerPath = manager.documentStorageURL.path
 
     // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
     // file://<containerPath>/<encodedRootPath>/path/filename
     // Remove containerPath, split and get encodedRootPath.
-    var encodedPath = url.absoluteString
+    var encodedPath = url.path
     encodedPath.removeFirst(containerPath.count)
+    if encodedPath.hasPrefix("/") {
+      encodedPath.removeFirst()
+    }
     
     // <encodedRootPath>/<encodedPath>/filename
     // <encodedRootPath>/<path>/<to>/filename
-    let encodedComponents = encodedPath.split(separator: "/")
-    self.encodedRootPath = String(encodedComponents[0])
-    let components: [String] = encodedComponents.map({ String($0).removingPercentEncoding ?? String($0) })
-    self.path = "/\(components[1...].joined(separator: "/"))"
-    print(self.path)
+    let parts = encodedPath.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
+    self.encodedRootPath = parts[0]
+    if parts.count > 1 {
+      self.path = parts[1]
+    } else {
+      self.path = ""
+    }
   }
 
   // file://<containerPath>/<encodedRootPath>/path/to/filename
   var url: URL {
     let manager = NSFileProviderManager.default
-    let pathcomponents = "\(encodedRootPath)\(self.path)"
+    let pathcomponents = "\(encodedRootPath)/\(self.path)"
     return manager.documentStorageURL.appendingPathComponent(pathcomponents)
   }
 
@@ -89,21 +94,21 @@ struct BlinkItemIdentifier {
   }
 
   var itemIdentifier: NSFileProviderItemIdentifier {
-    if path == "/" {
+    if path.isEmpty {
       return .rootContainer
     }
     return NSFileProviderItemIdentifier(
-      rawValue: "\(encodedRootPath)\(path)"
+      rawValue: "\(encodedRootPath)/\(path)"
     )
   }
 
   var parentIdentifier: NSFileProviderItemIdentifier {
     let parentPath = (path as NSString).deletingLastPathComponent
-    if parentPath == "/" {
+    if parentPath == "/" || parentPath.isEmpty {
       return .rootContainer
     } else {
       return NSFileProviderItemIdentifier(
-        rawValue: "\(encodedRootPath)\(parentPath)"
+        rawValue: "\(encodedRootPath)/\(parentPath)"
       )
     }
   }

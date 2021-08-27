@@ -55,11 +55,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
 
     self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
-        if !path.isEmpty {
-          return t.cloneWalkTo(path)
-        } else {
-          return .just(t.clone())
-        }
+        path.isEmpty ? .just(t.clone()) : t.cloneWalkTo(path)
       }.eraseToAnyPublisher()
 
     // TODO Schedule an interval enumeration (pull) from the server.
