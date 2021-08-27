@@ -224,7 +224,7 @@ extension BlinkItemReference: NSFileProviderItem {
         c.formUnion([.allowsContentEnumerating, .allowsReading])
       }
       if permissions.contains(.uw) {
-        c.formUnion([.allowsRenaming, .allowsDeleting])
+        c.formUnion([.allowsRenaming]) // .allowsDeleting - not supported yet
       }
     } else {
       if permissions.contains(.ur) {
