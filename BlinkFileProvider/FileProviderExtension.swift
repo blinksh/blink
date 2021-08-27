@@ -43,7 +43,9 @@ class FileProviderExtension: NSFileProviderExtension {
   
   var fileManager = FileManager()
   var cancellableBag: Set<AnyCancellable> = []
-  
+  let copyArguments = CopyArguments(inplace: true,
+                                    preserve: [.permissions],
+                                    checkTimes: true)
   override init() {
     super.init()
   }
@@ -77,19 +79,6 @@ class FileProviderExtension: NSFileProviderExtension {
   
   // MARK: - Actions
   
-  /* TODO: implement the actions for items here
-   each of the actions follows the same pattern:
-   - make a note of the change in the local model
-   - schedule a server request as a background task to inform the server of the change
-   - call the completion block with the modified item in its post-modification state
-   */
-  
-  // url => file:///Users/xxxx/Library/Developer/CoreSimulator/Devices/212A70E4-CE48-48C7-8A19-32357CE9B3BD/data/Containers/Shared/AppGroup/658A68A7-43BE-4C48-8586-C7029B0DCD9A/File%20Provider%20Storage/bG9jYWw6L3Vzcg==/L2xvY2Fs/filename
-  
-  // https://developer.apple.com/documentation/fileprovider/nsfileproviderextension/1623479-persistentidentifierforitematurl?language=objc
-  //  define a static mapping between URLs and their persistent identifiers.
-  //  A document's identifier should remain constant over time; it should not change when the document is edited, moved, or rename
-  //  TODO: Always return nil if the _URL is not inside in the directory referred to by the NSFileProviderManager object's documentStorageURL_ property.
   override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
     let blinkItem = BlinkItemIdentifier(url: url)
     return blinkItem.itemIdentifier
@@ -143,53 +132,6 @@ class FileProviderExtension: NSFileProviderExtension {
   }
   
   override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
-    
-    // TODO If the file is already at the specified URL, then we can figure out if we need to download it.
-    
-    // Should ensure that the actual file is in the position returned by URLForItemWithIdentifier:, then call the completion handler
-    
-    /* TODO:
-     This is one of the main entry points of the file provider. We need to check whether the file already exists on disk,
-     whether we know of a more recent version of the file, and implement a policy for these cases. Pseudocode:
-     */
-    //    if !fileOnDisk {
-    //      downloadRemoteFile()
-    //      callCompletion(downloadErrorOrNil)
-    //    } else if fileIsCurrent {
-    //      callCompletion(nil)
-    //    } else {
-    //      if localFileHasChanges {
-    //        // in this case, a version of the file is on disk, but we know of a more recent version
-    //        // we need to implement a strategy to resolve this conflict
-    //        moveLocalFileAside()
-    //        scheduleUploadOfLocalFile()
-    //        downloadRemoteFile()
-    //        callCompletion(downloadErrorOrNil)
-    //      } else {
-    //        downloadRemoteFile()
-    //        callCompletion(downloadErrorOrNil)
-    //      }
-    //    }
-    //
-    
-    // Best way in this scenario is to use the CopyArguments. So based on modifiedTime,
-    // we decide if the file should go through or not. We can then expose this somewhere else.
-    
-    // If the file is already on local, stat to see if it is latest version.
-    // If the file is not local or is not the latest, then download
-    // Complete
-    // - We need to update the reference with the local file information. Surprise, it will be the same
-    // as the remote, so we could possibly just pass it.
-    // - While the download is taking place, the attributes are actually the remote ones.
-    //   - If a file is being downloaded, we should not update the local information in case there is another "list"
-    
-    // We will need a two way state for the file, to figure out if this is the new one,
-    // and it is uploading to the remote (so we do not have download).
-    
-    let copyArguments = CopyArguments(inplace: true,
-                                      preserve: [.permissions],
-                                      checkTimes: true)
-
     // 1 - From URL we get the identifier.
     let blinkIdentifier = BlinkItemIdentifier(url: url)
     guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
@@ -208,7 +150,8 @@ class FileProviderExtension: NSFileProviderExtension {
     let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
       .flatMap { fileTranslator in
         // 4 - Start the copy
-        return destTranslator.flatMap { $0.copy(from: [fileTranslator], args: copyArguments) }
+        return destTranslator.flatMap { $0.copy(from: [fileTranslator],
+                                                args: self.copyArguments) }
       }.sink(receiveCompletion: { completion in
         print(completion)
         switch completion {
@@ -255,69 +198,71 @@ class FileProviderExtension: NSFileProviderExtension {
   override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
     print("importDocument at \(fileURL)")
     
-    let localParentIdentifier: BlinkItemIdentifier!
-
+    let parentBlinkIdentifier: BlinkItemIdentifier!
     if parentItemIdentifier == .rootContainer {
-      localParentIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
+      parentBlinkIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
     } else {
-      localParentIdentifier = BlinkItemIdentifier(parentItemIdentifier)
+      parentBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier)
     }
     
-    let localBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: localParentIdentifier, filename: fileURL.lastPathComponent)
-    let localFileURLDirectory = localBlinkIdentifier.url.deletingLastPathComponent().path
+    let fileBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentBlinkIdentifier, filename: fileURL.lastPathComponent)
+    let localFileURLDirectory = fileBlinkIdentifier.url.deletingLastPathComponent().path
     
     var attributes: FileAttributes!
     do {
       attributes = try fileManager.attributesOfItem(atPath: fileURL.path)
-      attributes[.name] = localBlinkIdentifier.url.lastPathComponent
+      attributes[.name] = fileBlinkIdentifier.url.lastPathComponent
     } catch {
       completionHandler(nil, error)
       return
     }
 
+    // Copy only Regular files, do not support directories yet.
     if attributes[.type] as! FileAttributeType != .typeRegular {
       completionHandler(nil, NSFileProviderError(.noSuchItem))
       return
     }
     
+    // Move file to the provider container.
     do {
       try moveFile(fileURL, to: localFileURLDirectory)
     } catch {
       completionHandler(nil, error)
     }
 
-    var blinkItemReference = BlinkItemReference(localBlinkIdentifier, attributes: attributes)
-    blinkItemReference.isUploading = true
+    let blinkItemReference = BlinkItemReference(fileBlinkIdentifier, local: attributes)
     FileTranslatorCache.store(reference: blinkItemReference)
     
-    completionHandler(blinkItemReference, nil)
-
     // 1. Translator for local target path
-    let localFileURLPath = localBlinkIdentifier.url.path
+    let localFileURLPath = fileBlinkIdentifier.url.path
     let srcTranslator = Local().cloneWalkTo(localFileURLPath)
 
     // 2. translator for remote target path
-    let destTranslator = FileTranslatorCache.translator(for: localParentIdentifier.encodedRootPath)
-      .flatMap { $0.cloneWalkTo(localParentIdentifier.path) }
+    let destTranslator = FileTranslatorCache.translator(for: parentBlinkIdentifier.encodedRootPath)
+      .flatMap { $0.cloneWalkTo(parentBlinkIdentifier.path) }
     
-    destTranslator.flatMap { remotePathTranslator in
+    let c = destTranslator.flatMap { remotePathTranslator in
         return srcTranslator.flatMap{ localFileTranslator -> CopyProgressInfoPublisher in
-          return remotePathTranslator.copy(from: [localFileTranslator])
+          // 3. Start copy
+          return remotePathTranslator.copy(from: [localFileTranslator],
+                                           args: self.copyArguments)
         }
-      }.sink  { completion in
+      }.sink { completion in
+        // 4. Update reference and notify
         if case let .failure(error) = completion {
           print("Copyfailed. \(error)")
-          blinkItemReference.isUploading = false
-          blinkItemReference.uploadingError = error
+          blinkItemReference.uploadCompleted(error)
+          completionHandler(blinkItemReference, error)
           return
         }
-        
-        blinkItemReference.isUploaded = true
-        blinkItemReference.isUploading = false
-      } receiveValue: { _ in
-        // When working with directories, we can use it to update the cache.
-      }.store(in: &cancellableBag)
-    
+
+        blinkItemReference.uploadCompleted(nil)
+        // NOTE: In theory, we should enumerate changes again. But when trying that,
+        // the state of the file would not change.
+        completionHandler(blinkItemReference, nil)
+      } receiveValue: { _ in }
+
+    blinkItemReference.uploadStarted(c)
   }
   
   override func itemChanged(at url: URL) {
