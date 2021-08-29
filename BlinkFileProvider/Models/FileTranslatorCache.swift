@@ -33,94 +33,39 @@ import Combine
 import Foundation
 
 import BlinkFiles
-import BlinkConfig
-import SSH
 
-enum BlinkFilesProtocol: String {
-  case ssh = "ssh"
-  case local = "local"
-  case sftp = "sftp"
-}
 
 final class FileTranslatorCache {
   static let shared = FileTranslatorCache()
-  private var translators: [String: AnyPublisher<Translator, Error>] = [:]
+  private var translators: [String: Translator] = [:]
   private var references: [String: BlinkItemReference] = [:]
   private var fileList:   [String: [BlinkItemReference]] = [:]
   private var backgroundThread: Thread? = nil
   private var backgroundRunLoop: RunLoop = RunLoop.current
-  private var connection: SSHClient? = nil
-  private var sftpClient: SFTPClient? = nil
+
 
   private init() {
-    self.backgroundThread = Thread {
-      self.backgroundRunLoop = RunLoop.current
-      // TODO Probably need a timer. This may exit immediately
-      RunLoop.current.run()
-    }
+    // self.backgroundThread = Thread {
+    //   self.backgroundRunLoop = RunLoop.current
+    //   // TODO Probably need a timer. This may exit immediately
+    //   RunLoop.current.run()
+    // }
     
-    self.backgroundThread!.start()
+    // self.backgroundThread!.start()
   }
   
   static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
-    guard let rootData = Data(base64Encoded: encodedRootPath),
-          let rootPath = String(data: rootData, encoding: .utf8) else {
-      return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
+    // Check if we have it cached, if it is still working
+    if let translator = shared.translators[encodedRootPath],
+       translator.isConnected {
+      return .just(translator)
     }
     
-    // rootPath: ssh:host:root_folder
-    let components = rootPath.split(separator: ":")
-    
-    // TODO At least two components. Tweak for sftp
-    let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
-    let pathAtFiles: String
-    let host: String?
-    if components.count == 2 {
-      pathAtFiles = String(components[1])
-      host = nil
-    } else {
-      pathAtFiles = String(components[2])
-      host = String(components[1])
-    }
-    
-    if let translator = shared.translators[encodedRootPath] {
-      return translator
-    }
-    
-    switch remoteProtocol {
-    case .local:
-      let translatorPub = Local().walkTo(pathAtFiles)
-      shared.translators[encodedRootPath] = translatorPub
-      return translatorPub
-    case .sftp:
-      
-      let (host, config) = SSHClientConfigProvider.config(host: host!)
-      
-      // NOTE We use main queue as this is an extension. Should move it to a different one though,
-      // in case of future changes.
-      return Just(config).receive(on: DispatchQueue.main).flatMap {
-        SSHClient
-        .dial(host, with: $0)
-        .print("Dialing...")
-        //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
-        .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
-          Self.shared.connection = conn
-          return conn.requestSFTP()
-        }.print("SFTP")
-        .flatMap { sftp -> AnyPublisher<Translator, Error> in
-          Self.shared.sftpClient = sftp
-          let translatorPub = sftp.walkTo(pathAtFiles)
-          shared.translators[encodedRootPath] = translatorPub
-          return translatorPub
-        }
-      }
-      .eraseToAnyPublisher()
-      .handleEvents(receiveCompletion: { _ in
-      })
-      .eraseToAnyPublisher()
-    default:
-      return Fail(error: "Not implemented").eraseToAnyPublisher()
-    }
+    return buildTranslator(for: encodedRootPath)
+      .map { t -> Translator in
+        shared.translators[encodedRootPath] = t
+        return t
+      }.eraseToAnyPublisher()
   }
   
   static func store(reference: BlinkItemReference) {
@@ -139,52 +84,3 @@ final class FileTranslatorCache {
   }
 }
 
-class SSHClientConfigProvider {
-  
-  static func config(host: String) -> (String, SSHClientConfig) {
-   
-    BKHosts.loadHosts()
-    BKPubKey.loadIDS()
-    
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
-    let agent = SSHAgent()
-    
-    let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
-    
-    if let (signer, name) = bkConfig.signer(forHost: host) {
-      _ = agent.loadKey(signer, aka: name, constraints: consts)
-    } else {
-      for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
-        if let (signer, name) = bkConfig.signer(forIdentity: identity) {
-          _ = agent.loadKey(signer, aka: name, constraints: consts)
-        }
-      }
-    }
-    
-    var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
-    if let password = bkConfig.password(forHost: host), !password.isEmpty {
-      availableAuthMethods.append(AuthPassword(with: password))
-    }
-    
-    let logger = PassthroughSubject<String, Never>()
-    
-    return (
-      bkConfig.hostName(forHost: host)!,
-      SSHClientConfig(
-        user: bkConfig.user(forHost: host) ?? "root",
-        port: bkConfig.port(forHost: host) ?? "22",
-        proxyJump: nil,
-        proxyCommand: bkConfig.proxyCommand(forHost: host),
-        authMethods: availableAuthMethods,
-        agent: agent,
-        loggingVerbosity: SSHLogLevel.debug,
-        verifyHostCallback: nil,
-        connectionTimeout: 300,
-        sshDirectory: BlinkPaths.ssh()!,
-        logger: logger,
-        compression: false,
-        compressionLevel: 6
-      )
-    )
-  }
-}

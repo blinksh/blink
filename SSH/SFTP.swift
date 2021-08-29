@@ -59,7 +59,8 @@ extension FileError {
 }
 
 public class SFTPClient : BlinkFiles.Translator {
-  let session: ssh_session
+  let client: SSHClient
+  var session: ssh_session { client.session }
   var rootPath: String = ""
   var path: String = ""
   public var current: String { get { path }}
@@ -70,9 +71,10 @@ public class SFTPClient : BlinkFiles.Translator {
   public var isDirectory: Bool {
     get { return fileType == .typeDirectory }
   }
+  public var isConnected: Bool { ssh_channel_is_closed(channel) != 1 && client.isConnected }
   
   init(from base: SFTPClient) {
-    self.session = base.session
+    self.client = base.client
     self.rootPath = base.rootPath
     self.path = base.path
     self.sftp = base.sftp
@@ -82,7 +84,7 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   init?(on channel: ssh_channel, client: SSHClient) {
-    self.session = client.session
+    self.client = client
     self.channel = channel
     
     guard let sftp = sftp_new_channel(client.session, channel) else {

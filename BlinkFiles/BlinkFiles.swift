@@ -49,6 +49,7 @@ public protocol Translator: CopierFrom {
   var fileType: FileAttributeType { get }
   var isDirectory: Bool { get }
   var current: String { get }
+  var isConnected: Bool { get }
   
   func clone() -> Translator
   

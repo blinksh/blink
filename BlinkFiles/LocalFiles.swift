@@ -42,6 +42,7 @@ public struct LocalFileError: Error {
 
 public class Local : Translator {
   public var isDirectory: Bool
+  public var isConnected: Bool { true }
   
   static let files = FileManager()
   static let queue = DispatchQueue(label: "LocalFS")

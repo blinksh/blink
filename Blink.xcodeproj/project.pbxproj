@@ -93,6 +93,7 @@
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
+		BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCED26D9802900054338 /* TranslatorFactory.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
@@ -663,6 +664,7 @@
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
+		BD44DCED26D9802900054338 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
@@ -1313,6 +1315,7 @@
 		98E7D0AF2638B3AE00758CF9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				BD44DCED26D9802900054338 /* TranslatorFactory.swift */,
 				BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */,
 				98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */,
 				BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */,
@@ -2359,6 +2362,7 @@
 			files = (
 				BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */,
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
+				BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */,
 				BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */,
 				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
 				98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */,
