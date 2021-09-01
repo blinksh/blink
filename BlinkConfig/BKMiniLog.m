@@ -32,6 +32,8 @@
 
 #import "BKMiniLog.h"
 #import "BlinkPaths.h"
+#import <UIKit/UIKit.h>
+#import <BlinkConfig/BlinkConfig-Swift.h>
 
 @implementation BKMiniLog {
   NSString *_name;
@@ -63,6 +65,17 @@
     NSError *err = nil;
     if (![log writeToFile: logPath atomically:YES encoding:NSUTF8StringEncoding error: &err]) {
       NSLog(@"%@: Error writing log %@", name, err);
+      
+      OwnAlertController *alert = [OwnAlertController
+                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
+                                   message:[NSString stringWithFormat: @"There was an issue storing trace logs. %@", err]
+                                   preferredStyle:UIAlertControllerStyleAlert];
+      
+      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+      [alert addAction:ok];
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [alert presentWithAnimated:true completion:nil];
+      });
     }
   });
   

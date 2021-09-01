@@ -120,16 +120,33 @@ static UICKeyChainStore *__get_keychain() {
   NSError *error = nil;
   NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile] options:NSDataReadingMappedIfSafe error:&error];
   if (error || !data) {
-    [miniLog log: [NSString stringWithFormat: @"Failed to read file: %@", error]];
     __identities = [[NSMutableArray alloc] init];
-    
-    // Create default key in next main queue step in order to speedup app start.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self saveDefaultKey];
-      [miniLog log: @"New default key is generated"];
+
+    if (error.code != NSFileReadNoSuchFileError) {
+      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load data: %@", error];
+      [miniLog log:errorMessage];
+      OwnAlertController *alert = [OwnAlertController
+                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
+                                   message:[NSString stringWithFormat: @"There was an issue loading your configuration. This may result in loss of data. Please take a screenshot and restart the app. %@", errorMessage]
+                                   preferredStyle:UIAlertControllerStyleAlert];
+      
+      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+      [alert addAction:ok];
+      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+        [alert presentWithAnimated:true completion:nil];
+      });
+      
       [miniLog save];
-    });
-    return;
+      return;
+    } else {
+      // Create default key in next main queue step in order to speedup app start.
+      dispatch_async(dispatch_get_main_queue(), ^{
+        [self saveDefaultKey];
+        [miniLog log: @"New default key is generated"];
+        [miniLog save];
+      });
+      return;
+    }
   }
   
   NSArray *result = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClasses:[NSSet setWithObjects:BKPubKey.class, nil] fromData:data error:&error];

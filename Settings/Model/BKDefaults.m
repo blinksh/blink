@@ -35,6 +35,7 @@
 #import "UIDevice+DeviceName.h"
 #import "BlinkPaths.h"
 #import "LayoutManager.h"
+#import <BlinkConfig/BlinkConfig-Swift.h>
 
 BKDefaults *defaults;
 
@@ -113,8 +114,21 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   // Load IDs from file
   NSError *error = nil;
   NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths defaultsFile] options:NSDataReadingMappedIfSafe error:&error];
-  if (error != nil) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to load data: %@", error]];
+  if (error != nil && error.code != NSFileReadNoSuchFileError) {
+      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load data: %@", error];
+      [miniLog log:errorMessage];
+      OwnAlertController *alert = [OwnAlertController
+                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
+                                   message:[NSString stringWithFormat: @"There was an issue loading your configuration. This may result in loss of data. Please take a screenshot and restart the app. %@", errorMessage]
+                                   preferredStyle:UIAlertControllerStyleAlert];
+    
+    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
+      [alert addAction:ok];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
+      [alert presentWithAnimated:true completion:nil];
+    });
+    // In this case, it is safe to continue
+    [miniLog save];
   }
   if (data) {
     defaults = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class] fromData:data error:&error];
@@ -128,7 +142,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if (defaults) {
     [miniLog log: @"Defaults are loaded without errors."];
   } else {
-    [miniLog log: @"Createing new defaults"];
+    [miniLog log: @"Creating new defaults"];
     // Initialize the structure if it doesn't exist
     defaults = [[BKDefaults alloc] init];
   }
