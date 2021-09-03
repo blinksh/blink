@@ -91,7 +91,7 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-public struct SSHClientConfig: CustomStringConvertible {
+public struct SSHClientConfig: CustomStringConvertible, Equatable {
   let user: String
   let port: String
   
@@ -188,6 +188,11 @@ public struct SSHClientConfig: CustomStringConvertible {
         self.authenticators.append(auth)
       }
     })
+  }
+  
+  public static func == (lhs: SSHClientConfig, rhs: SSHClientConfig) -> Bool {
+    return (lhs.port == rhs.port &&
+      lhs.user == rhs.user)
   }
 }
 

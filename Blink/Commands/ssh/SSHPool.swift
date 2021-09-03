@@ -186,7 +186,7 @@ fileprivate class SSHClientControl {
     if !self.exposed {
       return false
     }
-    return self.host == host ? true : false
+    return self.host == host && config == self.config ? true : false
   }
   
   func deregister(_ command: SSHCommand) {
