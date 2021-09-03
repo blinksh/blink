@@ -34,6 +34,8 @@ import Foundation
 import ArgumentParser
 
 
+fileprivate let Version = "1.0.0"
+
 struct SSHCommand: ParsableCommand {
   static var configuration = CommandConfiguration(
     // Optional abstracts and discussions are used for help output.
@@ -45,7 +47,7 @@ struct SSHCommand: ParsableCommand {
     """,
 
     // Commands can define a version for automatic '--version' support.
-    version: "1.0.0")
+    version: Version)
 
   // Port forwarding options
   @Option(name: .customShort("L"),

@@ -73,11 +73,11 @@ public class Local : Translator {
   }
   
   func fail<T>(msg: String) -> AnyPublisher<T, Error> {
-    return Fail(error: LocalFileError(msg: msg)).eraseToAnyPublisher()
+    return .fail(error: LocalFileError(msg: msg))
   }
   
   func fileManager() -> AnyPublisher<FileManager, Error> {
-    return Just(Local.files).receive(on: Local.queue).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(Local.files)
   }
   
   public func walkTo(_ path: String) -> AnyPublisher<Translator, Error> {
@@ -287,7 +287,7 @@ public class LocalFile : File {
   public func close() -> AnyPublisher<Bool, Error> {
     // TODO We should pass the errors from cleanupHandler
     self.channel.close(flags: .stop)
-    return Just(true).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(true)
   }
 }
 
