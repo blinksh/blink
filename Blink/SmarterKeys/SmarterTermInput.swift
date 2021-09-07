@@ -446,6 +446,14 @@ extension SmarterTermInput {
          #selector(Self.openLink(_:)):
       return sender != nil && device?.view?.detectedLink != nil
     default:
+      if #available(iOS 15.0, *) {
+        switch action {
+          case #selector(UIResponder.pasteAndMatchStyle(_:)),
+               #selector(UIResponder.pasteAndSearch(_:)),
+               #selector(UIResponder.pasteAndGo(_:)): return false
+          case _: break
+        }
+      }
       return super.canPerformAction(action, withSender: sender)
     }
   }
