@@ -58,14 +58,10 @@ class KBProxy: UIView {
   
   public override func didMoveToSuperview() {
     super.didMoveToSuperview()
-
-    guard let placeView = _placeView else {
-      _kbView.isHidden = true//removeFromSuperview()
+    if superview == nil {
+      _kbView.isHidden = true
       return
     }
-
-    placeView.addSubview(_kbView)
-    
     setNeedsLayout()
   }
   
@@ -79,6 +75,10 @@ class KBProxy: UIView {
     else {
       _kbView.isHidden = true
       return
+    }
+    
+    if placeView != _kbView.superview {
+      placeView.addSubview(_kbView)
     }
     
     _kbView.isHidden = false
