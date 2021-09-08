@@ -270,6 +270,7 @@ class SpaceController: UIViewController {
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
       self._attachInputToCurrentTerm()
+      self.cleanupControllers()
       completion?(didComplete)
     }
   }
