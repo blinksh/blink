@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,11 +29,29 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
 
-@interface BKPredictionViewController : UITableViewController
+import SwiftUI
 
-- (void)performInitialSelection:(NSString *)selectedPrediction;
-- (id)selectedObject;
+struct AlertModifier: ViewModifier {
+  @Binding var errorMessage: String
+  
+  private var _isPresented: Binding<Bool> {
+    Binding(get: { !errorMessage.isEmpty }, set: { _ in errorMessage = ""})
+  }
+  
+  func body(content: Content) -> some View {
+    content.alert(isPresented: _isPresented) {
+      Alert(
+        title: Text("Error"),
+        message: Text(errorMessage),
+        dismissButton: .default(Text("Ok"))
+      )
+    }
+  }
+}
 
-@end
+extension View {
+  func alert(errorMessage: Binding<String>) -> some View {
+    modifier(AlertModifier(errorMessage: errorMessage))
+  }
+}

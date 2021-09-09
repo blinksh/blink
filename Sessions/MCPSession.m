@@ -88,9 +88,10 @@
 - (void)executeWithArgs:(NSString *)args {
   dispatch_async(_cmdQueue, ^{
     [self setActiveSession];
-    ios_setMiniRoot([BlinkPaths documents]);
+    NSString *homePath = [BlinkPaths homePath];
+    ios_setMiniRoot(homePath);
+    [[NSFileManager defaultManager] changeCurrentDirectoryPath:homePath];
     [self updateAllowedPaths];
-    [[NSFileManager defaultManager] changeCurrentDirectoryPath:[BlinkPaths documents]];
 //    ios_setContext((__bridge void*)self);
 //    
     thread_stdout = nil;
@@ -240,40 +241,11 @@
   return _childSession != nil || _currentCmd != nil || _currentCmdLine != nil;
 }
 
-- (NSArray<NSString *> *)_symlinksInHomeDirectory
-{
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSMutableArray<NSString *> *allowedPaths = [[NSMutableArray alloc] init];
-  
-  NSString *documentsPath = [BlinkPaths documents];
-  NSArray<NSString *> * files = [fm contentsOfDirectoryAtPath:documentsPath error:nil];
-  
-  for (NSString *path in files) {
-    NSString *filePath = [documentsPath stringByAppendingPathComponent:path];
-    NSDictionary * attrs = [fm attributesOfItemAtPath:filePath error:nil];
-    if (attrs[NSFileType] != NSFileTypeSymbolicLink) {
-      continue;
-    }
-      
-    NSString *destPath = [fm destinationOfSymbolicLinkAtPath:filePath error:nil];
-    if (!destPath) {
-      continue;
-    }
-    
-    if (![fm isReadableFileAtPath:destPath]) {
-      // We lost access. Remove that symlink
-      [fm removeItemAtPath:filePath error:nil];
-      continue;
-    }
-    
-    [allowedPaths addObject:destPath];
-  }
-  return allowedPaths;
-}
 
 - (void)updateAllowedPaths
 {
-  ios_setAllowedPaths([self _symlinksInHomeDirectory]);
+  NSArray<NSString *>* allowedPaths = [BlinkPaths cleanedSymlinksInHomeDirectory];
+  ios_setAllowedPaths(allowedPaths);
 }
 
 - (void)_runSSHCopyIDWithArgs:(NSString *)args

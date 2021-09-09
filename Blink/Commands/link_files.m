@@ -124,12 +124,12 @@ int link_files_main(int argc, char *argv[]) {
     NSArray<NSString *> *folders = [picker pickWithInController: session.device.delegate.viewController];
     
     NSFileManager *fm = [[NSFileManager alloc] init];
-    NSString *documentsPath = [BlinkPaths documents];
+    NSString *homePath = [BlinkPaths homePath];
     
     for (NSString *path in folders) {
       NSString *linkName = [arg lastPathComponent] ?: [path lastPathComponent];
       arg = nil;
-      NSString *linkPath = [documentsPath stringByAppendingPathComponent:linkName];
+      NSString *linkPath = [homePath stringByAppendingPathComponent:linkName];
       NSError *error = nil;
       if (![fm createSymbolicLinkAtPath:linkPath withDestinationPath:path error:&error]) {
         fputs([NSString stringWithFormat:@"Can't create new symbolic link at ~/%@:\n", linkName].UTF8String, thread_stderr);

@@ -54,23 +54,38 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSString *moshStartup;
 @property (nonatomic, strong) NSNumber *prediction;
 @property (nonatomic, strong) NSString *proxyCmd;
+@property (nonatomic, strong) NSString *proxyJump;
 @property (nonatomic, strong) CKRecordID *iCloudRecordId;
 @property (nonatomic, strong) NSDate *lastModifiedTime;
 @property (nonatomic, strong) NSNumber *iCloudConflictDetected;
 @property (nonatomic, strong) BKHosts *iCloudConflictCopy;
+@property (nonatomic, strong) NSString *sshConfigAttachment;
+@property (nonatomic, strong) NSString *fpDomainsJSON;
 
 + (instancetype)withHost:(NSString *)ID;
-+ (void)loadHosts;
++ (void)loadHosts NS_SWIFT_NAME(loadHosts());
 + (BOOL)saveHosts;
-+ (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPortRange:(NSString *)moshPortRange startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd;
++ (instancetype)saveHost:(NSString *)host
+             withNewHost:(NSString *)newHost
+                hostName:(NSString *)hostName
+                 sshPort:(NSString *)sshPort
+                    user:(NSString *)user
+                password:(NSString *)password
+                 hostKey:(NSString *)hostKey
+              moshServer:(NSString *)moshServer
+           moshPortRange:(NSString *)moshPortRange
+              startUpCmd:(NSString *)startUpCmd
+              prediction:(enum BKMoshPrediction)prediction
+                proxyCmd:(NSString *)proxyCmd
+               proxyJump:(NSString *)proxyJump
+     sshConfigAttachment:(NSString *)sshConfigAttachment
+           fpDomainsJSON:(NSString *)fpDomainsJSON
+;
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
 + (NSMutableArray<BKHosts *> *)all;
 + (NSArray<BKHosts *> *)allHosts;
 + (NSInteger)count;
-+ (NSString *)predictionStringForRawValue:(int)rawValue;
-+ (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString;
-+ (NSMutableArray *)predictionStringList;
 + (CKRecord *)recordFromHost:(BKHosts *)host;
 + (BKHosts *)hostFromRecord:(CKRecord *)hostRecord;
 + (instancetype)withiCloudId:(CKRecordID *)record;

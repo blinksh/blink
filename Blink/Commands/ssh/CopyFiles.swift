@@ -40,6 +40,8 @@ import SSH
 import NonStdIO
 
 
+fileprivate let Version = "1.0.1"
+
 // TODO Wildcards on source will be matched by the shell, and throw No Match if there are none.
 // Test on new ios_system and fix there.
 @_cdecl("copyfiles_main")
@@ -60,10 +62,18 @@ struct BlinkCopyCommand: ParsableCommand {
     discussion: """
     """,
     // Commands can define a version for automatic '--version' support.
-    version: "1.0.0")
+    version: Version)
 
   @Flag(name: .shortAndLong)
   var verbose: Int
+
+  @Flag(name: [.customShort("p")],
+        help: "Preserve file attributes (permissions and timestamps)")
+  var preserve: Bool = false
+
+  @Flag(name: .shortAndLong,
+        help: "Copy only when source is newer than destination, considering the timestamp. This includes -p.")
+  var update: Bool = false
 
   @Argument(help: "SOURCE(s)",
             transform: { try FileLocationPath($0) })
@@ -72,6 +82,10 @@ struct BlinkCopyCommand: ParsableCommand {
   @Argument(help: "DEST",
             transform: { try FileLocationPath($0) })
   var destination: FileLocationPath
+  
+  var preserveFlags: CopyAttributesFlag {
+    preserve ? CopyAttributesFlag([.permissions, .timestamp]) : CopyAttributesFlag([])
+  }
 }
 
 enum BlinkFilesProtocols: String {
@@ -149,6 +163,9 @@ public class BlinkCopy: NSObject {
       return -1
     }
 
+    let copyArguments = CopyArguments(preserve: command.preserveFlags,
+                                      checkTimes: command.update)
+    
     // Connect to the destination first, as it will be the one driving the operation.
     let destProtocol = command.destination.proto ?? defaultRemoteProtocol
 
@@ -163,10 +180,11 @@ public class BlinkCopy: NSObject {
     var rc: Int32 = 0
     var currentFile: String?
     var currentCopied: UInt64 = 0
-    var currentSpeed: Double?
+    var currentSpeed: String?
+    var sourceBasePath: String?
     var startTimestamp = 0
     var lastElapsed = 0
-    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfo in
+    copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
       return sourceTranslator.flatMap {
         $0.translatorsMatching(path: self.command.source.filePath)
       }
@@ -174,35 +192,35 @@ public class BlinkCopy: NSObject {
           var new = all
           new.append(t)
           return new
-        }.flatMap { d.copy(from: $0) }.eraseToAnyPublisher()
+        }.flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         print("Copy failed. \(error)", to: &self.stderr)
         rc = -1
       }
       awake(runLoop: self.currentRunLoop)
-    }, receiveValue: { (file, size, written) in
+    }, receiveValue: { progress in //(file, size, written) in
       // ProgressReport object, which we can use here or at the Dashboard.
-      if currentFile != file {
-        currentFile = file
-        currentCopied = written
+      if currentFile != progress.name {
+        currentFile = progress.name
+        currentCopied = progress.written
         startTimestamp = Int(Date().timeIntervalSince1970)
         currentSpeed = nil
         lastElapsed = 0
       } else {
-        currentCopied += written
+        currentCopied += progress.written
         // Speed only updated by the second
         let elapsed = Int(Date().timeIntervalSince1970) - startTimestamp
         if elapsed > lastElapsed {
           lastElapsed = elapsed
           let kbCopied = Double(currentCopied / 1024)
-          currentSpeed = kbCopied / Double(elapsed)
+          currentSpeed = String(format: "%.2f", kbCopied / Double(elapsed))
         }
       }
-      if currentCopied == size {
-        print("\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", to: &self.stdout)
+      if currentCopied == progress.size {
+        print("\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", to: &self.stdout)
       } else {
-        print("\r\u{001B}[K\(file) - \(currentCopied) of \(size) - \(currentSpeed ?? 0)kb/S", terminator: "", to: &self.stdout)
+        print("\r\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", terminator: "", to: &self.stdout)
       }
     })
 
@@ -235,7 +253,8 @@ public class BlinkCopy: NSObject {
     }
 
     let (hostName, config) = SSHClientConfigProvider.config(command: sshCommand, using: device)
-    return SSHPool.dial(hostName, with: config, connectionOptions: sshOptions)
+    return SSHClient.dial(hostName, with: config)
+    //return SSHPool.dial(hostName, with: config, connectionOptions: sshOptions)
       .flatMap { conn -> AnyPublisher<Translator, Error> in
         return conn.requestSFTP().map { $0 as Translator }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()

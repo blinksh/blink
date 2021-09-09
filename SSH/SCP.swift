@@ -137,14 +137,14 @@ public class SCPClient: CopierFrom, CopierTo {
 
 extension SCPClient {
   // Perform copy with SCPClient as Sink, Translator as Source
-  public func copy(from ts: [Translator]) -> CopyProgressInfo {
+  public func copy(from ts: [Translator], args: CopyArguments = CopyArguments()) -> CopyProgressInfoPublisher {
     var directoryLevel = self.currentDirectoryLevel
     
     return ts.publisher.compactMap { t in
       return t.fileType == .typeDirectory || t.fileType == .typeRegular ? t : nil
     }
     // Process items one by one, because the directories have a state on SCP.
-    .flatMap(maxPublishers: .max(1)) { t -> CopyProgressInfo in
+    .flatMap(maxPublishers: .max(1)) { t -> CopyProgressInfoPublisher in
       return self.connection().tryMap { scp -> ssh_scp in
         while directoryLevel < self.currentDirectoryLevel {
           // Go up to the proper level
@@ -170,7 +170,7 @@ extension SCPClient {
           
           return (name, mode, size)
         }.eraseToAnyPublisher()
-      }.flatMap { (name, mode, size) -> CopyProgressInfo in
+      }.flatMap { (name, mode, size) -> CopyProgressInfoPublisher in
         if t.fileType == .typeDirectory {
           return self.connection().tryMap { scp -> Translator in
             let rc = ssh_scp_push_directory(scp, name, mode.int32Value)
@@ -188,10 +188,10 @@ extension SCPClient {
               throw FileError(title: "Could not push file", in: self.ssh.session)
             }
             return t
-          }.flatMap { t -> CopyProgressInfo in
+          }.flatMap { t -> CopyProgressInfoPublisher in
             // On empty file, just report, nothing to copy
             if size == 0 {
-              return .just((name, 0, 0))
+              return .just(CopyProgressInfo(name: name, written:0, size: 0))
             }
             return self.copyFileFrom(t, name: name, size: size)
           }
@@ -202,7 +202,7 @@ extension SCPClient {
   }
   
   // Schedule a copy of all the elements in a directory.
-  fileprivate func copyDirectoryFrom(_ t: Translator) -> CopyProgressInfo {
+  fileprivate func copyDirectoryFrom(_ t: Translator) -> CopyProgressInfoPublisher {
     return t.directoryFilesAndAttributes().flatMap {
       $0.compactMap { i -> FileAttributes? in
         if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
@@ -216,7 +216,7 @@ extension SCPClient {
     .eraseToAnyPublisher()
   }
   
-  fileprivate func copyFileFrom(_ t: Translator, name: String, size: NSNumber) -> CopyProgressInfo {
+  fileprivate func copyFileFrom(_ t: Translator, name: String, size: NSNumber) -> CopyProgressInfoPublisher {
     // TODO pass other properties like mtime
     var totalWritten = 0
     
@@ -227,11 +227,10 @@ extension SCPClient {
         }
         return file
       }
-      .flatMap { file -> CopyProgressInfo in
-        return file.writeTo(self).flatMap { written -> CopyProgressInfo in
+      .flatMap { file -> CopyProgressInfoPublisher in
+        return file.writeTo(self).flatMap { written -> CopyProgressInfoPublisher in
           totalWritten += written
-          let report = Just((name, size.uint64Value, UInt64(written)))
-            .mapError { $0 as Error }.eraseToAnyPublisher()
+          let report: AnyPublisher<CopyProgressInfo, Error> = .just(CopyProgressInfo(name: name, written: UInt64(written), size: size.uint64Value))
           
           if totalWritten == size.int64Value {
             // Close and send the final report
@@ -293,7 +292,7 @@ extension SCPClient {
   // Perform a copy where SCPClient is the Source, and the Translator is the Sink.
   // In this scenario the Source is driving the operation, so we do not know
   // what we will receive to copy.
-  public func copy(to t: Translator) -> CopyProgressInfo {
+  public func copy(to t: Translator) -> CopyProgressInfoPublisher {
     // This could potentially block. We are assuming this won't be an issue with a well behaved SCP provider.
     // We could poll before, as the function just reads char by char.
     // ssh_channel_poll(channel, window)
@@ -303,7 +302,7 @@ extension SCPClient {
     var dirsFifo: [Translator] = []
     
     // Ensure we pull actions one by one.
-    return pullSourceAction().flatMap(maxPublishers: .max(1)) { req -> CopyProgressInfo in
+    return pullSourceAction().flatMap(maxPublishers: .max(1)) { req -> CopyProgressInfoPublisher in
       // We nest the publisher so that we don't pull another action until the current one
       // has been processed by the underneath flow.
       return Just(req).flatMap { req -> AnyPublisher<ssh_scp_request_types, Error> in
@@ -341,7 +340,7 @@ extension SCPClient {
         }
       }
       .filter { $0 == SSH_SCP_REQUEST_NEWFILE }
-      .flatMap(maxPublishers: .max(1)) { req -> CopyProgressInfo in
+      .flatMap(maxPublishers: .max(1)) { req -> CopyProgressInfoPublisher in
         let size: UInt64 = ssh_scp_request_get_size64(self.scp)
         let name = String(cString: ssh_scp_request_get_filename(self.scp))
         let mode = mode_t(ssh_scp_request_get_permissions(self.scp))
@@ -383,13 +382,13 @@ extension SCPClient {
   }
   
   // Flow when receiving a file to copy. Create on Translator and then Write to it.
-  func copyFileTo(translator: Translator, usingName name: String, length: UInt64, mode: mode_t) -> CopyProgressInfo {
-    return translator.create(name: name, flags: O_RDWR, mode: mode).flatMap { file -> CopyProgressInfo in
+  func copyFileTo(translator: Translator, usingName name: String, length: UInt64, mode: mode_t) -> CopyProgressInfoPublisher {
+    return translator.create(name: name, flags: O_RDWR, mode: mode).flatMap { file -> CopyProgressInfoPublisher in
       var totalWritten: UInt64 = 0
       
       return self.writeTo(file, length: length).map { written in
         totalWritten += UInt64(written)
-        return (name, length, totalWritten)
+        return CopyProgressInfo(name: name, written: totalWritten, size: length)
       }.eraseToAnyPublisher()
     }.eraseToAnyPublisher()
   }

@@ -49,36 +49,21 @@
 @end
 
 @implementation BKSettingsViewController
-{
-  
-}
 
-- (void)viewDidLoad
-{
+- (void)viewDidLoad {
   [super viewDidLoad];
-  
-  
-  // Uncomment the following line to preserve selection between presentations.
-  // self.clearsSelectionOnViewWillAppear = NO;
-
-  // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
-  // self.navigationItem.rightBarButtonItem = self.editButtonItem;
   self.navigationItem.largeTitleDisplayMode = UINavigationItemLargeTitleDisplayModeAlways;
 }
 
-- (void)_closeConfig:(UIKeyCommand *)cmd
-{
+- (void)_closeConfig:(UIKeyCommand *)cmd {
   [self dismissViewControllerAnimated:YES completion:nil];
 }
 
-
-- (BOOL)canBecomeFirstResponder
-{
+- (BOOL)canBecomeFirstResponder {
   return YES;
 }
 
-- (void)viewWillAppear:(BOOL)animated
-{
+- (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   
   self.userNameLabel.text = [BKDefaults defaultUserName];
@@ -91,10 +76,6 @@
   [self.tableView layoutIfNeeded];
 }
 
-- (IBAction)unwindFromDefaultUser:(UIStoryboardSegue *)sender
-{
-}
-
 - (BOOL)tableView:(UITableView *)tableView shouldHighlightRowAtIndexPath:(NSIndexPath *)indexPath {
   return YES;
 }
@@ -102,6 +83,9 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   if (indexPath.section == 0 && indexPath.row == 0) {
     UIViewController *vc = [SettingsHostingController createKeysWithNav:self.navigationController];
+    [self.navigationController pushViewController:vc animated:YES];
+  } else if (indexPath.section == 0 && indexPath.row == 1) {
+    UIViewController *vc = [SettingsHostingController createHostsWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
   } else if (indexPath.section == 1 && indexPath.row == 1) {
     UIViewController *vc = [SettingsHostingController createKeyboardControllerWithNav:self.navigationController];
@@ -111,6 +95,5 @@
     [self.navigationController pushViewController:vc animated:YES];
   }
 }
-
 
 @end

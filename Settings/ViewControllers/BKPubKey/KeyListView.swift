@@ -72,6 +72,21 @@ struct KeyRow: View {
   }
 }
 
+struct KeySortView: View {
+  @Binding fileprivate var sortType: KeysObservable.KeySortType
+  
+  var body: some View {
+    Menu {
+      Section(header: Text("Order")) {
+        SortButton(label: "Name",    sortType: $sortType, asc: .nameAsc, desc: .nameDesc)
+        SortButton(label: "Type",    sortType: $sortType, asc: .typeAsc, desc: .typeDesc)
+        SortButton(label: "Storage", sortType: $sortType, asc: .storageAsc, desc: .storageDesc)
+      }
+    } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
+    
+  }
+}
+
 struct KeyListView: View {
   @StateObject private var _state = KeysObservable()
   
@@ -81,24 +96,26 @@ struct KeyListView: View {
         KeyRow(card: $0, reloadCards: _state.reloadCards)
       }.onDelete(perform: _state.deleteKeys)
     }
+    .listStyle(InsetGroupedListStyle())
     .navigationBarItems(
-      trailing: Button(
-        action: {
-          _state.actionSheetIsPresented = true
-        },
-        label: { Image(systemName: "plus") }
-      )
-      .actionSheet(isPresented: $_state.actionSheetIsPresented) {
-          ActionSheet(
-            title: Text("Add key"),
-            buttons: [
-              .default(Text("Generate New")) { _state.modal = .newKey },
-              .default(Text("Generate New in SE")) { _state.modal = .newSEKey },
-              .default(Text("Import from clipboard")) { _state.importFromClipboard() },
-              .default(Text("Import from a file")) { _state.filePickerIsPresented = true },
-              .cancel()
-            ]
-          )
+      trailing: HStack {
+        KeySortView(sortType: $_state.sortType)
+        Button(
+          action: { _state.actionSheetIsPresented = true },
+          label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) }
+        )
+        .actionSheet(isPresented: $_state.actionSheetIsPresented) {
+            ActionSheet(
+              title: Text("Add key"),
+              buttons: [
+                .default(Text("Generate New")) { _state.modal = .newKey },
+                .default(Text("Generate New in SE")) { _state.modal = .newSEKey },
+                .default(Text("Import from clipboard")) { _state.importFromClipboard() },
+                .default(Text("Import from a file")) { _state.filePickerIsPresented = true },
+                .cancel()
+              ]
+            )
+        }
       }
     )
     .navigationBarTitle("Keys")
@@ -136,32 +153,44 @@ struct KeyListView: View {
         }
       }
     }
-    .alert(isPresented: $_state.errorAlertIsPresented) {
-      Alert(
-        title: Text("Error"),
-        message: Text(_state.errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $_state.errorMessage)
   }
 }
 
 fileprivate class KeysObservable: ObservableObject {
+  enum KeySortType {
+    case nameAsc, nameDesc, typeAsc, typeDesc, storageAsc, storageDesc
+    
+    var sortFn: (_ a: KeyCard, _ b: KeyCard) -> Bool {
+      switch self {
+      case .nameAsc:     return { a, b in a.name < b.name }
+      case .nameDesc:    return { a, b in b.name < a.name }
+      case .typeAsc:     return { a, b in a.keyType ?? "" < b.keyType ?? "" }
+      case .typeDesc:    return { a, b in b.keyType ?? "" < a.keyType ?? "" }
+      case .storageAsc:  return { a, b in a.key.storageType.rawValue < b.key.storageType.rawValue }
+      case .storageDesc: return { a, b in b.key.storageType.rawValue < b.key.storageType.rawValue }
+      }
+    }
+  }
   
-  @Published var list: [KeyCard] = BKPubKey.all().map(KeyCard.init(key:))
+  @Published var sortType: KeySortType = .nameAsc {
+    didSet {
+      list = list.sorted(by: sortType.sortFn)
+    }
+  }
+  
+  @Published var list: [KeyCard] = BKPubKey.all().map(KeyCard.init(key:)).sorted(by: KeySortType.nameAsc.sortFn)
   @Published var actionSheetIsPresented: Bool = false
-  @Published var errorAlertIsPresented: Bool = false
   @Published var filePickerIsPresented: Bool = false
   @Published var modal: KeyModals? = nil
   var addKeyObservable: ImportKeyObservable? = nil
-  var errorMessage = ""
+  @Published var errorMessage = ""
   var proposedKeyName = ""
   
-  init() {
-  }
+  init() { }
   
   func reloadCards() {
-    self.list = BKPubKey.all().map(KeyCard.init(key:))
+    self.list = BKPubKey.all().map(KeyCard.init(key:)).sorted(by: sortType.sortFn)
   }
   
   func removeKey(card: BKPubKey) {
@@ -246,10 +275,8 @@ fileprivate class KeysObservable: ObservableObject {
   
   private func _showError(message: String) {
     errorMessage = message
-    errorAlertIsPresented = true
   }
 }
-
 
 fileprivate enum KeyModals: Identifiable {
   case passphrasePrompt(keyBlob: Data, proposedKeyName: String)
@@ -269,10 +296,7 @@ fileprivate enum KeyModals: Identifiable {
 
 extension View {
   func navigatePush(whenTrue toggle: Binding<Bool>) -> some View {
-    NavigationLink(
-      destination: self,
-      isActive: toggle
-    ) { EmptyView() }
+    NavigationLink(destination: self, isActive: toggle) { EmptyView() }
   }
   
   func navigatePush<H>(whenPresent toggle: Binding<H?>) -> some View {

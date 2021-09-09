@@ -30,11 +30,9 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
-import Combine
 
 struct BKNotificationsView: View {
-  
-  @ObservedObject var notification = NotificationConfig()
+  @StateObject var notification = NotificationConfig()
   
   var body: some View {
     List {
@@ -63,20 +61,16 @@ fileprivate enum BKNotifications: CaseIterable {
   /// User-facing string describing the type of notification available
   var description: LocalizedStringKey {
     switch self {
-    case .systemNotification:
-      return "System notification"
-    case .systemLike:
-      return "System-like notification with title & body"
+    case .systemNotification: return "System notification"
+    case .systemLike: return "System-like notification with title & body"
     }
   }
   
   /// Code sample to show to the user
   var example: String {
     switch self {
-    case .systemNotification:
-      return "echo -e \"\\033]9;Text to show\\a\""
-    case .systemLike:
-      return "echo -e \"\\033]777;notify;Title;Body of the notification\\a\""
+    case .systemNotification: return "echo -e \"\\033]9;Text to show\\a\""
+    case .systemLike: return "echo -e \"\\033]777;notify;Title;Body of the notification\\a\""
     }
   }
 }
@@ -117,13 +111,10 @@ class NotificationConfig: ObservableObject {
   
   @Published var notificationOnBackgroundShell: Bool {
     didSet {
-      
       _askForNotificationPermissions(completion: { granted in
-        
         if !granted {
-            self.notificationOnBackgroundShell = false
+          self.notificationOnBackgroundShell = false
         }
-        
         BKDefaults.setNotificationOnBellUnfocused(self.notificationOnBackgroundShell)
       })
     }
@@ -139,11 +130,9 @@ class NotificationConfig: ObservableObject {
     didSet {
       
       _askForNotificationPermissions(completion: { granted in
-        
         if !granted {
-            self.notifyNotifications = false
+          self.notifyNotifications = false
         }
-        
         BKDefaults.setOscNotifications(self.notifyNotifications)
       })
     }

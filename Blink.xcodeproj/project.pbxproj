@@ -77,6 +77,11 @@
 		803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 803B99E2258381B200DC99C8 /* SettingsHostingController.swift */; };
 		85A34307200A837A009324F1 /* webfontloader.js in Resources */ = {isa = PBXBuildFile; fileRef = 85A34303200A837A009324F1 /* webfontloader.js */; };
 		85A34309200A8FAF009324F1 /* term.css in Resources */ = {isa = PBXBuildFile; fileRef = 85A34308200A8FAF009324F1 /* term.css */; };
+		98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98271252262E4BDB00F883FA /* FileProviderExtension.swift */; };
+		98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98271256262E4BDB00F883FA /* FileProviderEnumerator.swift */; };
+		9827126B262E4BDB00F883FA /* BlinkFileProvider.appex in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = 98271250262E4BDB00F883FA /* BlinkFileProvider.appex */; platformFilter = ios; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */; };
+		98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B700AED71DD0F2C200100EBF /* CloudKit.framework */; };
 		B75112CD1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */; };
 		B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2A1DFEF19D00E305C8 /* BKUserConfigurationManager.m */; };
@@ -87,10 +92,12 @@
 		B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */; };
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
+		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
+		BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCED26D9802900054338 /* TranslatorFactory.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
+		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
+		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
-		BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
-		BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB713D425F133EF00129A55 /* SEKey.swift */; };
 		BD8BBFB025F947710084705F /* Keys.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFAF25F947710084705F /* Keys.swift */; };
 		BD8BBFF826001B020084705F /* AgentConstraints.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBFF426001B020084705F /* AgentConstraints.swift */; };
 		BD8D892225DC428300E55D9E /* Agent.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8D891D25DC428300E55D9E /* Agent.swift */; };
@@ -106,23 +113,39 @@
 		BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */; };
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
 		BD9BF7E9262A6B0F00B02074 /* SOCKSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */; };
+		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
+		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
+		BDCB7179268E15A2007D7047 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716C268E15A1007D7047 /* BKHosts.m */; };
+		BDCB717A268E15A2007D7047 /* UICKeyChainStore.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB716D268E15A1007D7047 /* UICKeyChainStore.h */; };
+		BDCB717B268E15A2007D7047 /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716E268E15A1007D7047 /* UICKeyChainStore.m */; };
+		BDCB717C268E15A2007D7047 /* BKPubKey.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB716F268E15A1007D7047 /* BKPubKey.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDCB717D268E15A2007D7047 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7170268E15A1007D7047 /* BKPubKey.swift */; };
+		BDCB717E268E15A2007D7047 /* BKHosts.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB7171268E15A1007D7047 /* BKHosts.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDCB717F268E15A2007D7047 /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7172268E15A2007D7047 /* BlinkPaths.m */; };
+		BDCB7180268E15A2007D7047 /* BlinkPaths.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB7173268E15A2007D7047 /* BlinkPaths.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDCB7181268E15A2007D7047 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7174268E15A2007D7047 /* BKPubKey.m */; };
+		BDCB7182268E15A2007D7047 /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
+		BDCB7183268E15A2007D7047 /* BKConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7176268E15A2007D7047 /* BKConfig.swift */; };
+		BDCB7184268E160F007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
+		BDCB718D268E16CE007D7047 /* BlinkConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = BDCB718C268E16CE007D7047 /* BlinkConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
+		BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */ = {isa = PBXBuildFile; productRef = BDCB7193268E175A007D7047 /* SSHConfig */; };
+		BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
+		BDF47238268CD50300A7A41B /* SSHConfig in Frameworks */ = {isa = PBXBuildFile; productRef = BDF47237268CD50300A7A41B /* SSHConfig */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
 		C94437601D831CD30096F84E /* Themes in Resources */ = {isa = PBXBuildFile; fileRef = C944375F1D831CD30096F84E /* Themes */; };
 		C94437651D838ABF0096F84E /* Fonts in Resources */ = {isa = PBXBuildFile; fileRef = C94437641D838ABF0096F84E /* Fonts */; };
 		C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */; };
-		C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */; };
-		C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E53F1D6CC488003E0079 /* BKHostsViewController.m */; };
-		C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5411D6CC488003E0079 /* BKPredictionViewController.m */; };
 		C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */; };
 		C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5531D6CC4A1003E0079 /* BKFontCreateViewController.m */; };
 		C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */; };
 		C9B2E02F1D6B612400B89F69 /* Settings.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = C9B2E0041D6B612300B89F69 /* Settings.storyboard */; };
-		C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0081D6B612300B89F69 /* BKPubKey.m */; };
 		C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00A1D6B612300B89F69 /* BKDefaults.m */; };
 		C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00C1D6B612300B89F69 /* BKFont.m */; };
-		C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E00E1D6B612300B89F69 /* BKHosts.m */; };
 		C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0101D6B612300B89F69 /* BKTheme.m */; };
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
+		D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2011CD626A6FF9F002E4E85 /* Alert.swift */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
 		D2060A5420E2644400CF5122 /* SSHClient.m in Sources */ = {isa = PBXBuildFile; fileRef = D2060A5320E2644400CF5122 /* SSHClient.m */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
@@ -162,7 +185,6 @@
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
 		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
-		D22A353826C1474200943C71 /* BKMiniLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D22A353726C1474200943C71 /* BKMiniLog.m */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
 		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
@@ -187,7 +209,6 @@
 		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
-		D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */ = {isa = PBXBuildFile; fileRef = D23E142A20A970C3000FCF5C /* BlinkPaths.m */; };
 		D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA944260379EB00BCF1FF /* KeyListView.swift */; };
 		D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */; };
 		D23FFC6A261C2D46003E9227 /* template_setup.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = D23FFC69261C2D46003E9227 /* template_setup.xcconfig */; };
@@ -220,12 +241,12 @@
 		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2673734265BD77B002036FF /* BuildCLIConfig.swift */; };
-		D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D269BF812608792A00ECEDF8 /* BKPubKey.swift */; };
 		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
 		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
@@ -235,6 +256,7 @@
 		D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5522DC676F00701BD5 /* SpaceController.swift */; };
 		D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */; };
 		D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */; };
+		D28C357626A56DDF00202C4D /* FileProviderDomain.swift in Sources */ = {isa = PBXBuildFile; fileRef = D28C357526A56DDE00202C4D /* FileProviderDomain.swift */; };
 		D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D28DB3AB210B110B008A1139 /* libcompression.tbd */; };
 		D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = D28F301921AD8A6B00E5259F /* DeviceInfo.m */; };
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
@@ -296,6 +318,7 @@
 		D2CF27292428A791009885ED /* KBTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF27282428A791009885ED /* KBTracker.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
 		D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D75EDF21AFDA10007336B6 /* LayoutManager.m */; };
+		D2D878632695AEBA00F78018 /* HostView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D878622695AEBA00F78018 /* HostView.swift */; };
 		D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */; };
 		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
@@ -303,7 +326,8 @@
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
-		D2DE9AC62689DBC1005BBB7A /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */; };
+		D2DE9CA626EA1CC000A0B29C /* BKMiniLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D22A353726C1474200943C71 /* BKMiniLog.m */; };
+		D2E66D142695B100007D42AA /* HostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E66D132695B100007D42AA /* HostListView.swift */; };
 		D2EC7B4C25DBC922008B6B3C /* XCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */; };
 		D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */; };
 		D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */ = {isa = PBXBuildFile; fileRef = D2EFE1EE20B7FAFC0087888B /* link_files.m */; };
@@ -318,7 +342,6 @@
 		D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9525CA99AD00F2225D /* libssh2.xcframework */; };
 		D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
 		D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
-		D2F64CBD25CABEFB00F2225D /* UICKeyChainStore.m in Sources */ = {isa = PBXBuildFile; fileRef = D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */; };
 		D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */; };
 /* End PBXBuildFile section */
 
@@ -386,6 +409,48 @@
 			remoteGlobalIDString = 07FABBAE25C9AECF00E1CC2C;
 			remoteInfo = BlinkFiles;
 		};
+		98271269262E4BDB00F883FA /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 9827124F262E4BDB00F883FA;
+			remoteInfo = BlinkFileProvider;
+		};
+		98E7D0E6263971C000758CF9 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABBAE25C9AECF00E1CC2C;
+			remoteInfo = BlinkFiles;
+		};
+		BDCB7163268E1577007D7047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDCB715D268E1577007D7047;
+			remoteInfo = BlinkConfig;
+		};
+		BDCB7186268E160F007D7047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDCB715D268E1577007D7047;
+			remoteInfo = BlinkConfig;
+		};
+		BDCB7190268E173D007D7047 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABB8325C9AEC000E1CC2C;
+			remoteInfo = SSH;
+		};
+		BDF471BC268CD17B00A7A41B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABB8325C9AEC000E1CC2C;
+			remoteInfo = SSH;
+		};
 		D218069D25CC27C100B98902 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -439,6 +504,7 @@
 			files = (
 				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
 				07FABB9A25C9AEC100E1CC2C /* SSH.framework in Embed Frameworks */,
+				BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */,
 				D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */,
 				D2334F0725C1C28F00385378 /* text.xcframework in Embed Frameworks */,
 				D2334EF525C1C28F00385378 /* ios_system.xcframework in Embed Frameworks */,
@@ -460,9 +526,20 @@
 			dstSubfolderSpec = 13;
 			files = (
 				D218069C25CC27C100B98902 /* AppKitBridge.bundle in Embed PlugIns */,
+				9827126B262E4BDB00F883FA /* BlinkFileProvider.appex in Embed PlugIns */,
 				D2BF5F732659522C0070F839 /* BlinkIntents.appex in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		D2A65709268D9FCB002E6ED7 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -552,6 +629,12 @@
 		803B99E2258381B200DC99C8 /* SettingsHostingController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsHostingController.swift; sourceTree = "<group>"; };
 		85A34303200A837A009324F1 /* webfontloader.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = webfontloader.js; sourceTree = "<group>"; };
 		85A34308200A8FAF009324F1 /* term.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = term.css; sourceTree = "<group>"; };
+		98271250262E4BDB00F883FA /* BlinkFileProvider.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlinkFileProvider.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		98271252262E4BDB00F883FA /* FileProviderExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderExtension.swift; sourceTree = "<group>"; };
+		98271256262E4BDB00F883FA /* FileProviderEnumerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderEnumerator.swift; sourceTree = "<group>"; };
+		98271258262E4BDB00F883FA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		98271259262E4BDB00F883FA /* BlinkFileProvider.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BlinkFileProvider.entitlements; sourceTree = "<group>"; };
+		98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkItemReference.swift; sourceTree = "<group>"; };
 		B700AED71DD0F2C200100EBF /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		B75112CB1DE4A7B10040C693 /* BKiCloudConfigurationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudConfigurationViewController.h; sourceTree = "<group>"; };
 		B75112CC1DE4A7B10040C693 /* BKiCloudConfigurationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudConfigurationViewController.m; sourceTree = "<group>"; };
@@ -571,7 +654,10 @@
 		B7D4503B1DD4706000CE0DBE /* Reachability.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Reachability.m; sourceTree = "<group>"; };
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
+		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
+		BD44DCED26D9802900054338 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
+		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
 		BD8BBFAF25F947710084705F /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
 		BD8BBFF426001B020084705F /* AgentConstraints.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentConstraints.swift; sourceTree = "<group>"; };
@@ -587,19 +673,27 @@
 		BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentPool.swift; sourceTree = "<group>"; };
 		BD9BF7E3262A6B0300B02074 /* SOCKS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKS.swift; sourceTree = "<group>"; };
 		BD9BF7E8262A6B0F00B02074 /* SOCKSTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKSTests.swift; sourceTree = "<group>"; };
-		BDB713D425F133EF00129A55 /* SEKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SEKey.swift; sourceTree = "<group>"; };
+		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
+		BDCB716C268E15A1007D7047 /* BKHosts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHosts.m; sourceTree = "<group>"; };
+		BDCB716D268E15A1007D7047 /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
+		BDCB716E268E15A1007D7047 /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
+		BDCB716F268E15A1007D7047 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
+		BDCB7170268E15A1007D7047 /* BKPubKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKPubKey.swift; sourceTree = "<group>"; };
+		BDCB7171268E15A1007D7047 /* BKHosts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHosts.h; sourceTree = "<group>"; };
+		BDCB7172268E15A2007D7047 /* BlinkPaths.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BlinkPaths.m; sourceTree = "<group>"; };
+		BDCB7173268E15A2007D7047 /* BlinkPaths.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlinkPaths.h; sourceTree = "<group>"; };
+		BDCB7174268E15A2007D7047 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
+		BDCB7175268E15A2007D7047 /* SEKey.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SEKey.swift; sourceTree = "<group>"; };
+		BDCB7176268E15A2007D7047 /* BKConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKConfig.swift; sourceTree = "<group>"; };
+		BDCB718C268E16CE007D7047 /* BlinkConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BlinkConfig.h; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
 		C944375F1D831CD30096F84E /* Themes */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Themes; sourceTree = "<group>"; };
 		C94437641D838ABF0096F84E /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Fonts; sourceTree = "<group>"; };
 		C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DismissSegue.h; path = ViewControllers/DismissSegue.h; sourceTree = "<group>"; };
 		C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = DismissSegue.m; path = ViewControllers/DismissSegue.m; sourceTree = "<group>"; };
-		C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsDetailViewController.h; sourceTree = "<group>"; };
-		C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsDetailViewController.m; sourceTree = "<group>"; };
-		C989E53E1D6CC488003E0079 /* BKHostsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHostsViewController.h; sourceTree = "<group>"; };
-		C989E53F1D6CC488003E0079 /* BKHostsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHostsViewController.m; sourceTree = "<group>"; };
-		C989E5401D6CC488003E0079 /* BKPredictionViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPredictionViewController.h; sourceTree = "<group>"; };
-		C989E5411D6CC488003E0079 /* BKPredictionViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPredictionViewController.m; sourceTree = "<group>"; };
 		C989E5501D6CC4A1003E0079 /* BKAppearanceViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAppearanceViewController.h; sourceTree = "<group>"; };
 		C989E5511D6CC4A1003E0079 /* BKAppearanceViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKAppearanceViewController.m; sourceTree = "<group>"; };
 		C989E5521D6CC4A1003E0079 /* BKFontCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFontCreateViewController.h; sourceTree = "<group>"; };
@@ -607,18 +701,15 @@
 		C989E5541D6CC4A1003E0079 /* BKThemeCreateViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKThemeCreateViewController.h; sourceTree = "<group>"; };
 		C989E5551D6CC4A1003E0079 /* BKThemeCreateViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKThemeCreateViewController.m; sourceTree = "<group>"; };
 		C9B2E0051D6B612300B89F69 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Settings.storyboard; sourceTree = "<group>"; };
-		C9B2E0071D6B612300B89F69 /* BKPubKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKPubKey.h; sourceTree = "<group>"; };
-		C9B2E0081D6B612300B89F69 /* BKPubKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKPubKey.m; sourceTree = "<group>"; };
 		C9B2E0091D6B612300B89F69 /* BKDefaults.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKDefaults.h; sourceTree = "<group>"; };
 		C9B2E00A1D6B612300B89F69 /* BKDefaults.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDefaults.m; sourceTree = "<group>"; };
 		C9B2E00B1D6B612300B89F69 /* BKFont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKFont.h; sourceTree = "<group>"; };
 		C9B2E00C1D6B612300B89F69 /* BKFont.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKFont.m; sourceTree = "<group>"; };
-		C9B2E00D1D6B612300B89F69 /* BKHosts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKHosts.h; sourceTree = "<group>"; };
-		C9B2E00E1D6B612300B89F69 /* BKHosts.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKHosts.m; sourceTree = "<group>"; };
 		C9B2E00F1D6B612300B89F69 /* BKTheme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKTheme.h; sourceTree = "<group>"; };
 		C9B2E0101D6B612300B89F69 /* BKTheme.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKTheme.m; sourceTree = "<group>"; };
 		C9B2E0121D6B612300B89F69 /* BKSettingsFileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsFileDownloader.h; sourceTree = "<group>"; };
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
+		D2011CD626A6FF9F002E4E85 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingConfigView.swift; sourceTree = "<group>"; };
 		D2060A5220E2644400CF5122 /* SSHClient.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClient.h; sourceTree = "<group>"; };
 		D2060A5320E2644400CF5122 /* SSHClient.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClient.m; sourceTree = "<group>"; };
@@ -680,8 +771,6 @@
 		D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKXCallBackUrlConfigurationViewController.h; sourceTree = "<group>"; };
 		D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKXCallBackUrlConfigurationViewController.m; sourceTree = "<group>"; };
 		D23D258723438B15002850CA /* UIColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIColor.swift; sourceTree = "<group>"; };
-		D23E142920A970C3000FCF5C /* BlinkPaths.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkPaths.h; sourceTree = "<group>"; };
-		D23E142A20A970C3000FCF5C /* BlinkPaths.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BlinkPaths.m; sourceTree = "<group>"; };
 		D23EA944260379EB00BCF1FF /* KeyListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyListView.swift; sourceTree = "<group>"; };
 		D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FixedTextField.swift; sourceTree = "<group>"; };
 		D23FFC69261C2D46003E9227 /* template_setup.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = template_setup.xcconfig; sourceTree = "<group>"; };
@@ -711,13 +800,13 @@
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
+		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
 		D2673734265BD77B002036FF /* BuildCLIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildCLIConfig.swift; sourceTree = "<group>"; };
-		D269BF812608792A00ECEDF8 /* BKPubKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKPubKey.swift; sourceTree = "<group>"; };
 		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
 		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
 		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
@@ -729,6 +818,7 @@
 		D2887A5522DC676F00701BD5 /* SpaceController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpaceController.swift; sourceTree = "<group>"; };
 		D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
 		D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Set+UIScene.swift"; sourceTree = "<group>"; };
+		D28C357526A56DDE00202C4D /* FileProviderDomain.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileProviderDomain.swift; sourceTree = "<group>"; };
 		D28DB3AB210B110B008A1139 /* libcompression.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libcompression.tbd; path = usr/lib/libcompression.tbd; sourceTree = SDKROOT; };
 		D28F301821AD8A6B00E5259F /* DeviceInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceInfo.h; sourceTree = "<group>"; };
 		D28F301921AD8A6B00E5259F /* DeviceInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceInfo.m; sourceTree = "<group>"; };
@@ -798,6 +888,7 @@
 		D2D6D78520527651003CBEC4 /* TermDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TermDevice.m; sourceTree = "<group>"; };
 		D2D75EDE21AFDA10007336B6 /* LayoutManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LayoutManager.h; sourceTree = "<group>"; };
 		D2D75EDF21AFDA10007336B6 /* LayoutManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LayoutManager.m; sourceTree = "<group>"; };
+		D2D878622695AEBA00F78018 /* HostView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostView.swift; sourceTree = "<group>"; };
 		D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuth.swift; sourceTree = "<group>"; };
 		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
@@ -805,8 +896,8 @@
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
 		D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase.pub"; sourceTree = "<group>"; };
 		D2DE0DDD260331F300A69B6F /* NewKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyView.swift; sourceTree = "<group>"; };
-		D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
 		D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
+		D2E66D132695B100007D42AA /* HostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostListView.swift; sourceTree = "<group>"; };
 		D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestCase.swift; sourceTree = "<group>"; };
 		D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureView.swift; sourceTree = "<group>"; };
 		D2EFE1EE20B7FAFC0087888B /* link_files.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = link_files.m; sourceTree = "<group>"; };
@@ -819,8 +910,6 @@
 		D2F330D920A7127B0074ADD7 /* open.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = open.m; sourceTree = "<group>"; };
 		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl.xcframework; sourceTree = SOURCE_ROOT; };
 		D2F64C9525CA99AD00F2225D /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
-		D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UICKeyChainStore.m; sourceTree = "<group>"; };
-		D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UICKeyChainStore.h; sourceTree = "<group>"; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -833,6 +922,7 @@
 				D218072725CD499C00B98902 /* LibSSH.xcframework in Frameworks */,
 				D218074C25CD4B3D00B98902 /* libz.tbd in Frameworks */,
 				07FABC4825C9B08100E1CC2C /* BlinkFiles.framework in Frameworks */,
+				BD896F8926CFDB17004313E6 /* Atomics in Frameworks */,
 				BD8D894F25DC528A00E55D9E /* OpenSSH.xcframework in Frameworks */,
 				D218073825CD4AF400B98902 /* openssl.xcframework in Frameworks */,
 			);
@@ -860,6 +950,26 @@
 			buildActionMask = 2147483647;
 			files = (
 				07FABBB825C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9827124D262E4BDB00F883FA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BDF47238268CD50300A7A41B /* SSHConfig in Frameworks */,
+				98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */,
+				BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */,
+				BDCB7184268E160F007D7047 /* BlinkConfig.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BDCB715B268E1577007D7047 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */,
+				BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -897,6 +1007,7 @@
 				07FABB9925C9AEC100E1CC2C /* SSH.framework in Frameworks */,
 				D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */,
 				D248EC562689EAFE009FD817 /* SSHConfig in Frameworks */,
+				BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */,
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
 				D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
@@ -944,8 +1055,6 @@
 				D2D6D78520527651003CBEC4 /* TermDevice.m */,
 				D27BBA1A20529FFF00AEA303 /* TermStream.h */,
 				D27BBA1B20529FFF00AEA303 /* TermStream.m */,
-				D23E142920A970C3000FCF5C /* BlinkPaths.h */,
-				D23E142A20A970C3000FCF5C /* BlinkPaths.m */,
 				D2060A5220E2644400CF5122 /* SSHClient.h */,
 				D2060A5320E2644400CF5122 /* SSHClient.m */,
 				D2C0F30E20E64FAD00E48F3A /* SSHClientConnectedChannel.h */,
@@ -975,13 +1084,9 @@
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
-				D269BF812608792A00ECEDF8 /* BKPubKey.swift */,
 				D2BF5F7B265953090070F839 /* Intents.intentdefinition */,
 				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
-				D2DE9AC52689DBC1005BBB7A /* BKHosts.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
-				D22A353626C1474200943C71 /* BKMiniLog.h */,
-				D22A353726C1474200943C71 /* BKMiniLog.m */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1098,7 +1203,6 @@
 		07FAB8E925C8E6C500E1CC2C /* ssh */ = {
 			isa = PBXGroup;
 			children = (
-				BDB713D425F133EF00129A55 /* SEKey.swift */,
 				07FAB8EA25C8E6C500E1CC2C /* Helpers.swift */,
 				07FAB8EB25C8E6C500E1CC2C /* CopyFiles.swift */,
 				07FAB8EC25C8E6C500E1CC2C /* ssh.swift */,
@@ -1192,6 +1296,29 @@
 			path = Notifications;
 			sourceTree = "<group>";
 		};
+		98271251262E4BDB00F883FA /* BlinkFileProvider */ = {
+			isa = PBXGroup;
+			children = (
+				98E7D0AF2638B3AE00758CF9 /* Models */,
+				98271252262E4BDB00F883FA /* FileProviderExtension.swift */,
+				98271256262E4BDB00F883FA /* FileProviderEnumerator.swift */,
+				98271258262E4BDB00F883FA /* Info.plist */,
+				98271259262E4BDB00F883FA /* BlinkFileProvider.entitlements */,
+			);
+			path = BlinkFileProvider;
+			sourceTree = "<group>";
+		};
+		98E7D0AF2638B3AE00758CF9 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				BD44DCED26D9802900054338 /* TranslatorFactory.swift */,
+				BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */,
+				98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */,
+				BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		B75112C71DE4A7680040C693 /* UserConfiguration */ = {
 			isa = PBXGroup;
 			children = (
@@ -1250,15 +1377,35 @@
 			name = keys;
 			sourceTree = "<group>";
 		};
+		BDCB715F268E1577007D7047 /* BlinkConfig */ = {
+			isa = PBXGroup;
+			children = (
+				BDCB718C268E16CE007D7047 /* BlinkConfig.h */,
+				BDCB7176268E15A2007D7047 /* BKConfig.swift */,
+				BDCB7171268E15A1007D7047 /* BKHosts.h */,
+				BDCB716C268E15A1007D7047 /* BKHosts.m */,
+				BDCB716B268E15A0007D7047 /* BKHosts.swift */,
+				BDCB716F268E15A1007D7047 /* BKPubKey.h */,
+				BDCB7174268E15A2007D7047 /* BKPubKey.m */,
+				BDCB7170268E15A1007D7047 /* BKPubKey.swift */,
+				BDCB7173268E15A2007D7047 /* BlinkPaths.h */,
+				BDCB7172268E15A2007D7047 /* BlinkPaths.m */,
+				BDCB7175268E15A2007D7047 /* SEKey.swift */,
+				BDCB716D268E15A1007D7047 /* UICKeyChainStore.h */,
+				BDCB716E268E15A1007D7047 /* UICKeyChainStore.m */,
+				D22A353626C1474200943C71 /* BKMiniLog.h */,
+				D22A353726C1474200943C71 /* BKMiniLog.m */,
+				BDCB7161268E1577007D7047 /* Info.plist */,
+			);
+			path = BlinkConfig;
+			sourceTree = "<group>";
+		};
 		C989E53B1D6CC488003E0079 /* BKHosts */ = {
 			isa = PBXGroup;
 			children = (
-				C989E53C1D6CC488003E0079 /* BKHostsDetailViewController.h */,
-				C989E53D1D6CC488003E0079 /* BKHostsDetailViewController.m */,
-				C989E53E1D6CC488003E0079 /* BKHostsViewController.h */,
-				C989E53F1D6CC488003E0079 /* BKHostsViewController.m */,
-				C989E5401D6CC488003E0079 /* BKPredictionViewController.h */,
-				C989E5411D6CC488003E0079 /* BKPredictionViewController.m */,
+				D2D878622695AEBA00F78018 /* HostView.swift */,
+				D2E66D132695B100007D42AA /* HostListView.swift */,
+				D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */,
 			);
 			path = BKHosts;
 			sourceTree = "<group>";
@@ -1296,8 +1443,6 @@
 			isa = PBXGroup;
 			children = (
 				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
-				D2F64CBC25CABEFB00F2225D /* UICKeyChainStore.h */,
-				D2F64CBB25CABEFA00F2225D /* UICKeyChainStore.m */,
 				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
 				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
 				B7B3FC3A1DF5E96900B3D37C /* Security */,
@@ -1314,16 +1459,13 @@
 			children = (
 				C94437551D8311960096F84E /* BKResource.h */,
 				C94437561D8311960096F84E /* BKResource.m */,
-				C9B2E0071D6B612300B89F69 /* BKPubKey.h */,
-				C9B2E0081D6B612300B89F69 /* BKPubKey.m */,
 				C9B2E0091D6B612300B89F69 /* BKDefaults.h */,
 				C9B2E00A1D6B612300B89F69 /* BKDefaults.m */,
 				C9B2E00B1D6B612300B89F69 /* BKFont.h */,
 				C9B2E00C1D6B612300B89F69 /* BKFont.m */,
-				C9B2E00D1D6B612300B89F69 /* BKHosts.h */,
-				C9B2E00E1D6B612300B89F69 /* BKHosts.m */,
 				C9B2E00F1D6B612300B89F69 /* BKTheme.h */,
 				C9B2E0101D6B612300B89F69 /* BKTheme.m */,
+				D28C357526A56DDE00202C4D /* FileProviderDomain.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -1547,6 +1689,7 @@
 				D2C2440A238E44AB0082C69C /* Row.swift */,
 				D2C2440B238E44AB0082C69C /* Chevron.swift */,
 				D23EA9582604CB4B00BCF1FF /* FixedTextField.swift */,
+				D2011CD626A6FF9F002E4E85 /* Alert.swift */,
 			);
 			path = General;
 			sourceTree = "<group>";
@@ -1599,7 +1742,9 @@
 				07FABBB025C9AECF00E1CC2C /* BlinkFiles */,
 				07FABBBD25C9AECF00E1CC2C /* BlinkFilesTests */,
 				D218068825CC277900B98902 /* AppKitBridge */,
+				98271251262E4BDB00F883FA /* BlinkFileProvider */,
 				D2BF5F6D2659522C0070F839 /* BlinkIntents */,
+				BDCB715F268E1577007D7047 /* BlinkConfig */,
 				0732F04F1D062BB300AB5438 /* Frameworks */,
 				0732F0481D062B9A00AB5438 /* Resources */,
 				074F30781D062A2800A73445 /* main.m */,
@@ -1622,7 +1767,9 @@
 				07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */,
 				07FABBB725C9AECF00E1CC2C /* BlinkFilesTests.xctest */,
 				D218068725CC277900B98902 /* AppKitBridge.bundle */,
+				98271250262E4BDB00F883FA /* BlinkFileProvider.appex */,
 				D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */,
+				BDCB715E268E1577007D7047 /* BlinkConfig.framework */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1646,6 +1793,18 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		BDCB7159268E1577007D7047 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BDCB717E268E15A2007D7047 /* BKHosts.h in Headers */,
+				BDCB717C268E15A2007D7047 /* BKPubKey.h in Headers */,
+				BDCB718D268E16CE007D7047 /* BlinkConfig.h in Headers */,
+				BDCB717A268E15A2007D7047 /* UICKeyChainStore.h in Headers */,
+				BDCB7180268E15A2007D7047 /* BlinkPaths.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
@@ -1664,6 +1823,9 @@
 				07FABC4B25C9B08100E1CC2C /* PBXTargetDependency */,
 			);
 			name = SSH;
+			packageProductDependencies = (
+				BD896F8826CFDB17004313E6 /* Atomics */,
+			);
 			productName = SSH;
 			productReference = 07FABB8425C9AEC000E1CC2C /* SSH.framework */;
 			productType = "com.apple.product-type.framework";
@@ -1724,6 +1886,51 @@
 			productReference = 07FABBB725C9AECF00E1CC2C /* BlinkFilesTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
+		9827124F262E4BDB00F883FA /* BlinkFileProvider */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 9827126F262E4BDB00F883FA /* Build configuration list for PBXNativeTarget "BlinkFileProvider" */;
+			buildPhases = (
+				9827124C262E4BDB00F883FA /* Sources */,
+				9827124D262E4BDB00F883FA /* Frameworks */,
+				9827124E262E4BDB00F883FA /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				98E7D0E7263971C000758CF9 /* PBXTargetDependency */,
+				BDF471BD268CD17B00A7A41B /* PBXTargetDependency */,
+				BDCB7187268E160F007D7047 /* PBXTargetDependency */,
+			);
+			name = BlinkFileProvider;
+			packageProductDependencies = (
+				BDF47237268CD50300A7A41B /* SSHConfig */,
+			);
+			productName = BlinkFileProvider;
+			productReference = 98271250262E4BDB00F883FA /* BlinkFileProvider.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		BDCB715D268E1577007D7047 /* BlinkConfig */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = BDCB7167268E1577007D7047 /* Build configuration list for PBXNativeTarget "BlinkConfig" */;
+			buildPhases = (
+				BDCB7159268E1577007D7047 /* Headers */,
+				BDCB715A268E1577007D7047 /* Sources */,
+				BDCB715B268E1577007D7047 /* Frameworks */,
+				BDCB715C268E1577007D7047 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BDCB7191268E173D007D7047 /* PBXTargetDependency */,
+			);
+			name = BlinkConfig;
+			packageProductDependencies = (
+				BDCB7193268E175A007D7047 /* SSHConfig */,
+			);
+			productName = BlinkConfig;
+			productReference = BDCB715E268E1577007D7047 /* BlinkConfig.framework */;
+			productType = "com.apple.product-type.framework";
+		};
 		D218068625CC277900B98902 /* AppKitBridge */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = D218068A25CC277900B98902 /* Build configuration list for PBXNativeTarget "AppKitBridge" */;
@@ -1766,6 +1973,7 @@
 				D2BF5F662659522C0070F839 /* Sources */,
 				D2BF5F672659522C0070F839 /* Frameworks */,
 				D2BF5F682659522C0070F839 /* Resources */,
+				D2A65709268D9FCB002E6ED7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -1796,7 +2004,9 @@
 				07FABB9825C9AEC100E1CC2C /* PBXTargetDependency */,
 				07FABBC325C9AECF00E1CC2C /* PBXTargetDependency */,
 				D218069E25CC27C100B98902 /* PBXTargetDependency */,
+				9827126A262E4BDB00F883FA /* PBXTargetDependency */,
 				D2BF5F722659522C0070F839 /* PBXTargetDependency */,
+				BDCB7164268E1577007D7047 /* PBXTargetDependency */,
 			);
 			name = Blink;
 			packageProductDependencies = (
@@ -1833,6 +2043,14 @@
 					};
 					07FABBB625C9AECF00E1CC2C = {
 						CreatedOnToolsVersion = 12.4;
+						TestTargetID = EA0BA18A1C0CC57B00719C1A;
+					};
+					9827124F262E4BDB00F883FA = {
+						CreatedOnToolsVersion = 12.4;
+					};
+					BDCB715D268E1577007D7047 = {
+						CreatedOnToolsVersion = 12.5;
+						LastSwiftMigration = 1250;
 					};
 					D218068625CC277900B98902 = {
 						CreatedOnToolsVersion = 12.4;
@@ -1889,6 +2107,9 @@
 				"zh-Hans",
 			);
 			mainGroup = EA0BA1821C0CC57B00719C1A;
+			packageReferences = (
+				BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */,
+			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
 			projectReferences = (
@@ -1910,7 +2131,9 @@
 				07FABBAE25C9AECF00E1CC2C /* BlinkFiles */,
 				07FABBB625C9AECF00E1CC2C /* BlinkFilesTests */,
 				D218068625CC277900B98902 /* AppKitBridge */,
+				9827124F262E4BDB00F883FA /* BlinkFileProvider */,
 				D2BF5F692659522C0070F839 /* BlinkIntents */,
+				BDCB715D268E1577007D7047 /* BlinkConfig */,
 			);
 		};
 /* End PBXProject section */
@@ -1975,6 +2198,20 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		07FABBB525C9AECF00E1CC2C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9827124E262E4BDB00F883FA /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BDCB715C268E1577007D7047 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2117,6 +2354,35 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		9827124C262E4BDB00F883FA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */,
+				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
+				BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */,
+				BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */,
+				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
+				98271257262E4BDB00F883FA /* FileProviderEnumerator.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		BDCB715A268E1577007D7047 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D2DE9CA626EA1CC000A0B29C /* BKMiniLog.m in Sources */,
+				BDCB7179268E15A2007D7047 /* BKHosts.m in Sources */,
+				BDCB7182268E15A2007D7047 /* SEKey.swift in Sources */,
+				BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */,
+				BDCB7181268E15A2007D7047 /* BKPubKey.m in Sources */,
+				BDCB7183268E15A2007D7047 /* BKConfig.swift in Sources */,
+				BDCB717D268E15A2007D7047 /* BKPubKey.swift in Sources */,
+				BDCB717F268E15A2007D7047 /* BlinkPaths.m in Sources */,
+				BDCB717B268E15A2007D7047 /* UICKeyChainStore.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		D218068325CC277900B98902 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -2129,7 +2395,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD8BBF7E25F82B7F0084705F /* SEKey.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
 				D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */,
@@ -2173,16 +2438,16 @@
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2C2441B238E44AB0082C69C /* NavView.swift in Sources */,
+				D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */,
+				D2E66D142695B100007D42AA /* HostListView.swift in Sources */,
 				D241CBD623040734003D64A5 /* KBSection.swift in Sources */,
 				D241CBDE23040734003D64A5 /* KBKeyValue.swift in Sources */,
 				D2179F2D2136A5DC00B0850A /* GeoManager.m in Sources */,
 				D2C2441E238E44AB0082C69C /* Checkmark.swift in Sources */,
 				D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */,
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
-				C9B2E0301D6B612400B89F69 /* BKPubKey.m in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
-				D2F64CBD25CABEFB00F2225D /* UICKeyChainStore.m in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -2205,12 +2470,11 @@
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
+				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
-				C989E54B1D6CC488003E0079 /* BKHostsViewController.m in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
-				BD8BBF5B25F829C40084705F /* SEKey.swift in Sources */,
 				D298D67D2110803600992CA4 /* SSHClientPortListener.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
@@ -2244,9 +2508,9 @@
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
+				D28C357626A56DDF00202C4D /* FileProviderDomain.swift in Sources */,
 				D2A90AE220D277E00073BF3D /* ssh.m in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
-				D2DE9AC62689DBC1005BBB7A /* BKHosts.swift in Sources */,
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
@@ -2260,20 +2524,16 @@
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
-				D23E142B20A970C3000FCF5C /* BlinkPaths.m in Sources */,
 				D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
-				C9B2E0331D6B612400B89F69 /* BKHosts.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
-				C989E54A1D6CC488003E0079 /* BKHostsDetailViewController.m in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
-				C989E54C1D6CC488003E0079 /* BKPredictionViewController.m in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
@@ -2300,15 +2560,14 @@
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
-				D22A353826C1474200943C71 /* BKMiniLog.m in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
-				D269BF822608792A00ECEDF8 /* BKPubKey.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
+				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
@@ -2358,6 +2617,36 @@
 			isa = PBXTargetDependency;
 			target = 07FABBAE25C9AECF00E1CC2C /* BlinkFiles */;
 			targetProxy = 07FABC4A25C9B08100E1CC2C /* PBXContainerItemProxy */;
+		};
+		9827126A262E4BDB00F883FA /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 9827124F262E4BDB00F883FA /* BlinkFileProvider */;
+			targetProxy = 98271269262E4BDB00F883FA /* PBXContainerItemProxy */;
+		};
+		98E7D0E7263971C000758CF9 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABBAE25C9AECF00E1CC2C /* BlinkFiles */;
+			targetProxy = 98E7D0E6263971C000758CF9 /* PBXContainerItemProxy */;
+		};
+		BDCB7164268E1577007D7047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDCB715D268E1577007D7047 /* BlinkConfig */;
+			targetProxy = BDCB7163268E1577007D7047 /* PBXContainerItemProxy */;
+		};
+		BDCB7187268E160F007D7047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDCB715D268E1577007D7047 /* BlinkConfig */;
+			targetProxy = BDCB7186268E160F007D7047 /* PBXContainerItemProxy */;
+		};
+		BDCB7191268E173D007D7047 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABB8325C9AEC000E1CC2C /* SSH */;
+			targetProxy = BDCB7190268E173D007D7047 /* PBXContainerItemProxy */;
+		};
+		BDF471BD268CD17B00A7A41B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABB8325C9AEC000E1CC2C /* SSH */;
+			targetProxy = BDF471BC268CD17B00A7A41B /* PBXContainerItemProxy */;
 		};
 		D218069E25CC27C100B98902 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -2657,6 +2946,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2688,6 +2978,7 @@
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blink.app/Blink";
 			};
 			name = Debug;
 		};
@@ -2695,6 +2986,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
+				BUNDLE_LOADER = "$(TEST_HOST)";
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
@@ -2719,6 +3011,187 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Blink.app/Blink";
+			};
+			name = Release;
+		};
+		98271270262E4BDB00F883FA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BlinkFileProvider/BlinkFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 298;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		98271271262E4BDB00F883FA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_ENTITLEMENTS = BlinkFileProvider/BlinkFileProvider.entitlements;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 298;
+				DEVELOPMENT_TEAM = "$(TEAM_ID)";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		BDCB7168268E1577007D7047 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				INFOPLIST_FILE = BlinkConfig/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		BDCB7169268E1577007D7047 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DEVELOPMENT_TEAM = HV2S48975V;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				INFOPLIST_FILE = BlinkConfig/Info.plist;
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MTL_FAST_MATH = YES;
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				PROVISIONING_PROFILE_SPECIFIER = "";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
+				SKIP_INSTALL = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
 			};
 			name = Release;
 		};
@@ -3150,6 +3623,24 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
+		9827126F262E4BDB00F883FA /* Build configuration list for PBXNativeTarget "BlinkFileProvider" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				98271270262E4BDB00F883FA /* Debug */,
+				98271271262E4BDB00F883FA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		BDCB7167268E1577007D7047 /* Build configuration list for PBXNativeTarget "BlinkConfig" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				BDCB7168268E1577007D7047 /* Debug */,
+				BDCB7169268E1577007D7047 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
 		D218068A25CC277900B98902 /* Build configuration list for PBXNativeTarget "AppKitBridge" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -3197,10 +3688,34 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCRemoteSwiftPackageReference section */
+		BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/apple/swift-atomics.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.3;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
 /* Begin XCSwiftPackageProductDependency section */
 		07FAB90E25C8E94E00E1CC2C /* ArgumentParser */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ArgumentParser;
+		};
+		BD896F8826CFDB17004313E6 /* Atomics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */;
+			productName = Atomics;
+		};
+		BDCB7193268E175A007D7047 /* SSHConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SSHConfig;
+		};
+		BDF47237268CD50300A7A41B /* SSHConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = SSHConfig;
 		};
 		D248EC552689EAFE009FD817 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;

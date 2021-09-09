@@ -1,6 +1,7 @@
 #!/bin/sh
 
 cd "${0%/*}"
+echo $(pwd)
 
 if [[ -z "${OPENSSH_PORT}" ]]; then
     OPENSSH_PORT=2222
@@ -18,4 +19,5 @@ fi
 
 docker build -t sshd .
 echo Starting openssh server on port $OPENSSH_PORT and dropbear on port $DROPBEAR_PORT
-docker run $RUN_DETACHED --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@
+# docker run $RUN_DETACHED --rm --init -v $(pwd)/copy_test:/home/no-password/copy_test --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@
+docker run $RUN_DETACHED --rm --init --name sshd -p $OPENSSH_PORT:22 -p $DROPBEAR_PORT:23 sshd $@

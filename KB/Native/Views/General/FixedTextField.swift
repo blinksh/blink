@@ -39,6 +39,7 @@ struct FixedTextField: UIViewRepresentable {
     fileprivate let _nextId: String?
     fileprivate let _returnKeyType: UIReturnKeyType?
     fileprivate let _onReturn: (() -> ())?
+    fileprivate let _enabled: Bool
     @Binding var text: String
     
     init(
@@ -51,18 +52,21 @@ struct FixedTextField: UIViewRepresentable {
       secureTextEntry: Bool = false,
       keyboardType: UIKeyboardType,
       autocorrectionType: UITextAutocorrectionType = .default,
-      autocapitalizationType: UITextAutocapitalizationType = .sentences
+      autocapitalizationType: UITextAutocapitalizationType = .sentences,
+      enabled: Bool = true
     ) {
       _id = id
       _text = text
       _nextId = nextId
       _returnKeyType = returnKeyType
       _onReturn = onReturn
+      _enabled = enabled
       super.init(frame: .zero)
       textField.keyboardType = keyboardType
       textField.placeholder = placeholder
       textField.delegate = self
       textField.isSecureTextEntry = secureTextEntry
+      textField.isEnabled = enabled
       
       textField.addTarget(
         self,
@@ -135,6 +139,7 @@ struct FixedTextField: UIViewRepresentable {
   private let _autocorrectionType: UITextAutocorrectionType
   private let _autocapitalizationType: UITextAutocapitalizationType
   private let _secureTextEntry: Bool
+  private let _enabled: Bool
   
   init(
     _ placeholder: String,
@@ -146,7 +151,8 @@ struct FixedTextField: UIViewRepresentable {
     secureTextEntry: Bool = false,
     keyboardType: UIKeyboardType = .default,
     autocorrectionType: UITextAutocorrectionType = .default,
-    autocapitalizationType: UITextAutocapitalizationType = .sentences
+    autocapitalizationType: UITextAutocapitalizationType = .sentences,
+    enabled: Bool = true
     
   ) {
     _placeholder = placeholder
@@ -159,6 +165,7 @@ struct FixedTextField: UIViewRepresentable {
     _keyboardType = keyboardType
     _autocorrectionType = autocorrectionType
     _autocapitalizationType = autocapitalizationType
+    _enabled = enabled
   }
   
   func makeUIView(
@@ -193,6 +200,7 @@ struct FixedTextField: UIViewRepresentable {
     uiView.textField.autocapitalizationType = _autocapitalizationType
     uiView.textField.autocorrectionType = _autocorrectionType
     uiView.textField.isSecureTextEntry = _secureTextEntry
+    uiView.textField.isEnabled = _enabled
     
     
     if !uiView.textField.isFirstResponder {

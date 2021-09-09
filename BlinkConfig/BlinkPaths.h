@@ -29,14 +29,38 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
 
-@class BKHosts;
+@interface BlinkPaths : NSObject
 
-@interface BKHostsDetailViewController : UITableViewController
++ (NSString *)homePath;
 
-@property (weak, nonatomic) BKHosts *bkHost;
-@property (assign, nonatomic) BOOL isExistingHost;
-@property (assign, nonatomic) BOOL isConflictCopy;
++ (NSString *) documentsPath;
++ (NSString *) iCloudDriveDocuments;
+
+// ~/.blink
++ (NSString *) blink;
+// ~/.ssh
++ (NSString *) ssh;
+
++ (NSURL *) blinkURL;
++ (NSString *)blinkKeysFile;
++ (NSString *)blinkHostsFile;
++ (NSURL *)blinkSSHConfigFileURL;
++ (NSString *)blinkSyncItemsFile;
++ (NSString *)blinkProfileFile;
++ (NSURL *)blinkKBConfigURL;
+
++ (NSString *) historyFile;
++ (NSURL *)historyURL;
++ (NSString *) knownHostsFile;
++ (NSString *) defaultsFile;
+
++ (void)linkICloudDriveIfNeeded;
++ (void)linkDocumentsIfNeeded;
+
++ (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
++ (void)migrateToHomeAtGroupContainer;
+
 
 @end

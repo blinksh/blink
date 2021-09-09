@@ -32,6 +32,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+
 typedef enum: NSUInteger {
   BKPubKeyStorageTypeKeyChain = 0,
   BKPubKeyStorageTypeSecureEnclave,
@@ -64,6 +65,7 @@ typedef enum: NSUInteger {
 
 + (void)loadIDS;
 + (BOOL)saveIDS;
++ (BOOL)saveGroupContainerKeys:(NSArray<BKPubKey *> *)keys;
 + (void)addCard:(nonnull BKPubKey *)pubKey;
 - (void)storePrivateKeyInKeychain:(nonnull NSString *) privateKey;
 - (void)storeCertificateInKeychain:(nullable NSString *) certificate;

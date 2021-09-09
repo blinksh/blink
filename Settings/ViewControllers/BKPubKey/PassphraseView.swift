@@ -41,8 +41,6 @@ struct PassphraseView: View {
   
   @State private var _passphrase: String = ""
   @State private var _errorMessage: String = ""
-  @State private var _errorAlertIsPresented: Bool = false
-  
   @State private var _importKeyObservable: ImportKeyObservable? = nil
   
   private func _unlock() {
@@ -50,13 +48,8 @@ struct PassphraseView: View {
       let key = try SSHKey(fromFileBlob: keyBlob, passphrase: _passphrase)
       _importKeyObservable = ImportKeyObservable(key: key, keyName: keyProposedName, keyComment: key.comment ?? "")
     } catch {
-      return _showError(message: error.localizedDescription)
+      _errorMessage = error.localizedDescription
     }
-  }
-    
-  private func _showError(message: String) {
-    _errorMessage = message
-    _errorAlertIsPresented = true
   }
   
   var body: some View {
@@ -92,12 +85,6 @@ struct PassphraseView: View {
     .onAppear() {
       FixedTextField.becomeFirstReponder(id: "passphrase")
     }
-    .alert(isPresented: $_errorAlertIsPresented) {
-      Alert(
-        title: Text("Error"),
-        message: Text(_errorMessage),
-        dismissButton: .default(Text("Ok"))
-      )
-    }
+    .alert(errorMessage: $_errorMessage)
   }
 }

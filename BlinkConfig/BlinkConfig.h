@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,35 +29,18 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
 
-@interface BlinkPaths : NSObject
+//! Project version number for BlinkConfig.
+FOUNDATION_EXPORT double BlinkConfigVersionNumber;
+
+//! Project version string for BlinkConfig.
+FOUNDATION_EXPORT const unsigned char BlinkConfigVersionString[];
+
+// In this header, you should import all the public headers of your framework using statements like #import <BlinkConfig/PublicHeader.h>
+#import <BlinkConfig/BKHosts.h>
+#import <BlinkConfig/BKPubKey.h>
+#import <BlinkConfig/BlinkPaths.h>
 
 
-+ (NSString *) documents;
-+ (NSURL *) documentsURL;
-
-+ (NSString *) iCloudDriveDocuments;
-
-// ~/.blink
-+ (NSString *) blink;
-// ~/.ssh
-+ (NSString *) ssh;
-
-+ (NSURL *) blinkURL;
-+ (NSString *)blinkKeysFile;
-+ (NSString *)blinkHostsFile;
-+ (NSURL *)blinkSSHConfigFileURL;
-+ (NSString *)blinkSyncItemsFile;
-+ (NSString *)blinkProfileFile;
-+ (NSURL *)blinkKBConfigURL;
-
-+ (NSString *) historyFile;
-+ (NSURL *)historyURL;
-+ (NSString *) knownHostsFile;
-+ (NSString *) defaultsFile;
-
-+ (void)linkICloudDriveIfNeeded;
-
-
-@end

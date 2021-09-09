@@ -29,21 +29,23 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#include <libssh/callbacks.h>
+//#include <libssh/callbacks.h>
 
 #import <Foundation/Foundation.h>
 #import "BKPubKey.h"
 #import "BKMiniLog.h"
 #import "UICKeyChainStore.h"
 
-#import "BlinkPaths.h"
-#import <openssl/rsa.h>
-#import <OpenSSH/sshbuf.h>
-#import <OpenSSH/sshkey.h>
-#import <OpenSSH/ssherr.h>
-#import "Blink-Swift.h"
+#import <BlinkConfig/BlinkConfig-Swift.h>
 
-NSMutableArray *Identities;
+#import "BlinkPaths.h"
+//#import <openssl/rsa.h>
+//#import <OpenSSH/sshbuf.h>
+//#import <OpenSSH/sshkey.h>
+//#import <OpenSSH/ssherr.h>
+//#import "Blink-Swift.h"
+
+NSMutableArray *__identities;
 
 const NSString * __keychainService = @"sh.blink.pkcard";
 
@@ -70,7 +72,7 @@ static UICKeyChainStore *__get_keychain() {
 + (instancetype)withID:(NSString *)ID
 {
   // Find the ID and return it.
-  for (BKPubKey *i in Identities) {
+  for (BKPubKey *i in __identities) {
     if ([i->_ID isEqualToString:ID]) {
       return i;
     }
@@ -81,7 +83,10 @@ static UICKeyChainStore *__get_keychain() {
 
 + (NSArray *)all
 {
-  return [Identities copy];
+  if (!__identities) {
+    [self loadIDS];
+  }
+  return [__identities copy];
 }
 
 + (BOOL)saveIDS
@@ -89,7 +94,7 @@ static UICKeyChainStore *__get_keychain() {
   BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.save.txt"];
   
   NSError *error = nil;
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:Identities requiringSecureCoding:YES error:&error];
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__identities requiringSecureCoding:YES error:&error];
   if (error || !data) {
     [miniLog log: [NSString stringWithFormat: @"Failed to archive to data: %@", error]];
     [miniLog save];
@@ -105,19 +110,18 @@ static UICKeyChainStore *__get_keychain() {
   }
   
   [miniLog save];
-  
   return result;
 }
 
-+ (void)loadIDS
-{
++ (void)loadIDS {
+  
   BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.load.txt"];
   
   NSError *error = nil;
   NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile] options:NSDataReadingMappedIfSafe error:&error];
   if (error || !data) {
     [miniLog log: [NSString stringWithFormat: @"Failed to read file: %@", error]];
-    Identities = [[NSMutableArray alloc] init];
+    __identities = [[NSMutableArray alloc] init];
     
     // Create default key in next main queue step in order to speedup app start.
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -134,7 +138,7 @@ static UICKeyChainStore *__get_keychain() {
     [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
     
     // Initialize the structure if it doesn't exist, with a default id_rsa key
-    Identities = [[NSMutableArray alloc] init];
+    __identities = [[NSMutableArray alloc] init];
     
     // Create default key in next main queue step in order to speedup app start.
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -146,7 +150,7 @@ static UICKeyChainStore *__get_keychain() {
   }
   [miniLog log:@"Loaded without errors."];
   [miniLog save];
-  Identities = [result mutableCopy];
+  __identities = [result mutableCopy];
 }
 
 - (nullable instancetype)initWithID:(NSString *)ID
@@ -169,13 +173,13 @@ static UICKeyChainStore *__get_keychain() {
 }
 
 + (void)addCard:(BKPubKey *)pubKey {
-  [Identities addObject:pubKey];
+  [__identities addObject:pubKey];
   [BKPubKey saveIDS];
 }
 
 + (NSInteger)count
 {
-  return [Identities count];
+  return [__identities count];
 }
 
 + (BOOL)supportsSecureCoding {
@@ -342,7 +346,7 @@ static UICKeyChainStore *__get_keychain() {
     [kc removeItemForKey:[self _certificateKeychainRef]];
     [kc removeItemForKey:[self _privateKeyKeychainRef]];
   }
-  [Identities removeObject:self];
+  [__identities removeObject:self];
   [BKPubKey saveIDS];
 }
 

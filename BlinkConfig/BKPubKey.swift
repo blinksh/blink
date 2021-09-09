@@ -33,9 +33,9 @@
 import Foundation
 import SSH
 
-extension BKPubKey {
+public extension BKPubKey {
   
-  @objc public static func saveDefaultKey() -> Bool {
+  @objc static func saveDefaultKey() -> Bool {
     do {
       let key = try SSHKey(type: .rsa, bits: 4096)
       try addKeychainKey(id: "id_rsa", key: key, comment: "blink")
@@ -91,9 +91,21 @@ extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
-  static func signerWithID(_ id: String) -> Signer? {
+  static func removeCard(card: BKPubKey) {
+    if card.storageType == BKPubKeyStorageTypeSecureEnclave {
+      try? SEKey.delete(tag: card.tag)
+    }
+    
+    card.removeCard()
+  }
+  
+}
+
+
+extension Collection where Element == BKPubKey {
+  public func signerWithID(_ id: String) -> Signer? {
     guard
-      let card = BKPubKey.withID(id)
+      let card = self.first(where: { $0.id == id }) //BKPubKey.withID(id)
     else {
       return nil
     }
@@ -118,12 +130,5 @@ extension BKPubKey {
     return nil
   }
   
-  static func removeCard(card: BKPubKey) {
-    if card.storageType == BKPubKeyStorageTypeSecureEnclave {
-      try? SEKey.delete(tag: card.tag)
-    }
-    
-    card.removeCard()
-  }
-  
+
 }

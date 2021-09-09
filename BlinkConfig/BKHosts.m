@@ -34,9 +34,9 @@
 #import "BKiCloudSyncHandler.h"
 #import "UICKeyChainStore.h"
 #import "BlinkPaths.h"
-#import "Blink-Swift.h"
+#import <BlinkConfig/BlinkConfig-Swift.h>
 
-NSMutableArray *Hosts;
+NSMutableArray *__hosts;
 
 static UICKeyChainStore *__get_keychain() {
   return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pwd"];
@@ -74,6 +74,9 @@ static UICKeyChainStore *__get_keychain() {
   _iCloudRecordId = [coder decodeObjectOfClass:[CKRecordID class] forKey:@"iCloudRecordId"];
   _iCloudConflictDetected = [coder decodeObjectOfClasses:numbers forKey:@"iCloudConflictDetected"];
   _proxyCmd = [coder decodeObjectOfClasses:strings forKey:@"proxyCmd"];
+  _proxyJump = [coder decodeObjectOfClasses:strings forKey:@"proxyJump"];
+  _sshConfigAttachment = [coder decodeObjectOfClasses:strings forKey:@"sshConfigAttachment"];
+  _fpDomainsJSON = [coder decodeObjectOfClasses:strings forKey:@"fpDomainsJSON"];
   return self;
 }
 
@@ -94,13 +97,29 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_iCloudRecordId forKey:@"iCloudRecordId"];
   [encoder encodeObject:_iCloudConflictDetected forKey:@"iCloudConflictDetected"];
   [encoder encodeObject:_proxyCmd forKey:@"proxyCmd"];
+  [encoder encodeObject:_proxyJump forKey:@"proxyJump"];
+  [encoder encodeObject:_sshConfigAttachment forKey:@"sshConfigAttachment"];
+  [encoder encodeObject:_fpDomainsJSON forKey:@"fpDomainsJSON"];
 }
 
-- (id)initWithHost:(NSString *)host hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user passwordRef:(NSString *)passwordRef hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPortRange:(NSString *)moshPortRange startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
+- (id)initWithAlias:(NSString *)alias
+           hostName:(NSString *)hostName
+            sshPort:(NSString *)sshPort
+               user:(NSString *)user
+        passwordRef:(NSString *)passwordRef
+            hostKey:(NSString *)hostKey
+         moshServer:(NSString *)moshServer
+      moshPortRange:(NSString *)moshPortRange
+         startUpCmd:(NSString *)startUpCmd
+         prediction:(enum BKMoshPrediction)prediction
+           proxyCmd:(NSString *)proxyCmd
+          proxyJump:(NSString *)proxyJump
+sshConfigAttachment:(NSString *)sshConfigAttachment
+      fpDomainsJSON:(NSString *)fpDomainsJSON
 {
   self = [super init];
   if (self) {
-    _host = host;
+    _host = alias;
     _hostName = hostName;
     if (![sshPort isEqualToString:@""]) {
       _port = [NSNumber numberWithInt:sshPort.intValue];
@@ -121,6 +140,9 @@ static UICKeyChainStore *__get_keychain() {
     _moshStartup = startUpCmd;
     _prediction = [NSNumber numberWithInt:prediction];
     _proxyCmd = proxyCmd;
+    _proxyJump = proxyJump;
+    _sshConfigAttachment = sshConfigAttachment;
+    _fpDomainsJSON = fpDomainsJSON;
   }
   return self;
 }
@@ -136,7 +158,7 @@ static UICKeyChainStore *__get_keychain() {
 
 + (instancetype)withHost:(NSString *)aHost
 {
-  for (BKHosts *host in Hosts) {
+  for (BKHosts *host in __hosts) {
     if ([host->_host isEqualToString:aHost]) {
       return host;
     }
@@ -146,7 +168,7 @@ static UICKeyChainStore *__get_keychain() {
 
 + (instancetype)withiCloudId:(CKRecordID *)record
 {
-  for (BKHosts *host in Hosts) {
+  for (BKHosts *host in __hosts) {
     if ([host->_iCloudRecordId isEqual:record]) {
       return host;
     }
@@ -156,27 +178,37 @@ static UICKeyChainStore *__get_keychain() {
 
 + (NSMutableArray<BKHosts *> *)all
 {
-  return Hosts;
+  if (__hosts == nil) {
+    [BKHosts loadHosts];
+  }
+  return __hosts;
 }
 
 + (NSArray<BKHosts *> *)allHosts
 {
-  return [Hosts copy];
+  if (__hosts == nil) {
+    [BKHosts loadHosts];
+  }
+  return [__hosts copy];
 }
 
 + (NSInteger)count
 {
-  return [Hosts count];
+  return [[self all] count];
 }
 
 + (BOOL)saveHosts
 {
+  if (!__hosts) {
+    return NO;
+  }
+  
   [self saveAllToSSHConfig];
 
   BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.hosts.save.txt"];
   // Save IDs to file
   NSError *error = nil;
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:Hosts requiringSecureCoding:YES error:&error];
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__hosts requiringSecureCoding:YES error:&error];
   if (error) {
     [miniLog log:[NSString stringWithFormat:@"Failed to archive hosts to data: %@", error]];
   }
@@ -205,7 +237,21 @@ static UICKeyChainStore *__get_keychain() {
   return result;
 }
 
-+ (instancetype)saveHost:(NSString *)host withNewHost:(NSString *)newHost hostName:(NSString *)hostName sshPort:(NSString *)sshPort user:(NSString *)user password:(NSString *)password hostKey:(NSString *)hostKey moshServer:(NSString *)moshServer moshPortRange:(NSString *)moshPortRange startUpCmd:(NSString *)startUpCmd prediction:(enum BKMoshPrediction)prediction proxyCmd:(NSString *)proxyCmd
++ (instancetype)saveHost:(NSString *)host
+             withNewHost:(NSString *)newHost
+                hostName:(NSString *)hostName
+                 sshPort:(NSString *)sshPort
+                    user:(NSString *)user
+                password:(NSString *)password
+                 hostKey:(NSString *)hostKey
+              moshServer:(NSString *)moshServer
+           moshPortRange:(NSString *)moshPortRange
+              startUpCmd:(NSString *)startUpCmd
+              prediction:(enum BKMoshPrediction)prediction
+                proxyCmd:(NSString *)proxyCmd
+               proxyJump:(NSString *)proxyJump
+     sshConfigAttachment:(NSString *)sshConfigAttachment
+           fpDomainsJSON:(NSString *)fpDomainsJSON
 {
   NSString *pwdRef = @"";
   if (password) {
@@ -216,8 +262,22 @@ static UICKeyChainStore *__get_keychain() {
   BKHosts *bkHost = [BKHosts withHost:host];
   // Save password to keychain if it changed
   if (!bkHost) {
-    bkHost = [[BKHosts alloc] initWithHost:newHost hostName:hostName sshPort:sshPort user:user passwordRef:pwdRef hostKey:hostKey moshServer:moshServer moshPortRange:moshPortRange startUpCmd:startUpCmd prediction:prediction proxyCmd:proxyCmd];
-    [Hosts addObject:bkHost];
+    bkHost = [[BKHosts alloc] initWithAlias:newHost
+                                   hostName:hostName
+                                    sshPort:sshPort
+                                       user:user
+                                passwordRef:pwdRef
+                                    hostKey:hostKey
+                                 moshServer:moshServer
+                              moshPortRange:moshPortRange
+                                 startUpCmd:startUpCmd
+                                 prediction:prediction
+                                   proxyCmd:proxyCmd
+                                  proxyJump:proxyJump
+                        sshConfigAttachment:sshConfigAttachment
+                              fpDomainsJSON:fpDomainsJSON
+    ];
+    [__hosts addObject:bkHost];
   } else {
     bkHost.host = newHost;
     bkHost.hostName = hostName;
@@ -242,6 +302,9 @@ static UICKeyChainStore *__get_keychain() {
     bkHost.moshStartup = startUpCmd;
     bkHost.prediction = [NSNumber numberWithInt:prediction];
     bkHost.proxyCmd = proxyCmd;
+    bkHost.proxyJump = proxyJump;
+    bkHost.sshConfigAttachment = sshConfigAttachment;
+    bkHost.fpDomainsJSON = fpDomainsJSON;
   }
   if (![BKHosts saveHosts]) {
     return nil;
@@ -287,7 +350,7 @@ static UICKeyChainStore *__get_keychain() {
     [miniLog log:[NSString stringWithFormat:@"Failed to load data: %@", error]];
     [miniLog save];
     
-    Hosts = [[NSMutableArray alloc] init];
+    __hosts = [[NSMutableArray alloc] init];
     return;
   }
   
@@ -297,58 +360,37 @@ static UICKeyChainStore *__get_keychain() {
     [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
     [miniLog save];
     
-    Hosts = [[NSMutableArray alloc] init];
+    __hosts = [[NSMutableArray alloc] init];
     return;
   }
   
   [miniLog log:@"Loaded without errors."];
   [miniLog save];
   
-  Hosts = [result mutableCopy];
+  __hosts = [result mutableCopy];
 }
 
-+ (NSString *)predictionStringForRawValue:(int)rawValue
-{
-  NSString *predictionString = nil;
-  switch (rawValue) {
-    case BKMoshPredictionAdaptive:
-      predictionString = @"Adaptive";
-      break;
-    case BKMoshPredictionAlways:
-      predictionString = @"Always";
-      break;
-    case BKMoshPredictionNever:
-      predictionString = @"Never";
-      break;
-    case BKMoshPredictionExperimental:
-      predictionString = @"Experimental";
-      break;
-
-    default:
-      break;
-  }
-  return predictionString;
-}
-
-+ (enum BKMoshPrediction)predictionValueForString:(NSString *)predictionString
-{
-  enum BKMoshPrediction value = BKMoshPredictionUnknown;
-  if ([predictionString isEqualToString:@"Adaptive"]) {
-    value = BKMoshPredictionAdaptive;
-  } else if ([predictionString isEqualToString:@"Always"]) {
-    value = BKMoshPredictionAlways;
-  } else if ([predictionString isEqualToString:@"Never"]) {
-    value = BKMoshPredictionNever;
-  } else if ([predictionString isEqualToString:@"Experimental"]) {
-    value = BKMoshPredictionExperimental;
-  }
-  return value;
-}
-
-+ (NSMutableArray *)predictionStringList
-{
-  return [NSMutableArray arrayWithObjects:@"Adaptive", @"Always", @"Never", @"Experimental", nil];
-}
+//+ (NSString *)predictionStringForRawValue:(int)rawValue
+//{
+//  NSString *predictionString = nil;
+//  switch (rawValue) {
+//    case BKMoshPredictionAdaptive:
+//      predictionString = @"Adaptive";
+//      break;
+//    case BKMoshPredictionAlways:
+//      predictionString = @"Always";
+//      break;
+//    case BKMoshPredictionNever:
+//      predictionString = @"Never";
+//      break;
+//    case BKMoshPredictionExperimental:
+//      predictionString = @"Experimental";
+//      break;
+//
+//    default:
+//      break;
+//  }
+//}
 
 + (CKRecord *)recordFromHost:(BKHosts *)host
 {
@@ -373,6 +415,9 @@ static UICKeyChainStore *__get_keychain() {
   [hostRecord setValue:host.prediction forKey:@"prediction"];
   [hostRecord setValue:host.user forKey:@"user"];
   [hostRecord setValue:host.proxyCmd forKey:@"proxyCmd"];
+  [hostRecord setValue:host.proxyJump forKey:@"proxyJump"];
+  [hostRecord setValue:host.sshConfigAttachment forKey:@"sshConfigAttachment"];
+  [hostRecord setValue:host.fpDomainsJSON forKey:@"fpDomainsJSON"];
   return hostRecord;
 }
 
@@ -387,17 +432,21 @@ static UICKeyChainStore *__get_keychain() {
   }
   
   
-  BKHosts *host = [[BKHosts alloc] initWithHost:[hostRecord valueForKey:@"host"]
-                                       hostName:[hostRecord valueForKey:@"hostName"]
-                                        sshPort:[hostRecord valueForKey:@"port"] ? [[hostRecord valueForKey:@"port"] stringValue] : @""
-                                           user:[hostRecord valueForKey:@"user"]
-                                    passwordRef:[hostRecord valueForKey:@"passwordRef"]
-                                        hostKey:[hostRecord valueForKey:@"key"]
-                                     moshServer:[hostRecord valueForKey:@"moshServer"]
-                                  moshPortRange:moshPortRange
-                                     startUpCmd:[hostRecord valueForKey:@"moshStartup"]
-                                     prediction:[[hostRecord valueForKey:@"prediction"] intValue]
-                                       proxyCmd:[hostRecord valueForKey:@"proxyCmd"]];
+  BKHosts *host = [[BKHosts alloc] initWithAlias:[hostRecord valueForKey:@"host"]
+                                        hostName:[hostRecord valueForKey:@"hostName"]
+                                         sshPort:[hostRecord valueForKey:@"port"] ? [[hostRecord valueForKey:@"port"] stringValue] : @""
+                                            user:[hostRecord valueForKey:@"user"]
+                                     passwordRef:[hostRecord valueForKey:@"passwordRef"]
+                                         hostKey:[hostRecord valueForKey:@"key"]
+                                      moshServer:[hostRecord valueForKey:@"moshServer"]
+                                   moshPortRange:moshPortRange
+                                      startUpCmd:[hostRecord valueForKey:@"moshStartup"]
+                                      prediction:[[hostRecord valueForKey:@"prediction"] intValue]
+                                        proxyCmd:[hostRecord valueForKey:@"proxyCmd"]
+                                       proxyJump:[hostRecord valueForKey:@"proxyJump"]
+                             sshConfigAttachment: [hostRecord valueForKey:@"sshConfigAttachment"]
+                                   fpDomainsJSON:[hostRecord valueForKey:@"fpDomainsJSON"]
+  ];
   return host;
 }
 

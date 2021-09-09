@@ -35,10 +35,14 @@ import Combine
 // Use as generic error for Translators.
 public struct LocalFileError: Error {
   public let msg: String
+  public var description: String {
+    return msg
+  }
 }
 
 public class Local : Translator {
   public var isDirectory: Bool
+  public var isConnected: Bool { true }
   
   static let files = FileManager()
   static let queue = DispatchQueue(label: "LocalFS")
@@ -65,15 +69,15 @@ public class Local : Translator {
   }
   
   func publisher() -> AnyPublisher<Translator, Error> {
-    return Just(self).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(self)
   }
   
   func fail<T>(msg: String) -> AnyPublisher<T, Error> {
-    return Fail(error: LocalFileError(msg: msg)).eraseToAnyPublisher()
+    return .fail(error: LocalFileError(msg: msg))
   }
   
   func fileManager() -> AnyPublisher<FileManager, Error> {
-    return Just(Local.files).receive(on: Local.queue).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(Local.files)
   }
   
   public func walkTo(_ path: String) -> AnyPublisher<Translator, Error> {
@@ -222,7 +226,7 @@ public class Local : Translator {
     .flatMap { fm -> AnyPublisher<Bool, Error> in
       // Relative path or from root
       guard let newName = attrs[.name] as? String else {
-        return Just(true).mapError { $0 as Error }.eraseToAnyPublisher()
+        return .just(true)
       }
       // We do this 9p style
       // https://github.com/kubernetes/minikube/pull/3047/commits/a37faa7c7868ca49b4e8abf92985ab2de3c85cf3
@@ -231,6 +235,7 @@ public class Local : Translator {
         // Full new path
         newPath = newName
       } else {
+        // Relative to CWD
         // Change name
         newPath = (self.current as NSString).deletingLastPathComponent
         newPath = (newPath as NSString).appendingPathComponent(newName)
@@ -282,7 +287,7 @@ public class LocalFile : File {
   public func close() -> AnyPublisher<Bool, Error> {
     // TODO We should pass the errors from cleanupHandler
     self.channel.close(flags: .stop)
-    return Just(true).mapError { $0 as Error }.eraseToAnyPublisher()
+    return .just(true)
   }
 }
 
@@ -354,7 +359,6 @@ extension LocalFile: Reader, WriterTo {
       }
       
       // done and data.count == 0 is indicator of EOF with no more data, so finish.
-      // TODO I think there is a bug here. It can be done and still have data.
       let eof = done && data.count == 0
       guard !eof else {
         print("Completed - EOF")

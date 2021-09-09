@@ -289,7 +289,7 @@ struct BuildSSHCopyID: NonStdIOCommand {
       keyPath = "~/.ssh/id_rsa.pub"
     }
     
-    let path = keyPath.replacingOccurrences(of: "~", with: BlinkPaths.documents())
+    let path = keyPath.replacingOccurrences(of: "~", with: BlinkPaths.homePath())
 //    let path: String = NSString(string: keyPath).expandingTildeInPath
     
     printDebug("Reading key at path: \(path)")

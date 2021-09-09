@@ -37,69 +37,173 @@ public struct CopyError : Error {
   public let msg: String
 }
 
+
+public struct CopyAttributesFlag: OptionSet {
+  public var rawValue: UInt
+  
+  public static let none = CopyAttributesFlag(rawValue: 0)
+  public static let timestamp = CopyAttributesFlag(rawValue: 1 << 0)
+  public static let permissions = CopyAttributesFlag(rawValue: 1 << 1)
+  
+  public init(rawValue: UInt) {
+    self.rawValue = rawValue
+  }
+  
+  func filter(_ attrs: FileAttributes) -> FileAttributes {
+    var newAttrs: FileAttributes = [:]
+    
+    if self.contains(.timestamp) {
+      newAttrs[.creationDate] = attrs[.creationDate]
+      newAttrs[.modificationDate] = attrs[.modificationDate]
+    }
+    if self.contains(.permissions) {
+      newAttrs[.posixPermissions] = attrs[.posixPermissions]
+    }
+    
+    return newAttrs
+  }
+}
+
+public struct CopyArguments {
+  public let inplace: Bool
+  public var preserve: CopyAttributesFlag // attributes. Check how FileManager passes this.
+  public let checkTimes: Bool
+  
+  public init(inplace: Bool = true,
+              preserve: CopyAttributesFlag = [.permissions],
+              checkTimes: Bool = false) {
+    self.inplace = inplace
+    self.preserve = preserve
+    self.checkTimes = checkTimes
+    
+    if checkTimes {
+      self.preserve.insert(.timestamp)
+    }
+  }
+}
+
 extension Translator {
-  public func copy(from ts: [Translator]) -> CopyProgressInfo {
+  public func copy(from ts: [Translator], args: CopyArguments = CopyArguments()) -> CopyProgressInfoPublisher {
     print("Copying \(ts.count) elements")
     return ts.publisher.compactMap { t in
       return t.fileType == .typeDirectory || t.fileType == .typeRegular ? t : nil
-    }.flatMap(maxPublishers: .max(1)) { t -> CopyProgressInfo in
-      return copyElement(from: t)
+    }.flatMap(maxPublishers: .max(1)) { t -> CopyProgressInfoPublisher in
+      return copyElement(from: t, args: args)
     }.eraseToAnyPublisher()
   }
   
-  fileprivate func copyElement(from t: Translator) -> CopyProgressInfo {
+  fileprivate func copyElement(from t: Translator, args: CopyArguments) -> CopyProgressInfoPublisher {
     return Just(t)
-      .flatMap(maxPublishers: .max(1)) { $0.stat() }
-      .tryMap { attrs -> (String, mode_t, NSNumber) in
+      .flatMap() { $0.stat() }
+      .tryMap { attrs -> (String, NSNumber, FileAttributes) in
         guard let name = attrs[FileAttributeKey.name] as? String else {
           throw CopyError(msg: "No name provided")
         }
-        let mode = attrs[FileAttributeKey.posixPermissions] as? NSNumber ??
-          (t.fileType == .typeDirectory ? NSNumber(value: Int16(0o755)) : NSNumber(value: Int16(0o644)))
+        
+        let passingAttributes = args.preserve.filter(attrs)
+        // TODO Two ways to set permissions. Should be part of the CopyArguments
+        // The equivalent of -P is simpler for now.
+        // https://serverfault.com/questions/639042/does-openssh-sftp-server-use-umask-or-preserve-client-side-permissions-after-put
+        // let mode = attrs[FileAttributeKey.posixPermissions] as? NSNumber ??
+        // (t.fileType == .typeDirectory ? NSNumber(value: Int16(0o755)) : NSNumber(value: Int16(0o644)))
         
         guard let size = attrs[FileAttributeKey.size] as? NSNumber else {
           throw CopyError(msg: "No size provided")
         }
         
-        return (name, mode_t(truncating: mode), size)
-      }.flatMap { (name, mode, size) -> CopyProgressInfo in
+        return (name, size, passingAttributes)
+      }.flatMap { (name, size, passingAttributes) -> CopyProgressInfoPublisher in
         print("Processing \(name)")
         switch t.fileType {
         case .typeDirectory:
-          return self.clone().mkdir(name: name, mode: mode)
-            .flatMap { $0.copyDirectory(from: t) }
-            .eraseToAnyPublisher()
+          let mode = passingAttributes[FileAttributeKey.posixPermissions] as? NSNumber ?? NSNumber(value: Int16(0o755))
+          return self.copyDirectory(as: name, from: t, mode: mode)
         default:
-          // TODO Create with generic permissions, and then later if a flag is specified, preserve them.
-          return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
-            .flatMap { f -> CopyProgressInfo in
-              if size == 0 {
-                return Just((name, 0, 0)).setFailureType(to: Error.self).eraseToAnyPublisher()
-              }
-              return f.copyFile(from: t, name: name, size: size)
-            }.eraseToAnyPublisher()
+          let copyFilePublisher = self.copyFile(from: t, name: name, size: size, attributes: passingAttributes)
+          
+          // When checkTimes, copy the file only if the modificationDate is different
+          if args.checkTimes {
+            return self.cloneWalkTo(name)
+              .flatMap { $0.stat() }
+              .catch { _ in Just([:]) }
+              .flatMap { localAttributes -> CopyProgressInfoPublisher in
+                if let localModificationDate = localAttributes[.modificationDate] as? NSDate,
+                   localModificationDate == (passingAttributes[.modificationDate] as? NSDate) {
+                  return .just(CopyProgressInfo(name: name, written: 0, size: size.uint64Value))
+                }
+                return copyFilePublisher
+              }.eraseToAnyPublisher()
+          }
+          
+          return copyFilePublisher
         }
       }.eraseToAnyPublisher()
   }
   
-  fileprivate func copyDirectory(from t: Translator) -> CopyProgressInfo {
+  fileprivate func copyDirectory(as name: String, from t: Translator, mode: NSNumber) -> CopyProgressInfoPublisher {
     print("Copying directory \(t.current)")
-    return t.directoryFilesAndAttributes().flatMap {
-      $0.compactMap { i -> FileAttributes? in
-        if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
-          return nil
-        } else {
-          return i
+    return self.clone().mkdir(name: name, mode: mode_t(truncating: mode))
+      .flatMap { dir -> CopyProgressInfoPublisher in
+        t.directoryFilesAndAttributes().flatMap {
+          $0.compactMap { i -> FileAttributes? in
+            if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+              return nil
+            } else {
+              return i
+            }
+          }.publisher
+        }.flatMap { t.cloneWalkTo($0[.name] as! String) }
+        .collect()
+        .flatMap { dir.copy(from: $0) }.eraseToAnyPublisher()
+      }.eraseToAnyPublisher()
+    
+//    return t.directoryFilesAndAttributes().flatMap {
+//      $0.compactMap { i -> FileAttributes? in
+//        if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+//          return nil
+//        } else {
+//          return i
+//        }
+//      }.publisher
+//    }.flatMap { t.cloneWalkTo($0[.name] as! String) }
+//    .collect()
+//    .flatMap { self.copy(from: $0) }.eraseToAnyPublisher()
+  }
+  
+  fileprivate func copyFile(from t: Translator,
+                            name: String,
+                            size: NSNumber,
+                            attributes: FileAttributes) -> CopyProgressInfoPublisher {
+    var file: BlinkFiles.File!
+    var totalWritten: UInt64 = 0
+
+    return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
+      .flatMap { f -> CopyProgressInfoPublisher in
+        file = f
+        if size == 0 {
+          return .just(CopyProgressInfo(name: name, written:0, size: 0))
         }
-      }.publisher
-    }.flatMap { t.cloneWalkTo($0[.name] as! String) }
-    .collect()
-    .flatMap { self.copy(from: $0) }.eraseToAnyPublisher()
+        return f.copyFile(from: t, name: name, size: size)
+      }.flatMap { report -> CopyProgressInfoPublisher in
+        totalWritten += report.written
+        if report.size == totalWritten {
+          print("Closing file...")
+          return file.close()
+            .flatMap { _ in
+              // TODO From the File, we could offer the Translator itself.
+              return self.cloneWalkTo(name).flatMap { $0.wstat(attributes) }
+            }
+            .map { _ in report }.eraseToAnyPublisher()
+        }
+        return .just(report)
+      }.eraseToAnyPublisher()
   }
 }
 
 extension File {
-  fileprivate func copyFile(from t: Translator, name: String, size: NSNumber) -> CopyProgressInfo {
+  fileprivate func copyFile(from t: Translator,
+                            name: String,
+                            size: NSNumber) -> CopyProgressInfoPublisher {
     let fileSize = size.uint64Value
     var totalWritten: UInt64 = 0
     print("Copying file \(name)")
@@ -111,20 +215,24 @@ extension File {
         }
         return file
       }
-      .flatMap { file -> CopyProgressInfo in
-        return file.writeTo(self).print("WRITE").flatMap { w -> CopyProgressInfo in
+      .flatMap { file -> CopyProgressInfoPublisher in
+        return file.writeTo(self).print("WRITE").flatMap { w -> CopyProgressInfoPublisher in
           let written = UInt64(w)
           print("File Copied bytes \(totalWritten)")
           totalWritten += written
-          let report = Just((name, fileSize, written))
-            .setFailureType(to: Error.self)
-            .eraseToAnyPublisher()
+          let report: AnyPublisher<CopyProgressInfo, Error> =
+            .just(CopyProgressInfo(name: name, written: written, size: fileSize))
           
+          // TODO We could offer a flag for EOF inside the File, and only close in that case.
+          // We could also close on WriterTo, but the interface is too generic for that.
+          // In that case, w could be zero.
           if totalWritten == fileSize {
             // Close and send the final report
             // NOTE We are closing a file for an active operation (the writeTo).
             // We have no other point to close and also emit progress. Future ideas may change that.
-            return Publishers.MergeMany([(file as! BlinkFiles.File).close(), self.close()]).collect().flatMap { _ -> CopyProgressInfo in
+            // - We could enforce writeTo to close on EOF.
+            // - We could communicate when the file is EOF, and send a written = 0 to capture.
+            return (file as! File).close().flatMap { _ -> CopyProgressInfoPublisher in
                 print("File finished copying")
                 return report
               }.eraseToAnyPublisher()
@@ -132,12 +240,11 @@ extension File {
           
           return report
         }
-        .tryCatch { error -> CopyProgressInfo in
+        .tryCatch { error -> CopyProgressInfoPublisher in
           // Closing the file while reading may provoke an error. Capture it here and if we are done, we ignore it.
           if totalWritten == fileSize {
-            return Just((name, fileSize, 0))
-              .setFailureType(to: Error.self)
-              .eraseToAnyPublisher()
+            print("Ignoring error as file finished copy")
+            return .just(CopyProgressInfo(name: name, written: totalWritten, size: fileSize))
           } else {
             throw error
           }

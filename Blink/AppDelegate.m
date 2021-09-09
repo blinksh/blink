@@ -31,10 +31,10 @@
 
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
-#import "BlinkPaths.h"
+#import <BlinkConfig/BlinkPaths.h>
 #import "BKDefaults.h"
-#import "BKPubKey.h"
-#import "BKHosts.h"
+#import <BlinkConfig/BKHosts.h>
+#import <BlinkConfig/BKPubKey.h>
 #import <ios_system/ios_system.h>
 #import <UserNotifications/UserNotifications.h>
 #include <libssh/callbacks.h>
@@ -83,8 +83,19 @@ void __setupProcessEnv() {
   
   signal(SIGPIPE, __on_pipebroken_signal);
   
+  [BlinkPaths migrateToHomeAtGroupContainer];
+  
+  [BKDefaults loadDefaults];
+  [BKPubKey loadIDS];
+  [BKHosts loadHosts];
+  [self _loadProfileVars];
+  [[UIView appearance] setTintColor:[UIColor blinkTint]];
+  
+  signal(SIGPIPE, __on_pipebroken_signal);
+ 
   dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
   dispatch_async(bgQueue, ^{
+    [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
   });
 
@@ -94,7 +105,7 @@ void __setupProcessEnv() {
     addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
       __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   });
-
+  
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
          selector:@selector(_onSceneDidEnterBackground:)
@@ -116,14 +127,10 @@ void __setupProcessEnv() {
 
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
   
-//#ifdef TARGET_OS_MACCATALYST
-//  NSURL * bundleURL = [[[NSBundle mainBundle] builtInPlugInsURL] URLByAppendingPathComponent:@"AppKitBridge.bundle"];
-//  [[NSBundle bundleWithURL:bundleURL] load];
-//  NSObject *clas = (NSObject *)NSClassFromString(@"AppBridge");
-//
-//  [clas performSelector:@selector(tuneStyle)];
-//#endif
-
+  
+ 
+  [NSFileProviderManager syncWithBKHosts];
+  
   return YES;
 }
 

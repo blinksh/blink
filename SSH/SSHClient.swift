@@ -91,7 +91,7 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-public struct SSHClientConfig: CustomStringConvertible {
+public struct SSHClientConfig: CustomStringConvertible, Equatable {
   let user: String
   let port: String
   
@@ -188,6 +188,11 @@ public struct SSHClientConfig: CustomStringConvertible {
         self.authenticators.append(auth)
       }
     })
+  }
+  
+  public static func == (lhs: SSHClientConfig, rhs: SSHClientConfig) -> Bool {
+    return (lhs.port == rhs.port &&
+      lhs.user == rhs.user)
   }
 }
 
@@ -368,8 +373,8 @@ public class SSHClient {
   
   func connection() -> SSHConnection {
     AnyPublisher
-      .just(self.session)
-      .subscribe(on: rloop)
+      .just(self.session).print("Before rloop")
+      .subscribe(on: rloop).print("After rloop")
       .eraseToAnyPublisher()
   }
   
@@ -733,7 +738,7 @@ public class SSHClient {
         }
 
         // SFTP implementation needs to poll, except for files
-        ssh_channel_set_blocking(channel, 1)
+        // ssh_channel_set_blocking(channel, 1)
         try sftp.start()
 
         return sftp
