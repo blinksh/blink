@@ -1,6 +1,7 @@
 [submodule "Frameworks/ios_system"]
 	path = Frameworks/ios_system
 	url = https://github.com/yury/ios_system.git
+	branch = blink
 [submodule "Frameworks/MBProgressHUD"]
 	path = Frameworks/MBProgressHUD
 	url = https://github.com/blinksh/MBProgressHUD.git

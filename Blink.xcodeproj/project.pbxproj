@@ -313,6 +313,8 @@
 		D2C244332390FB830082C69C /* KeyBinding.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244322390FB830082C69C /* KeyBinding.swift */; };
 		D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C244342390FEEF0082C69C /* KeyBindingAction.swift */; };
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
+		D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
+		D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
 		D2CF27292428A791009885ED /* KBTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF27282428A791009885ED /* KBTracker.swift */; };
@@ -341,7 +343,6 @@
 		D2F64CA925CAA92700F2225D /* curl_ios_static.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2E4F92E20B2BB4500B30F7B /* curl_ios_static.framework */; };
 		D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9525CA99AD00F2225D /* libssh2.xcframework */; };
 		D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
-		D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */; };
 /* End PBXBuildFile section */
 
@@ -502,6 +503,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
+				D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */,
 				D2334F0125C1C28F00385378 /* shell.xcframework in Embed Frameworks */,
 				07FABB9A25C9AEC100E1CC2C /* SSH.framework in Embed Frameworks */,
 				BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */,
@@ -1013,8 +1015,8 @@
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
 				D2B9E21E268084E40084B2C4 /* Machines in Frameworks */,
 				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
-				D2F64CB225CAB1B700F2225D /* openssl.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
+				D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				07FABBC425C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
