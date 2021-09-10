@@ -350,4 +350,12 @@ void __setupProcessEnv() {
   completionHandler();
 }
 
+#pragma mark - Menu Building
+
+- (void)buildMenuWithBuilder:(id<UIMenuBuilder>)builder {
+  if (builder.system == UIMenuSystem.mainSystem) {
+    [MenuController buildMenuWith:builder];
+  }
+}
+
 @end
