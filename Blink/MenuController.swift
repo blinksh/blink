@@ -31,8 +31,11 @@
 
 
 import Foundation
+import Dispatch
 import UIKit
 
+
+private var attachedShortcuts: [UIKeyCommand] = []
 
 //To rebuild a menu, call the setNeedsRebuild method. Call setNeedsRevalidate when you need the menu system to revalidate a menu.
 @objc public class MenuController: NSObject {
@@ -72,7 +75,8 @@ import UIKit
   @objc public class func buildMenu(with builder: UIMenuBuilder) {
     // We will embed our own textSize inside View, so just remove to avoid collisions.
     builder.remove(menu: .textSize)
-    
+
+    attachedShortcuts = []
     let shellMenuCommands:  [UICommand] = ShellMenu.allCases.map  { generate(Command(rawValue: $0.rawValue)!) }
     let editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
     let viewMenuCommands:   [UICommand] = ViewMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
@@ -84,50 +88,54 @@ import UIKit
                                  options: [],
                                  children: shellMenuCommands), beforeMenu: .edit)
     
-    // Note we are assuming that shortcuts here are already unique.
-    // The same shortcut, or the same action, will make this crash with a
-    // 'NSInternalInconsistencyException', reason: 'replacement menu has duplicate submenu,
-    // command or key command, or a key command is missing input or action'.
     builder.replaceChildren(ofMenu: .standardEdit) { _ in editMenuCommands   }
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }
     builder.replaceChildren(ofMenu: .window)       { _ in windowMenuCommands }
-    
-    // TODO 'NSInternalInconsistencyException', reason: 'replacement menu has duplicate submenu, command or key command, or a key command is missing input or action'
-    // The action also must be different, or at least have propertyList that identifies as different.
-    // We need to take into account that the stored shortcuts must not collide, otherwise things will break.
-    
-    // There is an additional problem, which is that maybe a user by mistake may have that same
-    // combination. We should clean it up. We could remove the dupes at the storage,
-    // and then use that same function to make sure there are none during creation.
   }
 
   private class func generate(_ command: Command) -> UICommand {
     let kbConfig = KBTracker.shared.loadConfig()
 
     // For the action to be different, we are passing it as part of the PropertyList.
-    if let shortcut = kbConfig.shortcuts.first(
-      where: { s in // s.triggers(command)
-        if case .command(let cmd) = s.action,
-           case command = cmd
-        {
-          return true
-        }
-        return false
-      })
+    // If the shortcut has already been assigned, then we define it as UICommand.
+    if let shortcut = kbConfig.shortcuts.first(where: { s in // s.triggers(command)
+      if case .command(let cmd) = s.action,
+         case command = cmd
+      {
+        return true
+      }
+      return false
+    })
     {
-      return UIKeyCommand(title: command.title,
-                          action: #selector(SpaceController._onShortcut(_:)),
-                          input: shortcut.input,
-                          modifierFlags: shortcut.modifiers,
-                          propertyList: ["Command": command.rawValue])
-    } else {
-      return UICommand(
-        title: command.title,
-        image: nil,
-        action: #selector(SpaceController._onShortcut(_:)),
-        propertyList: ["Command": command.rawValue]
-      )
+      // The same shortcut, or the same action, will make this crash with a
+      // 'NSInternalInconsistencyException', reason: 'replacement menu has duplicate submenu,
+      // command or key command, or a key command is missing input or action'.
+      if !attachedShortcuts.contains(where: {
+        $0.input == shortcut.input && $0.modifierFlags == shortcut.modifiers
+      }) {
+        let cmd =  UIKeyCommand(title: command.title,
+                                action: #selector(SpaceController._onShortcut(_:)),
+                                input: shortcut.input,
+                                modifierFlags: shortcut.modifiers,
+                                propertyList: ["Command": command.rawValue])
+        attachedShortcuts.append(cmd)
+        return cmd
+      } else {
+        // We notify the user and let the command go through as a UICommand
+        let alert = OwnAlertController(title: "Error building app menu", message: "The shortcut's '\(shortcut.title)' input is duplicated. This may prevent it from working. Please fix on Settings > Keyboard > Shortcuts", preferredStyle: .alert)
+        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+        alert.addAction(ok)
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+          alert.present(animated: true, completion: nil)
+        }
+      }
     }
+    return UICommand(
+      title: command.title,
+      image: nil,
+      action: #selector(SpaceController._onShortcut(_:)),
+      propertyList: ["Command": command.rawValue]
+    )
   }
 }
 
