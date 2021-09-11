@@ -522,12 +522,30 @@ extension SpaceController {
 
 
 // MARK: Commands
-
+fileprivate let copyCommand = UIKeyCommand(title: "",
+                                           action: #selector(UIResponder.copy(_:)),
+                                           input: "c",
+                                           modifierFlags: .command,
+                                           propertyList: nil)
+fileprivate let selectAllCommand =  UIKeyCommand(title: "",
+                                                 action: #selector(UIResponder.selectAll(_:)),
+                                                 input: "a",
+                                                 modifierFlags: .command,
+                                                 propertyList: nil)
 
 extension SpaceController {
   
   var foregroundActive: Bool {
     view.window?.windowScene?.activationState == UIScene.ActivationState.foregroundActive
+  }
+  
+  public override var keyCommands: [UIKeyCommand]? {
+    if let keyCode = stuckKeyCode {
+      return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
+    }
+    
+    // Attach regular shortcuts that are lost as they may be managed by the application.
+    return [copyCommand, selectAllCommand]
   }
   
   @objc func onStuckOpCommand() {

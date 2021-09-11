@@ -35,7 +35,8 @@ import Dispatch
 import UIKit
 
 
-private var attachedShortcuts: [UIKeyCommand] = []
+fileprivate var attachedShortcuts: [UIKeyCommand] = []
+
 
 //To rebuild a menu, call the setNeedsRebuild method. Call setNeedsRevalidate when you need the menu system to revalidate a menu.
 @objc public class MenuController: NSObject {
@@ -78,7 +79,7 @@ private var attachedShortcuts: [UIKeyCommand] = []
 
     attachedShortcuts = []
     let shellMenuCommands:  [UICommand] = ShellMenu.allCases.map  { generate(Command(rawValue: $0.rawValue)!) }
-    let editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
+    var editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
     let viewMenuCommands:   [UICommand] = ViewMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
     let windowMenuCommands: [UICommand] = WindowMenu.allCases.map { generate(Command(rawValue: $0.rawValue)!) }
 
