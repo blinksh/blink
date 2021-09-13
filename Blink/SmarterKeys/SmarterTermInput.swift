@@ -435,8 +435,13 @@ extension SmarterTermInput {
   override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
     switch action {
     case #selector(UIResponder.paste(_:)):
-      return sender != nil
-    case #selector(UIResponder.copy(_:)),
+      return UIPasteboard.general.string != nil
+    case #selector(UIResponder.copy(_:)):
+      // When the action is requested from the keyboard, the sender will be nil.
+      // In that case we let it go through to the WKWebView.
+      // Otherwise, we check if there is a selection.
+      return (sender == nil) || (sender != nil && device?.view?.hasSelection == true)
+    case
          #selector(TermView.pasteSelection(_:)),
          #selector(Self.soSelection(_:)),
          #selector(Self.googleSelection(_:)),

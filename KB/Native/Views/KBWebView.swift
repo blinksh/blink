@@ -40,11 +40,11 @@ class KBWebView: KBWebViewBase {
   
   private var _loaded = false
   private(set) var webViewReady = false
-  private(set) var blinkKeyCommands: [BlinkCommand] = []
   private var _grabsCtrlSpace = false
   
   func configure(_ cfg: KBConfig) {
-    _buildCommands(cfg)
+    _grabsCtrlSpace = matchCommand(input: " ", flags: [UIKeyModifierFlags.control]) != nil
+
     guard
       let data = try? JSONEncoder().encode(cfg),
       let json = String(data: data, encoding: .utf8)
@@ -52,23 +52,6 @@ class KBWebView: KBWebViewBase {
       return
     }
     report("config", arg: json as NSString)
-  }
-  
-  func _buildCommands(_ cfg: KBConfig) {
-    blinkKeyCommands = cfg.shortcuts.map { shortcut in
-      let cmd = BlinkCommand(
-        title: shortcut.action.isCommand ? shortcut.title : "", // Show only commands in cmd help view
-        image: nil,
-        action: #selector(SpaceController._onBlinkCommand(_:)),
-        input: shortcut.input,
-        modifierFlags: shortcut.modifiers,
-        propertyList: nil
-      )
-      cmd.bindingAction = shortcut.action
-      return cmd
-    }
-    
-    _grabsCtrlSpace = matchCommand(input: " ", flags: [UIKeyModifierFlags.control]) != nil
   }
   
   func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {

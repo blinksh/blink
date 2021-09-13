@@ -522,7 +522,16 @@ extension SpaceController {
 
 
 // MARK: Commands
-
+fileprivate let copyCommand = UIKeyCommand(title: "",
+                                           action: #selector(UIResponder.copy(_:)),
+                                           input: "c",
+                                           modifierFlags: .command,
+                                           propertyList: nil)
+fileprivate let selectAllCommand =  UIKeyCommand(title: "",
+                                                 action: #selector(UIResponder.selectAll(_:)),
+                                                 input: "a",
+                                                 modifierFlags: .command,
+                                                 propertyList: nil)
 
 extension SpaceController {
   
@@ -531,18 +540,12 @@ extension SpaceController {
   }
   
   public override var keyCommands: [UIKeyCommand]? {
-    guard
-      let input = KBTracker.shared.input,
-      foregroundActive
-    else {
-      return []
-    }
-    
     if let keyCode = stuckKeyCode {
       return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
     }
     
-    return input.blinkKeyCommands
+    // Attach regular shortcuts that are lost as they may be managed by the application.
+    return [copyCommand, selectAllCommand]
   }
   
   @objc func onStuckOpCommand() {
@@ -565,11 +568,21 @@ extension SpaceController {
     case .press(let keyCode, mods: let mods):
       input.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
       break;
-    case .command(let c):
-      _onCommand(c)
+//    case .command(let c):
+//      _onCommand(c)
     default:
       break;
     }
+  }
+  
+  @objc func _onShortcut(_ event: UICommand) {
+    guard
+      let propertyList = event.propertyList as? [String:String],
+      let cmd = Command(rawValue: propertyList["Command"]!)
+    else {
+      return
+    }
+    _onCommand(cmd)
   }
   
   func _onCommand(_ cmd: Command) {
