@@ -178,7 +178,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 
 + (NSMutableArray<BKHosts *> *)all
 {
-  if (__hosts == nil) {
+  if (!__hosts.count) {
     [BKHosts loadHosts];
   }
   return __hosts;
@@ -186,7 +186,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 
 + (NSArray<BKHosts *> *)allHosts
 {
-  if (__hosts == nil) {
+  if (!__hosts.count) {
     [BKHosts loadHosts];
   }
   return [__hosts copy];
@@ -195,46 +195,6 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
 + (NSInteger)count
 {
   return [[self all] count];
-}
-
-+ (BOOL)saveHosts
-{
-  if (!__hosts) {
-    return NO;
-  }
-  
-  [self saveAllToSSHConfig];
-
-  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.hosts.save.txt"];
-  // Save IDs to file
-  NSError *error = nil;
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__hosts requiringSecureCoding:YES error:&error];
-  if (error) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to archive hosts to data: %@", error]];
-  }
-  
-  if (!data) {
-    [miniLog log: @"Archived data is nil"];
-    [miniLog save];
-    return NO;
-  }
-  
-  BOOL result = [data writeToFile:[BlinkPaths blinkHostsFile] options:NSDataWritingAtomic error:&error];
-  
-  if (error) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to write data to file: %@", error]];
-    [miniLog save];
-    return NO;
-  }
-  
-  if (result) {
-    [miniLog log:@"Write success"];
-  } else {
-    [miniLog log:@"Failed to write data to file without error"];
-  }
-  [miniLog save];
-  
-  return result;
 }
 
 + (instancetype)saveHost:(NSString *)host
@@ -340,46 +300,56 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
   [BKHosts saveHosts];
 }
 
-+ (void)loadHosts
++ (BOOL)saveHosts
 {
-  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.hosts.load.txt"];
-  NSError *error = nil;
-  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkHostsFile] options:NSDataReadingMappedIfSafe error:&error];
-  
-  if (error || !data) {
-    if (error.code != NSFileReadNoSuchFileError) {
-      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load data: %@", error];
-      [miniLog log:errorMessage];
-      OwnAlertController *alert = [OwnAlertController
-                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
-                                   message:[NSString stringWithFormat: @"There was an issue loading your configuration. This may result in loss of data. Please take a screenshot and restart the app. %@", errorMessage]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-      
-      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-      [alert addAction:ok];
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [alert presentWithAnimated:true completion:nil];
-      });
-      // In this case, it is safe to continue
-      [miniLog save];
-    }
-    
-    __hosts = [[NSMutableArray alloc] init];
-    return;
+  if (!__hosts) {
+    return NO;
   }
   
-  NSArray *result = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[BKHosts class] fromData:data error:&error];
+  [self saveAllToSSHConfig];
+
+  NSError *error = nil;
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__hosts
+                                       requiringSecureCoding:YES
+                                                       error:&error];
+  if (error || !data) {
+    NSLog(@"[BKHosts] Failed to archive hosts to data: %@", error);
+    return NO;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths blinkHostsFile]
+                          options:NSDataWritingAtomic | NSDataWritingFileProtectionNone
+                            error:&error];
   
   if (error || !result) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
-    [miniLog save];
-    
-    __hosts = [[NSMutableArray alloc] init];
-    return;
+    NSLog(@"[BKHosts] Failed to write data to file: %@", error);
+    return NO;
   }
   
-  [miniLog log:@"Loaded without errors."];
-  [miniLog save];
+  return result;
+}
+
++ (void)loadHosts {
+  __hosts = [[NSMutableArray alloc] init];
+  
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkHostsFile]
+                                        options:NSDataReadingMappedIfSafe
+                                          error:&error];
+  
+  if (error || !data) {
+    NSLog(@"[BKHosts] Failed to load data: %@", error);
+    return;
+  }
+  NSArray *result =
+    [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClass:[BKHosts class]
+                                              fromData:data
+                                                 error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKHosts] Failed to unarchive data: %@", error);
+    return;
+  }
   
   __hosts = [result mutableCopy];
 }

@@ -33,7 +33,7 @@
 
 @interface BlinkPaths : NSObject
 
-+ (NSString *)homePath;
++ (NSString *) homePath;
 
 + (NSString *) documentsPath;
 + (NSString *) iCloudDriveDocuments;
@@ -44,17 +44,19 @@
 + (NSString *) ssh;
 
 + (NSURL *) blinkURL;
-+ (NSString *)blinkKeysFile;
-+ (NSString *)blinkHostsFile;
-+ (NSURL *)blinkSSHConfigFileURL;
-+ (NSString *)blinkSyncItemsFile;
-+ (NSString *)blinkProfileFile;
-+ (NSURL *)blinkKBConfigURL;
++ (NSURL *) blinkSSHConfigFileURL;
++ (NSURL *) blinkKBConfigURL;
 
++ (NSString *) blinkKeysFile;
++ (NSString *) blinkHostsFile;
++ (NSString *) blinkDefaultsFile;
++ (NSString *) blinkSyncItemsFile;
++ (NSString *) blinkProfileFile;
+
++ (NSURL *) historyURL;
 + (NSString *) historyFile;
-+ (NSURL *)historyURL;
 + (NSString *) knownHostsFile;
-+ (NSString *) defaultsFile;
+
 
 + (void)linkICloudDriveIfNeeded;
 + (void)linkDocumentsIfNeeded;

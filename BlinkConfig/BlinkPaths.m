@@ -181,7 +181,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self ssh] stringByAppendingPathComponent:@"known_hosts"];
 }
 
-+ (NSString *)defaultsFile
++ (NSString *)blinkDefaultsFile
 {
   return [[self blink] stringByAppendingPathComponent:@"defaults"];
 }
@@ -221,7 +221,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 + (void)migrateToHomeAtGroupContainer {
   [self cleanedSymlinksInHomeDirectory];
   NSFileManager *fm = NSFileManager.defaultManager;
-  //[fm removeItemAtPath:[self homePath] error:nil];
+//  [fm removeItemAtPath:[self homePath] error:nil];
   
   NSString *homePath = [self homePath];
  
@@ -229,9 +229,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
     return;
   }
   NSError *error = nil;
-  BOOL ok = [fm createDirectoryAtPath:homePath withIntermediateDirectories:YES attributes:nil error:nil];
+  BOOL ok = [fm createDirectoryAtPath:homePath
+          withIntermediateDirectories:YES
+                           attributes:nil
+                                error:&error];
   
-  if (!ok) {
+  if (error || !ok) {
     NSLog(@"Failed to create home folder :%@.", error);
     return;
   }
@@ -244,8 +247,23 @@ NSString *__iCloudsDriveDocumentsPath = nil;
     NSString *folderHomePath = [homePath stringByAppendingPathComponent:folder];
     
     ok = [fm copyItemAtPath:folderDocumentsPath toPath:folderHomePath error:&error];
-    if (!ok) {
+    if (error || !ok) {
       NSLog(@"Failed to copy folder %@ :%@.", folder, error);
+    }
+  }
+  
+  NSDictionary<NSFileAttributeKey, id> *attrs = @{NSFileProtectionKey: NSFileProtectionNone};
+
+  NSArray<NSString *> * pathsToFixPermissions = @[
+    BlinkPaths.blinkKeysFile,
+    BlinkPaths.blinkHostsFile,
+    BlinkPaths.blinkDefaultsFile
+  ];
+  
+  for (NSString *path in pathsToFixPermissions) {
+    ok = [fm setAttributes:attrs ofItemAtPath:path error:&error];
+    if (error || !ok) {
+      NSLog(@"Failed to set attribtues on %@ :%@.", path, error);
     }
   }
 }

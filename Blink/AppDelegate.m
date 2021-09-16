@@ -75,13 +75,6 @@ void __setupProcessEnv() {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-  [BKDefaults loadDefaults];
-  [BKPubKey loadIDS];
-  [BKHosts loadHosts];
-  [self _loadProfileVars];
-  [[UIView appearance] setTintColor:[UIColor blinkTint]];
-  
-  signal(SIGPIPE, __on_pipebroken_signal);
   
   [BlinkPaths migrateToHomeAtGroupContainer];
   

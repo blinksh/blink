@@ -83,90 +83,56 @@ static UICKeyChainStore *__get_keychain() {
 
 + (NSArray *)all
 {
-  if (!__identities) {
+  if (!__identities.count) {
     [self loadIDS];
   }
   return [__identities copy];
 }
 
-+ (BOOL)saveIDS
-{
-  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.save.txt"];
-  
++ (BOOL)saveIDS {
   NSError *error = nil;
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__identities requiringSecureCoding:YES error:&error];
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__identities
+                                       requiringSecureCoding:YES
+                                                       error:&error];
   if (error || !data) {
-    [miniLog log: [NSString stringWithFormat: @"Failed to archive to data: %@", error]];
-    [miniLog save];
-    return FALSE;
+    NSLog(@"[BKPubKey] Failed to archive to data: %@", error);
+    return NO;
   }
   
-  BOOL result = [data writeToFile:[BlinkPaths blinkKeysFile] options:NSDataWritingAtomic error:&error];
+  BOOL result = [data writeToFile:[BlinkPaths blinkKeysFile]
+                          options:NSDataWritingAtomic | NSDataWritingFileProtectionNone
+                            error:&error];
   
   if (error || !result) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to save data to file: %@", error]];
-  } else {
-    [miniLog log:@"Written wihtout errors."];
+    NSLog(@"[BKPubKey] Failed to save data to file: %@", error);
+    return NO;
   }
   
-  [miniLog save];
   return result;
 }
 
 + (void)loadIDS {
-  
-  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.keys.load.txt"];
+  __identities = [[NSMutableArray alloc] init];
   
   NSError *error = nil;
-  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile] options:NSDataReadingMappedIfSafe error:&error];
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile]
+                                        options:NSDataReadingMappedIfSafe
+                                          error:&error];
   if (error || !data) {
-    __identities = [[NSMutableArray alloc] init];
-
-    if (error.code != NSFileReadNoSuchFileError) {
-      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load data: %@", error];
-      [miniLog log:errorMessage];
-      OwnAlertController *alert = [OwnAlertController
-                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
-                                   message:[NSString stringWithFormat: @"There was an issue loading your configuration. This may result in loss of data. Please take a screenshot and restart the app. %@", errorMessage]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-      
-      UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-      [alert addAction:ok];
-      dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-        [alert presentWithAnimated:true completion:nil];
-      });
-      
-      [miniLog save];
-      return;
-    } else {
-      // Create default key in next main queue step in order to speedup app start.
-      dispatch_async(dispatch_get_main_queue(), ^{
-        [self saveDefaultKey];
-        [miniLog log: @"New default key is generated"];
-        [miniLog save];
-      });
-      return;
-    }
-  }
-  
-  NSArray *result = [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClasses:[NSSet setWithObjects:BKPubKey.class, nil] fromData:data error:&error];
-  
-  if (error || !result) {
-    [miniLog log:[NSString stringWithFormat:@"Failed to unarchive data: %@", error]];
-    
-    // Initialize the structure if it doesn't exist, with a default id_rsa key
-    __identities = [[NSMutableArray alloc] init];
-    
-    // Create default key in next main queue step in order to speedup app start.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      [self saveDefaultKey];
-      [miniLog log: @"New default key is generated"];
-      [miniLog save];
-    });
+    NSLog(@"[BKPubKey] Failed to load data: %@", error);
     return;
   }
-  [miniLog log:@"Loaded without errors."];
-  [miniLog save];
+
+  NSArray *result =
+    [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClasses:[NSSet setWithObjects:BKPubKey.class, nil]
+                                                fromData:data
+                                                   error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKPubKey] Failed to unarchive data: %@", error);
+    return;
+  }
+  
   __identities = [result mutableCopy];
 }
 

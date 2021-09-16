@@ -107,47 +107,50 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   return YES;
 }
 
-+ (void)loadDefaults
-{
-  BKMiniLog * miniLog = [[BKMiniLog alloc] initWithName:@"log.defaults.load.txt"];
-  
-  // Load IDs from file
++ (BOOL)saveDefaults {
   NSError *error = nil;
-  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths defaultsFile] options:NSDataReadingMappedIfSafe error:&error];
-  if (error != nil && error.code != NSFileReadNoSuchFileError) {
-      NSString *errorMessage = [NSString stringWithFormat:@"Failed to load data: %@", error];
-      [miniLog log:errorMessage];
-      OwnAlertController *alert = [OwnAlertController
-                                   alertControllerWithTitle:@"iOS15 Error Trace. Please report."
-                                   message:[NSString stringWithFormat: @"There was an issue loading your configuration. This may result in loss of data. Please take a screenshot and restart the app. %@", errorMessage]
-                                   preferredStyle:UIAlertControllerStyleAlert];
-    
-    UIAlertAction *ok = [UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:nil];
-      [alert addAction:ok];
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^(void) {
-      [alert presentWithAnimated:true completion:nil];
-    });
-    // In this case, it is safe to continue
-    [miniLog save];
-  }
-  if (data) {
-    defaults = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class] fromData:data error:&error];
-    if (error != nil) {
-      [miniLog log:[NSString stringWithFormat:@"Failed to unarchivedObject: %@", error]];
-    }
-  } else {
-    [miniLog log: @"Data is nil"];
-  }
-
-  if (defaults) {
-    [miniLog log: @"Defaults are loaded without errors."];
-  } else {
-    [miniLog log: @"Creating new defaults"];
-    // Initialize the structure if it doesn't exist
-    defaults = [[BKDefaults alloc] init];
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:defaults
+                                       requiringSecureCoding:YES
+                                                       error:&error];
+  
+  if (error || !data) {
+    NSLog(@"[BKDefaults] Failed to archive: %@", error);
+    return NO;
   }
   
-  [miniLog save];
+  BOOL result = [data writeToFile:[BlinkPaths blinkDefaultsFile]
+                          options:NSDataWritingAtomic | NSDataWritingFileProtectionNone
+                            error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKDefaults] Failed to save data to file: %@", error);
+    return NO;
+  }
+  
+  return result;
+}
+
+
++ (void)loadDefaults {
+  defaults = [[BKDefaults alloc] init];
+  
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkDefaultsFile]
+                                        options:NSDataReadingMappedIfSafe
+                                          error:&error];
+  
+  if (error || !data) {
+    NSLog(@"[BKDefaults] Failed to load data: %@", error);
+  } else {
+    BKDefaults * result = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class]
+                                                            fromData:data
+                                                               error:&error];
+    if (error || !result) {
+      NSLog(@"[BKDefaults] Failed to unarchive: %@", error);
+    } else {
+      defaults = result;
+    }
+  }
   
   if (defaults.layoutMode == BKLayoutModeDefault) {
     defaults.layoutMode = [LayoutManager deviceDefaultLayoutMode];
@@ -182,42 +185,6 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if(!defaults.defaultUser || ![[defaults.defaultUser stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]){
     [defaults setDefaultUser:[UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeUserName]];
   }
-}
-
-+ (BOOL)saveDefaults
-{
-  BKMiniLog *miniLog = [[BKMiniLog alloc] initWithName:@"log.defaults.save.txt"];
-  NSError *error = nil;
-  
-  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:defaults requiringSecureCoding:YES error:&error];
-  
-  if (error) {
-    [miniLog log:[NSString stringWithFormat: @"Failed to archive: %@", error]];
-    [miniLog save];
-    return NO;
-  }
-  
-  if (data == nil) {
-    [miniLog log:@"Archived data is nil"];
-    [miniLog save];
-    return NO;
-  }
-  
-  BOOL result = [data writeToFile:[BlinkPaths defaultsFile] options:NSDataWritingAtomic error:&error];
-  
-  if (error) {
-    [miniLog log:[NSString stringWithFormat: @"Failed to save data to file: %@", error]];
-    [miniLog save];
-    return NO;
-  }
-  
-  if (!result) {
-    [miniLog log:@"Failed to save data without error"];
-  }
-  
-  [miniLog save];
-  
-  return result;
 }
 
 + (void)setCursorBlink:(BOOL)state
