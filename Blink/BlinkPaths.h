@@ -47,6 +47,7 @@
 + (NSURL *) blinkURL;
 + (NSString *)blinkKeysFile;
 + (NSString *)blinkHostsFile;
++ (NSString *)blinkDefaultsFile;
 + (NSString *)blinkSyncItemsFile;
 + (NSString *)blinkProfileFile;
 + (NSURL *)blinkKBConfigURL;
@@ -54,9 +55,11 @@
 + (NSString *) historyFile;
 + (NSURL *)historyURL;
 + (NSString *) knownHostsFile;
-+ (NSString *) defaultsFile;
+
 
 + (void)linkICloudDriveIfNeeded;
+
++ (void)fixPermissionsIfNeeded;
 
 
 @end

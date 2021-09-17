@@ -166,9 +166,37 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [[self ssh] stringByAppendingPathComponent:@"known_hosts"];
 }
 
-+ (NSString *)defaultsFile
++ (NSString *)blinkDefaultsFile
 {
   return [[self blink] stringByAppendingPathComponent:@"defaults"];
+}
+
++ (void)fixPermissionsIfNeeded {
+  NSUserDefaults *ud = NSUserDefaults.standardUserDefaults;
+  NSString *permissionsFixedKey = @"_permissionsFixed";
+  
+  if ([ud boolForKey:permissionsFixedKey]) {
+    return;
+  }
+  
+  NSFileManager *fm = NSFileManager.defaultManager;
+  
+  NSArray<NSString *> * paths = @[
+    [self blinkDefaultsFile],
+    [self blinkKeysFile],
+    [self blinkHostsFile]
+  ];
+  
+  NSDictionary<NSFileAttributeKey, id> *attrs = @{NSFileProtectionKey: NSFileProtectionNone};
+  NSError *error = nil;
+  for (NSString *path in paths) {
+    BOOL ok = [fm setAttributes:attrs ofItemAtPath:path error:&error];
+    if (error || !ok) {
+      NSLog(@"Failed to set attribtues on %@ :%@.", path, error);
+    }
+  }
+  
+  [ud setBool:YES forKey:permissionsFixedKey];
 }
 
 @end

@@ -43,13 +43,25 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 #pragma mark - NSCoding
 
++ (BOOL)supportsSecureCoding {
+  return YES;
+}
+
 - (id)initWithCoder:(NSCoder *)coder
 {
-  _themeName = [coder decodeObjectForKey:@"themeName"];
-  _fontName = [coder decodeObjectForKey:@"fontName"];
-  _fontSize = [coder decodeObjectForKey:@"fontSize"];
-  _externalDisplayFontSize = [coder decodeObjectForKey:@"externalDisplayFontSize"];
-  _defaultUser = [coder decodeObjectForKey:@"defaultUser"];
+  self = [super init];
+  if (!self) {
+    return self;
+  }
+  NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
+  NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
+  
+  
+  _themeName = [coder decodeObjectOfClasses:strings forKey:@"themeName"];
+  _fontName = [coder decodeObjectOfClasses:strings forKey:@"fontName"];
+  _fontSize = [coder decodeObjectOfClasses:numbers forKey:@"fontSize"];
+  _externalDisplayFontSize = [coder decodeObjectOfClasses:numbers forKey:@"externalDisplayFontSize"];
+  _defaultUser = [coder decodeObjectOfClasses:strings forKey:@"defaultUser"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
@@ -59,7 +71,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _layoutMode = (BKLayoutMode)[coder decodeIntegerForKey:@"layoutMode"];
   _overscanCompensation = (BKOverscanCompensation)[coder decodeIntegerForKey:@"overscanCompensation"];
   _xCallBackURLEnabled = [coder decodeBoolForKey:@"xCallBackURLEnabled"];
-  _xCallBackURLKey = [coder decodeObjectForKey:@"xCallBackURLKey"];
+  _xCallBackURLKey = [coder decodeObjectOfClasses:strings forKey:@"xCallBackURLKey"];
   _disableCustomKeyboards = [coder decodeBoolForKey:@"disableCustomKeyboards"];
   _playSoundOnBell = [coder decodeBoolForKey:@"playSoundOnBell"];
   _notificationOnBellUnfocused = [coder decodeBoolForKey:@"notificationOnBellUnfocused"];
@@ -95,17 +107,30 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (void)loadDefaults
 {
-  // Load IDs from file
-  defaults = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths defaultsFile]];
-  if (!defaults) {
-    // Initialize the structure if it doesn't exist
-    defaults = [[BKDefaults alloc] init];
+  defaults = [[BKDefaults alloc] init];
+  
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkDefaultsFile]
+                                        options:NSDataReadingMappedIfSafe
+                                          error:&error];
+  
+  if (error || !data) {
+    NSLog(@"[BKDefaults] Failed to load data: %@", error);
+  } else {
+    BKDefaults * result = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class]
+                                                            fromData:data
+                                                               error:&error];
+    if (error || !result) {
+      NSLog(@"[BKDefaults] Failed to unarchive: %@", error);
+    } else {
+      defaults = result;
+    }
   }
   
   if (defaults.layoutMode == BKLayoutModeDefault) {
     defaults.layoutMode = [LayoutManager deviceDefaultLayoutMode];
   }
-
+  
   if (!defaults.fontName) {
     if ([BKFont withName:@"Pragmata Pro Mono"] != nil) {
       [defaults setFontName:@"Pragmata Pro Mono"];
@@ -118,11 +143,15 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
   
   if (!defaults.fontSize) {
+#if TARGET_OS_MACCATALYST
+    [defaults setFontSize:[NSNumber numberWithInt:22]];
+#else
     if (UIDevice.currentDevice.userInterfaceIdiom == UIUserInterfaceIdiomPad) {
       [defaults setFontSize:[NSNumber numberWithInt:18]];
     } else {
       [defaults setFontSize:[NSNumber numberWithInt:10]];
     }
+#endif
   }
   if (!defaults.externalDisplayFontSize) {
     [defaults setExternalDisplayFontSize:[NSNumber numberWithInt:24]];
@@ -135,8 +164,26 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (BOOL)saveDefaults
 {
-  // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:defaults toFile:[BlinkPaths defaultsFile]];
+  NSError *error = nil;
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:defaults
+                                       requiringSecureCoding:YES
+                                                       error:&error];
+  
+  if (error || !data) {
+    NSLog(@"[BKDefaults] Failed to archive: %@", error);
+    return NO;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths blinkDefaultsFile]
+                          options:NSDataWritingAtomic | NSDataWritingFileProtectionNone
+                            error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKDefaults] Failed to save data to file: %@", error);
+    return NO;
+  }
+  
+  return result;
 }
 
 + (void)setCursorBlink:(BOOL)state

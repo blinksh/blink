@@ -63,7 +63,7 @@ struct blink_ssh_key_struct {
   enum ssh_keytypes_e cert_type;
 };
 
-NSMutableArray *Identities;
+NSMutableArray *__identities;
 
 static UICKeyChainStore *__get_keychain() {
   return [UICKeyChainStore keyChainStoreWithService:@"sh.blink.pkcard"];
@@ -348,7 +348,7 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 + (instancetype)withID:(NSString *)ID
 {
   // Find the ID and return it.
-  for (BKPubKey *i in Identities) {
+  for (BKPubKey *i in __identities) {
     if ([i->_ID isEqualToString:ID]) {
       return i;
     }
@@ -359,28 +359,59 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 
 + (NSMutableArray *)all
 {
-  return Identities;
+  if (!__identities.count) {
+    [self loadIDS];
+  }
+  return [__identities copy];
 }
 
 + (BOOL)saveIDS
 {
-  // Save IDs to file
-  return [NSKeyedArchiver archiveRootObject:Identities toFile:[BlinkPaths blinkKeysFile]];
+  NSError *error = nil;
+  NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__identities
+                                       requiringSecureCoding:YES
+                                                       error:&error];
+  if (error || !data) {
+    NSLog(@"[BKPubKey] Failed to archive to data: %@", error);
+    return NO;
+  }
+  
+  BOOL result = [data writeToFile:[BlinkPaths blinkKeysFile]
+                          options:NSDataWritingAtomic | NSDataWritingFileProtectionNone
+                            error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKPubKey] Failed to save data to file: %@", error);
+    return NO;
+  }
+  
+  return result;
 }
 
 + (void)loadIDS
 {
-  // Load IDs from file
-  if ((Identities = [NSKeyedUnarchiver unarchiveObjectWithFile:[BlinkPaths blinkKeysFile]]) == nil) {
-    // Initialize the structure if it doesn't exist, with a default id_rsa key
-    Identities = [[NSMutableArray alloc] init];
-    
-    // Create default key in next main queue step in order to speedup app start.
-    dispatch_async(dispatch_get_main_queue(), ^{
-      Pki *defaultKey = [[Pki alloc] initRSAWithLength:4096];
-      [self saveCard:@"id_rsa" privateKey:defaultKey.privateKey publicKey:[defaultKey publicKeyWithComment:@""]];
-    });
+  __identities = [[NSMutableArray alloc] init];
+  
+  NSError *error = nil;
+  NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkKeysFile]
+                                        options:NSDataReadingMappedIfSafe
+                                          error:&error];
+  if (error || !data) {
+    NSLog(@"[BKPubKey] Failed to load data: %@", error);
+    return;
   }
+  
+  NSArray *result =
+  [NSKeyedUnarchiver unarchivedArrayOfObjectsOfClasses:[NSSet setWithObjects:BKPubKey.class, nil]
+                                              fromData:data
+                                                 error:&error];
+  
+  if (error || !result) {
+    NSLog(@"[BKPubKey] Failed to unarchive data: %@", error);
+    return;
+  }
+  
+  __identities = [result mutableCopy];
 }
 
 + (id)saveCard:(NSString *)ID privateKey:(NSString *)privateKey publicKey:(NSString *)publicKey
@@ -400,7 +431,7 @@ NSString *__get_passphrase(UIViewController *ctrl) {
   BKPubKey *card = [BKPubKey withID:ID];
   if (!card) {
     card = [[BKPubKey alloc] initWithID:ID privateKeyRef:privateKeyRef publicKey:publicKey];
-    [Identities addObject:card];
+    [__identities addObject:card];
   } else {
     card->_privateKeyRef = privateKeyRef;
     card->_publicKey = publicKey;
@@ -416,16 +447,26 @@ NSString *__get_passphrase(UIViewController *ctrl) {
 
 + (NSInteger)count
 {
-  return [Identities count];
+  return [__identities count];
+}
+
++ (BOOL)supportsSecureCoding {
+  return YES;
 }
 
 - (id)initWithCoder:(NSCoder *)coder
 {
-  _ID = [coder decodeObjectForKey:@"ID"];
-  _privateKeyRef = [coder decodeObjectForKey:@"privateKeyRef"];
-  _publicKey = [coder decodeObjectForKey:@"publicKey"];
-
-  return [self initWithID:_ID privateKeyRef:_privateKeyRef publicKey:_publicKey];
+  self = [super init];
+  if (!self) {
+    return self;
+  }
+  NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
+  
+  _ID = [coder decodeObjectOfClasses:strings forKey:@"ID"];
+  _privateKeyRef = [coder decodeObjectOfClasses:strings forKey:@"privateKeyRef"];
+  _publicKey = [coder decodeObjectOfClasses:strings forKey:@"publicKey"];
+  
+  return self;
 }
 
 - (void)encodeWithCoder:(NSCoder *)coder

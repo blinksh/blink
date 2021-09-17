@@ -1442,13 +1442,13 @@
 				TargetAttributes = {
 					D265FBB92317DD3C0017EAC4 = {
 						CreatedOnToolsVersion = 11.0;
-						DevelopmentTeam = "$(TEAM_ID)";
+						DevelopmentTeam = HV2S48975V;
 						ProvisioningStyle = Automatic;
 						TestTargetID = EA0BA18A1C0CC57B00719C1A;
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
-						DevelopmentTeam = "$(TEAM_ID)";
+						DevelopmentTeam = HV2S48975V;
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -2043,7 +2043,7 @@
 				);
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2084,7 +2084,7 @@
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				HEADER_SEARCH_PATHS = $SOURCE_ROOT/Frameworks/include;
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 14.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",

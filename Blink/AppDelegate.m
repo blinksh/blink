@@ -75,6 +75,8 @@ void __setupProcessEnv() {
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+  
+  [BlinkPaths fixPermissionsIfNeeded];
   signal(SIGPIPE, __on_pipebroken_signal);
   
   dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);
