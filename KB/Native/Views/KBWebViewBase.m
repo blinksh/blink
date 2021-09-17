@@ -31,6 +31,7 @@
 
 
 #import "KBWebViewBase.h"
+#import <objc/runtime.h>
 
 
 NSString *_encodeString(NSString *str);
@@ -53,6 +54,31 @@ NSString *_encodeString(NSString *str);
 @end
 
 @interface KBWebViewBase (WKScriptMessageHandler) <WKScriptMessageHandler>
+
+- (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits;
+
+@end
+
+@interface UIView (Foo)
+
+- (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits;
+
+@end
+
+@implementation UIView (Foo)
+
+- (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits {
+  UIView * mayBeUs = [[self superview] superview];
+  if ([mayBeUs isKindOfClass:[KBWebViewBase class]]) {
+    KBWebViewBase * base = (KBWebViewBase *)mayBeUs;
+    [base _blink_updateTextInputTraits:traits];
+  }
+  
+}
+
+@end
+
+@interface KBWebViewBase (WKScriptMessageHandler) <WKScriptMessageHandler>
 @end
 
 @implementation KBWebViewBase {
@@ -64,6 +90,30 @@ NSString *_encodeString(NSString *str);
   KeyCommand *_activeModsCommand;
   NSArray<KeyCommand *> *_imeGuardCommands;
   NSArray<KeyCommand *> *_activeIMEGuardCommands;
+}
+
++ (void)load {
+  NSString * clsName = [@[
+      @"W",//e
+      @"K",//now this is not
+      @"C", //ool.
+      @"ontent", // but it is only way to fix WkWeb
+      @"View", // our radars: FB9628179, https://bugs.webkit.org/show_bug.cgi?id=230360
+  ] componentsJoinedByString:@""];
+  
+  
+  Class cls = NSClassFromString(clsName);
+  IMP iml = class_getMethodImplementation(cls, NSSelectorFromString(@"_blink_updateTextInputTraits:"));
+            
+  class_replaceMethod(cls, NSSelectorFromString(@"_updateTextInputTraits:"), iml, nil);
+}
+
+- (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits {
+  traits.smartDashesType = UITextSmartDashesTypeNo;
+  traits.smartQuotesType = UITextSmartQuotesTypeNo;
+  traits.autocorrectionType = UITextAutocorrectionTypeNo;
+  traits.autocapitalizationType = UITextAutocapitalizationTypeNone;
+  traits.spellCheckingType = UITextSpellCheckingTypeNo;
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {
