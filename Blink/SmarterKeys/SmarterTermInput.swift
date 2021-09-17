@@ -150,7 +150,7 @@ class CaretHider {
     
     _inputAccessoryView?.isHidden = false
     
-    spaceController?.cleanupControllers()
+//    spaceController?.cleanupControllers()
 
     return res
   }

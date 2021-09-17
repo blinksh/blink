@@ -270,7 +270,7 @@ class SpaceController: UIViewController {
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
       self._attachInputToCurrentTerm()
-      self.cleanupControllers()
+//      self.cleanupControllers()
       completion?(didComplete)
     }
   }
@@ -644,18 +644,18 @@ extension SpaceController {
     _closeCurrentSpace()
   }
   
-  func cleanupControllers() {
-    for c in _termControllers {
-      if c.view?.superview == nil {
-        if c.removeFromContainer() {
-          _termControllers.remove(c)
-        }
-      }
-      if c.view?.window != view.window {
-        _termControllers.remove(c)
-      }
-    }
-  }
+//  func cleanupControllers() {
+//    for c in _termControllers {
+//      if c.view?.superview == nil {
+//        if c.removeFromContainer() {
+//          _termControllers.remove(c)
+//        }
+//      }
+//      if c.view?.window != view.window {
+//        _termControllers.remove(c)
+//      }
+//    }
+//  }
 
   private func _focusOtherWindowAction() {
     
