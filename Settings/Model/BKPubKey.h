@@ -50,7 +50,7 @@ extern const NSString *BK_KEYTYPE_Ed25519;
 
 @end
 
-@interface BKPubKey : NSObject <NSCoding, UIActivityItemSource>
+@interface BKPubKey : NSObject <NSSecureCoding, UIActivityItemSource>
 
 @property NSString *ID;
 @property (readonly) NSString *privateKey;
