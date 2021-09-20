@@ -99,10 +99,10 @@ extension Publisher {
     .eraseToAnyPublisher()
   }
   
-  func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
-  AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
-    tryOperation(operation)
-  }
+//  func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
+//  AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
+//    tryOperation(operation)
+//  }
 }
 
 extension AnyPublisher where Output == ssh_session, Failure == Error {

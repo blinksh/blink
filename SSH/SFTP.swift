@@ -112,8 +112,7 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   func connection() -> AnyPublisher<sftp_session, Error> {
-    return Just(sftp).subscribe(on: rloop).setFailureType(to: Error.self)
-      .eraseToAnyPublisher()
+    return .init(Just(sftp).subscribe(on: rloop).setFailureType(to: Error.self))
   }
   
   func canonicalize(_ path: String) throws -> (String, FileAttributeType) {
@@ -166,14 +165,14 @@ public class SFTPClient : BlinkFiles.Translator {
       }
     }
     
-    return connection().trySFTP { sftp -> SFTPClient in
+    return connection().tryMap { sftp -> SFTPClient in
       let (canonicalPath, type) = try self.canonicalize(absPath)
       
       self.path = canonicalPath
       self.fileType = type
       
       return self
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func directoryFilesAndAttributes() -> AnyPublisher<[FileAttributes], Error> {
@@ -181,7 +180,7 @@ public class SFTPClient : BlinkFiles.Translator {
       return .fail(error: FileError(title: "Not a directory.", in: session))
     }
     
-    return connection().trySFTP { sftp -> [FileAttributes] in
+    return connection().tryMap { sftp -> [FileAttributes] in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -204,7 +203,7 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return contents
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func open(flags: Int32) -> AnyPublisher<File, Error> {
@@ -212,7 +211,7 @@ public class SFTPClient : BlinkFiles.Translator {
       return .fail(error: FileError(title: "Not a file.", in: session))
     }
     
-    return connection().trySFTP { sftp -> SFTPFile in
+    return connection().tryMap { sftp -> SFTPFile in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -221,7 +220,7 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return SFTPFile(file, in: self)
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func create(name: String, flags: Int32, mode: mode_t = S_IRWXU) -> AnyPublisher<BlinkFiles.File, Error> {
@@ -229,7 +228,7 @@ public class SFTPClient : BlinkFiles.Translator {
       return .fail(error: FileError(title: "Not a directory.", in: session))
     }
     
-    return connection().trySFTP { sftp -> SFTPFile in
+    return connection().tryMap { sftp -> SFTPFile in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -239,11 +238,11 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return SFTPFile(file, in: self)
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func remove() -> AnyPublisher<Bool, Error> {
-    return connection().trySFTP { sftp -> Bool in
+    return connection().tryMap { sftp -> Bool in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -253,11 +252,11 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return true
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func rmdir() -> AnyPublisher<Bool, Error> {
-    return connection().trySFTP { sftp -> Bool in
+    return connection().tryMap { sftp -> Bool in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -267,13 +266,13 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return true
-    }
+    }.eraseToAnyPublisher()
   }
   
   // Mode uses same default as mkdir
   // This is working well for filesystems, but everything else...
   public func mkdir(name: String, mode: mode_t = S_IRWXU | S_IRWXG | S_IRWXO) -> AnyPublisher<Translator, Error> {
-    return connection().trySFTP { sftp -> Translator in
+    return connection().tryMap { sftp -> Translator in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -286,11 +285,11 @@ public class SFTPClient : BlinkFiles.Translator {
       
       self.path = dirPath
       return self
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func stat() -> AnyPublisher<FileAttributes, Error> {
-    return connection().trySFTP { sftp -> FileAttributes in
+    return connection().tryMap { sftp -> FileAttributes in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -300,12 +299,12 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return self.parseItemAttributes(attrs)
-    }
+    }.eraseToAnyPublisher()
   }
   
   public func wstat(_ attrs: FileAttributes) -> AnyPublisher<Bool, Error> {
     // TODO Move
-    return connection().trySFTP { sftp in
+    return connection().tryMap { sftp in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -317,7 +316,7 @@ public class SFTPClient : BlinkFiles.Translator {
       }
       
       return true
-    }
+    }.eraseToAnyPublisher()
   }
   
   func parseItemAttributes(_ attrs: sftp_attributes_struct) -> FileAttributes {
@@ -413,7 +412,7 @@ public class SFTPFile : BlinkFiles.File {
   }
   
   public func close() -> AnyPublisher<Bool, Error> {
-    return client.connection().trySFTP { _ in
+    return client.connection().tryMap { _ in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
