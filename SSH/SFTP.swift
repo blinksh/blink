@@ -400,7 +400,7 @@ public class SFTPFile : BlinkFiles.File {
   let blockSize = 32 * 1024
   let maxConcurrentOps = 20
   var demand: Subscribers.Demand = .none
-  var pub = PassthroughSubject<DispatchData, Error>()
+  var pub: PassthroughSubject<DispatchData, Error>!
   
   init(_ file: sftp_file, in client: SFTPClient) {
     self.client = client
@@ -434,43 +434,37 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
     inflightReads = []
     pub = PassthroughSubject<DispatchData, Error>()
     
-    return pub.handleEvents(
-      receiveRequest: { (req) in
-        // none, unlimited, one
-        self.demand = req
-        self.rloop.perform { self.inflightReadsLoop() }
-      }
-    ).reduce(DispatchData.empty, { prevValue, newValue -> DispatchData in
-      var n = prevValue
-      n.append(newValue)
-      return n
-    })
-    .subscribe(on: rloop)
-    .eraseToAnyPublisher()
+    return
+      .demandingSubject(pub,
+                        receiveRequest: receiveRequest,
+                        on: rloop)
   }
   
   public func writeTo(_ w: Writer) -> AnyPublisher<Int, Error> {
     inflightReads = []
     pub = PassthroughSubject<DispatchData, Error>()
-    
-    return pub.handleEvents(
-      receiveRequest: { (req) in
-        print("demand")
-        self.demand = req
-        self.rloop.perform {
-          print("processing demand")
-          self.inflightReadsLoop()
-        }
-      }
-    ).subscribe(on: self.rloop)
-    .flatMap(maxPublishers: .max(1)) { data -> AnyPublisher<Int, Error> in
-      return w.write(data, max: data.count).eraseToAnyPublisher()
-    }
-    .eraseToAnyPublisher()
+
+    return
+      .demandingSubject(pub,
+                        receiveRequest: receiveRequest(_:),
+                        on: rloop)
+      .flatMap(maxPublishers: .max(1)) { data -> AnyPublisher<Int, Error> in
+        return w.write(data, max: data.count)
+      }.eraseToAnyPublisher()
   }
   
+  private func receiveRequest(_ req: Subscribers.Demand) {
+    self.demand = req
+    self.inflightReadsLoop()
+  }
+
   // Handle demand. Read scheduled blocks if they are available and push them.
   func inflightReadsLoop() {
+    if file == nil {
+      pub.send(completion: .failure(FileError(title: "File Closed", in: self.session)))
+      return
+    }
+
     var data: DispatchData?
     var isComplete = false
     
@@ -519,12 +513,6 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
   
   
   func readBlocks() throws -> (DispatchData, Bool) {
-    // In an asynchronous scenario, the file may close while we are still reading somewhere else.
-    // We follow DispatchIO interface, throwing an error in case the file closes.
-    if file == nil {
-      throw FileError(title: "File Closed", in: self.session)
-    }
-    
     var data = DispatchData.empty
     let newReads: [UInt32] = []
     var lastIdx = -1
@@ -566,9 +554,14 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
 extension SFTPFile: BlinkFiles.Writer {
   // TODO Take into account length
   public func write(_ buf: DispatchData, max length: Int) -> AnyPublisher<Int, Error> {
-    let pb = PassthroughSubject<Int, Error>()
+    var pb = PassthroughSubject<Int, Error>()
     
     func writeLoop(_ w: DispatchData, _ wn: DispatchData) {
+      if self.file == nil {
+        pb.send(completion: .failure(FileError(title: "File is closed", in: session)))
+        return
+      }
+      
       var writtenBytes = 0
       
       var write = w
@@ -593,7 +586,7 @@ extension SFTPFile: BlinkFiles.Writer {
             written = written.subdata(in: writtenBytes..<written.count)
           }
         } catch {
-          pub.send(completion: .failure(error))
+          pb.send(completion: .failure(error))
         }
       }
       
@@ -635,8 +628,10 @@ extension SFTPFile: BlinkFiles.Writer {
       }
     }
     
-    return pb.handleEvents(receiveRequest: { _ in self.rloop.perform { writeLoop(buf, buf) } })
-      .eraseToAnyPublisher()
+    return
+      .demandingSubject(pb,
+                        receiveRequest: { _ in writeLoop(buf, buf) },
+                        on: self.rloop)
   }
   
   func checkWrites() throws -> Int {
