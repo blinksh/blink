@@ -169,87 +169,42 @@ extension Translator {
 //    .collect()
 //    .flatMap { self.copy(from: $0) }.eraseToAnyPublisher()
   }
-  
+}
+
+fileprivate enum FileState {
+  case copy(File)
+  case attributes(File)
+}
+
+extension Translator {
   fileprivate func copyFile(from t: Translator,
                             name: String,
                             size: NSNumber,
                             attributes: FileAttributes) -> CopyProgressInfoPublisher {
-    var file: BlinkFiles.File!
-    var totalWritten: UInt64 = 0
 
     return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
-      .flatMap { f -> CopyProgressInfoPublisher in
-        file = f
+      .flatMap { destination -> CopyProgressInfoPublisher in
         if size == 0 {
           return .just(CopyProgressInfo(name: name, written:0, size: 0))
         }
-        return f.copyFile(from: t, name: name, size: size)
-      }.flatMap { report -> CopyProgressInfoPublisher in
-        totalWritten += report.written
-        if report.size == totalWritten {
-          print("Closing file...")
-          return file.close()
-            .flatMap { _ in
-              // TODO From the File, we could offer the Translator itself.
-              return self.cloneWalkTo(name).flatMap { $0.wstat(attributes) }
+        
+        return t.open(flags: O_RDONLY)
+          .flatMap { [FileState.copy($0), FileState.attributes($0)].publisher }
+          .flatMap(maxPublishers: .max(1)) { state -> CopyProgressInfoPublisher in
+            switch state {
+            case .copy(let source):
+              return (source as! WriterTo)
+                .writeTo(destination)
+                .map { CopyProgressInfo(name: name, written: UInt64($0), size: size.uint64Value) }
+                .eraseToAnyPublisher()
+            case .attributes(let source):
+              return Publishers.Zip(source.close(), destination.close())
+                // TODO From the File, we could offer the Translator itself.
+                .flatMap { _ in self.cloneWalkTo(name).flatMap { $0.wstat(attributes) } }
+                .map { _ in CopyProgressInfo(name: name, written: 0, size: size.uint64Value) }
+                .eraseToAnyPublisher()
             }
-            .map { _ in report }.eraseToAnyPublisher()
-        }
-        return .just(report)
-      }.eraseToAnyPublisher()
-  }
-}
-
-extension File {
-  fileprivate func copyFile(from t: Translator,
-                            name: String,
-                            size: NSNumber) -> CopyProgressInfoPublisher {
-    let fileSize = size.uint64Value
-    var totalWritten: UInt64 = 0
-    print("Copying file \(name)")
-    
-    return t.open(flags: O_RDONLY)
-      .tryMap { file -> BlinkFiles.WriterTo in
-        guard let file = file as? WriterTo else {
-          throw CopyError(msg: "Not the proper file type")
-        }
-        return file
-      }
-      .flatMap { file -> CopyProgressInfoPublisher in
-        return file.writeTo(self).print("WRITE").flatMap { w -> CopyProgressInfoPublisher in
-          let written = UInt64(w)
-          print("File Copied bytes \(totalWritten)")
-          totalWritten += written
-          let report: AnyPublisher<CopyProgressInfo, Error> =
-            .just(CopyProgressInfo(name: name, written: written, size: fileSize))
-          
-          // TODO We could offer a flag for EOF inside the File, and only close in that case.
-          // We could also close on WriterTo, but the interface is too generic for that.
-          // In that case, w could be zero.
-          if totalWritten == fileSize {
-            // Close and send the final report
-            // NOTE We are closing a file for an active operation (the writeTo).
-            // We have no other point to close and also emit progress. Future ideas may change that.
-            // - We could enforce writeTo to close on EOF.
-            // - We could communicate when the file is EOF, and send a written = 0 to capture.
-            return (file as! File).close().flatMap { _ -> CopyProgressInfoPublisher in
-                print("File finished copying")
-                return report
-              }.eraseToAnyPublisher()
-          }
-          
-          return report
-        }
-        .tryCatch { error -> CopyProgressInfoPublisher in
-          // Closing the file while reading may provoke an error. Capture it here and if we are done, we ignore it.
-          if totalWritten == fileSize {
-            print("Ignoring error as file finished copy")
-            return .just(CopyProgressInfo(name: name, written: totalWritten, size: fileSize))
-          } else {
-            throw error
-          }
-        }
-        .eraseToAnyPublisher()
+          }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()
   }
 }

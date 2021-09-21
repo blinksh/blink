@@ -217,10 +217,16 @@ public class BlinkCopy: NSObject {
           currentSpeed = String(format: "%.2f", kbCopied / Double(elapsed))
         }
       }
-      if currentCopied == progress.size {
-        print("\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", to: &self.stdout)
+      
+      let progressOutput = [
+        "\u{001B}[K\(progress.name)",
+        "\(currentCopied) of \(progress.size)",
+        "\(currentSpeed ?? "-")kb/S"].joined(separator: "\t")
+      
+      if progress.written == 0 {
+        print(progressOutput, to: &self.stdout)
       } else {
-        print("\r\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", terminator: "", to: &self.stdout)
+        print(progressOutput, terminator: "\r", to: &self.stdout)
       }
     })
 
