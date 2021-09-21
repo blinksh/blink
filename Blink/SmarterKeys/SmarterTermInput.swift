@@ -436,7 +436,9 @@ extension SmarterTermInput {
     switch action {
     case #selector(UIResponder.paste(_:)):
       return UIPasteboard.general.string != nil
-    case #selector(UIResponder.copy(_:)):
+    case
+      #selector(UIResponder.copy(_:)),
+      #selector(UIResponder.cut(_:)):
       // When the action is requested from the keyboard, the sender will be nil.
       // In that case we let it go through to the WKWebView.
       // Otherwise, we check if there is a selection.
