@@ -178,13 +178,17 @@ public class BlinkCopy: NSObject {
 
     // TODO Output object for reports
     var rc: Int32 = 0
-    var currentFile: String?
+    var rootFilePath: String!
+    var currentFile = ""
+    var displayFileName = ""
     var currentCopied: UInt64 = 0
     var currentSpeed: String?
     var sourceBasePath: String?
     var startTimestamp = 0
     var lastElapsed = 0
     copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
+      rootFilePath = d.current
+      
       return sourceTranslator.flatMap {
         $0.translatorsMatching(path: self.command.source.filePath)
       }
@@ -192,7 +196,14 @@ public class BlinkCopy: NSObject {
           var new = all
           new.append(t)
           return new
-        }.flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
+        }
+        .tryMap { source in
+          if source.count == 0 {
+            throw CommandError(message: "Source not found")
+          }
+          return source
+        }
+        .flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         print("Copy failed. \(error)", to: &self.stderr)
@@ -202,7 +213,13 @@ public class BlinkCopy: NSObject {
     }, receiveValue: { progress in //(file, size, written) in
       // ProgressReport object, which we can use here or at the Dashboard.
       if currentFile != progress.name {
-        currentFile = progress.name
+        let width = (Int(self.device.cols / 2) + 3)
+        currentFile = progress.name.replacingOccurrences(of: rootFilePath, with: "")
+        if currentFile.count > width {
+          displayFileName = "..." + currentFile.dropFirst(currentFile.count - width)
+        } else {
+          displayFileName = currentFile
+        }
         currentCopied = progress.written
         startTimestamp = Int(Date().timeIntervalSince1970)
         currentSpeed = nil
@@ -219,8 +236,8 @@ public class BlinkCopy: NSObject {
       }
       
       let progressOutput = [
-        "\u{001B}[K\(progress.name)",
-        "\(currentCopied) of \(progress.size)",
+        "\u{001B}[K\(displayFileName)",
+        "\(currentCopied)/\(progress.size)",
         "\(currentSpeed ?? "-")kb/S"].joined(separator: "\t")
       
       if progress.written == 0 {

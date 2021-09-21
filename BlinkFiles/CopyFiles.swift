@@ -86,9 +86,9 @@ extension Translator {
   public func copy(from ts: [Translator], args: CopyArguments = CopyArguments()) -> CopyProgressInfoPublisher {
     print("Copying \(ts.count) elements")
     return ts.publisher.compactMap { t in
-      return t.fileType == .typeDirectory || t.fileType == .typeRegular ? t : nil
-    }.flatMap(maxPublishers: .max(1)) { t -> CopyProgressInfoPublisher in
-      return copyElement(from: t, args: args)
+      t.fileType == .typeDirectory || t.fileType == .typeRegular ? t : nil
+    }.flatMap(maxPublishers: .max(1)) { t in
+      copyElement(from: t, args: args)
     }.eraseToAnyPublisher()
   }
   
@@ -182,10 +182,12 @@ extension Translator {
                             size: NSNumber,
                             attributes: FileAttributes) -> CopyProgressInfoPublisher {
 
+    let fullFile = (self.current as NSString).appendingPathComponent(name)
+    
     return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
       .flatMap { destination -> CopyProgressInfoPublisher in
         if size == 0 {
-          return .just(CopyProgressInfo(name: name, written:0, size: 0))
+          return .just(CopyProgressInfo(name: fullFile, written:0, size: 0))
         }
         
         return t.open(flags: O_RDONLY)
@@ -195,13 +197,13 @@ extension Translator {
             case .copy(let source):
               return (source as! WriterTo)
                 .writeTo(destination)
-                .map { CopyProgressInfo(name: name, written: UInt64($0), size: size.uint64Value) }
+                .map { CopyProgressInfo(name: fullFile, written: UInt64($0), size: size.uint64Value) }
                 .eraseToAnyPublisher()
             case .attributes(let source):
               return Publishers.Zip(source.close(), destination.close())
                 // TODO From the File, we could offer the Translator itself.
                 .flatMap { _ in self.cloneWalkTo(name).flatMap { $0.wstat(attributes) } }
-                .map { _ in CopyProgressInfo(name: name, written: 0, size: size.uint64Value) }
+                .map { _ in CopyProgressInfo(name: fullFile, written: 0, size: size.uint64Value) }
                 .eraseToAnyPublisher()
             }
           }.eraseToAnyPublisher()
