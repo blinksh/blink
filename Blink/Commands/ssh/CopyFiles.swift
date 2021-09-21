@@ -108,7 +108,10 @@ class FileLocationPath {
     
     switch components.count {
     case 1:
-      self.filePath = components[0]
+      self.filePath = ((FileManager.default.currentDirectoryPath as NSString)
+        .appendingPathComponent(components[0]) as NSString)
+        .standardizingPath
+        
       self.proto = .local
     case 2:
       self.filePath = components[1]
@@ -253,7 +256,7 @@ public class BlinkCopy: NSObject {
   }
 
   func localTranslator(to path: String) -> AnyPublisher<Translator, Error> {
-    return .just(BlinkFiles.Local())
+    return BlinkFiles.Local().cloneWalkTo(path)
   }
 
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
