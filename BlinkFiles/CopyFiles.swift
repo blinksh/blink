@@ -117,7 +117,7 @@ extension Translator {
         switch t.fileType {
         case .typeDirectory:
           let mode = passingAttributes[FileAttributeKey.posixPermissions] as? NSNumber ?? NSNumber(value: Int16(0o755))
-          return self.copyDirectory(as: name, from: t, mode: mode)
+          return self.copyDirectory(as: name, from: t, mode: mode, args: args)
         default:
           let copyFilePublisher = self.copyFile(from: t, name: name, size: size, attributes: passingAttributes)
           
@@ -129,7 +129,8 @@ extension Translator {
               .flatMap { localAttributes -> CopyProgressInfoPublisher in
                 if let localModificationDate = localAttributes[.modificationDate] as? NSDate,
                    localModificationDate == (passingAttributes[.modificationDate] as? NSDate) {
-                  return .just(CopyProgressInfo(name: name, written: 0, size: size.uint64Value))
+                  let fullFile = (self.current as NSString).appendingPathComponent(name)
+                  return .just(CopyProgressInfo(name: fullFile, written: 0, size: size.uint64Value))
                 }
                 return copyFilePublisher
               }.eraseToAnyPublisher()
@@ -140,9 +141,23 @@ extension Translator {
       }.eraseToAnyPublisher()
   }
   
-  fileprivate func copyDirectory(as name: String, from t: Translator, mode: NSNumber) -> CopyProgressInfoPublisher {
+  fileprivate func copyDirectory(as name: String,
+                                 from t: Translator,
+                                 mode: NSNumber,
+                                 args: CopyArguments) -> CopyProgressInfoPublisher {
     print("Copying directory \(t.current)")
-    return self.clone().mkdir(name: name, mode: mode_t(truncating: mode))
+    
+    let directory: AnyPublisher<Translator, Error>
+    if args.checkTimes {
+      // Walk or create
+      directory = self.cloneWalkTo(name)
+        .tryCatch { _ in self.clone().mkdir(name: name, mode: mode_t(truncating: mode)) }
+        .eraseToAnyPublisher()
+    } else {
+      directory = self.clone().mkdir(name: name, mode: mode_t(truncating: mode))
+    }
+    
+    return directory
       .flatMap { dir -> CopyProgressInfoPublisher in
         t.directoryFilesAndAttributes().flatMap {
           $0.compactMap { i -> FileAttributes? in
@@ -154,7 +169,7 @@ extension Translator {
           }.publisher
         }.flatMap { t.cloneWalkTo($0[.name] as! String) }
         .collect()
-        .flatMap { dir.copy(from: $0) }.eraseToAnyPublisher()
+        .flatMap { dir.copy(from: $0, args: args) }.eraseToAnyPublisher()
       }.eraseToAnyPublisher()
     
 //    return t.directoryFilesAndAttributes().flatMap {

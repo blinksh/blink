@@ -216,12 +216,13 @@ public class BlinkCopy: NSObject {
     }, receiveValue: { progress in //(file, size, written) in
       // ProgressReport object, which we can use here or at the Dashboard.
       if currentFile != progress.name {
+        currentFile = progress.name
         let width = (Int(self.device.cols / 2) + 3)
-        currentFile = progress.name.replacingOccurrences(of: rootFilePath, with: "")
-        if currentFile.count > width {
-          displayFileName = "..." + currentFile.dropFirst(currentFile.count - width)
+        let trimmedPath = progress.name.replacingOccurrences(of: rootFilePath, with: "")
+        if trimmedPath.count > width {
+          displayFileName = "..." + trimmedPath.dropFirst(trimmedPath.count - width)
         } else {
-          displayFileName = currentFile
+          displayFileName = trimmedPath
         }
         currentCopied = progress.written
         startTimestamp = Int(Date().timeIntervalSince1970)
