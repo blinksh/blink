@@ -253,6 +253,9 @@ public class BlinkCopy: NSObject {
 
     awaitRunLoop(currentRunLoop)
 
+    // Make another run on the loop to close extra stuff in blocks.
+    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+    
     return rc
   }
 
