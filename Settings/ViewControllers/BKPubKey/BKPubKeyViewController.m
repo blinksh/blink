@@ -190,8 +190,8 @@ enum SshKeyImportOrigin {
       if (success) {
         // Remove BKPubKey
         [BKPubKey.all removeObjectAtIndex:indexPath.row];
-        [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
         [BKPubKey saveIDS];
+        [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
         [self.tableView reloadData];
       }
     } reason:@"to delete key."];
