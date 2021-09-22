@@ -362,7 +362,7 @@ NSString *__get_passphrase(UIViewController *ctrl) {
   if (!__identities.count) {
     [self loadIDS];
   }
-  return [__identities copy];
+  return __identities;
 }
 
 + (BOOL)saveIDS

@@ -97,8 +97,8 @@
       [[BKiCloudSyncHandler sharedHandler] deleteRecord:recordId ofType:BKiCloudRecordTypeHosts];
     }
     [BKHosts.all removeObjectAtIndex:indexPath.row];
-    [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
     [BKHosts saveHosts];
+    [self.tableView deleteRowsAtIndexPaths:@[ indexPath ] withRowAnimation:true];
     [self.tableView reloadData];
   }
 }
