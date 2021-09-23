@@ -282,12 +282,19 @@ public class LocalFile : File {
     
     // Avoid small local reads or writes.
     self.channel.setLimit(lowWater: blockSize)
+    // Setting a high watermark has no effect in memory.
+    // self.channel.setLimit(highWater: blockSize * 10)
   }
   
   public func close() -> AnyPublisher<Bool, Error> {
     // TODO We should pass the errors from cleanupHandler
     self.channel.close(flags: .stop)
     return .just(true)
+  }
+  
+  deinit {
+    self.channel.close(flags: .stop)
+    print("Local file deinit")
   }
 }
 
@@ -358,6 +365,7 @@ extension LocalFile: Reader, WriterTo {
         return assertionFailure()
       }
       
+      offset += Int64(data.count)
       // done and data.count == 0 is indicator of EOF with no more data, so finish.
       let eof = done && data.count == 0
       guard !eof else {
@@ -368,7 +376,7 @@ extension LocalFile: Reader, WriterTo {
       print("Sending \(data.count)")
       subj.send(data)
       
-      if done {
+      if done && offset == length {
         print("Completed")
         return subj.send(completion: .finished)
       }
@@ -403,7 +411,7 @@ extension LocalFile: Reader, WriterTo {
       }
     }
     
-    var scheduled = false
+    var offset: off_t = 0
     func onRequest(_ demand: Subscribers.Demand) {
       // Create a semaphore if necessary for the specified demand
       // No demand, no scheduling.
@@ -414,9 +422,13 @@ extension LocalFile: Reader, WriterTo {
       
       applyDemand(demand: demand)
       
-      if !scheduled {
-        scheduled = true
+      if demand == Subscribers.Demand.unlimited {
+        // NOTE Unlimited read is memory heavy. Dispatch will load as much as it can in memory,
+        // independently of high - low water marks.
         io.read(offset: 0, length: length, queue: self.queue, ioHandler: ioHandler)
+      } else {
+        // blockSize is coincidental with the demand, as we have set that value as the lower water mark.
+        io.read(offset: offset, length: blockSize, queue: self.queue, ioHandler: ioHandler)
       }
     }
     

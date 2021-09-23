@@ -69,7 +69,7 @@ extension Translator {
       }.eraseToAnyPublisher()
   }
   
-  private func wildcard(_ string: String, pattern: String) -> Bool {
+  fileprivate func wildcard(_ string: String, pattern: String) -> Bool {
     let pred = NSPredicate(format: "self LIKE %@", pattern)
     return !NSArray(object: string).filtered(using: pred).isEmpty
   }

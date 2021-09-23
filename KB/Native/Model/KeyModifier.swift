@@ -45,6 +45,7 @@ enum KeyModifier: String, Codable {
     case .none: return """
       A modifier is special state produced by pressing a modifier key. Modifiers don't do anything unless another key is pressed.
       An example is the shift modifier produced while you hold down a shift key.  Which keys produce which modifiers is controlled by the modifier mapping.
+      Most common sequences are Control and Escape (known by Emacs as Meta or ALT).
       """
     case .bit8: return "Add 128 to the unshifted character as in xterm."
     case .escape: return "Send an ESC prefix. Modern editors referes to this as ALT."

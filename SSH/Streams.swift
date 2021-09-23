@@ -221,7 +221,7 @@ public typealias ReaderFrom = BlinkFiles.ReaderFrom
 public typealias Writer = BlinkFiles.Writer
 public typealias WriterTo = BlinkFiles.WriterTo
 
-class OutStream : Reader, WriterTo {
+class OutStream {
   let stream: Stream
   // Get the channel from the stream, so it is reachable as long as the Stream is.
   var channel: ssh_channel { stream.channel }
@@ -231,6 +231,36 @@ class OutStream : Reader, WriterTo {
   var currentReading: Reading?
   
   var log: SSHLogger { get { stream.log } }
+  
+  init(_ stream: Stream, isStderr: Bool = false) {
+    self.stream = stream
+    self.rloop = stream.client.rloop
+    self.session = stream.client.session
+    if isStderr { self.isStderr = 1 }
+  }
+  
+  
+  deinit {
+    if self.isStderr == 1 {
+      log.message("Errstream deinit", SSH_LOG_DEBUG)
+    } else {
+      log.message("Outstream deinit", SSH_LOG_DEBUG)
+    }
+  }
+}
+
+extension OutStream: Reader {
+  // In case you try to read while the channel is closed, the operation will fail.
+  // In case it did not read anything, or if the channel was closed or received an EOF while reading,
+  // it will return an empty DispatchData object.
+  public func read(max length: Int) -> AnyPublisher<DispatchData, Error> {
+    return Reading(stream: self, length: length).publisher
+      .reduce(DispatchData.empty, { prevValue, newValue -> DispatchData in
+        var n = prevValue
+        n.append(newValue)
+        return n
+      }).eraseToAnyPublisher()
+  }
   
   // It is responsible to control the Reading flow. Stdout has two ways to read
   // data, for efficiency. One is through the normal loop based on demand, but the
@@ -247,13 +277,21 @@ class OutStream : Reader, WriterTo {
     var log: SSHLogger { get { parent.log }}
     
     var demand: Subscribers.Demand = .none
-    var pb = PassthroughSubject<DispatchData, Error>()
+    let pb = PassthroughSubject<DispatchData, Error>()
+    var publisher: AnyPublisher<DispatchData, Error> {
+      .demandingSubject(pb,
+                        receiveRequest: { demand in
+                                            self.applyDemand(demand)
+                                            self.readAsync() },
+                        receiveCancel: { self.cancel() },
+                        on: parent.rloop)
+    }
     var callbacks: ssh_channel_callbacks_struct? = nil
     var bytesLeft: Int
     var bytesRead = 0
     var cancelled = false
     
-    init(_ parent: OutStream, length: Int) {
+    init(stream parent: OutStream, length: Int) {
       self.parent = parent
       self.bytesLeft = length
     }
@@ -266,7 +304,7 @@ class OutStream : Reader, WriterTo {
       }
     }
     
-    func async() {
+    func readAsync() {
       if demand == .none || cancelled == true {
         return
       }
@@ -309,7 +347,7 @@ class OutStream : Reader, WriterTo {
         return
       } else if bytesLeft > 0 {
         if demand == .unlimited {
-          RunLoop.current.perform { self.async() }
+          RunLoop.current.perform { self.readAsync() }
           return
         } else if callbacks == nil {
           if startCallbacks() != SSH_OK {
@@ -380,7 +418,7 @@ class OutStream : Reader, WriterTo {
       // Cannot change the state of the channel in this pass, as we are inside a callback.
       // Schedule another read and figure out what to do with the channel there.
       ctxt.log.message("Received channel close event callback", SSH_LOG_INFO)
-      RunLoop.current.perform { ctxt.async() }
+      RunLoop.current.perform { ctxt.readAsync() }
     }
     
     let channelEOFCallback: ssh_channel_eof_callback = { (s, chan, userdata) in
@@ -389,7 +427,7 @@ class OutStream : Reader, WriterTo {
       // Cannot change the state of the channel in this pass, as we are inside a callback.
       // Schedule another read and figure out what to do with the channel there.
       ctxt.log.message("Received channel EOF event callback", SSH_LOG_INFO)
-      RunLoop.current.perform { ctxt.async() }
+      RunLoop.current.perform { ctxt.readAsync() }
     }
     
     func send(_ data: DispatchData) {
@@ -425,66 +463,18 @@ class OutStream : Reader, WriterTo {
       stopCallbacks()
     }
   }
+}
   
-  init(_ stream: Stream, isStderr: Bool = false) {
-    self.stream = stream
-    self.rloop = stream.client.rloop
-    self.session = stream.client.session
-    if isStderr { self.isStderr = 1 }
-  }
-  
-  // In case you try to read while the channel is closed, the operation will fail.
-  // In case it did not read anything, or if the channel was closed or received an EOF while reading,
-  // it will return an empty DispatchData object.
-  public func read(max length: Int) -> AnyPublisher<DispatchData, Error> {
-    return readNonBlock(length)
-      .reduce(DispatchData.empty, { prevValue, newValue -> DispatchData in
-        var n = prevValue
-        n.append(newValue)
-        return n
-      }).eraseToAnyPublisher()
-  }
-  
+extension OutStream: WriterTo {
   public func writeTo(_ w: Writer) -> AnyPublisher<Int, Error> {
-    return readNonBlock(SSIZE_MAX)
+    return Reading(stream: self, length: SSIZE_MAX).publisher
       .flatMap(maxPublishers: .max(1)) { data in
         return w.write(data, max: data.count)
       }.eraseToAnyPublisher()
   }
-  
-  func readNonBlock(_ length: Int) -> AnyPublisher<DispatchData, Error> {
-    let reading = Reading(self, length: length)
-    
-    return reading.pb
-      .handleEvents(
-        receiveCancel: {
-          reading.cancel()
-        },
-        receiveRequest: { demand in
-          reading.applyDemand(demand)
-          // Schedule the read so that the pb can receive the demand, after
-          // we changed it. Note it is two steps, schedule the demand in a run,
-          // then perform a read in a different run. If done together, the pb may
-          // not have received the demand, and we may lose reads.
-          self.rloop.perform {
-            reading.async()
-          }
-        })
-      // Subscribe on rloop so the demand is processed there
-      .subscribe(on: rloop)
-      .eraseToAnyPublisher()
-  }
-  
-  deinit {
-    if self.isStderr == 1 {
-      log.message("Errstream deinit", SSH_LOG_DEBUG)
-    } else {
-      log.message("Outstream deinit", SSH_LOG_DEBUG)
-    }
-  }
 }
 
-class InStream: Writer {
+class InStream {
   let stream: Stream
   var channel: ssh_channel { stream.channel }
   var client: SSHClient { stream.client }
@@ -500,13 +490,18 @@ class InStream: Writer {
     self.stream = stream
   }
   
+  deinit {
+    self.log.message("Instream deinit", SSH_LOG_DEBUG)
+  }
+}
+
+extension InStream: Writer {
   public func write(_ buf: DispatchData, max length: Int) ->AnyPublisher<Int, Error> {
-    let pb = PassthroughSubject<Int, Error>()
     var cancelled = false
+    let pb = PassthroughSubject<Int, Error>()
     
     // Limit buf to length before continuing
     //let buffer = buf.subdata(in: 0..<length)
-    
     func write(_ data: DispatchData) {
       if cancelled {
         return
@@ -541,22 +536,13 @@ class InStream: Writer {
       
       self.rloop.perform { write(nextData) }
     }
-    
-    return pb.handleEvents(receiveCancel: {
-      self.log.message("Cancelling InStream", SSH_LOG_INFO)
-      cancelled = true
-    },
-    receiveRequest: { _ in
-      self.rloop.perform {
-        write(buf)
-      }
       
-    })
-    .subscribe(on: rloop)
-    .eraseToAnyPublisher()
-  }
-  
-  deinit {
-    self.log.message("Instream deinit", SSH_LOG_DEBUG)
+    return .demandingSubject(pb,
+                             receiveRequest: { _ in write(buf) },
+                             receiveCancel: {
+                               self.log.message("Cancelling InStream", SSH_LOG_INFO)
+                               cancelled = true
+                             },
+                             on: rloop)
   }
 }

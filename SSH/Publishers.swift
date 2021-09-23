@@ -99,10 +99,10 @@ extension Publisher {
     .eraseToAnyPublisher()
   }
   
-  func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
-  AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
-    tryOperation(operation)
-  }
+//  func trySFTP<T>(_ operation: @escaping (sftp_session) throws -> T) ->
+//  AnyPublisher<T, Error> where Self == AnyPublisher<sftp_session, Error> {
+//    tryOperation(operation)
+//  }
 }
 
 extension AnyPublisher where Output == ssh_session, Failure == Error {
@@ -152,5 +152,34 @@ public extension AnyPublisher {
   
   @inlinable static func fail(error: Failure) -> Self {
     .init(Fail(error: error))
+  }
+}
+
+// A DemandingSubject helps create flows where the Demand needs to trigger
+// an operation to start processing and sending values, while protecting that all
+// such operations happen in the proper Scheduler.
+extension AnyPublisher {
+  @inlinable static func demandingSubject
+  <S: Subject, X: Scheduler>(_ subject: S,
+                             receiveRequest: @escaping (Subscribers.Demand) -> (),
+                             receiveCancel: (() -> Void)? = nil,
+                             on scheduler: X) -> AnyPublisher<S.Output, S.Failure> {
+    // The buffer not just "buffers" the values, but isolates the PS subscription flow
+    // from the rest. Without it, if you trigger on receiveRequest, the PS may still
+    // not have received a Subscription or Demand, so it may dump the first values.
+    // Previous versions where scheduling the function itself to handle the Demand, but
+    // it was not clear and was very prone to errors.
+    
+    return .init(
+      subject
+    //.print("buffer")
+      .buffer(size: .max, prefetch: .byRequest, whenFull: .dropOldest)
+    //.print("handle")
+      .handleEvents(
+        receiveCancel: receiveCancel,
+        receiveRequest: { receiveRequest($0) }
+      )
+      .subscribe(on: scheduler)
+    )
   }
 }

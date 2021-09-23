@@ -85,7 +85,7 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
 
     builder.insertSibling(UIMenu(title: "Shell",
                                  image: nil,
-                                 identifier: UIMenu.Identifier("com.example.apple-samplecode.menus.shellMenu"),
+                                 identifier: UIMenu.Identifier("com.CarlosCabanero.BlinkShell.menus.shellMenu"),
                                  options: [],
                                  children: shellMenuCommands), beforeMenu: .edit)
     

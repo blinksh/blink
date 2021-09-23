@@ -526,6 +526,11 @@ fileprivate let copyCommand = UIKeyCommand(title: "",
                                            input: "c",
                                            modifierFlags: .command,
                                            propertyList: nil)
+fileprivate let cutCommand  = UIKeyCommand(title: "",
+                                           action: #selector(UIResponder.cut(_:)),
+                                           input: "x",
+                                           modifierFlags: .command,
+                                           propertyList: nil)
 fileprivate let selectAllCommand =  UIKeyCommand(title: "",
                                                  action: #selector(UIResponder.selectAll(_:)),
                                                  input: "a",
@@ -544,7 +549,7 @@ extension SpaceController {
     }
     
     // Attach regular shortcuts that are lost as they may be managed by the application.
-    return [copyCommand, selectAllCommand]
+    return [copyCommand, cutCommand, selectAllCommand]
   }
   
   @objc func onStuckOpCommand() {

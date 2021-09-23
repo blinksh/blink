@@ -108,7 +108,10 @@ class FileLocationPath {
     
     switch components.count {
     case 1:
-      self.filePath = components[0]
+      self.filePath = ((FileManager.default.currentDirectoryPath as NSString)
+        .appendingPathComponent(components[0]) as NSString)
+        .standardizingPath
+        
       self.proto = .local
     case 2:
       self.filePath = components[1]
@@ -178,13 +181,17 @@ public class BlinkCopy: NSObject {
 
     // TODO Output object for reports
     var rc: Int32 = 0
-    var currentFile: String?
+    var rootFilePath: String!
+    var currentFile = ""
+    var displayFileName = ""
     var currentCopied: UInt64 = 0
     var currentSpeed: String?
     var sourceBasePath: String?
     var startTimestamp = 0
     var lastElapsed = 0
     copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
+      rootFilePath = d.current
+      
       return sourceTranslator.flatMap {
         $0.translatorsMatching(path: self.command.source.filePath)
       }
@@ -192,7 +199,14 @@ public class BlinkCopy: NSObject {
           var new = all
           new.append(t)
           return new
-        }.flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
+        }
+        .tryMap { source in
+          if source.count == 0 {
+            throw CommandError(message: "Source not found")
+          }
+          return source
+        }
+        .flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         print("Copy failed. \(error)", to: &self.stderr)
@@ -203,6 +217,13 @@ public class BlinkCopy: NSObject {
       // ProgressReport object, which we can use here or at the Dashboard.
       if currentFile != progress.name {
         currentFile = progress.name
+        let width = (Int(self.device.cols / 2) + 3)
+        let trimmedPath = progress.name.replacingOccurrences(of: rootFilePath, with: "")
+        if trimmedPath.count > width {
+          displayFileName = "..." + trimmedPath.dropFirst(trimmedPath.count - width)
+        } else {
+          displayFileName = trimmedPath
+        }
         currentCopied = progress.written
         startTimestamp = Int(Date().timeIntervalSince1970)
         currentSpeed = nil
@@ -217,20 +238,29 @@ public class BlinkCopy: NSObject {
           currentSpeed = String(format: "%.2f", kbCopied / Double(elapsed))
         }
       }
-      if currentCopied == progress.size {
-        print("\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", to: &self.stdout)
+      
+      let progressOutput = [
+        "\u{001B}[K\(displayFileName)",
+        "\(currentCopied)/\(progress.size)",
+        "\(currentSpeed ?? "-")kb/S"].joined(separator: "\t")
+      
+      if progress.written == 0 {
+        print(progressOutput, to: &self.stdout)
       } else {
-        print("\r\u{001B}[K\(progress.name) - \(currentCopied) of \(progress.size) - \(currentSpeed ?? "0")kb/S", terminator: "", to: &self.stdout)
+        print(progressOutput, terminator: "\r", to: &self.stdout)
       }
     })
 
     awaitRunLoop(currentRunLoop)
 
+    // Make another run on the loop to close extra stuff in blocks.
+    RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+    
     return rc
   }
 
   func localTranslator(to path: String) -> AnyPublisher<Translator, Error> {
-    return .just(BlinkFiles.Local())
+    return BlinkFiles.Local().cloneWalkTo(path)
   }
 
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
