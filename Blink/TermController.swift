@@ -64,6 +64,12 @@ private class ProxyView: UIView {
       let parent = superview,
       let container = parent.superview
     else {
+      // Delay removal... we need to be firstResponder for a while
+      DispatchQueue.main.async {
+        if self.superview == nil {
+          self.controlledView?.removeFromSuperview()
+        }
+      }
       _cancelable = nil
       return
     }
