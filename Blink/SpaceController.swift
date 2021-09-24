@@ -88,13 +88,17 @@ class SpaceController: UIViewController {
     FaceCamManager.update(in: self)
    
     DispatchQueue.main.async {
-      for tc in self._termControllers {
-        if let viewInScroll = tc.view.superview {
-          let rect = viewInScroll.convert(viewInScroll.bounds, to: self.view)
-          print(rect, self.view.bounds)
-          if !rect.intersects(self.view.bounds) {
-            print("kb", "removed", tc.removeFromContainer())
-          }
+      self._removeHiddenTerminals()
+    }
+  }
+  
+  func _removeHiddenTerminals() {
+    let bounds = self.view.bounds
+    for tc in _termControllers {
+      if let viewInScroll = tc.view.superview {
+        let rect = viewInScroll.convert(viewInScroll.bounds, to: view)
+        if !rect.intersects(bounds) {
+          _ = tc.removeFromContainer()
         }
       }
     }

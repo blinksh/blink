@@ -225,21 +225,20 @@ class KBTracker {
   }
   
   @objc private func _keyboardWillShow(_ notification: Notification) {
-    debugPrint("_keyboardWillShow")
+//    debugPrint("_keyboardWillShow")
     _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardWillHide(_ notification: Notification) {
-    debugPrint("_keyboardWillHide")
+//    debugPrint("_keyboardWillHide")
     _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardDidHide(_ notification: Notification) {
-    debugPrint("_keyboardDidHide")
+//    debugPrint("_keyboardDidHide")
   }
   
   @objc private func _keyboardDidShow(_ notification: Notification) {
-    debugPrint("_keyboardDidShow")
-//    kbTraits.isPortrait = 
+//    debugPrint("_keyboardDidShow")
   }
 }
