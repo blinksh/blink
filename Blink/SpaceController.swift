@@ -86,6 +86,18 @@ class SpaceController: UIViewController {
     _commandsHUD.setNeedsLayout()
     
     FaceCamManager.update(in: self)
+   
+    DispatchQueue.main.async {
+      for tc in self._termControllers {
+        if let viewInScroll = tc.view.superview {
+          let rect = viewInScroll.convert(viewInScroll.bounds, to: self.view)
+          print(rect, self.view.bounds)
+          if !rect.intersects(self.view.bounds) {
+            print("kb", "removed", tc.removeFromContainer())
+          }
+        }
+      }
+    }
   }
   
   override func viewDidAppear(_ animated: Bool) {
@@ -427,7 +439,7 @@ extension SpaceController: UIStateRestorable {
   }
   
   func dumpUIState() -> UIState {
-    UIState(keys: _viewportsKeys,
+    return UIState(keys: _viewportsKeys,
             currentKey: _currentKey,
             bgColor: CodableColor(uiColor: view.backgroundColor)
     )

@@ -105,6 +105,14 @@ NSString *_encodeString(NSString *str);
   IMP iml = class_getMethodImplementation(cls, NSSelectorFromString(@"_blink_updateTextInputTraits:"));
             
   class_replaceMethod(cls, NSSelectorFromString(@"_updateTextInputTraits:"), iml, nil);
+  
+  SEL selector = sel_getUid("_elementDidFocus:userIsInteracting:blurPreviousNode:activityStateChanges:userObject:");
+  Method method = class_getInstanceMethod(cls, selector);
+  IMP original = method_getImplementation(method);
+  IMP override = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, BOOL arg3, id arg4) {
+    ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3, arg4);
+  });
+  method_setImplementation(method, override);
 }
 
 - (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits {
