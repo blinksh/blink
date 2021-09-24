@@ -78,6 +78,21 @@ class SpaceController: UIViewController {
     }
     
     _commandsHUD.setNeedsLayout()
+    DispatchQueue.main.async {
+      self._removeHiddenTerminals()
+    }
+  }
+  
+  func _removeHiddenTerminals() {
+    let bounds = self.view.bounds
+    for tc in _termControllers {
+      if let viewInScroll = tc.view.superview {
+        let rect = viewInScroll.convert(viewInScroll.bounds, to: view)
+        if !rect.intersects(bounds) {
+          _ = tc.removeFromContainer()
+        }
+      }
+    }
   }
   
   @objc func _relayout() {
