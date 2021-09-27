@@ -73,26 +73,46 @@ private class ProxyView: UIView {
       return
     }
     
+    print("adding-view", UIApplication.shared.applicationState.rawValue)
+    
     _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
-      self?.controlledView?.frame = frame
+      if UIApplication.shared.applicationState == .active {
+        print("adding-frame", frame, UIApplication.shared.applicationState.rawValue)
+        self?.controlledView?.frame = frame
+      } else {
+        self?.controlledView?.removeFromSuperview()
+      }
     }
     
     _scrollCancelable = scrollView.publisher(for: \.contentOffset).sink { [weak self] offset in
       if let _ = self?.controlledView?.superview {
         return
       }
-     
+    
+      print("adding-offset", offset, UIApplication.shared.applicationState.rawValue)
       if UIApplication.shared.applicationState != .active {
         print("Not active")
         return
       }
 
-     
-      
       self?.placeControlledView()
     }
+//    if UIApplication.shared.applicationState == .active {
     
     placeControlledView()
+//    }
+  }
+  
+  override func layoutSubviews() {
+    super.layoutSubviews()
+    guard
+      let parent = superview,
+//      let container = parent.superview,
+      let controlledView = controlledView
+    else {
+      return
+    }
+    controlledView.frame = parent.frame
   }
   
   func placeControlledView() {
@@ -103,6 +123,8 @@ private class ProxyView: UIView {
     else {
       return
     }
+    
+    controlledView.frame = parent.frame
     
     if
       let sharedWindow = ShadowWindow.shared,
@@ -172,6 +194,10 @@ class TermController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
   
+  func placeToContainer() {
+    _proxyView.placeControlledView()
+  }
+  
   func removeFromContainer() -> Bool {
     if KBTracker.shared.input == _termView.webView {
       return false
@@ -181,9 +207,9 @@ class TermController: UIViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-//    if !coordinator.isAnimated {
-//      return
-//    }
+    if !coordinator.isAnimated {
+      return
+    }
 
     super.viewWillTransition(to: size, with: coordinator)
   }

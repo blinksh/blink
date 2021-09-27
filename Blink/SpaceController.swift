@@ -362,8 +362,13 @@ class SpaceController: UIViewController {
       _termViewToFocus = device.view
       return
     }
+    
+    print("adding-focusing")
+    
+    currentTerm()?.placeToContainer()
 
     let input = KBTracker.shared.input
+    
     KBTracker.shared.attach(input: device.view?.webView)
 
     device.attachInput(device.view.webView)
