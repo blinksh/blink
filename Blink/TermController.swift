@@ -75,7 +75,6 @@ private class ProxyView: UIView {
     
     _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
       self?.controlledView?.frame = frame
-      print("frame-change", frame)
     }
     
     _scrollCancelable = scrollView.publisher(for: \.contentOffset).sink { [weak self] offset in
@@ -83,13 +82,13 @@ private class ProxyView: UIView {
         return
       }
       
-      self?._placeControlledView()
+      self?.placeControlledView()
     }
     
-    _placeControlledView()
+    placeControlledView()
   }
   
-  private func _placeControlledView() {
+  func placeControlledView() {
     guard
       let parent = superview,
       let container = parent.superview,
@@ -144,6 +143,8 @@ class TermController: UIViewController {
     set { _bgColor = newValue }
   }
   
+  
+  
   private var _session: MCPSession? = nil
   
   required init(meta: SessionMeta? = nil) {
@@ -158,6 +159,8 @@ class TermController: UIViewController {
     }
   }
   
+  
+  
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -171,9 +174,9 @@ class TermController: UIViewController {
   }
   
   public override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
-    if !coordinator.isAnimated {
-      return
-    }
+//    if !coordinator.isAnimated {
+//      return
+//    }
 
     super.viewWillTransition(to: size, with: coordinator)
   }
