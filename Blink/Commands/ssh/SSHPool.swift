@@ -34,6 +34,7 @@ import Foundation
 import Combine
 import Dispatch
 
+import BlinkConfig
 import SSH
 
 
@@ -43,9 +44,13 @@ class SSHPool {
   
   private init() {}
 
-  static func dial(_ host: String, with config: SSHClientConfig, connectionOptions options: ConfigFileOptions, withProxy proxy: SSH.SSHClient.ExecProxyCommandCallback? = nil) -> AnyPublisher<SSH.SSHClient, Error> {
+  static func dial(_ host: String, 
+                   with config: SSHClientConfig, 
+                   withControlMaster: ControlMasterOption = .no, 
+                   withProxy proxy: SSH.SSHClient.ExecProxyCommandCallback? = nil) -> AnyPublisher<SSH.SSHClient, Error> {
+
     // Do not use an existing socket.
-    if !options.controlMaster {
+    if withControlMaster == .no {
       // TODO We may want a new socket, but still be able to manipulate it.
       // For now we will not allow that situation.
       return shared.startConnection(host, with: config, proxy: proxy, exposeSocket: false)

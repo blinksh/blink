@@ -89,4 +89,20 @@ enum BKMoshPrediction {
 + (CKRecord *)recordFromHost:(BKHosts *)host;
 + (BKHosts *)hostFromRecord:(CKRecord *)hostRecord;
 + (instancetype)withiCloudId:(CKRecordID *)record;
+
+- (id)initWithAlias:(NSString *)alias
+           hostName:(NSString *)hostName
+            sshPort:(NSString *)sshPort
+               user:(NSString *)user
+        passwordRef:(NSString *)passwordRef
+            hostKey:(NSString *)hostKey
+         moshServer:(NSString *)moshServer
+      moshPortRange:(NSString *)moshPortRange
+         startUpCmd:(NSString *)startUpCmd
+         prediction:(enum BKMoshPrediction)prediction
+           proxyCmd:(NSString *)proxyCmd
+          proxyJump:(NSString *)proxyJump
+sshConfigAttachment:(NSString *)sshConfigAttachment
+      fpDomainsJSON:(NSString *)fpDomainsJSON;
+
 @end

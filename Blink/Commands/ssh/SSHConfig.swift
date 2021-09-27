@@ -64,7 +64,25 @@ struct SSHCommand: ParsableCommand {
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
   @Flag(name: .shortAndLong)
-  var verbose: Int
+  var verbosity: Int
+  // The possible values are: QUIET, FATAL, ERROR, INFO, VERBOSE, DEBUG. The default is INFO.
+  // If DEBUG2, DEBUG3, etc... we would just transform to debug, which is our max.
+  var logLevel: String? {
+    switch verbosity {
+    case 0:
+      return "QUIET"
+    case 1:
+      return "INFO"
+    case 2:
+      return "VERBOSE"
+    case 3:
+      return "DEBUG"
+    case 4...:
+      return "DEBUG2"
+    default:
+      return nil
+    }
+  }
 
   @Option(
     name: [.customShort("O", allowingJoined: true)],
@@ -129,9 +147,6 @@ struct SSHCommand: ParsableCommand {
       )
   )
   var options: [String] = []
-  var connectionOptions: Result<ConfigFileOptions, Error> {
-    Result { try ConfigFileOptions(options) }
-  }
 
   // TODO Constraint things like port. Perform some validation
   // TODO Special -o commands - send env variables, etc...
@@ -186,7 +201,7 @@ struct SSHCommand: ParsableCommand {
   // Connect to User at Host
   @Argument(help: "[user@]host[#port]")
   var userAtHost: String
-  var host: String {
+  var hostAlias: String {
     get {
       let comps = userAtHost.components(separatedBy: "@")
       let hostAndPort = comps[comps.count - 1]
@@ -236,33 +251,51 @@ struct SSHCommand: ParsableCommand {
     }
   }
 
-  func run() throws {
-  }
+  func run() throws {}
 
   func validate() throws {
-    let _ = try connectionOptions.get()
-
+    let _ = try sshOptions()
+    
     if disableTTY && forceTTY {
       throw ValidationError("Incompatible flags t and T")
     }
   }
 }
 
-struct ConfigFileOptions {
-  var user: String?
-  var port: String?
-  var proxyCommand: String?
-  var compression: Bool?
-  var compressionLevel: UInt?
-  var connectionTimeout: Int?
-  var controlMaster: Bool = true
-  var sendEnv: [String: String] = [:]
-  var strictHostChecking: Bool = true
-  
-  init(_ options: [String]) throws {
-    let lang = String(cString: getenv("LANG"))
-    let term = String(cString: getenv("TERM"))
-    sendEnv = ["TERM": term, "LANG": lang]
+// TODO Working with half baked strings may be error prone.
+// We could use an enum, so the structure would be from the [Enum: Any].
+extension SSHCommand {
+  func bkSSHHost() throws -> BKSSHHost {
+    // Create an SSH Config dictionary with the content of the command.
+    // Note that the Host is actually not defined by the command, as it may be just an alias.
+    // If the resulting Host calculation does not have a host, then we set it up.
+    var params = try sshOptions()
+
+    if let user = self.user {
+      params["user"] = user
+    }
+
+    if let port = self.port {
+      params["port"] = port
+    }
+
+    if let identityFile = self.identityFile {
+      params["identityfile"] = identityFile
+    }
+
+    if let proxyJump = self.proxyJump {
+      params["proxyjump"] = proxyJump
+    }
+
+    if let logLevel = self.logLevel {
+      params["loglevel"] = logLevel
+    }
+
+    return try BKSSHHost(content: params)
+  }
+
+  func sshOptions() throws -> [String: Any] {
+    var params: [String: Any] = [:]
 
     for o in options {
       var option = o.components(separatedBy: "=")
@@ -272,56 +305,12 @@ struct ConfigFileOptions {
           throw ValidationError("\(option[0]) missing value")
         }
       }
-      switch option[0].lowercased() {
-      case "user":
-        self.user = option[1]
-      case "port":
-        self.port = option[1]
-      case "proxycommand":
-        self.proxyCommand = option[1]
-      case "compression":
-        compression = try ConfigFileOptions.yesNoValue(option[1], name: "compression")
-      case "compressionlevel":
-        guard let level = UInt(option[1]) else {
-          throw ValidationError("Compression level is not a number")
-        }
-        guard (1...9).contains(level) else {
-          throw ValidationError("Compression level must be between 1-9")
-        }
-        compressionLevel = level
-      case "connectiontimeout":
-        connectionTimeout = Int(option[1])
-      case "controlmaster":
-        controlMaster = try ConfigFileOptions.yesNoValue(option[1], name: "controlmaster")
-      case "sendenv":
-        var key = option[1]
-        if key.starts(with: "-") {
-          key.removeFirst()
-          sendEnv.removeValue(forKey: key)
-        } else {
-          let env = String(cString: getenv(key))
-          if env.isEmpty {
-            continue
-          }
-          sendEnv[key] = env
-        }
-      case "stricthostchecking":
-        strictHostChecking = try ConfigFileOptions.yesNoValue(option[1], name: "stricthostchecking")
-      default:
-        throw ValidationError("Unknown option \(option[0])")
-      }
-    }
-  }
 
-  fileprivate static func yesNoValue(_ str: String, name: String) throws -> Bool {
-    switch str.lowercased() {
-    case "yes":
-      return true
-    case "no":
-      return false
-    default:
-      throw ValidationError("Value \(name) should be yes/no")
+      // The BKSSHHost will perform further validation when generating the configuration
+      params[option[0]] = option[1]
     }
+
+    return params
   }
 }
 

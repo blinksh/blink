@@ -31,34 +31,65 @@
 
 
 import Foundation
-import SSH
 
+import SSH
+import SSHConfig
+
+
+// Responsible to intermediate between the Blink Configuration formats and the
+// SSHClient requirements, facilitating information between them.
+// TODO This will work a lot better as a singleton.
 public struct BKConfig {
-  
+  let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
+
   private let _allHosts: [BKHosts]
   private let _allIdentities: [BKPubKey]
+  private let bkSSHConfig: SSHConfig?
+
+  // TODO Config files
+  public init() {
+    _allHosts = BKHosts.allHosts()
+    _allIdentities = BKPubKey.all()
+    bkSSHConfig = try? SSHConfig.parse(url: BlinkPaths.blinkGlobalSSHConfigFileURL())
+  }
+
+  private func _host(_ host: String) -> BKHosts? {
+    return _allHosts.first(where: { $0.host == host })
+  }
+
+  // Return the stored configuration given the host.
+  // The root for the configuration is now the file sequence from .blink/ssh_config.
+  public func bkSSHHost(_ alias: String) throws -> BKSSHHost? {
+    guard var sshConfig = try? bkSSHConfig?.resolve(alias: alias) else {
+      return nil
+    }
+
+    // Add protected data (password)
+    if let password = _host(alias)?.password {
+      sshConfig["password"] = password
+    }
+
+    return try BKSSHHost(content: sshConfig)
+  }
   
-  public init(allHosts: [BKHosts], allIdentities: [BKPubKey]) {
-    _allHosts = allHosts
-    _allIdentities = allIdentities
+  public func bkSSHHost(_ alias: String, extending baseHost: BKSSHHost) throws -> BKSSHHost {
+    guard let sshConfigHost = try self.bkSSHHost(alias) else {
+      return baseHost
+    }
+    
+    return try baseHost.merge(sshConfigHost)
   }
 
   public func privateKey(forIdentifier identifier: String) -> (String, String)? {
-    let publicKeys = BKPubKey.all()
-    
     guard
-      let privateKey = publicKeys.first(where: { $0.id == identifier })?.loadPrivateKey()
+      let privateKey = _allIdentities.first(where: { $0.id == identifier })?.loadPrivateKey()
     else {
       return nil
     }
     
     return (privateKey, identifier)
   }
-  
-  private func _host(_ host: String) -> BKHosts? {
-    return _allHosts.first(where: { $0.host == host })
-  }
-  
+
   public func signer(forIdentity identity: String) -> (Signer, String)? {
     guard
       let signer = _allIdentities.signerWithID(identity)
@@ -69,34 +100,24 @@ public struct BKConfig {
     return (signer, identity)
   }
   
-  public func signer(forHost host: String) -> (Signer, String)? {
+  public func signer(forHost host: BKSSHHost) -> [(Signer, String)]? {
     guard
-      let host = _host(host),
-      let keyName = host.key
+      let identity = host.identityFile
     else {
       return nil
     }
     
-    return signer(forIdentity: keyName)
+    return identity.compactMap { signer(forIdentity: $0) }
   }
-  
-  public func privateKey(forHost host: String) -> (String, String)? {
-    guard let host = _host(host) else {
-      return nil
-    }
 
-    guard let keyIdentifier = host.key, let privateKey = privateKey(forIdentifier: keyIdentifier) else {
-      return nil
+  public func defaultSigners() -> [(Signer, String)] {
+    return defaultKeyNames.compactMap {
+      signer(forIdentity: $0)
     }
-
-    return privateKey
   }
   
   public func defaultKeys() -> [(String, String)] {
-    let publicKeys = BKPubKey.all()
-    
-    let defaultKeyNames = ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"]
-    return publicKeys
+    return _allIdentities
       .filter {
         defaultKeyNames.contains($0.id)
       }
@@ -112,33 +133,30 @@ public struct BKConfig {
         return (privateKey, $0.1)
       }
   }
-  
-  public func password(forHost host: String) -> String? {
-    _host(host)?.password
-  }
 
-  public func hostName(forHost host: String) -> String? {
-    _host(host)?.hostName
-  }
+  // TODO Keeping, not sure who needs this now after the merge.
+  // public func hostName(forHost host: String) -> String? {
+  //   _host(host)?.hostName
+  // }
   
-  public func proxyCommand(forHost host: String) -> String? {
-    _host(host)?.proxyCmd
-  }
+  // public func proxyCommand(forHost host: String) -> String? {
+  //   _host(host)?.proxyCmd
+  // }
 
-  public func proxyJump(forHost host: String) -> String? {
-    _host(host)?.proxyJump
-  }
+  // public func proxyJump(forHost host: String) -> String? {
+  //   _host(host)?.proxyJump
+  // }
   
-  public func user(forHost host: String) -> String? {
-    let user = _host(host)?.user ?? ""
-    return user.isEmpty ? nil : user
-  }
+  // public func user(forHost host: String) -> String? {
+  //   let user = _host(host)?.user ?? ""
+  //   return user.isEmpty ? nil : user
+  // }
   
-  public func port(forHost host: String) -> String? {
-    if let port = _host(host)?.port {
-      return port.stringValue
-    } else {
-      return nil
-    }
-  }
+  // public func port(forHost host: String) -> String? {
+  //   if let port = _host(host)?.port {
+  //     return port.stringValue
+  //   } else {
+  //     return nil
+  //   }
+  // }
 }

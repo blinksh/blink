@@ -68,16 +68,31 @@ extension TranslatorFactories {
 }
 
 extension TranslatorFactories {
+  struct TranslatorError: Error, Encodable {
+    let message: String
+  }
+  
   public static let sftp = Self.SFTP()
   
   public class SFTP {
     public func buildOn<T: Scheduler>(_ scheduler: T, hostAlias: String) -> AnyPublisher<Translator, Error> {
-      let (host, config) = SSHClientFileProviderConfig.config(host: hostAlias)
+      let hostName: String
+      let config: SSHClientConfig
+      
+      do {
+        guard let (name, cfg) = try SSHClientFileProviderConfig.config(host: hostAlias) else {
+          return .fail(error: TranslatorError(message: "Could not find config for given host."))
+        }
+        hostName = name
+        config = cfg
+      } catch {
+        return .fail(error: TranslatorError(message: "Configuration error - \(error)"))
+      }
       
       return Just(())
         .receive(on: scheduler).flatMap {
           SSHClient
-            .dial(host, with: config)
+            .dial(hostName, with: config)
             .print("Dialing...")
             .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
               return conn.requestSFTP()
@@ -91,45 +106,37 @@ extension TranslatorFactories {
   // A special FileProvider configuration that skips over user input configurations.
   class SSHClientFileProviderConfig {
 
-    static func config(host: String) -> (String, SSHClientConfig) {
+    static func config(host title: String) throws -> (String, SSHClientConfig)? {
 
-      BKHosts.loadHosts()
-      BKPubKey.loadIDS()
-
-      let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
+      let bkConfig = BKConfig()
       let agent = SSHAgent()
 
       let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
-      if let (signer, name) = bkConfig.signer(forHost: host) {
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
-      } else {
-        for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
-          if let (signer, name) = bkConfig.signer(forIdentity: identity) {
-            _ = agent.loadKey(signer, aka: name, constraints: consts)
-          }
+      // TODO The error is that SSHConfig has to change the order, and I think I did not commit that.
+      guard let host = try bkConfig.bkSSHHost(title),
+            let hostName = host.hostName else {
+        return nil
+      }
+      
+      if let signers = bkConfig.signer(forHost: host) {
+        signers.forEach { (signer, name) in
+          _ = agent.loadKey(signer, aka: name, constraints: consts)
         }
+      }
+      
+      for (signer, name) in bkConfig.defaultSigners() {
+        _ = agent.loadKey(signer, aka: name, constraints: consts)
       }
 
       var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
-      if let password = bkConfig.password(forHost: host), !password.isEmpty {
+      if let password = host.password, !password.isEmpty {
         availableAuthMethods.append(AuthPassword(with: password))
       }
 
-      return (
-        bkConfig.hostName(forHost: host)!,
-        SSHClientConfig(
-          user: bkConfig.user(forHost: host) ?? "root",
-          port: bkConfig.port(forHost: host) ?? "22",
-          proxyJump: nil,
-          proxyCommand: nil,
-          authMethods: availableAuthMethods,
-          agent: agent,
-          verifyHostCallback: nil,
-          sshDirectory: BlinkPaths.ssh()!,
-          logger: PassthroughSubject<String, Never>()
-        )
-      )
+      return (hostName,
+              host.sshClientConfig(authMethods: availableAuthMethods,
+                                   agent: agent))
     }
   }
 

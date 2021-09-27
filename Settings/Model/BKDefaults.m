@@ -35,7 +35,7 @@
 #import "UIDevice+DeviceName.h"
 #import "BlinkPaths.h"
 #import "LayoutManager.h"
-#import <BlinkConfig/BlinkConfig-Swift.h>
+
 
 BKDefaults *defaults;
 
@@ -60,6 +60,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _fontSize = [coder decodeObjectOfClasses:numbers forKey:@"fontSize"];
   _externalDisplayFontSize = [coder decodeObjectOfClasses:numbers forKey:@"externalDisplayFontSize"];
   _defaultUser = [coder decodeObjectOfClasses:strings forKey:@"defaultUser"];
+  _globalSSHConfig = [coder decodeObjectOfClasses: [NSSet setWithObjects: [BKGlobalSSHConfig class], nil] forKey:@"globalSSHConfig"];
   _cursorBlink = [coder decodeBoolForKey:@"cursorBlink"];
   _enableBold = [coder decodeIntegerForKey:@"enableBold"];
   _boldAsBright = [coder decodeBoolForKey:@"boldAsBright"];
@@ -87,6 +88,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeObject:_fontSize forKey:@"fontSize"];
   [encoder encodeObject:_externalDisplayFontSize forKey:@"externalDisplayFontSize"];
   [encoder encodeObject:_defaultUser forKey:@"defaultUser"];
+  [encoder encodeObject:_globalSSHConfig forKey:@"globalSSHConfig"];
   [encoder encodeBool:_cursorBlink forKey:@"cursorBlink"];
   [encoder encodeInteger:_enableBold forKey:@"enableBold"];
   [encoder encodeBool:_boldAsBright forKey:@"boldAsBright"];
@@ -187,6 +189,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   if(!defaults.defaultUser || ![[defaults.defaultUser stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] length]){
     [defaults setDefaultUser:[UIDevice getInfoTypeFromDeviceName:BKDeviceInfoTypeUserName]];
   }
+
+  if(!defaults.globalSSHConfig) {
+    [BKDefaults saveGlobalSSHConfig];
+  }
 }
 
 + (void)setCursorBlink:(BOOL)state
@@ -236,6 +242,12 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 + (void)setDefaultUserName:(NSString*)name
 {
   defaults.defaultUser = name;
+}
+
++ (void)saveGlobalSSHConfig
+{
+  BKGlobalSSHConfig *config = [[BKGlobalSSHConfig alloc] initWithUser: defaults.defaultUser];
+  [config saveFile];
 }
 
 + (void)setLayoutMode:(BKLayoutMode)mode {

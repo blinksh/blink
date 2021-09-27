@@ -92,21 +92,31 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }
 
     let cmd: SSHCommand
-    let options: ConfigFileOptions
     do {
       cmd = try SSHCommand.parse(Array(argv[1...]))
       command = cmd
-      options = try cmd.connectionOptions.get()
     } catch {
-      
       let message = SSHCommand.message(for: error)
       print("\(message)", to: &stderr)
       return -1
     }
+    
+    // TODO BKConfig.shared.host()
+    let host: BKSSHHost
+    do {
+      let commandHost = try cmd.bkSSHHost()
+      host = try BKConfig().bkSSHHost(cmd.hostAlias, extending: commandHost)
+    } catch {
+      print("Configuration error - \(error)", to: &stderr)
+      return -1
+    }
 
-    let (hostName, config) = SSHClientConfigProvider.config(command: cmd, using: device)
+    let hostName = host.hostName ?? cmd.hostAlias
+    let config = SSHClientConfigProvider.config(host: host, using: device)
+    // The HostName is the defined by "host", or the one from the command.
+
     if cmd.printConfiguration {
-      print("Configuration for \(cmd.host) as \(hostName)", to: &stdout)
+      print("Configuration for \(cmd.hostAlias) as \(hostName)", to: &stdout)
       print("\(config.description)", to: &stdout)
       return 0
     }
@@ -116,7 +126,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       guard
         let conn = SSHPool.connection(for: hostName, with: config)
       else {
-        print("No connection for \(cmd.host) to control", to: &stderr)
+        print("No connection for \(cmd.hostAlias) to control", to: &stderr)
         return -1
       }
       switch control {
@@ -139,7 +149,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       connect = SSHPool.dial(
         hostName,
         with: config,
-        connectionOptions: options,
+        withControlMaster: host.controlMaster ?? .no,
         withProxy: { [weak self] in
           guard let self = self
           else {
@@ -150,13 +160,22 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         })
     }
 
+    let environment: [String:String] = host.sendEnv?.reduce([String:String]()) { (result, env) in
+      var result = result
+      result[env] = String(cString: getenv(env))
+      return result
+    } ?? [:]
+
     connect.flatMap { conn -> SSHConnection in
       if cmd.startsSession {
         if let addr = conn.clientAddressIP() {
           print("Connected to \(addr)", to: &self.stdout)
         }
 
-        return self.startInteractiveSessions(conn, command: cmd)
+        return self.startInteractiveSessions(conn,
+                                             command: cmd,
+                                             withEnvVars: environment,
+                                             sendAgent: host.forwardAgent ?? false)
       }
       return .just(conn)
     }
@@ -169,7 +188,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     .sink(receiveCompletion: { completion in
       switch completion {
       case .failure(let error):
-        print("Error connecting to \(cmd.host). \(error)", to: &self.stderr)
+        print("Error connecting to \(cmd.hostAlias). \(error)", to: &self.stderr)
         self.exitCode = -1
         self.kill()
       default:
@@ -221,7 +240,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     ios_system(command);
   }
 
-  private func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
+  private func startInteractiveSessions(_ conn: SSH.SSHClient,
+                                        command: SSHCommand,
+                                        withEnvVars envVars: [String:String],
+                                        sendAgent: Bool) -> SSHConnection {
     let rows = Int32(self.device.rows)
     let cols = Int32(self.device.cols)
     var pty: SSH.SSHClient.PTY? = nil
@@ -229,20 +251,21 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
       self.device.rawMode = true
     }
-    
+
     let session: AnyPublisher<SSH.Stream, Error>
-    
-    let opts = try? command.connectionOptions.get()
-    
+
+    var envVars = envVars
+    envVars["TERM"] = String(cString: getenv("TERM"))
+
     if command.command.isEmpty {
       session = conn.requestInteractiveShell(withPTY: pty,
-                                             withEnvVars: opts?.sendEnv ?? [:],
-                                             withAgentForwarding: command.agentForward)
+                                             withEnvVars: envVars,
+                                             withAgentForwarding: sendAgent)
     } else {
       let exec = command.command.joined(separator: " ")
       session = conn.requestExec(command: exec, withPTY: pty,
-                                 withEnvVars: opts?.sendEnv ?? [:],
-                                 withAgentForwarding: command.agentForward)
+                                 withEnvVars: envVars,
+                                 withAgentForwarding: sendAgent)
     }
 
     return session.tryMap { s in
