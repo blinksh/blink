@@ -81,6 +81,13 @@ private class ProxyView: UIView {
       if let _ = self?.controlledView?.superview {
         return
       }
+     
+      if UIApplication.shared.applicationState != .active {
+        print("Not active")
+        return
+      }
+
+     
       
       self?.placeControlledView()
     }
