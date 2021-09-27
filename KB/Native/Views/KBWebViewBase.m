@@ -110,9 +110,23 @@ NSString *_encodeString(NSString *str);
   Method method = class_getInstanceMethod(cls, selector);
   IMP original = method_getImplementation(method);
   IMP override = imp_implementationWithBlock(^void(id me, void* arg0, BOOL arg1, BOOL arg2, BOOL arg3, id arg4) {
-    ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, TRUE, arg2, arg3, arg4);
+    UIView * mayBeUs = [[me superview] superview];
+    if ([mayBeUs isKindOfClass:[KBWebViewBase class]]) {
+      KBWebViewBase * base = (KBWebViewBase *)mayBeUs;
+      arg1 = [base _canBeFocused];
+      if (arg1) {
+        ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, arg1, arg2, arg3, arg4);
+      }
+    } else {
+      ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, arg1, arg2, arg3, arg4);
+    }
+    
   });
   method_setImplementation(method, override);
+}
+
+- (BOOL)_canBeFocused {
+  return self.userInteractionEnabled && _focused;
 }
 
 - (void)_blink_updateTextInputTraits:(id <UITextInputTraits>)traits {
@@ -141,7 +155,7 @@ NSString *_encodeString(NSString *str);
     _keyCommands = @[];
     _jsPath = @"_onKB";
     _interopName = @"_kb";
-    _focused = YES;
+    _focused = NO;
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
     self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
 //    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
@@ -255,17 +269,17 @@ NSString *_encodeString(NSString *str);
   [self report:@"guard-down" arg:_encodeString(cmd.input)];
 }
 
-- (id)_inputDelegate { return self; }
-- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info {
-  if (self.userInteractionEnabled) {
-    return _focused ? 1 : 0;
-  }
-  return 0;
-}
-
-- (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {
-  return YES;
-}
+//- (id)_inputDelegate { return self; }
+//- (int)_webView:(WKWebView *)webView decidePolicyForFocusedElement:(id) info {
+//  if (self.userInteractionEnabled) {
+//    return _focused ? 1 : 0;
+//  }
+//  return 0;
+//}
+//
+//- (_Bool)_webView:(WKWebView *)arg1 focusShouldStartInputSession:(id)arg2 {
+//  return YES;
+//}
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];

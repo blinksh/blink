@@ -49,30 +49,51 @@ import AVFoundation
 private class ProxyView: UIView {
   var controlledView: UIView? = nil
   private var _cancelable: AnyCancellable? = nil
+  private var _scrollCancelable: AnyCancellable? = nil
   
   override func willMove(toSuperview newSuperview: UIView?) {
     super.willMove(toSuperview: newSuperview)
     if superview == nil {
       _cancelable = nil
+      _scrollCancelable = nil
     }
   }
   
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     
+    _scrollCancelable = nil
+    _cancelable = nil
+    
     guard
       let parent = superview,
-      let container = parent.superview
+      let container = parent.superview,
+      let scrollView = container as? UIScrollView
     else {
-      _cancelable = nil
       return
     }
     
     _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
       self?.controlledView?.frame = frame
+      print("frame-change", frame)
     }
     
-    guard let controlledView = controlledView
+    _scrollCancelable = scrollView.publisher(for: \.contentOffset).sink { [weak self] offset in
+      if let _ = self?.controlledView?.superview {
+        return
+      }
+      
+      self?._placeControlledView()
+    }
+    
+    _placeControlledView()
+  }
+  
+  private func _placeControlledView() {
+    guard
+      let parent = superview,
+      let container = parent.superview,
+      let controlledView = controlledView
     else {
       return
     }
