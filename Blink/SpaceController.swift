@@ -52,7 +52,6 @@ class SpaceController: UIViewController {
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
   
   private var _viewportsKeys = [UUID]()
-  private var _termControllers: Set<TermController> = Set()
   private var _currentKey: UUID? = nil
   
   private var _hud: MBProgressHUD? = nil
@@ -88,18 +87,19 @@ class SpaceController: UIViewController {
     FaceCamManager.update(in: self)
    
     DispatchQueue.main.async {
-      self._removeHiddenTerminals()
+      self.forEachActive { t in
+        if t.viewIsLoaded && t.view?.superview == nil {
+          _ = t.removeFromContainer()
+        }
+      }
     }
+    
   }
   
-  func _removeHiddenTerminals() {
-    let bounds = self.view.bounds
-    for tc in _termControllers {
-      if let viewInScroll = tc.view.superview {
-        let rect = viewInScroll.convert(viewInScroll.bounds, to: view)
-        if !rect.intersects(bounds) {
-          _ = tc.removeFromContainer()
-        }
+  private func forEachActive(block:(TermController) -> ()) {
+    for key in _viewportsKeys {
+      if let ctrl: TermController = SessionRegistry.shared.sessionFromIndexWith(key: key) {
+        block(ctrl)
       }
     }
   }
@@ -186,7 +186,6 @@ class SpaceController: UIViewController {
     } else if let key = _currentKey {
       let term: TermController = SessionRegistry.shared[key]
       term.delegate = self
-      _termControllers.insert(term)
       term.bgColor = view.backgroundColor ?? .black
       _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
@@ -238,6 +237,63 @@ class SpaceController: UIViewController {
     
     nc.addObserver(self, selector: #selector(_termViewIsReady(n:)), name: NSNotification.Name(TermViewReadyNotificationKey), object: nil)
     
+    nc.addObserver(self, selector: #selector(_UISceneDidEnterBackgroundNotification(_:)),
+                   name: UIScene.didEnterBackgroundNotification, object: nil)
+    
+    nc.addObserver(self, selector: #selector(_UISceneWillEnterForegroundNotification(_:)),
+                   name: UIScene.willEnterForegroundNotification, object: nil)
+    
+    nc.addObserver(self, selector: #selector(_UISceneWillBeginSystemSnapshotSequence(_:)),
+                   name: .init(rawValue: "UISceneWillBeginSystemSnapshotSequence"), object: nil)
+    
+    nc.addObserver(self, selector: #selector(_UISceneDidCompleteSystemSnapshotSequence(_:)),
+                   name: .init(rawValue: "UISceneDidCompleteSystemSnapshotSequence"), object: nil)
+  }
+  
+  @objc func _UISceneWillBeginSystemSnapshotSequence(_ n: Notification) {
+    if let scene = n.object as? UIWindowScene {
+      print("_UISceneWillBeginSystemSnapshotSequence", view.window?.windowScene === scene)
+    } else {
+      print("_UISceneWillBeginSystemSnapshotSequence", "???")
+    }
+  }
+  
+  @objc func _UISceneDidCompleteSystemSnapshotSequence(_ n: Notification) {
+    if let scene = n.object as? UIWindowScene {
+      print("_UISceneDidCompleteSystemSnapshotSequence", view.window?.windowScene === scene)
+    } else {
+      print("_UISceneDidCompleteSystemSnapshotSequence", "???")
+    }
+  }
+                   
+  @objc func _UISceneDidEnterBackgroundNotification(_ n: Notification) {
+    guard let scene = n.object as? UIWindowScene,
+          view.window?.windowScene === scene
+    else {
+      return
+    }
+    
+    let currentTerm = currentTerm()
+    
+    forEachActive { ctrl in
+      if ctrl.viewIsLoaded && ctrl !== currentTerm {
+        _ = ctrl.removeFromContainer()
+      }
+    }
+  }
+  
+  @objc func _UISceneWillEnterForegroundNotification(_ n: Notification) {
+    guard let scene = n.object as? UIWindowScene,
+          view.window?.windowScene === scene
+    else {
+      return
+    }
+    
+    forEachActive { ctrl in
+      if ctrl.viewIsLoaded {
+        ctrl.placeToContainer()
+      }
+    }
   }
   
   private func _attachHUD() {
@@ -270,7 +326,6 @@ class SpaceController: UIViewController {
     term.delegate = self
     term.userActivity = userActivity
     term.bgColor = view.backgroundColor ?? .black
-    _termControllers.insert(term)
     
     if let currentKey = _currentKey,
       let idx = _viewportsKeys.firstIndex(of: currentKey)?.advanced(by: 1) {
@@ -286,7 +341,6 @@ class SpaceController: UIViewController {
     _viewportsController.setViewControllers([term], direction: .forward, animated: animated) { (didComplete) in
       self._displayHUD()
       self._attachInputToCurrentTerm()
-      self.cleanupControllers()
       completion?(didComplete)
     }
   }
@@ -362,10 +416,6 @@ class SpaceController: UIViewController {
       _termViewToFocus = device.view
       return
     }
-    
-    print("adding-focusing")
-    
-    currentTerm()?.placeToContainer()
 
     let input = KBTracker.shared.input
     
@@ -505,7 +555,6 @@ extension SpaceController: UIPageViewControllerDataSource {
     let newCtrl: TermController = SessionRegistry.shared[newKey]
     newCtrl.delegate = self
     newCtrl.bgColor = view.backgroundColor ?? .black
-    _termControllers.insert(newCtrl)
     return newCtrl
   }
   
@@ -668,19 +717,6 @@ extension SpaceController {
   
   @objc func closeShellAction() {
     _closeCurrentSpace()
-  }
-  
-  func cleanupControllers() {
-    for c in _termControllers {
-      if c.view?.superview == nil {
-        if c.removeFromContainer() {
-          _termControllers.remove(c)
-        }
-      }
-      if c.view?.window != view.window {
-        _termControllers.remove(c)
-      }
-    }
   }
 
   private func _focusOtherWindowAction() {
@@ -847,7 +883,6 @@ extension SpaceController {
   private func _addTerm(term: TermController, animated: Bool = true) {
     SessionRegistry.shared.track(session: term)
     term.delegate = self
-    _termControllers.insert(term)
     _viewportsKeys.append(term.meta.key)
     _moveToShell(key: term.meta.key, animated: animated)
   }

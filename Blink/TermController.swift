@@ -49,70 +49,50 @@ import AVFoundation
 private class ProxyView: UIView {
   var controlledView: UIView? = nil
   private var _cancelable: AnyCancellable? = nil
-  private var _scrollCancelable: AnyCancellable? = nil
   
   override func willMove(toSuperview newSuperview: UIView?) {
     super.willMove(toSuperview: newSuperview)
     if superview == nil {
       _cancelable = nil
-      _scrollCancelable = nil
     }
   }
   
   override func didMoveToSuperview() {
     super.didMoveToSuperview()
     
-    _scrollCancelable = nil
     _cancelable = nil
     
     guard
-      let parent = superview,
-      let container = parent.superview,
-      let scrollView = container as? UIScrollView
+      let parent = superview
     else {
       return
     }
     
-    print("adding-view", UIApplication.shared.applicationState.rawValue)
-    
     _cancelable = parent.publisher(for: \.frame).sink { [weak self] frame in
-      if UIApplication.shared.applicationState == .active {
-        print("adding-frame", frame, UIApplication.shared.applicationState.rawValue)
-        self?.controlledView?.frame = frame
-      } else {
-        self?.controlledView?.removeFromSuperview()
-      }
-    }
-    
-    _scrollCancelable = scrollView.publisher(for: \.contentOffset).sink { [weak self] offset in
-      if let _ = self?.controlledView?.superview {
+      guard let controlledView = self?.controlledView,
+            controlledView.superview != nil
+      else {
         return
       }
-    
-      print("adding-offset", offset, UIApplication.shared.applicationState.rawValue)
-      if UIApplication.shared.applicationState != .active {
-        print("Not active")
-        return
-      }
-
-      self?.placeControlledView()
+      controlledView.frame = frame
     }
-//    if UIApplication.shared.applicationState == .active {
-    
+  
     placeControlledView()
-//    }
   }
   
   override func layoutSubviews() {
     super.layoutSubviews()
     guard
       let parent = superview,
-//      let container = parent.superview,
       let controlledView = controlledView
     else {
       return
     }
     controlledView.frame = parent.frame
+  }
+  
+  func removeControlledView() {
+    controlledView?.removeFromSuperview()
   }
   
   func placeControlledView() {
@@ -142,7 +122,7 @@ private class ProxyView: UIView {
 
 class TermController: UIViewController {
   private let _meta: SessionMeta
-  
+ 
   private var _termDevice = TermDevice()
   private var _bag = Array<AnyCancellable>()
   private var _termView = TermView(frame: .zero)
@@ -163,6 +143,8 @@ class TermController: UIViewController {
   private var _bgColor: UIColor? = nil
   private var _fontSizeBeforeScaling: Int? = nil
   
+  @objc public var viewIsLoaded: Bool = false
+  
   @objc public var activityKey: String? = nil
   @objc public var termDevice: TermDevice { _termDevice }
   @objc weak var delegate: TermControlDelegate? = nil
@@ -171,8 +153,6 @@ class TermController: UIViewController {
     get { _bgColor }
     set { _bgColor = newValue }
   }
-  
-  
   
   private var _session: MCPSession? = nil
   
@@ -187,8 +167,6 @@ class TermController: UIViewController {
       _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }
-  
-  
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
@@ -226,6 +204,7 @@ class TermController: UIViewController {
   
   public override func viewDidLoad() {
     super.viewDidLoad()
+    viewIsLoaded = true
     
     resumeIfNeeded()
     

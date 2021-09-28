@@ -101,6 +101,10 @@ extension SuspendableSession {
     _sessionsIndex[key] = session
   }
   
+  func sessionFromIndexWith<T: SuspendableSession>(key: UUID) -> T? {
+    _sessionsIndex[key] as? T
+  }
+  
   subscript<T: SuspendableSession>(key: UUID) -> T {
     // 1. we already have it (same type)
     if let session = _sessionsIndex[key] as? T {
