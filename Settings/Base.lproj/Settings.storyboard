@@ -1403,7 +1403,7 @@
                     <navigationItem key="navigationItem" title="Default User" id="6uh-i1-q1k">
                         <barButtonItem key="rightBarButtonItem" style="plain" systemItem="save" id="8Qw-iT-X87">
                             <connections>
-                                <segue destination="eGr-d1-SC6" kind="unwind" unwindAction="unwindFromDefaultUser:" id="vuw-6U-Spn"/>
+                                <segue destination="eGr-d1-SC6" kind="unwind" unwindAction="unwindForSegue:towardsViewController:" id="SO7-nb-RFi"/>
                             </connections>
                         </barButtonItem>
                     </navigationItem>
