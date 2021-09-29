@@ -79,7 +79,8 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
 
     attachedShortcuts = []
     let shellMenuCommands:  [UICommand] = ShellMenu.allCases.map  { generate(Command(rawValue: $0.rawValue)!) }
-    var editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
+    let editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
+      + Self.remainingStandardEditMenuCommands()
     let viewMenuCommands:   [UICommand] = ViewMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
     let windowMenuCommands: [UICommand] = WindowMenu.allCases.map { generate(Command(rawValue: $0.rawValue)!) }
 
@@ -93,7 +94,7 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }
     builder.replaceChildren(ofMenu: .window)       { _ in windowMenuCommands }
   }
-
+  
   private class func generate(_ command: Command) -> UICommand {
     let kbConfig = KBTracker.shared.loadConfig()
 
@@ -137,6 +138,35 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
       action: #selector(SpaceController._onShortcut(_:)),
       propertyList: ["Command": command.rawValue]
     )
+  }
+  
+  // As we are rewriting the edit menu, if the standard sequences are not defined,
+  // we add them here so they can go through the normal flow, and let our terminal map.
+  private class func remainingStandardEditMenuCommands() -> [UICommand] {
+    let copyCommand = UIKeyCommand(title: "",
+                                   action: #selector(UIResponder.copy(_:)),
+                                   input: "c",
+                                   modifierFlags: .command,
+                                   propertyList: nil)
+    let cutCommand  = UIKeyCommand(title: "",
+                                   action: #selector(UIResponder.cut(_:)),
+                                   input: "x",
+                                   modifierFlags: .command,
+                                   propertyList: nil)
+    let selectAllCommand =  UIKeyCommand(title: "",
+                                         action: #selector(UIResponder.selectAll(_:)),
+                                         input: "a",
+                                         modifierFlags: .command,
+                                         propertyList: nil)
+    
+    return [copyCommand,
+            cutCommand,
+            selectAllCommand]
+      .filter { shortcut in
+        false == attachedShortcuts.contains(where: {
+          $0.input == shortcut.input && $0.modifierFlags == shortcut.modifierFlags
+        })
+      }
   }
 }
 
