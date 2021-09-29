@@ -391,6 +391,11 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
 
   FILE *term_r = ios_popen(sshCmd.UTF8String, "r");
   
+  if (term_r == NULL) {
+    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"SSH session exited with error. Try SSH to the host first." }];
+    return;
+  }
+  
   // Capture ssh output and process parameters for Mosh connection
   char *buf = NULL;
   size_t buf_sz = 0;
@@ -435,13 +440,18 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   fclose(term_r);
   
+  if (!match) {
+    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Could not start mosh-server." }];
+    return;
+  }
+  
   if (!self.sessionParams.ip) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Incorrect mosh-server startup sequence." }];
     return;
   }
   
   if (self.sessionParams.key == nil || self.sessionParams.port == nil) {
-    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Did not find remote IP address" }];
+    *error = [NSError errorWithDomain:@"blink.mosh.ssh" code:0 userInfo:@{ NSLocalizedDescriptionKey : @"Incorrect mosh-server startup sequence." }];
     return;
   }
 }
