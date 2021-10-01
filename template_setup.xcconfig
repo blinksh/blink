@@ -22,3 +22,12 @@ CLOUD_ID = com.carloscabanero.blinkshell
 KEYCHAIN_ID1 = Com.CarlosCabanero.Blink
 KEYCHAIN_ID2 = Com.CarlosCabanero.BlinkShell
 // if you want to build without keychain, please remove the section in xCode
+
+
+// BLINK_PUBLISHING_OPTION_DEVELOPER
+// BLINK_PUBLISHING_OPTION_TESTFLIGHT
+// BLINK_PUBLISHING_OPTION_APPSTORE
+
+SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Debug]   = BLINK_PUBLISHING_OPTION_DEVELOPER
+SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Release] = BLINK_PUBLISHING_OPTION_APPSTORE
+

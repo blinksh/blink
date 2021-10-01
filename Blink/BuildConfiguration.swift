@@ -63,7 +63,7 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
     if self.contains(.testFlight) {
       result.append("Test Flight")
     }
-    if self.contains(.testFlight) {
+    if self.contains(.appStore) {
       result.append("App Store")
     }
     
@@ -78,7 +78,7 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
     if self.contains(.testFlight) {
       result.append("testFlight")
     }
-    if self.contains(.testFlight) {
+    if self.contains(.appStore) {
       result.append("appStore")
     }
     
