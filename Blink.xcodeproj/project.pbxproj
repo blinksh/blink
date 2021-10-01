@@ -270,7 +270,7 @@
 		D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
-		D2A80979270713D200CD0FAF /* BuildConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A80978270713D200CD0FAF /* BuildConfiguration.swift */; };
+		D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A80978270713D200CD0FAF /* FeatureFlags.swift */; };
 		D2A86D6920EB86F2000DF1DA /* SSHClientOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */; };
 		D2A90AE220D277E00073BF3D /* ssh.m in Sources */ = {isa = PBXBuildFile; fileRef = D2A90ADB20D277DF0073BF3D /* ssh.m */; };
 		D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611D23AB5ACD00BE6585 /* UIApplication+Version.m */; };
@@ -839,7 +839,7 @@
 		D2A0C63E20AAD98D001CF38F /* ios_error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_error.h; sourceTree = "<group>"; };
 		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
 		D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGestureRecognizer.swift; sourceTree = "<group>"; };
-		D2A80978270713D200CD0FAF /* BuildConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildConfiguration.swift; sourceTree = "<group>"; };
+		D2A80978270713D200CD0FAF /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		D2A86D6720EB86F2000DF1DA /* SSHClientOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SSHClientOptions.h; sourceTree = "<group>"; };
 		D2A86D6820EB86F2000DF1DA /* SSHClientOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SSHClientOptions.m; sourceTree = "<group>"; };
 		D2A90ADB20D277DF0073BF3D /* ssh.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ssh.m; sourceTree = "<group>"; };
@@ -1092,7 +1092,7 @@
 				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
-				D2A80978270713D200CD0FAF /* BuildConfiguration.swift */,
+				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -2580,7 +2580,7 @@
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
-				D2A80979270713D200CD0FAF /* BuildConfiguration.swift in Sources */,
+				D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */,
 				D2C2441A238E44AB0082C69C /* KeySection.swift in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
 				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
