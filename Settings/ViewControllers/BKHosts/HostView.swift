@@ -329,26 +329,28 @@ struct HostView: View {
         FieldMoshPrediction(value: $_moshPrediction, enabled: _enabled)
       }.disabled(!_enabled)
       
-      Section(header: Label("Files.app", systemImage: "folder")) {
-        ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
-        .onDelete { indexSet in
-          _domains.remove(atOffsets: indexSet)
+      if FeatureFlags.fileProviders {
+        Section(header: Label("Files.app", systemImage: "folder")) {
+          ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
+          .onDelete { indexSet in
+            _domains.remove(atOffsets: indexSet)
+          }
+          Button(
+            action: {
+              let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+              _domains.append(FileProviderDomain(
+                id:UUID(),
+                displayName: displayName.isEmpty ? "Location Name" : displayName,
+                remotePath: "~",
+                proto: "sftp"
+              ))
+            },
+            label: { Label("Add Location", systemImage: "folder.badge.plus") }
+          )
         }
-        Button(
-          action: {
-            let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
-            _domains.append(FileProviderDomain(
-              id:UUID(),
-              displayName: displayName.isEmpty ? "Location Name" : displayName,
-              remotePath: "~",
-              proto: "sftp"
-            ))
-          },
-          label: { Label("Add Location", systemImage: "folder.badge.plus") }
-        )
+        .id(_domainsListVersion)
+        .disabled(!_enabled)
       }
-      .id(_domainsListVersion)
-      .disabled(!_enabled)
     }
     .listStyle(GroupedListStyle())
     .alert(errorMessage: $_errorMessage)
