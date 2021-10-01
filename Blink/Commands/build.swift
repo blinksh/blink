@@ -318,6 +318,12 @@ public func build_main(argc: Int32, argv: Argv) -> Int32 {
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
   
+  guard FeatureFlags.blinkBuild
+  else {
+    io.print("build is unavailable in \(FeatureFlags.currentPublishingOptions())")
+    return 0
+  }
+  
   BuildCLIConfig.shared = BuildCLIConfig.blinkConfig
   
   BuildCommands.customSSHCommand = BuildSSH.self
