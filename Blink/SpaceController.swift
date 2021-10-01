@@ -45,8 +45,7 @@ class SpaceController: UIViewController {
 
   final private lazy var _viewportsController = UIPageViewController(
     transitionStyle: .scroll,
-    navigationOrientation: .horizontal,
-    options: [.spineLocation: UIPageViewController.SpineLocation.mid]
+    navigationOrientation: .horizontal
   )
   
   var sceneRole: UISceneSession.Role = UISceneSession.Role.windowApplication
@@ -64,6 +63,14 @@ class SpaceController: UIViewController {
   
   var safeFrame: CGRect {
     _overlay.frame
+  }
+  
+  func freezeTabs() {
+    _viewportsController.dataSource = nil
+  }
+  
+  func unfreezeTabs() {
+    _viewportsController.dataSource = self
   }
   
   public override func viewDidLayoutSubviews() {
@@ -92,6 +99,7 @@ class SpaceController: UIViewController {
           _ = t.removeFromContainer()
         }
       }
+      self.unfreezeTabs()
     }
     
   }
