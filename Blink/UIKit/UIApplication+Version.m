@@ -31,6 +31,7 @@
 
 
 #include "UIApplication+Version.h"
+#include "Blink-Swift.h"
 
 @implementation UIApplication (BlinkVersion)
 
@@ -39,9 +40,9 @@
   
   NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
   NSString *appDisplayName = [infoDictionary objectForKey:@"CFBundleName"];
-  
-  return [NSString stringWithFormat:@"%@: %@. %@",
-          appDisplayName, [UIApplication blinkShortVersion], compileDate];
+ 
+  return [NSString stringWithFormat:@"%@: %@ %@. %@",
+          appDisplayName, [UIApplication blinkShortVersion], [FeatureFlags currentPublishingOptions] , compileDate];
 }
 
 + (NSString *)blinkShortVersion {
