@@ -34,8 +34,9 @@ import Foundation
 
 // Feature flags definition
 extension FeatureFlags {
-  @objc static let fileProviders = _enabled(for: .developer, .testFlight)
-  @objc static let blinkBuild    = _enabled(for: .developer, .testFlight)
+  @objc static let fileProviders         = _enabled(for: .developer, .testFlight)
+  @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
+  @objc static let sshConfigAttachments  = _enabled(for: .developer, .testFlight)
 }
 
 struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
