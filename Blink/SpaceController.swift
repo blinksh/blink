@@ -608,11 +608,18 @@ extension SpaceController {
   }
   
   public override var keyCommands: [UIKeyCommand]? {
+    guard
+      let input = KBTracker.shared.input,
+      foregroundActive
+    else {
+      return nil
+    }
+    
     if let keyCode = stuckKeyCode {
       return [UIKeyCommand(input: "", modifierFlags: keyCode.modifierFlags, action: #selector(onStuckOpCommand))]
     }
     
-    return nil
+    return input.blinkKeyCommands
   }
   
   @objc func onStuckOpCommand() {
@@ -626,7 +633,7 @@ extension SpaceController {
       let input = currentDevice?.view?.webView else {
       return
     }
-
+    
 //    input.reportStateReset()
     switch cmd.bindingAction {
     case .hex(let hex, comment: _):
