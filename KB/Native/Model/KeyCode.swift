@@ -71,6 +71,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case delete       = "Backspace"
   case `return`     = "Enter"
   case semicolon    = "Semicolon"
+  case circumflex   = "Circumflex"
+  case underscore   = "Underscore"
   case unidentified = "Unidentified"
   
   var isOption: Bool {
@@ -107,6 +109,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .delete: return "⌫ Delete"
     case .return: return "↩︎ Return"
     case .semicolon: return ";"
+    case .circumflex: return "^"
+    case .underscore: return "_"
     case .unidentified: return "?"
     default: return rawValue
     }
@@ -194,6 +198,9 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .delete: return 8
     case .return: return 13
     case .semicolon: return 186
+    // Mapped to 6 and -, as those are applying the same combination.
+    case .circumflex: return 54
+    case .underscore: return 189
     }
   }
   
@@ -221,6 +228,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .backquote: return "`"
     case .delete: return "⌫"
     case .return: return "↩︎"
+    case .circumflex: return "^"
+    case .underscore: return "_"
     case .unidentified: return ""
     default: return rawValue
     }
