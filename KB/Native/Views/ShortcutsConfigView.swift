@@ -195,7 +195,6 @@ struct ShortcutConfigView: View {
     .background(KeyCaptureView(shortcut: shortcut))
     .onReceive(shortcut.objectWillChange, perform: {
       config.objectWillChange.send()
-      UIMenuSystem.main.setNeedsRebuild()
     })
     
   }
@@ -271,6 +270,5 @@ struct ShortcutsConfigView: View {
     for v in toDelete {
       self.config.shortcuts.removeAll(where: {$0 === v})
     }
-    UIMenuSystem.main.setNeedsRebuild()
   }
 }

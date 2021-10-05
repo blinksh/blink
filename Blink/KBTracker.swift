@@ -77,6 +77,7 @@ class KBTracker {
     
     try? data.write(to: url, options: .atomicWrite)
     input?.configure(config)
+    UIMenuSystem.main.setNeedsRebuild()
   }
   
   func attach(input: SmarterTermInput?) {
