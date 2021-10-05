@@ -120,6 +120,9 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                 input: shortcut.input,
                                 modifierFlags: shortcut.modifiers,
                                 propertyList: ["Command": command.rawValue])
+        if #available(iOS 15.0, *) {
+          cmd.wantsPriorityOverSystemBehavior = true
+        }
         attachedShortcuts.append(cmd)
         return cmd
       } else {
