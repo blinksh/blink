@@ -35,38 +35,38 @@ var binaryTargets: [PackageDescription.Target] = [
 
   (
     "ios_system",
-    "93f337df76ebf6346e36a64c715829a03679e5aca1b7882087593d84f66050f0",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/ios_system.xcframework.zip"
+    "908ab71b2218de791635ffa4928a819ff8e21dd7652a8e98057988b7db856b6e",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/ios_system.xcframework.zip"
   ),
   (
     "awk",
-    "dd41e8940066aefd0e21c24e0c8b8b46f34005f840f96ace2b870369eef3fcbc",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/awk.xcframework.zip"
+    "4eae71d775e5bb304a9f4dde79cbba4b45586c344b21df1484e0a827fc049b5f",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/awk.xcframework.zip"
   ),
   (
     "files",
-    "75589e8591a66f7c95a10fabc3302efec0ddf4ca04e86228d5adfdd752a18a67",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/files.xcframework.zip"
+    "dce416ae2a9b3bf40399af67bee41a30a72df27038febdf61204b816664f4ff1",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/files.xcframework.zip"
   ),
   (
     "shell",
-    "41657942cbfb4fe12cd96f6557dfa46a7ae07cbbcec935e0c881b78fd5bf3dbd",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/shell.xcframework.zip"
+    "57452605a8f3d84212d2a6de0215c99df3ffd644fd6a400debf50d77faa5f404",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/shell.xcframework.zip"
   ),
   (
     "ssh_cmd",
-    "2e59319d045dd586e2be33e3cfc54d8421476e27fda75a2b64b17b393de05da8",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/ssh_cmd.xcframework.zip"
+    "7dbff3bac11e77f3a0dd154de237b28a6fd387b358dd54f2b46470e6b59c1236",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/ssh_cmd.xcframework.zip"
   ),
   (
     "tar",
-    "ce5b979f5d3fca6dbcbdc9c88302830481f0649a8eb984a9a73d184d71ee5d92",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/tar.xcframework.zip"
+    "c18a50dab43bf5ef583c07119f3c321374ccce692b7ad2967dbac0ebb5529c29",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/tar.xcframework.zip"
   ),
   (
     "text",
-    "f1c1cfe124fe6ddf922d80446d60b8faa80233742630b6caa2d9c0482ede84c6",
-    "https://github.com/yury/ios_system/releases/download/v2.9.1/text.xcframework.zip"
+    "c91dea4306d0b8603aa7a390297ddc0947254b35faa9b07514ae34fcab6fe970",
+    "https://github.com/yury/ios_system/releases/download/v2.9.3/text.xcframework.zip"
   ),
   (
     "network_ios",
