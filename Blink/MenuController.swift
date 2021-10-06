@@ -120,8 +120,13 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                 input: shortcut.input,
                                 modifierFlags: shortcut.modifiers,
                                 propertyList: ["Command": command.rawValue])
-        if #available(iOS 15.0, *) {
-          cmd.wantsPriorityOverSystemBehavior = true
+
+        //        if #available(iOS 15.0, *) {
+        //          cmd.wantsPriorityOverSystemBehavior = true
+        //        }
+
+        if cmd.responds(to: NSSelectorFromString("setWantsPriorityOverSystemBehavior:")) {
+          cmd.setValue(NSNumber(true), forKey: "wantsPriorityOverSystemBehavior")
         }
         attachedShortcuts.append(cmd)
         return cmd
