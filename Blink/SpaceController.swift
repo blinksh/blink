@@ -65,14 +65,6 @@ class SpaceController: UIViewController {
     _overlay.frame
   }
   
-  func freezeTabs() {
-    _viewportsController.dataSource = nil
-  }
-  
-  func unfreezeTabs() {
-    _viewportsController.dataSource = self
-  }
-  
   public override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
@@ -99,9 +91,7 @@ class SpaceController: UIViewController {
           _ = t.removeFromContainer()
         }
       }
-      self.unfreezeTabs()
     }
-    
   }
   
   private func forEachActive(block:(TermController) -> ()) {
@@ -250,28 +240,6 @@ class SpaceController: UIViewController {
     
     nc.addObserver(self, selector: #selector(_UISceneWillEnterForegroundNotification(_:)),
                    name: UIScene.willEnterForegroundNotification, object: nil)
-    
-    nc.addObserver(self, selector: #selector(_UISceneWillBeginSystemSnapshotSequence(_:)),
-                   name: .init(rawValue: "UISceneWillBeginSystemSnapshotSequence"), object: nil)
-    
-    nc.addObserver(self, selector: #selector(_UISceneDidCompleteSystemSnapshotSequence(_:)),
-                   name: .init(rawValue: "UISceneDidCompleteSystemSnapshotSequence"), object: nil)
-  }
-  
-  @objc func _UISceneWillBeginSystemSnapshotSequence(_ n: Notification) {
-    if let scene = n.object as? UIWindowScene {
-      print("_UISceneWillBeginSystemSnapshotSequence", view.window?.windowScene === scene)
-    } else {
-      print("_UISceneWillBeginSystemSnapshotSequence", "???")
-    }
-  }
-  
-  @objc func _UISceneDidCompleteSystemSnapshotSequence(_ n: Notification) {
-    if let scene = n.object as? UIWindowScene {
-      print("_UISceneDidCompleteSystemSnapshotSequence", view.window?.windowScene === scene)
-    } else {
-      print("_UISceneDidCompleteSystemSnapshotSequence", "???")
-    }
   }
                    
   @objc func _UISceneDidEnterBackgroundNotification(_ n: Notification) {

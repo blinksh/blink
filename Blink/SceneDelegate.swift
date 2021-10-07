@@ -328,10 +328,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     input?.reportStateReset()
   }
   
-  func sceneDidEnterBackground(_ scene: UIScene) {
-    _spCtrl.freezeTabs()
-  }
-  
   func stateRestorationActivity(for scene: UIScene) -> NSUserActivity? {
     _setDummyVC()
     return _spCtrl.stateRestorationActivity()

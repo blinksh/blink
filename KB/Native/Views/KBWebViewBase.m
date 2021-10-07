@@ -176,6 +176,10 @@ NSString *_encodeString(NSString *str);
   return self;
 }
 
+- (BOOL) _isShowingVideoPictureInPicture {
+  return YES;
+}
+
 //- (BOOL)_requiresKeyboardWhenFirstResponder {
 //  return YES;
 //}
