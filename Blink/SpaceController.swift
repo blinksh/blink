@@ -259,8 +259,20 @@ class SpaceController: UIViewController {
   }
   
   @objc func _UISceneWillEnterForegroundNotification(_ n: Notification) {
-    guard let scene = n.object as? UIWindowScene,
-          view.window?.windowScene === scene
+    guard let scene = n.object as? UIWindowScene
+    else {
+      return
+    }
+    
+    if scene.session.role == .windowExternalDisplay,
+      let sharedWindow = ShadowWindow.shared,
+       sharedWindow === view.window,
+       let ctrl = sharedWindow.spaceController.currentTerm() {
+      
+      ctrl.resumeIfNeeded()
+    }
+    
+    guard view.window?.windowScene === scene
     else {
       return
     }
@@ -270,6 +282,8 @@ class SpaceController: UIViewController {
         ctrl.placeToContainer()
       }
     }
+    
+    currentTerm()?.resumeIfNeeded()
   }
   
   private func _attachHUD() {
