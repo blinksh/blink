@@ -85,7 +85,7 @@ class SSHClientConfigProvider {
         user: options?.user ?? cmd.user ?? bkConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
         // first use `port` from options, then from cmd, then from configured host, and fallback to 22
         port: options?.port ?? cmd.port.map(String.init) ?? bkConfig.port(forHost: host) ?? "22",
-        proxyJump: cmd.proxyJump,
+        proxyJump: cmd.proxyJump ?? bkConfig.proxyJump(forHost: host),
         proxyCommand: options?.proxyCommand ?? bkConfig.proxyCommand(forHost: host),
         authMethods: availableAuthMethods,
         agent: agent,
