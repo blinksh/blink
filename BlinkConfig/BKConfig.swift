@@ -124,6 +124,10 @@ public struct BKConfig {
   public func proxyCommand(forHost host: String) -> String? {
     _host(host)?.proxyCmd
   }
+
+  public func proxyJump(forHost host: String) -> String? {
+    _host(host)?.proxyJump
+  }
   
   public func user(forHost host: String) -> String? {
     let user = _host(host)?.user ?? ""
