@@ -253,7 +253,11 @@
   self.sessionParams.childSessionParams = nil;
   _childSession = [[SSHCopyIDSession alloc] initWithDevice:_device andParams:self.sessionParams.childSessionParams];
   self.sessionParams.childSessionType = @"sshcopyid";
-  [_childSession executeAttachedWithArgs:args];
+  
+  // duplicate args
+  NSString *str = [NSString stringWithFormat:@"%@", args];
+  [_childSession executeAttachedWithArgs:str];
+
   _childSession = nil;
 }
 
