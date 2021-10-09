@@ -218,9 +218,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     ios_dup2(sockOut, STDOUT_FILENO)
     ios_dup2(devnull, STDERR_FILENO)
 
-    var cmd = command
-    cmd.removeAll(where: { $0 == "[" || $0 == "]" })
-    ios_system(cmd);
+    ios_system(command);
   }
 
   private func startInteractiveSessions(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
