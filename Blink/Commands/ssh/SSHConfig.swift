@@ -322,46 +322,73 @@ struct ConfigFileOptions {
 }
 
 struct PortForwardInfo: Equatable {
-  let localPort: UInt16
-  let bindAddress: String
   let remotePort: UInt16
+  let bindAddress: String
+  let localPort: UInt16
+  
+  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.]+)):(?<remotePort>\d+)$"#
 
-  init(_ pattern: String) throws {
-    let comps = pattern.components(separatedBy: ":")
-    if comps.count != 3 {
+  init(_ info: String) throws {
+    let regex = try! NSRegularExpression(pattern: pattern)
+    
+    guard let match = regex.firstMatch(in: info,
+                                       range: NSRange(location: 0, length: info.count))
+    else {
       throw ValidationError("Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
     }
-
-    guard let localPort = UInt16(comps[0]) else {
-      throw ValidationError("Invalid port \(comps[0])")
+    guard let r = Range(match.range(withName: "localPort"), in: info),
+          let localPort = UInt16(info[r])
+    else {
+      throw ValidationError("Invalid local port.")
     }
     self.localPort = localPort
-
-    self.bindAddress = comps[1]
-
-    guard let remotePort = UInt16(comps[2]) else {
-      throw ValidationError("Invalid port \(comps[2])")
+    
+    guard let r = Range(match.range(withName: "remotePort"), in: info),
+          let remotePort = UInt16(info[r])
+    else {
+      throw ValidationError("Invalid remote port.")
     }
     self.remotePort = remotePort
+    
+    guard let r = Range(match.range(withName: "bindAddress"), in: info)
+    else {
+      throw ValidationError("Invalid bind address.")
+    }
+    var bindAddress = String(info[r])
+    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
+    self.bindAddress = bindAddress
   }
 }
 
 struct StdioForwardInfo: Equatable {
-  let bindAddress: String
   let remotePort: UInt16
+  let bindAddress: String
 
-  init(_ pattern: String) throws {
-    let comps = pattern.components(separatedBy: ":")
-    if comps.count != 2 {
+  private let pattern = #"^(?<bindAddress>\[([\w:.]+)\]|([\w.]+)):(?<remotePort>\d+)$"#
+
+  init(_ info: String) throws {
+    let regex = try! NSRegularExpression(pattern: pattern)
+    
+    guard let match = regex.firstMatch(in: info,
+                                       range: NSRange(location: 0, length: info.count))
+    else {
       throw ValidationError("Missing <bind_address>:<remoteport> for stdio forwarding.")
     }
-
-    self.bindAddress = comps[0]
-
-    guard let remotePort = UInt16(comps[1]) else {
-      throw ValidationError("Invalid port \(comps[1])")
+    
+    guard let r = Range(match.range(withName: "remotePort"), in: info),
+          let remotePort = UInt16(info[r])
+    else {
+      throw ValidationError("Invalid remote port.")
     }
     self.remotePort = remotePort
+    
+    guard let r = Range(match.range(withName: "bindAddress"), in: info)
+    else {
+      throw ValidationError("Invalid bind address.")
+    }
+    var bindAddress = String(info[r])
+    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
+    self.bindAddress = bindAddress
   }
 }
 
