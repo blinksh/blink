@@ -1,3 +1,70 @@
+# Version 14.0.0
+
+## SSH
+
+To get the ball rolling, we are releasing a new SSH subsystem. This will allow us to make a few key improvements and to tailor new services inside our app.
+- New SSH connections are automatically ran from a pool. This will allow you to start tunnels on top of running sessions and all those. If you want to run separate connections, you can use -o ControlMaster no.
+- We now support ProxyJump flag (-J) to simplify setting up ProxyCommand.
+- Improved argument parser, verbose output and error communication.
+
+## Tunneling
+
+- Tunnels have been completely rewritten. 
+- Tunnels can now be started on top of existing connections without depending on running interactive sessions. You can do that with the -N flag.
+- You can control running tunnels with the -O stop|start setting.
+- Reverse tunnels now support port 0 (as in -R 0:localhost:XXX), so that the remote server can assign and send a port back to the client. This is useful for ngrok and other tools where you can now do `ssh -R 0:localhost:8080 tunnel.us.ngrok.com http`.
+
+## SOCKS5 Proxy (#1234)
+
+- Blink can now do Dynamic port forwarding, aka SOCKS5 proxy or server. This is perfect as a simple VPN that allows you to browse the internet using a remote machine as a proxy, or - a more critical dev scenario - to access backend services behind a Firewall. As a SOCKS proxy sits at layer 5 of the OSI stack, its performance is also astounding, try for yourself! For more information, please read  #1234
+
+## New Agent built-in and and Keys
+
+- More secure Blink Agent built in. First we improved the integration, so there is no need to start it separately anymore. You can add keys to the agent by using ssh-add (-d to remove). The Agent can be forwarded by using the standard ssh -A. Please test it and let us know if you are missing anything. Now that we have a deeper integration, we plan to add a few really cool features here. Ideas welcome!
+
+## Support for Certificates (#653)
+
+- You can attach a certificate to a key and use it for Login. Certificates are a safer way to handle teams of users or fleets of devices. Please note the CA will have to sign the public key (as part of the certificate generation process) separately. For instructions please read: https://gravitational.com/blog/how-to-ssh-properly/
+
+## Secure Enclave Keys (#457)
+
+- Blink can now create Secure Enclave Keys. “The Secure Enclave is a hardware-based key manager that’s isolated from the main processor to provide an extra layer of security. When you store a private key in the Secure Enclave, you never actually handle the key, making it difficult for the key to become compromised.”
+
+## New architecture for Keys
+
+- We have rebuilt our Keys architecture on top of OpenSSH. We were having a lot of issues with the mismatch between OpenSSH and LibSSH, so now everything is done the standard OpenSSH way.
+New interface for Key Management
+- To wrap it all up, we bumped our keys UI to offer the new options in a cleaner way and with an improved ssh key import flow.
+
+## SFTP - SCP
+
+We have new SFTP and SCP commands, implemented from scratch. It is faster than anything on iOS, and even faster than OpenSSH SFTP command!
+
+- We are taking the approach of using the same simple interface of SCP for both, but backed by SFTP functionality.
+- There is support for wildcards and recursive copy.
+- You can also use three way copy, from a remote source to a remote destination: user@host1:file user@host2:destination_path. Because nothing is stored locally, it is very fast!
+- SFTP and SCP capture port using the hash, so you can do sftp user@host1#port:file user@host2#port:destination_path
+- New flags. The --update will perform rsync style update, traversing the whole hierarchy, checking for changes and only uploading when there were modifications to a file!
+- Preserve permissions.
+
+## Mosh
+
+- Improved Mosh and other command outputs.
+- New Flags supported.
+- Improved Mosh durability
+
+## iOS15 and other goodies
+
+- Facecam command
+- We reworked the directory structure of our container.
+- New menus.
+- Notifications. Bell notifications and sequences.
+- Fixes on configurations and making sure everything is still in place.
+- Updates for new devices
+- Many many bug fixes
+- Libraries updated
+- And many more things!
+
 # Version 13.5.10
 
 - Added action for KeyCast toggle. #1180
