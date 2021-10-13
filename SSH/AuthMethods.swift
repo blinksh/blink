@@ -372,6 +372,8 @@ public class AuthAgent: AuthMethod, Authenticator {
       return .success
     case SSH_AUTH_DENIED.rawValue:
       return .denied
+    case SSH_AUTH_PARTIAL.rawValue:
+      return .partial
     default:
       // NOTE This may return a completely different error because the failure may not be tied
       // to the status of the agent.
