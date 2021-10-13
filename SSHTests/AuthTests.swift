@@ -146,7 +146,7 @@ class AuthTests: XCTestCase {
   /**
    
    */
-  func testPartialAuthentication() throws {
+  func testPublicKeyPartialAuthentication() throws {
     let config = SSHClientConfig(
       user: Credentials.partialAuthentication.user,
       port: Credentials.port,
@@ -154,6 +154,35 @@ class AuthTests: XCTestCase {
         AuthPublicKey(privateKey: Credentials.privateKey),
         AuthPassword(with: Credentials.partialAuthentication.password)
       ]
+    )
+    
+    var completion: Any? = nil
+    
+    let connection = SSHClient
+      .dial(Credentials.partialAuthentication.host, with: config)
+      .exactOneOutput(
+        test: self,
+        receiveCompletion: {
+          completion = $0
+        }
+      )
+    assertCompletionFinished(completion)
+    XCTAssertNotNil(connection)
+  }
+  
+  func testAgentPartialAuthentication() throws {
+    let agent = SSHAgent()
+    let key = try SSHKey(fromFileBlob: Credentials.privateKey.data(using: .utf8)!)
+    XCTAssertTrue(agent.loadKey(key, aka: "testKey"))
+    
+    let config = SSHClientConfig(
+      user: Credentials.partialAuthentication.user,
+      port: Credentials.port,
+      authMethods: [
+        AuthAgent(agent),
+        AuthPassword(with: Credentials.partialAuthentication.password)
+      ],
+      agent: agent
     )
     
     var completion: Any? = nil
