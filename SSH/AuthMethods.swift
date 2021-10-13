@@ -366,13 +366,14 @@ public class AuthAgent: AuthMethod, Authenticator {
   
   func auth(_ session: ssh_session) throws -> AuthState {
     let rc = ssh_userauth_agent(session, nil)
-    
-    switch rc {
-    case SSH_AUTH_SUCCESS.rawValue:
+    let auth = ssh_auth_e(rc)
+
+    switch auth {
+    case SSH_AUTH_SUCCESS:
       return .success
-    case SSH_AUTH_DENIED.rawValue:
+    case SSH_AUTH_DENIED:
       return .denied
-    case SSH_AUTH_PARTIAL.rawValue:
+    case SSH_AUTH_PARTIAL:
       return .partial
     default:
       // NOTE This may return a completely different error because the failure may not be tied
