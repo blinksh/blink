@@ -127,21 +127,16 @@ extension SSHClientConfigProvider {
     var authMethods: [AuthMethod] = []
     let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
 
-    var doAddAuthPasswordInteractive = false
     // Host password
     if let password = bkConfig.password(forHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
     } else {
       // Interactive
-      doAddAuthPasswordInteractive = true
-    }
-
-    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 2))
-    
-    if doAddAuthPasswordInteractive {
       authMethods.append(AuthPasswordInteractive(requestAnswers: self.authPrompt,
           wrongRetriesAllowed: 2))
     }
+
+    authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 2))
 
     return authMethods
   }
