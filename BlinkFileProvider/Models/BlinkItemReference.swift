@@ -121,6 +121,9 @@ final class BlinkItemReference: NSObject {
   }
 
   var filename: String {
+    if identifier.filename.isEmpty {
+      return "/"
+    }
     return identifier.filename
   }
   
@@ -217,8 +220,8 @@ extension BlinkItemReference: NSFileProviderItem {
     }
     
     var c = NSFileProviderItemCapabilities()
-    
     if isDirectory {
+      print("Capabilities for \(self.filename)")
       c.formUnion(.allowsAddingSubItems)
       if permissions.contains(.ux) {
         c.formUnion([.allowsContentEnumerating, .allowsReading])

@@ -66,8 +66,12 @@ class FileProviderExtension: NSFileProviderExtension {
     }
     
     guard let reference = FileTranslatorCache.reference(identifier: queryableIdentifier) else {
+     if identifier == .rootContainer {
+       // Request an enumeration
+       throw NSFileProviderError(.pageExpired)
+     }
       print("ITEM \(queryableIdentifier.path) REQUESTED with ERROR")
-      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: queryableIdentifier.itemIdentifier)
+      throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
     }
     
     return reference
@@ -297,7 +301,6 @@ class FileProviderExtension: NSFileProviderExtension {
   
   override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
     
-    let maybeEnumerator: NSFileProviderEnumerator? = nil
     print("Called enumerator for \(containerItemIdentifier.rawValue)")
     
     guard let domain = self.domain else {
