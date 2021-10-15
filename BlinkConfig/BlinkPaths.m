@@ -238,7 +238,29 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   if ([fm fileExistsAtPath:homePath]) {
     return;
   }
+ 
+  // 1. try to fix file permissions in Documents/.blink
+  NSDictionary<NSFileAttributeKey, id> *attrs = @{NSFileProtectionKey: NSFileProtectionNone};
+  NSString *documentsPath = [self documentsPath];
   
+  NSArray<NSString *> * pathsToFixPermissions = @[
+    [documentsPath stringByAppendingPathComponent:@".blink/keys"],  // BlinkPaths.blinkKeysFile,
+    [documentsPath stringByAppendingPathComponent:@".blink/hosts"], // BlinkPaths.blinkHostsFile,
+    [documentsPath stringByAppendingPathComponent:@".blink/defaults"]  // BlinkPaths.blinkDefaultsFile
+  ];
+  
+  for (NSString *path in pathsToFixPermissions) {
+    if (![fm fileExistsAtPath:path]) {
+      continue;
+    }
+    ok = [fm setAttributes:attrs ofItemAtPath:path error:&error];
+    if (error || !ok) {
+      NSLog(@"Failed to set attribtues on %@ :%@.", path, error);
+      exit(0);
+    }
+  }
+  
+  // 2. create home-tmp
   NSString *tmpHomePath = [homePath stringByAppendingString:@"-tmp"];
   
   if ([fm fileExistsAtPath:tmpHomePath]) {
@@ -260,8 +282,9 @@ NSString *__iCloudsDriveDocumentsPath = nil;
     exit(0);
     return;
   }
-
-  NSString *documentsPath = [self documentsPath];
+  
+  // 3. copy .blink, .ssh from Documents to home-tmp
+  
   NSArray<NSString *> *foldersToCopy = @[@".blink", @".ssh"];
   
   for (NSString * folder in foldersToCopy) {
@@ -279,25 +302,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
     }
   }
   
-  NSDictionary<NSFileAttributeKey, id> *attrs = @{NSFileProtectionKey: NSFileProtectionNone};
-
-  NSArray<NSString *> * pathsToFixPermissions = @[
-    [tmpHomePath stringByAppendingPathComponent:@".blink/keys"],  // BlinkPaths.blinkKeysFile,
-    [tmpHomePath stringByAppendingPathComponent:@".blink/hosts"], // BlinkPaths.blinkHostsFile,
-    [tmpHomePath stringByAppendingPathComponent:@".blink/defaults"]  // BlinkPaths.blinkDefaultsFile
-  ];
-  
-  for (NSString *path in pathsToFixPermissions) {
-    if (![fm fileExistsAtPath:path]) {
-      continue;
-    }
-    ok = [fm setAttributes:attrs ofItemAtPath:path error:&error];
-    if (error || !ok) {
-      NSLog(@"Failed to set attribtues on %@ :%@.", path, error);
-      exit(0);
-    }
-  }
-  
+  // 4. Move home-tmp to home
   ok = [fm moveItemAtPath:tmpHomePath toPath:homePath error:&error];
   if (error || !ok) {
     NSLog(@"Failed to move tmpHomePath to homePath :%@.", error);
