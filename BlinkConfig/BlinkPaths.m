@@ -221,50 +221,87 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 + (void)migrateToHomeAtGroupContainer {
   [self cleanedSymlinksInHomeDirectory];
   NSFileManager *fm = NSFileManager.defaultManager;
-//  [fm removeItemAtPath:[self homePath] error:nil];
+  
+  NSError *error = nil;
+  BOOL ok;
   
   NSString *homePath = [self homePath];
+
+  /* // Uncomment this only for tests
+  ok = [fm removeItemAtPath:homePath error:&error];
+  if (error || !ok) {
+    NSLog(@"Failed to remove existing home folder for tests :%@.", error);
+    exit(0);
+  }
+   */
  
   if ([fm fileExistsAtPath:homePath]) {
     return;
   }
-  NSError *error = nil;
-  BOOL ok = [fm createDirectoryAtPath:homePath
-          withIntermediateDirectories:YES
-                           attributes:nil
-                                error:&error];
+  
+  NSString *tmpHomePath = [homePath stringByAppendingString:@"-tmp"];
+  
+  if ([fm fileExistsAtPath:tmpHomePath]) {
+    ok = [fm removeItemAtPath:tmpHomePath error:&error];
+    if (error || !ok) {
+      NSLog(@"Failed to remove existing tmp folder :%@.", error);
+      exit(0);
+      return;
+    }
+  }
+  
+  ok = [fm createDirectoryAtPath:tmpHomePath
+     withIntermediateDirectories:YES
+                      attributes:nil
+                           error:&error];
   
   if (error || !ok) {
-    NSLog(@"Failed to create home folder :%@.", error);
+    NSLog(@"Failed to create tmp home folder :%@.", error);
+    exit(0);
     return;
   }
 
   NSString *documentsPath = [self documentsPath];
-  NSArray<NSString *> *foldersToMove = @[@".blink", @".ssh"];
+  NSArray<NSString *> *foldersToCopy = @[@".blink", @".ssh"];
   
-  for (NSString * folder in foldersToMove) {
+  for (NSString * folder in foldersToCopy) {
     NSString *folderDocumentsPath = [documentsPath stringByAppendingPathComponent:folder];
-    NSString *folderHomePath = [homePath stringByAppendingPathComponent:folder];
+    NSString *folderHomePath = [tmpHomePath stringByAppendingPathComponent:folder];
+    
+    if (![fm fileExistsAtPath:folderDocumentsPath]) {
+      continue;
+    }
     
     ok = [fm copyItemAtPath:folderDocumentsPath toPath:folderHomePath error:&error];
     if (error || !ok) {
       NSLog(@"Failed to copy folder %@ :%@.", folder, error);
+      exit(0);
     }
   }
   
   NSDictionary<NSFileAttributeKey, id> *attrs = @{NSFileProtectionKey: NSFileProtectionNone};
 
   NSArray<NSString *> * pathsToFixPermissions = @[
-    BlinkPaths.blinkKeysFile,
-    BlinkPaths.blinkHostsFile,
-    BlinkPaths.blinkDefaultsFile
+    [tmpHomePath stringByAppendingPathComponent:@".blink/keys"],  // BlinkPaths.blinkKeysFile,
+    [tmpHomePath stringByAppendingPathComponent:@".blink/hosts"], // BlinkPaths.blinkHostsFile,
+    [tmpHomePath stringByAppendingPathComponent:@".blink/defaults"]  // BlinkPaths.blinkDefaultsFile
   ];
   
   for (NSString *path in pathsToFixPermissions) {
+    if (![fm fileExistsAtPath:path]) {
+      continue;
+    }
     ok = [fm setAttributes:attrs ofItemAtPath:path error:&error];
     if (error || !ok) {
       NSLog(@"Failed to set attribtues on %@ :%@.", path, error);
+      exit(0);
     }
+  }
+  
+  ok = [fm moveItemAtPath:tmpHomePath toPath:homePath error:&error];
+  if (error || !ok) {
+    NSLog(@"Failed to move tmpHomePath to homePath :%@.", error);
+    exit(0);
   }
 }
 
