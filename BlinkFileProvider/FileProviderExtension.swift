@@ -304,7 +304,7 @@ class FileProviderExtension: NSFileProviderExtension {
     print("Called enumerator for \(containerItemIdentifier.rawValue)")
     
     guard let domain = self.domain else {
-      throw "No domain received."
+      throw NSFileProviderError(.notAuthenticated)
     }
     
     if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
