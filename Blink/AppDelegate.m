@@ -76,8 +76,9 @@ void __setupProcessEnv() {
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
   
-  [BlinkPaths migrateToHomeAtGroupContainer];
-  
+  [Migrator perform];
+  [BlinkPaths cleanedSymlinksInHomeDirectory];
+
   [BKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
