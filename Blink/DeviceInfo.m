@@ -61,7 +61,7 @@
     NSString *marketingName = self.marketingName;
     
     _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"];
-    _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [marketingName hasPrefix:@"Mac"];
+    _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [_machine hasPrefix:@"iPad14"] || [marketingName hasPrefix:@"Mac"];
     
   }
   return self;
@@ -172,6 +172,9 @@
     
     @"iPad13,1" : @"iPad Air 4",  // wifi
     @"iPad13,2" : @"iPad Air 4",  // cellular
+    
+    @"iPad14,2": @"iPad Mini 6", // cellular
+    @"iPad14,1": @"iPad Mini 6", // wifi
   };
   
   NSString *value = codes[_machine];
