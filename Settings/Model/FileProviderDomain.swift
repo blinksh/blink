@@ -71,9 +71,11 @@ class _NSFileProviderDomain {
 
 #else
 
-typealias _NSFileProviderDomain = NSFileProviderDomain
-typealias _NSFileProviderManager = NSFileProviderManager
-typealias _NSFileProviderDomainIdentifier = NSFileProviderDomainIdentifier
+public typealias _NSFileProviderDomain = NSFileProviderDomain
+@objc class _NSFileProviderManager: NSFileProviderManager {
+  
+}
+public typealias _NSFileProviderDomainIdentifier = NSFileProviderDomainIdentifier
 
 #endif
 

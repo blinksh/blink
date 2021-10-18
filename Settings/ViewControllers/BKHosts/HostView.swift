@@ -481,7 +481,7 @@ struct HostView: View {
     BKiCloudSyncHandler.shared()?.check(forReachabilityAndSync: nil)
     #if targetEnvironment(macCatalyst)
     #else
-    NSFileProviderManager.syncWithBKHosts()
+    _NSFileProviderManager.syncWithBKHosts()
     #endif
   }
   
