@@ -122,7 +122,7 @@ void __setupProcessEnv() {
   [UIApplication sharedApplication].applicationSupportsShakeToEdit = NO;
   
   
-  [NSFileProviderManager syncWithBKHosts];
+  [_NSFileProviderManager syncWithBKHosts];
   
   return YES;
 }

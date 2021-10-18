@@ -479,7 +479,10 @@ struct HostView: View {
 
     BKHosts.updateHost(host.host, withiCloudId: host.iCloudRecordId, andLastModifiedTime: Date())
     BKiCloudSyncHandler.shared()?.check(forReachabilityAndSync: nil)
+    #if targetEnvironment(macCatalyst)
+    #else
     NSFileProviderManager.syncWithBKHosts()
+    #endif
   }
   
   private func _saveICloudVersion() {
@@ -529,7 +532,7 @@ struct HostView: View {
     BKHosts.markHost(iCloudHost.host, for: BKHosts.record(fromHost: host), withConflict: false)
     syncHandler.check(forReachabilityAndSync: nil)
     
-    NSFileProviderManager.syncWithBKHosts()
+    _NSFileProviderManager.syncWithBKHosts()
   }
   
   private func _saveLocalVersion() {
