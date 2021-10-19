@@ -264,6 +264,15 @@ class SpaceController: UIViewController {
       return
     }
     
+    #if targetEnvironment(macCatalyst)
+    
+    if scene.session.persistentIdentifier.hasPrefix("NSMenuBarScene") {
+      KBTracker.shared.input?.reportStateWithSelection()
+      return
+    }
+    
+    #endif
+    
     if scene.session.role == .windowExternalDisplay,
       let sharedWindow = ShadowWindow.shared,
        sharedWindow === view.window,
@@ -282,8 +291,15 @@ class SpaceController: UIViewController {
         ctrl.placeToContainer()
       }
     }
-    
+   
     currentTerm()?.resumeIfNeeded()
+   
+    #if targetEnvironment(macCatalyst)
+    #else
+    if view.window === KBTracker.shared.input?.window {
+      KBTracker.shared.input?.reportStateWithSelection()
+    }
+    #endif
   }
   
   private func _attachHUD() {
@@ -620,12 +636,10 @@ extension SpaceController {
     switch cmd.bindingAction {
     case .hex(let hex, comment: _):
       input.reportHex(hex)
-      break;
     case .press(let keyCode, mods: let mods):
       input.reportPress(UIKeyModifierFlags(rawValue: mods), keyId: keyCode.id)
-      break;
-//    case .command(let c):
-//      _onCommand(c)
+    case .command(let c):
+      _onCommand(c)
     default:
       break;
     }
