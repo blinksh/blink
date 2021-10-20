@@ -40,6 +40,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   let translator: AnyPublisher<Translator, Error>
   var cancellableBag: Set<AnyCancellable> = []
   var currentAnchor: Int = 0
+  let log: BlinkLogger
 
   init(enumeratedItemIdentifier: NSFileProviderItemIdentifier,
        domain: NSFileProviderDomain) {
@@ -51,7 +52,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     }
 
     let path = self.identifier.path
-    print("\(path) - Initialized enumerator ")
+    self.log = BlinkLogger("enumeratorFor \(path)")
+    self.log.debug("Initialized")
 
     self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
       .flatMap { t -> AnyPublisher<Translator, Error> in
@@ -65,7 +67,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
   func invalidate() {
     // TODO: perform invalidation of server connection if necessary?
     // Stop the enumeration
-    print("\(self.identifier.path) - Invalidate enumerator")
+    self.log.debug("Invalidate")
     cancellableBag = []
   }
 
@@ -82,7 +84,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
      - inform the observer about the items returned by the server (possibly multiple times)
      - inform the observer that you are finished with this page
      */
-    print("\(self.identifier.path) - enumeration requested")
+    self.log.info("Enumeration requested")
 
     // We use the local files and the representation of the remotes to construct the view of the system.
     // It is a simpler way to warm up the local cache without having a persistent representation.
@@ -138,13 +140,16 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         receiveCompletion: { completion in
           switch completion {
           case .failure(let error):
-            print("ERROR \(error.localizedDescription)")
+            self.log.error("\(error)")
             observer.finishEnumeratingWithError(error)
           case .finished:
             observer.finishEnumerating(upTo: nil)
           }
         },
-        receiveValue: { observer.didEnumerate($0) }).store(in: &cancellableBag)
+        receiveValue: {
+          self.log.info("Enumerated \($0.count) items")
+          observer.didEnumerate($0)
+        }).store(in: &cancellableBag)
   }
 
   

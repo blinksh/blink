@@ -57,6 +57,7 @@
 + (NSString *) historyFile;
 + (NSString *) knownHostsFile;
 
++ (NSURL *)fileProviderErrorLogURL;
 
 + (void)linkICloudDriveIfNeeded;
 + (void)linkDocumentsIfNeeded;

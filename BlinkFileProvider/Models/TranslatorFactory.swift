@@ -48,10 +48,10 @@ func buildTranslator(for encodedRootPath: String) -> AnyPublisher<Translator, Er
         let rootPath = String(data: rootData, encoding: .utf8) else {
     return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
   }
-  
+
   // rootPath: ssh:host:root_folder
   let components = rootPath.split(separator: ":")
-  
+
   // TODO At least two components. Tweak for sftp
   let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
   let pathAtFiles: String
@@ -83,7 +83,7 @@ fileprivate func local(path: String) -> AnyPublisher<Translator, Error> {
 
 fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Error> {
   let (host, config) = SSHClientConfigProvider.config(host: host)
-  
+  let log = BlinkLogger("SFTP")
   // NOTE We use main queue as this is an extension. Should move it to a different one though,
   // in case of future changes.
   return Just(config).receive(on: DispatchQueue.main).flatMap {
@@ -93,24 +93,33 @@ fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Er
     //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
       .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
         return conn.requestSFTP()
-      }.print("SFTP")
-      .flatMap { $0.walkTo(path) }
+      }//.print("SFTP")
+      .mapError { error -> Error in
+        log.error("Error connecting: \(error)")
+        return error
+      }
+      .flatMap { $0.walkTo(path)
+                   .mapError { error -> Error in
+                     log.error("Error walking to base path \(path): \(error)")
+                     return error
+                   }
+      }
       .eraseToAnyPublisher()
   }.eraseToAnyPublisher()
 }
 
 class SSHClientConfigProvider {
-  
+
   static func config(host: String) -> (String, SSHClientConfig) {
-   
+
     BKHosts.loadHosts()
     BKPubKey.loadIDS()
-    
+
     let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
     let agent = SSHAgent()
-    
+
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
-    
+
     if let (signer, name) = bkConfig.signer(forHost: host) {
       _ = agent.loadKey(signer, aka: name, constraints: consts)
     } else {
@@ -120,7 +129,7 @@ class SSHClientConfigProvider {
         }
       }
     }
-    
+
     var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
     if let password = bkConfig.password(forHost: host), !password.isEmpty {
       availableAuthMethods.append(AuthPassword(with: password))
