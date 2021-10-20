@@ -96,12 +96,12 @@ fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Er
       }//.print("SFTP")
       .mapError { error -> Error in
         log.error("Error connecting: \(error)")
-        return error
+        return NSFileProviderError.couldNotConnect(dueTo: error)
       }
       .flatMap { $0.walkTo(path)
                    .mapError { error -> Error in
                      log.error("Error walking to base path \(path): \(error)")
-                     return error
+                     return NSFileProviderError(.noSuchItem)
                    }
       }
       .eraseToAnyPublisher()

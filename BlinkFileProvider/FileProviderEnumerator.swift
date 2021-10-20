@@ -138,7 +138,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
       }
       .sink(
         receiveCompletion: { completion in
-          switch completion {
+        switch completion {
           case .failure(let error):
             self.log.error("\(error)")
             observer.finishEnumeratingWithError(error)

@@ -13,7 +13,7 @@
             <objects>
                 <viewController id="J6p-g8-CHO" customClass="DocumentActionViewController" customModule="BlinkFileProviderUI" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Vdh-Gp-eV6">
-                        <rect key="frame" x="0.0" y="0.0" width="758" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="758" height="703"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Blink File Providers" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="p4V-Dz-HfP">
@@ -23,43 +23,43 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" text="Browse, upload and download files from remote servers." textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="tyf-Q1-V93">
-                                <rect key="frame" x="20" y="112.66666666666667" width="718" height="19.000000000000014"/>
+                                <rect key="frame" x="20" y="112.66666666666667" width="718" height="26.333333333333329"/>
                                 <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="22"/>
                                 <color key="textColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➊ Open Blink." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nqF-pt-C9L">
-                                <rect key="frame" x="30" y="161.66666666666666" width="698" height="21.666666666666657"/>
+                                <rect key="frame" x="30" y="241.33333333333334" width="698" height="21.666666666666657"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➋ Go to Config (⌘,) - Hosts" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Nma-sK-11p">
-                                <rect key="frame" x="30" y="203.33333333333334" width="698" height="21.666666666666657"/>
+                                <rect key="frame" x="30" y="283" width="698" height="21.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="748" text="➌ Add and configure your connection." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GAN-VJ-TC1">
-                                <rect key="frame" x="30" y="245" width="698" height="0.0"/>
+                                <rect key="frame" x="30" y="324.66666666666669" width="698" height="21.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➍ Add the location you want to start browsing from." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="uRC-yH-5Ka">
-                                <rect key="frame" x="30" y="265" width="698" height="21.666666666666686"/>
+                                <rect key="frame" x="30" y="366.33333333333331" width="698" height="21.666666666666686"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="➎ Make sure to start an ssh connection in the shell to test your connection works." lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZyQ-Qb-oqb">
-                                <rect key="frame" x="30" y="444.33333333333331" width="698" height="21.666666666666686"/>
+                                <rect key="frame" x="30" y="545.66666666666663" width="698" height="21.666666666666629"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k6y-tY-87X">
-                                <rect key="frame" x="30" y="496" width="698" height="40"/>
+                            <button opaque="NO" contentMode="scaleToFill" ambiguous="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="k6y-tY-87X">
+                                <rect key="frame" x="30" y="590" width="698" height="40"/>
                                 <color key="backgroundColor" red="0.40194046500000002" green="0.86639392380000002" blue="0.92942261699999995" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                                 <accessibility key="accessibilityConfiguration" identifier="FPUInternalActionDoneButtonIdentifier"/>
                                 <constraints>
@@ -75,17 +75,25 @@
                                 </connections>
                             </button>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="app_location" translatesAutoresizingMaskIntoConstraints="NO" id="cyt-Vt-E0R">
-                                <rect key="frame" x="0.0" y="291.66666666666669" width="758" height="142.66666666666669"/>
+                                <rect key="frame" x="0.0" y="393" width="758" height="142.66666666666663"/>
                                 <constraints>
                                     <constraint firstAttribute="width" secondItem="cyt-Vt-E0R" secondAttribute="height" multiplier="250:47" id="xXo-hU-zpP"/>
                                 </constraints>
                             </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" verticalCompressionResistancePriority="749" textAlignment="center" lineBreakMode="headTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" minimumScaleFactor="0.5" showsExpansionTextWhenTruncated="YES" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Ene-hJ-Zbv">
+                                <rect key="frame" x="30" y="154" width="698" height="57.333333333333343"/>
+                                <string key="text">This is an error that can happen while authentication and all of that from the application to this piece hereThis is an error that can happen while authentication and all of that from the application to this piece here</string>
+                                <fontDescription key="fontDescription" name=".AppleSystemUIFont" family=".AppleSystemUIFont" pointSize="16"/>
+                                <color key="textColor" systemColor="systemRedColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="zTo-CZ-ppy"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
                             <constraint firstItem="cyt-Vt-E0R" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" id="0yW-M2-JWu"/>
                             <constraint firstItem="tyf-Q1-V93" firstAttribute="centerX" secondItem="Vdh-Gp-eV6" secondAttribute="centerX" id="1Jt-hX-TAJ"/>
+                            <constraint firstAttribute="trailing" secondItem="Ene-hJ-Zbv" secondAttribute="trailing" constant="30" id="50e-Fm-peG"/>
                             <constraint firstItem="uRC-yH-5Ka" firstAttribute="trailing" secondItem="nqF-pt-C9L" secondAttribute="trailing" id="8P2-S8-0o0"/>
                             <constraint firstItem="ZyQ-Qb-oqb" firstAttribute="leading" secondItem="nqF-pt-C9L" secondAttribute="leading" id="CL3-3T-Tbt"/>
                             <constraint firstItem="nqF-pt-C9L" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="30" id="Gsi-hD-Ixi"/>
@@ -94,8 +102,8 @@
                             <constraint firstItem="zTo-CZ-ppy" firstAttribute="trailing" secondItem="cyt-Vt-E0R" secondAttribute="trailing" id="IL5-yp-7KG"/>
                             <constraint firstItem="tyf-Q1-V93" firstAttribute="leading" secondItem="Vdh-Gp-eV6" secondAttribute="leading" constant="20" id="JuF-e0-07Y"/>
                             <constraint firstItem="GAN-VJ-TC1" firstAttribute="top" secondItem="Nma-sK-11p" secondAttribute="bottom" constant="20" id="MnQ-HW-Aw8"/>
+                            <constraint firstItem="Ene-hJ-Zbv" firstAttribute="leading" secondItem="Vdh-Gp-eV6" secondAttribute="leading" constant="30" id="RlB-re-JNW"/>
                             <constraint firstItem="p4V-Dz-HfP" firstAttribute="top" secondItem="zTo-CZ-ppy" secondAttribute="top" constant="30" id="WTd-1a-ydN"/>
-                            <constraint firstItem="nqF-pt-C9L" firstAttribute="top" secondItem="tyf-Q1-V93" secondAttribute="bottom" constant="30" id="Wpb-9O-uxg"/>
                             <constraint firstItem="cyt-Vt-E0R" firstAttribute="top" secondItem="uRC-yH-5Ka" secondAttribute="bottom" constant="5" id="Xki-lO-noB"/>
                             <constraint firstItem="uRC-yH-5Ka" firstAttribute="top" secondItem="GAN-VJ-TC1" secondAttribute="bottom" constant="20" id="Xol-Ow-ReR"/>
                             <constraint firstItem="zTo-CZ-ppy" firstAttribute="trailing" secondItem="k6y-tY-87X" secondAttribute="trailing" constant="30" id="Yt1-G8-zE8"/>
@@ -103,33 +111,40 @@
                             <constraint firstItem="GAN-VJ-TC1" firstAttribute="trailing" secondItem="nqF-pt-C9L" secondAttribute="trailing" id="af3-pl-UdD"/>
                             <constraint firstItem="GAN-VJ-TC1" firstAttribute="leading" secondItem="nqF-pt-C9L" secondAttribute="leading" id="bD3-dM-5nc"/>
                             <constraint firstItem="uRC-yH-5Ka" firstAttribute="leading" secondItem="nqF-pt-C9L" secondAttribute="leading" id="bEb-gP-N3i"/>
+                            <constraint firstItem="Ene-hJ-Zbv" firstAttribute="top" secondItem="tyf-Q1-V93" secondAttribute="bottom" constant="15" id="cLT-Bs-BXz"/>
                             <constraint firstItem="ZyQ-Qb-oqb" firstAttribute="top" secondItem="cyt-Vt-E0R" secondAttribute="bottom" constant="10" id="ccD-YJ-stc"/>
+                            <constraint firstItem="Ene-hJ-Zbv" firstAttribute="centerX" secondItem="Vdh-Gp-eV6" secondAttribute="centerX" id="eyY-zE-Jcs"/>
                             <constraint firstAttribute="trailing" secondItem="tyf-Q1-V93" secondAttribute="trailing" constant="20" id="f1W-Ey-qQv"/>
                             <constraint firstItem="Nma-sK-11p" firstAttribute="top" secondItem="nqF-pt-C9L" secondAttribute="bottom" constant="20" id="gdk-7a-TIx"/>
                             <constraint firstItem="zTo-CZ-ppy" firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="k6y-tY-87X" secondAttribute="bottom" constant="30" id="hst-gO-lWu"/>
                             <constraint firstItem="k6y-tY-87X" firstAttribute="top" relation="greaterThanOrEqual" secondItem="ZyQ-Qb-oqb" secondAttribute="bottom" priority="900" constant="30" id="imq-YK-uhV"/>
                             <constraint firstItem="k6y-tY-87X" firstAttribute="leading" secondItem="zTo-CZ-ppy" secondAttribute="leading" constant="30" id="nEW-3I-qvf"/>
                             <constraint firstItem="Nma-sK-11p" firstAttribute="leading" secondItem="nqF-pt-C9L" secondAttribute="leading" id="rXs-Hx-Kdz"/>
+                            <constraint firstItem="nqF-pt-C9L" firstAttribute="top" secondItem="Ene-hJ-Zbv" secondAttribute="bottom" constant="30" id="td9-bA-Iik"/>
                             <constraint firstItem="k6y-tY-87X" firstAttribute="centerX" secondItem="Vdh-Gp-eV6" secondAttribute="centerX" id="vae-Xp-3rP"/>
                             <constraint firstItem="Nma-sK-11p" firstAttribute="trailing" secondItem="nqF-pt-C9L" secondAttribute="trailing" id="xuM-bD-OTG"/>
                             <constraint firstItem="p4V-Dz-HfP" firstAttribute="centerX" secondItem="Vdh-Gp-eV6" secondAttribute="centerX" id="xyL-Nh-VRL"/>
                         </constraints>
                     </view>
                     <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-                    <size key="freeformSize" width="758" height="600"/>
+                    <size key="freeformSize" width="758" height="703"/>
                     <connections>
                         <outlet property="doneButton" destination="k6y-tY-87X" id="HfO-E1-usr"/>
+                        <outlet property="errorLabel" destination="Ene-hJ-Zbv" id="BeH-Fr-ijT"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="UoZ-ya-W3e" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-406.39999999999998" y="83.497536945812811"/>
+            <point key="canvasLocation" x="-406.39999999999998" y="121.55172413793105"/>
         </scene>
     </scenes>
     <resources>
         <image name="app_location" width="1080" height="203"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>

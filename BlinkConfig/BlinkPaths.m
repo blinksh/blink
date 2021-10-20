@@ -188,7 +188,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 
 + (NSURL *)fileProviderErrorLogURL
 {
-  return [[self blinkURL] URLByAppendingPathComponent:@"fileprovider.error.log"];
+  return [[self blinkURL] URLByAppendingPathComponent:@"fileprovider.log"];
 }
 
 + (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory

@@ -193,14 +193,13 @@ class FileProviderExtension: NSFileProviderExtension {
         return destTranslator.flatMap { $0.copy(from: [fileTranslator],
                                                 args: self.copyArguments) }
       }.sink(receiveCompletion: { completion in
-        print(completion)
         switch completion {
         case .finished:
           log.info("\(blinkIdentifier.path) - completed")
           blinkItemReference.downloadCompleted(nil)
           completionHandler(nil)
         case .failure(let error):
-          completionHandler(error)
+          completionHandler(NSFileProviderError.operationError(dueTo: error))
         }
       }, receiveValue: { _ in })
 
@@ -258,7 +257,7 @@ class FileProviderExtension: NSFileProviderExtension {
       attributes[.name] = fileBlinkIdentifier.url.lastPathComponent
     } catch {
       log.error("Could not fetch attributes of item - \(error)")
-      completionHandler(nil, error)
+      completionHandler(nil, NSFileProviderError.operationError(dueTo: error))
       return
     }
 
@@ -298,7 +297,8 @@ class FileProviderExtension: NSFileProviderExtension {
         if case let .failure(error) = completion {
           log.error("Upload failed \(localFileURLPath)- \(error)")
           blinkItemReference.uploadCompleted(error)
-          completionHandler(blinkItemReference, error)
+          completionHandler(blinkItemReference,
+                            NSFileProviderError.operationError(dueTo: error))
           return
         }
 
@@ -341,10 +341,12 @@ class FileProviderExtension: NSFileProviderExtension {
   // MARK: - Enumeration
 
   override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-    BlinkLogger("enumerator").info("\(containerItemIdentifier.rawValue)")
+    let log = BlinkLogger("enumerator")
+    log.info("\(containerItemIdentifier.rawValue)")
 
     guard let domain = self.domain else {
-      throw NSFileProviderError(.notAuthenticated)
+      log.error("No domain provided")
+      throw NSFileProviderError.noDomainProvided
     }
 
     if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {

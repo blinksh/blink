@@ -33,63 +33,29 @@ import Foundation
 import FileProvider
 
 extension NSFileProviderError {
-
-  static var doesntHaveReferenceToCopy: Self {
-    _init(
-      errorCode: 10,
-      errorDescription: "The operation couldn't be completed",
-      failureReason: "Does not have a reference to copy"
-    )
+  static func couldNotConnect(dueTo error: Error) -> Self {
+    // NOTE We can show the error itself, but it is not providing any extra information.
+    self.init(.notAuthenticated, userInfo: [//NSLocalizedFailureErrorKey: error,
+                                            NSLocalizedFailureReasonErrorKey: "Could not connect."])
   }
-
-  static var wrongEncodedIdentifierForTranslator: Self {
-    _init(
-      errorCode: 11,
-      errorDescription: "The operation couldn't be completed",
-      failureReason: "Wrong encoded identifier for Translator"
-    )
+  static var noDomainProvided: Self {
+    self.init(.notAuthenticated, userInfo: [NSLocalizedFailureReasonErrorKey: "No location provided"])
   }
-
-  static var missingHostInTranslatorRoute: Self {
-    _init(
-      errorCode: 12,
-      errorDescription: "The operation couldn't be completed",
-      failureReason: "Missing host in Translator route"
-    )
-  }
-
-  //    throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
-  static var notImplemented: Self {
-    _init(
-      errorCode: 13,
-      errorDescription: "The operation couldn't be completed",
-      failureReason: "Not implemented"
-    )
-  }
-
-  static var noDomainReceived: Self {
-    _init(
-      // Displayed:
-//      errorCode: Code.serverUnreachable.rawValue,
-//      errorCode: Code.notAuthenticated.rawValue,
-      // Loop:
-//      errorCode: Code.syncAnchorExpired.rawValue,
-      errorCode: Code.insufficientQuota.rawValue,
-      errorDescription: "The operation couldn't be completed",
-      failureReason: "No domain received."
-    )
+  
+  static func operationError(dueTo error: Error) -> Self {
+    self.init(errorCode: 100,
+              errorDescription: "Operation Error",
+              failureReason: "\(error)")
   }
 }
 
-
 extension NSFileProviderError {
-
-  private static func _init(
+  init(
     errorCode: Int,
     errorDescription: String?,
     failureReason: String? = nil
-  ) -> NSFileProviderError {
-    var info = [String: Any]()
+  ) {
+    var info = [String:Any]()
     if let errorDescription = errorDescription {
       info[NSLocalizedDescriptionKey] = errorDescription
     }
@@ -97,12 +63,11 @@ extension NSFileProviderError {
       info[NSLocalizedFailureReasonErrorKey] = failureReason
     }
 
-    info[NSLocalizedRecoverySuggestionErrorKey] = "NSLocalizedRecoverySuggestionErrorKey"
+    //info[NSLocalizedRecoverySuggestionErrorKey] = "NSLocalizedRecoverySuggestionErrorKey"
 
 
-    info[NSLocalizedFailureErrorKey] = "NSLocalizedFailureErrorKey"
+    //info[NSLocalizedFailureErrorKey] = "NSLocalizedFailureErrorKey"
 
-
-    return NSFileProviderError(Code(rawValue: errorCode)!, userInfo: info)
+    self.init(Code(rawValue: errorCode)!, userInfo: info)
   }
 }

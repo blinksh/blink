@@ -35,7 +35,7 @@ import FileProviderUI
 
 class DocumentActionViewController: FPUIActionExtensionViewController {
     
-    @IBOutlet weak var identifierLabel: UILabel!
+    @IBOutlet weak var errorLabel: UILabel!
     @IBOutlet weak var actionTypeLabel: UILabel!
     @IBOutlet weak var doneButton: UIButton!
   
@@ -47,12 +47,12 @@ class DocumentActionViewController: FPUIActionExtensionViewController {
   }
   
     override func prepare(forAction actionIdentifier: String, itemIdentifiers: [NSFileProviderItemIdentifier]) {
-        identifierLabel?.text = actionIdentifier
+        //identifierLabel?.text = actionIdentifier
         actionTypeLabel?.text = "Custom action"
     }
     
     override func prepare(forError error: Error) {
-        identifierLabel?.text = error.localizedDescription
+        errorLabel?.text = error.localizedDescription
         actionTypeLabel?.text = "Authenticate"
     }
 
