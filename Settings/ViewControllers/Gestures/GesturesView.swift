@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,42 +29,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
-@interface BlinkPaths : NSObject
+import SwiftUI
 
-+ (NSString *) homePath;
-
-+ (NSString *) groupContainerPath;
-+ (NSString *) documentsPath;
-+ (NSString *) iCloudDriveDocuments;
-
-// ~/.blink
-+ (NSString *) blink;
-// ~/.ssh
-+ (NSString *) ssh;
-
-+ (NSURL *) blinkURL;
-+ (NSURL *) blinkSSHConfigFileURL;
-+ (NSURL *) blinkKBConfigURL;
-
-+ (NSString *) blinkKeysFile;
-+ (NSString *) blinkHostsFile;
-+ (NSString *) blinkDefaultsFile;
-+ (NSString *) blinkSyncItemsFile;
-+ (NSString *) blinkProfileFile;
-
-+ (NSURL *) historyURL;
-+ (NSString *) historyFile;
-+ (NSString *) knownHostsFile;
-
-+ (NSURL *)fileProviderErrorLogURL;
-
-+ (void)linkICloudDriveIfNeeded;
-+ (void)linkDocumentsIfNeeded;
-
-+ (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
-+ (void)migrateToHomeAtGroupContainer;
+struct GesturesView: View {
+  @StateObject var gestures = GesturesConfig()
+  
+    var body: some View {
+      List {
+        Section(header: Text("Scroll")) {
+          Toggle("Invert Vertical Scroll", isOn: $gestures.invertVerticalScroll)
+        }
+      }
+      .listStyle(GroupedListStyle())
+      .navigationBarTitle("Gestures")
+      .onDisappear(perform: {
+        BKDefaults.save()
+      })
+    }
+}
 
 
-@end
+class GesturesConfig: ObservableObject {
+  @Published var invertVerticalScroll: Bool {
+    didSet {
+      BKDefaults.setInvertedVerticalScroll(invertVerticalScroll)
+    }
+  }
+  
+  init() {
+    invertVerticalScroll = BKDefaults.doInvertVerticalScroll()
+  }
+}

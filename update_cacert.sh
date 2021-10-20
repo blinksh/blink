@@ -1,1 +1,1 @@
-curl -o Resources/cacert.pem https://curl.haxx.se/ca/cacert.pem
+curl -o Resources/cacert.pem https://curl.se/ca/cacert.pem

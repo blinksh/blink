@@ -31,6 +31,54 @@
 
 
 import Foundation
+import FileProvider
+
+#if targetEnvironment(macCatalyst)
+
+struct _NSFileProviderDomainIdentifier {
+  let rawValue: String
+  init(rawValue: String) {
+    self.rawValue = rawValue
+  }
+}
+
+
+class _NSFileProviderDomain {
+  let identifier: _NSFileProviderDomainIdentifier
+  let displayName: String
+  let pathRelativeToDocumentStorage: String
+  
+  init(identifier: _NSFileProviderDomainIdentifier, displayName: String, pathRelativeToDocumentStorage: String) {
+    self.identifier = identifier
+    self.displayName = displayName
+    self.pathRelativeToDocumentStorage = pathRelativeToDocumentStorage
+  }
+}
+
+@objc class _NSFileProviderManager: NSObject {
+  static func add(_ domain: _NSFileProviderDomain, callback: @escaping (NSError?) -> ()) {
+    callback(nil)
+  }
+  
+  static func remove(_ domain: _NSFileProviderDomain, callback: @escaping (NSError?) -> ()) {
+    callback(nil)
+  }
+  
+  static func getDomainsWithCompletionHandler(_ callback: @escaping ([_NSFileProviderDomain], NSError?) -> ()) {
+    callback([], nil)
+  }
+}
+
+#else
+
+public typealias _NSFileProviderDomain = NSFileProviderDomain
+@objc class _NSFileProviderManager: NSFileProviderManager {
+  
+}
+public typealias _NSFileProviderDomainIdentifier = NSFileProviderDomainIdentifier
+
+#endif
+
 
 class FileProviderDomain: Identifiable, Codable, Equatable {
   static func == (lhs: FileProviderDomain, rhs: FileProviderDomain) -> Bool {
@@ -52,9 +100,9 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
     self.proto = proto
   }
   
-  func nsFileProviderDomain(alias: String) -> NSFileProviderDomain? {
-    NSFileProviderDomain(
-      identifier: NSFileProviderDomainIdentifier(rawValue: id.uuidString),
+  func nsFileProviderDomain(alias: String) -> _NSFileProviderDomain? {
+    _NSFileProviderDomain(
+      identifier: _NSFileProviderDomainIdentifier(rawValue: id.uuidString),
       displayName: displayName,
       pathRelativeToDocumentStorage: encodedPathFor(alias: alias) ?? ""
     )
@@ -93,7 +141,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
     return str
   }
   
-  static func _syncDomainsForAllHosts(nsDomains: [NSFileProviderDomain]) {
+  static func _syncDomainsForAllHosts(nsDomains: [_NSFileProviderDomain]) {
     var domainsMap = [String : (alias: String, domain: FileProviderDomain)]()
     var hostsMap = [String : BKHosts]()
     var keysMap = [String : BKPubKey]()
@@ -117,7 +165,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
       }
     }
 
-    var domainsToRemove: [NSFileProviderDomain] = []
+    var domainsToRemove: [_NSFileProviderDomain] = []
     for d in nsDomains {
       if let blinkDomain = domainsMap.removeValue(forKey: d.identifier.rawValue) {
         if blinkDomain.domain.displayName != d.displayName ||
@@ -131,7 +179,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
     }
     
     for nsDomain in domainsToRemove {
-      NSFileProviderManager.remove(nsDomain) { err in
+      _NSFileProviderManager.remove(nsDomain) { err in
         if let err = err {
           print("failed to remove domain", err)
         }
@@ -140,7 +188,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
     
     for (_, value) in domainsMap {
       if let domain = value.domain.nsFileProviderDomain(alias: value.alias) {
-        NSFileProviderManager.add(domain) { err in
+        _NSFileProviderManager.add(domain) { err in
           if let err = err {
             print("failed to add domain", err)
           }
@@ -150,7 +198,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
   }
 }
 
-extension NSFileProviderManager {
+extension _NSFileProviderManager {
   @objc static func syncWithBKHosts() {
     guard FeatureFlags.fileProviders
     else {

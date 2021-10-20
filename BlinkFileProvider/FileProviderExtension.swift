@@ -99,8 +99,10 @@ class FileProviderExtension: NSFileProviderExtension {
 
     guard let reference = FileTranslatorCache.reference(identifier: queryableIdentifier) else {
      if identifier == .rootContainer {
-       // Request an enumeration
-       throw NSFileProviderError(.pageExpired)
+       let attributes = try? fileManager.attributesOfItem(atPath: queryableIdentifier.url.path)
+       // Move operation requests root without enumarating. Return domain root with local attribtues
+       // TODO: Store in FileTranslatorCache?
+       return BlinkItemReference(queryableIdentifier, local: attributes)
      }
       print("ITEM \(queryableIdentifier.path) REQUESTED with ERROR")
       throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)

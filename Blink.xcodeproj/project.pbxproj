@@ -127,6 +127,8 @@
 		BD9EA216271F83B400874007 /* BlinkLoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */; };
 		BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD9EA218271F846400874007 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
+		BD9EA1FE271A148700874007 /* Migrator.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA1F9271A148700874007 /* Migrator.swift */; };
+		BD9EA1FF271A148700874007 /* 1400Migration.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA1FD271A148700874007 /* 1400Migration.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -290,6 +292,7 @@
 		D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */; };
 		D2AC6749220303D900177BC5 /* openurl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AC6742220303D900177BC5 /* openurl.m */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
+		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2B9E21E268084E40084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21D268084E40084B2C4 /* Machines */; };
@@ -707,6 +710,8 @@
 		BD9EA20A271F62ED00874007 /* BlinkLogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkLogging.swift; sourceTree = "<group>"; };
 		BD9EA20C271F664D00874007 /* Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publisher.swift; sourceTree = "<group>"; };
 		BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkLoggingTests.swift; sourceTree = "<group>"; };
+		BD9EA1F9271A148700874007 /* Migrator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Migrator.swift; sourceTree = "<group>"; };
+		BD9EA1FD271A148700874007 /* 1400Migration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = 1400Migration.swift; sourceTree = "<group>"; };
 		BDB8BEA726E008190093BF48 /* OwnAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnAlertController.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -878,6 +883,7 @@
 		D2AC6742220303D900177BC5 /* openurl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = openurl.m; sourceTree = "<group>"; };
 		D2AC674A22031EE600177BC5 /* openurl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openurl.h; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
+		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
 		D2B9E218268084C60084B2C4 /* Spinner */ = {isa = PBXFileReference; lastKnownFileType = text; name = Spinner; path = xcfs/.build/checkouts/Spinner; sourceTree = SOURCE_ROOT; };
@@ -1079,6 +1085,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				BD9EA1ED2719D28800874007 /* Migrator */,
 				D215AC282335218E00E164C3 /* WebKit */,
 				D265FBC7231904B50017EAC4 /* Foundation */,
 				D2A52225231304A90010AC04 /* UIKit */,
@@ -1440,6 +1447,15 @@
 				BD9EA20C271F664D00874007 /* Publisher.swift */,
 			);
 			path = BlinkLogging;
+      sourceTree = "<group>";
+    };
+		BD9EA1ED2719D28800874007 /* Migrator */ = {
+			isa = PBXGroup;
+			children = (
+				BD9EA1FD271A148700874007 /* 1400Migration.swift */,
+				BD9EA1F9271A148700874007 /* Migrator.swift */,
+			);
+			path = Migrator;
 			sourceTree = "<group>";
 		};
 		BDCB715F268E1577007D7047 /* BlinkConfig */ = {
@@ -1552,6 +1568,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				D2B0BD172720311B00485854 /* Gestures */,
 				803B99CB2582865500DC99C8 /* Notifications */,
 				B7A4876A1DC7C6F4007BA809 /* Settings */,
 				B7A4875F1DC7BD29007BA809 /* BKDefaultUser */,
@@ -1688,6 +1705,14 @@
 				D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */,
 			);
 			path = UIKit;
+			sourceTree = "<group>";
+		};
+		D2B0BD172720311B00485854 /* Gestures */ = {
+			isa = PBXGroup;
+			children = (
+				D2B0BD1B2720312C00485854 /* GesturesView.swift */,
+			);
+			path = Gestures;
 			sourceTree = "<group>";
 		};
 		D2BF5F6D2659522C0070F839 /* BlinkIntents */ = {
@@ -2579,6 +2604,7 @@
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
 				B752EE2B1DFEF19D00E305C8 /* BKUserConfigurationManager.m in Sources */,
 				C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */,
+				BD9EA1FF271A148700874007 /* 1400Migration.swift in Sources */,
 				D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */,
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
 				D2DDD70B2657E35C00DAB52A /* build.swift in Sources */,
@@ -2595,6 +2621,7 @@
 				D2C0F31020E64FAD00E48F3A /* SSHClientConnectedChannel.m in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
+				BD9EA1FE271A148700874007 /* Migrator.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
@@ -2688,6 +2715,7 @@
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D2060A5420E2644400CF5122 /* SSHClient.m in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
+				D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */,
@@ -2738,6 +2766,7 @@
 		};
 		9827126A262E4BDB00F883FA /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
+			platformFilter = ios;
 			target = 9827124F262E4BDB00F883FA /* BlinkFileProvider */;
 			targetProxy = 98271269262E4BDB00F883FA /* PBXContainerItemProxy */;
 		};
@@ -3022,10 +3051,12 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.BlinkFiles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -3066,8 +3097,10 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.BlinkFiles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
+				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
+				TARGETED_DEVICE_FAMILY = "1,2,6";
 				VERSIONING_SYSTEM = "apple-generic";
 				VERSION_INFO_PREFIX = "";
 			};
@@ -3163,7 +3196,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3177,7 +3210,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
@@ -3209,7 +3242,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
@@ -3219,7 +3252,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3336,7 +3369,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3354,7 +3387,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
@@ -3389,7 +3422,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3403,7 +3436,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -3560,7 +3593,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3574,7 +3607,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkIntents;
@@ -3605,7 +3638,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkIntents/Info.plist;
@@ -3615,7 +3648,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkIntents;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3742,7 +3775,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -3758,7 +3791,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -3767,6 +3800,7 @@
 				STRIP_STYLE = "non-global";
 				STRIP_SWIFT_SYMBOLS = NO;
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3782,7 +3816,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 351;
+				CURRENT_PROJECT_VERSION = 359;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
@@ -3793,7 +3827,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.1;
+				MARKETING_VERSION = 14.0.3;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -3801,6 +3835,7 @@
 				STRIP_STYLE = "non-global";
 				STRIP_SWIFT_SYMBOLS = NO;
 				SUPPORTS_MACCATALYST = YES;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_OBJC_BRIDGING_HEADER = "Blink/Blink-bridge.h";
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

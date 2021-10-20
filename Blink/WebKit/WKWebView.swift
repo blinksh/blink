@@ -347,11 +347,15 @@ extension WKWebViewGesturesInteraction: UIScrollViewDelegate {
       if abs(deltaY) < charHeight {
         return
       }
-      let dY = CGFloat(Int(deltaY) / Int(charHeight)) * charHeight
+      var dY = CGFloat(Int(deltaY) / Int(charHeight)) * charHeight
       reportedScroll.y = reportedScroll.y + dY
       _termScrollView.reportedScroll = reportedScroll
       
       let point = _scrollPoint ?? _scrollPointTrackpad ?? CGPoint(x: scrollView.bounds.size.width * 0.5, y: scrollView.bounds.size.height * 0.5)
+     
+      if BKDefaults.doInvertVerticalScroll() {
+        dY *= -1.0;
+      }
       
       _wkWebView?.evaluateJavaScript("term_reportWheelEvent(\"wheel\", \(point.x), \(point.y), \(0), \(dY));", completionHandler: nil)
     }

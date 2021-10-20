@@ -1,4 +1,11 @@
+# Version 14.0.2
+
+- Fixed 2FA
+- Safe file structure migration.
+- iPad mini 6 support.
+
 # Version 14.0.0
+
 
 ## SSH
 

@@ -162,6 +162,10 @@ class CaretHider {
     device?.view?.cleanSelection()
   }
   
+  func reportStateWithSelection() {
+    reportStateReset(device?.view?.hasSelection ?? false)
+  }
+  
   func _refreshInputViews() {
     guard
       traitCollection.userInterfaceIdiom == .pad,
