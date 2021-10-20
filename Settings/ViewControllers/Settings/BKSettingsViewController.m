@@ -80,6 +80,18 @@
   return YES;
 }
 
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+  if (section == 1) {
+#if TARGET_OS_MACCATALYST
+    return 5;
+#else
+    return 4;
+#endif
+  }
+  
+  return [super tableView:tableView numberOfRowsInSection:section];
+}
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   if (indexPath.section == 0 && indexPath.row == 0) {
     UIViewController *vc = [SettingsHostingController createKeysWithNav:self.navigationController];
@@ -92,6 +104,9 @@
     [self.navigationController pushViewController:vc animated:YES];
   } else if (indexPath.section == 1 && indexPath.row == 3) {
     UIViewController *vc = [SettingsHostingController createNotificationsWithNav:self.navigationController];
+    [self.navigationController pushViewController:vc animated:YES];
+  } else if (indexPath.section == 1 && indexPath.row == 4) {
+    UIViewController *vc = [SettingsHostingController createGesturesWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
   }
 }

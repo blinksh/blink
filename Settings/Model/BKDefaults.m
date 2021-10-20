@@ -75,6 +75,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   _notificationOnBellUnfocused = [coder decodeBoolForKey:@"notificationOnBellUnfocused"];
   _hapticFeedbackOnBellOff = [coder decodeBoolForKey:@"hapticFeedbackOnBellOff"];
   _oscNotifications = [coder decodeBoolForKey:@"oscNotifications"];
+  _invertVerticalScroll = [coder decodeBoolForKey:@"invertVerticalScroll"];
   
   return self;
 }
@@ -101,6 +102,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   [encoder encodeBool:_notificationOnBellUnfocused forKey:@"notificationOnBellUnfocused"];
   [encoder encodeBool:_hapticFeedbackOnBellOff forKey:@"hapticFeedbackOnBellOff"];
   [encoder encodeBool:_oscNotifications forKey:@"oscNotifications"];
+  [encoder encodeBool:_invertVerticalScroll forKey:@"invertVerticalScroll"];
 }
 
 + (BOOL)supportsSecureCoding {
@@ -264,6 +266,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   defaults.playSoundOnBell = state;
 }
 
++ (void)setInvertedVerticalScroll:(BOOL) state {
+  defaults.invertVerticalScroll = state;
+}
+
 + (void)setNotificationOnBellUnfocused:(BOOL)state {
   defaults.notificationOnBellUnfocused = state;
 }
@@ -367,6 +373,10 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
 + (BOOL)isOscNotificationsOn {
   return defaults.oscNotifications;
+}
+
++ (BOOL)doInvertVerticalScroll {
+  return defaults.invertVerticalScroll;
 }
 
 + (void)applyExternalScreenCompensation:(BKOverscanCompensation)value {
