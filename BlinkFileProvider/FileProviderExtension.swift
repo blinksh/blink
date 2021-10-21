@@ -34,13 +34,14 @@ import Combine
 import FileProvider
 
 import BlinkFiles
+import BlinkConfig
 
 // TODO Provide proper error subclassing. BlinkFilesProviderError
 extension String: Error {}
 
 
 class FileProviderExtension: NSFileProviderExtension {
-  
+
   var fileManager = FileManager()
   var cancellableBag: Set<AnyCancellable> = []
   let copyArguments = CopyArguments(inplace: true,
@@ -48,14 +49,45 @@ class FileProviderExtension: NSFileProviderExtension {
                                     checkTimes: true)
   override init() {
     super.init()
+
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "MMM dd YYYY, HH:mm:ss"
+
+    BlinkLogging.handle(
+      {
+        $0.filter(logLevel: .debug)
+          .format { [ $0[.component] as? String ?? "global",
+                      $0[.message] as? String ?? ""
+                    ].joined(separator: " ") }
+          .sinkToOutput()
+      }
+    )
+    
+    guard let file = try? FileLogging(to: BlinkPaths.fileProviderErrorLogURL()) else {
+      print("File logging not configured")
+      return
+    }
+    // Configure logging so all goes to file (filtered by error level) and output.
+    BlinkLogging.handle(
+      {
+        try $0.filter(logLevel: .info)
+        // Format
+          .format { [ dateFormatter.string(from: Date()),
+                      $0[.component] as? String ?? "global",
+                      "[\($0[.logLevel]!)]",
+                      $0[.message] as? String ?? ""
+                    ].joined(separator: " ") }
+          .sinkToFile(file)
+      }
+    )
   }
-  
+
   // MARK: - BlinkItem Entry : DB-GET query (using uniq NSFileProviderItemIdentifier ID)
   override func item(for identifier: NSFileProviderItemIdentifier) throws -> NSFileProviderItem {
     print("ITEM \(identifier.rawValue) REQUESTED")
-    
+
     var queryableIdentifier: BlinkItemIdentifier!
-    
+
     if identifier == .rootContainer {
       guard let encodedRootPath = domain?.pathRelativeToDocumentStorage else {
         throw NSFileProviderError(.noSuchItem)
@@ -64,7 +96,7 @@ class FileProviderExtension: NSFileProviderExtension {
     } else {
       queryableIdentifier = BlinkItemIdentifier(identifier)
     }
-    
+
     guard let reference = FileTranslatorCache.reference(identifier: queryableIdentifier) else {
      if identifier == .rootContainer {
        let attributes = try? fileManager.attributesOfItem(atPath: queryableIdentifier.url.path)
@@ -75,31 +107,31 @@ class FileProviderExtension: NSFileProviderExtension {
       print("ITEM \(queryableIdentifier.path) REQUESTED with ERROR")
       throw NSError.fileProviderErrorForNonExistentItem(withIdentifier: identifier)
     }
-    
+
     return reference
   }
-  
+
   override func urlForItem(withPersistentIdentifier identifier: NSFileProviderItemIdentifier) -> URL? {
     let blinkItemFromId = BlinkItemIdentifier(identifier)
-    debugPrint("blinkItemFromId.url")
-    debugPrint(blinkItemFromId.url)
+    BlinkLogger("urlForItem").debug("\(blinkItemFromId.itemIdentifier)")
     return blinkItemFromId.url
   }
-  
+
   // MARK: - Actions
-  
+
   override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
+    BlinkLogger("persistentIdentifierForItem").debug("\(url.path)")
     let blinkItem = BlinkItemIdentifier(url: url)
     return blinkItem.itemIdentifier
   }
-  
+
   override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
-    
-    print("providePlaceholder at \(url)")
-    
+    let log = BlinkLogger("providePlaceHolder")
+    log.info("\(url.path)")
+
     //A.1. Get the document’s persistent identifier by calling persistentIdentifierForItemAtURL:, and pass in the value of the url parameter.
     let localDirectory = url.deletingLastPathComponent()
-    
+
     do {
       try fileManager.createDirectory(
         at: localDirectory,
@@ -107,41 +139,42 @@ class FileProviderExtension: NSFileProviderExtension {
         attributes: nil
       )
     } catch {
+      log.error("\(error)")
       completionHandler(error)
       return
     }
-    
+
     //A Look Up the Document's File Provider Item
     guard let identifier = persistentIdentifierForItem(at: url) else {
       completionHandler(NSFileProviderError(.noSuchItem))
       return
     }
-    print("identifier \(identifier)")
-    
+    log.debug("identifier \(identifier)")
+
     do {
-      
+
       //A.2. Call itemForIdentifier:error:, and pass in the persistent identifier. This method returns the file provider item for the document.
       let fileProviderItem = try item(for: identifier)
-      
+
       // B. Write the Placeholder
       // B.1 Get the placeholder URL by calling placeholderURLForURL:, and pass in the value of the url parameter.
       let placeholderURL = NSFileProviderManager.placeholderURL(for: url)
-      
+
       // B.2 Call writePlaceholderAtURL:withMetadata:error:, and pass in the placeholder URL and the file provider item.
       try NSFileProviderManager.writePlaceholder(at: placeholderURL,withMetadata: fileProviderItem)
-      
+
       completionHandler(nil)
-      
-      
+
     } catch let error {
-      debugPrint(error)
+      log.error("\(error)")
       completionHandler(error)
       return
     }
   }
-  
+
   override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
     // 1 - From URL we get the identifier.
+    let log = BlinkLogger("startProvidingItem")
     let blinkIdentifier = BlinkItemIdentifier(url: url)
     guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
       // TODO Proper error types (NSError)
@@ -149,11 +182,11 @@ class FileProviderExtension: NSFileProviderExtension {
       return
     }
 
-    print("\(blinkIdentifier.path) - Start Providing item")
-    
+    log.info("\(blinkIdentifier.path) - start")
+
     // 2 local translator
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
-    
+
     // 3 remote - From the identifier, we get the translator and walk to the remote.
     let srcTranslator = FileTranslatorCache.translator(for: blinkIdentifier.encodedRootPath)
     let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
@@ -162,37 +195,39 @@ class FileProviderExtension: NSFileProviderExtension {
         return destTranslator.flatMap { $0.copy(from: [fileTranslator],
                                                 args: self.copyArguments) }
       }.sink(receiveCompletion: { completion in
-        print(completion)
         switch completion {
         case .finished:
+          log.info("\(blinkIdentifier.path) - completed")
           blinkItemReference.downloadCompleted(nil)
           completionHandler(nil)
         case .failure(let error):
-          completionHandler(error)
+          completionHandler(NSFileProviderError.operationError(dueTo: error))
         }
       }, receiveValue: { _ in })
 
     blinkItemReference.downloadStarted(downloadTask)
   }
-  
+
   override func stopProvidingItem(at url: URL) {
-    print("stopProvidingItem ITEM at \(url)")
+    let log = BlinkLogger("stopProvidingItem")
+    log.info("\(url.path)")
     // Called after the last claim to the file has been released. At this point, it is safe for the file provider to remove the content file.
     // Care should be taken that the corresponding placeholder file stays behind after the content file has been deleted.
-    
+
     // Called after the last claim to the file has been released. At this point, it is safe for the file provider to remove the content file.
-    
+
     // TODO: look up whether the file has local changes
     let fileHasLocalChanges = false
-    
+
     if !fileHasLocalChanges {
       // remove the existing file to free up space
       do {
         _ = try FileManager.default.removeItem(at: url)
       } catch {
         // Handle error
+        log.error("\(error)")
       }
-      
+
       // write out a placeholder to facilitate future property lookups
       self.providePlaceholder(at: url, completionHandler: { error in
         // TODO The placeholder will take into account the file, but we will need to make sure
@@ -203,26 +238,28 @@ class FileProviderExtension: NSFileProviderExtension {
       })
     }
   }
-  
+
   override func importDocument(at fileURL: URL, toParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-    print("importDocument at \(fileURL)")
-    
+    let log = BlinkLogger("importDocument")
+    print("importDocument at \(fileURL.path)")
+
     let parentBlinkIdentifier: BlinkItemIdentifier!
     if parentItemIdentifier == .rootContainer {
       parentBlinkIdentifier = BlinkItemIdentifier(domain!.pathRelativeToDocumentStorage)
     } else {
       parentBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier)
     }
-    
+
     let fileBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentBlinkIdentifier, filename: fileURL.lastPathComponent)
     let localFileURLDirectory = fileBlinkIdentifier.url.deletingLastPathComponent().path
-    
+
     var attributes: FileAttributes!
     do {
       attributes = try fileManager.attributesOfItem(atPath: fileURL.path)
       attributes[.name] = fileBlinkIdentifier.url.lastPathComponent
     } catch {
-      completionHandler(nil, error)
+      log.error("Could not fetch attributes of item - \(error)")
+      completionHandler(nil, NSFileProviderError.operationError(dueTo: error))
       return
     }
 
@@ -231,17 +268,18 @@ class FileProviderExtension: NSFileProviderExtension {
       completionHandler(nil, NSFileProviderError(.noSuchItem))
       return
     }
-    
+
     // Move file to the provider container.
     do {
       try moveFile(fileURL, to: localFileURLDirectory)
     } catch {
+      log.error("File could not be moved to container - \(error)")
       completionHandler(nil, error)
     }
 
     let blinkItemReference = BlinkItemReference(fileBlinkIdentifier, local: attributes)
     FileTranslatorCache.store(reference: blinkItemReference)
-    
+
     // 1. Translator for local target path
     let localFileURLPath = fileBlinkIdentifier.url.path
     let srcTranslator = Local().cloneWalkTo(localFileURLPath)
@@ -249,7 +287,7 @@ class FileProviderExtension: NSFileProviderExtension {
     // 2. translator for remote target path
     let destTranslator = FileTranslatorCache.translator(for: parentBlinkIdentifier.encodedRootPath)
       .flatMap { $0.cloneWalkTo(parentBlinkIdentifier.path) }
-    
+
     let c = destTranslator.flatMap { remotePathTranslator in
         return srcTranslator.flatMap{ localFileTranslator -> CopyProgressInfoPublisher in
           // 3. Start copy
@@ -259,56 +297,60 @@ class FileProviderExtension: NSFileProviderExtension {
       }.sink { completion in
         // 4. Update reference and notify
         if case let .failure(error) = completion {
-          print("Copyfailed. \(error)")
+          log.error("Upload failed \(localFileURLPath)- \(error)")
           blinkItemReference.uploadCompleted(error)
-          completionHandler(blinkItemReference, error)
+          completionHandler(blinkItemReference,
+                            NSFileProviderError.operationError(dueTo: error))
           return
         }
 
         blinkItemReference.uploadCompleted(nil)
         // NOTE: In theory, we should enumerate changes again. But when trying that,
         // the state of the file would not change.
+        log.info("Upload completed \(localFileURLPath)")
         completionHandler(blinkItemReference, nil)
       } receiveValue: { _ in }
 
     blinkItemReference.uploadStarted(c)
   }
-  
+
   override func itemChanged(at url: URL) {
-    print("\(url) - itemChanged")
-    
+    BlinkLogger("Unsupported itemChanged").debug("\(url.path)")
+
     // Called at some point after the file has changed; the provider may then trigger an upload
-    
+
     /* TODO:
      - mark file at <url> as needing an update in the model
      - if there are existing NSURLSessionTasks uploading this file, cancel them
      - create a fresh background NSURLSessionTask and schedule it to upload the current modifications
      - register the NSURLSessionTask with NSFileProviderManager to provide progress updates
      */
-    
+
   }
-  
+
   override func createDirectory(withName directoryName: String,
                                 inParentItemIdentifier parentItemIdentifier: NSFileProviderItemIdentifier,
                                 completionHandler: @escaping (NSFileProviderItem?, Error?) -> Void) {
-    
+
     // TODO:
-    
+
     // 1. Check for collisions
-    
+
     // 2. Create a directory (locally?)
+    completionHandler(nil, NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:]))
   }
-  
+
   // MARK: - Enumeration
-  
+
   override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
-    
-    print("Called enumerator for \(containerItemIdentifier.rawValue)")
-    
+    let log = BlinkLogger("enumerator")
+    log.info("\(containerItemIdentifier.rawValue)")
+
     guard let domain = self.domain else {
-      throw "No domain received."
+      log.error("No domain provided")
+      throw NSFileProviderError.noDomainProvided
     }
-    
+
     if (containerItemIdentifier != NSFileProviderItemIdentifier.workingSet) {
       return FileProviderEnumerator(enumeratedItemIdentifier: containerItemIdentifier, domain: domain)
     } else {
@@ -316,11 +358,11 @@ class FileProviderExtension: NSFileProviderExtension {
       throw NSError(domain: NSCocoaErrorDomain, code: NSFeatureUnsupportedError, userInfo:[:])
     }
   }
-  
+
   // MARK: - Private
   private func moveFile(_ fileURL: URL, to targetPath: String) throws {
     _ = fileURL.startAccessingSecurityScopedResource()
-    
+
     var isDirectory: ObjCBool = false
     var coordinatorError: NSError? = nil
     var error: NSError? = nil
@@ -331,28 +373,27 @@ class FileProviderExtension: NSFileProviderExtension {
             try fileManager.createDirectory(atPath: targetPath, withIntermediateDirectories: true, attributes: nil)
         // Check to see if file exists, move file, error handling
           }
-      
+
           let filename = fileURL.lastPathComponent
           let newFilePath  = (targetPath as NSString).appendingPathComponent(filename)
           if fileManager.fileExists(atPath: newFilePath) {
             try fileManager.removeItem(atPath: newFilePath)
           }
-      
+
           try fileManager.moveItem(atPath: fileURL.path, toPath: newFilePath)
         } catch let err {
           error = err as NSError
         }
       }
-    
+
     fileURL.stopAccessingSecurityScopedResource()
 
     if let error = (error != nil) ? error : coordinatorError {
       throw error
     }
   }
-  
+
   deinit {
     print("OOOOUUUTTTTT!!!!!")
   }
 }
-

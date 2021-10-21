@@ -50,24 +50,24 @@ final class FileTranslatorCache {
     //   // TODO Probably need a timer. This may exit immediately
     //   RunLoop.current.run()
     // }
-    
+
     // self.backgroundThread!.start()
   }
-  
+
   static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
     // Check if we have it cached, if it is still working
     if let translator = shared.translators[encodedRootPath],
        translator.isConnected {
       return .just(translator)
     }
-    
+
     return buildTranslator(for: encodedRootPath)
       .map { t -> Translator in
         shared.translators[encodedRootPath] = t
         return t
       }.eraseToAnyPublisher()
   }
-  
+
   static func store(reference: BlinkItemReference) {
     print("storing File BlinkItemReference : \(reference.itemIdentifier.rawValue)")
 //    let parent = reference.parentIdentifier.rawValue
@@ -83,4 +83,3 @@ final class FileTranslatorCache {
     return shared.references[identifier.itemIdentifier.rawValue]
   }
 }
-
