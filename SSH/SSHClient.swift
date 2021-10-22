@@ -596,11 +596,11 @@ public class SSHClient {
     if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PUBLICKEY)) != 0) {
       appendMethod("publickey")
     }
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0) {
-      appendMethod("password")
-    }
     if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_INTERACTIVE)) != 0) {
       appendMethod("keyboard-interactive")
+    }
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0) {
+      appendMethod("password")
     }
     if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_HOSTBASED)) != 0) {
       appendMethod("hostbased")
