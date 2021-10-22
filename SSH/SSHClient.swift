@@ -596,6 +596,7 @@ public class SSHClient {
     if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PUBLICKEY)) != 0) {
       appendMethod("publickey")
     }
+    // NOTE: For 2FA to work properly we should try keyboard-interactive before password.
     if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_INTERACTIVE)) != 0) {
       appendMethod("keyboard-interactive")
     }
