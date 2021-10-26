@@ -32,26 +32,68 @@
 
 import XCTest
 
+@testable import BlinkCode
+
+
 class BlinkCodeTests: XCTestCase {
+  override func setUpWithError() throws {
+    // Put setup code here. This method is called before the invocation of each test method in the class.
+  }
 
-    override func setUpWithError() throws {
-        // Put setup code here. This method is called before the invocation of each test method in the class.
-    }
+  override func tearDownWithError() throws {
+    // Put teardown code here. This method is called after the invocation of each test method in the class.
+  }
 
-    override func tearDownWithError() throws {
-        // Put teardown code here. This method is called after the invocation of each test method in the class.
-    }
+  func testStat() throws {
+    let expectation = XCTestExpectation(description: "Message received")
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
-    }
+    let service = try CodeFileSystemService(listenOn: 8000, tls: false)
+    let serviceURL = URL(string: "ws://localhost:8000")!
+    
+    // TODO Create the message
+    let task = URLSession.shared.webSocketTask(with: serviceURL)
+    task.resume()
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        measure {
-            // Put the code you want to measure the time of here.
+    let statRequest = CodeFileSystemRequest(op: .stat, uri: "/Users/carloscabanero/build.token")
+    let statPayload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(statRequest))
+    let statMessage =
+      CodeSocketMessageHeader(type: statPayload.type, operationId: 1).encoded + statPayload.encoded
+
+    task.send(.data(statMessage)) { error in if let error = error { XCTFail("\(error)") }}
+    // TODO Wrap this into a different Result, we can use just for tests.
+    task.receive { result in
+      switch result {
+      case .success(let response):
+        switch response {
+        case .data(let data):
+          // TODO Validate data here. We could check response type, and response IDs.
+          // AssertResponseHeader
+          // Check IDs for response
+          // Check content
+          var buffer = data
+          guard let respHeader = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
+            XCTFail("Could not parse response header")
+            return
+          }
+          // TODO Note Yury's protocol still has a response ID
+          print(respHeader)
+          
+          buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
+          guard let respContent = try? JSONDecoder().decode(FileStat.self, from: buffer) else {
+            XCTFail("Could not decode JSON")
+            return
+          }
+          print(respContent)
+          break
+        default:
+          XCTFail("Wrong response type")
         }
+        case .failure(let error):
+          XCTFail("\(error)")
+      }
+      expectation.fulfill()
     }
 
+    wait(for: [expectation], timeout: 5.0)
+  }
 }

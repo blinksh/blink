@@ -1,7 +1,8 @@
 import Combine
+import Foundation
+import Network
 
 import BlinkFiles
-import Foundation
 
 
 enum CodeFileSystemAction: String, Codable {
@@ -24,8 +25,8 @@ struct CodeFileSystemRequest: Codable {
 class CodeFileSystemService: CodeSocketDelegate {
   let server: WebSocketServer
 
-  init() throws {
-    self.server = try WebSocketServer(listenOn: 8000, tls: true)
+  init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
+    self.server = try WebSocketServer(listenOn: port, tls: tls)
     self.server.delegate = self
   }
 

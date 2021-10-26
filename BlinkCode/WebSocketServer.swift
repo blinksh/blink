@@ -216,8 +216,9 @@ public class WebSocketServer {
     // We are going to make it rest right here, at the server. But it could be moved
     // one level up, to the Delegate.
     var buffer = data
-    guard let header = CodeSocketMessageHeader(buffer[0...CodeSocketMessageHeader.encodedSize]) else {
+    guard let header = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
       // TODO Throw Wrong header
+      print("Wrong header")
       return
     }
     buffer = data.advanced(by: CodeSocketMessageHeader.encodedSize)
@@ -226,12 +227,14 @@ public class WebSocketServer {
     // TODO If the message has error type, then throw Invalid Request error.
     let messageHeaderTypes: [CodeSocketContentType] = [.Json, .Binary, .JsonWithBinary]
     guard messageHeaderTypes.contains(header.type) else {
+      print("Wrong message type")
       return
     }
     
     let operationId = header.operationId
     guard let payload = CodeSocketMessagePayload(buffer, type: header.type) else {
       // TODO Throw invalid payload content
+      print("Invalid payload")
       return
     }
     
@@ -247,6 +250,7 @@ public class WebSocketServer {
       .sink(receiveCompletion: { completion in
         switch completion {
         case .failure(let error):
+          print("Error completing operation - \(error)")
           // TODO Send back an error
           break
         case .finished:
@@ -294,10 +298,14 @@ extension Data {
 extension UInt32 {
   fileprivate static func decode(_ data: inout Data) -> UInt32 {
     let size = MemoryLayout<UInt32>.size
-    let val = data[0..<size].withUnsafeBytes { bytes in
-      bytes.load(fromByteOffset: 0, as: UInt32.self)
+    let val = UInt32(bigEndian: data[0..<size].withUnsafeBytes { bytes in
+      bytes.load(as: UInt32.self)
+    })
+    if data.count == size {
+      data = Data()
+    } else {
+      data = data.advanced(by: size)
     }
-    data = data.advanced(by: size)
     return val
   }
 }
@@ -360,7 +368,7 @@ struct CodeSocketMessagePayload {
     self.binaryData = binaryData
   }
   
-  init(encodedData: Data?, binaryData: Data?) {
+  init(encodedData: Data?, binaryData: Data? = nil) {
     self.encodedData = encodedData ?? Data()
     self.binaryData  = binaryData
   }
