@@ -130,11 +130,11 @@ public protocol CopierTo {
 }
 
 extension AnyPublisher {
-  @inlinable static func just(_ output: Output) -> Self {
+  @inlinable public static func just(_ output: Output) -> Self {
     .init(Just(output).setFailureType(to: Failure.self))
   }
   
-  @inlinable static func fail(error: Failure) -> Self {
+  @inlinable public static func fail(error: Failure) -> Self {
     .init(Fail(error: error))
   }
 }
