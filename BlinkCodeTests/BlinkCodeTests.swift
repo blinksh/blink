@@ -57,7 +57,7 @@ class BlinkCodeTests: XCTestCase {
     let statRequest = CodeFileSystemRequest(op: .stat, uri: "/Users/carloscabanero/build.token")
     let statPayload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(statRequest))
     let statMessage =
-      CodeSocketMessageHeader(type: statPayload.type, operationId: 1).encoded + statPayload.encoded
+    CodeSocketMessageHeader(type: statPayload.type, operationId: 1, referenceId: 1).encoded + statPayload.encoded
 
     task.send(.data(statMessage)) { error in if let error = error { XCTFail("\(error)") }}
     // TODO Wrap this into a different Result, we can use just for tests.
@@ -80,6 +80,59 @@ class BlinkCodeTests: XCTestCase {
           
           buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
           guard let respContent = try? JSONDecoder().decode(FileStat.self, from: buffer) else {
+            XCTFail("Could not decode JSON")
+            return
+          }
+          print(respContent)
+          break
+        default:
+          XCTFail("Wrong response type")
+        }
+        case .failure(let error):
+          XCTFail("\(error)")
+      }
+      expectation.fulfill()
+    }
+
+    wait(for: [expectation], timeout: 5.0)
+  }
+  
+  func testReadDirectory() throws {
+    let expectation = XCTestExpectation(description: "Message received")
+
+    let service = try CodeFileSystemService(listenOn: 8000, tls: false)
+    let serviceURL = URL(string: "ws://localhost:8000")!
+    
+    // TODO Create the message
+    let task = URLSession.shared.webSocketTask(with: serviceURL)
+    task.resume()
+
+    let statRequest = CodeFileSystemRequest(op: .readDirectory, uri: "/Users/carloscabanero")
+    let statPayload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(statRequest))
+    let statMessage =
+    CodeSocketMessageHeader(type: statPayload.type, operationId: 1, referenceId: 1).encoded + statPayload.encoded
+
+    task.send(.data(statMessage)) { error in if let error = error { XCTFail("\(error)") }}
+    // TODO Wrap this into a different Result, we can use just for tests.
+    task.receive { result in
+      switch result {
+      case .success(let response):
+        switch response {
+        case .data(let data):
+          // TODO Validate data here. We could check response type, and response IDs.
+          // AssertResponseHeader
+          // Check IDs for response
+          // Check content
+          var buffer = data
+          guard let respHeader = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
+            XCTFail("Could not parse response header")
+            return
+          }
+          // TODO Note Yury's protocol still has a response ID
+          print(respHeader)
+          
+          buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
+          guard let respContent = try? JSONDecoder().decode([String:FileType].self, from: buffer) else {
             XCTFail("Could not decode JSON")
             return
           }

@@ -277,7 +277,8 @@ public class WebSocketServer {
     let payload = CodeSocketMessagePayload(encodedData: encodedData, binaryData: binaryData)
     
     let replyHeader = CodeSocketMessageHeader(type: payload.type,
-                                              operationId: operationId)
+                                              operationId: operationId,
+                                              referenceId: operationId)
     conn.send(content: replyHeader.encoded + payload.encoded,
               contentContext: context,
               completion: .idempotent)
@@ -319,10 +320,12 @@ struct CodeSocketMessageHeader {
   
   let type: CodeSocketContentType
   let operationId: UInt32
+  let referenceId: UInt32
   
-  init(type: CodeSocketContentType, operationId: UInt32) {
+  init(type: CodeSocketContentType, operationId: UInt32, referenceId: UInt32) {
     self.type = type
     self.operationId = operationId
+    self.referenceId = referenceId
   }
   
   init?(_ data: Data) {
@@ -332,10 +335,11 @@ struct CodeSocketMessageHeader {
     }
     self.type = type
     self.operationId = UInt32.decode(&buffer)
+    self.referenceId = UInt32.decode(&buffer)
   }
   
   public var encoded: Data {
-    Data(type.rawValue) + Data(operationId)
+    Data(type.rawValue) + Data(operationId) + Data(referenceId)
   }
 }
 

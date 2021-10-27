@@ -50,6 +50,8 @@ class CodeFileSystemService: CodeSocketDelegate {
     switch request.op {
     case .stat:
       return fs.stat(request.uri)
+    case .readDirectory:
+      return fs.readDirectory(request.uri)
     default:
       return .fail(error: CodeFileSystemError.badRequest)
     }
@@ -75,7 +77,19 @@ class CodeFileSystem {
       }
       .tryMap { (try JSONEncoder().encode($0), nil) }
       .eraseToAnyPublisher()
-      
+  }
+  
+  func readDirectory(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    return translator
+      .flatMap { $0.cloneWalkTo(uri) }
+      .flatMap { $0.directoryFilesAndAttributes() }
+      .map { filesAttributes -> [String:FileType] in
+        filesAttributes.reduce(into: [String:FileType]()) { (result, attrs) in
+          result[attrs[.name] as! String] = FileType(posixType: attrs[.type] as? FileAttributeType)
+        }
+      }
+      .tryMap { (try JSONEncoder().encode($0), nil) }
+      .eraseToAnyPublisher()
   }
 }
 
