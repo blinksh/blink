@@ -91,6 +91,30 @@ class CodeFileSystem {
       .tryMap { (try JSONEncoder().encode($0), nil) }
       .eraseToAnyPublisher()
   }
+  
+  func readFile(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    return translator
+      .flatMap { $0.cloneWalkTo(uri) }
+      .flatMap { $0.open(flags: O_RDONLY) }
+      .flatMap { file -> AnyPublisher<DispatchData, Error> in
+        var content = DispatchData.empty
+        return file
+          .read(max: Int(INT32_MAX))
+          .flatMap { dd -> AnyPublisher<Bool, Error> in
+            content = dd
+            return file.close()
+          }
+          .map { _ in content }.eraseToAnyPublisher()
+      }
+      .map { dd -> (Data?, Data?) in
+        var result = Data(count: dd.count)
+        result.withUnsafeMutableBytes { buf in
+          _ = dd.copyBytes(to: buf)
+        }
+        return (nil, result)
+      }
+      .eraseToAnyPublisher()
+  }
 }
 
 enum FileType: Int, Codable {
@@ -130,4 +154,9 @@ struct FileStat: Codable {
     self.mtime = mtime
     self.size = size
   }
+}
+
+struct WriteFileOptions: Codable {
+  let create: Bool
+  let overwrite: Bool
 }
