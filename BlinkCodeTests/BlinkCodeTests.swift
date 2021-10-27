@@ -132,11 +132,12 @@ class BlinkCodeTests: XCTestCase {
           print(respHeader)
           
           buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
-          guard let respContent = try? JSONDecoder().decode([String:FileType].self, from: buffer) else {
-            XCTFail("Could not decode JSON")
-            return
-          }
-          print(respContent)
+          print(String(data: buffer, encoding: .utf8))
+//          guard let respContent = try? JSONDecoder().decode([DirectoryTuple].self, from: buffer) else {
+//            XCTFail("Could not decode JSON")
+//            return
+//          }
+          //print(respContent)
           break
         default:
           XCTFail("Wrong response type")

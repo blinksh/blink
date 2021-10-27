@@ -8,6 +8,7 @@ import BlinkFiles
 enum CodeFileSystemAction: String, Codable {
   case stat
   case readDirectory
+  case readFile
 }
 
 enum CodeFileSystemError: Error {
@@ -18,6 +19,21 @@ struct CodeFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: String
   // let extraOptions: Enum
+}
+
+struct DirectoryTuple: Codable {
+  let name: String
+  let type: FileType
+  
+  init(name: String, type: FileType) {
+    self.name = name
+    self.type = type
+  }
+  func encode(to encoder: Encoder) throws {
+    var container = encoder.unkeyedContainer()
+    try container.encode(name)
+    try container.encode(type)
+  }
 }
 
 // We may create a new FS per base URI. And then all of them into a singleton
@@ -37,8 +53,10 @@ class CodeFileSystemService: CodeSocketDelegate {
     let request: CodeFileSystemRequest
     do {
       // TODO Decode to [String:Any] and take it from there
+      // Any is not codable, so we need to figure out something else. We could do String:String
       request = try JSONDecoder().decode(CodeFileSystemRequest.self, from: encodedData)
     } catch {
+      print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
       return .fail(error: CodeFileSystemError.badRequest)
     }
 
@@ -46,13 +64,20 @@ class CodeFileSystemService: CodeSocketDelegate {
     // so things like connections can be persisted.
     // For now we will just go with new instances on Local system.
     let fs = CodeFileSystem(.just(Local()))
-
+    // TODO Process the URI
+    // sftp:host:route
+    // code /
+    let uri = request.uri.replacingOccurrences(of: "blink-fs:", with: "")
+    
     switch request.op {
     case .stat:
-      return fs.stat(request.uri)
+      return fs.stat(uri)
     case .readDirectory:
-      return fs.readDirectory(request.uri)
+      return fs.readDirectory(uri)
+    case .readFile:
+      return fs.readFile(uri)
     default:
+      print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
       return .fail(error: CodeFileSystemError.badRequest)
     }
   }
@@ -66,26 +91,39 @@ class CodeFileSystem {
   }
   
   func stat(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    print("stat \(uri)")
+
     return translator
       .flatMap { $0.cloneWalkTo(uri) }
       .flatMap { $0.stat() }
-      .map {
-        FileStat(type: FileType(posixType: $0[.type] as? FileAttributeType),
-                 ctime: $0[.creationDate] as? Int,
-                 mtime: $0[.modificationDate] as? Int,
-                 size: $0[.size] as? Int)
+      .map { attrs -> FileStat in
+        var mtimeMillis = 0
+        var ctimeMillis = 0
+        if let mtime = attrs[.modificationDate] as? NSDate {
+          mtimeMillis = Int(mtime.timeIntervalSince1970)
+        }
+        if let createtime = attrs[.creationDate] as? NSDate {
+          ctimeMillis = Int(createtime.timeIntervalSince1970)
+        }
+        return FileStat(type: FileType(posixType: attrs[.type] as? FileAttributeType),
+                 ctime: ctimeMillis,
+                 mtime: mtimeMillis,
+                 size: attrs[.size] as? Int)
       }
       .tryMap { (try JSONEncoder().encode($0), nil) }
       .eraseToAnyPublisher()
   }
   
   func readDirectory(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    print("readDirectory \(uri)")
+
     return translator
       .flatMap { $0.cloneWalkTo(uri) }
       .flatMap { $0.directoryFilesAndAttributes() }
-      .map { filesAttributes -> [String:FileType] in
-        filesAttributes.reduce(into: [String:FileType]()) { (result, attrs) in
-          result[attrs[.name] as! String] = FileType(posixType: attrs[.type] as? FileAttributeType)
+      .map { filesAttributes -> [DirectoryTuple] in
+        filesAttributes.map { 
+          DirectoryTuple(name: $0[.name] as! String,
+                         type: FileType(posixType: $0[.type] as? FileAttributeType))
         }
       }
       .tryMap { (try JSONEncoder().encode($0), nil) }
@@ -93,6 +131,7 @@ class CodeFileSystem {
   }
   
   func readFile(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    print("readFile \(uri)")
     return translator
       .flatMap { $0.cloneWalkTo(uri) }
       .flatMap { $0.open(flags: O_RDONLY) }

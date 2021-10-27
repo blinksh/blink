@@ -126,9 +126,9 @@ public class WebSocketServer {
   typealias ResponsePublisher = AnyPublisher<Response, Error>
   var delegate: CodeSocketDelegate? = nil
   var cancellables = [UInt32:AnyCancellable]()
-  
-  var listener: NWListener!
   let queue = DispatchQueue(label: "WebSocketServer")
+
+  var listener: NWListener!
   
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
     try startListening(port, tls)
@@ -183,26 +183,38 @@ public class WebSocketServer {
   func handleNewConnection(_ conn: NWConnection) {
     // TODO Skipping on the statehandler for the connection for now
     //connections.append(conn)
+    WebSocketConnection(conn, delegate).receiveNextMessage()
+  }
+}
+
+class WebSocketConnection {
+  let conn: NWConnection
+  let delegate: CodeSocketDelegate?
+  let queue = DispatchQueue(label: "WebSocketServer")
+  var cancellables = [UInt32:AnyCancellable]()
+
+  init(_ conn: NWConnection, _ delegate: CodeSocketDelegate?) {
+    self.conn = conn
+    self.delegate = delegate
     conn.start(queue: queue)
-    receiveNextMessage(conn)
   }
   
-  func receiveNextMessage(_ conn: NWConnection) {
+  func receiveNextMessage() {
     conn.receiveMessage { (content, context, isComplete, error) in
       if let data = content,
          let context = context {
         if let metadata = context.protocolMetadata as?  [NWProtocolWebSocket.Metadata],
            metadata[0].opcode == .ping {
-          self.handlePing(conn: conn, data: data)
+          self.handlePing(data: data)
         } else {
-          self.handleMessage(conn: conn, data: data)
+          self.handleMessage(data: data)
         }
-        self.receiveNextMessage(conn)
+        self.receiveNextMessage()
       }
     }
   }
   
-  func handlePing(conn: NWConnection, data: Data) {
+  func handlePing(data: Data) {
     // Return a pong with the same data
     let metadata = NWProtocolWebSocket.Metadata(opcode: .pong)
     let context = NWConnection.ContentContext(identifier: "pongContext",
@@ -210,7 +222,7 @@ public class WebSocketServer {
     conn.send(content: data, contentContext: context, completion: .idempotent)
   }
   
-  func handleMessage(conn: NWConnection, data: Data) {
+  func handleMessage(data: Data) {
     // The combine flows can be cancelled.
     // These must be done by the one keeping track of the "action" itself.
     // We are going to make it rest right here, at the server. But it could be moved
@@ -259,15 +271,13 @@ public class WebSocketServer {
         }
       },
             receiveValue: {
-        self.sendMessage(conn: conn,
-                         operationId: operationId,
+        self.sendMessage(operationId: operationId,
                          encodedData: $0,
                          binaryData: $1)
       })
   }
   
-  func sendMessage(conn: NWConnection,
-                   operationId: UInt32,
+  func sendMessage(operationId: UInt32,
                    encodedData: Data?,
                    binaryData: Data?) {
     let metadata = NWProtocolWebSocket.Metadata(opcode: .binary)
@@ -291,16 +301,35 @@ public class WebSocketServer {
 
 extension Data {
   fileprivate init(_ int: UInt32) {
-    var val: UInt32 = UInt32(int).bigEndian
+    var val: UInt32 = UInt32(int)
     self.init(bytes: &val, count: MemoryLayout<UInt32>.size)
+  }
+  fileprivate init(_ int: UInt8) {
+    var val: UInt8 = UInt8(int)
+    self.init(bytes: &val, count: MemoryLayout<UInt8>.size)
   }
 }
 
 extension UInt32 {
   fileprivate static func decode(_ data: inout Data) -> UInt32 {
     let size = MemoryLayout<UInt32>.size
-    let val = UInt32(bigEndian: data[0..<size].withUnsafeBytes { bytes in
+    let val = UInt32(data[0..<size].withUnsafeBytes { bytes in
       bytes.load(as: UInt32.self)
+    })
+    if data.count == size {
+      data = Data()
+    } else {
+      data = data.advanced(by: size)
+    }
+    return val
+  }
+}
+
+extension UInt8 {
+  fileprivate static func decode(_ data: inout Data) -> UInt8 {
+    let size = MemoryLayout<UInt8>.size
+    let val = UInt8(data[0..<size].withUnsafeBytes { bytes in
+      bytes.load(as: UInt8.self)
     })
     if data.count == size {
       data = Data()
@@ -316,7 +345,7 @@ protocol CodeSocketDelegate {
 }
 
 struct CodeSocketMessageHeader {
-  static var encodedSize: Int { MemoryLayout<CodeSocketMessageHeader>.size }
+  static var encodedSize: Int { (MemoryLayout<UInt32>.size * 2) + MemoryLayout<UInt8>.size }
   
   let type: CodeSocketContentType
   let operationId: UInt32
@@ -330,7 +359,7 @@ struct CodeSocketMessageHeader {
   
   init?(_ data: Data) {
     var buffer = data
-    guard let type = CodeSocketContentType(rawValue: UInt32.decode(&buffer)) else {
+    guard let type = CodeSocketContentType(rawValue: UInt8.decode(&buffer)) else {
       return nil
     }
     self.type = type
@@ -398,7 +427,7 @@ struct CodeSocketMessagePayload {
     }
   }
 }
-enum CodeSocketContentType: UInt32 {
+enum CodeSocketContentType: UInt8 {
   case Cancel = 1
   case Binary
   case Json
