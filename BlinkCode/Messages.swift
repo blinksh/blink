@@ -148,6 +148,12 @@ struct DirectoryTuple: Codable {
     try container.encode(name)
     try container.encode(type)
   }
+  
+  init(from decoder: Decoder) throws {
+    var container = try decoder.unkeyedContainer()
+    self.name = try container.decode(String.self)
+    self.type = try container.decode(FileType.self)
+  }
 }
 
 enum CodeFileSystemAction: String, Codable {

@@ -5,8 +5,6 @@ import Network
 import BlinkFiles
 
 
-// We may create a new FS per base URI. And then all of them into a singleton
-// We may just group all that here.
 class CodeFileSystemService: CodeSocketDelegate {
   let server: WebSocketServer
 
