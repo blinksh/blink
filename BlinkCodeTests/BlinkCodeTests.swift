@@ -39,7 +39,7 @@ let ServiceURL = URL(string: "ws://localhost:8000")!
 
 class BlinkCodeTests: XCTestCase {
   var service: CodeFileSystemService? = nil
-  
+
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     OperationId = 0
@@ -55,14 +55,14 @@ class BlinkCodeTests: XCTestCase {
 
     let service = try CodeFileSystemService(listenOn: 8000, tls: false)
     let serviceURL = URL(string: "ws://localhost:8000")!
-    
-    wait(for: [expectation], timeout: 5000.0)
+
+    //wait(for: [expectation], timeout: 5000.0)
 
     // TODO Create the message
     let task = URLSession.shared.webSocketTask(with: serviceURL)
     task.resume()
 
-    let statRequest = CodeFileSystemRequest(op: .stat, uri: "/Users/carloscabanero/build.token")
+    let statRequest = StatFileSystemRequest(uri: "/Users/carloscabanero/build.token")
     let statPayload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(statRequest))
     let statMessage =
     CodeSocketMessageHeader(type: statPayload.type, operationId: 1, referenceId: 1).encoded + statPayload.encoded
@@ -85,7 +85,7 @@ class BlinkCodeTests: XCTestCase {
           }
           // TODO Note Yury's protocol still has a response ID
           print(respHeader)
-          
+
           buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
           guard let respContent = try? JSONDecoder().decode(FileStat.self, from: buffer) else {
             XCTFail("Could not decode JSON")
@@ -104,18 +104,18 @@ class BlinkCodeTests: XCTestCase {
 
     wait(for: [expectation], timeout: 5.0)
   }
-  
+
   func testReadDirectory() throws {
     let expectation = XCTestExpectation(description: "Message received")
 
     let service = try CodeFileSystemService(listenOn: 8000, tls: false)
     let serviceURL = URL(string: "ws://localhost:8000")!
-    
+
     // TODO Create the message
     let task = URLSession.shared.webSocketTask(with: serviceURL)
     task.resume()
 
-    let statRequest = CodeFileSystemRequest(op: .readDirectory, uri: "/Users/carloscabanero")
+    let statRequest = ReadDirectoryFileSystemRequest(uri: "/Users/carloscabanero")
     let statPayload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(statRequest))
     let statMessage =
     CodeSocketMessageHeader(type: statPayload.type, operationId: 1, referenceId: 1).encoded + statPayload.encoded
@@ -161,18 +161,83 @@ class BlinkCodeTests: XCTestCase {
   func testWriteFile() throws {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
-    
+
     let filePath = "/Users/carloscabanero/createtest"
-    let req = WriteFileSystemRequest(uri: filePath, options: .init(overwrite: false, create: false))
+    let req = WriteFileSystemRequest(uri: filePath, options: .init(overwrite: true, create: false))
     let content = "Hello world".data(using: .utf8)
-    let (response, responseContent) = try task.sendCodeFileSystemRequest(req, binaryData: content, test: self)
+
+    let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
+                                                                         binaryData: content,
+                                                                         test: self)
     XCTAssertTrue(response.isEmpty)
     XCTAssertTrue(responseContent == nil)
-    
+
     let readContent = try String(contentsOfFile: filePath).data(using: .utf8)
     XCTAssertTrue(content == readContent)
   }
 
+  // TODO Try to recreate and check error
+  func testCreateDirectory() throws {
+    let task = URLSession.shared.webSocketTask(with: ServiceURL)
+    task.resume()
+
+    let path = "/Users/carloscabanero/newdir"
+    let req  = CreateDirectoryFileSystemRequest(uri: path)
+
+    let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
+                                                                         binaryData: nil,
+                                                                         test: self)
+    XCTAssertTrue(response.isEmpty)
+    XCTAssertTrue(responseContent == nil)
+
+    var isDir: ObjCBool = false
+    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
+    XCTAssertTrue(exists)
+    XCTAssertTrue(isDir.boolValue)
+  }
+
+  func testRename() throws {
+    let task = URLSession.shared.webSocketTask(with: ServiceURL)
+    task.resume()
+
+    let path = "/Users/carloscabanero/newdir"
+    let newPath = "/Users/carloscabanero/newpathdir"
+    let req  = RenameFileSystemRequest(oldUri: path,
+                                       newUri: newPath,
+                                       options: .init(overwrite:false))
+
+    let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
+                                                                         binaryData: nil,
+                                                                         test: self)
+
+    XCTAssertTrue(response.isEmpty)
+    XCTAssertTrue(responseContent == nil)
+
+    var isDir: ObjCBool = false
+    let exists = FileManager.default.fileExists(atPath: newPath, isDirectory: &isDir)
+    XCTAssertTrue(exists)
+    XCTAssertTrue(isDir.boolValue)
+  }
+
+  func testDelete() throws {
+    let task = URLSession.shared.webSocketTask(with: ServiceURL)
+    task.resume()
+
+    let path = "/Users/carloscabanero/newdir"
+    let req  = DeleteFileSystemRequest(uri: path,
+                                       options: .init(recursive: false))
+
+    let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
+                                                                         binaryData: nil,
+                                                                         test: self)
+
+    XCTAssertTrue(response.isEmpty)
+    XCTAssertTrue(responseContent == nil)
+
+    var isDir: ObjCBool = false
+    let exists = FileManager.default.fileExists(atPath: path, isDirectory: &isDir)
+    XCTAssertFalse(exists)
+  }
 }
 
 extension URLSessionWebSocketTask {
@@ -196,18 +261,18 @@ extension URLSessionWebSocketTask {
         switch response {
         case .data(let data):
           var buffer = data
-          
+
           guard let respHeader = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
             XCTFail("Could not parse response header")
             return
           }
           print(respHeader)
-          
+
           XCTAssertTrue(respHeader.referenceId == header.operationId)
-          
+
           buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
           print(String(data: buffer, encoding: .utf8))
-          
+
           guard let respPayload = CodeSocketMessagePayload(buffer, type: respHeader.type) else {
             XCTFail("Could not parse response payload")
             return

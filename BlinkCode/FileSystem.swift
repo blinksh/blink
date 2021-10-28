@@ -5,56 +5,6 @@ import Network
 import BlinkFiles
 
 
-enum CodeFileSystemAction: String, Codable {
-  case stat
-  case readDirectory
-  case readFile
-  case writeFile
-}
-
-enum CodeFileSystemError: Error {
-  case badRequest
-  case fileExists
-  case fileNotFound
-}
-
-struct CodeFileSystemRequest: Codable {
-  let op: CodeFileSystemAction
-  let uri: String
-}
-
-struct WriteFileSystemRequest: Codable {
-  let op: CodeFileSystemAction
-  let uri: String
-  let options: Options
-
-  struct Options: Codable {
-    let overwrite: Bool
-    let create: Bool
-  }
-  
-  init(uri: String, options: Options) {
-    self.op = .writeFile
-    self.uri = uri
-    self.options = options
-  }
-}
-
-struct DirectoryTuple: Codable {
-  let name: String
-  let type: FileType
-
-  init(name: String, type: FileType) {
-    self.name = name
-    self.type = type
-  }
-  func encode(to encoder: Encoder) throws {
-    var container = encoder.unkeyedContainer()
-    try container.encode(name)
-    try container.encode(type)
-  }
-}
-
 // We may create a new FS per base URI. And then all of them into a singleton
 // We may just group all that here.
 class CodeFileSystemService: CodeSocketDelegate {
@@ -66,31 +16,36 @@ class CodeFileSystemService: CodeSocketDelegate {
   }
 
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
-    guard let request = decodeFileSystemRequest(encodedData) else {
+    guard let request = try? JSONDecoder().decode(BaseFileSystemRequest.self, from: encodedData) else {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
       return .fail(error: CodeFileSystemError.badRequest)
     }
 
-    // We need the URI
     let fs = CodeFileSystem(.just(Local()))
 
     do {
-      let uri = request.uri.replacingOccurrences(of: "blink-fs:", with: "")
-
-      // TODO I want this to be objects as otherwise it becomes messy to change a name or reference.
       switch request.op {
       case .stat:
-        return fs.stat(uri)
+        let msg: StatFileSystemRequest = try decode(encodedData)
+        return fs.stat(msg.uri.path)
       case .readDirectory:
-        return fs.readDirectory(uri)
+        let msg: ReadDirectoryFileSystemRequest = try decode(encodedData)
+        return fs.readDirectory(msg.uri.path)
       case .readFile:
-        return fs.readFile(uri)
+        let msg: ReadFileFileSystemRequest = try decode(encodedData)
+        return fs.readFile(msg.uri.path)
       case .writeFile:
-        let msg = try JSONDecoder().decode(WriteFileSystemRequest.self, from: encodedData)
-        return fs.writeFile(uri, options: msg.options, content: binaryData ?? Data())
-      default:
-        print(String(data: encodedData, encoding: .utf8) ?? "Unknown operation")
-        return .fail(error: CodeFileSystemError.badRequest)
+        let msg: WriteFileSystemRequest = try decode(encodedData)
+        return fs.writeFile(msg.uri.path, options: msg.options, content: binaryData ?? Data())
+      case .createDirectory:
+        let msg: CreateDirectoryFileSystemRequest = try decode(encodedData)
+        return fs.createDirectory(msg.uri.path)
+      case .rename:
+        let msg: RenameFileSystemRequest = try decode(encodedData)
+        return fs.rename(oldUri: msg.oldUri.path, newUri: msg.newUri.path, options: msg.options)
+      case .delete:
+        let msg: DeleteFileSystemRequest = try decode(encodedData)
+        return fs.delete(uri: msg.uri.path, options: msg.options)
       }
     } catch {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
@@ -100,17 +55,6 @@ class CodeFileSystemService: CodeSocketDelegate {
     // TODO Process the URI
     // sftp:host:route
     // code /
-
-  func decodeFileSystemRequest(_ encoded: Data) -> CodeFileSystemRequest? {
-    if let request: CodeFileSystemRequest = try? JSONDecoder().decode(CodeFileSystemRequest.self, from: encoded)
-       //let opCode = CodeFileSystemAction(rawValue: request["op"] ?? ""),
-       //let uri = request["uri"]
-    {
-      return request //CodeFileSystemRequest(op: opCode, uri: uri)
-    } else {
-      return nil
-    }
-  }
 }
 
 class CodeFileSystem {
@@ -185,7 +129,7 @@ class CodeFileSystem {
       .eraseToAnyPublisher()
   }
 
-  func writeFile(_ uri: String, options: WriteFileSystemRequest.Options, content: Data) -> WebSocketServer.ResponsePublisher {
+  func writeFile(_ uri: String, options: FileSystemOperationOptions, content: Data) -> WebSocketServer.ResponsePublisher {
     print("writeFile \(uri)")
     let parentDir = (uri as NSString).deletingLastPathComponent
     let fileName  = (uri as NSString).lastPathComponent
@@ -198,7 +142,7 @@ class CodeFileSystem {
           .flatMap { fileT -> AnyPublisher<File, Error> in
             // [`FileExists`](#FileSystemError.FileExists) when `uri` already exists and `overwrite` is set.
             // NOTE From testing, looks like docs should say 'overwrite' is NOT set.
-            if !options.overwrite {
+            if !(options.overwrite ?? false) {
               return .fail(error: CodeFileSystemError.fileExists)
             }
             return fileT.open(flags: O_RDWR | O_TRUNC)
@@ -208,7 +152,7 @@ class CodeFileSystem {
               throw error
             }
             // [`FileNotFound`](#FileSystemError.FileNotFound) when `uri` doesn't exist and `create` is not set.
-            if !options.create {
+            if !(options.create ?? false) {
               return .fail(error: CodeFileSystemError.fileNotFound)
             }
             return parentT.create(name: fileName, flags: O_WRONLY, mode: 0o644)
@@ -229,48 +173,114 @@ class CodeFileSystem {
           .eraseToAnyPublisher()
       }.eraseToAnyPublisher()
   }
-}
 
-enum FileType: Int, Codable {
-  case Unknown = 0
-  case File = 1
-  case Directory = 2
-  case SymbolicLink = 64
+  func createDirectory(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    let parent  = (uri as NSString).deletingLastPathComponent
+    let dirName = (uri as NSString).lastPathComponent
 
-  init(posixType: FileAttributeType?) {
-    guard let posixType = posixType else {
-      self = .Unknown
-      return
+    return translator
+      .flatMap {
+        $0.cloneWalkTo(parent)
+          .mapError { _ in CodeFileSystemError.fileNotFound }
+      }
+      .flatMap { parentT -> AnyPublisher<Translator, Error> in
+        parentT.cloneWalkTo(dirName)
+          .tryMap { _ in throw CodeFileSystemError.fileExists }
+          .tryCatch { error -> AnyPublisher<Translator, Error> in
+            if case CodeFileSystemError.fileExists = error {
+              throw error
+            }
+            return parentT
+              .mkdir(name: dirName, mode: S_IRWXU | S_IRWXG | S_IRWXO)
+              .mapError { _ in return CodeFileSystemError.noPermissions }
+              .eraseToAnyPublisher()
+          }.eraseToAnyPublisher()
+      }
+      .map { _ in (nil, nil) }
+      .eraseToAnyPublisher()
+  }
+
+  func rename(oldUri: String, newUri: String, options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
+    // Walk to oldURI
+    // Walk to new parent
+    // Walk to file and apply overwrite
+    // Stat to new location. Or fail.
+    let newParent = (newUri as NSString).deletingLastPathComponent
+
+    return translator
+      .flatMap {
+        $0.cloneWalkTo(oldUri)
+          .mapError { _ in CodeFileSystemError.fileNotFound }
+      }
+      .flatMap { oldT in
+        self.translator.flatMap {
+            $0.cloneWalkTo(newParent)
+              .mapError { _ in CodeFileSystemError.fileNotFound }
+          }
+        // Will take the easy route for now.
+        // We try the stat, and will figure out if in case it is a file, we have to
+        // remove it or what.
+          .flatMap { _ in oldT.wstat([.name: newUri]) }
+      }
+      .map { _ in (nil, nil) }
+      .eraseToAnyPublisher()
+  }
+
+  func delete(uri: String, options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
+    let recursive = options.recursive ?? false
+
+    func delete(_ translators: [Translator]) -> AnyPublisher<Void, Error> {
+      translators.publisher
+        .flatMap { t -> AnyPublisher<Void, Error> in
+          print(t.current)
+          if t.fileType == .typeDirectory {
+            return [deleteDirectoryContent(t), AnyPublisher(t.rmdir().map {_ in})]
+              .compactMap { $0 }
+              .publisher
+              .flatMap { $0 }
+              .collect()
+              .map {_ in}
+              .eraseToAnyPublisher()
+          }
+
+          return AnyPublisher(t.remove().map { _ in })
+        }.eraseToAnyPublisher()
     }
 
-    switch posixType {
-    case .typeRegular:
-      self = .File
-    case .typeDirectory:
-      self = .Directory
-    case .typeSymbolicLink:
-      self = .SymbolicLink
-    default:
-      self = .Unknown
+    func deleteDirectoryContent(_ t: Translator) -> AnyPublisher<Void, Error>? {
+      if recursive == false {
+        return nil
+      }
+
+      return t.directoryFilesAndAttributes().flatMap {
+        $0.compactMap { i -> FileAttributes? in
+          if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+            return nil
+          } else {
+            return i
+          }
+        }.publisher
+      }
+      .flatMap { t.cloneWalkTo($0[.name] as! String) }
+      .collect()
+      .flatMap { delete($0) }
+      .eraseToAnyPublisher()
     }
+
+    return translator
+      .flatMap {
+        $0.cloneWalkTo(uri)
+          .mapError { _ in CodeFileSystemError.fileNotFound }
+          .flatMap { delete([$0]) }
+      }
+      .map { _ in (nil, nil) }
+      .eraseToAnyPublisher()
   }
+
 }
 
-struct FileStat: Codable {
-  let type: FileType
-  let ctime: Int?
-  let mtime: Int?
-  let size: Int?
-
-  init(type: FileType?, ctime: Int?, mtime: Int?, size: Int?) {
-    self.type = type ?? .Unknown
-    self.ctime = ctime
-    self.mtime = mtime
-    self.size = size
+extension CodeFileSystemService {
+  func decode<T: Decodable>(_ encodedData: Data) throws -> T {
+    try JSONDecoder().decode(T.self, from: encodedData)
   }
-}
-
-struct WriteFileOptions: Codable {
-  let create: Bool
-  let overwrite: Bool
 }

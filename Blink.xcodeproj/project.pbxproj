@@ -96,6 +96,7 @@
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
 		BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCED26D9802900054338 /* TranslatorFactory.swift */; };
+		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
@@ -718,6 +719,7 @@
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
 		BD44DCED26D9802900054338 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
+		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
@@ -1522,6 +1524,7 @@
 				BDBFA3202728925C00C77798 /* FileSystem.swift */,
 				BDBFA31F2728925C00C77798 /* WebSocketServer.swift */,
 				BDBFA3072728914F00C77798 /* BlinkCode.h */,
+				BD67FC78272B30F300C1EE75 /* Messages.swift */,
 			);
 			path = BlinkCode;
 			sourceTree = "<group>";
@@ -2657,6 +2660,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */,
+				BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */,
 				BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
