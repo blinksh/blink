@@ -301,7 +301,7 @@ class WebSocketConnection {
 
 extension Data {
   fileprivate init(_ int: UInt32) {
-    var val: UInt32 = UInt32(int)
+    var val: UInt32 = UInt32(bigEndian: int)
     self.init(bytes: &val, count: MemoryLayout<UInt32>.size)
   }
   fileprivate init(_ int: UInt8) {
@@ -313,7 +313,7 @@ extension Data {
 extension UInt32 {
   fileprivate static func decode(_ data: inout Data) -> UInt32 {
     let size = MemoryLayout<UInt32>.size
-    let val = UInt32(data[0..<size].withUnsafeBytes { bytes in
+    let val = UInt32(bigEndian: data[0..<size].withUnsafeBytes { bytes in
       bytes.load(as: UInt32.self)
     })
     if data.count == size {
@@ -409,10 +409,11 @@ struct CodeSocketMessagePayload {
   var type: CodeSocketContentType {
     if !encodedData.isEmpty, let _ = binaryData {
       return .JsonWithBinary
-    } else if !encodedData.isEmpty {
-      return .Json
-    } else {
+    } else if let _ = binaryData {
       return .Binary
+    } else {
+      // NOTE An empty message is still an empty JSON message
+      return .Json
     }
   }
   
@@ -422,11 +423,14 @@ struct CodeSocketMessagePayload {
       return Data(UInt32(encodedData.count)) + encodedData + binaryData!
     case .Json:
       return encodedData
-    default:
+    case .Binary:
       return binaryData!
+    default:
+      return Data()
     }
   }
 }
+
 enum CodeSocketContentType: UInt8 {
   case Cancel = 1
   case Binary

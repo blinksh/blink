@@ -34,10 +34,16 @@ import XCTest
 
 @testable import BlinkCode
 
+var OperationId: UInt32 = 0
+let ServiceURL = URL(string: "ws://localhost:8000")!
 
 class BlinkCodeTests: XCTestCase {
+  var service: CodeFileSystemService? = nil
+  
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
+    OperationId = 0
+    service = try CodeFileSystemService(listenOn: 8000, tls: false)
   }
 
   override func tearDownWithError() throws {
@@ -50,6 +56,8 @@ class BlinkCodeTests: XCTestCase {
     let service = try CodeFileSystemService(listenOn: 8000, tls: false)
     let serviceURL = URL(string: "ws://localhost:8000")!
     
+    wait(for: [expectation], timeout: 5000.0)
+
     // TODO Create the message
     let task = URLSession.shared.webSocketTask(with: serviceURL)
     task.resume()
@@ -128,9 +136,7 @@ class BlinkCodeTests: XCTestCase {
             XCTFail("Could not parse response header")
             return
           }
-          // TODO Note Yury's protocol still has a response ID
           print(respHeader)
-          
           buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
           print(String(data: buffer, encoding: .utf8))
 //          guard let respContent = try? JSONDecoder().decode([DirectoryTuple].self, from: buffer) else {
@@ -149,5 +155,77 @@ class BlinkCodeTests: XCTestCase {
     }
 
     wait(for: [expectation], timeout: 5.0)
+  }
+
+  // TODO Test. Fail if no create. Create file. Overwrite file. Fail if overwrite.
+  func testWriteFile() throws {
+    let task = URLSession.shared.webSocketTask(with: ServiceURL)
+    task.resume()
+    
+    let filePath = "/Users/carloscabanero/createtest"
+    let req = WriteFileSystemRequest(uri: filePath, options: .init(overwrite: false, create: false))
+    let content = "Hello world".data(using: .utf8)
+    let (response, responseContent) = try task.sendCodeFileSystemRequest(req, binaryData: content, test: self)
+    XCTAssertTrue(response.isEmpty)
+    XCTAssertTrue(responseContent == nil)
+    
+    let readContent = try String(contentsOfFile: filePath).data(using: .utf8)
+    XCTAssertTrue(content == readContent)
+  }
+
+}
+
+extension URLSessionWebSocketTask {
+  fileprivate func sendCodeFileSystemRequest<T: Codable>(_ req: T, binaryData: Data? = nil, test: XCTestCase) throws -> (Data, Data?) {
+    let expectation = XCTestExpectation(description: "File System Request fulfilled")
+
+    let payload = CodeSocketMessagePayload(encodedData: try JSONEncoder().encode(req),
+                                           binaryData: binaryData)
+    let header = CodeSocketMessageHeader(type: payload.type,
+                                         operationId: OperationId,
+                                         referenceId: 1)
+    let message = header.encoded + payload.encoded
+    self.send(.data(message)) { error in if let error = error { XCTFail("\(error)") }}
+
+    var responseEncodedData: Data = Data()
+    var responseBinaryData:  Data? = nil
+
+    self.receive { result in
+      switch result {
+      case .success(let response):
+        switch response {
+        case .data(let data):
+          var buffer = data
+          
+          guard let respHeader = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
+            XCTFail("Could not parse response header")
+            return
+          }
+          print(respHeader)
+          
+          XCTAssertTrue(respHeader.referenceId == header.operationId)
+          
+          buffer = buffer.advanced(by: CodeSocketMessageHeader.encodedSize)
+          print(String(data: buffer, encoding: .utf8))
+          
+          guard let respPayload = CodeSocketMessagePayload(buffer, type: respHeader.type) else {
+            XCTFail("Could not parse response payload")
+            return
+          }
+          responseEncodedData = respPayload.encodedData
+          responseBinaryData  = respPayload.binaryData
+
+        default:
+          XCTFail("Wrong response type")
+        }
+        case .failure(let error):
+          XCTFail("\(error)")
+      }
+      expectation.fulfill()
+    }
+
+    test.wait(for: [expectation], timeout: 5.0)
+
+    return (responseEncodedData, responseBinaryData)
   }
 }
