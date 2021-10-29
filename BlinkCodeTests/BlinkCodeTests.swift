@@ -50,12 +50,18 @@ class BlinkCodeTests: XCTestCase {
     // Put teardown code here. This method is called after the invocation of each test method in the class.
   }
 
+  func testVSCode() throws {
+    throw XCTSkip("Comment if running VSCode integration")
+    let expectation = expectation(description: "Holding up for VSCode")
+    wait(for: [expectation], timeout: 50000)
+  }
+  
   func testStat() throws {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
     let req = StatFileSystemRequest(uri: "/Users/carloscabanero/build.token")
-
+    
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          test: self)
     
