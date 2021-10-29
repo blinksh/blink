@@ -263,8 +263,10 @@ class WebSocketConnection {
         switch completion {
         case .failure(let error):
           print("Error completing operation - \(error)")
-          // TODO Send back an error
-          break
+          if case is CodeFileSystemError = error {
+            self.sendError(operationId: operationId,
+                           error: error as! CodeFileSystemError)
+          }
         case .finished:
           // TODO Remove the cancellable
           break
@@ -294,8 +296,21 @@ class WebSocketConnection {
               completion: .idempotent)
   }
   
-  func sendError(_ msg: String) {
-    // TODO
+  func sendError(operationId: UInt32,
+                 error: CodeFileSystemError) {
+    let metadata = NWProtocolWebSocket.Metadata(opcode: .binary)
+    let context = NWConnection.ContentContext(identifier: "binaryContext",
+                                              metadata: [metadata])
+    
+    let encodedData = try? JSONEncoder().encode(error)
+    let payload = CodeSocketMessagePayload(encodedData: encodedData)
+    
+    let replyHeader = CodeSocketMessageHeader(type: .Error,
+                                              operationId: operationId,
+                                              referenceId: operationId)
+    conn.send(content: replyHeader.encoded + payload.encoded,
+              contentContext: context,
+              completion: .idempotent)
   }
 }
 
@@ -436,6 +451,5 @@ enum CodeSocketContentType: UInt8 {
   case Binary
   case Json
   case JsonWithBinary
-  // TODO The error may be better as a json content type, with an error inside.
   case Error
 }

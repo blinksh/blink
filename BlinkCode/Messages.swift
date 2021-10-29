@@ -33,6 +33,16 @@
 import Foundation
 
 
+enum CodeFileSystemAction: String, Codable {
+  case stat
+  case readDirectory
+  case readFile
+  case writeFile
+  case createDirectory
+  case delete
+  case rename
+}
+
 struct BaseFileSystemRequest: Codable {
   let op: CodeFileSystemAction
 }
@@ -156,21 +166,33 @@ struct DirectoryTuple: Codable {
   }
 }
 
-enum CodeFileSystemAction: String, Codable {
-  case stat
-  case readDirectory
-  case readFile
-  case writeFile
-  case createDirectory
-  case delete
-  case rename
-}
-
-enum CodeFileSystemError: Error {
+enum CodeFileSystemError: Error, Encodable {
   case badRequest
-  case fileExists
-  case fileNotFound
-  case noPermissions
+  case fileExists(uri: URI)
+  case fileNotFound(uri: URI)
+  case noPermissions(uri: URI)
+
+  var info: (String, URI) {
+    switch self {
+    case .badRequest:
+      return ("BadRequest", "Bad request error")
+    case .fileExists(let uri):
+      return ("FileExists", uri)
+    case .fileNotFound(let uri):
+      return ("FileNotFound", uri)
+    case .noPermissions(let uri):
+      return ("NoPermissions", uri)
+    }
+  }
+
+  enum CodingKeys: String, CodingKey { case errorCode; case uri; }
+
+  func encode(to encoder: Encoder) throws {
+    let (errorCode, uri) = self.info
+    var container = encoder.container(keyedBy: CodingKeys.self)
+    try container.encode(errorCode, forKey: .errorCode)
+    try container.encode(uri, forKey: .uri)
+  }
 }
 
 enum FileType: Int, Codable {

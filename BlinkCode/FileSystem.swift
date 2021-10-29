@@ -25,7 +25,7 @@ class CodeFileSystemService: CodeSocketDelegate {
       switch request.op {
       case .stat:
         let msg: StatFileSystemRequest = try decode(encodedData)
-        return fs.stat(msg.uri.path)
+        return fs.stat(msg.uri)
       case .readDirectory:
         let msg: ReadDirectoryFileSystemRequest = try decode(encodedData)
         return fs.readDirectory(msg.uri.path)
@@ -62,11 +62,17 @@ class CodeFileSystem {
     self.translator = t
   }
 
-  func stat(_ uri: String) -> WebSocketServer.ResponsePublisher {
-    print("stat \(uri)")
+  func stat(_ uri: URI) -> WebSocketServer.ResponsePublisher {
+    let path = uri.path
+    print("stat \(path)")
 
     return translator
-      .flatMap { $0.cloneWalkTo(uri) }
+      .flatMap {
+        $0.cloneWalkTo(path)
+          .mapError { _ in
+            return CodeFileSystemError.fileNotFound(uri: uri)
+          }
+      }
       .flatMap { $0.stat() }
       .map { attrs -> FileStat in
         var mtimeMillis = 0
@@ -141,7 +147,7 @@ class CodeFileSystem {
             // [`FileExists`](#FileSystemError.FileExists) when `uri` already exists and `overwrite` is set.
             // NOTE From testing, looks like docs should say 'overwrite' is NOT set.
             if !(options.overwrite ?? false) {
-              return .fail(error: CodeFileSystemError.fileExists)
+              return .fail(error: CodeFileSystemError.fileExists(uri: uri))
             }
             return fileT.open(flags: O_RDWR | O_TRUNC)
           }
@@ -151,7 +157,7 @@ class CodeFileSystem {
             }
             // [`FileNotFound`](#FileSystemError.FileNotFound) when `uri` doesn't exist and `create` is not set.
             if !(options.create ?? false) {
-              return .fail(error: CodeFileSystemError.fileNotFound)
+              return .fail(error: CodeFileSystemError.fileNotFound(uri: uri))
             }
             return parentT.create(name: fileName, flags: O_WRONLY, mode: 0o644)
           }
@@ -173,24 +179,25 @@ class CodeFileSystem {
   }
 
   func createDirectory(_ uri: String) -> WebSocketServer.ResponsePublisher {
+    print("createDirectory \(uri)")
     let parent  = (uri as NSString).deletingLastPathComponent
     let dirName = (uri as NSString).lastPathComponent
 
     return translator
       .flatMap {
         $0.cloneWalkTo(parent)
-          .mapError { _ in CodeFileSystemError.fileNotFound }
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri:uri) }
       }
       .flatMap { parentT -> AnyPublisher<Translator, Error> in
         parentT.cloneWalkTo(dirName)
-          .tryMap { _ in throw CodeFileSystemError.fileExists }
+          .tryMap { _ in throw CodeFileSystemError.fileExists(uri: uri) }
           .tryCatch { error -> AnyPublisher<Translator, Error> in
             if case CodeFileSystemError.fileExists = error {
               throw error
             }
             return parentT
               .mkdir(name: dirName, mode: S_IRWXU | S_IRWXG | S_IRWXO)
-              .mapError { _ in return CodeFileSystemError.noPermissions }
+              .mapError { _ in return CodeFileSystemError.noPermissions(uri: parent) }
               .eraseToAnyPublisher()
           }.eraseToAnyPublisher()
       }
@@ -199,6 +206,7 @@ class CodeFileSystem {
   }
 
   func rename(oldUri: String, newUri: String, options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
+    print("rename \(oldUri)")
     // Walk to oldURI
     // Walk to new parent
     // Walk to file and apply overwrite
@@ -208,12 +216,12 @@ class CodeFileSystem {
     return translator
       .flatMap {
         $0.cloneWalkTo(oldUri)
-          .mapError { _ in CodeFileSystemError.fileNotFound }
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri: oldUri) }
       }
       .flatMap { oldT in
         self.translator.flatMap {
             $0.cloneWalkTo(newParent)
-              .mapError { _ in CodeFileSystemError.fileNotFound }
+            .mapError { _ in CodeFileSystemError.fileNotFound(uri: newParent) }
           }
         // Will take the easy route for now.
         // We try the stat, and will figure out if in case it is a file, we have to
@@ -268,7 +276,7 @@ class CodeFileSystem {
     return translator
       .flatMap {
         $0.cloneWalkTo(uri)
-          .mapError { _ in CodeFileSystemError.fileNotFound }
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri: uri) }
           .flatMap { delete([$0]) }
       }
       .map { _ in (nil, nil) }
