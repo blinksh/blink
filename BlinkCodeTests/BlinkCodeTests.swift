@@ -43,7 +43,7 @@ class BlinkCodeTests: XCTestCase {
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     OperationId = 0
-    service = try CodeFileSystemService(listenOn: 8000, tls: false)
+    service = try CodeFileSystemService(listenOn: 10015, tls: false)
   }
 
   override func tearDownWithError() throws {
@@ -51,7 +51,7 @@ class BlinkCodeTests: XCTestCase {
   }
 
   func testVSCode() throws {
-    throw XCTSkip("Comment if running VSCode integration")
+    //throw XCTSkip("Comment if running VSCode integration")
     let expectation = expectation(description: "Holding up for VSCode")
     wait(for: [expectation], timeout: 50000)
   }

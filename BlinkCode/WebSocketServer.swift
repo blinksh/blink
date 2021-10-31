@@ -173,7 +173,7 @@ public class WebSocketServer {
     }
     if let identity = sec_identity_create(secIdentity) {
       sec_protocol_options_set_min_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
-      sec_protocol_options_set_max_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
+      sec_protocol_options_set_max_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv13)
       sec_protocol_options_set_local_identity(tlsOptions.securityProtocolOptions, identity)
 //      sec_protocol_options_append_tls_ciphersuite( tlsOptions.securityProtocolOptions, tls_ciphersuite_t(rawValue: UInt16(TLS_AES_128_GCM_SHA256))! )
     }
@@ -200,6 +200,7 @@ class WebSocketConnection {
   }
   
   func receiveNextMessage() {
+    conn.stateUpdateHandler = { print("Connection state update - \($0)")}
     conn.receiveMessage { (content, context, isComplete, error) in
       if let data = content,
          let context = context {
@@ -228,6 +229,7 @@ class WebSocketConnection {
     // We are going to make it rest right here, at the server. But it could be moved
     // one level up, to the Delegate.
     var buffer = data
+    // TODO Check header size, otherwise the server will crash.
     guard let header = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
       // TODO Throw Wrong header
       print("Wrong header")

@@ -27,7 +27,11 @@ public class CodeFileSystemService: CodeSocketDelegate {
   }
   
   func getRoot(token: Int, version: Int) -> WebSocketServer.ResponsePublisher {
-    .just((nil, nil)).eraseToAnyPublisher()
+    if let mount = self.tokens[token] {
+      return .just((try! JSONEncoder().encode(mount), nil)).eraseToAnyPublisher()
+    } else {
+      return .just((nil, nil)).eraseToAnyPublisher()
+    }
   }
 
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
