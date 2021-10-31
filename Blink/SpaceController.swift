@@ -422,10 +422,20 @@ class SpaceController: UIViewController {
       _termViewToFocus = device.view
       return
     }
-
+    
     let input = KBTracker.shared.input
     
-    KBTracker.shared.attach(input: device.view?.webView)
+    if device.view.browserView != nil {
+      KBTracker.shared.attach(input: device.view?.webView)
+      device.attachInput(device.view.browserView)
+      _ = device.view.browserView.becomeFirstResponder()
+      if input != KBTracker.shared.input {
+        input?.reportFocus(false)
+      }
+      return
+    }
+
+    
 
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)

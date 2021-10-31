@@ -51,7 +51,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@interface TermView () <WKScriptMessageHandler>
+@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
 @end
 
 @implementation TermView {
@@ -66,6 +66,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   UIView *_coverView;
   UIView *_parentScrollView;
+  NSInteger _touchID;
+  NSMutableArray *_touchesArray;
 }
 
 
@@ -76,11 +78,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   if (!self) {
     return self;
   }
+  _touchID = 1000;
+  
   _selectionRect = CGRectZero;
   _layoutDebounceTimer = nil;
   _currentBounds = CGRectZero;
   _jsQueue = dispatch_queue_create(@"TermView.js".UTF8String, DISPATCH_QUEUE_SERIAL);
   _jsBuffer = [[NSMutableString alloc] init];
+  _touchesArray = [[NSMutableArray alloc] init];
 
   [self _addWebView];
   _coverView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, frame.size.height)];
@@ -127,7 +132,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   if (!CGRectEqualToRect(_webView.frame, webViewFrame)) {
     _webView.frame = webViewFrame;
-//    _scroller.frame = webViewFrame;
+    _browserView.frame = webViewFrame;
+    if (_browserView) {
+      [self bringSubviewToFront:_browserView];
+    }
   }
 
   _currentBounds = self.bounds;
@@ -169,10 +177,194 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self addSubview:_webView];
 }
 
+- (void)addBrowserWebView:(NSURL *)url agent: (NSString *)agent
+{
+  WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
+  configuration.selectionGranularity = WKSelectionGranularityCharacter;
+  configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
+  
+  
+  NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
+  NSString * script =  [NSString stringWithContentsOfURL:scriptURL];
+  WKUserScript *userScript = [[WKUserScript alloc] initWithSource:script injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly: YES];
+
+  [configuration.userContentController addUserScript:userScript];
+  [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
+//  configuration.limitsNavigationsToAppBoundDomains = YES;
+
+
+  _browserView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _browserView.customUserAgent =
+  [@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 " stringByAppendingString:agent];
+
+  NSLog(@"AGENT: %@", _browserView.customUserAgent);
+  _browserView.UIDelegate = self;
+  _browserView.navigationDelegate = self;
+//   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
+//  [_webView addInteraction:_gestureInteraction];
+  
+  UIPanGestureRecognizer *rec = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_pan:)];
+  rec.maximumNumberOfTouches = 1;
+  rec.cancelsTouchesInView = YES;
+  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
+  rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  
+  
+  UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
+  rec.maximumNumberOfTouches = 1;
+  rec.cancelsTouchesInView = YES;
+  //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
+  rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  
+  [_browserView addGestureRecognizer:rec];
+  [_browserView addGestureRecognizer:rec2];
+
+  [self addSubview:_browserView];
+  [_browserView setOpaque:NO];
+  _browserView.backgroundColor = [UIColor clearColor];
+  _browserView.scrollView.backgroundColor = [UIColor clearColor];
+
+  NSURLRequest *request = [NSURLRequest requestWithURL:url];
+  [_browserView loadRequest:request];
+}
+
+- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+  decisionHandler(WKNavigationActionPolicyAllow);
+}
+
+- (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
+  NSURLCredential *cred = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
+//  let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
+//  completionHandler(.useCredential, cred)
+  completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+}
+
+- (void)webView:(WKWebView *)webView authenticationChallenge:(NSURLAuthenticationChallenge *)challenge shouldAllowDeprecatedTLS:(void (^)(BOOL))decisionHandler {
+  decisionHandler(YES);
+}
+
+- (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
+  
+  
+  UIViewController * ctrl = [[UIViewController alloc] init];
+  
+  WKWebView * wv = [[WKWebView alloc] initWithFrame:CGRectMake(10, 10, 400, 400) configuration:configuration];
+  [ctrl.view addSubview:wv];
+  
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp showViewController:ctrl sender:self];
+  
+  return wv;
+//  NSURL *url = navigationAction.request.URL;
+//
+//  [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
+//
+//  }];
+//  return nil;
+}
+
+//- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
+//  completionHandler();
+//}
+
+//- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
+//  decisionHandler(WKNavigationActionPolicyAllow);
+//}
+
 - (NSString *)title {
   return _webView.title;
 }
 
+
+- (void)_pan: (UIPanGestureRecognizer *)rec {
+
+  _touchID = 12345;
+  if (rec.state == UIGestureRecognizerStateBegan) {
+//    _touchID = (_touchID + 1 ) % 10000000;
+//    [_touchesArray addObject:@(_touchID)];
+
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchstart\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+
+    return;
+  }
+  if (rec.state == UIGestureRecognizerStateChanged) {
+    CGPoint delta = [rec translationInView:rec.view];
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchmove\", %@, %@,  %@,  %@,  %@, %@);",  @(_touchID), @(point.x), @(point.y), @(delta.x), @(delta.y), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+    return;
+  }
+
+  if (rec.state == UIGestureRecognizerStateEnded) {
+    CGPoint delta = [rec translationInView:rec.view];
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchend\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(delta.x), @(delta.y), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+    return;
+  }
+
+  if (rec.state == UIGestureRecognizerStateCancelled) {
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchcancel\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+  }
+}
+
+- (void)_pan2: (UITapGestureRecognizer *)rec {
+
+  _touchID = 12345;
+  if (rec.state == UIGestureRecognizerStateBegan) {
+//    _touchID = (_touchID + 1 ) % 10000000;
+//    [_touchesArray addObject:@(_touchID)];
+
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchstart\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+
+    return;
+  }
+  if (rec.state == UIGestureRecognizerStateChanged) {
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchmove\", %@, %@,  %@,  %@,  %@, %@);",  @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+    return;
+  }
+
+  if (rec.state == UIGestureRecognizerStateEnded) {
+    CGPoint point = [rec locationInView:rec.view];
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchstart\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+
+    script = [NSString stringWithFormat:@"term_touch(\"touchend\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+    return;
+  }
+
+  if (rec.state == UIGestureRecognizerStateCancelled) {
+    CGPoint point = [rec locationInView:rec.view];
+
+    NSString *script = [NSString stringWithFormat:@"term_touch(\"touchcancel\", %@, %@,  %@,  %@,  %@, %@);", @(_touchID), @(point.x), @(point.y), @(0), @(0), @(rec.modifierFlags)];
+
+    [_browserView evaluateJavaScript:script completionHandler:nil];
+  }
+}
+
+                         
 - (void)loadWith:(MCPParams *)params;
 {
   [_webView.configuration.userContentController addUserScript:[self _termInitScriptWith:params]];

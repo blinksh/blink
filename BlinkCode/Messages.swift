@@ -34,6 +34,7 @@ import Foundation
 
 
 enum CodeFileSystemAction: String, Codable {
+  case getRoot
   case stat
   case readDirectory
   case readFile
@@ -45,6 +46,18 @@ enum CodeFileSystemAction: String, Codable {
 
 struct BaseFileSystemRequest: Codable {
   let op: CodeFileSystemAction
+}
+
+struct GetRootRequest: Codable {
+  let op: CodeFileSystemAction
+  let token: Int
+  let version: Int
+  
+  init(token: Int, version: Int) {
+    self.op = .getRoot
+    self.token = token
+    self.version = version
+  }
 }
 
 struct StatFileSystemRequest: Codable {

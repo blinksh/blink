@@ -74,6 +74,7 @@ extern NSString * TermViewReadyNotificationKey;
 @property (nonatomic, readonly) BOOL isReady;
 @property (nonatomic, readonly) CGRect selectionRect;
 @property (nonatomic, readonly) SmarterTermInput *webView;
+@property (nonatomic, readonly) SmarterTermInput *browserView;
 
 
 - (CGRect)webViewFrame;
@@ -105,6 +106,7 @@ extern NSString * TermViewReadyNotificationKey;
 - (void)writeB64:(NSData *)data;
 - (void)displayInput:(NSString *)input;
 - (void)apiResponse:(NSString *)name response:(NSString *)response;
+- (void)addBrowserWebView:(NSURL *)url agent: (NSString *)agent;
 
 - (void)modifySideOfSelection;
 - (void)modifySelectionInDirection:(NSString *)direction granularity:(NSString *)granularity;

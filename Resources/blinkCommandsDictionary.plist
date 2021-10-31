@@ -37,13 +37,13 @@
 		<string></string>
 		<string>no</string>
 	</array>
-  <key>facecam</key>
-  <array>
-    <string>MAIN</string>
-    <string>facecam_main</string>
-    <string></string>
-    <string>no</string>
-  </array>
+	<key>facecam</key>
+	<array>
+		<string>MAIN</string>
+		<string>facecam_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>cssh</key>
 	<array>
 		<string>MAIN</string>
@@ -146,6 +146,13 @@
 	<array>
 		<string>MAIN</string>
 		<string>blink_openurl_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
+	<key>code</key>
+	<array>
+		<string>MAIN</string>
+		<string>code_main</string>
 		<string></string>
 		<string>no</string>
 	</array>

@@ -122,8 +122,8 @@ let pemCert = """
 extension String: Error {}
 
 public class WebSocketServer {
-  typealias Response = (Data?, Data?)
-  typealias ResponsePublisher = AnyPublisher<Response, Error>
+  public typealias Response = (Data?, Data?)
+  public typealias ResponsePublisher = AnyPublisher<Response, Error>
   var delegate: CodeSocketDelegate? = nil
   var cancellables = [UInt32:AnyCancellable]()
   let queue = DispatchQueue(label: "WebSocketServer")
@@ -173,9 +173,9 @@ public class WebSocketServer {
     }
     if let identity = sec_identity_create(secIdentity) {
       sec_protocol_options_set_min_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
-      sec_protocol_options_set_max_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv13)
+      sec_protocol_options_set_max_tls_protocol_version(tlsOptions.securityProtocolOptions, .TLSv12)
       sec_protocol_options_set_local_identity(tlsOptions.securityProtocolOptions, identity)
-      //sec_protocol_options_append_tls_ciphersuite( tlsOptions.securityProtocolOptions, tls_ciphersuite_t(rawValue: UInt16(TLS_AES_128_GCM_SHA256))! )
+//      sec_protocol_options_append_tls_ciphersuite( tlsOptions.securityProtocolOptions, tls_ciphersuite_t(rawValue: UInt16(TLS_AES_128_GCM_SHA256))! )
     }
     
     return tlsOptions

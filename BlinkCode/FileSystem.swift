@@ -4,13 +4,30 @@ import Network
 
 import BlinkFiles
 
+struct MountEntry: Codable {
+  let name: String
+  let root: String
+}
 
-class CodeFileSystemService: CodeSocketDelegate {
+
+public class CodeFileSystemService: CodeSocketDelegate {
   let server: WebSocketServer
+  
+  let port: UInt16
+  var tokens: [Int: MountEntry] = [:]
+  
+  public func registerMount(token: Int, name: String, root: String) {
+      tokens[token] = MountEntry(name: name, root: root)
+  }
 
-  init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
+  public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
+    self.port = port.rawValue
     self.server = try WebSocketServer(listenOn: port, tls: tls)
     self.server.delegate = self
+  }
+  
+  func getRoot(token: Int, version: Int) -> WebSocketServer.ResponsePublisher {
+    .just((nil, nil)).eraseToAnyPublisher()
   }
 
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
@@ -23,6 +40,9 @@ class CodeFileSystemService: CodeSocketDelegate {
 
     do {
       switch request.op {
+      case .getRoot:
+        let msg: GetRootRequest = try decode(encodedData)
+        return getRoot(token: msg.token, version: msg.version)
       case .stat:
         let msg: StatFileSystemRequest = try decode(encodedData)
         return fs.stat(msg.uri)
