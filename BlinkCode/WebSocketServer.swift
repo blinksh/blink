@@ -135,6 +135,8 @@ public class WebSocketServer {
   }
   
   func startListening(_ port: NWEndpoint.Port, _ tls: Bool) throws {
+    
+  
     let parameters: NWParameters
     if tls {
       parameters = NWParameters(tls: try tlsOptions())

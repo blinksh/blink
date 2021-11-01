@@ -82,13 +82,14 @@ struct Code: NonStdIOCommand {
     print(pwd)
     
     let fp = SharedFP.startedFP(port: 50000)
-    fp.service.registerMount(token: 1, name: "Test", root: "blink-fs:" + pwd)
+    let port = fp.service.port
+    let token = fp.service.registerMount(name: "Test", root: "blink-fs:" + pwd)
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     DispatchQueue.main.async {
       let url = URL(string: "https://vscode.dev")!
 ////      var url = URL(string: "https://github.com/codespaces")!
 //
-      let agent = "BlinkSH/15 (wss;\(50000);\(1))"
+      let agent = "BlinkSH/15 (wss;\(port);\(token))"
       session.device.view.addBrowserWebView(url, agent: agent)
     }
   }

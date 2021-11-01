@@ -13,11 +13,14 @@ struct MountEntry: Codable {
 public class CodeFileSystemService: CodeSocketDelegate {
   let server: WebSocketServer
   
-  let port: UInt16
+  public let port: UInt16
   var tokens: [Int: MountEntry] = [:]
+  var tokenIdx = 0;
   
-  public func registerMount(token: Int, name: String, root: String) {
-      tokens[token] = MountEntry(name: name, root: root)
+  public func registerMount(name: String, root: String) -> Int {
+    tokenIdx += 1
+    tokens[tokenIdx] = MountEntry(name: name, root: root)
+    return tokenIdx
   }
 
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
