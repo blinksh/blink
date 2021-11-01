@@ -303,7 +303,7 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   public func wstat(_ attrs: FileAttributes) -> AnyPublisher<Bool, Error> {
-    // TODO Move
+    // TODO Move -> Rename
     return connection().tryMap { sftp in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }

@@ -97,6 +97,13 @@
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
 		BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCED26D9802900054338 /* TranslatorFactory.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
+		BD67FC80272DF19B00C1EE75 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */; };
+		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
+		BD67FC82272DF22700C1EE75 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
+		BD67FC86272E3FF800C1EE75 /* SSH.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
+		BD67FC8A272E401000C1EE75 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
@@ -455,6 +462,20 @@
 			remoteGlobalIDString = 07FABBAE25C9AECF00E1CC2C;
 			remoteInfo = BlinkFiles;
 		};
+		BD67FC83272DF22700C1EE75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDCB715D268E1577007D7047;
+			remoteInfo = BlinkConfig;
+		};
+		BD67FC87272E3FF800C1EE75 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 07FABB8325C9AEC000E1CC2C;
+			remoteInfo = SSH;
+		};
 		BD9EA1D12718E19000874007 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
@@ -588,6 +609,9 @@
 			dstSubfolderSpec = 10;
 			files = (
 				BDBFA3242728927000C77798 /* BlinkFiles.framework in Embed Frameworks */,
+				BD67FC86272E3FF800C1EE75 /* SSH.framework in Embed Frameworks */,
+				BD67FC8A272E401000C1EE75 /* openssl.xcframework in Embed Frameworks */,
+				BD67FC82272DF22700C1EE75 /* BlinkConfig.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -732,6 +756,7 @@
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
 		BD44DCED26D9802900054338 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
+		BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
@@ -1075,6 +1100,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */,
+				BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */,
+				BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */,
+				BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1537,6 +1565,7 @@
 		BDBFA3062728914F00C77798 /* BlinkCode */ = {
 			isa = PBXGroup;
 			children = (
+				BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */,
 				BDBFA3202728925C00C77798 /* FileSystem.swift */,
 				BDBFA31F2728925C00C77798 /* WebSocketServer.swift */,
 				BDBFA3072728914F00C77798 /* BlinkCode.h */,
@@ -2143,6 +2172,8 @@
 			);
 			dependencies = (
 				BDBFA3262728927000C77798 /* PBXTargetDependency */,
+				BD67FC84272DF22700C1EE75 /* PBXTargetDependency */,
+				BD67FC88272E3FF800C1EE75 /* PBXTargetDependency */,
 			);
 			name = BlinkCode;
 			productName = BlinkCode;
@@ -2679,6 +2710,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */,
+				BD67FC80272DF19B00C1EE75 /* TranslatorFactory.swift in Sources */,
 				BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */,
 				BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */,
 			);
@@ -2966,6 +2998,16 @@
 			isa = PBXTargetDependency;
 			target = 07FABBAE25C9AECF00E1CC2C /* BlinkFiles */;
 			targetProxy = 98E7D0E6263971C000758CF9 /* PBXContainerItemProxy */;
+		};
+		BD67FC84272DF22700C1EE75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDCB715D268E1577007D7047 /* BlinkConfig */;
+			targetProxy = BD67FC83272DF22700C1EE75 /* PBXContainerItemProxy */;
+		};
+		BD67FC88272E3FF800C1EE75 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 07FABB8325C9AEC000E1CC2C /* SSH */;
+			targetProxy = BD67FC87272E3FF800C1EE75 /* PBXContainerItemProxy */;
 		};
 		BD9EA1D22718E19000874007 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

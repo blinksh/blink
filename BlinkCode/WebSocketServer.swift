@@ -119,7 +119,6 @@ let pemCert = """
   -----END CERTIFICATE-----
   """
 
-extension String: Error {}
 
 public class WebSocketServer {
   public typealias Response = (Data?, Data?)

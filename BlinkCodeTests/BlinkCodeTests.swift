@@ -60,7 +60,7 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let req = StatFileSystemRequest(uri: "/Users/carloscabanero/build.token")
+    let req = StatFileSystemRequest(uri: "blink-fs:local:/Users/carloscabanero/build.token")
     
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          test: self)
@@ -80,7 +80,7 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let req = ReadDirectoryFileSystemRequest(uri: "/Users/carloscabanero")
+    let req = ReadDirectoryFileSystemRequest(uri: "blink-fs:local:/Users/carloscabanero")
     
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req, test: self)
     
@@ -101,8 +101,9 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let filePath = "/Users/carloscabanero/createtest"
-    let req = WriteFileSystemRequest(uri: filePath, options: .init(overwrite: true, create: false))
+    let uri = URI("blink-fs:local:/Users/carloscabanero/createtest")
+    let filePath = uri.rootPath.filesAtPath
+    let req = WriteFileSystemRequest(uri: uri, options: .init(overwrite: true, create: false))
     let content = "Hello world".data(using: .utf8)
 
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
@@ -120,8 +121,9 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let path = "/Users/carloscabanero/newdir"
-    let req  = CreateDirectoryFileSystemRequest(uri: path)
+    let uri = URI("blink-fs:local:/Users/carloscabanero/newdir")
+    let path = uri.rootPath.filesAtPath
+    let req  = CreateDirectoryFileSystemRequest(uri: uri)
 
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          binaryData: nil,
@@ -139,10 +141,12 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let path = "/Users/carloscabanero/newdir"
-    let newPath = "/Users/carloscabanero/newpathdir"
-    let req  = RenameFileSystemRequest(oldUri: path,
-                                       newUri: newPath,
+    let uri     = URI("blink-fs:local:/Users/carloscabanero/newdir")
+    let path    = uri.rootPath.filesAtPath
+    let newUri  = URI("blink-fs:local:/Users/carloscabanero/newpathdir")
+    let newPath = newUri.rootPath.filesAtPath
+    let req  = RenameFileSystemRequest(oldUri: uri,
+                                       newUri: newUri,
                                        options: .init(overwrite:false))
 
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
@@ -162,9 +166,9 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let path = "/Users/carloscabanero/newdir"
+    let path = "blink-fs:local:/Users/carloscabanero/newdir"
     let req  = DeleteFileSystemRequest(uri: path,
-                                       options: .init(recursive: false))
+                                       options: .init(recursive: true))
 
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          binaryData: nil,
