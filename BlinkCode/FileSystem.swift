@@ -94,7 +94,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
     }
     
     switch(rootPath.protocolIdentifier) {
-    case "/sftp":
+    case "blinksftp":
       let builder = TranslatorFactories.sftp
       var thread: Thread!
       var runLoop: RunLoop? = nil
@@ -122,7 +122,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
 
       return CodeFileSystem(translator, uri: uri)
 
-    case "/local":
+    case "blinkfs":
       // The local one does not need to be saved.
       return CodeFileSystem(TranslatorFactories.local.build(rootPath), uri: uri)
     default:

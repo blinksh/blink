@@ -43,7 +43,7 @@ class BlinkCodeTests: XCTestCase {
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     OperationId = 0
-    service = try CodeFileSystemService(listenOn: 8000, tls: false)
+    service = try CodeFileSystemService(listenOn: 10015, tls: false)
   }
 
   override func tearDownWithError() throws {
@@ -60,7 +60,7 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let req = StatFileSystemRequest(uri: URI("blink-fs:local:/Users/carloscabanero/build.token"))
+    let req = StatFileSystemRequest(uri: URI("blink-fs:/Users/carloscabanero/build.token"))
     
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          test: self)

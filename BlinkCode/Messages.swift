@@ -144,24 +144,23 @@ struct URI {
   let rootPath: RootPath
 }
 
+// <protocol>://<host>/<path>
+// <protocol>:/<path>
 extension URI: Codable {
   init(from decoder: Decoder) throws {
-    guard let str = try String(from: decoder).removingPercentEncoding else {
-      throw "Decoding error"
-    }
-//    var container = try decoder.unkeyedContainer()
-//    let str = try container.decode(String.self)
-    guard str.components(separatedBy: ":").count >= 3 else {
-      throw "Decoding error"
-    }
-    let path = str.replacingOccurrences(of: "blink-fs:", with: "")
+    let str = try String(from: decoder)
     
-    self.init(rootPath: RootPath(path))
+    guard let url = URL(string: str)
+    else {
+      throw "Not a valid URI"
+    }
+
+    self.init(rootPath: RootPath(url))
   }
   
   func encode(to encoder: Encoder) throws {
     //var container = encoder.unkeyedContainer()
-    let output = "blink-fs:" + rootPath.fullPath
+    let output = rootPath.url.absoluteString
     try output.encode(to: encoder)
   }
 }
