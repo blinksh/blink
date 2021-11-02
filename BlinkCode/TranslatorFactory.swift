@@ -43,12 +43,14 @@ extension String: Error {}
 
 
 public struct RootPath {
+  let fullPath: String
   let protocolIdentifier: String
   let host: String?
   let filesAtPath: String
 
   // rootPath: ssh:host:root_folder
   init(_ rootPath: String) {
+    self.fullPath = rootPath
     let components = rootPath.split(separator: ":")
 
     let protocolIdentifier = String(components[0])

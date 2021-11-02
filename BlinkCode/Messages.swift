@@ -97,7 +97,7 @@ struct WriteFileSystemRequest: Codable {
   let uri: URI
   let options: FileSystemOperationOptions
 
-  init(uri: String, options: FileSystemOperationOptions) {
+  init(uri: URI, options: FileSystemOperationOptions) {
     self.op = .writeFile
     self.uri = uri
     self.options = options
@@ -110,7 +110,7 @@ struct RenameFileSystemRequest: Codable {
   let newUri: URI
   let options: FileSystemOperationOptions
   
-  init(oldUri: String, newUri: String, options: FileSystemOperationOptions) {
+  init(oldUri: URI, newUri: URI, options: FileSystemOperationOptions) {
     self.op = .rename
     self.oldUri = oldUri
     self.newUri = newUri
@@ -123,7 +123,7 @@ struct DeleteFileSystemRequest: Codable {
   let uri: URI
   let options: FileSystemOperationOptions
   
-  init(uri: String, options: FileSystemOperationOptions) {
+  init(uri: URI, options: FileSystemOperationOptions) {
     self.op = .delete
     self.uri = uri
     self.options = options
@@ -140,10 +140,30 @@ struct CreateDirectoryFileSystemRequest: Codable {
   }
 }
 
-typealias URI = String
+struct URI {
+  let rootPath: RootPath
+}
 
-extension URI {
-  var path: String { self.replacingOccurrences(of: "blink-fs:", with: "") }
+extension URI: Codable {
+  init(from decoder: Decoder) throws {
+    guard let str = try String(from: decoder).removingPercentEncoding else {
+      throw "Decoding error"
+    }
+//    var container = try decoder.unkeyedContainer()
+//    let str = try container.decode(String.self)
+    guard str.components(separatedBy: ":").count >= 3 else {
+      throw "Decoding error"
+    }
+    let path = str.replacingOccurrences(of: "blink-fs:", with: "")
+    
+    self.init(rootPath: RootPath(path))
+  }
+  
+  func encode(to encoder: Encoder) throws {
+    //var container = encoder.unkeyedContainer()
+    let output = "blink-fs:" + rootPath.fullPath
+    try output.encode(to: encoder)
+  }
 }
 
 struct FileSystemOperationOptions: Codable {
@@ -180,15 +200,12 @@ struct DirectoryTuple: Codable {
 }
 
 enum CodeFileSystemError: Error, Encodable {
-  case badRequest
   case fileExists(uri: URI)
   case fileNotFound(uri: URI)
   case noPermissions(uri: URI)
 
   var info: (String, URI) {
     switch self {
-    case .badRequest:
-      return ("BadRequest", "Bad request error")
     case .fileExists(let uri):
       return ("FileExists", uri)
     case .fileNotFound(let uri):

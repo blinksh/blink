@@ -83,7 +83,7 @@ struct Code: NonStdIOCommand {
     
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
-    let token = fp.service.registerMount(name: "Test", root: "blink-fs:" + pwd)
+    let token = fp.service.registerMount(name: "Test", root: "blink-fs:local:" + pwd)
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     DispatchQueue.main.async {
       let url = URL(string: "https://vscode.dev")!

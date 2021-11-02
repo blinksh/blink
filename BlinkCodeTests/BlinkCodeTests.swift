@@ -43,7 +43,7 @@ class BlinkCodeTests: XCTestCase {
   override func setUpWithError() throws {
     // Put setup code here. This method is called before the invocation of each test method in the class.
     OperationId = 0
-    service = try CodeFileSystemService(listenOn: 10015, tls: false)
+    service = try CodeFileSystemService(listenOn: 8000, tls: false)
   }
 
   override func tearDownWithError() throws {
@@ -60,7 +60,7 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let req = StatFileSystemRequest(uri: "blink-fs:local:/Users/carloscabanero/build.token")
+    let req = StatFileSystemRequest(uri: URI("blink-fs:local:/Users/carloscabanero/build.token"))
     
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
                                                                          test: self)
@@ -80,7 +80,7 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let req = ReadDirectoryFileSystemRequest(uri: "blink-fs:local:/Users/carloscabanero")
+    let req = ReadDirectoryFileSystemRequest(uri: URI("blink-fs:local:/Users/carloscabanero"))
     
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req, test: self)
     
@@ -166,8 +166,9 @@ class BlinkCodeTests: XCTestCase {
     let task = URLSession.shared.webSocketTask(with: ServiceURL)
     task.resume()
 
-    let path = "blink-fs:local:/Users/carloscabanero/newdir"
-    let req  = DeleteFileSystemRequest(uri: path,
+    let uri = URI("blink-fs:local:/Users/carloscabanero/newdir")
+    let path = uri.rootPath.filesAtPath
+    let req  = DeleteFileSystemRequest(uri: uri,
                                        options: .init(recursive: true))
 
     let (response, responseContent) = try task.sendCodeFileSystemRequest(req,
@@ -235,5 +236,13 @@ extension URLSessionWebSocketTask {
     test.wait(for: [expectation], timeout: 5.0)
 
     return (responseEncodedData, responseBinaryData)
+  }
+}
+
+extension URI {
+  // The URI always comes from decoding messages, so we add a helper to simulate that.
+  init(_ str: String) {
+    let out = try! JSONEncoder().encode(str)
+    self = try! JSONDecoder().decode(URI.self, from: out)
   }
 }

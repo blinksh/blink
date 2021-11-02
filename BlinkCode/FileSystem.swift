@@ -45,7 +45,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
     guard let request = try? JSONDecoder().decode(BaseFileSystemRequest.self, from: encodedData) else {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
-      return .fail(error: CodeFileSystemError.badRequest)
+      return .fail(error: "Bad request")
     }
 
     do {
@@ -80,12 +80,13 @@ public class CodeFileSystemService: CodeSocketDelegate {
       }
     } catch {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
-      return .fail(error: CodeFileSystemError.badRequest)
+      print("Error \(error)")
+      return .fail(error: "Bad request")
     }
   }
 
   private func fileSystem(for uri: URI) -> CodeFileSystem {
-    let rootPath = RootPath(from: uri)
+    let rootPath = uri.rootPath
 
     if let (t, _) = translators[rootPath.protocolIdentifier],
        t.isConnected {
@@ -93,7 +94,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
     }
     
     switch(rootPath.protocolIdentifier) {
-    case "sftp":
+    case "/sftp":
       let builder = TranslatorFactories.sftp
       var thread: Thread!
       var runLoop: RunLoop? = nil
@@ -121,7 +122,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
 
       return CodeFileSystem(translator, uri: uri)
 
-    case "local":
+    case "/local":
       // The local one does not need to be saved.
       return CodeFileSystem(TranslatorFactories.local.build(rootPath), uri: uri)
     default:
@@ -149,7 +150,6 @@ public class CodeFileSystemService: CodeSocketDelegate {
 class CodeFileSystem {
   private let translator: AnyPublisher<Translator, Error>
   private let uri: URI
-  private var path: String { uri.rootPath.filesAtPath }
   
   init(_ t: AnyPublisher<Translator, Error>, uri: URI) {
     self.translator = t
@@ -157,11 +157,12 @@ class CodeFileSystem {
   }
 
   func stat() -> WebSocketServer.ResponsePublisher {
+    let path = self.uri.rootPath.filesAtPath
     print("stat \(path)")
 
     return translator
       .flatMap {
-        $0.cloneWalkTo(self.path)
+        $0.cloneWalkTo(path)
           .mapError { _ in
             return CodeFileSystemError.fileNotFound(uri: self.uri)
           }
@@ -186,10 +187,11 @@ class CodeFileSystem {
   }
 
   func readDirectory() -> WebSocketServer.ResponsePublisher {
-    print("readDirectory \(self.path)")
+    let path = self.uri.rootPath.filesAtPath
+    print("readDirectory \(path)")
 
     return translator
-      .flatMap { $0.cloneWalkTo(self.path) }
+      .flatMap { $0.cloneWalkTo(path) }
       .flatMap { $0.directoryFilesAndAttributes() }
       .map { filesAttributes -> [DirectoryTuple] in
         filesAttributes.map {
@@ -202,9 +204,14 @@ class CodeFileSystem {
   }
 
   func readFile() -> WebSocketServer.ResponsePublisher {
-    print("readFile \(self.path)")
+    let path = self.uri.rootPath.filesAtPath
+    print("readFile \(path)")
+    
     return translator
-      .flatMap { $0.cloneWalkTo(self.uri) }
+      .flatMap {
+        $0.cloneWalkTo(path)
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri: self.uri) }
+      }
       .flatMap { $0.open(flags: O_RDONLY) }
       .flatMap { file -> AnyPublisher<DispatchData, Error> in
         var content = DispatchData.empty
@@ -227,7 +234,9 @@ class CodeFileSystem {
   }
 
   func writeFile(options: FileSystemOperationOptions, content: Data) -> WebSocketServer.ResponsePublisher {
+    let path = self.uri.rootPath.filesAtPath
     print("writeFile \(path)")
+    
     let parentDir = (path as NSString).deletingLastPathComponent
     let fileName  = (path as NSString).lastPathComponent
 
@@ -272,14 +281,17 @@ class CodeFileSystem {
   }
 
   func createDirectory() -> WebSocketServer.ResponsePublisher {
+    let path = self.uri.rootPath.filesAtPath
     print("createDirectory \(path)")
-    let parent  = (path as NSString).deletingLastPathComponent
+    
+    let parentUri = URI(rootPath: self.uri.rootPath.parent)
+    let parent  = parentUri.rootPath.filesAtPath
     let dirName = (path as NSString).lastPathComponent
 
     return translator
       .flatMap {
         $0.cloneWalkTo(parent)
-          .mapError { _ in CodeFileSystemError.fileNotFound(uri:self.uri) }
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri: parentUri) }
       }
       .flatMap { parentT -> AnyPublisher<Translator, Error> in
         parentT.cloneWalkTo(dirName)
@@ -290,7 +302,7 @@ class CodeFileSystem {
             }
             return parentT
               .mkdir(name: dirName, mode: S_IRWXU | S_IRWXG | S_IRWXO)
-              .mapError { _ in return CodeFileSystemError.noPermissions(uri: parent) }
+              .mapError { _ in return CodeFileSystemError.noPermissions(uri: parentUri) }
               .eraseToAnyPublisher()
           }.eraseToAnyPublisher()
       }
@@ -299,24 +311,25 @@ class CodeFileSystem {
   }
 
   func rename(newUri: URI, options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
-    print("rename \(self.path)")
+    let path = self.uri.rootPath.filesAtPath
+    print("rename \(path)")
     
     // Walk to oldURI
     // Walk to new parent
     // Walk to file and apply overwrite
     // Stat to new location. Or fail.
-    let newParent = (newUri.rootPath.filesAtPath as NSString).deletingLastPathComponent
+    let newParent = newUri.rootPath.parent.filesAtPath
     let newPath   = newUri.rootPath.filesAtPath
     
     return translator
       .flatMap {
-        $0.cloneWalkTo(self.path)
+        $0.cloneWalkTo(path)
           .mapError { _ in CodeFileSystemError.fileNotFound(uri: self.uri) }
       }
       .flatMap { oldT in
         self.translator.flatMap {
             $0.cloneWalkTo(newParent)
-            .mapError { _ in CodeFileSystemError.fileNotFound(uri: newUri) }
+            .mapError { _ in CodeFileSystemError.fileNotFound(uri: URI(rootPath: newUri.rootPath.parent)) }
           }
         // Will take the easy route for now.
         // We try the stat, and will figure out if in case it is a file, we have to
@@ -328,6 +341,9 @@ class CodeFileSystem {
   }
 
   func delete(options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
+    let path = self.uri.rootPath.filesAtPath
+    print("rename \(path)")
+    
     let recursive = options.recursive ?? false
 
     func delete(_ translators: [Translator]) -> AnyPublisher<Void, Error> {
@@ -370,8 +386,8 @@ class CodeFileSystem {
 
     return translator
       .flatMap {
-        $0.cloneWalkTo(self.path)
-          .mapError { _ in CodeFileSystemError.fileNotFound(uri: self.path) }
+        $0.cloneWalkTo(path)
+          .mapError { _ in CodeFileSystemError.fileNotFound(uri: self.uri) }
           .flatMap { delete([$0]) }
       }
       .map { _ in (nil, nil) }
@@ -386,12 +402,12 @@ extension CodeFileSystemService {
   }
 }
 
-extension URI {
-  var rootPath: RootPath { RootPath(from: self) }
-}
-
 extension RootPath {
-  init(from uri: URI) {
-    self.init(uri.path)
+  public var parent: RootPath {
+    RootPath([protocolIdentifier,
+              host,
+              (filesAtPath as NSString).deletingLastPathComponent]
+              .compactMap { $0 }
+              .joined(separator: ":"))
   }
 }
