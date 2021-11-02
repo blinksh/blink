@@ -196,7 +196,9 @@ class CodeFileSystem {
       .flatMap { $0.cloneWalkTo(path) }
       .flatMap { $0.directoryFilesAndAttributes() }
       .map { filesAttributes -> [DirectoryTuple] in
-        filesAttributes.map {
+        filesAttributes
+          .filter { ($0[.name] as! String != "." && $0[.name] as! String != "..") }
+          .map {
           DirectoryTuple(name: $0[.name] as! String,
                          type: FileType(posixType: $0[.type] as? FileAttributeType))
         }

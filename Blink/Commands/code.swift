@@ -64,46 +64,62 @@ struct Code: NonStdIOCommand {
   var io = NonStdIO.standart
  
   @Argument(
-    help: .init(
-      "If a <command> is specified, it is executed on the container instead of a login shell",
-      valueName: "path"
-    )
+    help: "Path to connect to",
+    transform: { try FileLocationPath($0) }
   )
-  var path: String?
+  var path: FileLocationPath?
   
-  func run() throws {
-    let fm = FileManager.default
-    var pwd = fm.currentDirectoryPath
-    if let path = path {
-      var p = URL(fileURLWithPath: pwd)
-      p.appendPathComponent(path)
-      pwd = p.absoluteURL.path
-    }
- 
+  mutating func run() throws {
+    // You usually start at the ~, with that format.
+    // Problem is we need to pass that as a path to code, but we do not know
+    // what the canonical route will be.
+    // TODO Idea is to resolve and build the path here.
+    // The connections then will start from here, instead of from the CodeFileSystem.
+    // But that one will have to restart a connection if it is lost anyway.
+
     
-    pwd = (pwd as NSString).standardizingPath
-    
+//    let fm = FileManager.default
+//    var pwd = fm.currentDirectoryPath
+//    if let path = path {
+//      var p = URL(fileURLWithPath: pwd)
+//      p.appendPathComponent(path)
+//      pwd = p.absoluteURL.path
+//    }
+//
+//
+//    pwd = (pwd as NSString).standardizingPath
+//
     var openFile: String? = nil
     var newFile: String? = nil
-    var isDir: ObjCBool = false
+//    var isDir: ObjCBool = false
+//
+//    if fm.fileExists(atPath: pwd, isDirectory: &isDir) {
+//      if isDir.boolValue {
+//
+//      } else {
+//        openFile = "blinkfs:" + pwd
+//        pwd = (pwd as NSString).deletingLastPathComponent
+//      }
+//    } else {
+//      newFile = "blinkfs:" + pwd
+//      pwd = (pwd as NSString).deletingLastPathComponent
+//    }
     
-    if fm.fileExists(atPath: pwd, isDirectory: &isDir) {
-      if isDir.boolValue {
-        
-      } else {
-        openFile = "blinkfs:" + pwd
-        pwd = (pwd as NSString).deletingLastPathComponent
-      }
-    } else {
-      newFile = "blinkfs:" + pwd
-      pwd = (pwd as NSString).deletingLastPathComponent
-    }
-    
-    print(pwd)
+//    print(pwd)
     
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
-    let token = fp.service.registerMount(name: "Test", root: "blinkfs:" + pwd, newFile: newFile, openFile: openFile)
+
+    // TODO Maybe resolve if not absolute
+    // Build a rootPath
+    if path == nil {
+      path = try FileLocationPath(".")
+    }
+    
+    guard let rootURI = path!.codeFileSystemURI else {
+      throw CommandError(message: "Could not parse path.")
+    }
+    let token = fp.service.registerMount(name: "Test", root: rootURI.absoluteString, newFile: newFile, openFile: openFile)
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     DispatchQueue.main.async {
       let url = URL(string: "https://vscode.dev")!
@@ -126,4 +142,30 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   io.err = OutputStream(file: thread_stderr)
   
   return Code.main(Array(argv.args(count: argc)[1...]), io: io)
+}
+
+extension FileLocationPath {
+  // blinkfs:/path
+  // blinksftp://user@host:port/path
+  fileprivate var codeFileSystemURI: URL? {
+    if proto == .local {
+      return URL(string: uriProtocolIdentifier + filePath)
+    } else {
+      // "/user@host#port" -> "/user@host:port"
+      guard let hostPath = hostPath else {
+        return nil
+      }
+      let host = "/\(hostPath.replacingOccurrences(of: "#", with: ":"))"
+      return URL(string: uriProtocolIdentifier + host)?.appendingPathComponent(filePath)
+    }
+  }
+  
+  fileprivate var uriProtocolIdentifier: String {
+    switch proto {
+    case .local:
+      return "blinkfs:"
+    default:
+      return "blinksftp:/"
+    }
+  }
 }

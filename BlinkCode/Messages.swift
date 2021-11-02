@@ -249,6 +249,14 @@ enum FileType: Int, Codable {
   }
 }
 
+//function toFileType(stat: fs.Stats): FileType {
+//
+//    if (stat.isSymbolicLink()) {
+//        return FileType.SymbolicLink | (stat.isDirectory() ? FileType.Directory : FileType.File);
+//    }
+//
+//    return stat.isFile() ? FileType.File : stat.isDirectory() ? FileType.Directory : FileType.Unknown;
+//}
 struct FileStat: Codable {
   let type: FileType
   let ctime: Int?

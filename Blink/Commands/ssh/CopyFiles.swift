@@ -129,7 +129,7 @@ class FileLocationPath {
       }
       self.proto = BlinkFilesProtocols(rawValue: proto)
     default:
-      throw ArgumentParser.ValidationError("Path format can only have three components /<protocol>:<host>:<path>")
+      throw ArgumentParser.ValidationError("Path format can only have three components <protocol>:<host>:<path>")
     }
   }
 }
