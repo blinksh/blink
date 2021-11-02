@@ -72,18 +72,38 @@ struct Code: NonStdIOCommand {
   var path: String?
   
   func run() throws {
-    var pwd = FileManager.default.currentDirectoryPath
+    let fm = FileManager.default
+    var pwd = fm.currentDirectoryPath
     if let path = path {
       var p = URL(fileURLWithPath: pwd)
       p.appendPathComponent(path)
       pwd = p.absoluteURL.path
     }
+ 
+    
     pwd = (pwd as NSString).standardizingPath
+    
+    var openFile: String? = nil
+    var newFile: String? = nil
+    var isDir: ObjCBool = false
+    
+    if fm.fileExists(atPath: pwd, isDirectory: &isDir) {
+      if isDir.boolValue {
+        
+      } else {
+        openFile = "blinkfs:" + pwd
+        pwd = (pwd as NSString).deletingLastPathComponent
+      }
+    } else {
+      newFile = "blinkfs:" + pwd
+      pwd = (pwd as NSString).deletingLastPathComponent
+    }
+    
     print(pwd)
     
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
-    let token = fp.service.registerMount(name: "Test", root: "blinkfs:" + pwd)
+    let token = fp.service.registerMount(name: "Test", root: "blinkfs:" + pwd, newFile: newFile, openFile: openFile)
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     DispatchQueue.main.async {
       let url = URL(string: "https://vscode.dev")!
