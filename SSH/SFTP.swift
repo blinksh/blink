@@ -155,16 +155,21 @@ public class SFTPClient : BlinkFiles.Translator {
   public func walkTo(_ path: String) -> AnyPublisher<Translator, Error> {
     // All paths on SFTP, even Windows ones, must start with a slash (/c:/whatever/)
     var absPath = path
-    if !absPath.starts(with: "/") {
-      if absPath.starts(with: "~") {
-        absPath.removeFirst(absPath.starts(with: "~/") ? 2 : 1)
-        absPath = NSString(string: self.rootPath).appendingPathComponent(absPath)
-      } else {
-        // NSString performs a cleanup of the path as well.
-        absPath = NSString(string: self.path).appendingPathComponent(path)
-      }
+
+    // First cleanup the ~, and walk from rootPath
+    if absPath == "~" {
+      absPath = String(self.rootPath)
+    } else if let range = absPath.range(of: "~/", options: [.backwards]) {
+      absPath.removeSubrange(absPath.startIndex..<range.upperBound)
+      absPath = NSString(string: self.rootPath).appendingPathComponent(absPath)
     }
-    
+
+    // For a relative walk, append to current path.
+    if !absPath.starts(with: "/") {
+      // NSString performs a cleanup of the path as well.
+      absPath = NSString(string: self.path).appendingPathComponent(path)
+    }
+
     return connection().tryMap { sftp -> SFTPClient in
       let (canonicalPath, type) = try self.canonicalize(absPath)
       
