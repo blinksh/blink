@@ -149,7 +149,8 @@ extension FileLocationPath {
   // blinksftp://user@host:port/path
   fileprivate var codeFileSystemURI: URL? {
     if proto == .local {
-      return URL(string: uriProtocolIdentifier + filePath)
+      return URL(string: uriProtocolIdentifier +
+                 filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
     } else {
       // "/user@host#port" -> "/user@host:port"
       guard let hostPath = hostPath else {
