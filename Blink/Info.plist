@@ -197,6 +197,12 @@
 			<string>blink</string>
 		</dict>
 	</array>
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>vscode.azureedge.net</string>
+		<string>vscode.dev</string>
+		<string>vscode-webview.net</string>
+	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>

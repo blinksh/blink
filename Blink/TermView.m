@@ -167,6 +167,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
+  configuration.limitsNavigationsToAppBoundDomains = YES;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -182,7 +183,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
-  
+  configuration.limitsNavigationsToAppBoundDomains = true;
   
   NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
   NSString * script =  [NSString stringWithContentsOfURL:scriptURL];
