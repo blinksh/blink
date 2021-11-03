@@ -203,7 +203,7 @@ class CodeFileSystem {
 
     return translator
       .flatMap { $0.cloneWalkTo(path) }
-      .flatMap { $0.directoryFilesAndAttributes() }
+      .flatMap { $0.directoryFilesAndAttributesResolvingLinks() }
       .map { filesAttributes -> [DirectoryTuple] in
         filesAttributes
           .filter { ($0[.name] as! String != "." && $0[.name] as! String != "..") }

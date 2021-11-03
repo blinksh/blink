@@ -108,7 +108,8 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
       }
       .flatMap {
         // 2. Stat both local and remote files.
-        Publishers.Zip($0.directoryFilesAndAttributes(),
+        // For remote, if the file is a link, then stat to know the real attributes
+        Publishers.Zip($0.directoryFilesAndAttributesResolvingLinks(),
                          Local().walkTo(self.identifier.url.path)
                           .flatMap { $0.directoryFilesAndAttributes() }
                           .catch { _ in AnyPublisher.just([]) })
@@ -152,7 +153,6 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }).store(in: &cancellableBag)
   }
 
-  
 //  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
 //    /* TODO:
 //     - query the server for updates since the passed-in sync anchor
