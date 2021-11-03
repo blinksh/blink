@@ -15,6 +15,7 @@ struct MountEntry: Codable {
 
 
 public class CodeFileSystemService: CodeSocketDelegate {
+  
   let server: WebSocketServer
   
   public let port: UInt16
@@ -22,6 +23,13 @@ public class CodeFileSystemService: CodeSocketDelegate {
   var tokenIdx = 0;
 
   private var translators: [String: (Translator, RunLoop)] = [:]
+
+  private let finishedCallback: ((Error?) -> ())
+  func finished(_ error: Error?) { finishedCallback(error) }
+  
+  public var state: NWListener.State {
+    server.listener.state
+  }
   
   public func registerMount(name: String, root: String, newFile: String?, openFile: String?) -> Int {
     tokenIdx += 1
@@ -29,10 +37,11 @@ public class CodeFileSystemService: CodeSocketDelegate {
     return tokenIdx
   }
 
-  public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
+  public init(listenOn port: NWEndpoint.Port, tls: Bool, finished: @escaping ((Error?) -> ()))  throws {
     self.port = port.rawValue
     self.server = try WebSocketServer(listenOn: port, tls: tls)
-
+    self.finishedCallback = finished
+    
     self.server.delegate = self
   }
   

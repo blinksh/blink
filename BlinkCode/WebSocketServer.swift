@@ -126,31 +126,52 @@ public class WebSocketServer {
   var delegate: CodeSocketDelegate? = nil
   var cancellables = [UInt32:AnyCancellable]()
   let queue = DispatchQueue(label: "WebSocketServer")
+  let port: NWEndpoint.Port
+  let tls: Bool
 
   var listener: NWListener!
   
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
-    try startListening(port, tls)
+    self.port = port
+    self.tls = tls
+    startListening()
   }
   
-  func startListening(_ port: NWEndpoint.Port, _ tls: Bool) throws {
-    
-  
-    let parameters: NWParameters
-    if tls {
-      parameters = NWParameters(tls: try tlsOptions())
-    } else {
-      parameters = NWParameters.tcp
+  func startListening() {
+    do {
+      let parameters: NWParameters
+      if tls {
+        parameters = NWParameters(tls: try tlsOptions())
+      } else {
+        parameters = NWParameters.tcp
+      }
+      let websocketOptions = NWProtocolWebSocket.Options()
+      parameters.defaultProtocolStack.applicationProtocols.insert(websocketOptions, at: 0)
+      
+      self.listener = try NWListener(using: parameters, on: port)
+      
+      listener.newConnectionHandler = { [weak self] in self?.handleNewConnection($0) }
+      listener.stateUpdateHandler = { [weak self] in self?.handleStateUpdate($0) }
+      listener.start(queue: queue)
+    } catch {
+      self.delegate?.finished(error)
     }
-    let websocketOptions = NWProtocolWebSocket.Options()
-    parameters.defaultProtocolStack.applicationProtocols.insert(websocketOptions, at: 0)
     
-    self.listener = try NWListener(using: parameters, on: port)
-    
-    listener.newConnectionHandler = { [weak self] in self?.handleNewConnection($0) }
-    // TODO Review the state
-    listener.stateUpdateHandler = { print("WebSocket Listener \($0)") }
-    listener.start(queue: queue)
+  }
+  
+  func handleStateUpdate(_ newState: NWListener.State) {
+    print("WebSocket Listener \(newState)")
+    if case .failed(let error) = newState {
+      // If the listener fails, re-start.
+      if error == NWError.dns(DNSServiceErrorType(kDNSServiceErr_DefunctConnection)) {
+        print("Listener failed with \(error), restarting")
+        listener.cancel()
+        self.startListening()
+      } else {
+        listener.cancel()
+        self.delegate?.finished(error)
+      }
+    }
   }
   
   func tlsOptions() throws -> NWProtocolTLS.Options {
@@ -181,6 +202,7 @@ public class WebSocketServer {
     
     return tlsOptions
   }
+  
   func handleNewConnection(_ conn: NWConnection) {
     // TODO Skipping on the statehandler for the connection for now
     //connections.append(conn)
@@ -201,7 +223,14 @@ class WebSocketConnection {
   }
   
   func receiveNextMessage() {
-    conn.stateUpdateHandler = { print("Connection state update - \($0)")}
+    conn.stateUpdateHandler = { newState in
+      print("Connection state update - \(newState)")
+      if case .failed(let error) = newState {
+        print("Connection failed - \(error)")
+        self.conn.cancel()
+        // TODO if we associate to the translator, we need to the delegate.
+      }
+    }
     conn.receiveMessage { (content, context, isComplete, error) in
       if let data = content,
          let context = context {
@@ -360,6 +389,7 @@ extension UInt8 {
 
 protocol CodeSocketDelegate {
   func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher
+  func finished(_ error: Error?)
 }
 
 struct CodeSocketMessageHeader {

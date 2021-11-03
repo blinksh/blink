@@ -40,17 +40,26 @@ class SharedFP {
   
   init(port: UInt16) {
     let p = NWEndpoint.Port(rawValue: port)!
-    service = try! CodeFileSystemService.init(listenOn: p, tls: true)
+    service = try! CodeFileSystemService.init(listenOn: p, tls: true) { error in
+      if let error = error {
+        print("Listener failed - \(error)")
+      }
+    }
   }
   
   static var shared: SharedFP? = nil
   
   static func startedFP(port: UInt16 = 50000) -> SharedFP {
-    if shared == nil {
-      shared = SharedFP(port: port)
+    guard let shared = shared,
+          shared.service.state == .ready else {
+      // We may need the WebServer to restart, instead of creating a new object.
+      // My theory is that this stops, and I don't get the new state because we are in background.
+      let shared = SharedFP(port: port)
+      self.shared = shared
+      return shared
     }
     
-    return shared!
+    return shared
   }
 }
 
