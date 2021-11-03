@@ -128,17 +128,23 @@ public class WebSocketServer {
   let queue = DispatchQueue(label: "WebSocketServer")
   let port: NWEndpoint.Port
   let tls: Bool
-
+  var listenerMonitor: BackgroundTaskMonitor? = nil
+  
   var listener: NWListener!
   
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
     self.port = port
     self.tls = tls
-    startListening()
+    self.listenerMonitor = BackgroundTaskMonitor(start: { [weak self] in self?.startListening()  },
+                                                 stop:  { [weak self] in
+      print("Suspending WebSocket")
+      self?.listener.cancel()
+    })
   }
   
   func startListening() {
     do {
+      print("Starting WebSocket...")
       let parameters: NWParameters
       if tls {
         parameters = NWParameters(tls: try tlsOptions())
@@ -156,7 +162,6 @@ public class WebSocketServer {
     } catch {
       self.delegate?.finished(error)
     }
-    
   }
   
   func handleStateUpdate(_ newState: NWListener.State) {
@@ -169,6 +174,7 @@ public class WebSocketServer {
         self.startListening()
       } else {
         listener.cancel()
+        listenerMonitor = nil
         self.delegate?.finished(error)
       }
     }
