@@ -404,7 +404,8 @@ extension TermController: TermDeviceDelegate {
 
     guard
       let input = KBTracker.shared.input,
-      input == _termDevice.view.webView
+      input == _termDevice.view.webView,
+      _termDevice.view.browserView == nil
     else {
       return
     }
