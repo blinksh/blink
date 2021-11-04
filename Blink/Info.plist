@@ -201,6 +201,7 @@
 	<array>
 		<string>github.dev</string>
 		<string>github.com</string>
+		<string>vsassets.io</string>
 		<string>vscode.azureedge.net</string>
 		<string>vscode.dev</string>
 		<string>vscode-webview.net</string>
