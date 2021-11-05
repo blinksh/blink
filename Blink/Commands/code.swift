@@ -85,13 +85,9 @@ struct CodeCommand: NonStdIOCommand {
 
 class Code {
   func start(_ cmd: CodeCommand) throws {
-    // TODO Get rid of these
-    var openFile: String? = nil
-    var newFile: String? = nil
-
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
-
+    
     var path: FileLocationPath
     // Build a rootPath
     if cmd.path == nil {
@@ -105,7 +101,7 @@ class Code {
     }
 
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-    let token = fp.service.registerMount(name: "Test", root: rootURI.absoluteString, newFile: newFile, openFile: openFile)
+    let token = fp.service.registerMount(name: "xxx", root: rootURI.absoluteString)
     NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
       guard let device = notification.userInfo?["device"] as? TermDevice else {
         return

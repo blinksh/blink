@@ -9,8 +9,6 @@ import SwiftUI
 struct MountEntry: Codable {
   let name: String
   let root: String
-  let newFile: String?
-  let openFile: String?
 }
 
 class TranslatorReference {
@@ -44,9 +42,9 @@ public class CodeFileSystemService: CodeSocketDelegate {
     server.listener.state
   }
   
-  public func registerMount(name: String, root: String, newFile: String?, openFile: String?) -> Int {
+  public func registerMount(name: String, root: String) -> Int {
     tokenIdx += 1
-    tokens[tokenIdx] = MountEntry(name: name, root: root, newFile: newFile, openFile: openFile)
+    tokens[tokenIdx] = MountEntry(name: name, root: root)
     return tokenIdx
   }
 
