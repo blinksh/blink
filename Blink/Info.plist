@@ -199,6 +199,8 @@
 	</array>
 	<key>WKAppBoundDomains</key>
 	<array>
+		<string>github.dev</string>
+		<string>github.com</string>
 		<string>vscode.azureedge.net</string>
 		<string>vscode.dev</string>
 		<string>vscode-webview.net</string>
