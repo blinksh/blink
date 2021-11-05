@@ -250,9 +250,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
   NSURLCredential *cred = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
-//  let cred = URLCredential(trust: challenge.protectionSpace.serverTrust!)
-//  completionHandler(.useCredential, cred)
-  completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+
+  if ([challenge.protectionSpace.host isEqual: @"localhost"]) {
+    // Let localhost go through.
+    completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+    return;
+  }
+  
+  completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
 }
 
 - (void)webView:(WKWebView *)webView authenticationChallenge:(NSURLAuthenticationChallenge *)challenge shouldAllowDeprecatedTLS:(void (^)(BOOL))decisionHandler {
