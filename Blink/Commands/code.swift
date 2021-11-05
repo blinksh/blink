@@ -40,11 +40,11 @@ class SharedFP {
 
   init(port: UInt16) {
     let p = NWEndpoint.Port(rawValue: port)!
-    service = try! CodeFileSystemService.init(listenOn: p, tls: true) { error in
+    service = try! CodeFileSystemService.init(listenOn: p, tls: true, finished: { error in
       if let error = error {
         print("Listener failed - \(error)")
       }
-    }
+    })
   }
 
   static var shared: SharedFP? = nil

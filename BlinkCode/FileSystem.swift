@@ -109,7 +109,6 @@ public class CodeFileSystemService: CodeSocketDelegate {
         let msg: ReadFileFileSystemRequest = try decode(encodedData)
         return fileSystem(for: msg.uri).readFile()
       case .writeFile:
-        // TODO Change the other requests
         let msg: WriteFileSystemRequest = try decode(encodedData)
         return fileSystem(for: msg.uri).writeFile(options: msg.options,
                                                   content: binaryData ?? Data())
@@ -180,24 +179,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
       return CodeFileSystem(TranslatorFactories.local.build(rootPath), uri: uri)
     default:
       return CodeFileSystem(.fail(error: "Unknown protocol - \(rootPath.protocolIdentifier)"), uri: uri)
-    }
-    
-    // Use a single thread for all the internal operations.
-    // We need to have the RunLoop so we can control when the thread stops, to close the whole WebServer.
-    // A thread for each SFTP connection seems excessive. But this one would be unused if only for local.
-    // TODO An alternative would be to capture the "RunLoop" when we capture the Translator.
-    // Then we could use that to wake it up and go.
-    // TODO There is still the trick of cleaning up the objects, which requires to run the RunLoop again.
-    // I was thinking we could actually make that as part of the "deinit" for LibSSH.
-    // Because LibSSH already has stuff loaded at the RunLoop, the deinit could still be triggered and go through.
-  }
-  // TODO Process the URI
-  // sftp:host:route
-  // code /
-  public func cancel() {
-    // If the WebSocket is cancelled (no more connections to serve), we can cancel the shared Service
-    //Self._shared = nil
-  }
+    }        
+  }  
 }
 
 class CodeFileSystem {
