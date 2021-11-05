@@ -37,7 +37,7 @@ import Network
 
 class SharedFP {
   let service: CodeFileSystemService
-  
+
   init(port: UInt16) {
     let p = NWEndpoint.Port(rawValue: port)!
     service = try! CodeFileSystemService.init(listenOn: p, tls: true) { error in
@@ -46,9 +46,9 @@ class SharedFP {
       }
     }
   }
-  
+
   static var shared: SharedFP? = nil
-  
+
   static func startedFP(port: UInt16 = 50000) -> SharedFP {
     guard let shared = shared,
           shared.service.state == .ready else {
@@ -58,20 +58,20 @@ class SharedFP {
       self.shared = shared
       return shared
     }
-    
+
     return shared
   }
 }
 
-struct Code: NonStdIOCommand {
+struct CodeCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "code",
     abstract: "Starts code editor"
   )
-  
+
   @OptionGroup var verboseOptions: VerboseOptions
   var io = NonStdIO.standart
- 
+
   @Argument(
     help: "Path to connect to",
     transform: { try FileLocationPath($0) }
@@ -79,57 +79,43 @@ struct Code: NonStdIOCommand {
   var path: FileLocationPath?
   
   mutating func run() throws {
-    // You usually start at the ~, with that format.
-    // Problem is we need to pass that as a path to code, but we do not know
-    // what the canonical route will be.
-    // TODO Idea is to resolve and build the path here.
-    // The connections then will start from here, instead of from the CodeFileSystem.
-    // But that one will have to restart a connection if it is lost anyway.
+    try Code().start(self)
+  }
+}
 
-    
-//    let fm = FileManager.default
-//    var pwd = fm.currentDirectoryPath
-//    if let path = path {
-//      var p = URL(fileURLWithPath: pwd)
-//      p.appendPathComponent(path)
-//      pwd = p.absoluteURL.path
-//    }
-//
-//
-//    pwd = (pwd as NSString).standardizingPath
-//
+class Code {
+  func start(_ cmd: CodeCommand) throws {
+    // TODO Get rid of these
     var openFile: String? = nil
     var newFile: String? = nil
-//    var isDir: ObjCBool = false
-//
-//    if fm.fileExists(atPath: pwd, isDirectory: &isDir) {
-//      if isDir.boolValue {
-//
-//      } else {
-//        openFile = "blinkfs:" + pwd
-//        pwd = (pwd as NSString).deletingLastPathComponent
-//      }
-//    } else {
-//      newFile = "blinkfs:" + pwd
-//      pwd = (pwd as NSString).deletingLastPathComponent
-//    }
-    
-//    print(pwd)
-    
+
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
 
-    // TODO Maybe resolve if not absolute
+    var path: FileLocationPath
     // Build a rootPath
-    if path == nil {
+    if cmd.path == nil {
       path = try FileLocationPath(".")
+    } else {
+      path = cmd.path!
     }
-    
-    guard let rootURI = path!.codeFileSystemURI else {
+
+    guard let rootURI = path.codeFileSystemURI else {
       throw CommandError(message: "Could not parse path.")
     }
-    let token = fp.service.registerMount(name: "Test", root: rootURI.absoluteString, newFile: newFile, openFile: openFile)
+
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
+    let token = fp.service.registerMount(name: "Test", root: rootURI.absoluteString, newFile: newFile, openFile: openFile)
+    NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
+      guard let device = notification.userInfo?["device"] as? TermDevice else {
+        return
+      }
+      if session.device == device {
+        fp.service.deregisterMount(token)
+      }
+      NotificationCenter.default.removeObserver(self)
+    }
+
     DispatchQueue.main.async {
       let url = URL(string: "https://vscode.dev")!
 ////      var url = URL(string: "https://github.com/codespaces")!
@@ -149,8 +135,8 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   let io = NonStdIO.standart
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
-  
-  return Code.main(Array(argv.args(count: argc)[1...]), io: io)
+
+  return CodeCommand.main(Array(argv.args(count: argc)[1...]), io: io)
 }
 
 extension FileLocationPath {
@@ -169,7 +155,7 @@ extension FileLocationPath {
       return URL(string: uriProtocolIdentifier + host)?.appendingPathComponent(filePath)
     }
   }
-  
+
   fileprivate var uriProtocolIdentifier: String {
     switch proto {
     case .local:

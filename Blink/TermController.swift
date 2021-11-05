@@ -255,6 +255,7 @@ class TermController: UIViewController {
   }
   
   @objc public func terminate() {
+    NotificationCenter.default.post(name: .deviceTerminated, object: nil, userInfo: ["device": _termDevice])
     _termDevice.delegate = nil
     _termView.terminate()
     _session?.kill()
@@ -514,3 +515,6 @@ extension TermController: SuspendableSession {
   }
 }
 
+extension Notification.Name {
+  static let deviceTerminated = Notification.Name("deviceTerminated")
+}

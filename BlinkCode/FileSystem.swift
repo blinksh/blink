@@ -13,6 +13,19 @@ struct MountEntry: Codable {
   let openFile: String?
 }
 
+class TranslatorReference {
+  let translator: Translator
+  let cancel: () -> Void
+
+  init(_ translator: Translator, cancel: @escaping (() -> Void)) {
+    self.translator = translator
+    self.cancel = cancel
+  }
+  
+  deinit {
+    cancel()
+  }
+}
 
 public class CodeFileSystemService: CodeSocketDelegate {
   
@@ -22,7 +35,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
   var tokens: [Int: MountEntry] = [:]
   var tokenIdx = 0;
 
-  private var translators: [String: (Translator, RunLoop)] = [:]
+  private var translators: [String: TranslatorReference] = [:]
 
   private let finishedCallback: ((Error?) -> ())
   func finished(_ error: Error?) { finishedCallback(error) }
@@ -35,6 +48,30 @@ public class CodeFileSystemService: CodeSocketDelegate {
     tokenIdx += 1
     tokens[tokenIdx] = MountEntry(name: name, root: root, newFile: newFile, openFile: openFile)
     return tokenIdx
+  }
+
+  public func deregisterMount(_ token: Int) {
+    // If no other token is using the same translator, trash it
+    guard let token = tokens.removeValue(forKey: tokenIdx) else {
+      return
+    }
+    let root = URL(string: token.root)!
+
+    // If we have no host, there is no remote translator
+    guard let host = root.host,
+          let _ = translators[host] else {
+      return
+    }
+
+    // Remove the Translator if no other mounts use it.
+    if let _ = tokens.first(where: { (_, tk) in
+                                   let url = URL(string: tk.root)!
+                                   return host == url.host
+                                 }) {
+      return
+    }
+
+    translators.removeValue(forKey: host)
   }
 
   public init(listenOn port: NWEndpoint.Port, tls: Bool, finished: @escaping ((Error?) -> ()))  throws {
@@ -99,9 +136,10 @@ public class CodeFileSystemService: CodeSocketDelegate {
   private func fileSystem(for uri: URI) -> CodeFileSystem {
     let rootPath = uri.rootPath
 
-    if let (t, _) = translators[rootPath.protocolIdentifier],
-       t.isConnected {
-      return CodeFileSystem(.just(t), uri: uri)
+    if let host = rootPath.host,
+       let tRef = translators[host],
+       tRef.translator.isConnected {
+      return CodeFileSystem(.just(tRef.translator), uri: uri)
     }
     
     switch(rootPath.protocolIdentifier) {
@@ -119,6 +157,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
           RunLoop.current.add(timer, forMode: .default)
           promise(.success(RunLoop.current))
           CFRunLoopRun()
+          // Wrap it up
+          RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
         }
         thread.start()
       }
@@ -126,7 +166,11 @@ public class CodeFileSystemService: CodeSocketDelegate {
       let translator = threadIsReady
         .flatMap { builder.buildOn($0, rootPath: rootPath) }
         .map { t -> Translator in
-          self.translators[rootPath.protocolIdentifier] = (t, runLoop!)
+          self.translators[rootPath.host!] = TranslatorReference(t, cancel: {
+            print("Cancelling translator")
+            let cfRunLoop = runLoop!.getCFRunLoop()
+            CFRunLoopStop(cfRunLoop)
+          })
           return t
         }
         .eraseToAnyPublisher()
