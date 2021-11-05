@@ -40,6 +40,7 @@
 #import "Blink-Swift.h"
 
 NSString * TermViewReadyNotificationKey = @"TermViewReadyNotificationKey";
+NSString * TermViewBrowserReadyNotificationKey = @"TermViewBrowserReadyNotificationKey";
 
 struct winsize __winSizeFromJSON(NSDictionary *json) {
   struct winsize res;
@@ -212,13 +213,23 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   
   
   UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
-  rec.maximumNumberOfTouches = 1;
-  rec.cancelsTouchesInView = YES;
+//  rec2.maximumNumberOfTouches = 1;
+  rec2.cancelsTouchesInView = YES;
   //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-  rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  
+  UITapGestureRecognizer *recTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_on1fTap:)];
+//  recTap.maximumNumberOfTouches = 1;
+//  recTap.cancelsTouchesInView = YES;
+  //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
+//  recTap.allowedTouchTypes = @[@(UITouchTypeDirect), @(UITouchTypePencil)];
   
   [_browserView addGestureRecognizer:rec];
   [_browserView addGestureRecognizer:rec2];
+  [_browserView addGestureRecognizer:recTap];
+  
+  
+  
 
   [self addSubview:_browserView];
   [_browserView setOpaque:NO];
@@ -276,6 +287,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return _webView.title;
 }
 
+- (void)_on1fTap:(UITapGestureRecognizer *)rec {
+  if ([_browserView isFirstResponder]) {
+    return;
+  }
+  
+  [_browserView becomeFirstResponder];
+}
 
 - (void)_pan: (UIPanGestureRecognizer *)rec {
 
@@ -549,6 +567,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   } else if ([operation isEqualToString:@"notify"]) {
     [data setValue:[NSNumber numberWithInt:BKNotificationTypeOsc] forKey:@"type"];
     [_device viewNotify:data];
+  } else if ([operation isEqualToString:@"browser-ready"]) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:TermViewBrowserReadyNotificationKey object:self];
   } else if ([operation isEqualToString:@"ring-bell"]) {
     [_device viewDidReceiveBellRing];
     
@@ -633,6 +653,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _selectedText = data[@"text"];
   _hasSelection = _selectedText.length > 0;
   _gestureInteraction.hasSelection = _hasSelection;
+  
+  if (_browserView) {
+    return;
+  }
   
   [_device viewSelectionChanged];
   
@@ -766,7 +790,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   NSString *str = [UIPasteboard generalPasteboard].string;
   if (str) {
-    [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    if (_browserView) {
+      [_browserView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    } else {
+      [_webView evaluateJavaScript:term_paste(str) completionHandler:nil];
+    }
   }
   
   [self cleanSelection];

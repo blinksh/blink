@@ -234,6 +234,9 @@ class SpaceController: UIViewController {
     
     
     nc.addObserver(self, selector: #selector(_termViewIsReady(n:)), name: NSNotification.Name(TermViewReadyNotificationKey), object: nil)
+    nc.addObserver(self, selector: #selector(_termViewBrowserIsReady(n:)), name: NSNotification.Name(TermViewBrowserReadyNotificationKey), object: nil)
+    
+    
     
     nc.addObserver(self, selector: #selector(_UISceneDidEnterBackgroundNotification(_:)),
                    name: UIScene.didEnterBackgroundNotification, object: nil)
@@ -409,6 +412,10 @@ class SpaceController: UIViewController {
     
     _termViewToFocus = nil
     _attachInputToCurrentTerm()
+  }
+  
+  @objc private func _termViewBrowserIsReady(n: Notification) {
+    _attachInputToCurrentTerm();
   }
   
   private func _attachInputToCurrentTerm() {

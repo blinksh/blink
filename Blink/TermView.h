@@ -38,6 +38,7 @@
 @class MCPParams;
 
 extern NSString * TermViewReadyNotificationKey;
+extern NSString * TermViewBrowserReadyNotificationKey;
 
 @protocol TermViewDeviceProtocol
 
