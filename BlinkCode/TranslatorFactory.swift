@@ -38,9 +38,7 @@ import BlinkConfig
 import SSH
 
 
-// TODO Temporary until we decide what domain these errors should belong to.
-extension String: Error {}
-
+public enum TranslatorFactories {}
 
 public struct RootPath {
   let url: URL // should be private
@@ -59,36 +57,6 @@ public struct RootPath {
   }
 }
 
-//public struct RootPath {
-//  let fullPath: String
-//  let protocolIdentifier: String
-//  let host: String?
-//  let filesAtPath: String
-//
-//  // rootPath: ssh:host:root_folder
-//  init(_ rootPath: String) {
-//    self.fullPath = rootPath
-//    let components = rootPath.split(separator: ":")
-//
-//    let protocolIdentifier = String(components[0])
-//    let filesAtPath: String
-//    let host: String?
-//    if components.count == 2 {
-//      filesAtPath = String(components[1])
-//      host = nil
-//    } else {
-//      filesAtPath = String(components[2])
-//      host = String(components[1])
-//    }
-//
-//    self.protocolIdentifier = protocolIdentifier
-//    self.host = host
-//    self.filesAtPath = filesAtPath
-//  }
-//}
-
-public enum TranslatorFactories {}
-
 extension TranslatorFactories {
   public static let local = Self.Local()
   
@@ -103,13 +71,9 @@ extension TranslatorFactories {
   public static let sftp = Self.SFTP()
   
   public class SFTP {
-    public func buildOn<T: Scheduler>(_ scheduler: T, rootPath: RootPath) -> AnyPublisher<Translator, Error> {
-      guard let hostIdentifier = rootPath.host else {
-        return Fail(error: "Missing host on rootpath").eraseToAnyPublisher()
-      }
-
-      let (host, config) = SSHClientFileProviderConfig.config(host: hostIdentifier)
-
+    public func buildOn<T: Scheduler>(_ scheduler: T, hostAlias: String) -> AnyPublisher<Translator, Error> {
+      let (host, config) = SSHClientFileProviderConfig.config(host: hostAlias)
+      
       return Just(())
         .receive(on: scheduler).flatMap {
           SSHClient

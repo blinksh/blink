@@ -1,3 +1,35 @@
+//////////////////////////////////////////////////////////////////////////////////
+//
+// B L I N K
+//
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
+//
+// This file is part of Blink.
+//
+// Blink is free software: you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation, either version 3 of the License, or
+// (at your option) any later version.
+//
+// Blink is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with Blink. If not, see <http://www.gnu.org/licenses/>.
+//
+// In addition, Blink is also subject to certain additional terms under
+// GNU GPL version 3 section 7.
+//
+// You should have received a copy of these additional terms immediately
+// following the terms and conditions of the GNU General Public License
+// which accompanied the Blink Source Code. If not, see
+// <http://www.github.com/blinksh/blink>.
+//
+////////////////////////////////////////////////////////////////////////////////
+
+
 import Combine
 import Foundation
 import Network
@@ -91,46 +123,46 @@ public class CodeFileSystemService: CodeSocketDelegate {
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
     guard let request = try? JSONDecoder().decode(BaseFileSystemRequest.self, from: encodedData) else {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
-      return .fail(error: "Bad request")
+      return .fail(error: WebSocketError(message: "Bad request"))
     }
 
     do {
       switch request.op {
       case .getRoot:
         let msg: GetRootRequest = try decode(encodedData)
-        return getRoot(token: msg.token, version: msg.version)
+        return try getRoot(token: msg.token, version: msg.version)
       case .stat:
         let msg: StatFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).stat()
+        return try fileSystem(for: msg.uri).stat()
       case .readDirectory:
         let msg: ReadDirectoryFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).readDirectory()
+        return try fileSystem(for: msg.uri).readDirectory()
       case .readFile:
         let msg: ReadFileFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).readFile()
+        return try fileSystem(for: msg.uri).readFile()
       case .writeFile:
         let msg: WriteFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).writeFile(options: msg.options,
-                                                  content: binaryData ?? Data())
+        return try fileSystem(for: msg.uri).writeFile(options: msg.options,
+                                                      content: binaryData ?? Data())
       case .createDirectory:
         let msg: CreateDirectoryFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).createDirectory()
+        return try fileSystem(for: msg.uri).createDirectory()
       case .rename:
         let msg: RenameFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.oldUri).rename(newUri: msg.newUri,
-                                                  options: msg.options)
+        return try fileSystem(for: msg.oldUri).rename(newUri: msg.newUri,
+                                                     options: msg.options)
       case .delete:
         let msg: DeleteFileSystemRequest = try decode(encodedData)
-        return fileSystem(for: msg.uri).delete(options: msg.options)
+        return try fileSystem(for: msg.uri).delete(options: msg.options)
       }
     } catch {
       print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
       print("Error \(error)")
-      return .fail(error: "Bad request")
+      return .fail(error: error)
     }
   }
 
-  private func fileSystem(for uri: URI) -> CodeFileSystem {
+  private func fileSystem(for uri: URI) throws -> CodeFileSystem {
     let rootPath = uri.rootPath
 
     if let host = rootPath.host,
@@ -160,8 +192,12 @@ public class CodeFileSystemService: CodeSocketDelegate {
         thread.start()
       }
       
+      guard let hostAlias = rootPath.host else {
+        throw WebSocketError(message: "Missing host on rootpath")
+      }
+
       let translator = threadIsReady
-        .flatMap { builder.buildOn($0, rootPath: rootPath) }
+        .flatMap { builder.buildOn($0, hostAlias: hostAlias) }
         .map { t -> Translator in
           self.translators[rootPath.host!] = TranslatorReference(t, cancel: {
             print("Cancelling translator")
@@ -178,7 +214,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
       // The local one does not need to be saved.
       return CodeFileSystem(TranslatorFactories.local.build(rootPath), uri: uri)
     default:
-      return CodeFileSystem(.fail(error: "Unknown protocol - \(rootPath.protocolIdentifier)"), uri: uri)
+      throw WebSocketError(message: "Unknown protocol - \(rootPath.protocolIdentifier)")
     }        
   }  
 }

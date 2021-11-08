@@ -152,7 +152,7 @@ extension URI: Codable {
     
     guard let url = URL(string: str)
     else {
-      throw "Not a valid URI"
+      throw WebSocketError(message: "Not a valid URI")
     }
 
     self.init(rootPath: RootPath(url))
@@ -196,6 +196,10 @@ struct DirectoryTuple: Codable {
     self.name = try container.decode(String.self)
     self.type = try container.decode(FileType.self)
   }
+}
+
+struct WebSocketError: Error, Encodable {
+  let message: String
 }
 
 enum CodeFileSystemError: Error, Encodable {
@@ -249,14 +253,6 @@ enum FileType: Int, Codable {
   }
 }
 
-//function toFileType(stat: fs.Stats): FileType {
-//
-//    if (stat.isSymbolicLink()) {
-//        return FileType.SymbolicLink | (stat.isDirectory() ? FileType.Directory : FileType.File);
-//    }
-//
-//    return stat.isFile() ? FileType.File : stat.isDirectory() ? FileType.Directory : FileType.Unknown;
-//}
 struct FileStat: Codable {
   let type: FileType
   let ctime: Int?
