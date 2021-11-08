@@ -52,7 +52,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate>
+@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate, UIGestureRecognizerDelegate>
 @end
 
 @implementation TermView {
@@ -197,6 +197,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
   _browserView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   _browserView.customUserAgent =
+//  [@"Mozilla/5.0 (Linux; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 " stringByAppendingString:agent];
   [@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 " stringByAppendingString:agent];
 
   NSLog(@"AGENT: %@", _browserView.customUserAgent);
@@ -210,6 +211,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   rec.cancelsTouchesInView = YES;
   rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
   rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  rec.delegate = self;
   
   
   UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
@@ -217,8 +219,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   rec2.cancelsTouchesInView = YES;
   //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
   rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+  rec2.delegate = self;
   
   UITapGestureRecognizer *recTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_on1fTap:)];
+  recTap.delegate = self;
 //  recTap.maximumNumberOfTouches = 1;
 //  recTap.cancelsTouchesInView = YES;
   //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
@@ -288,18 +292,18 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)_on1fTap:(UITapGestureRecognizer *)rec {
-  if ([_browserView isFirstResponder]) {
-    return;
-  }
-  
-  [_browserView becomeFirstResponder];
+//  if ([_browserView isFirstResponder]) {
+//    return;
+//  }
+//  
+//  [_browserView becomeFirstResponder];
 }
 
 - (void)_pan: (UIPanGestureRecognizer *)rec {
 
-  _touchID = 12345;
+//  _touchID = 12345;
   if (rec.state == UIGestureRecognizerStateBegan) {
-//    _touchID = (_touchID + 1 ) % 10000000;
+    _touchID = (_touchID + 1 ) % 10000000;
 //    [_touchesArray addObject:@(_touchID)];
 
     CGPoint point = [rec locationInView:rec.view];
@@ -881,6 +885,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _gestureInteraction = nil;
   [_layoutDebounceTimer invalidate];
   _layoutDebounceTimer = nil;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
+  return YES;
 }
 
 @end
