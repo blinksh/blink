@@ -128,10 +128,11 @@ extension BlinkLogger {
 }
 
 extension BlinkLogger {
-  convenience init(_ component: String) {
+  convenience init(_ component: String,  
+                   handlers: [BlinkLogging.LogHandlerFactory]? = nil) {
     self.init(bootstrap: {
       $0.map { $0.merging([BlinkLogKeys.component: component], uniquingKeysWith: { (_, new) in new }) }
         .eraseToAnyPublisher()
-    })
+    }, handlers: handlers)
   }
 }

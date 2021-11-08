@@ -44,7 +44,7 @@ public class WebSocketServer {
   let port: NWEndpoint.Port
   let tls: Bool
   var listenerMonitor: BackgroundTaskMonitor? = nil
-  
+  let log: BlinkLogger = CodeFileSystemLogger.log("CodeWebSocketServer")
   var listener: NWListener!
   
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
@@ -52,14 +52,14 @@ public class WebSocketServer {
     self.tls = tls
     self.listenerMonitor = BackgroundTaskMonitor(start: { [weak self] in self?.startListening()  },
                                                  stop:  { [weak self] in
-      print("Suspending WebSocket")
+      self?.log.info("Suspending WebSocket")
       self?.listener.cancel()
     })
   }
   
   func startListening() {
     do {
-      print("Starting WebSocket...")
+      log.info("Starting WebSocket...")
       let parameters: NWParameters
       if tls {
         parameters = NWParameters(tls: try tlsOptions())
@@ -80,11 +80,11 @@ public class WebSocketServer {
   }
   
   func handleStateUpdate(_ newState: NWListener.State) {
-    print("WebSocket Listener \(newState)")
+    log.info("WebSocket Listener \(newState)")
     if case .failed(let error) = newState {
       // If the listener fails, re-start.
       if error == NWError.dns(DNSServiceErrorType(kDNSServiceErr_DefunctConnection)) {
-        print("Listener failed with \(error), restarting")
+        log.error("Listener failed with \(error), restarting")
         listener.cancel()
         self.startListening()
       } else {
@@ -122,8 +122,6 @@ public class WebSocketServer {
   }
   
   func handleNewConnection(_ conn: NWConnection) {
-    // TODO Skipping on the statehandler for the connection for now
-    //connections.append(conn)
     WebSocketConnection(conn, delegate).receiveNextMessage()
   }
 }
@@ -132,21 +130,23 @@ class WebSocketConnection {
   let conn: NWConnection
   let delegate: CodeSocketDelegate?
   let queue = DispatchQueue(label: "WebSocketServer")
+  let log: BlinkLogger
   var cancellables = [UInt32:AnyCancellable]()
 
   init(_ conn: NWConnection, _ delegate: CodeSocketDelegate?) {
     self.conn = conn
     self.delegate = delegate
+    self.log = CodeFileSystemLogger.log("Connection \(conn.currentPath!.remoteEndpoint!.debugDescription)")
     conn.start(queue: queue)
   }
   
   func receiveNextMessage() {
     conn.stateUpdateHandler = { newState in
-      print("Connection state update - \(newState)")
+      self.log.info("Connection state update - \(newState)")
       if case .failed(let error) = newState {
-        print("Connection failed - \(error)")
+        self.log.error("Connection failed - \(error)")
         self.conn.cancel()
-        // TODO if we associate to the translator, we need to the delegate.
+        // TODO if we associate to the translator, we need to notify the delegate.
       }
     }
     conn.receiveMessage { (content, context, isComplete, error) in
@@ -174,24 +174,23 @@ class WebSocketConnection {
   func handleMessage(data: Data) {
     var buffer = data
 
-    // Log errors if malformed as this is just our service.
-    // TODO Will figure out how to communicate this cases better with Code
+    // Log errors if malformed as this is just our service.    
     guard buffer.count >= CodeSocketMessageHeader.encodedSize,
           let header = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
-      print("Wrong header")
-      return
+            self.log.error("Wrong header")
+            return
     }
     buffer = data.advanced(by: CodeSocketMessageHeader.encodedSize)
     
     let messageHeaderTypes: [CodeSocketContentType] = [.Json, .Binary, .JsonWithBinary]
     guard messageHeaderTypes.contains(header.type) else {
-      print("Wrong message type")
+      log.error("Wrong message type")
       return
     }
     
     let operationId = header.operationId
     guard let payload = CodeSocketMessagePayload(buffer, type: header.type) else {
-      print("Invalid payload")
+      log.error("Invalid payload")
       return
     }
     
@@ -207,7 +206,7 @@ class WebSocketConnection {
         receiveCompletion: { [weak self] completion in
           switch completion {
           case .failure(let error):
-            print("Error completing operation - \(error)")
+            self?.log.error("Error completing operation - \(error)")
             if case is CodeFileSystemError = error {
               self?.sendError(operationId: operationId,
                              error: error as! CodeFileSystemError)

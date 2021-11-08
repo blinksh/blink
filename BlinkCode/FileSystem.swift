@@ -35,6 +35,7 @@ import Foundation
 import Network
 
 import BlinkFiles
+import BlinkConfig
 import System
 import SwiftUI
 
@@ -60,6 +61,7 @@ class TranslatorReference {
 public class CodeFileSystemService: CodeSocketDelegate {
   
   let server: WebSocketServer
+  let log: BlinkLogger
   
   public let port: UInt16
   var tokens: [Int: MountEntry] = [:]
@@ -77,10 +79,12 @@ public class CodeFileSystemService: CodeSocketDelegate {
   public func registerMount(name: String, root: String) -> Int {
     tokenIdx += 1
     tokens[tokenIdx] = MountEntry(name: name, root: root)
+    log.info("Registered mount \(tokenIdx) for \(name) at \(root)")
     return tokenIdx
   }
 
   public func deregisterMount(_ token: Int) {
+    log.info("De-registering mount \(tokenIdx)")
     // If no other token is using the same translator, trash it
     guard let token = tokens.removeValue(forKey: tokenIdx) else {
       return
@@ -109,6 +113,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
     self.server = try WebSocketServer(listenOn: port, tls: tls)
     self.finishedCallback = finished
     
+    self.log = CodeFileSystemLogger.log("FileSystem")
+    
     self.server.delegate = self
   }
   
@@ -122,7 +128,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
 
   public func handleMessage(encodedData: Data, binaryData: Data?) -> WebSocketServer.ResponsePublisher {
     guard let request = try? JSONDecoder().decode(BaseFileSystemRequest.self, from: encodedData) else {
-      print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
+      log.error(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
       return .fail(error: WebSocketError(message: "Bad request"))
     }
 
@@ -156,8 +162,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
         return try fileSystem(for: msg.uri).delete(options: msg.options)
       }
     } catch {
-      print(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")
-      print("Error \(error)")
+      log.error("\(error)")
+      log.error("Processing request \(String(data: encodedData, encoding: .utf8) ?? "Error decoding data")")
       return .fail(error: error)
     }
   }
@@ -200,7 +206,7 @@ public class CodeFileSystemService: CodeSocketDelegate {
         .flatMap { builder.buildOn($0, hostAlias: hostAlias) }
         .map { t -> Translator in
           self.translators[rootPath.host!] = TranslatorReference(t, cancel: {
-            print("Cancelling translator")
+            self.log.debug("Cancelling translator")
             let cfRunLoop = runLoop!.getCFRunLoop()
             CFRunLoopStop(cfRunLoop)
           })
@@ -483,5 +489,41 @@ extension RootPath {
               (filesAtPath as NSString).deletingLastPathComponent]
               .compactMap { $0 }
               .joined(separator: ":"))
+  }
+}
+
+struct CodeFileSystemLogger {
+  static var handler = [BlinkLogging.LogHandlerFactory]()
+  static func log(_ component: String) -> BlinkLogger {
+    if handler.isEmpty {
+      handler.append(
+        {
+          $0.format { [ $0[.component] as? String ?? "global",
+                      $0[.message] as? String ?? ""
+                    ].joined(separator: " ") }
+          .sinkToOutput()
+        }
+      )
+      
+      let dateFormatter = DateFormatter()
+      dateFormatter.dateFormat = "MMM dd YYYY, HH:mm:ss"
+      if let file = try? FileLogging(to: BlinkPaths.blinkCodeErrorLogURL()) {
+        handler.append(
+          {
+            try $0.format {
+              [ "[\($0[.logLevel]!)]",
+                dateFormatter.string(from: Date()),
+                $0[.component] as? String ?? "global",
+                $0[.message] as? String ?? ""
+              ].joined(separator: " ") }
+            .sinkToFile(file)
+          }
+        )
+      } else {
+        print("File logging not working")
+      }
+    }
+
+    return BlinkLogger(component, handlers: handler)
   }
 }
