@@ -89,14 +89,16 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                  identifier: UIMenu.Identifier("com.CarlosCabanero.BlinkShell.menus.shellMenu"),
                                  options: [],
                                  children: shellMenuCommands), beforeMenu: .edit)
-   
-    builder.replaceChildren(ofMenu: .textStyle, from: { _ in [] })
+  
+    // remove cmd+b
+    builder.remove(menu: .textStyle)
+    // remove cmd+t
+    builder.remove(menu: .font)
+
     builder.replaceChildren(ofMenu: .standardEdit) { _ in editMenuCommands   }
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }
     builder.replaceChildren(ofMenu: .window)       { _ in windowMenuCommands }
     
-    // remove cmd+t
-    builder.remove(menu: .font)
   }
   
   private class func generate(_ command: Command) -> UICommand {

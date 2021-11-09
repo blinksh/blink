@@ -444,8 +444,6 @@ NSString *_encodeString(NSString *str);
     [self onCommand: body[@"command"]];
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
-  } else if ([@"browser-ready" isEqual:op]) {
-    [self becomeFirstResponder];
   }
   
 }
