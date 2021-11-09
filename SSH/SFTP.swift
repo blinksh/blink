@@ -262,6 +262,8 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func rmdir() -> AnyPublisher<Bool, Error> {
     return connection().tryMap { sftp -> Bool in
+      print("Removing directory \(self.current)")
+
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -309,7 +311,7 @@ public class SFTPClient : BlinkFiles.Translator {
   
   public func wstat(_ attrs: FileAttributes) -> AnyPublisher<Bool, Error> {
     // TODO Move -> Rename
-    return connection().tryMap { sftp in
+    return connection().tryMap { sftp -> sftp_session in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -320,8 +322,36 @@ public class SFTPClient : BlinkFiles.Translator {
         throw FileError(title: "Could not setstat file", in: self.session)
       }
       
+      return sftp
+    }
+    .tryMap { sftp in
+      ssh_channel_set_blocking(self.channel, 1)
+      defer { ssh_channel_set_blocking(self.channel, 0) }
+      
+      // Relative path or from root
+      guard let newName = attrs[.name] as? String else {
+        return true
+      }
+      // We do this 9p style
+      // https://github.com/kubernetes/minikube/pull/3047/commits/a37faa7c7868ca49b4e8abf92985ab2de3c85cf3
+      var newPath = ""
+      if newName.starts(with: "/") {
+        // Full new path
+        newPath = newName
+      } else {
+        // Relative to CWD
+        // Change name
+        newPath = (self.current as NSString).deletingLastPathComponent
+        newPath = (newPath as NSString).appendingPathComponent(newName)
+      }
+      
+      let rc = sftp_rename(sftp, self.path, newPath)
+      if rc != SSH_OK {
+        throw FileError(title: "Could not rename file", in: self.session)
+      }
       return true
-    }.eraseToAnyPublisher()
+    }
+    .eraseToAnyPublisher()
   }
   
   func parseItemAttributes(_ attrs: sftp_attributes_struct) -> FileAttributes {
