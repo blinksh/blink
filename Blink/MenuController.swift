@@ -89,7 +89,8 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                  identifier: UIMenu.Identifier("com.CarlosCabanero.BlinkShell.menus.shellMenu"),
                                  options: [],
                                  children: shellMenuCommands), beforeMenu: .edit)
-    
+   
+    builder.replaceChildren(ofMenu: .textStyle, from: { _ in [] })
     builder.replaceChildren(ofMenu: .standardEdit) { _ in editMenuCommands   }
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }
     builder.replaceChildren(ofMenu: .window)       { _ in windowMenuCommands }
@@ -169,10 +170,18 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                          input: "a",
                                          modifierFlags: .command,
                                          propertyList: nil)
+    let toggleBoldCommand =  UIKeyCommand(title: "",
+                                         action: #selector(UIResponder.toggleBoldface(_:)),
+                                         input: "b",
+                                         modifierFlags: .command,
+                                         propertyList: nil)
     
-    return [copyCommand,
-            cutCommand,
-            selectAllCommand]
+    return [
+      copyCommand,
+      cutCommand,
+      selectAllCommand,
+      toggleBoldCommand, // from textStyle menu
+    ]
       .filter { shortcut in
         false == attachedShortcuts.contains(where: {
           $0.input == shortcut.input && $0.modifierFlags == shortcut.modifierFlags
