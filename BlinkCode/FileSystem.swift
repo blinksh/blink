@@ -399,7 +399,7 @@ class CodeFileSystem {
     // Walk to file and apply overwrite
     // Stat to new location. Or fail.
     let newParent = newUri.rootPath.parent.filesAtPath
-    let newPath   = newUri.rootPath.filesAtPath
+    let newName   = newUri.rootPath.url.lastPathComponent
     
     return translator
       .flatMap {
@@ -414,7 +414,9 @@ class CodeFileSystem {
         // Will take the easy route for now.
         // We try the stat, and will figure out if in case it is a file, we have to
         // remove it or what.
-        .flatMap { _ in oldT.wstat([.name: newPath]) }
+        .flatMap { newParentT in
+          oldT.wstat([.name: (newParentT.current as NSString).appendingPathComponent(newName)])
+        }
       }
       .map { _ in (nil, nil) }
       .eraseToAnyPublisher()
@@ -422,19 +424,19 @@ class CodeFileSystem {
 
   func delete(options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("rename \(path)")
+    print("delete \(path)")
     
     let recursive = options.recursive ?? false
 
     func delete(_ translators: [Translator]) -> AnyPublisher<Void, Error> {
       translators.publisher
-        .flatMap { t -> AnyPublisher<Void, Error> in
+        .flatMap(maxPublishers: .max(1)) { t -> AnyPublisher<Void, Error> in
           print(t.current)
           if t.fileType == .typeDirectory {
             return [deleteDirectoryContent(t), AnyPublisher(t.rmdir().map {_ in})]
               .compactMap { $0 }
               .publisher
-              .flatMap { $0 }
+              .flatMap(maxPublishers: .max(1)) { $0 }
               .collect()
               .map {_ in}
               .eraseToAnyPublisher()
@@ -458,9 +460,11 @@ class CodeFileSystem {
           }
         }.publisher
       }
-      .flatMap { t.cloneWalkTo($0[.name] as! String) }
+      .flatMap {
+        t.cloneWalkTo($0[.name] as! String) }
       .collect()
-      .flatMap { delete($0) }
+      .flatMap {
+        delete($0) }
       .eraseToAnyPublisher()
     }
 
@@ -484,11 +488,12 @@ extension CodeFileSystemService {
 
 extension RootPath {
   public var parent: RootPath {
-    RootPath([protocolIdentifier,
-              host,
-              (filesAtPath as NSString).deletingLastPathComponent]
-              .compactMap { $0 }
-              .joined(separator: ":"))
+    return RootPath(url.deletingLastPathComponent())
+//    RootPath([protocolIdentifier,
+//              host,
+//              (filesAtPath as NSString).deletingLastPathComponent]
+//              .compactMap { $0 }
+//              .joined(separator: ":"))
   }
 }
 
