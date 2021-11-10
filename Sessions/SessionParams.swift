@@ -51,12 +51,12 @@ import UIKit
   }
   
   func encode(with coder: NSCoder) {
-    coder.encode(encodedState, for: Key.encodedState)
+    coder.bk_encode(encodedState, for: Key.encodedState)
   }
   
   required init?(coder: NSCoder) {
     super.init()
-    encodedState = coder.decode(for: Key.encodedState)
+    encodedState = coder.bk_decode(for: Key.encodedState)
   }
   
   static var secureCoding1 = true
@@ -89,25 +89,25 @@ import UIKit
   override func encode(with coder: NSCoder) {
     super.encode(with: coder)
     
-    coder.encode(ip, for: Key.ip)
-    coder.encode(port, for: Key.port)
-    coder.encode(key, for: Key.key)
-    coder.encode(predictionMode, for: Key.predictionMode)
-    coder.encode(startupCmd, for: Key.startupCmd)
-    coder.encode(serverPath, for: Key.serverPath)
-    coder.encode(experimentalRemoteIp, for: Key.experimentalRemoteIp)
+    coder.bk_encode(ip, for: Key.ip)
+    coder.bk_encode(port, for: Key.port)
+    coder.bk_encode(key, for: Key.key)
+    coder.bk_encode(predictionMode, for: Key.predictionMode)
+    coder.bk_encode(startupCmd, for: Key.startupCmd)
+    coder.bk_encode(serverPath, for: Key.serverPath)
+    coder.bk_encode(experimentalRemoteIp, for: Key.experimentalRemoteIp)
   }
   
   required init?(coder: NSCoder) {
     super.init(coder: coder)
     
-    self.ip = coder.decode(for: Key.ip)
-    self.port = coder.decode(for: Key.port)
-    self.key = coder.decode(for: Key.key)
-    self.predictionMode = coder.decode(for: Key.predictionMode)
-    self.startupCmd = coder.decode(for: Key.startupCmd)
-    self.serverPath = coder.decode(for: Key.serverPath)
-    self.experimentalRemoteIp = coder.decode(for: Key.experimentalRemoteIp)
+    self.ip = coder.bk_decode(for: Key.ip)
+    self.port = coder.bk_decode(for: Key.port)
+    self.key = coder.bk_decode(for: Key.key)
+    self.predictionMode = coder.bk_decode(for: Key.predictionMode)
+    self.startupCmd = coder.bk_decode(for: Key.startupCmd)
+    self.serverPath = coder.bk_decode(for: Key.serverPath)
+    self.experimentalRemoteIp = coder.bk_decode(for: Key.experimentalRemoteIp)
   }
   
   
@@ -163,40 +163,37 @@ import UIKit
   
   override func encode(with coder: NSCoder) {
     super.encode(with: coder)
-    
-    coder.encode(childSessionType, for: Key.childSessionType)
-    coder.encode(childSessionParams, for: Key.childSessionParams)
-    coder.encode(viewSize, for: Key.viewSize)
-    coder.encode(rows, for: Key.rows)
-    coder.encode(cols, for: Key.cols)
-    coder.encode(themeName, for: Key.themeName)
-    coder.encode(fontName, for: Key.fontName)
-    coder.encode(fontSize, for: Key.fontSize)
-    coder.encode(layoutMode, for: Key.layoutMode)
-    coder.encode(boldAsBright, for: Key.boldAsBright)
-    coder.encode(enableBold, for: Key.enableBold)
-    coder.encode(layoutLocked, for: Key.layoutLocked)
-    coder.encode(layoutLockedFrame, for: Key.u)
+
+    coder.bk_encode(childSessionType, for: Key.childSessionType)
+    coder.bk_encode(childSessionParams, for: Key.childSessionParams)
+    coder.bk_encode(viewSize, for: Key.viewSize)
+    coder.bk_encode(rows, for: Key.rows)
+    coder.bk_encode(cols, for: Key.cols)
+    coder.bk_encode(themeName, for: Key.themeName)
+    coder.bk_encode(fontName, for: Key.fontName)
+    coder.bk_encode(fontSize, for: Key.fontSize)
+    coder.bk_encode(layoutMode, for: Key.layoutMode)
+    coder.bk_encode(boldAsBright, for: Key.boldAsBright)
+    coder.bk_encode(enableBold, for: Key.enableBold)
+    coder.bk_encode(layoutLocked, for: Key.layoutLocked)
+    coder.bk_encode(layoutLockedFrame, for: Key.u)
   }
   
   required init?(coder: NSCoder) {
     super.init(coder: coder)
-    
-    self.childSessionType = coder.decode(for: Key.childSessionType)
-    self.childSessionParams = coder.decode(of: [MoshParams.self, SessionParams.self], for: Key.childSessionParams)
-    self.viewSize = coder.decode(for: Key.viewSize)
-    self.rows = coder.decode(for: Key.rows)
-    self.cols = coder.decode(for: Key.cols)
-    self.themeName = coder.decode(for: Key.themeName)
-    self.fontName = coder.decode(for: Key.fontName)
-    self.fontSize = coder.decode(for: Key.fontSize)
-    self.layoutMode = coder.decode(for: Key.layoutMode)
-    self.boldAsBright = coder.decode(for: Key.boldAsBright)
-    self.enableBold = coder.decode(for: Key.enableBold)
-    self.layoutLocked = coder.decode(for: Key.layoutLocked)
-    self.layoutLockedFrame = coder.decode(for: Key.u)
-    
-    
+    self.childSessionType = coder.bk_decode(for: Key.childSessionType)
+    self.childSessionParams = coder.bk_decode(of: [MoshParams.self, SessionParams.self], for: Key.childSessionParams)
+    self.viewSize = coder.bk_decode(for: Key.viewSize)
+    self.rows = coder.bk_decode(for: Key.rows)
+    self.cols = coder.bk_decode(for: Key.cols)
+    self.themeName = coder.bk_decode(for: Key.themeName)
+    self.fontName = coder.bk_decode(for: Key.fontName)
+    self.fontSize = coder.bk_decode(for: Key.fontSize)
+    self.layoutMode = coder.bk_decode(for: Key.layoutMode)
+    self.boldAsBright = coder.bk_decode(for: Key.boldAsBright)
+    self.enableBold = coder.bk_decode(for: Key.enableBold)
+    self.layoutLocked = coder.bk_decode(for: Key.layoutLocked)
+    self.layoutLockedFrame = coder.bk_decode(for: Key.u)
   }
   
   static var secureCoding2 = true

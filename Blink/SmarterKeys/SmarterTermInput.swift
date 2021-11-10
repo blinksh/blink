@@ -437,7 +437,8 @@ extension SmarterTermInput {
   override func canPerformAction(_ action: Selector, withSender sender: Any?) -> Bool {
     switch action {
     case #selector(UIResponder.paste(_:)):
-      return UIPasteboard.general.string != nil
+      // do not touch UIPasteboard before actual paste to skip exta notification.
+      return true// UIPasteboard.general.string != nil
     case
       #selector(UIResponder.copy(_:)),
       #selector(UIResponder.cut(_:)):
