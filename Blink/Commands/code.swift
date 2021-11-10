@@ -77,6 +77,11 @@ struct CodeCommand: NonStdIOCommand {
     transform: { try FileLocationPath($0) }
   )
   var path: FileLocationPath?
+
+  @Option(
+    help: "URL for vscode"
+  )
+  var vscode: String = "https://vscode.dev"
   
   mutating func run() throws {
     try Code().start(self)
@@ -102,6 +107,7 @@ class Code {
 
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     let token = fp.service.registerMount(name: "xxx", root: rootURI.absoluteString)
+    
     NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
       guard let device = notification.userInfo?["device"] as? TermDevice else {
         return
@@ -113,7 +119,7 @@ class Code {
     }
 
     DispatchQueue.main.async {
-      let url = URL(string: "https://vscode.dev")!
+      let url = URL(string: cmd.vscode)!
 ////      var url = URL(string: "https://github.com/codespaces")!
 //
       let agent = "BlinkSH/15 (wss;\(port);\(token))"
