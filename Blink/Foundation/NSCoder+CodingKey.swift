@@ -30,100 +30,99 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-//import Foundation
 import UIKit
 
 extension UIKit.NSCoder {
   
-  func encode(_ value: Any?, for key: CodingKey) {
+  func bk_encode(_ value: Any?, for key: CodingKey) {
     encode(value, forKey: key.stringValue)
   }
   
-  func decode<T>(for key: CodingKey) -> T? where T : NSObject, T : NSCoding {
+  func bk_decode<T>(for key: CodingKey) -> T? where T : NSObject, T : NSCoding {
     decodeObject(of: T.self, forKey: key.stringValue) as T?
   }
   
-  func decode<T>(of: [AnyClass], for key: CodingKey) -> T? {
+  func bk_decode<T>(of: [AnyClass], for key: CodingKey) -> T? {
     decodeObject(of: of, forKey: key.stringValue) as? T
   }
   
   // MARK: - Data
   
-  func encode(_ value: Data?, for key: CodingKey) {
+  func bk_encode(_ value: Data?, for key: CodingKey) {
     encode(value as NSData?, forKey: key.stringValue)
   }
   
-  func decode(for key: CodingKey) -> Data? {
+  func bk_decode(for key: CodingKey) -> Data? {
     decodeObject(of: NSData.self, forKey: key.stringValue) as Data?
   }
   
   // MARK: - String
   
-  func encode(_ value: String?, for key: CodingKey) {
+  func bk_encode(_ value: String?, for key: CodingKey) {
     encode(value, forKey: key.stringValue)
   }
   
-  func decode(for key: CodingKey) -> String? {
+  func bk_decode(for key: CodingKey) -> String? {
     decodeObject(of: NSString.self, forKey: key.stringValue) as String?
   }
   
   // MARK: - Bool
   
-  func encode(_ value: Bool, for key: CodingKey) {
+  func bk_encode(_ value: Bool, for key: CodingKey) {
     encode(value, forKey: key.stringValue)
   }
   
-  func decode(for key: CodingKey) -> Bool {
+  func bk_decode(for key: CodingKey) -> Bool {
     decodeBool(forKey: key.stringValue)
   }
   
   // MARK: - Int
   
-  func encode(_ value: Int, for key: CodingKey) {
+  func bk_encode(_ value: Int, for key: CodingKey) {
     encode(value, forKey: key.stringValue)
   }
   
-  func decode(for key: CodingKey) -> Int {
+  func bk_decode(for key: CodingKey) -> Int {
     decodeInteger(forKey: key.stringValue)
   }
   
   // MARK: - UInt
   
-  func encode(_ value: UInt, for key: CodingKey) {
+  func bk_encode(_ value: UInt, for key: CodingKey) {
     encode(Int(value), forKey: key.stringValue)
   }
   
-  func decode(for key: CodingKey) -> UInt {
+  func bk_decode(for key: CodingKey) -> UInt {
     UInt(decodeInteger(forKey: key.stringValue))
   }
   
   // MARK: - CGRect
   
-//  func encode(_ value: CGRect, for key: CodingKey) {
-//    encode(value, forKey: key.stringValue)
-//  }
+  func bk_encode(_ value: CGRect, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
   
-  func decode(for key: CodingKey) -> CGRect {
+  func bk_decode(for key: CodingKey) -> CGRect {
     decodeCGRect(forKey: key.stringValue)
   }
   
   // MARK: - CGSize
   
-//  func encode(_ value: CGSize, for key: CodingKey) {
-//    encode(value, forKey: key.stringValue)
-//  }
-//
-  func decode(for key: CodingKey) -> CGSize {
+  func bk_encode(_ value: CGSize, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
+
+  func bk_decode(for key: CodingKey) -> CGSize {
     decodeCGSize(forKey: key.stringValue)
   }
   
   // MARK: - CGPoint
   
-//  func encode(_ value: CGPoint, for key: CodingKey) {
-//    encode(value, forKey: key.stringValue)
-//  }
+  func bk_encode(_ value: CGPoint, for key: CodingKey) {
+    encode(value, forKey: key.stringValue)
+  }
   
-  func decode(for key: CodingKey) -> CGPoint {
+  func bk_decode(for key: CodingKey) -> CGPoint {
     decodeCGPoint(forKey: key.stringValue)
   }
   
