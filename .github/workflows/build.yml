@@ -12,9 +12,6 @@ jobs:
       with:
         submodules: true
 
-    - name: xcode-select
-      run: sudo xcode-select -s /Applications/Xcode_12.4.app
-
     - name: use cache
       id: cache
       uses: actions/cache@v2
