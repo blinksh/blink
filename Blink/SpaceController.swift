@@ -197,11 +197,15 @@ class SpaceController: UIViewController {
     super.viewWillTransition(to: size, with: coordinator)
     if view.window?.isKeyWindow == true {
       DispatchQueue.main.async {
+//        KBTracker.shared.attach(input: KBTracker.shared.input)
+//        input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
 //        self.currentTerm()?.termDevice.view?.webView?.kbView.reset()
 //        SmarterTermInput.shared.contentView()?.reloadInputViews()
       }
     }
   }
+  
+  
   
   override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
     DispatchQueue.main.async {
@@ -433,7 +437,7 @@ class SpaceController: UIViewController {
     let input = KBTracker.shared.input
     
     if device.view.browserView != nil {
-      KBTracker.shared.attach(input: device.view?.webView)
+      KBTracker.shared.attach(input: device.view?.browserView)
       device.attachInput(device.view.browserView)
       _ = device.view.browserView.becomeFirstResponder()
       if input != KBTracker.shared.input {
@@ -443,7 +447,7 @@ class SpaceController: UIViewController {
     }
 
     
-
+    KBTracker.shared.attach(input: device.view?.webView)
     device.attachInput(device.view.webView)
     device.view.webView.reportFocus(true)
     device.focus()

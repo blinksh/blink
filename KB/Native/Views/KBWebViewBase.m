@@ -135,6 +135,7 @@ NSString *_encodeString(NSString *str);
   traits.autocorrectionType = UITextAutocorrectionTypeNo;
   traits.autocapitalizationType = UITextAutocapitalizationTypeNone;
   traits.spellCheckingType = UITextSpellCheckingTypeNo;
+  traits.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {

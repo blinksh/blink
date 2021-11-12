@@ -237,7 +237,6 @@ class CaretHider {
         }
       }
       
-      
       if needToReload {
         DispatchQueue.main.async {
           self._refreshInputViews()
