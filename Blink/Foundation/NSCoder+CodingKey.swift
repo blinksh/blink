@@ -99,31 +99,31 @@ extension UIKit.NSCoder {
   // MARK: - CGRect
   
   func bk_encode(_ value: CGRect, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
+    bk_encode(NSCoder.string(for: value), for: key)
   }
   
   func bk_decode(for key: CodingKey) -> CGRect {
-    decodeCGRect(forKey: key.stringValue)
+    NSCoder.cgRect(for: bk_decode(for: key) ?? "")
   }
   
   // MARK: - CGSize
   
   func bk_encode(_ value: CGSize, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
+    bk_encode(NSCoder.string(for: value), for: key)
   }
 
   func bk_decode(for key: CodingKey) -> CGSize {
-    decodeCGSize(forKey: key.stringValue)
+    NSCoder.cgSize(for: bk_decode(for: key) ?? "")
   }
   
   // MARK: - CGPoint
   
   func bk_encode(_ value: CGPoint, for key: CodingKey) {
-    encode(value, forKey: key.stringValue)
+    bk_encode(NSCoder.string(for: value), for: key)
   }
   
   func bk_decode(for key: CodingKey) -> CGPoint {
-    decodeCGPoint(forKey: key.stringValue)
+    NSCoder.cgPoint(for: bk_decode(for: key) ?? "")
   }
   
 }
