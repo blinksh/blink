@@ -130,13 +130,12 @@ extension SSHClientConfigProvider {
     // Host password
     if let password = bkConfig.password(forHost: command.host), !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
-    } else {
-      // Interactive
-      authMethods.append(AuthPasswordInteractive(requestAnswers: self.authPrompt,
-          wrongRetriesAllowed: 2))
     }
 
     authMethods.append(AuthKeyboardInteractive(requestAnswers: self.authPrompt, wrongRetriesAllowed: 2))
+    // Password-Interactive
+    authMethods.append(AuthPasswordInteractive(requestAnswers: self.authPrompt,
+                                               wrongRetriesAllowed: 2))
 
     return authMethods
   }
