@@ -2,6 +2,13 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>skstore</key>
+	<array>
+		<string>MAIN</string>
+		<string>skstore_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>fcp</key>
 	<array>
 		<string>MAIN</string>
@@ -37,13 +44,13 @@
 		<string></string>
 		<string>no</string>
 	</array>
-  <key>facecam</key>
-  <array>
-    <string>MAIN</string>
-    <string>facecam_main</string>
-    <string></string>
-    <string>no</string>
-  </array>
+	<key>facecam</key>
+	<array>
+		<string>MAIN</string>
+		<string>facecam_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>cssh</key>
 	<array>
 		<string>MAIN</string>
