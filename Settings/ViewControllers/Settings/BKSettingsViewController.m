@@ -48,6 +48,15 @@
 
 @end
 
+typedef enum SettingsSection : NSUInteger {
+  ssSubscription,
+  ssConnect,
+  ssTerminal,
+  ssConfiguration,
+  ssGetInTouch,
+  ssAbout
+} SettingsSection;
+
 @implementation BKSettingsViewController
 
 - (void)viewDidLoad {
@@ -81,7 +90,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-  if (section == 1) {
+  if (section == ssTerminal) {
 #if TARGET_OS_MACCATALYST
     return 5;
 #else
@@ -93,19 +102,23 @@
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-  if (indexPath.section == 0 && indexPath.row == 0) {
+  if (indexPath.section == ssSubscription && indexPath.row == 0) {
+    UIViewController *vc = [SettingsHostingController createSubscriptionControllerWithNav:self.navigationController];
+    [self.navigationController pushViewController:vc animated:YES];
+  }
+  if (indexPath.section == ssConnect && indexPath.row == 0) {
     UIViewController *vc = [SettingsHostingController createKeysWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
-  } else if (indexPath.section == 0 && indexPath.row == 1) {
+  } else if (indexPath.section == ssConnect && indexPath.row == 1) {
     UIViewController *vc = [SettingsHostingController createHostsWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
-  } else if (indexPath.section == 1 && indexPath.row == 1) {
+  } else if (indexPath.section == ssTerminal && indexPath.row == 1) {
     UIViewController *vc = [SettingsHostingController createKeyboardControllerWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
-  } else if (indexPath.section == 1 && indexPath.row == 3) {
+  } else if (indexPath.section == ssTerminal && indexPath.row == 3) {
     UIViewController *vc = [SettingsHostingController createNotificationsWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
-  } else if (indexPath.section == 1 && indexPath.row == 4) {
+  } else if (indexPath.section == ssTerminal && indexPath.row == 4) {
     UIViewController *vc = [SettingsHostingController createGesturesWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
   }

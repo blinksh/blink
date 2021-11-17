@@ -85,6 +85,8 @@ void __setupProcessEnv() {
   [self _loadProfileVars];
   [[UIView appearance] setTintColor:[UIColor blinkTint]];
   
+  [SubscriptionNag.shared start];
+  
   signal(SIGPIPE, __on_pipebroken_signal);
  
   dispatch_queue_t bgQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0);

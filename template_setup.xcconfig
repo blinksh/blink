@@ -9,18 +9,19 @@
 // https://help.apple.com/xcode/#/dev745c5c974
 
 // update TEAM_ID with your apple developer id
-TEAM_ID = HV2S48975V
+TEAM_ID = A2H2CL32AG
 
 // BUNDLE_ID is used as name for BUNDLE_IDENTIFIER
-BUNDLE_ID = Com.CarlosCabanero.BlinkShell
+BUNDLE_ID = sh.blink.blinkshell
+GROUP_ID  = sh.blink
 
 // CLOUD_ID is used as name for iCloud (prefix icloud. is added)
-CLOUD_ID = com.carloscabanero.blinkshell
+CLOUD_ID = sh.blink.blinkshell
 // if you want to build without iCloud, please remove the section in xCode
 
 // KEYCHAIN_ID is used as name for keychain
-KEYCHAIN_ID1 = Com.CarlosCabanero.Blink
-KEYCHAIN_ID2 = Com.CarlosCabanero.BlinkShell
+KEYCHAIN_ID1 = sh.blink
+//KEYCHAIN_ID2 = Com.CarlosCabanero.BlinkShell
 // if you want to build without keychain, please remove the section in xCode
 
 
