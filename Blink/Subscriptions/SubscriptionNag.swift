@@ -30,7 +30,6 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
-import CloudKit
 
 
 private let NagTimer = "NagTimer"
@@ -48,20 +47,7 @@ class SubscriptionNag: NSObject {
 
   private override init() {}
 
-  @objc func start() {
-    
-    let container = CKContainer(identifier: "iCloud.com.carloscabanero.blinkshell")
-        container.fetchUserRecordID() {
-            recordID, error in
-
-            if let err = error {
-                print(err.localizedDescription)
-            }
-            else if let recID = recordID {
-                print("fetched ID \(recID.recordName ?? "NA")")
-            }
-        }
-    
+  @objc func start() {  
     let user = UserModel()
     if user.shellAccess.active {
       return
