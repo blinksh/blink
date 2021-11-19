@@ -203,6 +203,11 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   NSLog(@"AGENT: %@", _browserView.customUserAgent);
   _browserView.UIDelegate = self;
   _browserView.navigationDelegate = self;
+  
+  _browserView.scrollView.delaysContentTouches = NO;
+  _browserView.scrollView.canCancelContentTouches = NO;
+  [_browserView.scrollView setScrollEnabled:NO];
+  [_browserView.scrollView.panGestureRecognizer setEnabled:NO];
 //   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
 //  [_webView addInteraction:_gestureInteraction];
   
@@ -221,19 +226,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
   rec2.delegate = self;
   
-  UITapGestureRecognizer *recTap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_on1fTap:)];
-  recTap.delegate = self;
-//  recTap.maximumNumberOfTouches = 1;
-//  recTap.cancelsTouchesInView = YES;
-  //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-//  recTap.allowedTouchTypes = @[@(UITouchTypeDirect), @(UITouchTypePencil)];
-  
   [_browserView addGestureRecognizer:rec];
   [_browserView addGestureRecognizer:rec2];
-  [_browserView addGestureRecognizer:recTap];
-  
-  
-  
 
   [self addSubview:_browserView];
   [_browserView setOpaque:NO];
@@ -294,14 +288,6 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (NSString *)title {
   return _webView.title;
-}
-
-- (void)_on1fTap:(UITapGestureRecognizer *)rec {
-//  if ([_browserView isFirstResponder]) {
-//    return;
-//  }
-//  
-//  [_browserView becomeFirstResponder];
 }
 
 - (void)_pan: (UIPanGestureRecognizer *)rec {
