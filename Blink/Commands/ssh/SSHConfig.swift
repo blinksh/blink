@@ -326,7 +326,7 @@ struct PortForwardInfo: Equatable {
   let bindAddress: String
   let localPort: UInt16
   
-  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.]+)):(?<remotePort>\d+)$"#
+  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
 
   init(_ info: String) throws {
     let regex = try! NSRegularExpression(pattern: pattern)
