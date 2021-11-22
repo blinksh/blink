@@ -199,6 +199,7 @@
 	</array>
 	<key>WKAppBoundDomains</key>
 	<array>
+		<string>gitpod.io</string>
 		<string>github.dev</string>
 		<string>github.com</string>
 		<string>vsassets.io</string>
