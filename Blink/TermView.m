@@ -261,30 +261,20 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
   
   
-  UIViewController * ctrl = [[UIViewController alloc] init];
+  BrowserController * ctrl = [[BrowserController alloc] init];
   
-  WKWebView * wv = [[WKWebView alloc] initWithFrame:CGRectMake(10, 10, 400, 400) configuration:configuration];
-  [ctrl.view addSubview:wv];
+  WKWebView * wv = [[WKWebView alloc] initWithFrame:ctrl.view.bounds configuration:configuration];
+  
+  [ctrl setWebView: wv];
+  
+  UINavigationController *navCtrl = [[UINavigationController alloc] initWithRootViewController:ctrl];
   
   SpaceController *sp = (SpaceController *)self.window.rootViewController;
-  [sp showViewController:ctrl sender:self];
+  [sp showViewController:navCtrl sender:self];
+  [wv becomeFirstResponder];
   
   return wv;
-//  NSURL *url = navigationAction.request.URL;
-//
-//  [UIApplication.sharedApplication openURL:url options:@{} completionHandler:^(BOOL success) {
-//
-//  }];
-//  return nil;
 }
-
-//- (void)webView:(WKWebView *)webView runJavaScriptAlertPanelWithMessage:(NSString *)message initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(void))completionHandler {
-//  completionHandler();
-//}
-
-//- (void)webView:(WKWebView *)webView decidePolicyForNavigationAction:(WKNavigationAction *)navigationAction decisionHandler:(void (^)(WKNavigationActionPolicy))decisionHandler {
-//  decisionHandler(WKNavigationActionPolicyAllow);
-//}
 
 - (NSString *)title {
   return _webView.title;
