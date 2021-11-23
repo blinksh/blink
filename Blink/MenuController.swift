@@ -94,6 +94,17 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
     builder.remove(menu: .textStyle)
     // remove cmd+t
     builder.remove(menu: .font)
+//    builder.remove(menu: .help) - cmd+?
+//    builder.remove(menu: .close)
+//    builder.remove(menu: .hide)
+//    builder.remove(menu: .edit)
+//    builder.remove(menu: .textStylePasteboard)
+//    builder.remove(menu: .spelling)
+//    builder.remove(menu: .spellingPanel)
+//    builder.remove(menu: .alignment)
+//    builder.remove(menu: .format)
+//    builder.remove(menu: .minimizeAndZoom)
+
 
     builder.replaceChildren(ofMenu: .standardEdit) { _ in editMenuCommands   }
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }

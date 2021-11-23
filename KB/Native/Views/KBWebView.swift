@@ -41,6 +41,7 @@ class KBWebView: KBWebViewBase {
   private var _loaded = false
   private(set) var webViewReady = false
   private(set) var blinkKeyCommands: [BlinkCommand] = []
+  private(set) var allBlinkKeyCommands: [BlinkCommand] = []
   private var _grabsCtrlSpace = false
   
   func configure(_ cfg: KBConfig) {
@@ -58,10 +59,10 @@ class KBWebView: KBWebViewBase {
   func _buildCommands(_ cfg: KBConfig) {
     _grabsCtrlSpace = false
     
-    blinkKeyCommands = cfg.shortcuts.compactMap { shortcut in
-      if shortcut.action.isCommand {
-        return nil
-      }
+    self.blinkKeyCommands.removeAll()
+    self.allBlinkKeyCommands.removeAll()
+    
+    cfg.shortcuts.forEach { shortcut in
       let cmd = BlinkCommand(
         title: "",
         image: nil,
@@ -74,15 +75,40 @@ class KBWebView: KBWebViewBase {
       if shortcut.input == " " && shortcut.modifiers.contains([UIKeyModifierFlags.control]) {
         _grabsCtrlSpace = true
       }
-      return cmd
+      
+      allBlinkKeyCommands.append(cmd)
+      
+      if !shortcut.action.isCommand {
+        blinkKeyCommands.append(cmd)
+      }
     }
   }
   
   func matchCommand(input: String, flags: UIKeyModifierFlags) -> (UIKeyCommand, UIResponder)? {
     var result: (UIKeyCommand, UIResponder)? = nil
-
+    
     var iterator: UIResponder? = self
-
+    
+    // try first on space controller
+    let cmd = allBlinkKeyCommands.first(
+      where: {
+        $0.input == input && $0.modifierFlags == flags
+      }
+    )
+    
+    if let cmd = cmd {
+      while let responder = iterator {
+        if let _ = responder as? SpaceController,
+           let action = cmd.action,
+           responder.canPerformAction(action, withSender: self) {
+          return (cmd, responder)
+        }
+        iterator = responder.next
+      }
+    }
+    
+    iterator = self
+    
     while let responder = iterator {
       if let cmd = responder.keyCommands?.first(
         where: {
