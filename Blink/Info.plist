@@ -197,16 +197,6 @@
 			<string>blink</string>
 		</dict>
 	</array>
-	<key>WKAppBoundDomains</key>
-	<array>
-		<string>azureedge.net</string>
-		<string>gitpod.io</string>
-		<string>github.dev</string>
-		<string>github.com</string>
-		<string>vsassets.io</string>
-		<string>vscode.dev</string>
-		<string>vscode-webview.net</string>
-	</array>
 	<key>UTImportedTypeDeclarations</key>
 	<array>
 		<dict>
@@ -229,6 +219,16 @@
 			<key>UTTypeSize64IconFile</key>
 			<string>blink</string>
 		</dict>
+	</array>
+	<key>WKAppBoundDomains</key>
+	<array>
+		<string>azureedge.net</string>
+		<string>gitpod.io</string>
+		<string>github.dev</string>
+		<string>github.com</string>
+		<string>vsassets.io</string>
+		<string>vscode.dev</string>
+		<string>vscode-webview.net</string>
 	</array>
 </dict>
 </plist>
