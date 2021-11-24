@@ -93,6 +93,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
   private let _scrollView = UIScrollViewWithoutHitTest()
   private let _termScrollView = UIScrollViewWithoutHitTest()
   private let _jsScrollerPath: String
+  private let _handlerName: String
   private let _1fTapRecognizer = UITapGestureRecognizer()
   private let _2fTapRecognizer = UITapGestureRecognizer()
   private let _pinchRecognizer = UIPinchGestureRecognizer()
@@ -147,7 +148,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
       _scrollView.frame = webView.bounds
       webView.addSubview(_scrollView)
       webView.addSubview(_termScrollView)
-      webView.configuration.userContentController.add(self, name: "wkScroller")
+      webView.configuration.userContentController.add(self, name: _handlerName)
       
       for r in allRecognizers {
         webView.addGestureRecognizer(r)
@@ -157,7 +158,7 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     } else {
       _scrollView.removeFromSuperview()
       _termScrollView.removeFromSuperview()
-      _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: "wkScroller")
+      _wkWebView?.configuration.userContentController.removeScriptMessageHandler(forName: _handlerName)
       
       for r in allRecognizers {
         _wkWebView?.addGestureRecognizer(r)
@@ -171,8 +172,13 @@ class UIScrollViewWithoutHitTest: UIScrollView {
     self.view = view
   }
   
-  @objc init(jsScrollerPath: String) {
+  @objc convenience init(jsScrollerPath: String) {
+    self.init(jsScrollerPath: jsScrollerPath, handlerName: "wkScroller")
+  }
+  
+  @objc init(jsScrollerPath: String, handlerName: String) {
     _jsScrollerPath = jsScrollerPath
+    _handlerName = handlerName
     super.init()
     _scrollView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     _scrollView.alwaysBounceVertical = false

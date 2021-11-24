@@ -55,7 +55,6 @@ extension SuspendableSession {
   }
 }
 
-
 @objc class SessionRegistry: NSObject {
   private var _sessionsIndex: [UUID: SuspendableSession] = [:]
   private var _metaIndex: [UUID: SessionMeta] = [:]

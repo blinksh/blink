@@ -194,7 +194,7 @@ extension BlinkItemReference: NSFileProviderItem {
       print("\(itemIdentifier) missing type")
       return ""
     }
-    if type == .typeDirectory || type == .typeSymbolicLink {
+    if type == .typeDirectory {
       return kUTTypeFolder as String
     }
     

@@ -150,7 +150,7 @@ class KBView: UIView {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    
+   
     let strictSpace = !traits.isHKBAttached && traits.hasSuggestions
     self.kbSizes = kbDevice.sizesFor(portrait: traits.isPortrait)
     

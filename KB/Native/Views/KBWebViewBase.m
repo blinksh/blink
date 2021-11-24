@@ -135,6 +135,7 @@ NSString *_encodeString(NSString *str);
   traits.autocorrectionType = UITextAutocorrectionTypeNo;
   traits.autocapitalizationType = UITextAutocapitalizationTypeNone;
   traits.spellCheckingType = UITextSpellCheckingTypeNo;
+  traits.smartInsertDeleteType = UITextSmartInsertDeleteTypeNo;
 }
 
 - (KeyCommand *)_modifiersCommand:(UIKeyModifierFlags) flags {
@@ -372,11 +373,11 @@ NSString *_encodeString(NSString *str);
 }
 
 - (void)ready {
-//  [self removeAssistantsFromView];
+  [self removeAssistantsFromView];
 }
 
 - (void)removeAssistantsFromView {
-//  [self _removeAssistantsFromView:self];
+  [self _removeAssistantsFromView:self];
 }
 
 - (void)_removeAssistantsFromView:(UIView *)view {
@@ -445,6 +446,7 @@ NSString *_encodeString(NSString *str);
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
   }
+  
 }
 
 @end

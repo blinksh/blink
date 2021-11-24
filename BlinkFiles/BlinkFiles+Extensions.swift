@@ -74,3 +74,26 @@ extension Translator {
     return !NSArray(object: string).filtered(using: pred).isEmpty
   }
 }
+
+extension Translator {
+  public func directoryFilesAndAttributesResolvingLinks() -> AnyPublisher<[FileAttributes], Error> {
+    directoryFilesAndAttributes()
+      .flatMap { filesAttributes -> AnyPublisher<[FileAttributes], Never> in
+        filesAttributes.publisher
+          .flatMap { attrs -> AnyPublisher<FileAttributes, Never> in
+            guard let type = attrs[.type] as? FileAttributeType,
+                  let name = attrs[.name] as? String,
+                  type == .typeSymbolicLink else {
+              return .just(attrs)
+            }
+
+            return cloneWalkTo(name)
+              .flatMap { $0.stat() }
+              .catch { _ in Just(attrs) }
+              .eraseToAnyPublisher()
+          }.map { $0 }
+          .collect()
+          .eraseToAnyPublisher()
+      }.eraseToAnyPublisher()
+  }
+}

@@ -92,7 +92,7 @@ public class Local : Translator {
       }
       
       do {
-        let attrs = try fm.attributesOfItem(atPath: absPath)
+        let attrs = try fm.attributesOfItem(atPath: (absPath as NSString).resolvingSymlinksInPath)
         self.fileType = attrs[.type] as! FileAttributeType
       } catch {
         return self.fail(msg: "Could not obtain attributes of file.")
@@ -113,8 +113,9 @@ public class Local : Translator {
   
   func fileAttributes(atPath path: String) -> AnyPublisher<FileAttributes, Error> {
     return fileManager().tryMap { fm -> FileAttributes in
-      var attrs = try fm.attributesOfItem(atPath: path)
-      attrs[.name] = (path as NSString).lastPathComponent
+      let nsPath = (path as NSString)
+      var attrs = try fm.attributesOfItem(atPath: nsPath.resolvingSymlinksInPath)
+      attrs[.name] = nsPath.lastPathComponent
       return attrs
     }.mapError { _ in LocalFileError(msg: "Could not get attributes of item.") }
     .eraseToAnyPublisher()

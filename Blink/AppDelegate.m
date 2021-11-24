@@ -59,6 +59,7 @@ void __on_pipebroken_signal(int signum){
 }
 
 void __setupProcessEnv() {
+  
   NSBundle *mainBundle = [NSBundle mainBundle];
   int forceOverwrite = 1;
   NSString *SSL_CERT_FILE = [mainBundle pathForResource:@"cacert" ofType:@"pem"];

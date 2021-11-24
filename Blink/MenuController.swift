@@ -89,13 +89,27 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                  identifier: UIMenu.Identifier("com.CarlosCabanero.BlinkShell.menus.shellMenu"),
                                  options: [],
                                  children: shellMenuCommands), beforeMenu: .edit)
-    
+  
+    // remove cmd+b, cmd+i and cmd+u
+    builder.remove(menu: .textStyle)
+    // remove cmd+t
+    builder.remove(menu: .font)
+//    builder.remove(menu: .help) - cmd+?
+//    builder.remove(menu: .close)
+//    builder.remove(menu: .hide)
+//    builder.remove(menu: .edit)
+//    builder.remove(menu: .textStylePasteboard)
+//    builder.remove(menu: .spelling)
+//    builder.remove(menu: .spellingPanel)
+//    builder.remove(menu: .alignment)
+//    builder.remove(menu: .format)
+//    builder.remove(menu: .minimizeAndZoom)
+
+
     builder.replaceChildren(ofMenu: .standardEdit) { _ in editMenuCommands   }
     builder.replaceChildren(ofMenu: .view)         { _ in viewMenuCommands  }
     builder.replaceChildren(ofMenu: .window)       { _ in windowMenuCommands }
     
-    // remove cmd+t
-    builder.remove(menu: .font)
   }
   
   private class func generate(_ command: Command) -> UICommand {
@@ -154,25 +168,57 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
   // As we are rewriting the edit menu, if the standard sequences are not defined,
   // we add them here so they can go through the normal flow, and let our terminal map.
   private class func remainingStandardEditMenuCommands() -> [UICommand] {
-    let copyCommand = UIKeyCommand(title: "",
-                                   action: #selector(UIResponder.copy(_:)),
-                                   input: "c",
-                                   modifierFlags: .command,
-                                   propertyList: nil)
-    let cutCommand  = UIKeyCommand(title: "",
-                                   action: #selector(UIResponder.cut(_:)),
-                                   input: "x",
-                                   modifierFlags: .command,
-                                   propertyList: nil)
-    let selectAllCommand =  UIKeyCommand(title: "",
-                                         action: #selector(UIResponder.selectAll(_:)),
-                                         input: "a",
-                                         modifierFlags: .command,
-                                         propertyList: nil)
+    let copyCommand = UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.copy(_:)),
+      input: "c",
+      modifierFlags: .command,
+      propertyList: nil
+    )
+    let cutCommand  = UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.cut(_:)),
+      input: "x",
+      modifierFlags: .command,
+      propertyList: nil
+    )
+    let selectAllCommand =  UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.selectAll(_:)),
+      input: "a",
+      modifierFlags: .command,
+      propertyList: nil
+    )
+    let toggleBoldCommand = UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.toggleBoldface(_:)),
+      input: "b",
+      modifierFlags: .command,
+      propertyList: nil
+    )
+    let toggleItalicCommand = UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.toggleItalics(_:)),
+      input: "i",
+      modifierFlags: .command,
+      propertyList: nil
+    )
+    let toggleUnderlineCommand = UIKeyCommand(
+      title: "",
+      action: #selector(UIResponder.toggleUnderline(_:)),
+      input: "u",
+      modifierFlags: .command,
+      propertyList: nil
+    )
     
-    return [copyCommand,
-            cutCommand,
-            selectAllCommand]
+    return [
+      copyCommand,
+      cutCommand,
+      selectAllCommand,
+      toggleBoldCommand, // from textStyle menu
+      toggleItalicCommand,
+      toggleUnderlineCommand
+    ]
       .filter { shortcut in
         false == attachedShortcuts.contains(where: {
           $0.input == shortcut.input && $0.modifierFlags == shortcut.modifierFlags

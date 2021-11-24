@@ -63,6 +63,7 @@ final class FileTranslatorCache {
 
     return buildTranslator(for: encodedRootPath)
       .map { t -> Translator in
+        // Next time, the translator does not need to be built again (authentication, etc...)
         shared.translators[encodedRootPath] = t
         return t
       }.eraseToAnyPublisher()

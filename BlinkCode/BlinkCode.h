@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,43 +29,15 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
 
-@interface BlinkPaths : NSObject
+//! Project version number for BlinkCode.
+FOUNDATION_EXPORT double BlinkCodeVersionNumber;
 
-+ (NSString *) homePath;
+//! Project version string for BlinkCode.
+FOUNDATION_EXPORT const unsigned char BlinkCodeVersionString[];
 
-+ (NSString *) groupContainerPath;
-+ (NSString *) documentsPath;
-+ (NSString *) iCloudDriveDocuments;
-
-// ~/.blink
-+ (NSString *) blink;
-// ~/.ssh
-+ (NSString *) ssh;
-
-+ (NSURL *) blinkURL;
-+ (NSURL *) blinkSSHConfigFileURL;
-+ (NSURL *) blinkKBConfigURL;
-
-+ (NSString *) blinkKeysFile;
-+ (NSString *) blinkHostsFile;
-+ (NSString *) blinkDefaultsFile;
-+ (NSString *) blinkSyncItemsFile;
-+ (NSString *) blinkProfileFile;
-
-+ (NSURL *) historyURL;
-+ (NSString *) historyFile;
-+ (NSString *) knownHostsFile;
-
-+ (NSURL *)fileProviderErrorLogURL;
-+ (NSURL *)blinkCodeErrorLogURL;
-
-+ (void)linkICloudDriveIfNeeded;
-+ (void)linkDocumentsIfNeeded;
-
-+ (NSArray<NSString *> *)cleanedSymlinksInHomeDirectory;
-+ (void)migrateToHomeAtGroupContainer;
+// In this header, you should import all the public headers of your framework using statements like #import <BlinkCode/PublicHeader.h>
 
 
-@end
