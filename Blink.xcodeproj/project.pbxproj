@@ -99,11 +99,8 @@
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
 		BD67FC80272DF19B00C1EE75 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */; };
 		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
-		BD67FC82272DF22700C1EE75 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
-		BD67FC86272E3FF800C1EE75 /* SSH.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
-		BD67FC8A272E401000C1EE75 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BD67FC9B2732D4D300C1EE75 /* BackgroundTaskMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD81522027387D1F002BB169 /* Certificates.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81521C27387D1F002BB169 /* Certificates.swift */; };
@@ -149,7 +146,6 @@
 		BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA31F2728925C00C77798 /* WebSocketServer.swift */; };
 		BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3202728925C00C77798 /* FileSystem.swift */; };
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
-		BDBFA3242728927000C77798 /* BlinkFiles.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -605,20 +601,6 @@
 				D2334EF325C1C28F00385378 /* files.xcframework in Embed Frameworks */,
 				D2334EFB25C1C28F00385378 /* network_ios.xcframework in Embed Frameworks */,
 				07FABBC525C9AECF00E1CC2C /* BlinkFiles.framework in Embed Frameworks */,
-			);
-			name = "Embed Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		BDBFA3272728927000C77798 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				BDBFA3242728927000C77798 /* BlinkFiles.framework in Embed Frameworks */,
-				BD67FC86272E3FF800C1EE75 /* SSH.framework in Embed Frameworks */,
-				BD67FC8A272E401000C1EE75 /* openssl.xcframework in Embed Frameworks */,
-				BD67FC82272DF22700C1EE75 /* BlinkConfig.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2181,7 +2163,6 @@
 				BDBFA3012728914F00C77798 /* Sources */,
 				BDBFA3022728914F00C77798 /* Frameworks */,
 				BDBFA3032728914F00C77798 /* Resources */,
-				BDBFA3272728927000C77798 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
