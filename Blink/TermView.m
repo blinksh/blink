@@ -254,6 +254,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
 }
 
+
+
 - (void)webView:(WKWebView *)webView authenticationChallenge:(NSURLAuthenticationChallenge *)challenge shouldAllowDeprecatedTLS:(void (^)(BOOL))decisionHandler {
   decisionHandler(YES);
 }

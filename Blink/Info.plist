@@ -199,11 +199,11 @@
 	</array>
 	<key>WKAppBoundDomains</key>
 	<array>
+		<string>azureedge.net</string>
 		<string>gitpod.io</string>
 		<string>github.dev</string>
 		<string>github.com</string>
 		<string>vsassets.io</string>
-		<string>vscode.azureedge.net</string>
 		<string>vscode.dev</string>
 		<string>vscode-webview.net</string>
 	</array>
