@@ -104,6 +104,8 @@ class BlinkLoggingTests: XCTestCase {
     
     log.send(message[0])
     log.send(message[1])
+    
+    sleep(1)
 
     let result = try String(contentsOf: fileURL)
     XCTAssert(result == "\(message[0])\n\(message[1])\n", "TestFileLogger got \n\(result)")

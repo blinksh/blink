@@ -130,7 +130,7 @@ public struct Prompt {
 
 public class AuthPasswordInteractive: AuthMethod, Authenticator {
   public func name() -> String {
-    "password"
+    "password-interactive"
   }
   
   public typealias RequestAnswersCb = (Prompt) -> AnyPublisher<[String], Error>

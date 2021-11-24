@@ -372,7 +372,7 @@ public class SFTPClient : BlinkFiles.Translator {
     
     item[.name] = attrs.name != nil ? String(cString: attrs.name, encoding: .utf8) : (self.path as NSString).lastPathComponent
     
-    if attrs.size > 0 {
+    if attrs.size >= 0 {
       item[.size] = NSNumber(value: attrs.size)
     }
     
