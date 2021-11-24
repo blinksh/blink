@@ -63,6 +63,23 @@ class SharedFP {
   }
 }
 
+enum FileLocationPathOrURL {
+  case fileLocationPath(FileLocationPath)
+  case url(URL)
+  
+  init(_ str: String) throws {
+    if str.starts(with: "http://") || str.starts(with: "https://") {
+      if let url = URL(string: str) {
+        self = .url(url)
+      } else {
+        throw ArgumentParser.ValidationError("Invalid http(s) url")
+      }
+    } else {
+      self = .fileLocationPath(try FileLocationPath(str))
+    }
+  }
+}
+
 struct CodeCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "code",
@@ -73,55 +90,61 @@ struct CodeCommand: NonStdIOCommand {
   var io = NonStdIO.standart
 
   @Argument(
-    help: "Path to connect to",
-    transform: { try FileLocationPath($0) }
+    help: "Path to connect to or http(s) vscode like editor url",
+    transform: { try FileLocationPathOrURL($0) }
   )
-  var path: FileLocationPath?
+  var pathOrUrl: FileLocationPathOrURL?
 
   @Option(
-    help: "URL for vscode"
+    help: "URL for vscode",
+    transform: {
+      guard let url = URL(string: $0) else {
+        throw ArgumentParser.ValidationError("Invalid vscode url")
+      }
+      return url
+    }
   )
-  var vscode: String = "https://vscode.dev"
+  var vscodeURL: URL?
   
   mutating func run() throws {
-    try Code().start(self)
-  }
-}
-
-class Code {
-  func start(_ cmd: CodeCommand) throws {
-    let fp = SharedFP.startedFP(port: 50000)
-    let port = fp.service.port
+    let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     
     var path: FileLocationPath
-    // Build a rootPath
-    if cmd.path == nil {
+    
+    switch pathOrUrl {
+    case .url(let url):
+      DispatchQueue.main.async {
+        session.device.view.addBrowserWebView(url, agent: "")
+      }
+      return
+    case .fileLocationPath(let p):
+      path = p
+    default:
       path = try FileLocationPath(".")
-    } else {
-      path = cmd.path!
     }
+    
+    let fp = SharedFP.startedFP(port: 50000)
+    let port = fp.service.port
 
     guard let rootURI = path.codeFileSystemURI else {
       throw CommandError(message: "Could not parse path.")
     }
 
-    let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     let token = fp.service.registerMount(name: "xxx", root: rootURI.absoluteString)
     
-    NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
+    var observer: NSObjectProtocol = NSObject()
+    observer = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
       guard let device = notification.userInfo?["device"] as? TermDevice else {
         return
       }
       if session.device == device {
         fp.service.deregisterMount(token)
       }
-      NotificationCenter.default.removeObserver(self)
+      NotificationCenter.default.removeObserver(observer)
     }
 
+    let url = vscodeURL ?? URL(string: "https://vscode.dev")!
     DispatchQueue.main.async {
-      let url = URL(string: cmd.vscode)!
-////      var url = URL(string: "https://github.com/codespaces")!
-//
       let agent = "BlinkSH/15 (wss;\(port);\(token))"
       session.device.view.addBrowserWebView(url, agent: agent)
     }
