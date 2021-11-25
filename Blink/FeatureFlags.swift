@@ -36,6 +36,7 @@ import Foundation
 extension FeatureFlags {
   @objc static let fileProviders         = _enabled(for: .developer, .testFlight)
   @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
+  @objc static let blinkCode             = _enabled(for: .developer, .testFlight)
   @objc static let sshConfigAttachments  = _enabled(for: .developer, .testFlight)
 }
 

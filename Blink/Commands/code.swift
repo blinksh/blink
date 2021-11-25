@@ -160,6 +160,12 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   let io = NonStdIO.standart
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
+  
+  guard FeatureFlags.blinkCode
+  else {
+    io.print("code is unavailable in \(FeatureFlags.currentPublishingOptions())")
+    return 0
+  }
 
   return CodeCommand.main(Array(argv.args(count: argc)[1...]), io: io)
 }
