@@ -104,39 +104,41 @@ struct SortButton<T>: View where T: Equatable {
 struct HostListView: View {
   @StateObject private var _state = HostsObservable()
   @EnvironmentObject private var _nav: Nav
+  @State private var query = ""
   
   var body: some View {
     Group {
-      if _state.list.isEmpty {
+      if _state.filteredList.isEmpty {
         Button(
           action: _addHost,
           label: { Label("Add new host", systemImage: "plus") }
         )
       } else {
-        List {
-          ForEach(_state.list, id: \.alias) {
-            HostRow(card: $0, reloadList: _state.reloadHosts)
-          }.onDelete(perform: _state.deleteHosts)
-        }
-        .listStyle(InsetGroupedListStyle())
-        .navigationBarItems(
-          trailing: HStack {
-            Menu {
-              Section(header: Text("Order")) {
-                SortButton(label: "Alias",    sortType: $_state.sortType, asc: .aliasAsc, desc: .aliasDesc)
-                SortButton(label: "HostName", sortType: $_state.sortType, asc: .hostNameAsc, desc: .hostNameDesc)
-              }
-            } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
-            Button(
-              action: _addHost,
-              label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) }
-            )
+          List {
+            ForEach(_state.filteredList, id: \.alias) {
+              HostRow(card: $0, reloadList: _state.reloadHosts)
+            }.onDelete(perform: _state.deleteHosts)
           }
-        )
+          .listStyle(InsetGroupedListStyle())
+          .navigationBarItems(
+            trailing: HStack {
+              Menu {
+                Section(header: Text("Order")) {
+                  SortButton(label: "Alias",    sortType: $_state.sortType, asc: .aliasAsc, desc: .aliasDesc)
+                  SortButton(label: "HostName", sortType: $_state.sortType, asc: .hostNameAsc, desc: .hostNameDesc)
+                }
+              } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
+              Button(
+                action: _addHost,
+                label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) }
+              )
+            }
+          )
       }
     }
     .onAppear(perform: _state.startSync)
     .navigationBarTitle("Hosts")
+    .searchable(text: $_state.filterQuery)
   }
   
   private func _addHost() {
@@ -161,13 +163,39 @@ fileprivate class HostsObservable: ObservableObject {
     }
   }
   
-  @Published var sortType: HostSortType = .aliasAsc {
+  init() {
+    filterIfNeeded()
+  }
+  
+  @Published var filterQuery: String = "" {
     didSet {
-      list = list.sorted(by: sortType.sortFn)
+      filterIfNeeded()
     }
   }
   
-  @Published var list: [HostCard] = BKHosts.allHosts()
+  @Published var sortType: HostSortType = .aliasAsc {
+    didSet {
+      list = list.sorted(by: sortType.sortFn)
+      filterIfNeeded()
+    }
+  }
+  
+  @Published var filteredList: [HostCard] = []
+  
+  func filterIfNeeded() {
+    let trimmedQuery = filterQuery.trimmingCharacters(in: .whitespacesAndNewlines)
+    if trimmedQuery.isEmpty {
+      filteredList = list
+      return
+    }
+    
+    filteredList = list.filter({ h in
+      h.hostName.localizedCaseInsensitiveContains(trimmedQuery) ||
+      h.alias.localizedCaseInsensitiveContains(trimmedQuery)
+    })
+  }
+  
+  var list: [HostCard] = BKHosts.allHosts()
     .map(HostCard.init(host:))
     .sorted(by: HostSortType.aliasAsc.sortFn)
   
@@ -192,10 +220,11 @@ fileprivate class HostsObservable: ObservableObject {
     self.list = BKHosts.allHosts()
       .map(HostCard.init(host:))
       .sorted(by: sortType.sortFn)
+    filterIfNeeded()
   }
   
   func deleteHosts(indexSet: IndexSet) {
-    let hostsToDelete = indexSet.map { list[$0] }
+    let hostsToDelete = indexSet.map { filteredList[$0] }
     
     let syncHandler = BKiCloudSyncHandler.shared()
     let allHosts = BKHosts.all()
@@ -207,7 +236,8 @@ fileprivate class HostsObservable: ObservableObject {
       allHosts?.remove(h.host)
     }
     BKHosts.save()
-    list.remove(atOffsets: indexSet)
+    filteredList.remove(atOffsets: indexSet)
+    reloadHosts()
   }
 }
 
