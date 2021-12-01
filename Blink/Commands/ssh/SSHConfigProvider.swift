@@ -198,7 +198,7 @@ extension SSHClientConfigProvider {
     let readAnswer = self.device.readline(messageToShow, secure: false)
 
     if let answer = readAnswer?.lowercased() {
-      if answer.starts(with: "y") {
+      if answer.starts(with: "y") || answer.isEmpty {
         response = .affirmative
       }
     } else {
