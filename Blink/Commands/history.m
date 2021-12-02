@@ -36,40 +36,50 @@
 #include "MCPSession.h"
 #include <Blink-Swift.h>
 
+int _print_history_lines(NSInteger number) {
+  NSString *history = [NSString stringWithContentsOfFile:[BlinkPaths historyFile]
+                                                encoding:NSUTF8StringEncoding error:nil];
+  NSArray *lines = [history componentsSeparatedByString:@"\n"];
+  if (!lines) {
+    return 1;
+  }
+  lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
+  
+  NSInteger len = lines.count;
+  NSInteger start = 0;
+  if (number > 0) {
+    len = MIN(len, number);
+  } else if (number < 0) {
+    start = MAX(len + number , 0);
+  }
+  
+  for (NSInteger i = start; i < len; i++) {
+    puts([NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String);
+  }
+  
+  return 0;
+}
 __attribute__ ((visibility("default")))
 int history_main(int argc, char *argv[]) {
   NSString *args = @"";
   if (argc == 2) {
     args = [NSString stringWithUTF8String:argv[1]];
+  } else {
+    args = @"500";
   }
   NSInteger number = [args integerValue];
   if (number != 0) {
-    NSString *history = [NSString stringWithContentsOfFile:[BlinkPaths historyFile]
-                                                  encoding:NSUTF8StringEncoding error:nil];
-    NSArray *lines = [history componentsSeparatedByString:@"\n"];
-    if (!lines) {
-      return 1;
-    }
-    lines = [lines filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self != ''"]];
-    
-    NSInteger len = lines.count;
-    NSInteger start = 0;
-    if (number > 0) {
-      len = MIN(len, number);
-    } else {
-      start = MAX(len + number , 0);
-    }
-    
-    for (NSInteger i = start; i < len; i++) {
-      puts([NSString stringWithFormat:@"% 4li %@", i + 1, lines[i]].UTF8String);
-    }
+    return _print_history_lines(number);
+  } else if ([args isEqualToString:@"-a"]) {
+    return _print_history_lines(0);
   } else if ([args isEqualToString:@"-c"]) {
-    [HistoryObj clear];
+      [HistoryObj clear];
   } else {
     NSString *usage = [@[
                          @"history usage:",
-                         @"history <number> - Show history (can be negative)",
+                         @"history <number> - Show history (can be negative). Default 500",
                          @"history -c       - Clear history",
+                         @"history -a       - Print all history",
                          @""
                          ] componentsJoinedByString:@"\n"];
     puts(usage.UTF8String);
