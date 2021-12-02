@@ -68,7 +68,13 @@ import WebKit
         barButtonSystemItem: .refresh,
         target: self,
         action: #selector(_reload)
-      )
+      ),
+      UIBarButtonItem(
+        image: UIImage(systemName: "safari"),
+        style: .plain,
+        target: self,
+        action: #selector(_openBrowser)
+      ),
     ]
     
   }
@@ -88,5 +94,11 @@ import WebKit
   
   @objc func _reload() {
     webView?.reloadFromOrigin()
+  }
+  
+  @objc func _openBrowser() {
+    if let url = webView?.url {
+      blink_openurl(url)
+    }
   }
 }
