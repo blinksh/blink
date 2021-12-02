@@ -312,7 +312,7 @@ struct HostView: View {
       }.disabled(!_enabled)
       
       Section(header: Text("SSH")) {
-        Field("HostName",  $_hostName,  next: "Port",      placeholder: "Required", enabled: _enabled, kbType: .URL)
+        Field("HostName",  $_hostName,  next: "Port",      placeholder: "Host or IP address. Required", enabled: _enabled, kbType: .URL)
         Field("Port",      $_port,      next: "User",      placeholder: "22", enabled: _enabled, kbType: .numberPad)
         Field("User",      $_user,      next: "Password",  placeholder: BKDefaults.defaultUserName(), enabled: _enabled)
         Field("Password",  $_password,  next: "ProxyCmd",  placeholder: "Ask Every Time", secureTextEntry: true, enabled: _enabled)
