@@ -189,8 +189,8 @@ struct SSHCommand: ParsableCommand {
   var host: String {
     get {
       let comps = userAtHost.components(separatedBy: "@")
-      let hostAtPort = comps.count > 1 ? comps[1] : comps[0]
-      let compsHost = hostAtPort.components(separatedBy: "#")
+      let hostAndPort = comps[comps.count - 1]
+      let compsHost = hostAndPort.components(separatedBy: "#")
       return compsHost[0]
     }
   }
@@ -200,8 +200,12 @@ struct SSHCommand: ParsableCommand {
       if let user = loginName {
         return user
       }
-      let comps = userAtHost.components(separatedBy: "@")
-      return comps.count > 1 ? comps[0] : nil
+      var comps = userAtHost.components(separatedBy: "@")
+      if comps.count > 1 {
+        comps.removeLast()
+        return comps.joined(separator: "@")
+      }
+      return nil
     }
   }
   var port: UInt16? {
