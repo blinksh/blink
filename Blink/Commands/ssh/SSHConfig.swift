@@ -276,7 +276,7 @@ extension SSHCommand {
     }
 
     if let port = self.port {
-      params["port"] = port
+      params["port"] = String(port)
     }
 
     if let identityFile = self.identityFile {
