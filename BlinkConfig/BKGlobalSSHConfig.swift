@@ -59,39 +59,18 @@ public class BKGlobalSSHConfig: NSObject, NSSecureCoding {
     coder.encode(user, forKey: "user")
   }
 
-  // @objc public func save() {
-  //   do {
-  //     let data = try NSKeyedArchiver.archivedData(
-  //       withRootObject: self,
-  //       requiringSecureCoding: true
-  //     )
-
-  //     try data.write(to: BlinkPaths.globalSSHConfig,
-  //                    options: NSDataWritingAtomic | NSDataWritingFileProtectionNone)
-  //   } catch {
-  //     print(error)
-  //   }
-  // }
-
-  // public static func load() -> BKGlobalSSHConfig? {
-  //   do {
-  //     let data = try Data(contentsOf: BlinkPaths.globalSSHConfig)
-
-  //     return try NSKeyedUnarchiver.decodeObject(data) as? BKGlobalSSHConfig
-  //   } catch {
-  //     print(error)
-  //     return nil
-  //   }
-  // }
-
   @objc public func saveFile() {
     do {
       let config = SSHConfig()
 
-      // TODO High level migration mechanism.
+      // TODO If we decide to add values, we need to figure out when to overwrite it.
+      // Probably as part of the Default config.
+      // Not sure if now it was happening on every run.
       try config.add(alias: "*", cfg: [("User", self.user),
                                        ("ControlMaster", "auto"),
-                                       ("SendEnv", "LANG")])
+                                       ("SendEnv", "LANG"),
+                                       ("Compression", "yes"),
+                                       ("CompressionLevel", "6")])
    
       // Config does not currently allow for single lines
       let configString = """

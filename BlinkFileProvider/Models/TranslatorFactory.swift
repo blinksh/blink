@@ -123,9 +123,8 @@ class SSHClientConfigProvider {
   
   static func config(host title: String) throws -> (String, SSHClientConfig)? {
    
-    // TODO We could assume this is just regular config initialization.
-    // No need to pass it to the BKConfig itself then.
-    // Maybe have a dev warning at the BKConfig init in case all Hosts and Keys are all empty.
+    // NOTE This is just regular config initialization. Usually happens on AppDelegate, but the
+    // FileProvider doesn't get another chance.
     BKHosts.loadHosts()
     BKPubKey.loadIDS()
     
@@ -157,43 +156,5 @@ class SSHClientConfigProvider {
             host.sshClientConfig(authMethods: availableAuthMethods,
                                  agent: agent)
     )
-
-    // some basic parameters, we can extract directly.
-    // hostName = host.name
-    // The Host, will gather all the information from blink/ssh_config and internals
-    // host = bkConfig.host(forName: host)
-    // I was thinking separating blink internals and external ssh config would be a good idea, but truth
-    // is in the future, the driver will be the BKConfig. So if you have different profiles, that info
-    // will be kept as part of the BKConfig. It does not make sense to repeat ourselves here then.
-
-    // The Host itself will know how to attach more Host information, coming from different sources.
-    // host.append(SSHConfig(fromFile).host(forName: host))
-
-    // The BKConfig, as an intermmediate, will get the Host, and based on the key passed,
-    // try to extract it from the configuration.
-    // (signer, name) = bkConfig.signer(forHost host: Host)
-
-    // We finally generate the SSHClientConfig
-    // SSHClientConfig(parse: host)
-
-    // return (
-    //   bkConfig.hostName(forHost: host)!,
-    //   SSHClientConfig(
-    //     user: bkConfig.user(forHost: host) ?? "root",
-    //     port: bkConfig.port(forHost: host) ?? "22",
-    //     proxyJump: nil,
-
-    //     proxyCommand: bkConfig.proxyCommand(forHost: host),
-    //     authMethods: availableAuthMethods,
-    //     agent: agent,
-    //     loggingVerbosity: SSHLogLevel.debug,
-    //     verifyHostCallback: nil,
-    //     connectionTimeout: 300,
-    //     sshDirectory: BlinkPaths.ssh()!,
-    //     logger: PassthroughSubject<String, Never>(),
-    //     compression: false,
-    //     compressionLevel: 6
-    //  )
-    // )
   }
 }

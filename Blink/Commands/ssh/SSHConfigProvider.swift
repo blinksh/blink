@@ -81,27 +81,6 @@ class SSHClientConfigProvider {
                            verifyHostCallback: prov.cliVerifyHostCallback,
                            agent: agent,
                            logger: prov.logger)
-    //     return (
-    //   bkConfig.hostName(forHost: host) ?? cmd.host,
-    //   SSHClientConfig(
-    //     // first use 'user' from options, then from cmd, then from configured host, then from defaultUserName, and fallback to `root`
-    //     user: options?.user ?? cmd.user ?? bkConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
-    //     // first use `port` from options, then from cmd, then from configured host, and fallback to 22
-    //     port: options?.port ?? cmd.port.map(String.init) ?? bkConfig.port(forHost: host) ?? "22",
-    //     proxyJump: cmd.proxyJump ?? bkConfig.proxyJump(forHost: host),
-    //     proxyCommand: options?.proxyCommand ?? bkConfig.proxyCommand(forHost: host),
-    //     authMethods: availableAuthMethods,
-    //     agent: agent,
-    //     loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-    //     verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
-    //     connectionTimeout: options?.connectionTimeout ?? 30,
-    //     sshDirectory: BlinkPaths.ssh()!,
-    //     logger: prov.logger,
-    //     compression: options?.compression ?? true,
-    //     compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
-    //   )
-    // )
-
   }
 }
 

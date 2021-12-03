@@ -133,30 +133,4 @@ public struct BKConfig {
         return (privateKey, $0.1)
       }
   }
-
-  // TODO Keeping, not sure who needs this now after the merge.
-  // public func hostName(forHost host: String) -> String? {
-  //   _host(host)?.hostName
-  // }
-  
-  // public func proxyCommand(forHost host: String) -> String? {
-  //   _host(host)?.proxyCmd
-  // }
-
-  // public func proxyJump(forHost host: String) -> String? {
-  //   _host(host)?.proxyJump
-  // }
-  
-  // public func user(forHost host: String) -> String? {
-  //   let user = _host(host)?.user ?? ""
-  //   return user.isEmpty ? nil : user
-  // }
-  
-  // public func port(forHost host: String) -> String? {
-  //   if let port = _host(host)?.port {
-  //     return port.stringValue
-  //   } else {
-  //     return nil
-  //   }
-  // }
 }
