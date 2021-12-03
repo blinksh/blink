@@ -101,7 +101,6 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return -1
     }
     
-    // TODO BKConfig.shared.host()
     let host: BKSSHHost
     do {
       let commandHost = try cmd.bkSSHHost()

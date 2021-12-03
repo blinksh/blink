@@ -35,7 +35,6 @@ import Foundation
 import LibSSH
 
 
-// TODO: check libssh api for string values
 extension ssh_options_e {
   var name: String {
     switch self {
@@ -75,15 +74,10 @@ public enum VerifyHost {
   case notFound(serverFingerprint: String)
 }
 
-// TODO Having the middle-man here to parse the config will allow us to then
-// use the same defaults, etc... as with the SSHClientConfig, so we can abstract,
-// modify, and adapt to our use cases.
-
 public struct SSHClientConfig: CustomStringConvertible, Equatable {
   let user: String
   let port: String
   
-  // TODO We could pass a callbacks type on dial instead of here.
   public typealias RequestVerifyHostCallback = (VerifyHost) -> AnyPublisher<InteractiveResponse, Error>
   
   /**
@@ -116,9 +110,8 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
   
   let compression: Bool
   let compressionLevel: Int
-  
-  // TODO We can still offer this as a way to show what went through and simplify.
-  // We may have enough with the one coming from the new BKConfig.
+
+  // Offer a description based on what the final configuration is.
   public var description: String { """
   user: \(user)
   port: \(port)

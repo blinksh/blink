@@ -34,11 +34,6 @@ import Foundation
 import SSHConfig
 
 
-// TODO We need this if we want to indicate to the user which of the
-// extra ssh attributes we support, and obviously, when we don't.
-// fileprivate enum ExtendedSSHConfigAttributes {
-//   case
-// }
 extension BKHosts {
   static func sshConfig() throws -> SSHConfig {
     let config = SSHConfig()
@@ -70,8 +65,7 @@ extension BKHosts {
             .trimmingCharacters(in: .whitespaces)
             .components(separatedBy: CharacterSet(charactersIn: " \t"))
           if components.count == 2,
-             // TODO Comments may be doable with ("//", "content")
-             components[0] != "//" {
+             components[0] != "#" {
             cfg.append((components[0], components[1]))
           }
         }

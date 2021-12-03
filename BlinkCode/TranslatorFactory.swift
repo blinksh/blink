@@ -113,7 +113,6 @@ extension TranslatorFactories {
 
       let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
-      // TODO The error is that SSHConfig has to change the order, and I think I did not commit that.
       guard let host = try bkConfig.bkSSHHost(title),
             let hostName = host.hostName else {
         return nil

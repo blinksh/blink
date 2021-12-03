@@ -84,7 +84,6 @@ class SSHClientConfigProvider {
   }
 }
 
-// TODO Just KeyAuthMethods, we would map to our KBConfig
 extension SSHClientConfigProvider {
   // NOTE Unused as we moved to a pure agent. Leaving here in case it is useful in the future.
   fileprivate func keyAuthMethods(for host: BKSSHHost) -> [AuthMethod] {

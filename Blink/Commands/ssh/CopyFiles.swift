@@ -266,8 +266,6 @@ public class BlinkCopy: NSObject {
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {
     // At the moment everything is just SSH. At some point we should have a factory.
     let sshCommand: SSHCommand
-    // TODO ConfigFileOptions should now come from proper BKconfig
-    // let sshOptions: ConfigFileOptions
     var params = [hostPath]
     let host: BKSSHHost
     
