@@ -54,68 +54,73 @@ fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@. The
 // Having access from CLI
 // Having access from UI. Some parameters must already exist, others need to be tweaked.
 // Pass it a host and get everything necessary to connect, but some functions still need to be setup.
+
 class SSHClientConfigProvider {
   let device: TermDevice
-  let command: SSHCommand
   let logger = PassthroughSubject<String, Never>()
   var logCancel: AnyCancellable? = nil
+  let config: BKConfig
   
-  fileprivate init(command cmd: SSHCommand, using device: TermDevice) {
+  fileprivate init(using device: TermDevice) {
     self.device = device
-    self.command = cmd
+    self.config = BKConfig()
 
     logCancel = logger.sink { [weak self] in self?.printLn($0, err: true) }
   }
   
-  // Return HostName, SSHClientConfig for the server and Options for the Connection
-  static func config(command cmd: SSHCommand, using device: TermDevice) -> (String, SSHClientConfig) {
-    let host = cmd.host
-    let prov = SSHClientConfigProvider(command: cmd, using: device)
-    let agent = prov.agent(forHost: host)
-    let availableAuthMethods: [AuthMethod] = [AuthAgent(agent)] + prov.passwordAuthMethods()
+  // Return HostName, SSHClientConfig for the server
+  static func config(host: BKSSHHost, using device: TermDevice) -> SSHClientConfig {
+    let prov = SSHClientConfigProvider(using: device)
 
-    let options = try? cmd.connectionOptions.get()
-    
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
+    let agent = prov.agent(for: host)
 
-    return (
-      bkConfig.hostName(forHost: host) ?? cmd.host,
-      SSHClientConfig(
-        // first use 'user' from options, then from cmd, then from configured host, then from defaultUserName, and fallback to `root`
-        user: options?.user ?? cmd.user ?? bkConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
-        // first use `port` from options, then from cmd, then from configured host, and fallback to 22
-        port: options?.port ?? cmd.port.map(String.init) ?? bkConfig.port(forHost: host) ?? "22",
-        proxyJump: cmd.proxyJump ?? bkConfig.proxyJump(forHost: host),
-        proxyCommand: options?.proxyCommand ?? bkConfig.proxyCommand(forHost: host),
-        authMethods: availableAuthMethods,
-        agent: agent,
-        loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
-        verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
-        connectionTimeout: options?.connectionTimeout ?? 30,
-        sshDirectory: BlinkPaths.ssh()!,
-        logger: prov.logger,
-        compression: options?.compression ?? true,
-        compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
-      )
-    )
+    let availableAuthMethods: [AuthMethod] = [AuthAgent(agent)] + prov.passwordAuthMethods(for: host)
+
+    return
+      host.sshClientConfig(authMethods: availableAuthMethods,
+                           verifyHostCallback: prov.cliVerifyHostCallback,
+                           agent: agent,
+                           logger: prov.logger)
+    //     return (
+    //   bkConfig.hostName(forHost: host) ?? cmd.host,
+    //   SSHClientConfig(
+    //     // first use 'user' from options, then from cmd, then from configured host, then from defaultUserName, and fallback to `root`
+    //     user: options?.user ?? cmd.user ?? bkConfig.user(forHost: host) ?? BKDefaults.defaultUserName() ?? "root",
+    //     // first use `port` from options, then from cmd, then from configured host, and fallback to 22
+    //     port: options?.port ?? cmd.port.map(String.init) ?? bkConfig.port(forHost: host) ?? "22",
+    //     proxyJump: cmd.proxyJump ?? bkConfig.proxyJump(forHost: host),
+    //     proxyCommand: options?.proxyCommand ?? bkConfig.proxyCommand(forHost: host),
+    //     authMethods: availableAuthMethods,
+    //     agent: agent,
+    //     loggingVerbosity: SSHLogLevel(rawValue: cmd.verbose) ?? SSHLogLevel.debug,
+    //     verifyHostCallback: (options?.strictHostChecking ?? true) ? prov.cliVerifyHostCallback : nil,
+    //     connectionTimeout: options?.connectionTimeout ?? 30,
+    //     sshDirectory: BlinkPaths.ssh()!,
+    //     logger: prov.logger,
+    //     compression: options?.compression ?? true,
+    //     compressionLevel: options?.compressionLevel.map { Int($0) } ?? 6
+    //   )
+    // )
+
   }
 }
 
-
+// TODO Just KeyAuthMethods, we would map to our KBConfig
 extension SSHClientConfigProvider {
-  fileprivate func keyAuthMethods() -> [AuthMethod] {
+  // NOTE Unused as we moved to a pure agent. Leaving here in case it is useful in the future.
+  fileprivate func keyAuthMethods(for host: BKSSHHost) -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
-    
+
     // Explicit identity
-    if let identityFile = command.identityFile,
-       let (identityKey, name) = bkConfig.privateKey(forIdentifier: identityFile) {
-      authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
-    } else if let (hostKey, name) = bkConfig.privateKey(forHost: command.host) {
-      authMethods.append(AuthPublicKey(privateKey: hostKey, keyName: name))
+    if let identities = host.identityFile {
+      identities.forEach { identity in
+        if let (identityKey, name) = config.privateKey(forIdentifier: identity) {
+            authMethods.append(AuthPublicKey(privateKey: identityKey, keyName: name))
+        }
+      }
     } else {
       // All default keys
-      for (defaultKey, name) in bkConfig.defaultKeys() {
+      for (defaultKey, name) in config.defaultKeys() {
         authMethods.append(AuthPublicKey(privateKey: defaultKey, keyName: name))
       }
     }
@@ -123,12 +128,11 @@ extension SSHClientConfigProvider {
     return authMethods
   }
   
-  fileprivate func passwordAuthMethods() -> [AuthMethod] {
+  fileprivate func passwordAuthMethods(for host: BKSSHHost) -> [AuthMethod] {
     var authMethods: [AuthMethod] = []
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
 
     // Host password
-    if let password = bkConfig.password(forHost: command.host), !password.isEmpty {
+    if let password = host.password, !password.isEmpty {
       authMethods.append(AuthPassword(with: password))
     }
 
@@ -150,25 +154,21 @@ extension SSHClientConfigProvider {
     .eraseToAnyPublisher()
   }
 
-  fileprivate func agent(forHost host: String) -> SSHAgent {
+  fileprivate func agent(for host: BKSSHHost) -> SSHAgent {
     let agent = SSHAgent()
-    
-    let bkConfig = BKConfig(allHosts: BKHosts.allHosts(), allIdentities: BKPubKey.all())
+
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
-    if let identityFile = command.identityFile,
-       let (signer, name) = bkConfig.signer(forIdentity: identityFile) {
-      // NOTE We could also keep the reference and just read the key at the proper time.
-      // TODO Errors. Either pass or log here, or if we create a different
-      // type of key, then let the Agent fail.
-      agent.loadKey(signer, aka: name, constraints: consts)
-    } else if let (signer, name) = bkConfig.signer(forHost: command.host) {
-      agent.loadKey(signer, aka: name, constraints: consts)
+    if let signers = config.signer(forHost: host) {
+      signers.forEach { (signer, name) in
+        // NOTE We could also keep the reference and just read the key at the proper time.
+        // TODO Errors. Either pass or log here, or if we create a different
+        // type of key, then let the Agent fail.
+        _ = agent.loadKey(signer, aka: name, constraints: consts)
+      }
     } else {
-      for identity in ["id_dsa", "id_rsa", "id_ecdsa", "id_ed25519"] {
-        if let (signer, name) = bkConfig.signer(forIdentity: identity) {
-          agent.loadKey(signer, aka: name, constraints: consts)
-        }
+      for (signer, name) in config.defaultSigners() {
+        _ = agent.loadKey(signer, aka: name, constraints: consts)
       }
     }
     

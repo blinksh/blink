@@ -31,6 +31,9 @@
 
 #import <Foundation/Foundation.h>
 
+#import <BlinkConfig/BlinkConfig-Swift.h>
+
+
 extern NSString *const BKAppearanceChanged;
 
 typedef NS_ENUM(NSInteger, BKLayoutMode) {
@@ -60,6 +63,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 @property (nonatomic, strong) NSNumber *fontSize;
 @property (nonatomic, strong) NSNumber *externalDisplayFontSize;
 @property (nonatomic, strong) NSString *defaultUser;
+@property (nonatomic, strong) BKGlobalSSHConfig *globalSSHConfig;
 @property (nonatomic) BOOL cursorBlink;
 @property (nonatomic) NSUInteger enableBold;
 @property (nonatomic) BOOL boldAsBright;
@@ -109,6 +113,7 @@ typedef NS_ENUM(NSInteger, BKKeyboardStyle) {
 + (NSString *)xCallBackURLKey;
 + (BOOL)disableCustomKeyboards;
 + (void)setDefaultUserName:(NSString*)name;
++ (void)saveGlobalSSHConfig;
 + (NSString*)defaultUserName;
 + (BKLayoutMode)layoutMode;
 + (BKOverscanCompensation)overscanCompensation;

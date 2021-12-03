@@ -41,26 +41,6 @@ public func SSHInit() {
   ssh_init()
 }
 
-// TODO: check libssh api for string values
-fileprivate extension ssh_options_e {
-  var name: String {
-    switch self {
-    case SSH_OPTIONS_HOST:              return "SSH_OPTIONS_HOST"
-    case SSH_OPTIONS_USER:              return "SSH_OPTIONS_USER"
-    case SSH_OPTIONS_LOG_VERBOSITY:     return "SSH_OPTIONS_LOG_VERBOSITY"
-    case SSH_OPTIONS_COMPRESSION_C_S:   return "SSH_OPTIONS_COMPRESSION_C_S"
-    case SSH_OPTIONS_COMPRESSION_S_C:   return "SSH_OPTIONS_COMPRESSION_S_C"
-    case SSH_OPTIONS_COMPRESSION:       return "SSH_OPTIONS_COMPRESSION"
-    case SSH_OPTIONS_COMPRESSION_LEVEL: return "SSH_OPTIONS_COMPRESSION_LEVEL"
-    case SSH_OPTIONS_PORT_STR:          return "SSH_OPTIONS_PORT_STR"
-    case SSH_OPTIONS_PROXYJUMP:         return "SSH_OPTIONS_PROXYJUMP"
-    case SSH_OPTIONS_PROXYCOMMAND:      return "SSH_OPTIONS_PROXYCOMMAND"
-    case SSH_OPTIONS_SSH_DIR:           return "SSH_OPTIONS_SSH_DIR"
-    default:                            return "raw: \(rawValue)"
-    }
-  }
-}
-
 // This is a macro in libssh, so we redefine it here
 // https://stackoverflow.com/questions/24662864/swift-how-to-use-sizeof
 func ssh_init_callbacks(_ cb: inout ssh_callbacks_struct) {
@@ -71,130 +51,6 @@ func ssh_init_channel_callbacks(_ cb: inout ssh_channel_callbacks_struct) {
   cb.size = MemoryLayout.size(ofValue: cb)
 }
 
-/**
- Delegates the responsability of interpreting a "Yes"/"Si"/"да" to the app.
- Should return a `.affirmative` if it's a positive answer.
- */
-public enum InteractiveResponse {
-  /// "Yes"/"Si"/"да"
-  case affirmative
-  /// "No"/"No"/"нет"
-  case negative
-}
-
-/**
- Delegates the responsability of implementing and handling the cases.
- */
-public enum VerifyHost {
-  case changed(serverFingerprint: String)
-  case unknown(serverFingerprint: String)
-  case notFound(serverFingerprint: String)
-}
-
-public struct SSHClientConfig: CustomStringConvertible, Equatable {
-  let user: String
-  let port: String
-  
-  public typealias RequestVerifyHostCallback = (VerifyHost) -> AnyPublisher<InteractiveResponse, Error>
-  
-  /**
-   List of all of the authentication methods to use. Priority in which they are tried is not tied to their position on the list, defined in `SSHClient.validAuthMethods()`.
-   1. Publickey
-   2. Password
-   3. Keyboard Interactive
-   4. Hostbased
-   */
-  var authenticators: [Authenticator] = []
-  var agent: SSHAgent?
-
-  /// `.ssh` path location
-  let sshDirectory: String?
-  /// Path to config file
-  let sshClientConfigPath: String?
-  /// If `nil` no host verification will be done
-  let requestVerifyHostCallback: RequestVerifyHostCallback?
-  
-  let logger: SSHLoggerPublisher?
-  /// Default verbosity logging is disabled, SSH_LOG_NOLOG
-  let loggingVerbosity: SSHLogLevel
-  
-  let keepAliveInterval: Int? = nil
-  
-  let proxyCommand: String?
-  let proxyJump: String?
-  
-  let connectionTimeout: Int
-  
-  let compression: Bool
-  let compressionLevel: Int
-  
-  public var description: String { """
-  user: \(user)
-  port: \(port)
-  authenticators: \(authenticators.map { $0.displayName }.joined(separator: ", "))
-  proxyJump: \(proxyJump)
-  proxyCommand: \(proxyCommand)
-  compression: \(compression)
-  compressionLevel: \(compressionLevel)
-  """}
-
-  /**
-   - Parameters:
-   - user:
-   - port: Default will be `22`
-   - authMethods: Different authentication methods to try
-   - loggingVerbosity: Default LibSSH logging shown is `SSH_LOG_NOLOG`
-   - verifyHostCallback:
-   - terminalEmulator:
-   - sshDirectory: `ssh` directory, if `nil` it will use the default directory
-   - keepAliveInterval: if `nil` it won't send KeepAlive packages from Client to the Server
-   */
-  public init(user: String,
-              port: String = "22",
-              proxyJump: String? = nil,
-              proxyCommand: String? = nil,
-              authMethods: [AuthMethod]? = nil,
-              agent: SSHAgent? = nil,
-              loggingVerbosity: SSHLogLevel = .none,
-              verifyHostCallback: RequestVerifyHostCallback? = nil,
-              connectionTimeout: Int = 30,
-              sshDirectory: String? = nil,
-              sshClientConfigPath: String? = nil,
-              logger: PassthroughSubject<String, Never>? = nil,
-              keepAliveInterval: Int? = nil,
-              compression: Bool = true,
-              compressionLevel: Int = 6) {
-    // We do our own constructor because the automatic one cannot define optional params.
-    self.user = user
-    self.port = port
-    self.proxyCommand = proxyCommand
-    self.proxyJump = proxyJump
-    self.agent = agent
-    self.loggingVerbosity = loggingVerbosity
-    self.requestVerifyHostCallback = verifyHostCallback
-    self.sshDirectory = sshDirectory
-    self.sshClientConfigPath = sshClientConfigPath
-    self.logger = logger
-    self.connectionTimeout = connectionTimeout
-    self.compression = compression
-    self.compressionLevel = compressionLevel
-    
-    // TODO Disable Keep Alive for now. LibSSH is not processing correctly the messages
-    // that may come back from the server.
-    // self.keepAliveInterval = keepAliveInterval
-    
-    authMethods?.forEach({ auth in
-      if let auth = (auth as? Authenticator) {
-        self.authenticators.append(auth)
-      }
-    })
-  }
-  
-  public static func == (lhs: SSHClientConfig, rhs: SSHClientConfig) -> Bool {
-    return (lhs.port == rhs.port &&
-      lhs.user == rhs.user)
-  }
-}
 
 public class SSHClient {
   let session: ssh_session
@@ -307,9 +163,8 @@ public class SSHClient {
     /// Parse `~/.ssh/config` file.
     /// This should be the last call of all options, it may overwrite options which are already set.
     /// It requires that the host name is already set with ssh_options_set_host().
-    guard
-      ssh_options_parse_config(session, options.sshClientConfigPath) == SSH_OK
-    else {
+    if let sshConfigPath = options.sshClientConfigPath,
+       ssh_options_parse_config(session, sshConfigPath) != SSH_OK {
       throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
     }
   }
@@ -939,7 +794,7 @@ public class SSHClient {
   }
 }
 
-public typealias SSHLoggerPublisher = PassthroughSubject<String, Never>
+public typealias SSHLogPublisher = PassthroughSubject<String, Never>
 //typealias SSHLoggerMessage = (message: String, level: Int32)
 public enum SSHLogLevel: Int {
   case none = 0
@@ -947,13 +802,30 @@ public enum SSHLogLevel: Int {
   case info
   case debug
   case trace
+
+  public init?(_ level: String) {
+    switch level.uppercased() {
+    case "QUIET":
+      self = .none
+    case "FATAL", "ERROR", "INFO":
+      self = .warn
+    case "VERBOSE":
+      self = .info
+    case "DEBUG", "DEBUG1":
+      self = .debug
+    case "DEBUG2", "DEBUG3":
+      self = .trace
+    default:
+      return nil
+    }
+  }
 }
 
 class SSHLogger {
   let verbosity: SSHLogLevel
-  let logger: SSHLoggerPublisher?
+  let logger: SSHLogPublisher?
   
-  init(verbosity level: SSHLogLevel, logger: PassthroughSubject<String, Never>?) {
+  init(verbosity level: SSHLogLevel, logger: SSHLogPublisher?) {
     self.verbosity = level
     self.logger = logger
   }
