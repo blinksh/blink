@@ -127,6 +127,7 @@ public struct BKSSHHost {
       loggingVerbosity: logLevel,
       verifyHostCallback: verifyHostCallback,
       connectionTimeout: connectionTimeout,
+      sshDirectory: BlinkPaths.ssh()!,
       logger: logger,
       compression: compression,
       compressionLevel: compressionLevel

@@ -101,6 +101,11 @@ void __setupProcessEnv() {
       __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
   });
   
+  NSString *homePath = BlinkPaths.homePath;
+  setenv("HOME", homePath.UTF8String, 1);
+  setenv("SSH_HOME", homePath.UTF8String, 1);
+  setenv("CURL_HOME", homePath.UTF8String, 1);
+  
   NSNotificationCenter *nc = NSNotificationCenter.defaultCenter;
   [nc addObserver:self
          selector:@selector(_onSceneDidEnterBackground:)
