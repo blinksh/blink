@@ -89,7 +89,7 @@ public class BKGlobalSSHConfig: NSObject, NSSecureCoding {
       let config = SSHConfig()
 
       // TODO High level migration mechanism.
-      try config.add(alias: "*", cfg: [("User", self.user), 
+      try config.add(alias: "*", cfg: [("User", self.user),
                                        ("ControlMaster", "auto"),
                                        ("SendEnv", "LANG")])
    

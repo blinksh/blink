@@ -42,6 +42,7 @@ import SSHConfig
 extension BKHosts {
   static func sshConfig() throws -> SSHConfig {
     let config = SSHConfig()
+    
     let hosts = BKHosts.allHosts() ?? []
     for h in hosts {
       var cfg: [(String, Any)] = []
@@ -85,11 +86,20 @@ extension BKHosts {
   @objc public static func saveAllToSSHConfig() {
     do {
       let config = try sshConfig()
+      
+      let configStr =
+"""
+# ATTENTION! THIS IS GENERATED FILE. DO NOT CHANGE IT DIRECTLY.
+# GENERATED \(Date.now.ISO8601Format())
+#
+# Use config command do configure your hosts
+# Or put your configuration to ~/.ssh/config
 
-      // TODO Maybe add a comment to not modify the file on your own.
-      // TODO Add the .ssh/config import
+\(config.string())
+"""
+
       guard
-        let data = config.string().data(using: .utf8),
+        let data = configStr.data(using: .utf8),
         let url = BlinkPaths.blinkSSHConfigFileURL()
       else {
         // TODO As this file is basically our own, we may want to report
