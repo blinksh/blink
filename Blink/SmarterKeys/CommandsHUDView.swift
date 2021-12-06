@@ -290,7 +290,7 @@ class CommandsHUGView: UIView {
     )
     
     let f = CGRect(origin: origin, size: size)
-    if f == self.frame {
+    if f == self.frame || origin.y < 0 {
       return
     }
     self.frame = f
