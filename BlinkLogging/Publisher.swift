@@ -38,19 +38,29 @@ public class FileLogging {
   let queue = DispatchQueue(label: "FileLogging")
   
   public init(to url: URL) throws {
-    if !FileManager.default.fileExists(atPath: url.path) {
-      guard FileManager.default.createFile(atPath: url.path, contents: nil, attributes: nil) else {
+    let fm = FileManager.default
+    
+    let attrs: [FileAttributeKey : Any] = [.protectionKey: FileProtectionType.none]
+    
+    if !fm.fileExists(atPath: url.path) {
+      guard fm.createFile(atPath: url.path, contents: nil, attributes: attrs) else {
         throw NSError(domain: NSPOSIXErrorDomain, code: 1)
       }
+    } else {
+      try fm.setAttributes(attrs, ofItemAtPath: url.path)
     }
-
+    
     self.h = try FileHandle(forWritingTo: url)
     h.truncateFile(atOffset: 0)
     //h.seekToEndOfFile()
   }
   
   func write(_ data: Data) {
-    h.write(data)
+    do {
+      try h.write(contentsOf: data)
+    } catch {
+      debugPrint("Failed to write log: ", error)
+    }
   }
 }
 
