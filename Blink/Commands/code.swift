@@ -120,7 +120,11 @@ struct CodeCommand: NonStdIOCommand {
     case .fileLocationPath(let p):
       path = p
     default:
-      path = try FileLocationPath(".")
+      DispatchQueue.main.async {
+        let url = URL(string: "https://github.com/blinksh/blink/blob/raw/CODE.md")!
+        session.device.view.addBrowserWebView(url, agent: "")
+      }
+      return
     }
     
     let fp = SharedFP.startedFP(port: 50000)
