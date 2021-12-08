@@ -112,7 +112,13 @@ struct CodeCommand: NonStdIOCommand {
     var path: FileLocationPath
     
     switch pathOrUrl {
-    case .url(let url):
+    case .url(var url):
+      var str = url.absoluteString
+      let githubCom = "https://github.com/"
+      if str.hasPrefix(githubCom) {
+        str = "https://github.dev/" + str[githubCom.endIndex...]
+        url = URL(string: str)!
+      }
       DispatchQueue.main.async {
         session.device.view.addBrowserWebView(url, agent: "")
       }
