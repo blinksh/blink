@@ -121,7 +121,7 @@ struct CodeCommand: NonStdIOCommand {
       path = p
     default:
       DispatchQueue.main.async {
-        let url = URL(string: "https://github.com/blinksh/blink/blob/raw/CODE.md")!
+        let url = URL(string: "https://github.dev/blinksh/blink/blob/raw/CODE.md")!
         session.device.view.addBrowserWebView(url, agent: "")
       }
       return
