@@ -81,7 +81,7 @@ struct BlinkCopyCommand: ParsableCommand {
 
   @Argument(help: "DEST",
             transform: { try FileLocationPath($0) })
-  var destination: FileLocationPath
+  var destination: FileLocationPath = try! FileLocationPath(".")
   
   var preserveFlags: CopyAttributesFlag {
     preserve ? CopyAttributesFlag([.permissions, .timestamp]) : CopyAttributesFlag([])
