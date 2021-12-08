@@ -78,7 +78,7 @@ class SSHClientConfigProvider {
 
     return
       host.sshClientConfig(authMethods: availableAuthMethods,
-                           verifyHostCallback: prov.cliVerifyHostCallback,
+                           verifyHostCallback: (host.strictHostKeyChecking ?? true) ? prov.cliVerifyHostCallback : nil,
                            agent: agent,
                            logger: prov.logger)
   }

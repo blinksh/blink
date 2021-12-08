@@ -52,6 +52,7 @@ public struct BKSSHHost {
   public var controlMaster: ControlMasterOption?
   public var forwardAgent: Bool?
   public var sendEnv: [String]?
+  public var strictHostKeyChecking: Bool?
   // TODO SendEnv, Tunnels, etc...
   
   public struct ValidationError: Error {
@@ -83,20 +84,21 @@ public struct BKSSHHost {
         let key = key.lowercased()
         
         switch key {
-        case "hostname":            self.hostName           = try castValue(value)
-        case "password":            self.password           = try castValue(value)
-        case "user":                self.user               = try castValue(value)
-        case "port":                self.port               = try castValue(value)
-        case "proxycommand":        self.proxyCommand       = try castValue(value)
-        case "proxyjump":           self.proxyJump          = try castValue(value)
-        case "compression":         self.compression        = try castValue(value)
-        case "compressionlevel":    self.compressionLevel   = try castValue(value)
-        case "connectiontimeout":   self.connectionTimeout  = try castValue(value)
-        case "loglevel":            self.logLevel           = try castValue(value)
-        case "controlmaster":       self.controlMaster      = try castValue(value)
-        case "forwardagent":        self.forwardAgent       = try castValue(value)
-        case "sendenv":             self.sendEnv            = try castList(value)
-        case "identityfile":        self.identityFile       = try castList(value)
+        case "hostname":                self.hostName               = try castValue(value)
+        case "password":                self.password               = try castValue(value)
+        case "user":                    self.user                   = try castValue(value)
+        case "port":                    self.port                   = try castValue(value)
+        case "proxycommand":            self.proxyCommand           = try castValue(value)
+        case "proxyjump":               self.proxyJump              = try castValue(value)
+        case "compression":             self.compression            = try castValue(value)
+        case "compressionlevel":        self.compressionLevel       = try castValue(value)
+        case "connectiontimeout":       self.connectionTimeout      = try castValue(value)
+        case "loglevel":                self.logLevel               = try castValue(value)
+        case "controlmaster":           self.controlMaster          = try castValue(value)
+        case "forwardagent":            self.forwardAgent           = try castValue(value)
+        case "stricthostkeychecking":   self.strictHostKeyChecking  = try castValue(value)
+        case "sendenv":                 self.sendEnv                = try castList(value)
+        case "identityfile":            self.identityFile           = try castList(value)
         default:
           // Skip unknown
           break
