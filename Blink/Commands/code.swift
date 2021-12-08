@@ -193,6 +193,9 @@ extension FileLocationPath {
         return nil
       }
       let host = "/\(hostPath.replacingOccurrences(of: "#", with: ":"))"
+      if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
+        filePath = "~/\(filePath)"
+      }
       return URL(string: uriProtocolIdentifier + host)?.appendingPathComponent(filePath)
     }
   }
