@@ -119,6 +119,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     {"port", required_argument, 0, 'p'},
     {"ip", optional_argument, 0, 'i'},
     {"key", optional_argument, 0, 'k'},
+    {"no-ssh-pty", optional_argument, 0, 'T'},
     //{"ssh", required_argument, 0, 'S'},
     {"verbose", no_argument, &_debug, 1},
     {"help", no_argument, &help, 1},
