@@ -422,6 +422,79 @@ class FileProviderExtension: NSFileProviderExtension {
         }
       ).store(in: &cancellableBag)
   }
+
+  override func deleteItem(withIdentifier itemIdentifier: NSFileProviderItemIdentifier, completionHandler: @escaping (Error?) -> Void) {
+    let log = BlinkLogger("deleteItem")
+    log.info("\(itemIdentifier)")
+
+    let blinkItemIdentifier = BlinkItemIdentifier(itemIdentifier)
+    guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkItemIdentifier) else {
+      completionHandler(NSFileProviderError(.noSuchItem))
+      return
+    }
+
+    let recursive = true
+
+    func delete(_ translators: [Translator]) -> AnyPublisher<Void, Error> {
+      translators.publisher
+        .flatMap(maxPublishers: .max(1)) { t -> AnyPublisher<Void, Error> in
+          print(t.current)
+          if t.fileType == .typeDirectory {
+            return [deleteDirectoryContent(t), AnyPublisher(t.rmdir().map {_ in})]
+              .compactMap { $0 }
+              .publisher
+              .flatMap(maxPublishers: .max(1)) { $0 }
+              .collect()
+              .map {_ in}
+              .eraseToAnyPublisher()
+          }
+
+          return AnyPublisher(t.remove().map { _ in })
+        }.eraseToAnyPublisher()
+    }
+
+    func deleteDirectoryContent(_ t: Translator) -> AnyPublisher<Void, Error>? {
+      if recursive == false {
+        return nil
+      }
+
+      return t.directoryFilesAndAttributes().flatMap {
+        $0.compactMap { i -> FileAttributes? in
+          if (i[.name] as! String) == "." || (i[.name] as! String) == ".." {
+            return nil
+          } else {
+            return i
+          }
+        }.publisher
+      }
+      .flatMap {
+        t.cloneWalkTo($0[.name] as! String) }
+      .collect()
+      .flatMap {
+        delete($0) }
+      .eraseToAnyPublisher()
+    }
+
+    FileTranslatorCache.translator(for: blinkItemIdentifier.encodedRootPath)
+      .flatMap {
+        $0.cloneWalkTo(blinkItemIdentifier.path)
+          .flatMap { delete([$0]) }
+      }
+      .sink(
+        receiveCompletion: { completion in
+          if case let .failure(error) = completion {
+            log.error("\(error)")
+            completionHandler(NSFileProviderError.operationError(dueTo: error))
+          } else {
+            // NOTE We may want to delete the other references as well.
+            FileTranslatorCache.remove(reference: blinkItemReference)
+            completionHandler(nil)
+          }
+        },
+        receiveValue: { _ in }
+      ).store(in: &cancellableBag)
+  }
+
   // MARK: - Enumeration
 
   override func enumerator(for containerItemIdentifier: NSFileProviderItemIdentifier) throws -> NSFileProviderEnumerator {
