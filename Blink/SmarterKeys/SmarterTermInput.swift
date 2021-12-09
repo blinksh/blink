@@ -372,6 +372,16 @@ extension SmarterTermInput {
     }
   }
   
+  override func canBeFocused() -> Bool {
+    let res = super.canBeFocused()
+   
+    if res == false {
+      return KBTracker.shared.input == self
+    }
+    
+    return res
+  }
+  
   override func onMods() {
     kbView.stopRepeats()
   }

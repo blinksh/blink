@@ -113,7 +113,7 @@ NSString *_encodeString(NSString *str);
     UIView * mayBeUs = [[me superview] superview];
     if ([mayBeUs isKindOfClass:[KBWebViewBase class]]) {
       KBWebViewBase * base = (KBWebViewBase *)mayBeUs;
-      arg1 = [base _canBeFocused];
+      arg1 = [base canBeFocused];
       if (arg1) {
         ((void (*)(id, SEL, void*, BOOL, BOOL, BOOL, id))original)(me, selector, arg0, arg1, arg2, arg3, arg4);
       }
@@ -125,7 +125,7 @@ NSString *_encodeString(NSString *str);
   method_setImplementation(method, override);
 }
 
-- (BOOL)_canBeFocused {
+- (BOOL)canBeFocused {
   return self.userInteractionEnabled && _focused;
 }
 

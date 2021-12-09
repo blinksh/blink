@@ -66,6 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)_keyboardDidHide:(NSNotification *)notification;
 - (void)_keyboardDidShow:(NSNotification *)notification;
 
+- (BOOL)canBeFocused;
+
 
 @end
 
