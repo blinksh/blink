@@ -78,6 +78,9 @@ final class FileTranslatorCache {
 //    shared.fileList[parent]!.append(reference)
     shared.references[reference.itemIdentifier.rawValue] = reference
   }
+  static func remove(reference: BlinkItemReference) {
+    shared.references.removeValue(forKey: reference.itemIdentifier.rawValue)
+  }
 
   static func reference(identifier: BlinkItemIdentifier) -> BlinkItemReference? {
     print("requesting File BlinkItemReference : \(identifier.itemIdentifier.rawValue)")
