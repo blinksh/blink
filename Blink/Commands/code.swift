@@ -115,7 +115,8 @@ struct CodeCommand: NonStdIOCommand {
     case .url(var url):
       var str = url.absoluteString
       let githubCom = "https://github.com/"
-      if str.hasPrefix(githubCom) {
+      let codespaces = "https://github.com/codespaces/"
+      if str.hasPrefix(githubCom) && !str.hasPrefix(codespaces) {
         str = "https://github.dev/" + str[githubCom.endIndex...]
         url = URL(string: str)!
       }
