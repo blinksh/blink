@@ -331,7 +331,7 @@ class CodeFileSystem {
             if !(options.overwrite ?? false) {
               return .fail(error: CodeFileSystemError.fileExists(uri: self.uri))
             }
-            return fileT.open(flags: O_RDWR | O_TRUNC)
+            return fileT.open(flags: O_WRONLY | O_TRUNC)
           }
           .tryCatch { error -> AnyPublisher<BlinkFiles.File, Error> in
             if case CodeFileSystemError.fileExists = error {
@@ -346,13 +346,21 @@ class CodeFileSystem {
         // 2. Write the content to the file
           .flatMap { file -> AnyPublisher<Int, Error> in
             if content.isEmpty {
-              return .just(0)
+              return file.close()
+                .map { _ in
+                  0 }
+                .eraseToAnyPublisher()
             }
             return file.write(content.withUnsafeBytes { DispatchData(bytes: $0) }, max: content.count)
               .reduce(0, { count, written -> Int in
                            print("Total Written \(count)")
                            return count + written
-              }).eraseToAnyPublisher()
+              })
+              .flatMap { wrote in
+                file.close().map { _ in wrote }
+                
+              }
+              .eraseToAnyPublisher()
           }
         // 3. Resolve once everything copied. Just collect but output nothing.
           .map { _ in (nil, nil) }
