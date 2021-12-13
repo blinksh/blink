@@ -799,9 +799,40 @@ void trace(void* ptr, const char *mess, size_t size) {
   libssh2_knownhost_readfile(kh, khFilePath, LIBSSH2_KNOWNHOST_FILE_OPENSSH);
   
   key = libssh2_session_hostkey(_session, &key_len, &key_type);
-  int kh_key_type = (key_type == LIBSSH2_HOSTKEY_TYPE_RSA) ? LIBSSH2_KNOWNHOST_KEY_SSHRSA : LIBSSH2_KNOWNHOST_KEY_SSHDSS;
-  type_str = (key_type == LIBSSH2_HOSTKEY_TYPE_RSA) ? "RSA" : "DSS";
+  int kh_key_type;
   
+  switch (key_type) {
+    case LIBSSH2_HOSTKEY_TYPE_RSA:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_SSHRSA;
+      type_str = "RSA";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_DSS:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_SSHDSS;
+      type_str = "DSS";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_ECDSA_256:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_ECDSA_256;
+      type_str = "ECDSA 256";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_ECDSA_384:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_ECDSA_384;
+      type_str = "ECDSA 384";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_ECDSA_521:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_ECDSA_521;
+      type_str = "ECDSA 521";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_ED25519:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_ED25519;
+      type_str = "ED25519";
+      break;
+    case LIBSSH2_HOSTKEY_TYPE_UNKNOWN:
+    default:
+      kh_key_type = LIBSSH2_KNOWNHOST_KEY_UNKNOWN;
+      type_str = "Unknown";
+      break;
+  }
+    
   const char *hk_hash = libssh2_hostkey_hash(_session, LIBSSH2_HOSTKEY_HASH_SHA1);
   
   NSData *data = [NSData dataWithBytes:hk_hash length:20];
