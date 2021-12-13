@@ -33,7 +33,6 @@
 
 
 #import "Session.h"
-#import "SSHClient.h"
 
 
 @class MCPParams;

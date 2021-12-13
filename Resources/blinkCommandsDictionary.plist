@@ -51,13 +51,6 @@
 		<string></string>
 		<string>no</string>
 	</array>
-	<key>cssh</key>
-	<array>
-		<string>MAIN</string>
-		<string>ssh_main</string>
-		<string>axR:L:Vo:CGp:i:hqTtvl:F:</string>
-		<string>no</string>
-	</array>
 	<key>ssh-add</key>
 	<array>
 		<string>MAIN</string>
