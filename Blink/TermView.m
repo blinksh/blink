@@ -195,7 +195,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 //  configuration.limitsNavigationsToAppBoundDomains = YES;
 
 
-  _browserView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _browserView = [[VSCodeInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
   _browserView.customUserAgent =
 //  [@"Mozilla/5.0 (Linux; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 " stringByAppendingString:agent];
   [@"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.1 Safari/605.1.15 " stringByAppendingString:agent];
