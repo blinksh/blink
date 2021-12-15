@@ -53,71 +53,39 @@ struct SKStoreCmd: NonStdIOCommand {
     help: "attribute"
   )
   var attribute: String
+  var infoURL: URL { BlinkPaths.blinkURL().appendingPathComponent(".receiptInfo") }
   
   func run() throws {
     let sema = DispatchSemaphore(value: 0)
     
-    if attribute != "" {
+    if attribute != "asdf" {
       return
     }
     
     let sk = SKStore()
-    sk.start { message in
-      if let message = message {
-        print(message)
+    var error: Error? = nil
+
+    let c = sk.fetchReceiptURLPublisher()
+      .tryMap { url in 
+        let d = try Data(contentsOf: url, options: .alwaysMapped)
+        let str = d.base64EncodedString(options: [])
+        try str.write(to: infoURL, atomically: false, encoding: .utf8)
       }
-      sema.signal()
-    }
+      .sink(receiveCompletion: { completion in
+        if case .failure(let err) = completion {
+          error = err
+        }
+        sema.signal()
+      }, receiveValue: { _ in })
+
     sema.wait()
-  }
-}
-
-@objc class SKStore: NSObject {
-  var infoURL: URL { BlinkPaths.blinkURL().appendingPathComponent(".receiptInfo") }
-  var done: ((String?) -> Void)!
-  var skReq: SKReceiptRefreshRequest? = nil
-  
-  @objc func start(done: @escaping ((String?) -> Void)) {
-    self.done = done
-    guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL else {
-      return done("No URL for receipt found.")
-    }
-    if !FileManager.default.fileExists(atPath: appStoreReceiptURL.path) {
-      let skReq = SKReceiptRefreshRequest(receiptProperties: nil)
-      skReq.delegate = self
-      skReq.start()
-      self.skReq = skReq
-      return
-    }
     
-    store(appStoreReceiptURL)
-  }
-  
-  func store(_ url: URL) {
-    do {
-      let d = try Data(contentsOf: url, options: .alwaysMapped)
-      let str = d.base64EncodedString(options: [])
-      try str.write(to: infoURL, atomically: false, encoding: .utf8)
-      done(nil)
-    } catch {
-      done(error.localizedDescription)
+    if let error = error {
+      throw error
     }
   }
 }
 
-extension SKStore: SKRequestDelegate {
-  func requestDidFinish(_ request: SKRequest) {
-    if let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
-       FileManager.default.fileExists(atPath: appStoreReceiptURL.path) {
-      store(appStoreReceiptURL)
-    } else {
-      done("No receipt found after request.")
-    }
-  }
-  func request(_ request: SKRequest, didFailWithError error: Error) {
-    done(error.localizedDescription)
-  }
-}
 
 @_cdecl("skstore_main")
 public func skstore_main(argc: Int32, argv: Argv) -> Int32 {
