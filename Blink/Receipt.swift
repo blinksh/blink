@@ -36,69 +36,76 @@ import Foundation
 import StoreKit
 
 
-fileprivate let endpointURL = URL("https://us-central1-gold-stone-332203.cloudfunctions.net/receiptEntitlementPOST")!
+fileprivate let endpointURL = URL(string: "https://us-central1-gold-stone-332203.cloudfunctions.net/receiptEntitlement")!
 
 
-func requestReceiptForMigration(attachedTo originalUserId: String) -> AnyPublisher<Data, Error> {
-  SKStore()
-    .fetchReceiptURLPublisher()
-    .tryMap { receiptURL -> [String:String] in
-      let d = try Data(contentsOf: receiptURL, options: .alwaysMapped)
-      let receipt = d.base64EncodedString(options: [])
-      return  ["receiptData": receipt,
-               "originalUserId": originalUserId]
-    }
-    .encode(encoder: JSONEncoder())
-    // TODO Map the error?
-    .map { data -> URLRequest in
-      var request = URLRequest(url: endpointURL)
-      request.httpMethod = "POST"
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      request.httpBody = data
-      return request
-    }
-    .flatMap {
-      URLSession.shared.dataTaskPublisher(for: $0)
-      .tryMap { response -> Data in
-        guard let httpResponse = response as? HTTPURLResponse else {
-          throw ReceiptMigrationError.RequestError
-        }
-        let statusCode = httpResponse.statusCode
-        guard statusCode == 200 else {
-          switch statusCode {
-            case 409:
-            throw ReceiptMigrationError.ReceiptExists
-            case 400:
-            throw ReceiptMigrationError.APIError
-            default:
-            throw ReceiptMigrationError.RequestError
-          }
-        }
-        return response.data
-      }
-    }.eraseToAnyPublisher()
-}
-
-struct MigrationToken {
+struct MigrationToken: Codable {
   let token: String
   let data:  String
 
+  public static func requestTokenForMigration(receiptData: String, attachedTo originalUserId: String) -> AnyPublisher<Data, Error> {
+    Just(["receiptData": receiptData,
+          "originalUserId": originalUserId])
+  // NOTE Leaving this for reference. This is now responsibility of other layers.
+  //  SKStore()
+  //    .fetchReceiptURLPublisher()
+  //    .tryMap { receiptURL -> [String:String] in
+  //      let d = try Data(contentsOf: receiptURL, options: .alwaysMapped)
+  //      let receipt = d.base64EncodedString(options: [])
+  //      return  ["receiptData": receipt,
+  //               "originalUserId": originalUserId]
+  //    }
+      .encode(encoder: JSONEncoder())
+      .map { data -> URLRequest in
+        var request = URLRequest(url: endpointURL)
+        request.httpMethod = "POST"
+        request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = data
+        return request
+      }
+      .flatMap {
+        URLSession.shared.dataTaskPublisher(for: $0)
+        .tryMap { element -> Data in
+          guard let httpResponse = element.response as? HTTPURLResponse else {
+            throw ReceiptMigrationError.RequestError
+          }
+          let statusCode = httpResponse.statusCode
+          guard statusCode == 200 else {
+            let errorMessage = try? JSONDecoder().decode(ErrorMessage.self, from: element.data)
+            switch statusCode {
+              case 409:
+              throw ReceiptMigrationError.ReceiptExists
+              case 400:
+              throw ReceiptMigrationError.InvalidAppReceipt(error: errorMessage)
+              default:
+              throw ReceiptMigrationError.RequestError
+            }
+          }
+          return element.data
+        }
+      }.eraseToAnyPublisher()
+  }
 
   public func validateReceiptForMigration(attachedTo originalUserId: String) throws {
     let dataComponents = data.components(separatedBy: ":")
     let currentTimestamp = Int(Date().timeIntervalSince1970)
-    
+
+    // Check the user coming from signature and params match.
+    // Check the timestamp is within a range, to prevent reuse.
     guard dataComponents.count == 3,
       dataComponents[1] == originalUserId,
       let receiptTimestamp = Int(dataComponents[2]),
-      // 5 min margin for timestamp
-      (currentTimestamp - receiptTimestamp) < 300,
-      isSignatureVerified else {
+      // 60s margin for timestamp. It is rare that it takes more than 15 secs.
+      (currentTimestamp - receiptTimestamp) < 60 else {
         throw ReceiptMigrationError.InvalidMigrationReceipt
       }
+    guard isSignatureVerified else {
+      throw ReceiptMigrationError.InvalidMigrationReceiptSignature
+    }
   }
 
-  private let publicKeyStr = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEsuI2ZyUFD45NRAH4OEu4GvrOmdv4X4Ti49pbhbLY2fvQNEHI6fp/5Ndawwnp5uK2GIDk0e1E//uV3GEiPT8vOA=="
+  private let publicKeyStr = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEO5gruKzo5hnh8eiaakwZgliooXEWS+0180oEeF2m1jUtTlje6AL/ybNTkXdAtxz3DtBUEGI9VIVvtN5eNBYbpg=="
+  //private let publicKeyStr = "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEsuI2ZyUFD45NRAH4OEu4GvrOmdv4X4Ti49pbhbLY2fvQNEHI6fp/5Ndawwnp5uK2GIDk0e1E//uV3GEiPT8vOA=="
   private var publicKey: CryptoKit.P256.Signing.PublicKey {
     get {
       let pemKeyData = Data(base64Encoded: publicKeyStr)!
@@ -110,7 +117,7 @@ struct MigrationToken {
   }
 
   private var isSignatureVerified: Bool {
-    guard 
+    guard
       let data = data.data(using: .utf8),
       let signedRawRS = Data(base64Encoded: token),
       let signature = try? CryptoKit.P256.Signing
@@ -122,15 +129,18 @@ struct MigrationToken {
   }
 }
 
-enum ReceiptMigrationError: Error {
+struct ErrorMessage: Codable, Equatable {
+  let error: String
+}
+
+enum ReceiptMigrationError: Error, Equatable {
   // 409 - we may want to drop the ID in this scenario.
   case ReceiptExists
   // 40X
-  case InvalidAppReceipt
+  case InvalidAppReceipt(error: ErrorMessage?)
   case InvalidMigrationReceipt
+  case InvalidMigrationReceiptSignature
   // Everything else
-  case APIError
-  // Or capture NSURLError
   case RequestError
 }
 
@@ -141,10 +151,9 @@ enum SKStoreError: Error {
 }
 
 @objc class SKStore: NSObject {
-  var infoURL: URL { BlinkPaths.blinkURL().appendingPathComponent(".receiptInfo") }
   var done: ((URL?, Error?) -> Void)!
   var skReq: SKReceiptRefreshRequest? = nil
-  
+
   func fetchReceiptURLPublisher() -> AnyPublisher<URL, Error> {
     return Future<URL, Error> { promise in
       self.fetchReceiptURL { (url, error) in
@@ -159,7 +168,7 @@ enum SKStoreError: Error {
 
   func fetchReceiptURL(_ done: @escaping (URL?, Error?) -> Void) {
     self.done = done
-    
+
     guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL else {
       return done(nil, SKStoreError.notFound)
     }
@@ -171,7 +180,7 @@ enum SKStoreError: Error {
     } else {
       done(appStoreReceiptURL, nil)
     }
-    
+
   }
 }
 
