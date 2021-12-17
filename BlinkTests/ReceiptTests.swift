@@ -43,15 +43,18 @@ class ReceiptTests: XCTestCase {
 
     XCTAssertThrowsError(try requestTokenForMigration(receiptData: validReceipt, attachedTo: "otherUser"),
       "Deny user after one exists") { error in
-        XCTAssertEqual(error as? ReceiptMigrationError,
-                       ReceiptMigrationError.ReceiptExists)
+        if case ReceiptMigrationError.receiptExists(let err) = error {
+          print(err)
+        } else {
+          XCTFail("Receipt already exists for user.")
+        }
       }
   }
 
   func testInvalidReceiptMigration() throws {
     XCTAssertThrowsError(try requestTokenForMigration(receiptData: invalidReceipt, attachedTo: validUser),
       "Deny receipt that could not be validated by backend") { error in
-      if case ReceiptMigrationError.InvalidAppReceipt(let err) = error {
+      if case ReceiptMigrationError.invalidAppReceipt(let err) = error {
         print(err)
       } else {
         XCTFail("Receipt should not validate from backend.")
@@ -64,7 +67,7 @@ class ReceiptTests: XCTestCase {
     var migrationToken: MigrationToken!
     var error: Error? = nil
 
-    var c = MigrationToken.requestTokenForMigration(receiptData: receiptData, attachedTo: user)
+    var c = MigrationToken.requestTokenForMigration(receipt: receiptData, attachedTo: user)
       // In a regular application, the migration token is sent over a URL scheme,
       // decoded and validated on that side.
       .decode(type: MigrationToken.self, decoder: JSONDecoder())

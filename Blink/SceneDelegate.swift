@@ -106,8 +106,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    
-    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
+    if let blinkUrlScheme = URLContexts.first(where: { $0.url.scheme == "blinkv14"})?.url {
+      _handleReceiptUrlScheme(with: blinkUrlScheme, calledReceivedBy: "test")
+    } else if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
       _handleXcallbackUrl(with: xCallbackUrl)
@@ -349,7 +350,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
-  
+  // blinkv14:validatereceipt?OriginalUserId
+  private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL, calledReceivedBy: String) {
+    // TODO: Ignore it did not come from our Blink 15 AppID
+
+    // Start receipt exchange function.
+    let ctrl = UIHostingController(rootView: ReceiptMigrationView(process: ReceiptMigrationProgress(originalUserId: "test")))
+    ctrl.modalPresentationStyle = .formSheet
+    _spCtrl.present(ctrl, animated: false)
+  }
+
   /**
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    - Parameters:
