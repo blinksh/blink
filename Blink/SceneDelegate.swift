@@ -106,9 +106,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
+    #if BLINK_LEGACY
     if let blinkUrlScheme = URLContexts.first(where: { $0.url.scheme == "blinkv14"})?.url {
-      _handleReceiptUrlScheme(with: blinkUrlScheme, calledReceivedBy: "test")
-    } else if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
+      _handleReceiptUrlScheme(with: blinkUrlScheme)
+    }
+    #else
+    if let migrationTokenUrl = URLContexts.first(where: { $0.url.scheme == "blinkv15"})?.url {
+      _handleMigrationTokenUrl(with: migrationTokenUrl)
+    }
+    #endif
+    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
       _handleXcallbackUrl(with: xCallbackUrl)
@@ -350,8 +357,12 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
+  private func _handleMigrationTokenUrl(with migrationTokenUrl: URL) {
+    print("Received \(migrationTokenUrl)")
+  }
+
   // blinkv14:validatereceipt?OriginalUserId
-  private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL, calledReceivedBy: String) {
+  private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL) {
     // TODO: Ignore it did not come from our Blink 15 AppID
 
     // Start receipt exchange function.

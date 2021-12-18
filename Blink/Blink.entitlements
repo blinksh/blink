@@ -25,7 +25,7 @@
 	<true/>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.Com.CarlosCabanero.BlinkShell</string>
+		<string>group.$(GROUP_ID)</string>
 	</array>
 	<key>com.apple.security.device.bluetooth</key>
 	<true/>
@@ -42,7 +42,6 @@
 	<key>keychain-access-groups</key>
 	<array>
 		<string>$(AppIdentifierPrefix)$(KEYCHAIN_ID1)</string>
-		<string>$(AppIdentifierPrefix)$(KEYCHAIN_ID2)</string>
 	</array>
 </dict>
 </plist>

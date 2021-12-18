@@ -58,7 +58,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 }
 
 + (NSString *)groupContainerPath {
-  NSString *groupID = @"group.Com.CarlosCabanero.BlinkShell";
+  NSString *groupID = @"group.sh.blink";
   NSFileManager *fm = [NSFileManager defaultManager];
   return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
 }
@@ -66,7 +66,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 + (NSString *)iCloudDriveDocuments
 {
   if (__iCloudsDriveDocumentsPath == nil) {
-    NSString *iCloudID = @"iCloud.com.carloscabanero.blinkshell";
+    NSString *iCloudID = @"iCloud.sh.blink.blinkshell";
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *path = [[fm URLForUbiquityContainerIdentifier:iCloudID] URLByAppendingPathComponent:@"Documents"].path;
     [self _ensureFolderAtPath:path];
