@@ -34,7 +34,6 @@ import Foundation
 import SwiftUI
 
 
-
 class ExternalWindow: UIWindow {
   var shadowWindow: UIWindow? = nil
 }
@@ -355,18 +354,39 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
 }
 
+fileprivate extension URL {
+  func getQueryStringParameter(param: String) -> String? {
+    guard let url = URLComponents(url: self, resolvingAgainstBaseURL: false) else { return nil }
+    return url.queryItems?.first(where: { $0.name == param })?.value
+  }
+}
+
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
+  // blinkv15:validateReceipt?migrationToken 
   private func _handleMigrationTokenUrl(with migrationTokenUrl: URL) {
-    print("Received \(migrationTokenUrl)")
+    guard let migrationTokenString = migrationTokenUrl
+      .getQueryStringParameter(param: "migrationToken"),
+      let migrationTokenData = migrationTokenString.data(using: .utf8)
+      else { return }
+    
+    // TODO Yury, need to connect here with the Dialog, offering the $0 unlock.
+    let view = ReceiptMigrationOfferingView(encodedMigrationToken: migrationTokenData)
+    let ctrl = UIHostingController(rootView: view)
+    ctrl.modalPresentationStyle = .formSheet
+    _spCtrl.present(ctrl, animated: false)      
   }
 
-  // blinkv14:validatereceipt?OriginalUserId
+  // blinkv14:validatereceipt?originalUserId
   private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL) {
     // TODO: Ignore it did not come from our Blink 15 AppID
+    guard let originalUserId = blinkReceiptUrl
+      .getQueryStringParameter(param: "originalUserId") 
+      else { return }
 
     // Start receipt exchange function.
-    let ctrl = UIHostingController(rootView: ReceiptMigrationView(process: ReceiptMigrationProgress(originalUserId: "test")))
+    let view = ReceiptMigrationView(process: ReceiptMigrationProgress(originalUserId: originalUserId))
+    let ctrl = UIHostingController(rootView: view)
     ctrl.modalPresentationStyle = .formSheet
     _spCtrl.present(ctrl, animated: false)
   }

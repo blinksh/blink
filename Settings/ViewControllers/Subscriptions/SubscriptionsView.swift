@@ -46,6 +46,9 @@ struct SubscriptionsView: View {
   }
   var body: some View {
     VStack {
+      Button(action: {
+        let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")
+      }, label: { Text("Migrate") })
       if let plusAccess = user.plusAccess,
          plusAccess.active {
         Text("Thanks for subscribing")
@@ -68,6 +71,7 @@ struct SubscriptionsView: View {
         }
       }
     }
+    // NOTE This was for testing. Real app should listen somewhere else.
     .onReceive(NotificationCenter.default.publisher(for: .subscriptionNag)) { _ in
       showingOffering = true
     }

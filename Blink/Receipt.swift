@@ -36,6 +36,7 @@ import Foundation
 import StoreKit
 import SwiftUI
 
+import Purchases
 
 fileprivate let endpointURL = URL(string: "https://us-central1-gold-stone-332203.cloudfunctions.net/receiptEntitlement")!
 
@@ -54,9 +55,9 @@ struct ReceiptMigrationView: View {
 class ReceiptMigrationProgress: ObservableObject {
   var receiptOperation: AnyCancellable? = nil
   let originalUserId: String
-  @Published var state = State.working
+  @Published var state = Status.working
 
-  enum State {
+  enum Status {
     case working
     case done
     case requestFailure
@@ -107,9 +108,44 @@ class ReceiptMigrationProgress: ObservableObject {
         },
         receiveValue: { migrationToken in
           // Open blinkv15 with received value
-          print(migrationToken)
+          let migrationTokenUrl = URL(string: "blinkv15://validateReceipt?migrationToken=\(migrationToken)&data=")!
+          UIApplication.shared.open(migrationTokenUrl) // Result?
         }
       )
+  }
+}
+
+struct ReceiptMigrationOfferingView: View {
+  enum Status {
+    case validating
+    case accepted
+    case denied(error: Error)
+  }
+
+  var encodedMigrationToken: Data
+  let originalUserId = Purchases.shared.appUserID
+  @State var migrationStatus = Status.validating
+
+  var body: some View {
+    VStack {
+      switch(migrationStatus) {
+        case .validating:
+        Text("Validating...")
+        case .accepted:
+        Text("Hurray!!")
+        case .denied(let error):
+        Text("Invalid Migration Token \(error.localizedDescription)")
+      }
+    }
+    .onAppear(perform: {
+      do {
+        let migrationToken = try JSONDecoder().decode(MigrationToken.self, from: encodedMigrationToken)
+        try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
+        migrationStatus = .accepted
+      } catch {
+        migrationStatus = .denied(error: error)
+      }
+    })
   }
 }
 

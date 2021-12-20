@@ -103,8 +103,10 @@ typedef enum SettingsSection : NSUInteger {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   if (indexPath.section == ssSubscription && indexPath.row == 0) {
+    #if !BLINK_LEGACY
     UIViewController *vc = [SettingsHostingController createSubscriptionControllerWithNav:self.navigationController];
     [self.navigationController pushViewController:vc animated:YES];
+    #endif
   }
   if (indexPath.section == ssConnect && indexPath.row == 0) {
     UIViewController *vc = [SettingsHostingController createKeysWithNav:self.navigationController];

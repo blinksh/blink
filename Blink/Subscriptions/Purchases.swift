@@ -41,6 +41,7 @@ public class AppStoreEntitlements: EntitlementGuarantor {
     Purchases.logLevel = .debug
     let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
     Purchases.configure(withAPIKey: publicAPIKey)
+    print("RevCat UserID is \(Purchases.shared.appUserID)")
   }
   
   public func isActive(entitlement: CompatibilityAccessManager.Entitlement) -> Future<EntitlementInfo, Never> {
