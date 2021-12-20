@@ -96,6 +96,10 @@ class CaretHider {
     kbView.setNeedsLayout()
   }
   
+  func shouldUseWKCopyAndPaste() -> Bool {
+    false
+  }
+  
   private var _caretHider: CaretHider? = nil
   
   override func ready() {
@@ -468,11 +472,19 @@ extension SmarterTermInput {
   }
   
   override func copy(_ sender: Any?) {
-    device?.view?.copy(sender)
+    if shouldUseWKCopyAndPaste() {
+      super.copy(sender)
+    } else {
+      device?.view?.copy(sender)
+    }
   }
   
   override func paste(_ sender: Any?) {
-    device?.view?.paste(sender)
+    if shouldUseWKCopyAndPaste() {
+      super.paste(sender)
+    } else {
+      device?.view?.paste(sender)
+    }
   }
   
   @objc func copyLink(_ sender: Any) {
@@ -556,6 +568,10 @@ extension SmarterTermInput: TermInput {
 }
 
 class VSCodeInput: SmarterTermInput {
+  override func shouldUseWKCopyAndPaste() -> Bool {
+    true
+  }
+  
   override func canBeFocused() -> Bool {
     let res = super.canBeFocused()
    
