@@ -38,6 +38,7 @@ extension FeatureFlags {
   @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
   @objc static let blinkCode             = _enabled(for: .developer, .testFlight)
   @objc static let sshConfigAttachments  = _enabled(for: .developer, .testFlight)
+  @objc static let checkReceipt          = _enabled(for: .legacy)
 }
 
 struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
@@ -47,15 +48,25 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   static let testFlight = Self.init(rawValue: 1 << 1)
   static let appStore   = Self.init(rawValue: 1 << 2)
   
-  static let all: Self = [.developer, .testFlight, .appStore]
+  static let legacy = Self.init(rawValue: 1 << 3)
+  
+  static let all: Self = [.developer, .testFlight, .appStore, .legacy]
   
   #if BLINK_PUBLISHING_OPTION_DEVELOPER
-  static var current: Self  = .developer
+  static var current: Self  = [_commonFlags(), .developer]
   #elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
-  static var current: Self  = .testFlight
+  static var current: Self  = [_commonFlags(), .testFlight]
   #else
-  static var current: Self  = .appStore
+  static var current: Self  = [_commonFlags(), .appStore]
   #endif
+  
+  static private func _commonFlags() -> Self {
+    var flags: Self = []
+    #if BLINK_LEGACY
+    flags = flags.union(.legacy)
+    #endif
+    return flags
+  }
   
   var description: String {
     var result: [String] = []
@@ -94,7 +105,8 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   override init() { }
 
   private static func _enabled(for options: PublishingOptions...) -> Bool {
-    PublishingOptions(options).contains(.current)
+    PublishingOptions.current.contains(PublishingOptions(options))
+//    PublishingOptions(options).contains(.current)
   }
   
   @objc static func currentPublishingOptions() -> String {
