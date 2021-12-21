@@ -87,6 +87,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   private var _ctrl = DummyVC()
   private var _lockCtrl: UIViewController? = nil
   private var _spCtrl = SpaceController()
+  private var paywallWindow: UIWindow? = nil
+  
+  override init() {
+    super.init()
+    
+    NotificationCenter.default.addObserver(self, selector: #selector(_showPaywallIfNeeded), name: .subscriptionNag, object: nil)
+  }
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
+  }
+  
+  @objc private func _showPaywallIfNeeded() {
+    guard SubscriptionNag.shared.doShowPaywall() else {
+      if let window = self.paywallWindow {
+        UIView.animate(withDuration: 0.5) {
+          window.layer.opacity = 0;
+        } completion: { _ in
+          self.paywallWindow = nil
+        }
+      }
+      
+      return
+    }
+    
+    guard let windowScene = self.window?.windowScene else {
+      return
+    }
+    
+    guard self.paywallWindow == nil else {
+      return
+    }
+      
+    self.paywallWindow = UIWindow(windowScene: windowScene)
+    self.paywallWindow?.windowLevel = .statusBar + 0.5
+    self.paywallWindow?.rootViewController = StatusBarLessViewController(rootView: PaywallView())
+    self.paywallWindow?.makeKeyAndVisible()
+    self.paywallWindow?.layer.opacity = 0;
+
+    UIView.animate(withDuration: 0.3) {
+      self.paywallWindow?.layer.opacity = 1;
+    }
+    
+  }
   
   func sceneDidDisconnect(_ scene: UIScene) {
     if scene == ShadowWindow.shared?.refWindow.windowScene {
@@ -97,8 +141,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       // We need to move it
       ShadowWindow.shared?.windowScene = UIApplication.shared.connectedScenes.activeAppScene(exclude: scene)
     }
-    
-//    
   }
   
   /**
@@ -130,6 +172,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     guard let windowScene = scene as? UIWindowScene else {
       return
+    }
+    
+    defer {
+      self._showPaywallIfNeeded()
     }
     
     #if targetEnvironment(macCatalyst)
@@ -540,5 +586,7 @@ extension SceneDelegate {
       newTerm.xCallbackLineSubmitted(cmdItem, xSuccessURL)
     }
   }
+  
+  
   
 }

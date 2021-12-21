@@ -194,6 +194,15 @@
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2011CD626A6FF9F002E4E85 /* Alert.swift */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
+		D2043EBE2771C283002E29AF /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBA2771C282002E29AF /* CheckmarkRow.swift */; };
+		D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBB2771C282002E29AF /* MigratePageView.swift */; };
+		D2043EC02771C283002E29AF /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBC2771C282002E29AF /* PaywallView.swift */; };
+		D2043EC12771C283002E29AF /* MigrateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBD2771C283002E29AF /* MigrateButton.swift */; };
+		D2043EC82771C28D002E29AF /* SubscribeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC32771C28D002E29AF /* SubscribeButton.swift */; };
+		D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC42771C28D002E29AF /* PurchasePageView.swift */; };
+		D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC52771C28D002E29AF /* ShakeDetector.swift */; };
+		D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC62771C28D002E29AF /* TopupPageView.swift */; };
+		D2043ECD2771DB9C002E29AF /* PaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
@@ -851,6 +860,15 @@
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
 		D2011CD626A6FF9F002E4E85 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingConfigView.swift; sourceTree = "<group>"; };
+		D2043EBA2771C282002E29AF /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
+		D2043EBB2771C282002E29AF /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
+		D2043EBC2771C282002E29AF /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		D2043EBD2771C283002E29AF /* MigrateButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrateButton.swift; sourceTree = "<group>"; };
+		D2043EC32771C28D002E29AF /* SubscribeButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscribeButton.swift; sourceTree = "<group>"; };
+		D2043EC42771C28D002E29AF /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
+		D2043EC52771C28D002E29AF /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
+		D2043EC62771C28D002E29AF /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
+		D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallViewController.swift; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
@@ -1540,6 +1558,7 @@
 		BD81523B273DB964002BB169 /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
+				D2043EB62771C25D002E29AF /* Paywall */,
 				BD81523C273DB964002BB169 /* CompatibilityAccessManager.swift */,
 				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
 				BD81523E273DB964002BB169 /* Purchases.swift */,
@@ -1754,6 +1773,22 @@
 				B75112C71DE4A7680040C693 /* UserConfiguration */,
 			);
 			path = ViewControllers;
+			sourceTree = "<group>";
+		};
+		D2043EB62771C25D002E29AF /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				D2043EC42771C28D002E29AF /* PurchasePageView.swift */,
+				D2043EC52771C28D002E29AF /* ShakeDetector.swift */,
+				D2043EC32771C28D002E29AF /* SubscribeButton.swift */,
+				D2043EC62771C28D002E29AF /* TopupPageView.swift */,
+				D2043EBA2771C282002E29AF /* CheckmarkRow.swift */,
+				D2043EBC2771C282002E29AF /* PaywallView.swift */,
+				D2043EBD2771C283002E29AF /* MigrateButton.swift */,
+				D2043EBB2771C282002E29AF /* MigratePageView.swift */,
+				D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */,
+			);
+			path = Paywall;
 			sourceTree = "<group>";
 		};
 		D215AC282335218E00E164C3 /* WebKit */ = {
@@ -2921,6 +2956,7 @@
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
+				D2043EC82771C28D002E29AF /* SubscribeButton.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
@@ -2950,16 +2986,19 @@
 				BD9EA1FE271A148700874007 /* Migrator.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
+				D2043EC02771C283002E29AF /* PaywallView.swift in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
+				D2043EBE2771C283002E29AF /* CheckmarkRow.swift in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,
 				BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
+				D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */,
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
 				D2C24419238E44AB0082C69C /* KeyConfigPairView.swift in Sources */,
 				D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */,
@@ -2972,9 +3011,11 @@
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
+				D2043EC12771C283002E29AF /* MigrateButton.swift in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,
+				D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */,
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D28C357626A56DDF00202C4D /* FileProviderDomain.swift in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
@@ -2989,6 +3030,7 @@
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
+				D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
 				D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */,
@@ -3034,8 +3076,10 @@
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
+				D2043ECD2771DB9C002E29AF /* PaywallViewController.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
+				D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,

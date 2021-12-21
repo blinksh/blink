@@ -30,58 +30,17 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
+import SwiftUI
 
-
-private let NagTimer = "NagTimer"
-private let NagTimerMax = 10
-private let NagInterval: TimeInterval = 1
-
-extension Notification.Name {
-  public static let subscriptionNag = Notification.Name("SubscriptionNag")
-}
-
-
-class SubscriptionNag: NSObject {
-  @objc static let shared = SubscriptionNag()
-  private var nagTimer = Timer()
-
-  private override init() {}
-
-  @objc func start() {  
-    let user = UserModel()
-    if user.shellAccess.active {
-      return
-    }
-    
-    self.nagTimer = Timer.scheduledTimer(
-      withTimeInterval: NagInterval,
-      repeats: true
-    ) { _ in
-      if self.doShowPaywall() {
-        self.stop()
-        NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-        return
-      }
-      UserDefaults.standard.set(self._nagCount() + 1, forKey: NagTimer)
+struct SubscribeButton: View {
+  var body: some View {
+    HStack {
+      Spacer()
+      Button("Subscribe now") { }
+      .buttonStyle(.borderedProminent)
+      Spacer().frame(maxWidth: 40)
+      Button("get more free time") { }
+      Spacer()
     }
   }
-  
-  func doShowPaywall() -> Bool {
-    return _nagCount() > NagTimerMax
-  }
-  
-  private func _nagCount() -> Int {
-    UserDefaults.standard.integer(forKey: NagTimer)
-  }
-
-  func restart() {
-    UserDefaults.standard.set(0, forKey: NagTimer)
-    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-    start()
-  }
-
-  func stop () {
-    nagTimer.invalidate()
-  }
 }
-
