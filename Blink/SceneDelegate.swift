@@ -100,6 +100,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   }
   
   @objc private func _showPaywallIfNeeded() {
+    if FeatureFlags.checkReceipt {
+      return
+    }
+    
     guard SubscriptionNag.shared.doShowPaywall() else {
       if let window = self.paywallWindow {
         UIView.animate(withDuration: 0.5) {
@@ -147,16 +151,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    Handles the `ssh://` URL schemes and x-callback-url for devices that are running iOS 13 or higher.
    */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
-    #if BLINK_LEGACY
-    if let blinkUrlScheme = URLContexts.first(where: { $0.url.scheme == "blinkv14"})?.url {
+    if FeatureFlags.checkReceipt,
+       let blinkUrlScheme = URLContexts.first(where: { $0.url.scheme == "blinkv14"})?.url {
       _handleReceiptUrlScheme(with: blinkUrlScheme)
-    }
-    #else
-    if let migrationTokenUrl = URLContexts.first(where: { $0.url.scheme == "blinkv15"})?.url {
+    } else if !FeatureFlags.checkReceipt,
+              let migrationTokenUrl = URLContexts.first(where: { $0.url.scheme == "blinkv15"})?.url {
       _handleMigrationTokenUrl(with: migrationTokenUrl)
-    }
-    #endif
-    if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
+    } else if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
       _handleXcallbackUrl(with: xCallbackUrl)

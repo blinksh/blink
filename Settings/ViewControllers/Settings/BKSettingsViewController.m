@@ -103,10 +103,11 @@ typedef enum SettingsSection : NSUInteger {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   if (indexPath.section == ssSubscription && indexPath.row == 0) {
-    #if !BLINK_LEGACY
-    UIViewController *vc = [SettingsHostingController createSubscriptionControllerWithNav:self.navigationController];
-    [self.navigationController pushViewController:vc animated:YES];
-    #endif
+    // TODO This is just to show the flow, should go away.
+    if (!FeatureFlags.checkReceipt) {
+      UIViewController *vc = [SettingsHostingController createSubscriptionControllerWithNav:self.navigationController];
+      [self.navigationController pushViewController:vc animated:YES];
+    }
   }
   if (indexPath.section == ssConnect && indexPath.row == 0) {
     UIViewController *vc = [SettingsHostingController createKeysWithNav:self.navigationController];

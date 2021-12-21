@@ -60,7 +60,12 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 + (NSString *)groupContainerPath {
   NSString *groupID = @"group.sh.blink";
   NSFileManager *fm = [NSFileManager defaultManager];
-  return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+  NSString *path = [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+  if (path == nil) {
+    groupID = @"group.com.carloscabanero";
+    return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+  }
+  return path;
 }
 
 + (NSString *)iCloudDriveDocuments
