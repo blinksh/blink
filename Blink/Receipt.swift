@@ -58,7 +58,7 @@ struct ReceiptMigrationView: View {
         Button(action: process.load, label: { Text("Please try again.") })
       case .migrationFailure(let error):
         Text("Could not migrate your token.")
-        Text("\(error)")
+        //Text("\(error)")
       case .done:
         Text("Done")
           .onAppear(perform: { presentationMode.wrappedValue.dismiss() })
@@ -105,10 +105,6 @@ class ReceiptMigrationProgress: ObservableObject {
           case .finished:
             self.state = .done
           case .failure(let error):
-            // SKStoreError
-            // ReceiptMigrationError
-            // SKStoreError.fetchError
-            // ReceiptMigrationError.requestError
             print("Error performing request token migration - \(error)")
             switch error {
             case ReceiptMigrationError.requestError,
