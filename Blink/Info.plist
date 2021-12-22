@@ -88,7 +88,7 @@
 			<array>
 				<string>ssh</string>
 				<string>blinkshell</string>
-				<string>$(BLINK_MIGRATION_SCHEME)</string>
+				<string>${BLINK_MIGRATION_SCHEME}</string>
 			</array>
 		</dict>
 	</array>
