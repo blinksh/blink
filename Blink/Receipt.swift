@@ -216,14 +216,15 @@ struct MigrationToken: Codable {
   }
 
   public func validateReceiptForMigration(attachedTo originalUserId: String) throws {
+    // TODO We need to use a different separator, as actually RevCat is using the colon.
     let dataComponents = data.components(separatedBy: ":")
     let currentTimestamp = Int(Date().timeIntervalSince1970)
 
     // Check the user coming from signature and params match.
     // Check the timestamp is within a range, to prevent reuse.
-    guard dataComponents.count == 3,
-      dataComponents[1] == originalUserId,
-      let receiptTimestamp = Int(dataComponents[2]),
+    guard dataComponents.count == 4,
+      "\(dataComponents[1]):\(dataComponents[2])" == originalUserId,
+      let receiptTimestamp = Int(dataComponents[3]),
       // 60s margin for timestamp. It is rare that it takes more than 15 secs.
       (currentTimestamp - receiptTimestamp) < 60 else {
         throw ReceiptMigrationError.invalidMigrationReceipt

@@ -414,11 +414,12 @@ extension SceneDelegate {
   private func _handleMigrationTokenUrl(with migrationTokenUrl: URL) {
     guard let migrationTokenString = migrationTokenUrl
       .getQueryStringParameter(param: "migrationToken"),
-      let migrationTokenData = migrationTokenString.data(using: .utf8)
+      let migrationTokenData = Data(base64Encoded: migrationTokenString)
       else { return }
     
     // TODO Yury, need to connect here with the Dialog, offering the $0 unlock.
     let view = ReceiptMigrationOfferingView(encodedMigrationToken: migrationTokenData)
+    _spCtrl.dismiss(animated: false, completion: {})
     let ctrl = UIHostingController(rootView: view)
     ctrl.modalPresentationStyle = .formSheet
     _spCtrl.present(ctrl, animated: false)      

@@ -139,7 +139,7 @@
 		<string>com.blink.session</string>
 	</array>
 	<key>RevCatPublicKey</key>
-	<string>$REVCAT_PUBKEY</string>
+	<string>$(REVCAT_PUBKEY)</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

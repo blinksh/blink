@@ -47,7 +47,8 @@ struct SubscriptionsView: View {
   var body: some View {
     VStack {
       Button(action: {
-        let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")
+        let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")!
+        UIApplication.shared.open(url)
       }, label: { Text("Migrate") })
       if let plusAccess = user.plusAccess,
          plusAccess.active {
