@@ -33,7 +33,7 @@ import Foundation
 
 
 private let NagTimer = "NagTimer"
-private let NagTimerMax = 10
+private let NagTimerMax = 30 * 60
 private let NagInterval: TimeInterval = 1
 
 extension Notification.Name {
