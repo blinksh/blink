@@ -893,9 +893,11 @@ extension SpaceController {
     }
     
     DispatchQueue.main.async {
-      let storyboard = UIStoryboard(name: "Settings", bundle: nil)
-      let vc = storyboard.instantiateViewController(identifier: "NavSettingsController")
-      self.present(vc, animated: true, completion: nil)
+      let navCtrl = UINavigationController()
+      navCtrl.navigationBar.prefersLargeTitles = true
+      let s = SettingsHostingController.createSettings(nav: navCtrl)
+      navCtrl.setViewControllers([s], animated: false)
+      self.present(navCtrl, animated: true, completion: nil)
     }
   }
   

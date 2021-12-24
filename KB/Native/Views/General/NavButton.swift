@@ -44,3 +44,17 @@ struct NavButton<Details: View>: View {
       }, label: { EmptyView() })
   }
 }
+struct StoryBoardNavButton: View {
+  @EnvironmentObject var nav: Nav
+  var storyBoardID: String
+  
+  var body: some View {
+    Button(action: {
+//      let rootView = self.details().environmentObject(self.nav)
+//      let vc = UIHostingController(rootView: rootView)
+      let storyboard = UIStoryboard(name: "Settings", bundle: nil)
+      let vc = storyboard.instantiateViewController(identifier: storyBoardID)
+      self.nav.navController.pushViewController(vc, animated: true)
+      }, label: { EmptyView() })
+  }
+}

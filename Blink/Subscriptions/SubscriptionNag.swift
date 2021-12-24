@@ -53,6 +53,7 @@ class SubscriptionNag: NSObject {
       return
     }
     
+    self.nagTimer.invalidate()
     self.nagTimer = Timer.scheduledTimer(
       withTimeInterval: NagInterval,
       repeats: true
@@ -62,7 +63,9 @@ class SubscriptionNag: NSObject {
         NotificationCenter.default.post(name: .subscriptionNag, object: nil)
         return
       }
-      UserDefaults.standard.set(self._nagCount() + 1, forKey: NagTimer)
+      let nag = self._nagCount() + 1
+      print("nag ", Date.now, nag)
+      UserDefaults.standard.set(nag, forKey: NagTimer)
     }
   }
   

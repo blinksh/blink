@@ -46,8 +46,17 @@ struct Row<Content: View, Details: View>: View {
   }
 }
 
-struct Row_Previews: PreviewProvider {
-  static var previews: some View {
-    Row(content: {Text("Row")}, details: {EmptyView()})
+
+struct RowWithStoryBoardId<Content: View>: View {
+  var content: () ->  Content
+  var storyBoardId: String
+  
+  var body: some View {
+    HStack {
+      content()
+      Spacer()
+      Chevron()
+    }
+    .overlay(StoryBoardNavButton(storyBoardID: storyBoardId))
   }
 }

@@ -35,7 +35,7 @@ import SwiftUI
 struct Chevron: View {
   var body: some View {
     Image(systemName:"chevron.right")
-      .foregroundColor(Color(UIColor.secondaryLabel))
+      .foregroundColor(Color(UIColor.tertiaryLabel))
       .font(Font.subheadline.weight(Font.Weight.semibold))
   }
 }

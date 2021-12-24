@@ -34,7 +34,8 @@ import UIKit
 
 @objc class SettingsHostingController: NSObject {
   private static func _createWith<T: View>(view: T, nav: UINavigationController?) -> UIViewController {
-    guard let nav = nav else {
+    guard let nav = nav
+    else {
       return UIHostingController(rootView: view)
     }
     return UIHostingController(rootView: NavView(navController: nav)  { view } )
@@ -62,5 +63,9 @@ import UIKit
   
   @objc static func createHostsWith(nav: UINavigationController?) -> UIViewController {
     _createWith(view: HostListView(), nav: nav)
+  }
+  
+  static func createSettings(nav: UINavigationController?) -> UIViewController {
+    _createWith(view: SettingsView(), nav: nav)
   }
 }

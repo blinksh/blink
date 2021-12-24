@@ -319,6 +319,7 @@
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29568B921BE629100480A83 /* bk_getopts.c in Sources */ = {isa = PBXBuildFile; fileRef = D29568B821BE629100480A83 /* bk_getopts.c */; };
+		D297DF002774962600A20265 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297DEFF2774962600A20265 /* SettingsView.swift */; };
 		D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */; };
 		D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29D6C3022DB9CA700A84173 /* TermController.swift */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
@@ -984,6 +985,7 @@
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29568B721BE629100480A83 /* bk_getopts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bk_getopts.h; sourceTree = "<group>"; };
 		D29568B821BE629100480A83 /* bk_getopts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bk_getopts.c; sourceTree = "<group>"; };
+		D297DEFF2774962600A20265 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserController.swift; sourceTree = "<group>"; };
 		D29D6C3022DB9CA700A84173 /* TermController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermController.swift; sourceTree = "<group>"; };
 		D29FE548208DC860004679D0 /* commandDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandDictionary.plist; sourceTree = "<group>"; };
@@ -1724,6 +1726,7 @@
 				C9B2E0111D6B612300B89F69 /* Network */,
 				C9B2E0141D6B612300B89F69 /* ViewControllers */,
 				803B99E2258381B200DC99C8 /* SettingsHostingController.swift */,
+				D297DEFF2774962600A20265 /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -3081,6 +3084,7 @@
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
+				D297DF002774962600A20265 /* SettingsView.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,

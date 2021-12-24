@@ -76,9 +76,9 @@ struct SubscriptionsView: View {
     .onReceive(NotificationCenter.default.publisher(for: .subscriptionNag)) { _ in
       showingOffering = true
     }
-    .sheet(isPresented: $showingOffering, onDismiss: { SubscriptionNag.shared.restart() }) {
+//    .sheet(isPresented: $showingOffering, onDismiss: { SubscriptionNag.shared.restart() }) {
       Offering(isPresented: $showingOffering)
-    }
+//    }
   }
 }
 
@@ -110,12 +110,6 @@ struct Offering: View {
     }
   }
   
-}
-
-struct SubscriptionsView_Previews: PreviewProvider {
-  static var previews: some View {
-    SubscriptionsView()
-  }
 }
 
 fileprivate extension UserModel {
