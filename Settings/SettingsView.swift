@@ -39,9 +39,10 @@ struct SettingsView: View {
   @EnvironmentObject private var _nav: Nav
   @State private var _biometryType = LAContext().biometryType
   @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
-  @State private var _iCloudSyncOn = false
-  @State private var _autoLockOn = false
-  @State private var _xCallbackUrlOn = false
+  @State private var _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
+  @State private var _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
+  @State private var _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
+  @State private var _defaultUser = BKDefaults.defaultUserName() ?? ""
   
   var body: some View {
     List {
@@ -66,7 +67,11 @@ struct SettingsView: View {
           HostListView()
         }
         RowWithStoryBoardId(content: {
-          Label("Default User", systemImage: "person")
+          HStack {
+            Label("Default User", systemImage: "person")
+            Spacer()
+            Text(_defaultUser).foregroundColor(.secondary)
+          }
         }, storyBoardId: "BKDefaultUserViewController")
       }
       
@@ -150,6 +155,7 @@ struct SettingsView: View {
       _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
       _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
       _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
+      _defaultUser = BKDefaults.defaultUserName() ?? ""
     }
     .listStyle(.grouped)
     .navigationTitle("Settings")
