@@ -46,14 +46,28 @@ struct SettingsView: View {
   
   var body: some View {
     List {
-      Section("Subscription") {
-        NavigationLink(destination: {
-          EmptyView()
-        }, label: {
-          Label("Subscription", systemImage: "bag")
-          Spacer()
-          Text("Free Plan").foregroundColor(.secondary)
-        })
+      if FeatureFlags.checkReceipt {
+        Section(header: Text("Information"), footer: Text("Upgrade is free for you.")) {
+          NavigationLink(destination: {
+            ScrollView {
+              ExplanationView()
+            }
+          }, label: {
+            Label("New Blink.app", systemImage: "exclamationmark.circle")
+            Spacer()
+            Image(systemName: "questionmark.circle").foregroundColor(Color(UIColor.blinkTint))
+          })
+        }
+      } else {
+        Section("Subscription") {
+          NavigationLink(destination: {
+            PlansView()
+          }, label: {
+            Label("Subscription", systemImage: "bag")
+            Spacer()
+            Text("Free Plan").foregroundColor(.secondary)
+          })
+        }
       }
       Section("Connect") {
         Row {
@@ -99,7 +113,6 @@ struct SettingsView: View {
           GesturesView()
         }
 #endif
-//
       }
       
       Section("Configuration") {
@@ -113,11 +126,7 @@ struct SettingsView: View {
         
         RowWithStoryBoardId(content: {
           HStack {
-            if _biometryType == .faceID {
-              Label("Auto Lock", systemImage: "faceid")
-            } else {
-              Label("Auto Lock", systemImage: "touchid")
-            }
+            Label("Auto Lock", systemImage: _biometryType == .faceID ? "faceid" : "touchid")
             Spacer()
             Text(_autoLockOn ? "On" : "Off").foregroundColor(.secondary)
           }

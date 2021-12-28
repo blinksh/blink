@@ -51,8 +51,6 @@ struct PurchasePageView: Page {
           withAnimation {
             switchTab(1)
           }
-          
-          
         }
         Spacer()
       }

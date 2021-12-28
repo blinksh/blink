@@ -52,21 +52,27 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   
   static let all: Self = [.developer, .testFlight, .appStore, .legacy]
   
-  #if BLINK_PUBLISHING_OPTION_DEVELOPER
-  static var current: Self  = [_commonFlags(), .developer]
+  #if BLINK_LEGACY_PUBLISHING_OPTION_DEVELOPER
+  static var current: Self  = [.legacy, .developer]
+  #elseif BLINK_LEGACY_PUBLISHING_OPTION_TESTFLIGHT
+  static var current: Self  = [.legacy, .testFlight]
+  #elseif BLINK_LEGACY_PUBLISHING_OPTION_APPSTORE
+  static var current: Self  = [.legacy, .appStore]
+  #elseif BLINK_PUBLISHING_OPTION_DEVELOPER
+  static var current: Self  = [.developer]
   #elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
-  static var current: Self  = [_commonFlags(), .testFlight]
+  static var current: Self  = [.testFlight]
   #else
-  static var current: Self  = [_commonFlags(), .appStore]
+  static var current: Self  = [.appStore]
   #endif
   
-  static private func _commonFlags() -> Self {
-    var flags: Self = []
-    #if BLINK_LEGACY
-    flags = flags.union(.legacy)
-    #endif
-    return flags
-  }
+//  static private func _commonFlags() -> Self {
+//    var flags: Self = []
+//    #if BLINK_LEGACY
+//    flags = flags.union(.legacy)
+//    #endif
+//    return flags
+//  }
   
   var description: String {
     var result: [String] = []
@@ -78,6 +84,10 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
     }
     if self.contains(.appStore) {
       result.append("App Store")
+    }
+    
+    if self.contains(.legacy) {
+      result.append("Legacy")
     }
     
     return "(" + result.joined(separator: ", ") + ")"
@@ -93,6 +103,10 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
     }
     if self.contains(.appStore) {
       result.append("appStore")
+    }
+    
+    if self.contains(.legacy) {
+      result.append("legacy")
     }
     
     return "[" + result.joined(separator: ", ") + "]"
