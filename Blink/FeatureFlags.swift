@@ -34,7 +34,6 @@ import Foundation
 
 // Feature flags definition
 extension FeatureFlags {
-  @objc static let fileProviders         = _enabled(for: .developer, .testFlight)
   @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
   @objc static let blinkCode             = _enabled(for: .developer, .testFlight)
   @objc static let sshConfigAttachments  = _enabled(for: .developer, .testFlight)
@@ -48,32 +47,28 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   static let testFlight = Self.init(rawValue: 1 << 1)
   static let appStore   = Self.init(rawValue: 1 << 2)
   
-  static let legacy = Self.init(rawValue: 1 << 3)
+  static let legacyDeveloper  = Self.init(rawValue: 1 << 3)
+  static let legacyTestFlight = Self.init(rawValue: 1 << 4)
+  static let legacyAppStore   = Self.init(rawValue: 1 << 5)
   
-  static let all: Self = [.developer, .testFlight, .appStore, .legacy]
+  static let all: Self = [.developer, .testFlight, .appStore, .legacyDeveloper, .legacyTestFlight, .legacyAppStore]
+  
+  static let legacy: Self = [.legacyDeveloper, .legacyTestFlight, .legacyAppStore]
   
   #if BLINK_LEGACY_PUBLISHING_OPTION_DEVELOPER
-  static var current: Self  = [.legacy, .developer]
+  static var current: Self  = .legacyDeveloper
   #elseif BLINK_LEGACY_PUBLISHING_OPTION_TESTFLIGHT
-  static var current: Self  = [.legacy, .testFlight]
+  static var current: Self  = .legacyTestFlight
   #elseif BLINK_LEGACY_PUBLISHING_OPTION_APPSTORE
-  static var current: Self  = [.legacy, .appStore]
+  static var current: Self  = .legacyAppStore
   #elseif BLINK_PUBLISHING_OPTION_DEVELOPER
-  static var current: Self  = [.developer]
+  static var current: Self  = .developer
   #elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
-  static var current: Self  = [.testFlight]
+  static var current: Self  = .testFlight
   #else
-  static var current: Self  = [.appStore]
+  static var current: Self  = .appStore
   #endif
-  
-//  static private func _commonFlags() -> Self {
-//    var flags: Self = []
-//    #if BLINK_LEGACY
-//    flags = flags.union(.legacy)
-//    #endif
-//    return flags
-//  }
-  
+    
   var description: String {
     var result: [String] = []
     if self.contains(.developer) {
@@ -86,8 +81,16 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
       result.append("App Store")
     }
     
-    if self.contains(.legacy) {
-      result.append("Legacy")
+    if self.contains(.legacyDeveloper) {
+      result.append("Developer Legacy")
+    }
+    
+    if self.contains(.legacyTestFlight) {
+      result.append("Test Flight Legacy")
+    }
+    
+    if self.contains(.legacyAppStore) {
+      result.append("App Store Legacy")
     }
     
     return "(" + result.joined(separator: ", ") + ")"
@@ -105,8 +108,16 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
       result.append("appStore")
     }
     
-    if self.contains(.legacy) {
-      result.append("legacy")
+    if self.contains(.legacyDeveloper) {
+      result.append("developer-legacy")
+    }
+    
+    if self.contains(.legacyTestFlight) {
+      result.append("testFlight-Legacy")
+    }
+    
+    if self.contains(.legacyAppStore) {
+      result.append("appStore-Legacy")
     }
     
     return "[" + result.joined(separator: ", ") + "]"
@@ -119,8 +130,8 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   override init() { }
 
   private static func _enabled(for options: PublishingOptions...) -> Bool {
-    PublishingOptions.current.contains(PublishingOptions(options))
-//    PublishingOptions(options).contains(.current)
+//    PublishingOptions.current.contains(PublishingOptions(options))
+    PublishingOptions(options).contains(.current)
   }
   
   @objc static func currentPublishingOptions() -> String {

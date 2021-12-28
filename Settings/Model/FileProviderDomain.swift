@@ -200,10 +200,6 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
 
 extension _NSFileProviderManager {
   @objc static func syncWithBKHosts() {
-    guard FeatureFlags.fileProviders
-    else {
-      return
-    }
     getDomainsWithCompletionHandler { nsDomains, err in
       guard err == nil else {
         print("get domains error", err!)
