@@ -54,6 +54,7 @@ public struct BKSSHHost {
   public var sendEnv: [String]?
   public var strictHostKeyChecking: Bool?
   // TODO SendEnv, Tunnels, etc...
+  public var localForward: [PortForwardInfo]?
   
   public struct ValidationError: Error {
     let message: String
@@ -99,6 +100,7 @@ public struct BKSSHHost {
         case "stricthostkeychecking":   self.strictHostKeyChecking  = try castValue(value)
         case "sendenv":                 self.sendEnv                = try castList(value)
         case "identityfile":            self.identityFile           = try castList(value)
+        case "localforward":            self.localForward           = try castList(value)
         default:
           // Skip unknown
           break
@@ -190,5 +192,48 @@ public enum ControlMasterOption: String, SSHValue {
       throw BKSSHHost.ValidationError(message: "Value must be auto, ask, autoask, yes or no")
     }
     self.init(rawValue: val)!
+  }
+}
+
+public struct PortForwardInfo: Equatable, SSHValue {
+  public let remotePort: UInt16
+  public let bindAddress: String
+  public let localPort: UInt16
+  
+  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
+
+  fileprivate init(castSSHValue val: String) throws {
+    try self.init(val)
+  }
+  
+  public init(_ info: String) throws {
+    let regex = try! NSRegularExpression(pattern: pattern)
+    
+    guard let match = regex.firstMatch(in: info,
+                                       range: NSRange(location: 0, length: info.count))
+    else {
+      throw BKSSHHost.ValidationError(message: "Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
+    }
+    guard let r = Range(match.range(withName: "localPort"), in: info),
+          let localPort = UInt16(info[r])
+    else {
+      throw BKSSHHost.ValidationError(message: "Invalid local port.")
+    }
+    self.localPort = localPort
+    
+    guard let r = Range(match.range(withName: "remotePort"), in: info),
+          let remotePort = UInt16(info[r])
+    else {
+      throw BKSSHHost.ValidationError(message: "Invalid remote port.")
+    }
+    self.remotePort = remotePort
+    
+    guard let r = Range(match.range(withName: "bindAddress"), in: info)
+    else {
+      throw BKSSHHost.ValidationError(message: "Invalid bind address.")
+    }
+    var bindAddress = String(info[r])
+    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
+    self.bindAddress = bindAddress
   }
 }

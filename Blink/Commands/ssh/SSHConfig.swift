@@ -51,9 +51,10 @@ struct SSHCommand: ParsableCommand {
 
   // Port forwarding options
   @Option(name: .customShort("L"),
+          parsing: ArrayParsingStrategy.unconditionalSingleValue,
           help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.",
-          transform: {  try PortForwardInfo($0) })
-  var localPortForward: PortForwardInfo?
+          transform: { try PortForwardInfo($0) })
+  var localForward: [PortForwardInfo] = []
 
   // Reverse Port forwarding
   @Option(name:  [.customShort("R")],
@@ -311,45 +312,6 @@ extension SSHCommand {
     }
 
     return params
-  }
-}
-
-struct PortForwardInfo: Equatable {
-  let remotePort: UInt16
-  let bindAddress: String
-  let localPort: UInt16
-  
-  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
-
-  init(_ info: String) throws {
-    let regex = try! NSRegularExpression(pattern: pattern)
-    
-    guard let match = regex.firstMatch(in: info,
-                                       range: NSRange(location: 0, length: info.count))
-    else {
-      throw ValidationError("Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
-    }
-    guard let r = Range(match.range(withName: "localPort"), in: info),
-          let localPort = UInt16(info[r])
-    else {
-      throw ValidationError("Invalid local port.")
-    }
-    self.localPort = localPort
-    
-    guard let r = Range(match.range(withName: "remotePort"), in: info),
-          let remotePort = UInt16(info[r])
-    else {
-      throw ValidationError("Invalid remote port.")
-    }
-    self.remotePort = remotePort
-    
-    guard let r = Range(match.range(withName: "bindAddress"), in: info)
-    else {
-      throw ValidationError("Invalid bind address.")
-    }
-    var bindAddress = String(info[r])
-    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
-    self.bindAddress = bindAddress
   }
 }
 

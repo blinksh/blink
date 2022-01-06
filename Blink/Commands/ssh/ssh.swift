@@ -65,7 +65,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var command: SSHCommand?
   var stream: SSH.Stream?
   var connection: SSH.SSHClient?
-  var tunnels: [SSHPortForwardListener] = []
+  var forwardTunnels: [PortForwardInfo] = []
   var tunnelStream: SSH.Stream?
   var reverseTunnels: [SSHPortForwardClient] = []
   var proxyThread: Thread?
@@ -181,7 +181,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     .flatMap { self.startStdioTunnel($0, command: cmd) }
     // TODO In order to support ExitOnForwardFailure, we will have to become a bit smarter here.
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
-    .flatMap { self.startForwardTunnels($0, command: cmd) }
+    .flatMap { self.startForwardTunnels(cmd.localForward + (host.localForward ?? []), on: $0) }
     .flatMap { self.startReverseTunnels($0, command: cmd) }
     .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
@@ -213,10 +213,11 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
 
     // Need to get rid of the stream because the channel needs a cycle to be closed.
     self.stream = nil
-    // The channel is responsibility of the other thread, so this runloop is not need atm.
-    //RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+
     if let conn = self.connection, cmd.blocks {
+//      SSHPool.deregister(shellOn: conn)
       SSHPool.deregister(runningCommand: cmd, on: conn)
+      forwardTunnels.forEach { SSHPool.deregister($0, on: conn) }
     }
     
     self.socks?.close()
@@ -278,7 +279,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }
       s.handleFailure = { error in
         self.exitCode = -1
-        print("Error starting Interactive Shell. \(error)", to: &self.stderr)
+        print("Interactive Shell error. \(error)", to: &self.stderr)
         self.kill()
         return
       }
@@ -319,18 +320,26 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }.eraseToAnyPublisher()
   }
 
-  private func startForwardTunnels(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
-    guard let tunnel = command.localPortForward else {
+  private func startForwardTunnels(_ tunnels: [PortForwardInfo], on conn: SSH.SSHClient) -> SSHConnection {
+    // TODO Proper logging
+    if tunnels.isEmpty {
       return .just(conn)
     }
     
-    let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
-    
-    // Await for Listener to bind and be ready.
-    return lis.ready().map {
-      SSHPool.register(lis, runningCommand: command, on: conn)
-      return conn
-    }.eraseToAnyPublisher()
+    return tunnels.publisher
+      .flatMap(maxPublishers: .max(1)) { tunnel -> AnyPublisher<Void, Error> in
+        let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
+        
+        // Await for Listener to bind and be ready.
+        // TODO Handle exit here - or ignore.
+        return lis.ready().map {
+          SSHPool.register(lis, portForwardInfo: tunnel, on: conn)
+          self.forwardTunnels.append(tunnel)
+        }.eraseToAnyPublisher()
+      }
+      .last()
+      .map { conn }
+      .eraseToAnyPublisher()
   }
 
   private func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {

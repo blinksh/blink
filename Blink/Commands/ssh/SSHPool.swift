@@ -110,9 +110,9 @@ class SSHPool {
     c?.numShells += 1
   }
   
-  static func register(_ listener: SSHPortForwardListener, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
+  static func register(_ listener: SSHPortForwardListener, portForwardInfo: PortForwardInfo, on connection: SSH.SSHClient) {
     let c = control(on: connection)
-    c?.tunnelListeners.append((command, listener))
+    c?.tunnelListeners.append((portForwardInfo, listener))
   }
 
   static func register(_ client: SSHPortForwardClient, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
@@ -125,6 +125,14 @@ class SSHPool {
     c?.streams.append((command, stream))
   }
   
+  static func deregister(_ tunnel: PortForwardInfo, on connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+    c.deregister(tunnel)
+    shared.enforcePersistance(c)
+  }
+
   // TODO connection won't be deinited if you are still keeping a reference.
   // I care about the channel, everything else should not be an issue.
   static func deregister(runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
@@ -184,7 +192,7 @@ fileprivate class SSHClientControl {
   
   var numShells: Int = 0
   //var shells: [(SSHCommand, SSH.Stream)] = []
-  var tunnelListeners: [(SSHCommand, SSHPortForwardListener)] = []
+  var tunnelListeners: [(PortForwardInfo, SSHPortForwardListener)] = []
   var tunnelClients: [(SSHCommand, SSHPortForwardClient)] = []
   var streams: [(SSHCommand, SSH.Stream)] = []
   var numChannels: Int {
@@ -223,6 +231,13 @@ fileprivate class SSHClientControl {
     }
   }
   
+  func deregister(_ portForwardInfo: PortForwardInfo) { 
+    if let idx = self.tunnelListeners.firstIndex(where: { (t, _) in t == portForwardInfo }) {
+      let (_, lis) = tunnelListeners.remove(at: idx)
+      lis.close()
+    }
+  }
+
   func deregister(_ command: SSHCommand) {
     if command.startsSession {
       // There is no way to stop a specific shell from remote, as they are not identified,
@@ -241,14 +256,6 @@ fileprivate class SSHClientControl {
       stream.cancel()
     }
     
-    // Remove the tunnels
-    // TEST Once the tunnels are deinitalized, they shoul also be closed.
-    // TODO We should not need the close but will enforce it.
-    if let tunnel = command.localPortForward,
-       let idx = self.tunnelListeners.firstIndex(where: { (t, _) in t.localPortForward == tunnel }) {
-      let (_, lis) = tunnelListeners.remove(at: idx)
-      lis.close()
-    }
     if let tunnel = command.reversePortForward,
        let idx = self.tunnelClients.firstIndex(where: { (t, _) in t.reversePortForward == tunnel }) {
       let (_, cli) = tunnelClients.remove(at: idx)
