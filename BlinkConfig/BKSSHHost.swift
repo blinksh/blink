@@ -55,6 +55,7 @@ public struct BKSSHHost {
   public var strictHostKeyChecking: Bool?
   // TODO SendEnv, Tunnels, etc...
   public var localForward: [PortForwardInfo]?
+  public var exitOnForwardFailure: Bool?
   
   public struct ValidationError: Error {
     let message: String
@@ -85,6 +86,7 @@ public struct BKSSHHost {
         let key = key.lowercased()
         
         switch key {
+        case "exitonforwardfailure":    self.exitOnForwardFailure   = try castValue(value)
         case "hostname":                self.hostName               = try castValue(value)
         case "password":                self.password               = try castValue(value)
         case "user":                    self.user                   = try castValue(value)

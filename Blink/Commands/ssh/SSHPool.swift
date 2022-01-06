@@ -125,6 +125,14 @@ class SSHPool {
     c?.streams.append((command, stream))
   }
   
+  static func contains(_ tunnel: PortForwardInfo, on connection: SSH.SSHClient) -> Bool {
+    guard let c = control(on: connection) else {
+      return false
+    }
+    
+    return c.contains(tunnel)
+  }
+
   static func deregister(_ tunnel: PortForwardInfo, on connection: SSH.SSHClient) {
     guard let c = control(on: connection) else {
       return
@@ -209,6 +217,10 @@ fileprivate class SSHClientControl {
     self.exposed = exposed
   }
   
+  func contains(_ portForwardInfo: PortForwardInfo) -> Bool {
+    self.tunnelListeners.contains(where: { (t, _) in t == portForwardInfo }) // ||
+  }
+
   // Other parameters could specify how the connection should be treated by the pool
   // (timeouts, etc...)
   func isConnection(for host: String, with config: SSHClientConfig) -> Bool {

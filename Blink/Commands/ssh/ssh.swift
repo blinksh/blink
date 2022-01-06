@@ -181,7 +181,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     .flatMap { self.startStdioTunnel($0, command: cmd) }
     // TODO In order to support ExitOnForwardFailure, we will have to become a bit smarter here.
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
-    .flatMap { self.startForwardTunnels(cmd.localForward + (host.localForward ?? []), on: $0) }
+    // TODO Note, we are not merging localForward on host and cmd yet. There can also be -o.
+    .flatMap { self.startForwardTunnels(cmd.localForward + (host.localForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
     .flatMap { self.startReverseTunnels($0, command: cmd) }
     .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
@@ -320,8 +321,10 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       }.eraseToAnyPublisher()
   }
 
-  private func startForwardTunnels(_ tunnels: [PortForwardInfo], on conn: SSH.SSHClient) -> SSHConnection {
-    // TODO Proper logging
+  private func startForwardTunnels(_ tunnels: [PortForwardInfo], 
+                                   on conn: SSH.SSHClient,
+                                   exitOnFailure: Bool) -> SSHConnection {
+    let tunnels = tunnels.filter { !SSHPool.contains($0, on: conn) }
     if tunnels.isEmpty {
       return .just(conn)
     }
@@ -331,11 +334,20 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         let lis = SSHPortForwardListener(on: tunnel.localPort, toDestination: tunnel.bindAddress, on: tunnel.remotePort, using: conn)
         
         // Await for Listener to bind and be ready.
-        // TODO Handle exit here - or ignore.
         return lis.ready().map {
           SSHPool.register(lis, portForwardInfo: tunnel, on: conn)
           self.forwardTunnels.append(tunnel)
-        }.eraseToAnyPublisher()
+        }
+        // In case of failure, exit report and continue.
+        .tryCatch { error -> AnyPublisher<Void, Error> in
+          if exitOnFailure {
+            throw error
+          }
+          
+          print("\(error)", to: &self.stderr)
+          return .just(Void())
+        } 
+        .eraseToAnyPublisher()
       }
       .last()
       .map { conn }
