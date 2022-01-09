@@ -56,11 +56,12 @@ struct SSHCommand: ParsableCommand {
           transform: { try PortForwardInfo($0) })
   var localForward: [PortForwardInfo] = []
 
-  // Reverse Port forwarding
+  // Remote Port forwarding
   @Option(name:  [.customShort("R")],
+          parsing: ArrayParsingStrategy.unconditionalSingleValue,
           help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.",
           transform: { try PortForwardInfo($0) })
-  var reversePortForward: PortForwardInfo?
+  var remoteForward: [PortForwardInfo] = []
 
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.

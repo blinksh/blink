@@ -55,6 +55,7 @@ public struct BKSSHHost {
   public var strictHostKeyChecking: Bool?
   // TODO SendEnv, Tunnels, etc...
   public var localForward: [PortForwardInfo]?
+  public var remoteForward: [PortForwardInfo]?
   public var exitOnForwardFailure: Bool?
   
   public struct ValidationError: Error {
@@ -103,6 +104,7 @@ public struct BKSSHHost {
         case "sendenv":                 self.sendEnv                = try castList(value)
         case "identityfile":            self.identityFile           = try castList(value)
         case "localforward":            self.localForward           = try castList(value)
+        case "remoteforward":           self.remoteForward          = try castList(value)
         default:
           // Skip unknown
           break

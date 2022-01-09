@@ -66,8 +66,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var stream: SSH.Stream?
   var connection: SSH.SSHClient?
   var forwardTunnels: [PortForwardInfo] = []
-  var tunnelStream: SSH.Stream?
-  var reverseTunnels: [SSHPortForwardClient] = []
+  var remoteTunnels: [PortForwardInfo] = []
   var proxyThread: Thread?
   var socks: SOCKSServer? = nil
 
@@ -166,6 +165,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     } ?? [:]
 
     connect.flatMap { conn -> SSHConnection in
+      self.connection = conn
+
       if cmd.startsSession {
         if let addr = conn.clientAddressIP() {
           print("Connected to \(addr)", to: &self.stdout)
@@ -183,7 +184,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
     // TODO Note, we are not merging localForward on host and cmd yet. There can also be -o.
     .flatMap { self.startForwardTunnels(cmd.localForward + (host.localForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
-    .flatMap { self.startReverseTunnels($0, command: cmd) }
+    .flatMap { self.startRemoteTunnels(cmd.remoteForward + (host.remoteForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
     .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
       switch completion {
@@ -196,8 +197,6 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         break
       }
     }, receiveValue: { conn in
-      self.connection = conn
-      
       if !cmd.blocks {
         self.kill()
       }
@@ -216,9 +215,9 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     self.stream = nil
 
     if let conn = self.connection, cmd.blocks {
-//      SSHPool.deregister(shellOn: conn)
-      SSHPool.deregister(runningCommand: cmd, on: conn)
-      forwardTunnels.forEach { SSHPool.deregister($0, on: conn) }
+      if cmd.startsSession { SSHPool.deregister(shellOn: conn) }
+      forwardTunnels.forEach { SSHPool.deregister(localForward:  $0, on: conn) }
+      remoteTunnels.forEach  { SSHPool.deregister(remoteForward: $0, on: conn) }
     }
     
     self.socks?.close()
@@ -324,7 +323,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   private func startForwardTunnels(_ tunnels: [PortForwardInfo], 
                                    on conn: SSH.SSHClient,
                                    exitOnFailure: Bool) -> SSHConnection {
-    let tunnels = tunnels.filter { !SSHPool.contains($0, on: conn) }
+    let tunnels = tunnels.filter { !SSHPool.contains(localForward: $0, on: conn) }
     if tunnels.isEmpty {
       return .just(conn)
     }
@@ -354,24 +353,43 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       .eraseToAnyPublisher()
   }
 
-  private func startReverseTunnels(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
-    guard let tunnel = command.reversePortForward else {
+  private func startRemoteTunnels(_ tunnels: [PortForwardInfo],
+                                  on conn: SSH.SSHClient, 
+                                  exitOnFailure: Bool) -> SSHConnection {
+    let tunnels = tunnels.filter { !SSHPool.contains(remoteForward: $0, on: conn) }
+    if tunnels.isEmpty {
       return .just(conn)
     }
-     
-    let client: SSHPortForwardClient
-    client = SSHPortForwardClient(forward: tunnel.bindAddress,
-                                  onPort: tunnel.remotePort,
-                                  toRemotePort: tunnel.localPort,
-                                  using: conn)
-    reverseTunnels.append(client)
-    
-    // Await for Client to be setup and ready.
-    return client.ready().map {
-      // Mark to dashboard
-      SSHPool.register(client, runningCommand: command, on: conn)
-      return conn
-    }.eraseToAnyPublisher()
+
+    return tunnels.publisher
+      .flatMap(maxPublishers: .max(1)) { tunnel -> AnyPublisher<Void, Error> in
+        let client: SSHPortForwardClient
+        client = SSHPortForwardClient(forward: tunnel.bindAddress,
+                                      onPort: tunnel.remotePort,
+                                      toRemotePort: tunnel.localPort,
+                                      using: conn)
+        
+        
+        // Await for Client to be setup and ready.
+        return client.ready().map {
+          self.remoteTunnels.append(tunnel)
+          // Mark to dashboard
+          SSHPool.register(client, portForwardInfo: tunnel, on: conn)
+        }
+        .tryCatch { error -> AnyPublisher<Void, Error> in
+          if exitOnFailure {
+            throw error
+          }
+          print("\(error)", to: &self.stderr)
+          return .just(Void())
+        }
+        .eraseToAnyPublisher()
+      }
+      .last()
+      .map {
+        conn
+      }
+      .eraseToAnyPublisher()
   }
 
   private func startDynamicForwarding(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
