@@ -183,8 +183,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // TODO In order to support ExitOnForwardFailure, we will have to become a bit smarter here.
     // ExitOnForwardFailure only closes if the bind for -L/-R fails
     // TODO Note, we are not merging localForward on host and cmd yet. There can also be -o.
-    .flatMap { self.startForwardTunnels(cmd.localForward + (host.localForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
-    .flatMap { self.startRemoteTunnels(cmd.remoteForward + (host.remoteForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
+    .flatMap { self.startForwardTunnels( (host.localForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
+    .flatMap { self.startRemoteTunnels( (host.remoteForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
     .flatMap { self.startDynamicForwarding($0, command: cmd) }
     .sink(receiveCompletion: { completion in
       switch completion {

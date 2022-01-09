@@ -51,17 +51,15 @@ struct SSHCommand: ParsableCommand {
 
   // Port forwarding options
   @Option(name: .customShort("L"),
-          parsing: ArrayParsingStrategy.unconditionalSingleValue,
-          help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.",
-          transform: { try PortForwardInfo($0) })
-  var localForward: [PortForwardInfo] = []
+          help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side."
+  )
+  var localForward: [String] = []
 
   // Remote Port forwarding
-  @Option(name:  [.customShort("R")],
-          parsing: ArrayParsingStrategy.unconditionalSingleValue,
-          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.",
-          transform: { try PortForwardInfo($0) })
-  var remoteForward: [PortForwardInfo] = []
+  @Option(name:  [.customShort("R")],          
+          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side."
+  )
+  var remoteForward: [String] = []
 
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
@@ -293,6 +291,14 @@ extension SSHCommand {
       params["loglevel"] = logLevel
     }
 
+    if !self.localForward.isEmpty {
+      params["localforward"] = self.localForward
+    }
+
+    if !self.remoteForward.isEmpty {
+      params["remoteforward"] = self.remoteForward
+    }
+    
     return try BKSSHHost(content: params)
   }
 
