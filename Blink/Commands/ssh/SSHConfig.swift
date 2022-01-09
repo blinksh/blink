@@ -298,6 +298,10 @@ extension SSHCommand {
     if !self.remoteForward.isEmpty {
       params["remoteforward"] = self.remoteForward
     }
+
+    if agentForward {
+      params["forwardagent"] = "yes"
+    } 
     
     return try BKSSHHost(content: params)
   }
