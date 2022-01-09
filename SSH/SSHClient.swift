@@ -668,7 +668,7 @@ public class SSHClient {
       }
   }
   
-  public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<Stream, Error> {
+  public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<PassthroughSubject<Stream, Error>, Error> {
     if let _ = self.reversePorts[port] {
       return .fail(error: SSHError(title: "Reverse forward already exits for that port."))
     }
@@ -720,7 +720,7 @@ public class SSHClient {
         }
         
         return port
-      }.flatMap { port -> PassthroughSubject<Stream, Error> in
+      }.map { port -> PassthroughSubject<Stream, Error> in
         let pub = PassthroughSubject<Stream, Error>()
         self.reversePorts[port] = pub
         

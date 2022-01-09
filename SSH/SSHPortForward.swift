@@ -266,6 +266,12 @@ public class SSHPortForwardClient {
     // because here we serve the requests from the other side,
     // so the streams are received instead of generated here.
     reverseForward = self.client.requestReverseForward(bindTo: bindAddress, port: Int32(remotePort.rawValue))
+      .flatMap { pub -> PassthroughSubject<Stream, Error> in 
+        // Notify that a connection has been established.
+        self.status.send(PortForwardState.ready)
+        self.isReady = true
+        return pub
+      }
       .sink(
         receiveCompletion: { completion in
           switch completion {
@@ -303,28 +309,29 @@ public class SSHPortForwardClient {
   }
   
   public func close() {
-    log.message("Closing Reverse Forward", SSH_LOG_INFO)
-    if isReady {
-      // Note we are not cancelling the already open connections
-      reverseForward?.cancel()
+      log.message("Closing Reverse Forward", SSH_LOG_INFO)
+      reverseForward = nil
+      streams.forEach { $0.cancel() }
+      streams = []
       self.status.send(completion: .finished)
-    }
   }
   
   private func receive(stream: Stream) {
     self.log.message("Reverse stream received. Establishing connection and piping stream", SSH_LOG_INFO)
 
     self.streams.append(stream)
-    let conn = NWConnection(host: self.forwardHost, port: self.localPort, using: .tcp)
-    conn.stateUpdateHandler = { (state: NWConnection.State) in
+    var conn = NWConnection(host: self.forwardHost, port: self.localPort, using: .tcp)
+    conn.stateUpdateHandler = { [weak self] (state: NWConnection.State) in
+      guard let self = self else {
+        return
+      }
       self.log.message("Connection state Updated \(state)", SSH_LOG_INFO)
       self.isReady = false
       
       switch state {
       case .ready:
-        // Notify that a connection has been established.
-        self.status.send(PortForwardState.ready)
-        self.isReady = true
+        // NOTE For the dashboard, we could offer another publisher for the state of the connection.
+        break
       case .waiting(let error):
         // Just notify, the connection itself will be reopened after a wait.
         self.status.send(PortForwardState.waiting(error))
@@ -337,17 +344,29 @@ public class SSHPortForwardClient {
     conn.start(queue: self.queue)
     stream.connect(stdout: conn, stdin: conn)
 
-    func removeStream() {
-      if let idx = self.streams.firstIndex(where: { stream === $0 }) {
-        self.streams.remove(at: idx)
+    
+    weak var weakStream = stream
+    stream.handleCompletion = { [weak self] in
+      guard let self = self, let stream = weakStream else {
+        return
       }
+      self.removeStream(stream)
+      conn.cancel()
     }
-    stream.handleCompletion = {
-      removeStream()
-    }
-    stream.handleFailure = { error in
-      removeStream()
+    stream.handleFailure = { [weak self] error in
+      guard let self = self, let stream = weakStream else {
+        return
+      }
+      self.removeStream(stream)
       self.status.send(.error(error))
+      conn.cancel()
     }
   }
+  
+  private func removeStream(_ s: SSH.Stream) {
+    if let idx = self.streams.firstIndex(where: { s === $0 }) {
+      self.streams.remove(at: idx)
+    }
+  }
+  
 }
