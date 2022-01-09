@@ -204,7 +204,7 @@ public struct PortForwardInfo: Equatable, SSHValue {
   public let bindAddress: String
   public let localPort: UInt16
   
-  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
+  private let pattern = #"^((?<localPort>\d+)(:|\s))?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
 
   fileprivate init(castSSHValue val: String) throws {
     try self.init(val)
