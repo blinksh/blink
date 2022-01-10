@@ -128,14 +128,15 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         return -1
       }
       switch control {
-      case .stop:
-        SSHPool.deregister(runningCommand: cmd, on: conn)
-        return 0
+      // case .stop:
+      //   SSHPool.deregister(runningCommand: cmd, on: conn)
+      //   return 0
       case .forward:
         connect = .just(conn)
         break
-//      case .cancel:
-//        SSHPool.deregister(allTunnelsFor: connection)
+      case .cancel:
+        SSHPool.deregister(allTunnelsForConnection: conn)
+        return 0
 //      case .exit:
 //        // This one would require to have a handle to the Session as well.
 //        SSHPool.deregister(allFor: connection)
@@ -308,10 +309,12 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         s.connect(stdout: outStream, stdin: inStream)
 
         s.handleCompletion = {
-          SSHPool.deregister(runningCommand: command, on: conn)
+          SSHPool.deregister(allTunnelsForConnection: conn)
+          //SSHPool.deregister(runningCommand: command, on: conn)
         }
         s.handleFailure = { error in
-          SSHPool.deregister(runningCommand: command, on: conn)
+          SSHPool.deregister(allTunnelsForConnection: conn)
+          //SSHPool.deregister(runningCommand: command, on: conn)
         }
         
         // TODO Check this out again. The tunnel is already stored, so we can close the process.

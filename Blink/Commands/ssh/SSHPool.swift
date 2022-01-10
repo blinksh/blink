@@ -130,6 +130,20 @@ class SSHPool {
   }
 }
 
+extension SSHPool {
+  static func deregister(allTunnelsForConnection connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+
+    c.localTunnels.forEach  { (k, _) in deregister(localForward: k, on: connection) }
+    c.remoteTunnels.forEach { (k, _) in deregister(remoteForward: k, on: connection) }
+    // NOTE This is a workaround
+    c.streams.forEach { (_, s) in s.cancel() }
+    c.streams = []
+  }
+}
+
 // Shell
 extension SSHPool {
   static func register(shellOn connection: SSH.SSHClient) {
