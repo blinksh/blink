@@ -51,15 +51,15 @@ struct SSHCommand: ParsableCommand {
 
   // Port forwarding options
   @Option(name: .customShort("L"),
-          help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side.",
-          transform: {  try PortForwardInfo($0) })
-  var localPortForward: PortForwardInfo?
+          help: "<localport>:<bind_address>:<remoteport> Specifies that the given port on the local (client) host is to be forwarded to the given host and port on the remote side."
+  )
+  var localForward: [String] = []
 
-  // Reverse Port forwarding
-  @Option(name:  [.customShort("R")],
-          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side.",
-          transform: { try PortForwardInfo($0) })
-  var reversePortForward: PortForwardInfo?
+  // Remote Port forwarding
+  @Option(name:  [.customShort("R")],          
+          help: "port:host:hostport Specifies that the given port on the remote (server) host is to be forwarded to the given host and port on the local side."
+  )
+  var remoteForward: [String] = []
 
   // Verbosity levels
   // (Magic) When a flag is of type Int, the value is parsed as a count of the number of times that the flag is specified.
@@ -291,6 +291,18 @@ extension SSHCommand {
       params["loglevel"] = logLevel
     }
 
+    if !self.localForward.isEmpty {
+      params["localforward"] = self.localForward
+    }
+
+    if !self.remoteForward.isEmpty {
+      params["remoteforward"] = self.remoteForward
+    }
+
+    if agentForward {
+      params["forwardagent"] = "yes"
+    } 
+    
     return try BKSSHHost(content: params)
   }
 
@@ -311,45 +323,6 @@ extension SSHCommand {
     }
 
     return params
-  }
-}
-
-struct PortForwardInfo: Equatable {
-  let remotePort: UInt16
-  let bindAddress: String
-  let localPort: UInt16
-  
-  private let pattern = #"^((?<localPort>\d+):)?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
-
-  init(_ info: String) throws {
-    let regex = try! NSRegularExpression(pattern: pattern)
-    
-    guard let match = regex.firstMatch(in: info,
-                                       range: NSRange(location: 0, length: info.count))
-    else {
-      throw ValidationError("Missing <localport>:<bind_address>:<remoteport> for port forwarding.")
-    }
-    guard let r = Range(match.range(withName: "localPort"), in: info),
-          let localPort = UInt16(info[r])
-    else {
-      throw ValidationError("Invalid local port.")
-    }
-    self.localPort = localPort
-    
-    guard let r = Range(match.range(withName: "remotePort"), in: info),
-          let remotePort = UInt16(info[r])
-    else {
-      throw ValidationError("Invalid remote port.")
-    }
-    self.remotePort = remotePort
-    
-    guard let r = Range(match.range(withName: "bindAddress"), in: info)
-    else {
-      throw ValidationError("Invalid bind address.")
-    }
-    var bindAddress = String(info[r])
-    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
-    self.bindAddress = bindAddress
   }
 }
 
