@@ -88,7 +88,6 @@
 		B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B752EE2D1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m */; };
 		B7A487651DC7BD65007BA809 /* BKDefaultUserViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A487641DC7BD65007BA809 /* BKDefaultUserViewController.m */; };
 		B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A487681DC7C48D007BA809 /* UIDevice+DeviceName.m */; };
-		B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */; };
 		B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */; };
 		B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D4503B1DD4706000CE0DBE /* Reachability.m */; };
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
@@ -761,8 +760,6 @@
 		B7A487641DC7BD65007BA809 /* BKDefaultUserViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKDefaultUserViewController.m; sourceTree = "<group>"; };
 		B7A487671DC7C48D007BA809 /* UIDevice+DeviceName.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIDevice+DeviceName.h"; sourceTree = "<group>"; };
 		B7A487681DC7C48D007BA809 /* UIDevice+DeviceName.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+DeviceName.m"; sourceTree = "<group>"; };
-		B7A4876B1DC7C709007BA809 /* BKSettingsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSettingsViewController.h; sourceTree = "<group>"; };
-		B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsViewController.m; sourceTree = "<group>"; };
 		B7D450341DD3A87200CE0DBE /* BKiCloudSyncHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKiCloudSyncHandler.h; sourceTree = "<group>"; };
 		B7D450351DD3A87200CE0DBE /* BKiCloudSyncHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKiCloudSyncHandler.m; sourceTree = "<group>"; };
 		B7D4503A1DD4706000CE0DBE /* Reachability.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Reachability.h; sourceTree = "<group>"; };
@@ -1544,15 +1541,6 @@
 			path = BKDefaultUser;
 			sourceTree = "<group>";
 		};
-		B7A4876A1DC7C6F4007BA809 /* Settings */ = {
-			isa = PBXGroup;
-			children = (
-				B7A4876B1DC7C709007BA809 /* BKSettingsViewController.h */,
-				B7A4876C1DC7C709007BA809 /* BKSettingsViewController.m */,
-			);
-			path = Settings;
-			sourceTree = "<group>";
-		};
 		B7B3FC3A1DF5E96900B3D37C /* Security */ = {
 			isa = PBXGroup;
 			children = (
@@ -1772,7 +1760,6 @@
 				BD815248273EFA1A002BB169 /* Subscriptions */,
 				D2B0BD172720311B00485854 /* Gestures */,
 				803B99CB2582865500DC99C8 /* Notifications */,
-				B7A4876A1DC7C6F4007BA809 /* Settings */,
 				B7A4875F1DC7BD29007BA809 /* BKDefaultUser */,
 				07E3AEBD1D918FBA007BC086 /* About */,
 				07E3AEAA1D8F64C6007BC086 /* GetInTouch */,
@@ -2928,7 +2915,6 @@
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
-				B7A4876D1DC7C709007BA809 /* BKSettingsViewController.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */,
 				BD8152542743FF84002BB169 /* skstore.swift in Sources */,

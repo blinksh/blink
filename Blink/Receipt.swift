@@ -57,7 +57,7 @@ struct ReceiptMigrationView: View {
         Text("Error performing your migration request.")
         Button(action: process.load, label: { Text("Please try again.") })
       case .migrationFailure(let error):
-        Text("Could not migrate your token.")
+        Text("Could not migrate your token. \(error.localizedDescription)")
         //Text("\(error)")
       case .done:
         Text("Done")
