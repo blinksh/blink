@@ -35,8 +35,7 @@ import SystemConfiguration
 
 import Purchases
 
-
-public class AppStoreEntitlements: EntitlementGuarantor {
+public class AppStoreEntitlementsSource: EntitlementsSource {
   public init() {
     Purchases.logLevel = .debug
     let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
@@ -44,42 +43,41 @@ public class AppStoreEntitlements: EntitlementGuarantor {
     print("RevCat UserID is \(Purchases.shared.appUserID)")
   }
   
-  public func isActive(entitlement: CompatibilityAccessManager.Entitlement) -> Future<EntitlementInfo, Never> {
-    print("Checking access to entitlement \(entitlement)")
-    
-    return Future { promise in
-      Purchases.shared.purchaserInfo { (info, error) in
-        if let info = info {
-          promise(.success(info.entitlementInfo(entitlement: entitlement.description)))
-        } else {
-          promise(.success(EntitlementInfo(active: false)))
-        }
+  public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
+    let pub = PassthroughSubject<EntitlementStatus, Never>()
+    return pub.handleEvents(receiveRequest: { _ in
+      Purchases.shared.purchaserInfo { info, error in
+        pub.send(info?.status(of: entitlement) ?? .inactive)
+        // TODO: handle error?
+        pub.send(completion: .finished)
       }
-    }
+    }).eraseToAnyPublisher()
   }
 }
+
 
 fileprivate extension Purchases.PurchaserInfo {
-  func entitlementInfo(entitlement: String) -> EntitlementInfo {
-    return EntitlementInfo(active: self.entitlements[entitlement]?.isActive ?? false,
-                           since: self.purchaseDate(forEntitlement: entitlement),
-                           until: self.expirationDate(forEntitlement: entitlement))
+  func status(of entitlement: CompatibilityAccessManager.Entitlement) -> EntitlementStatus {
+    let id = entitlement.id
+    let since = purchaseDate(forEntitlement: id)
+    let until = expirationDate(forEntitlement: id)
+    let active = entitlements[id]?.isActive == true
+    return EntitlementStatus(active: active, since: since, until: until)
   }
 }
 
+
 // TODO Assign on Sandbox?
-public class PreconfiguredEntitlements: EntitlementGuarantor {
+public class PreconfiguredEntitlementsSource: EntitlementsSource {
   public init() {
-    Purchases.logLevel = .info
+    Purchases.logLevel = .debug
     let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
     Purchases.configure(withAPIKey: publicAPIKey)
+    print("RevCat UserID is \(Purchases.shared.appUserID)")
   }
   
-  public func isActive(entitlement: CompatibilityAccessManager.Entitlement) -> Future<EntitlementInfo, Never> {
-    if entitlement.name == "shell" {
-      return Future { $0(.success(EntitlementInfo(active: true))) }
-    } else {
-      return Future { $0(.success(EntitlementInfo(active: false))) }
-    }
+  public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
+    Just(.init(active: entitlement == .shell)).eraseToAnyPublisher()
   }
 }
+

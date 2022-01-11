@@ -29,50 +29,127 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
-import Foundation
-
 import Purchases
-
-
-struct SubscriptionInfo {
-  let active: Bool
-  let since: Date?
-  let until: Date?
-}
+import Combine
+import SwiftUI
 
 extension CompatibilityAccessManager.Entitlement {
-  static let shell = CompatibilityAccessManager.Entitlement("shell")
+  static let shell = Self("shell")
+  static let plus = Self("plus")
 }
 
 class UserModel: ObservableObject {
-  @Published var shellAccess = EntitlementInfo(active: false)
-  @Published var plusAccess = EntitlementInfo(active: false)
+  @Published var shellAccess: EntitlementStatus = .inactive
+  @Published var plusAccess: EntitlementStatus = .inactive
+  @Published var errorMessage: String = ""
   
-  init() {
-    update()
+  @Published var plusProduct: SKProduct? = nil
+  @Published var purchaseInProgress: Bool = false
+  
+  private let _priceFormatter = NumberFormatter()
+  
+  private init() {
+    _priceFormatter.numberStyle = .currency
+    refresh()
   }
   
-  // Instead of recalculating, we could also gather the data all the time. Most values are cached and rarely used anyway.
-  // TODO Issue is that we may not be able to have a Published value without a setter.
-  // We could also potentially tie to a different value.
-  func update() {
-    CompatibilityAccessManager.shared.isActive(entitlement: .shell).assign(to: &$shellAccess)
+  static let shared = UserModel()
+  
+  func refresh() {
+    let manager = CompatibilityAccessManager.shared
+    manager.status(of: .shell).assign(to: &$shellAccess)
+    manager.status(of: .plus).assign(to: &$plusAccess)
     
-    //      CompatibilityAccessManager.shared.isActive(entitlement: .shell, result: { (active, _) in
-    //            self.shellIsActive = active
-    //        })
-    //        CompatibilityAccessManager.shared.isActive(entitlement: "plus", result: { (active, info) in
-    //            if let info = info {
-    //                self.plusAccess = SubscriptionInfo(active: active,
-    //                                                   since: info.purchaseDate(forEntitlement: "plus"),
-    //                                                   until: info.expirationDate(forEntitlement: "plus"))
-    //            } else {
-    //                self.plusAccess = SubscriptionInfo(active: active,
-    //                                                   since: nil,
-    //                                                   until: nil)
-    //            }
-    //
-    //        })
+    if self.plusProduct == nil {
+      self.fetchPlusProduct()
+    }
   }
+  
+  func restore() {
+    Purchases.shared.restoreTransactions { info, error in
+      
+    }
+  }
+  
+  func makePurchase(_ productId: String, successfulPurchase: @escaping () -> Void) {
+    Purchases.shared.products([productId]) { products in
+      guard let product = products.first else {
+        return
+      }
+      
+      Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
+        guard error == nil, !cancelled else {
+          return
+        }
+        
+        self.refresh()
+        successfulPurchase()
+      }
+    }
+  }
+  
+  func purchasePlus() {
+    guard let product = self.plusProduct else {
+      return
+    }
+   
+    withAnimation {
+      self.purchaseInProgress = true
+    }
+    
+    
+    Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
+      self.purchaseInProgress = false
+    }
+  }
+  
+  func restorePurchases() {
+    Purchases.shared.restoreTransactions { info, error in
+      
+    }
+  }
+  
+  func formattedPlustPriceWithPeriod() -> String? {
+    guard let product = plusProduct else {
+      return nil
+    }
+    
+    _priceFormatter.locale = product.priceLocale
+    guard let priceStr = _priceFormatter.string(for: product.price) else {
+      return nil
+    }
+    
+    guard let period = product.subscriptionPeriod else {
+      return priceStr
+    }
+    
+    let n = period.numberOfUnits
+    
+    if n <= 1 {
+      switch period.unit {
+      case .day: return "\(priceStr)/day"
+      case .week: return "\(priceStr)/week"
+      case .month: return "\(priceStr)/month"
+      case .year: return "\(priceStr)/year"
+      @unknown default:
+        return priceStr
+      }
+    }
+    
+    switch period.unit {
+    case .day: return "\(priceStr) / \(n) days"
+    case .week: return "\(priceStr) / \(n) weeks"
+    case .month: return "\(priceStr) / \(n) months"
+    case .year: return "\(priceStr) / \(n) years"
+    @unknown default:
+      return priceStr
+    }
+  }
+  
+  func fetchPlusProduct() {
+    Purchases.shared.products(["0000.0000"]) { products in
+      self.plusProduct = products.first
+    }
+  }
+  
 }

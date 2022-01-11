@@ -31,10 +31,19 @@
 
 import Foundation
 import SwiftUI
+import Spinner
 
 struct PurchasePageView: Page {
+  @ObservedObject var model: UserModel = .shared
+  
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
+  
+  init(horizontal: Bool, switchTab: @escaping (Int) -> ()) {
+    self.horizontal = horizontal
+    self.switchTab = switchTab
+  }
+  
   
   var body: some View {
     VStack(alignment: .leading) {
@@ -44,21 +53,35 @@ struct PurchasePageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        Button("Subscribe now") { }
-        .buttonStyle(.borderedProminent)
-        Spacer().frame(maxWidth: 40)
-        Button("get more free time") {
-          withAnimation {
-            switchTab(1)
+        if model.purchaseInProgress {
+          ProgressView()
+            .transition(.slide)
+        } else {
+          if let _ = model.plusProduct {
+            Button("Subscribe now") {
+              model.purchasePlus()
+            }
+            .buttonStyle(.borderedProminent)
+            .transition(
+              .scale.combined(with: .opacity).combined(with: .slide)
+            )
+            Spacer().frame(maxWidth: 40)
+          }
+          Button("get more free time") {
+            withAnimation {
+              switchTab(1)
+            }
           }
         }
         Spacer()
-      }
+      }.frame(minHeight: 40)
       Spacer()
       HStack {
         Spacer()
-        Text("Plan auto-renews for $19.99/year until canceled.")
+        if let formattedPrice = model.formattedPlustPriceWithPeriod() {
+        Text("Plan auto-renews for \(formattedPrice) until canceled.")
           .font(.footnote)
+        }
         Spacer()
       }
       Spacer().frame(maxHeight:8)

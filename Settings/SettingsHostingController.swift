@@ -42,7 +42,7 @@ import UIKit
   }
 
   @objc static func createSubscriptionControllerWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: SubscriptionsView().environmentObject(UserModel()), nav: nav)
+    _createWith(view: SubscriptionsView().environmentObject(UserModel.shared), nav: nav)
   }
   
   @objc static func createKeyboardControllerWith(nav: UINavigationController?) -> UIViewController {

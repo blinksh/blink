@@ -36,6 +36,7 @@ import Purchases
 struct PlansView: View {
   
   @State var alertErrorMessage: String = ""
+  @ObservedObject var model: UserModel = .shared
   
   var body: some View {
     List {
@@ -54,28 +55,37 @@ struct PlansView: View {
           Text("This is your current plan").foregroundColor(.green)
         }
       }
-      Section(
-        header: Text("Blink+ PLAN"),
-        footer: Text("Plan auto-renews for $19.99/year until canceled.")) {
-          HStack {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-            Text("Access to all blink features and services")
+      if let _ = model.plusProduct {
+        Section(
+          header: Text("Blink+ PLAN"),
+          footer: Text("Plan auto-renews for \(model.formattedPlustPriceWithPeriod() ?? "") until canceled.")) {
+            HStack {
+              Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+              Text("Access to all blink features and services")
+            }
+            HStack {
+              Image(systemName: "suit.heart.fill")
+                .foregroundColor(.red)
+              Text("Support Blink development")
+            }
+            HStack {
+              Image(systemName: "infinity")
+                .foregroundColor(.green)
+              Text("Interruption free usage")
+            }
+            HStack {
+              if model.purchaseInProgress {
+                ProgressView()
+              } else {
+                Button("Upgrade to Blink+ Plan", action: {
+                  model.purchasePlus()
+                })
+              }
+            }
           }
-          HStack {
-            Image(systemName: "suit.heart.fill")
-              .foregroundColor(.red)
-            Text("Support Blink development")
-          }
-          HStack {
-            Image(systemName: "infinity")
-              .foregroundColor(.green)
-            Text("Interruption free usage")
-          }
-          HStack {
-            Button("Upgrade to Blink+ Plan", action: {})
-          }
-        }
+      }
+      
       Section(
         header: Text("Blink Classic PLAN"),
         footer: Text("After reciept verification with legacy `Blink.app` you will be able to access `basic plan` for zero cost purchase."),

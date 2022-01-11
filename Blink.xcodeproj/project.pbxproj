@@ -197,7 +197,6 @@
 		D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBB2771C282002E29AF /* MigratePageView.swift */; };
 		D2043EC02771C283002E29AF /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBC2771C282002E29AF /* PaywallView.swift */; };
 		D2043EC12771C283002E29AF /* MigrateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBD2771C283002E29AF /* MigrateButton.swift */; };
-		D2043EC82771C28D002E29AF /* SubscribeButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC32771C28D002E29AF /* SubscribeButton.swift */; };
 		D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC42771C28D002E29AF /* PurchasePageView.swift */; };
 		D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC52771C28D002E29AF /* ShakeDetector.swift */; };
 		D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC62771C28D002E29AF /* TopupPageView.swift */; };
@@ -864,7 +863,6 @@
 		D2043EBB2771C282002E29AF /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
 		D2043EBC2771C282002E29AF /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		D2043EBD2771C283002E29AF /* MigrateButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrateButton.swift; sourceTree = "<group>"; };
-		D2043EC32771C28D002E29AF /* SubscribeButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscribeButton.swift; sourceTree = "<group>"; };
 		D2043EC42771C28D002E29AF /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
 		D2043EC52771C28D002E29AF /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
 		D2043EC62771C28D002E29AF /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
@@ -1776,7 +1774,6 @@
 			children = (
 				D2043EC42771C28D002E29AF /* PurchasePageView.swift */,
 				D2043EC52771C28D002E29AF /* ShakeDetector.swift */,
-				D2043EC32771C28D002E29AF /* SubscribeButton.swift */,
 				D2043EC62771C28D002E29AF /* TopupPageView.swift */,
 				D2043EBA2771C282002E29AF /* CheckmarkRow.swift */,
 				D2043EBC2771C282002E29AF /* PaywallView.swift */,
@@ -2951,7 +2948,6 @@
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
-				D2043EC82771C28D002E29AF /* SubscribeButton.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,

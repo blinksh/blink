@@ -101,7 +101,7 @@ struct Offering: View {
           if let error = error {
             print("\(error)")
           }
-          if UserModel().shellAccess.active {
+          if UserModel.shared.shellAccess.active {
             isPresented = false
           }
         }
@@ -112,21 +112,3 @@ struct Offering: View {
   
 }
 
-fileprivate extension UserModel {
-  func makePurchase(_ productId: String, successfulPurchase: @escaping () -> Void) {
-    Purchases.shared.products([productId]) { products in
-      guard let product = (products.isEmpty ? nil : products[0]) else {
-        return
-      }
-      
-      Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
-        guard error == nil, !cancelled else {
-          return
-        }
-        
-        self.update()
-        successfulPurchase()
-      }
-    }
-  }
-}

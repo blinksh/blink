@@ -33,7 +33,7 @@ import Combine
 import Foundation
 
 
-public struct EntitlementInfo {
+public struct EntitlementStatus {
   let active: Bool
   let since: Date?
   let until: Date?
@@ -43,52 +43,38 @@ public struct EntitlementInfo {
     self.since  = since
     self.until  = until
   }
+  
+  static var inactive: EntitlementStatus = .init(active: false)
 }
 
-// Different guarantors allow to obtain entitlements from stored file tokens,
-// appstore receipts, etc...
-public protocol EntitlementGuarantor {
-  func isActive(entitlement: CompatibilityAccessManager.Entitlement) -> Future<EntitlementInfo, Never>
+public protocol EntitlementsSource {
+  func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never>
 }
 
 public class CompatibilityAccessManager {
-  public struct Entitlement: CustomStringConvertible {
-    let name: String
+  public struct Entitlement: Identifiable, Equatable {
+    public let id: String
     public init(_ name: String) {
-      self.name = name
+      self.id = name
     }
-    public var description: String { name }
+    
+    var name: String { id }
   }
 
-  public static let shared = CompatibilityAccessManager([AppStoreEntitlements()])
+  public static let shared = CompatibilityAccessManager([AppStoreEntitlementsSource()])
 
-  public let guarantors: [EntitlementGuarantor]
+  public let sources: [EntitlementsSource]
   
-  private init(_ guarantors: [EntitlementGuarantor]) {
-    self.guarantors = guarantors
+  private init(_ sources: [EntitlementsSource]) {
+    self.sources = sources
   }
-
-  public func isActive(entitlement: CompatibilityAccessManager.Entitlement) -> Future<EntitlementInfo, Never> {
-    print("Checking access to entitlement '\(entitlement)'")
-    
-    var isActive = false
-    
-    // Declared outside to retain the function until execution.
-    var cancellable: AnyCancellable?
-    return Future { promise in
-      cancellable = self.guarantors
-        .publisher
-        .flatMap { $0.isActive(entitlement: entitlement) }
-        .first { $0.active == true }
-        .sink(receiveCompletion: { _ in
-          if !isActive {
-            promise(.success(EntitlementInfo(active: false)))
-          }
-        }, receiveValue: { val in
-          isActive = true
-          promise(.success(val))
-        }
-      )
-    }
+  
+  public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
+    self.sources.publisher
+      .print("checking access")
+      .flatMap { $0.status(of: entitlement) }
+      .first(where: \.active)
+      .replaceEmpty(with: .inactive)
+      .eraseToAnyPublisher()
   }
 }
