@@ -38,7 +38,6 @@ import CryptoKit
 import BlinkConfig
 import SSH
 
-fileprivate let fm = FileManager.default
 
 struct Archive {
   struct Error: Swift.Error {
@@ -51,6 +50,7 @@ struct Archive {
   let tmpDirectoryURL: URL
 
   private init() throws {
+    let fm = FileManager.default
     try self.tmpDirectoryURL = fm.url(for: .itemReplacementDirectory,
                                       in: .userDomainMask,
                                       appropriateFor: BlinkPaths.blinkURL(),
@@ -97,6 +97,8 @@ struct Archive {
     else {
       throw Error("Could not create encryption streams for archive")
     }
+    
+    let fm = FileManager.default
 
     defer {
       try? encoderStream.close()
@@ -117,6 +119,8 @@ struct Archive {
 
   // Recover from an archive file. This operation may overwrite current configuration.
   static func recover(from archiveURL: URL, password: String) throws {
+    let fm = FileManager.default
+
     // Extract
     let homeURL = URL(fileURLWithPath: BlinkPaths.homePath())
     try extract(from: archiveURL, password: password, to: homeURL)
@@ -211,6 +215,8 @@ struct Archive {
   }
 
   private func copyAllDataToTmpDirectory() throws {
+    let fm = FileManager.default
+    
     // Copy everything
     let blinkURL = BlinkPaths.blinkURL()!
 
