@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Combine
+import FileProvider
 import Foundation
 
 import BlinkFiles
@@ -85,5 +86,22 @@ final class FileTranslatorCache {
   static func reference(identifier: BlinkItemIdentifier) -> BlinkItemReference? {
     print("requesting File BlinkItemReference : \(identifier.itemIdentifier.rawValue)")
     return shared.references[identifier.itemIdentifier.rawValue]
+  }
+
+  static func reference(url: URL) -> BlinkItemReference? {
+    let manager = NSFileProviderManager.default
+    let containerPath = manager.documentStorageURL.path
+
+    // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
+    // file://<containerPath>/<encodedRootPath>/path/filename
+    // Remove containerPath, split and get encodedRootPath.
+    var encodedPath = url.path
+    encodedPath.removeFirst(containerPath.count)
+    if encodedPath.hasPrefix("/") {
+      encodedPath.removeFirst()
+    }
+
+    // <encodedRootPath>/<path>/<to>/filename
+    return shared.references[encodedPath]
   }
 }

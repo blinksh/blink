@@ -43,7 +43,7 @@ final class BlinkItemReference: NSObject {
   private let identifier: BlinkItemIdentifier
   var remote: BlinkFiles.FileAttributes?
   var local: BlinkFiles.FileAttributes?
-  
+
   var primary: BlinkFiles.FileAttributes = [:]
   var replica: BlinkFiles.FileAttributes?
 
@@ -77,7 +77,7 @@ final class BlinkItemReference: NSObject {
     }
     evaluate()
   }
-  
+
   private func evaluate() {
     guard let remoteModified = (remote?[.modificationDate] as? Date) else {
       primary = local!
@@ -112,6 +112,14 @@ final class BlinkItemReference: NSObject {
     }
   }
 
+  var path: String {
+    identifier.path
+  }
+
+  var encodedRootPath: String {
+    identifier.encodedRootPath
+  }
+
   var url: URL {
     identifier.url
   }
@@ -126,7 +134,7 @@ final class BlinkItemReference: NSObject {
     }
     return identifier.filename
   }
-  
+
   var permissions: PosixPermissions? {
     guard let perm = primary[.posixPermissions] as? NSNumber else {
       return nil
@@ -155,14 +163,14 @@ final class BlinkItemReference: NSObject {
     uploadingTask = c
     uploadingError = nil
   }
-  
+
   func uploadCompleted(_ error: Error?) {
     if let error = error {
       uploadingError = error
       uploadingTask = nil
       return
     }
-    
+
     remote = local
     evaluate()
     uploadingTask = nil
@@ -188,7 +196,7 @@ extension BlinkItemReference: NSFileProviderItem {
 
   // iOS14
   //  var contentType: UTType
-  
+
   var typeIdentifier: String {
     guard let type = primary[.type] as? FileAttributeType else {
       print("\(itemIdentifier) missing type")
@@ -197,7 +205,7 @@ extension BlinkItemReference: NSFileProviderItem {
     if type == .typeDirectory {
       return kUTTypeFolder as String
     }
-    
+
     let pathExtension = (filename as NSString).pathExtension
     guard let typeIdentifier = (UTTypeCreatePreferredIdentifierForTag(
       kUTTagClassFilenameExtension,
@@ -206,11 +214,11 @@ extension BlinkItemReference: NSFileProviderItem {
     )?.takeRetainedValue() as String?) else {
       return kUTTypeItem as String
     }
-    
+
     if typeIdentifier.starts(with: "dyn") {
       return kUTTypeItem as String
     }
-    
+
     return typeIdentifier
   }
 
@@ -218,7 +226,7 @@ extension BlinkItemReference: NSFileProviderItem {
     guard let permissions = self.permissions else {
       return []
     }
-    
+
     var c = NSFileProviderItemCapabilities()
     if isDirectory {
       print("Capabilities for \(self.filename)")
