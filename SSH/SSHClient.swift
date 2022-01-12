@@ -336,7 +336,8 @@ public class SSHClient {
       return .fail(error: SSHError(title: "Could not get server publickey hash"))
     }
     
-    let hexString = String(cString: ssh_get_hexa(hash, hlen))
+    let serverFingerprint = String(cString: ssh_get_fingerprint_hash(SSH_PUBLICKEY_HASH_SHA256, hash, hlen))
+    //let hexString = String(cString: ssh_get_hexa(hash, hlen))
     ssh_clean_pubkey_hash(&hash)
     
     let rc3 = ssh_session_is_known_server(session)
@@ -345,7 +346,7 @@ public class SSHClient {
       return .just(self)
       
     case SSH_KNOWN_HOSTS_CHANGED:
-      return self.options.requestVerifyHostCallback!(.changed(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
+      return self.options.requestVerifyHostCallback!(.changed(serverFingerprint: serverFingerprint)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
         if answer == .affirmative {
           let rc = ssh_session_update_known_hosts(self.session)
           if rc != SSH_OK {
@@ -358,7 +359,7 @@ public class SSHClient {
       }.eraseToAnyPublisher()
       
     case SSH_KNOWN_HOSTS_UNKNOWN:
-      return self.options.requestVerifyHostCallback!(.unknown(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
+      return self.options.requestVerifyHostCallback!(.unknown(serverFingerprint: serverFingerprint)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
         if answer == .affirmative {
           let rc = ssh_session_update_known_hosts(self.session)
           
@@ -382,7 +383,7 @@ public class SSHClient {
       return .fail(error: SSHError(title: "Could not verify host authenticity."))
     /// The known host file does not exist. The host is thus unknown. File will be created if host key is accepted
     case SSH_KNOWN_HOSTS_NOT_FOUND:
-      return self.options.requestVerifyHostCallback!(.notFound(serverFingerprint: hexString)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
+      return self.options.requestVerifyHostCallback!(.notFound(serverFingerprint: serverFingerprint)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
         if answer == .affirmative {
           let rc = ssh_session_update_known_hosts(self.session)
           
@@ -667,7 +668,7 @@ public class SSHClient {
       }
   }
   
-  public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<Stream, Error> {
+  public func requestReverseForward(bindTo address: String?, port: Int32) -> AnyPublisher<PassthroughSubject<Stream, Error>, Error> {
     if let _ = self.reversePorts[port] {
       return .fail(error: SSHError(title: "Reverse forward already exits for that port."))
     }
@@ -719,7 +720,7 @@ public class SSHClient {
         }
         
         return port
-      }.flatMap { port -> PassthroughSubject<Stream, Error> in
+      }.map { port -> PassthroughSubject<Stream, Error> in
         let pub = PassthroughSubject<Stream, Error>()
         self.reversePorts[port] = pub
         

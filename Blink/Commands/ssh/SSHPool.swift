@@ -102,44 +102,7 @@ class SSHPool {
   static func connection(for host: String, with config: SSHClientConfig) -> SSH.SSHClient? {
     shared.control(for: host, with: config)?.connection
   }
-  
-  static func register(shellOn connection: SSH.SSHClient) {
-    // running command is not enough here to identify the connction as some information
-    // may be predefined from Config.
-    let c = control(on: connection)
-    c?.numShells += 1
-  }
-  
-  static func register(_ listener: SSHPortForwardListener, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
-    let c = control(on: connection)
-    c?.tunnelListeners.append((command, listener))
-  }
 
-  static func register(_ client: SSHPortForwardClient, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
-    let c = control(on: connection)
-    c?.tunnelClients.append((command, client))
-  }
-  
-  static func register(stdioStream stream: SSH.Stream, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
-    let c = control(on: connection)
-    c?.streams.append((command, stream))
-  }
-  
-  // TODO connection won't be deinited if you are still keeping a reference.
-  // I care about the channel, everything else should not be an issue.
-  static func deregister(runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
-    // Attach Commands to possibly running sessions
-    // Command - tunnel, reverse, session. CommandControl.
-    // Session Control - for a connection, has multiple CommandControls.
-    // TODO Avoid enforcing !
-    guard let c = control(on: connection) else {
-      // TODO Should we throw?
-      return
-    }
-    c.deregister(command)
-    shared.enforcePersistance(c)
-  }
-  
   private static func control(on connection: SSH.SSHClient) -> SSHClientControl? {
     shared.controls.first { $0.connection === connection }
   }
@@ -149,6 +112,9 @@ class SSHPool {
   }
   
   private func enforcePersistance(_ control: SSHClientControl) {
+    print("Current channels \(control.numChannels)")
+    print("\(control.localTunnels)")
+    print("\(control.remoteTunnels)")
     if control.numChannels == 0 {
       // For now, we just stop the connection as is
       // We could use a delegate just to notify when a connection is dead, and the control could
@@ -162,6 +128,102 @@ class SSHPool {
       controls.remove(at: idx)
     }
   }
+}
+
+extension SSHPool {
+  static func deregister(allTunnelsForConnection connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+
+    c.localTunnels.forEach  { (k, _) in deregister(localForward: k, on: connection) }
+    c.remoteTunnels.forEach { (k, _) in deregister(remoteForward: k, on: connection) }
+    // NOTE This is a workaround
+    c.streams.forEach { (_, s) in s.cancel() }
+    c.streams = []
+  }
+}
+
+// Shell
+extension SSHPool {
+  static func register(shellOn connection: SSH.SSHClient) {
+    // running command is not enough here to identify the connction as some information
+    // may be predefined from Config.
+    if let c = control(on: connection) {
+      c.numShells += 1
+    }
+  }
+  
+  static func deregister(shellOn connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+    c.numShells -= 1
+    shared.enforcePersistance(c)
+  }
+}
+
+// Forward Tunnels
+extension SSHPool {
+  static func register(_ listener: SSHPortForwardListener, 
+                       portForwardInfo: PortForwardInfo, 
+                       on connection: SSH.SSHClient) {
+    let c = control(on: connection)
+    c?.localTunnels[portForwardInfo] = listener
+  }
+  
+  static func deregister(localForward: PortForwardInfo, on connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+    if let tunnel = c.localTunnels.removeValue(forKey: localForward) {
+      tunnel.close()
+    }
+    shared.enforcePersistance(c)
+  }
+
+  static func contains(localForward: PortForwardInfo, on connection: SSH.SSHClient) -> Bool {
+    guard let c = control(on: connection) else {
+      return false
+    }
+    
+    return c.localTunnels[localForward] != nil
+  }
+}
+
+// Remote Tunnels
+extension SSHPool {
+  static func register(_ client: SSHPortForwardClient, 
+                       portForwardInfo: PortForwardInfo, 
+                       on connection: SSH.SSHClient) {
+    let c = control(on: connection)
+    c?.remoteTunnels[portForwardInfo] = client
+  }
+
+  static func deregister(remoteForward: PortForwardInfo, on connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+    if let tunnel = c.remoteTunnels.removeValue(forKey: remoteForward) {
+      tunnel.close()
+    }
+    shared.enforcePersistance(c)
+  }
+
+  static func contains(remoteForward: PortForwardInfo, on connection: SSH.SSHClient) -> Bool {
+    guard let c = control(on: connection) else {
+      return false
+    }
+    
+    return c.remoteTunnels[remoteForward] != nil
+  }
+}
+
+extension SSHPool {
+  static func register(stdioStream stream: SSH.Stream, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
+    let c = control(on: connection)
+    c?.streams.append((command, stream))
+  }
   
   private func removeControl(_ control: SSHClientControl) {
     awake(runLoop: control.runLoop)
@@ -170,7 +232,6 @@ class SSHPool {
     else {
       return
     }
-    control.deregisterAll()
     controls.remove(at: idx)
   }
 }
@@ -184,12 +245,15 @@ fileprivate class SSHClientControl {
   
   var numShells: Int = 0
   //var shells: [(SSHCommand, SSH.Stream)] = []
-  var tunnelListeners: [(SSHCommand, SSHPortForwardListener)] = []
-  var tunnelClients: [(SSHCommand, SSHPortForwardClient)] = []
+
+  var localTunnels:  [PortForwardInfo:TunnelControl] = [:]
+  var remoteTunnels: [PortForwardInfo:TunnelControl] = [:]
+
   var streams: [(SSHCommand, SSH.Stream)] = []
+
   var numChannels: Int {
     get {
-      return numShells + streams.count + tunnelListeners.count + tunnelClients.count
+      return numShells + streams.count + localTunnels.count + remoteTunnels.count
     }
   }
   
@@ -201,6 +265,7 @@ fileprivate class SSHClientControl {
     self.exposed = exposed
   }
   
+  
   // Other parameters could specify how the connection should be treated by the pool
   // (timeouts, etc...)
   func isConnection(for host: String, with config: SSHClientConfig) -> Bool {
@@ -210,49 +275,21 @@ fileprivate class SSHClientControl {
     }
     return self.host == host && config == self.config ? true : false
   }
-  
-  func deregisterAll() {
-    streams.forEach { _, s in
-      s.cancel()
-    }
-    tunnelClients.forEach { _, cli in
-      cli.close()
-    }
-    tunnelListeners.forEach {_, lis in
-      lis.close()
-    }
-  }
-  
-  func deregister(_ command: SSHCommand) {
-    if command.startsSession {
-      // There is no way to stop a specific shell from remote, as they are not identified,
-      // so we just keep them as numbers.
-      // TODO Test force closing the connection will not mess up with the stream.
-      // We may want to take care of the stream here as well.
-      numShells -= 1
-    }
-    
-    // TODO This may not look very good when we start multiple sessions
-    // on the same server. We will need multiple connections, and deinstancing the right ones. When do you deregister?
-    if let stdio = command.stdioHostAndPort,
-       let idx = streams.firstIndex(where: { (c, _) in c.stdioHostAndPort == stdio }) {
-      let (_, stream) = streams.remove(at: idx)
-      //let (_, stream) = streams[idx]
-      stream.cancel()
-    }
-    
-    // Remove the tunnels
-    // TEST Once the tunnels are deinitalized, they shoul also be closed.
-    // TODO We should not need the close but will enforce it.
-    if let tunnel = command.localPortForward,
-       let idx = self.tunnelListeners.firstIndex(where: { (t, _) in t.localPortForward == tunnel }) {
-      let (_, lis) = tunnelListeners.remove(at: idx)
-      lis.close()
-    }
-    if let tunnel = command.reversePortForward,
-       let idx = self.tunnelClients.firstIndex(where: { (t, _) in t.reversePortForward == tunnel }) {
-      let (_, cli) = tunnelClients.remove(at: idx)
-      cli.close()
-    }
+}
+
+fileprivate protocol TunnelControl {
+  func close()
+}
+
+extension SSHPortForwardListener: TunnelControl {}
+
+extension SSHPortForwardClient: TunnelControl {}
+
+extension PortForwardInfo: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(self.localPort)
+    hasher.combine(self.bindAddress)
+    hasher.combine(self.remotePort)
   }
 }
+

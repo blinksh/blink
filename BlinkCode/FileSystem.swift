@@ -185,8 +185,8 @@ public class CodeFileSystemService: CodeSocketDelegate {
       
       let threadIsReady = Future<RunLoop, Error> { promise in
         thread = Thread {
-          let timer = Timer(timeInterval: TimeInterval(INT_MAX), repeats: true) { _ in
-            print("timer")
+          let timer = Timer(timeInterval: TimeInterval(1), repeats: true) { _ in
+            //print("timer")
           }
           runLoop = RunLoop.current
           RunLoop.current.add(timer, forMode: .default)
@@ -228,15 +228,17 @@ public class CodeFileSystemService: CodeSocketDelegate {
 class CodeFileSystem {
   private let translator: AnyPublisher<Translator, Error>
   private let uri: URI
+  private let log: BlinkLogger
   
   init(_ t: AnyPublisher<Translator, Error>, uri: URI) {
     self.translator = t
     self.uri = uri
+    self.log = CodeFileSystemLogger.log("\(uri.rootPath.host)")
   }
 
   func stat() -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("stat \(path)")
+    self.log.debug("stat \(path)")
 
     return translator
       .flatMap {
@@ -247,6 +249,7 @@ class CodeFileSystem {
       }
       .flatMap { $0.stat() }
       .map { attrs -> FileStat in
+        self.log.debug("stat \(path) called.")
         var mtimeMillis = 0
         var ctimeMillis = 0
         if let mtime = attrs[.modificationDate] as? NSDate {
@@ -266,13 +269,15 @@ class CodeFileSystem {
 
   func readDirectory() -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("readDirectory \(path)")
+    self.log.debug("readDirectory \(path)")
 
     return translator
       .flatMap { $0.cloneWalkTo(path) }
       .flatMap { $0.directoryFilesAndAttributesResolvingLinks() }
       .map { filesAttributes -> [DirectoryTuple] in
-        filesAttributes
+        self.log.debug("readDirectory \(path) called. \(filesAttributes.count) items.")
+
+        return filesAttributes
           .filter { ($0[.name] as! String != "." && $0[.name] as! String != "..") }
           .map {
           DirectoryTuple(name: $0[.name] as! String,
@@ -285,7 +290,7 @@ class CodeFileSystem {
 
   func readFile() -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("readFile \(path)")
+    self.log.debug("readFile \(path)")
     
     return translator
       .flatMap {
@@ -308,6 +313,8 @@ class CodeFileSystem {
         result.withUnsafeMutableBytes { buf in
           _ = dd.copyBytes(to: buf)
         }
+        self.log.debug("readFile \(path) completed. Read \(dd.count) bytes.")
+
         return (nil, result)
       }
       .eraseToAnyPublisher()
@@ -315,7 +322,7 @@ class CodeFileSystem {
 
   func writeFile(options: FileSystemOperationOptions, content: Data) -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("writeFile \(path)")
+    self.log.debug("writeFile \(path)")
     
     let parentDir = (path as NSString).deletingLastPathComponent
     let fileName  = (path as NSString).lastPathComponent
@@ -353,12 +360,11 @@ class CodeFileSystem {
             }
             return file.write(content.withUnsafeBytes { DispatchData(bytes: $0) }, max: content.count)
               .reduce(0, { count, written -> Int in
-                           print("Total Written \(count)")
                            return count + written
               })
-              .flatMap { wrote in
-                file.close().map { _ in wrote }
-                
+              .flatMap { wrote -> AnyPublisher<Int, Error> in
+                self.log.debug("writeFile \(path) completed. Wrote \(wrote) bytes.")
+                return file.close().map { _ in wrote }.eraseToAnyPublisher()
               }
               .eraseToAnyPublisher()
           }
@@ -370,7 +376,7 @@ class CodeFileSystem {
 
   func createDirectory() -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("createDirectory \(path)")
+    self.log.debug("createDirectory \(path)")
     
     let parentUri = URI(rootPath: self.uri.rootPath.parent)
     let parent  = parentUri.rootPath.filesAtPath
@@ -400,7 +406,7 @@ class CodeFileSystem {
 
   func rename(newUri: URI, options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("rename \(path)")
+    self.log.debug("rename \(path)")
     
     // Walk to oldURI
     // Walk to new parent
@@ -432,7 +438,7 @@ class CodeFileSystem {
 
   func delete(options: FileSystemOperationOptions) -> WebSocketServer.ResponsePublisher {
     let path = self.uri.rootPath.filesAtPath
-    print("delete \(path)")
+    self.log.debug("delete \(path)")
     
     let recursive = options.recursive ?? false
 
@@ -523,7 +529,9 @@ struct CodeFileSystemLogger {
       if let file = try? FileLogging(to: BlinkPaths.blinkCodeErrorLogURL()) {
         handler.append(
           {
-            try $0.format {
+            try $0
+            .filter(logLevel: .debug)
+            .format {
               [ "[\($0[.logLevel]!)]",
                 dateFormatter.string(from: Date()),
                 $0[.component] as? String ?? "global",
