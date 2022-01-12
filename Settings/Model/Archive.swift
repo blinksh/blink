@@ -158,6 +158,9 @@ struct Archive {
   }
 
   static func extract(from archiveURL: URL, password: String, to destinationURL: URL) throws {
+#if targetEnvironment(simulator)
+    throw Error("Simulator")
+#else
     guard let sourcePath = FilePath(archiveURL) else {
       throw Error("Wrong source path.")
     }
@@ -212,6 +215,7 @@ struct Archive {
     } catch {
       throw Error("Error extracting archive elements. \(error)")
     }
+#endif
   }
 
   private func copyAllDataToTmpDirectory() throws {
