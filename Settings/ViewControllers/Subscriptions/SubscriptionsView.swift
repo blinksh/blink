@@ -36,7 +36,7 @@ import Purchases
 
 
 struct SubscriptionsView: View {
-  @EnvironmentObject var user: UserModel
+  @EnvironmentObject var user: PurchasesUserModel
   @State private var showingOffering = false
   let dateFormatter = DateFormatter()
   
@@ -57,8 +57,8 @@ struct SubscriptionsView: View {
         Text("Until: \(dateFormatter.string(from: plusAccess.until!))")
         // TODO Manage subscription button?
       } else {
-        if let shellAccess = user.shellAccess,
-           shellAccess.active {
+        if let classicAccess = user.classicAccess,
+           classicAccess.active {
           Text("Thanks for your support. You can still upgrade.")
           Button(action: {
             showingOffering = true
@@ -84,7 +84,7 @@ struct SubscriptionsView: View {
 
 struct Offering: View {
   @Binding var isPresented: Bool
-  @EnvironmentObject var user: UserModel
+  @EnvironmentObject var user: PurchasesUserModel
   
   var body: some View {
     VStack {
@@ -101,7 +101,7 @@ struct Offering: View {
           if let error = error {
             print("\(error)")
           }
-          if UserModel.shared.shellAccess.active {
+          if PurchasesUserModel.shared.classicAccess.active {
             isPresented = false
           }
         }

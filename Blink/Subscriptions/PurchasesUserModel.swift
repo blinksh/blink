@@ -34,17 +34,18 @@ import Combine
 import SwiftUI
 
 extension CompatibilityAccessManager.Entitlement {
-  static let shell = Self("shell")
-  static let plus = Self("plus")
+  static let classic = Self("blink_shell_classic")
+  static let plus = Self("blink_shell_plus")
 }
 
-class UserModel: ObservableObject {
-  @Published var shellAccess: EntitlementStatus = .inactive
+class PurchasesUserModel: ObservableObject {
+  @Published var classicAccess: EntitlementStatus = .inactive
   @Published var plusAccess: EntitlementStatus = .inactive
   @Published var errorMessage: String = ""
   
   @Published var plusProduct: SKProduct? = nil
   @Published var purchaseInProgress: Bool = false
+  @Published var restoreInProgress: Bool = false
   
   private let _priceFormatter = NumberFormatter()
   
@@ -53,11 +54,11 @@ class UserModel: ObservableObject {
     refresh()
   }
   
-  static let shared = UserModel()
+  static let shared = PurchasesUserModel()
   
   func refresh() {
     let manager = CompatibilityAccessManager.shared
-    manager.status(of: .shell).assign(to: &$shellAccess)
+    manager.status(of: .classic).assign(to: &$classicAccess)
     manager.status(of: .plus).assign(to: &$plusAccess)
     
     if self.plusProduct == nil {
@@ -104,8 +105,10 @@ class UserModel: ObservableObject {
   }
   
   func restorePurchases() {
+    self.restoreInProgress = true
     Purchases.shared.restoreTransactions { info, error in
-      
+      self.refresh()
+      self.restoreInProgress = false
     }
   }
   
@@ -147,9 +150,16 @@ class UserModel: ObservableObject {
   }
   
   func fetchPlusProduct() {
-    Purchases.shared.products(["0000.0000"]) { products in
+    Purchases.shared.products(["blink_shell_plus_1y_1999"]) { products in
       self.plusProduct = products.first
     }
   }
   
+}
+
+@objc public class PurchasesUserModelObjc: NSObject {
+
+  @objc public static func preparePurchasesUserModel() {
+    PurchasesUserModel.shared.refresh()
+  }
 }

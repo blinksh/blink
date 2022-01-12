@@ -99,7 +99,7 @@ struct PageContainer<T: Page>: View {
 
 struct PaywallView: View {
   @State private var tabIndex = 0
-  @ObservedObject private var model: UserModel = .shared
+  @ObservedObject private var model: PurchasesUserModel = .shared
   
   var body: some View {
     TabView(selection: $tabIndex) {
@@ -109,7 +109,7 @@ struct PaywallView: View {
     }
     .tabViewStyle(.page)
     .indexViewStyle(.page(backgroundDisplayMode: .always))
-    .disabled(model.purchaseInProgress)
+    .disabled(model.purchaseInProgress || model.restoreInProgress)
   }
   
   private func _onSwitchTab(_ idx: Int) {

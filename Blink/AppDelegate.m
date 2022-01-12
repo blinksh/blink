@@ -134,6 +134,8 @@ void __setupProcessEnv() {
   
   [_NSFileProviderManager syncWithBKHosts];
   
+  [PurchasesUserModelObjc preparePurchasesUserModel];
+  
   return YES;
 }
 

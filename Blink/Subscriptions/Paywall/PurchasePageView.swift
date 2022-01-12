@@ -34,7 +34,7 @@ import SwiftUI
 import Spinner
 
 struct PurchasePageView: Page {
-  @ObservedObject var model: UserModel = .shared
+  @ObservedObject var model: PurchasesUserModel = .shared
   
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
@@ -43,7 +43,6 @@ struct PurchasePageView: Page {
     self.horizontal = horizontal
     self.switchTab = switchTab
   }
-  
   
   var body: some View {
     VStack(alignment: .leading) {
@@ -76,24 +75,36 @@ struct PurchasePageView: Page {
         Spacer()
       }.frame(minHeight: 40)
       Spacer()
-      HStack {
-        Spacer()
-        if let formattedPrice = model.formattedPlustPriceWithPeriod() {
-        Text("Plan auto-renews for \(formattedPrice) until canceled.")
-          .font(.footnote)
+      if model.restoreInProgress {
+        HStack {
+          Spacer()
+          ProgressView(label: { Text("restoring purchases....") })
+          Spacer()
+        }.padding(.bottom, self.horizontal ? 24 : 32)
+      } else {
+        HStack {
+          Spacer()
+          if let formattedPrice = model.formattedPlustPriceWithPeriod() {
+            Text("Plan auto-renews for \(formattedPrice) until canceled.")
+              .font(.footnote)
+          }
+          Spacer()
         }
-        Spacer()
+        Spacer().frame(maxHeight:8)
+        HStack {
+          Spacer()
+          Button("Privacy Policy", action: {}).padding(.trailing)
+          Button("Terms of Use", action: {}).padding(.trailing)
+          Button("Restore", action: {
+            self.model.restorePurchases()
+          })
+          
+          Spacer()
+        }
+        .font(.footnote)
+        .padding(.bottom, self.horizontal ? 32 : 40)
       }
-      Spacer().frame(maxHeight:8)
-      HStack {
-        Spacer()
-        Button("Privacy Policy", action: {}).padding(.trailing)
-        Button("Terms of Use", action: {}).padding(.trailing)
-        Button("Restore", action: {})
-        Spacer()
-      }
-      .font(.footnote)
-      .padding(.bottom, self.horizontal ? 32 : 40)
+      
     }.padding()
       .frame(maxWidth: horizontal ? 700 : 460)
   }

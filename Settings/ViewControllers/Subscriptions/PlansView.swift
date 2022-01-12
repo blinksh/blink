@@ -36,7 +36,7 @@ import Purchases
 struct PlansView: View {
   
   @State var alertErrorMessage: String = ""
-  @ObservedObject var model: UserModel = .shared
+  @ObservedObject var model: PurchasesUserModel = .shared
   
   var body: some View {
     List {

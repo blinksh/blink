@@ -32,37 +32,13 @@
 import SwiftUI
 import UIKit
 
-@objc class SettingsHostingController: NSObject {
+class SettingsHostingController: NSObject {
   private static func _createWith<T: View>(view: T, nav: UINavigationController?) -> UIViewController {
     guard let nav = nav
     else {
       return UIHostingController(rootView: view)
     }
     return UIHostingController(rootView: NavView(navController: nav)  { view } )
-  }
-
-  @objc static func createSubscriptionControllerWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: SubscriptionsView().environmentObject(UserModel.shared), nav: nav)
-  }
-  
-  @objc static func createKeyboardControllerWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: KBConfigView(config: KBTracker.shared.loadConfig()), nav: nav)
-  }
-  
-  @objc static func createNotificationsWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: BKNotificationsView(), nav: nav)
-  }
-  
-  @objc static func createGesturesWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: GesturesView(), nav: nav)
-  }
-  
-  @objc static func createKeysWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: KeyListView(), nav: nav)
-  }
-  
-  @objc static func createHostsWith(nav: UINavigationController?) -> UIViewController {
-    _createWith(view: HostListView(), nav: nav)
   }
   
   static func createSettings(nav: UINavigationController?) -> UIViewController {

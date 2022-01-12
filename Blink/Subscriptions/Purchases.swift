@@ -77,7 +77,7 @@ public class PreconfiguredEntitlementsSource: EntitlementsSource {
   }
   
   public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
-    Just(.init(active: entitlement == .shell)).eraseToAnyPublisher()
+    Just(.init(active: entitlement == .classic)).eraseToAnyPublisher()
   }
 }
 

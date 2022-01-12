@@ -48,7 +48,8 @@ class SubscriptionNag: NSObject {
   private override init() {}
 
   @objc func start() {  
-    if UserModel.shared.shellAccess.active {
+    if PurchasesUserModel.shared.classicAccess.active ||
+        PurchasesUserModel.shared.plusAccess.active {
       return
     }
     
