@@ -58,30 +58,12 @@ extension FileError {
   }
 }
 
-public class SFTPClient : BlinkFiles.Translator {
+public class SFTPClient {
   let client: SSHClient
   var session: ssh_session { client.session }
-  var rootPath: String = ""
-  var path: String = ""
-  public var current: String { get { path }}
   let sftp: sftp_session
   let rloop: RunLoop
   let channel: ssh_channel
-  public private(set) var fileType: FileAttributeType = .typeUnknown
-  public var isDirectory: Bool {
-    get { return fileType == .typeDirectory }
-  }
-  public var isConnected: Bool { ssh_channel_is_closed(channel) != 1 && client.isConnected }
-  
-  init(from base: SFTPClient) {
-    self.client = base.client
-    self.rootPath = base.rootPath
-    self.path = base.path
-    self.sftp = base.sftp
-    self.rloop = base.rloop
-    self.channel = base.channel
-    self.fileType = base.fileType
-  }
   
   init?(on channel: ssh_channel, client: SSHClient) {
     self.client = client
@@ -103,12 +85,44 @@ public class SFTPClient : BlinkFiles.Translator {
     if rc != SSH_OK {
       throw SSHError(rc, forSession: session)
     }
-    
+  }
+  
+  deinit {
+    print("SFTP Out!!")
+    self.client.closeSFTP(sftp)
+  }
+}
+
+public class SFTPTranslator: BlinkFiles.Translator {
+  let sftpClient: SFTPClient
+  var sftp: sftp_session { sftpClient.sftp }
+  var channel: ssh_channel { sftpClient.channel }
+  var session: ssh_session { sftpClient.session }
+  var rloop: RunLoop { sftpClient.rloop }
+  
+  var rootPath: String = ""
+  var path: String = ""
+  public var current: String { get { path }}
+  public private(set) var fileType: FileAttributeType = .typeUnknown
+  public var isDirectory: Bool {
+    get { return fileType == .typeDirectory }
+  }
+  public var isConnected: Bool { ssh_channel_is_closed(sftpClient.channel) != 1 && sftpClient.client.isConnected }
+  
+  public init(on sftpClient: SFTPClient) throws {
+    self.sftpClient = sftpClient
     let (rootPath, fileType) = try self.canonicalize("")
     
     self.rootPath = rootPath
     self.fileType = fileType
     self.path = rootPath
+  }
+  
+  init(from base: SFTPTranslator) {
+    self.sftpClient = base.sftpClient
+    self.rootPath = base.rootPath
+    self.path = base.path
+    self.fileType = base.fileType
   }
   
   func connection() -> AnyPublisher<sftp_session, Error> {
@@ -148,7 +162,7 @@ public class SFTPClient : BlinkFiles.Translator {
   }
   
   public func clone() -> Translator {
-    return SFTPClient(from: self)
+    return SFTPTranslator(from: self)
   }
   
   // Resolve to an element in the hierarchy
@@ -170,7 +184,7 @@ public class SFTPClient : BlinkFiles.Translator {
       absPath = NSString(string: self.path).appendingPathComponent(path)
     }
 
-    return connection().tryMap { sftp -> SFTPClient in
+    return connection().tryMap { sftp -> SFTPTranslator in
       let (canonicalPath, type) = try self.canonicalize(absPath)
       
       self.path = canonicalPath
@@ -224,7 +238,7 @@ public class SFTPClient : BlinkFiles.Translator {
         throw(FileError(title: "Error opening file", in: self.session))
       }
       
-      return SFTPFile(file, in: self)
+      return SFTPFile(file, in: self.sftpClient)
     }.eraseToAnyPublisher()
   }
   
@@ -242,7 +256,7 @@ public class SFTPClient : BlinkFiles.Translator {
         throw FileError(in: self.session)
       }
       
-      return SFTPFile(file, in: self)
+      return SFTPFile(file, in: self.sftpClient)
     }.eraseToAnyPublisher()
   }
   
@@ -424,10 +438,11 @@ public class SFTPClient : BlinkFiles.Translator {
 
 public class SFTPFile : BlinkFiles.File {
   var file: sftp_file?
-  let client: SFTPClient
-  let session: ssh_session
-  let rloop: RunLoop
-  let channel: ssh_channel
+  let sftpClient: SFTPClient
+  var sftp: sftp_session { sftpClient.sftp }
+  var channel: ssh_channel { sftpClient.channel }
+  var session: ssh_session { sftpClient.session }
+  var rloop: RunLoop { sftpClient.rloop }
   
   var inflightReads: [UInt32] = []
   var inflightWrites: [UInt32] = []
@@ -436,18 +451,19 @@ public class SFTPFile : BlinkFiles.File {
   var demand: Subscribers.Demand = .none
   var pub: PassthroughSubject<DispatchData, Error>!
   
-  init(_ file: sftp_file, in client: SFTPClient) {
-    self.client = client
+  init(_ file: sftp_file, in sftpClient: SFTPClient) {
+    self.sftpClient = sftpClient
     self.file = file
-    self.session = client.session
-    self.rloop = client.rloop
-    self.channel = client.channel
     
     sftp_file_set_nonblocking(file)
   }
   
+  func connection() -> AnyPublisher<sftp_session, Error> {
+    return .init(Just(sftp).subscribe(on: rloop).setFailureType(to: Error.self))
+  }
+
   public func close() -> AnyPublisher<Bool, Error> {
-    return client.connection().tryMap { _ in
+    return self.connection().tryMap { _ in
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       

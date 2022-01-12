@@ -102,9 +102,8 @@ fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Er
       .dial(hostName, with: $0)
       .print("Dialing...")
     //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
-      .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
-        return conn.requestSFTP()
-      }//.print("SFTP")
+      .flatMap { $0.requestSFTP() }
+      .tryMap  { try SFTPTranslator(on: $0) }
       .mapError { error -> Error in
         log.error("Error connecting: \(error)")
         return NSFileProviderError.couldNotConnect(dueTo: error)

@@ -287,9 +287,9 @@ public class BlinkCopy: NSObject {
 
     return SSHClient.dial(hostName, with: config)
     //return SSHPool.dial(hostName, with: config, connectionOptions: sshOptions)
-      .flatMap { conn -> AnyPublisher<Translator, Error> in
-        return conn.requestSFTP().map { $0 as Translator }.eraseToAnyPublisher()
-      }.eraseToAnyPublisher()
+      .flatMap { $0.requestSFTP() }
+      .tryMap  { try SFTPTranslator(on: $0) }
+      .eraseToAnyPublisher()
   }
 
   @objc func sigwinch() { }

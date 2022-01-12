@@ -94,9 +94,8 @@ extension TranslatorFactories {
           SSHClient
             .dial(hostName, with: config)
             .print("Dialing...")
-            .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
-              return conn.requestSFTP()
-            }
+            .flatMap { $0.requestSFTP() }
+            .tryMap  { try SFTPTranslator(on: $0) }
             .print("SFTP")
             .flatMap { $0.walkTo("") }
         }.eraseToAnyPublisher ()
