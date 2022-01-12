@@ -36,7 +36,9 @@ import AppleArchive
 import CryptoKit
 
 import BlinkConfig
+import SSH
 
+fileprivate let fm = FileManager.default
 
 struct Archive {
   struct Error: Swift.Error {
@@ -47,7 +49,6 @@ struct Archive {
   }
 
   let tmpDirectoryURL: URL
-  let fm = FileManager.default
 
   private init() throws {
     try self.tmpDirectoryURL = fm.url(for: .itemReplacementDirectory,
@@ -55,12 +56,12 @@ struct Archive {
                                       appropriateFor: BlinkPaths.blinkURL(),
                                       create: true)
   }
-  
+
   static func export(to archiveURL: URL, password: String) throws {
     #if targetEnvironment(simulator)
     throw Error("Simulator")
     #else
-    
+
     // Copy everything to the temporary directory
     // Import keys there
     let arch = try Archive()
@@ -86,7 +87,7 @@ struct Archive {
     else {
       throw Error("Could not create File Stream")
     }
-    
+
     guard
       let encryptionStream = ArchiveByteStream.encryptionStream(
         writingTo: archiveFileStream,
@@ -101,7 +102,7 @@ struct Archive {
       try? encoderStream.close()
       try? encryptionStream.close()
       try? archiveFileStream.close()
-      try? arch.fm.removeItem(at: arch.tmpDirectoryURL)
+      try? fm.removeItem(at: arch.tmpDirectoryURL)
     }
 
     // Archive
@@ -113,11 +114,43 @@ struct Archive {
     #endif
     // TODO Open on the other side, the activateFileViewerSelecting
   }
-  
+
+  // Recover from an archive file. This operation may overwrite current configuration.
   static func recover(from archiveURL: URL, password: String) throws {
     // Extract
+    let homeURL = URL(fileURLWithPath: BlinkPaths.homePath())
+    try extract(from: archiveURL, password: password, to: homeURL)
+
     // Import information (keys)
-    // We may want to create a command so everything is extracted, and then keys can be imported separately.
+    let keysDirectoryURL = homeURL.appendingPathComponent(".keys", isDirectory: true)
+    let keyNames = try fm.contentsOfDirectory(at: keysDirectoryURL, includingPropertiesForKeys: nil)
+      .filter { $0.lastPathComponent.split(separator: ".").count == 1 }
+      .map { $0.lastPathComponent }
+
+    defer { try? fm.removeItem(at: keysDirectoryURL) }
+
+    try keyNames.forEach { keyName in
+      if BKPubKey.withID(keyName) != nil {
+        throw Error("Key already exists \(keyName)")
+      }
+
+      do {
+        // Import and store
+        let keyURL = keysDirectoryURL.appendingPathComponent(keyName)
+        let keyBlob = try Data(contentsOf: keyURL)
+        //try Data(contentsOf: keyURL.appendingPathExtension("pub"))
+        let certBlob = try? Data(contentsOf: keysDirectoryURL.appendingPathComponent("\(keyName)-cert.pub"))
+        var pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
+        let pubkeyComment = String(pubkeyComponents.remove(at: 2) ?? "")
+
+        let key = try SSHKey(fromFileBlob: keyBlob, passphrase: "", withPublicFileCertBlob: certBlob)
+        let comment = (key.comment ?? "").isEmpty ? pubkeyComment : key.comment!
+
+        try BKPubKey.addKeychainKey(id: keyName, key: key, comment: comment)
+      } catch {
+        throw Error("Error importing key \(keyName)")
+      }
+    }
   }
 
   static func extract(from archiveURL: URL, password: String, to destinationURL: URL) throws {
@@ -132,9 +165,9 @@ struct Archive {
       path: sourcePath,
       mode: .readOnly,
       options: [],
-      permissions: []), 
+      permissions: []),
 
-      let context = ArchiveEncryptionContext(from: archiveFileStream)      
+      let context = ArchiveEncryptionContext(from: archiveFileStream)
     else {
       throw Error("Invalid archive file")
     }
@@ -149,7 +182,7 @@ struct Archive {
       throw Error("Invalid password for key")
     }
 
-    guard 
+    guard
       let decryptionStream = ArchiveByteStream.decryptionStream(
         readingFrom: archiveFileStream,
         encryptionContext: context),
@@ -158,7 +191,7 @@ struct Archive {
     else {
       throw Error("Error creating decryption streams.")
     }
-    
+
     guard let extractStream = ArchiveStream.extractStream(extractingTo: destinationPath) else {
       throw Error("Error creating extraction stream.")
     }
@@ -180,11 +213,40 @@ struct Archive {
   private func copyAllDataToTmpDirectory() throws {
     // Copy everything
     let blinkURL = BlinkPaths.blinkURL()!
-    
+
     // .blink folder
     try fm.copyItem(at: blinkURL, to: tmpDirectoryURL.appendingPathComponent(".blink"))
+    try fm.copyItem(at: blinkURL, to: tmpDirectoryURL.appendingPathComponent(".ssh"))
+    try? fm.removeItem(at: tmpDirectoryURL.appendingPathComponent(".blink/keys"))
+    // TODO Remove the keys file, as keys cannot be imported to other app. Not sure this is true
+    // within the same version of the app, even across devices, something to test.
 
-    // Read each key and store it within the FS    
+    let keysDirectory = tmpDirectoryURL.appendingPathComponent(".keys")
+    try fm.createDirectory(at: keysDirectory, withIntermediateDirectories: false, attributes: nil)
+
+    // Read each key and store it within the FS
+    // For each identity, get the Privatekey, Publickey and Certificate
+    try BKPubKey.all().forEach { card in
+      if card.storageType == BKPubKeyStorageTypeSecureEnclave {
+        return
+      }
+
+      guard let privateKey = card.loadPrivateKey() else {
+        throw Error("Could not read private key for \(card.id)")
+      }
+      let publicKey = card.publicKey
+      let cert = card.loadCertificate()
+
+      try privateKey
+        .write(to: keysDirectory.appendingPathComponent("\(card.id)"),
+                atomically: true, encoding: .utf8)
+      try publicKey
+        .write(to: keysDirectory.appendingPathComponent("\(card.id).pub"),
+                atomically: true, encoding: .utf8)
+      try cert?
+        .write(to: keysDirectory.appendingPathComponent("\(card.id)-cert.pub"),
+                atomically: true, encoding: .utf8)
+    }
   }
   // static func import(from path: URL, password: String) {}
 
