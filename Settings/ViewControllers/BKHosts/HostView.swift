@@ -320,9 +320,7 @@ struct HostView: View {
         Field("ProxyCmd",  $_proxyCmd,  next: "ProxyJump", placeholder: "ssh -W %h:%p bastion", enabled: _enabled)
         Field("ProxyJump", $_proxyJump, next: "Server",    placeholder: "bastion1,bastion2", enabled: _enabled)
         
-        if FeatureFlags.sshConfigAttachments {
-          FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
-        }
+        FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
       }
       
       Section(header: Text("MOSH")) {
@@ -332,28 +330,26 @@ struct HostView: View {
         FieldMoshPrediction(value: $_moshPrediction, enabled: _enabled)
       }.disabled(!_enabled)
       
-      if FeatureFlags.fileProviders {
-        Section(header: Label("Files.app", systemImage: "folder")) {
-          ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
+      Section(header: Label("Files.app", systemImage: "folder")) {
+        ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
           .onDelete { indexSet in
             _domains.remove(atOffsets: indexSet)
           }
-          Button(
-            action: {
-              let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
-              _domains.append(FileProviderDomain(
-                id:UUID(),
-                displayName: displayName.isEmpty ? "Location Name" : displayName,
-                remotePath: "~",
-                proto: "sftp"
-              ))
-            },
-            label: { Label("Add Location", systemImage: "folder.badge.plus") }
-          )
-        }
-        .id(_domainsListVersion)
-        .disabled(!_enabled)
+        Button(
+          action: {
+            let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+            _domains.append(FileProviderDomain(
+              id:UUID(),
+              displayName: displayName.isEmpty ? "Location Name" : displayName,
+              remotePath: "~",
+              proto: "sftp"
+            ))
+          },
+          label: { Label("Add Location", systemImage: "folder.badge.plus") }
+        )
       }
+      .id(_domainsListVersion)
+      .disabled(!_enabled)
     }
     .listStyle(GroupedListStyle())
     .alert(errorMessage: $_errorMessage)
