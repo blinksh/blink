@@ -437,9 +437,9 @@ extension SceneDelegate {
           return
         }
 
-      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
-                                                 archiveData: archiveData,
-                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
+//      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
+//                                                 archiveData: archiveData,
+//                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
     } else if route == "validatereceipt" {
       guard let migrationTokenString = blinkUrl
         .getQueryStringParameter(param: "migrationToken"),
