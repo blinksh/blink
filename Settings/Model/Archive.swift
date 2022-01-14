@@ -193,7 +193,7 @@ struct Archive {
 
       let decoderStream = ArchiveStream.decodeStream(readingFrom: decryptionStream)
     else {
-      throw Error("Error creating decryption streams.")
+      throw Error("Error on decryption streams. Bad password?")
     }
 
     guard let extractStream = ArchiveStream.extractStream(extractingTo: destinationPath) else {
