@@ -64,6 +64,7 @@ public class SFTPClient {
   let sftp: sftp_session
   let rloop: RunLoop
   let channel: ssh_channel
+  var log: SSHLogger { get { client.log } }
   
   init?(on channel: ssh_channel, client: SSHClient) {
     self.client = client
@@ -99,7 +100,8 @@ public class SFTPTranslator: BlinkFiles.Translator {
   var channel: ssh_channel { sftpClient.channel }
   var session: ssh_session { sftpClient.session }
   var rloop: RunLoop { sftpClient.rloop }
-  
+  var log: SSHLogger { get { sftpClient.log } }
+
   var rootPath: String = ""
   var path: String = ""
   public var current: String { get { path }}
@@ -276,8 +278,8 @@ public class SFTPTranslator: BlinkFiles.Translator {
   
   public func rmdir() -> AnyPublisher<Bool, Error> {
     return connection().tryMap { sftp -> Bool in
-      print("Removing directory \(self.current)")
-
+      self.log.message("Removing directory \(self.current)", SSH_LOG_INFO)
+      
       ssh_channel_set_blocking(self.channel, 1)
       defer { ssh_channel_set_blocking(self.channel, 0) }
       
@@ -443,6 +445,7 @@ public class SFTPFile : BlinkFiles.File {
   var channel: ssh_channel { sftpClient.channel }
   var session: ssh_session { sftpClient.session }
   var rloop: RunLoop { sftpClient.rloop }
+  var log: SSHLogger { get { sftpClient.log } }
   
   var inflightReads: [UInt32] = []
   var inflightWrites: [UInt32] = []
@@ -567,10 +570,10 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
     let newReads: [UInt32] = []
     var lastIdx = -1
     
-    //print("Reading blocks starting from \(inflightReads[0])")
+    self.log.message("Reading blocks starting from \(inflightReads[0])", SSH_LOG_DEBUG)
     for (idx, block) in inflightReads.enumerated() {
       let buf = UnsafeMutableRawPointer.allocate(byteCount: self.blockSize, alignment: MemoryLayout<UInt8>.alignment)
-      //print("Reading \(block)")
+      self.log.message("Reading \(block)", SSH_LOG_TRACE)
       let nbytes = sftp_async_read(self.file, buf, UInt32(self.blockSize), block)
       if nbytes > 0 {
         let bb = DispatchData(bytesNoCopy: UnsafeRawBufferPointer(start: buf, count: Int(nbytes)),
@@ -581,7 +584,7 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
       } else {
         buf.deallocate()
         if nbytes == SSH_AGAIN {
-          //print("AGAIN")
+            self.log.message("readBlock AGAIN", SSH_LOG_TRACE)
             break
         } else if nbytes < 0 {
           throw FileError(title: "Error while reading blocks", in: session)
@@ -593,7 +596,8 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
     }
     
     let blocksRead = lastIdx == -1 ? 0 : lastIdx + 1
-    print("Blocks read \(blocksRead), size \(data.count), last block \(lastIdx == -1 ? 0 : inflightReads[lastIdx])")
+    
+    self.log.message("Blocks read \(blocksRead), size \(data.count), last block \(lastIdx == -1 ? 0 : inflightReads[lastIdx])", SSH_LOG_DEBUG)
     inflightReads = Array(inflightReads[blocksRead...])
     inflightReads += newReads
     

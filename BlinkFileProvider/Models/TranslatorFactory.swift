@@ -43,6 +43,8 @@ enum BlinkFilesProtocol: String {
   case sftp = "sftp"
 }
 
+var logCancellables = Set<AnyCancellable>()
+
 func buildTranslator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
   guard let rootData = Data(base64Encoded: encodedRootPath),
         let rootPath = String(data: rootData, encoding: .utf8) else {
@@ -151,9 +153,15 @@ class SSHClientConfigProvider {
       availableAuthMethods.append(AuthPassword(with: password))
     }
     
+    let log = BlinkLogger("SSH")
+    let logger = PassthroughSubject<String, Never>()
+    logger.sink { log.send($0) }.store(in: &logCancellables)
+
+
     return (hostName,
             host.sshClientConfig(authMethods: availableAuthMethods,
-                                 agent: agent)
+                                 agent: agent,
+                                 logger: logger)
     )
   }
 }
