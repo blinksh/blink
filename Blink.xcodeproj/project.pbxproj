@@ -155,6 +155,7 @@
 		BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3202728925C00C77798 /* FileSystem.swift */; };
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
+		BDC8D8C02790D35A00115FD5 /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -819,6 +820,7 @@
 		BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServerTests.swift; sourceTree = "<group>"; };
 		BDBFA31F2728925C00C77798 /* WebSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
 		BDBFA3202728925C00C77798 /* FileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
+		BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveAlertUI.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -1556,6 +1558,7 @@
 			children = (
 				D2043EB62771C25D002E29AF /* Paywall */,
 				BD81523C273DB964002BB169 /* CompatibilityAccessManager.swift */,
+				BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */,
 				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
 				BD81523E273DB964002BB169 /* Purchases.swift */,
 				BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */,
@@ -3076,6 +3079,7 @@
 				BD815243273DBEDE002BB169 /* PurchasesUserModel.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
+				BDC8D8C02790D35A00115FD5 /* ArchiveAlertUI.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,

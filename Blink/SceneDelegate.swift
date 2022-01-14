@@ -33,6 +33,11 @@
 import Foundation
 import SwiftUI
 
+import Purchases
+
+
+let Blink14BundleID = "Com.CarlosCabanero.BlinkShell"
+let Blink15BundleID = "sh.blink.blinkshell"
 
 class ExternalWindow: UIWindow {
   var shadowWindow: UIWindow? = nil
@@ -152,11 +157,16 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    */
   func scene(_ scene: UIScene, openURLContexts URLContexts: Set<UIOpenURLContext>) {
     if FeatureFlags.checkReceipt,
-       let blinkUrlScheme = URLContexts.first(where: { $0.url.scheme == "blinkv14"})?.url {
-      _handleReceiptUrlScheme(with: blinkUrlScheme)
+       let blinkUrlContext = URLContexts.first(where: { $0.url.scheme == "blinkv14"})
+    // TODO Disabled bundleID for testing
+       //let bundleID = blinkUrlContext.options.sourceApplication
+    {
+      _handleBlink14UrlScheme(with: blinkUrlContext.url, fromApp: Blink15BundleID)
     } else if !FeatureFlags.checkReceipt,
-              let migrationTokenUrl = URLContexts.first(where: { $0.url.scheme == "blinkv15"})?.url {
-      _handleMigrationTokenUrl(with: migrationTokenUrl)
+              let blinkUrlContext = URLContexts.first(where: { $0.url.scheme == "blinkv15"})
+    //    let bundleID = blinkUrlContext.options.sourceApplication
+    {
+      _handleBlink15UrlScheme(with: blinkUrlContext.url, fromApp: Blink14BundleID)
     } else if let sshUrlScheme = URLContexts.first(where: { $0.url.scheme == "ssh" })?.url {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
@@ -411,40 +421,74 @@ fileprivate extension URL {
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
   // blinkv15:validateReceipt?migrationToken 
-  private func _handleMigrationTokenUrl(with migrationTokenUrl: URL) {
-    guard let migrationTokenString = migrationTokenUrl
-      .getQueryStringParameter(param: "migrationToken"),
-      let migrationTokenData = Data(base64Encoded: migrationTokenString)
-      else { return }
-    
-    // TODO Yury, need to connect here with the Dialog, offering the $0 unlock.
-    let view = ReceiptMigrationOfferingView(encodedMigrationToken: migrationTokenData)
-    _spCtrl.dismiss(animated: false, completion: {})
-    let ctrl = UIHostingController(rootView: view)
-    ctrl.modalPresentationStyle = .formSheet
-    _spCtrl.present(ctrl, animated: false)      
+  // blinkv15:importarchive?data=
+  private func _handleBlink15UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
+    guard sourceID == Blink14BundleID else {
+      return
+    }
+
+    let route = blinkUrl.host
+
+    if route == "importarchive" {
+      guard let archiveB64 = blinkUrl
+          .getQueryStringParameter(param: "archive"),
+        let archiveData = Data(base64Encoded: archiveB64)
+        else {
+          return
+        }
+
+      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
+                                                 archiveData: archiveData,
+                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
+    } else if route == "validatereceipt" {
+      guard let migrationTokenString = blinkUrl
+        .getQueryStringParameter(param: "migrationToken"),
+        let migrationTokenData = Data(base64Encoded: migrationTokenString)
+        else { return }
+      
+      // TODO Yury, need to connect here with the Dialog, offering the $0 unlock.
+      let view = ReceiptMigrationOfferingView(encodedMigrationToken: migrationTokenData)
+      _spCtrl.dismiss(animated: false, completion: {})
+      let ctrl = UIHostingController(rootView: view)
+      ctrl.modalPresentationStyle = .formSheet
+      _spCtrl.present(ctrl, animated: false)
+    }
   }
 
   // blinkv14:validatereceipt?originalUserId
-  private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL) {
-    // TODO: Ignore it did not come from our Blink 15 AppID
-    guard
-      let originalUserId = blinkReceiptUrl.getQueryStringParameter(param: "originalUserId")
-    else {
+  private func _handleBlink14UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
+    // Ignore if request did not come from Blink15
+    guard sourceID == Blink15BundleID else {
       return
     }
-    
 
-    // Dismiss any view controller we are currently presenting
-    _ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
+    if blinkUrl.host == "exportdata" {
+      guard let password = blinkUrl.getQueryStringParameter(param: "password"),
+        let callbackURL = URL(string: "blinkv15://importarchive")
+        else { return }
+      
+      
+      // Request permission from the user, and then perform the migration
+      // TODO We should use the real userId
+//      ArchiveAlertUI.presentImport(on: _spCtrl, cb: callbackURL, archivePassword: "Purchases.shared.appUserID")
+      //_spCtrl.present(alert, animated: false)
+    } else if blinkUrl.host == "validatereceipt" {
+      guard let originalUserId = blinkUrl
+        .getQueryStringParameter(param: "originalUserId") 
+        else { return }
 
-    // Start receipt exchange function.
-    let model = ReceiptMigrationProgress(originalUserId: originalUserId)
-    let view = ReceiptMigrationView(process: model)
-    let ctrl = StatusBarLessViewController(rootView: view)
-    ctrl.modalPresentationStyle = .fullScreen
-    _spCtrl.present(ctrl, animated: false)
-    model.load()
+      // Start receipt exchange function.
+      // Dismiss any view controller we are currently presenting
+      _ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
+
+      // Start receipt exchange function.
+      let model = ReceiptMigrationProgress(originalUserId: originalUserId)
+      let view = ReceiptMigrationView(process: model)
+      let ctrl = StatusBarLessViewController(rootView: view)
+      ctrl.modalPresentationStyle = .fullScreen
+      _spCtrl.present(ctrl, animated: false)
+      model.load()
+    }
   }
 
   /**
