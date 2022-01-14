@@ -46,6 +46,8 @@ struct SubscriptionsView: View {
   }
   var body: some View {
     VStack {
+      Text("")
+      /*
       Button(action: {
         let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")!
         UIApplication.shared.open(url)
@@ -71,6 +73,7 @@ struct SubscriptionsView: View {
           }, label: { Text("Subscribe") })
         }
       }
+       */
     }
     // NOTE This was for testing. Real app should listen somewhere else.
     .onReceive(NotificationCenter.default.publisher(for: .subscriptionNag)) { _ in
@@ -101,7 +104,7 @@ struct Offering: View {
           if let error = error {
             print("\(error)")
           }
-          if PurchasesUserModel.shared.classicAccess.active {
+          if PurchasesUserModel.shared.unlimitedTimeAccess.active {
             isPresented = false
           }
         }

@@ -34,11 +34,19 @@ import SwiftUI
 
 struct CheckmarkRow: View {
   let text: String
+  let checked: Bool
+  let failed: Bool
+  
+  init(text: String, checked: Bool = true, failed: Bool = false) {
+    self.text = text
+    self.checked = checked
+    self.failed = failed
+  }
   
   var body: some View {
     HStack(alignment: .firstTextBaseline) {
-      Image(systemName: "checkmark.circle.fill")
-        .foregroundColor(.green)
+      Image(systemName: failed ? "exclamationmark.circle" : checked ? "checkmark.circle.fill" : "circle")
+        .foregroundColor(failed ? .orange : .green)
       Text(text)
       Spacer()
     }

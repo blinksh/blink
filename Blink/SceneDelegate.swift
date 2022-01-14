@@ -428,15 +428,23 @@ extension SceneDelegate {
   // blinkv14:validatereceipt?originalUserId
   private func _handleReceiptUrlScheme(with blinkReceiptUrl: URL) {
     // TODO: Ignore it did not come from our Blink 15 AppID
-    guard let originalUserId = blinkReceiptUrl
-      .getQueryStringParameter(param: "originalUserId") 
-      else { return }
+    guard
+      let originalUserId = blinkReceiptUrl.getQueryStringParameter(param: "originalUserId")
+    else {
+      return
+    }
+    
+
+    // Dismiss any view controller we are currently presenting
+    _ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
 
     // Start receipt exchange function.
-    let view = ReceiptMigrationView(process: ReceiptMigrationProgress(originalUserId: originalUserId))
-    let ctrl = UIHostingController(rootView: view)
-    ctrl.modalPresentationStyle = .formSheet
+    let model = ReceiptMigrationProgress(originalUserId: originalUserId)
+    let view = ReceiptMigrationView(process: model)
+    let ctrl = StatusBarLessViewController(rootView: view)
+    ctrl.modalPresentationStyle = .fullScreen
     _spCtrl.present(ctrl, animated: false)
+    model.load()
   }
 
   /**

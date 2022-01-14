@@ -146,7 +146,6 @@
 		BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD9EA218271F846400874007 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
 		BDB48369276A5B13002CA78D /* ReceiptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB48368276A5B13002CA78D /* ReceiptTests.swift */; };
-		BDB4836D276A6B1A002CA78D /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB72136274821C000EE819A /* Receipt.swift */; };
 		BDB72137274821C000EE819A /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB72136274821C000EE819A /* Receipt.swift */; };
 		BDBFA30D2728914F00C77798 /* BlinkCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; };
 		BDBFA3122728914F00C77798 /* BlinkCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3112728914F00C77798 /* BlinkCodeTests.swift */; };
@@ -295,6 +294,7 @@
 		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D253EB3D2790570E00BF8541 /* MigrationLegacyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25EE8CE2779E060003EA471 /* PlansView.swift */; };
@@ -374,6 +374,7 @@
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
 		D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		D2C83F2A278EF93C007FFED6 /* MigrationPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
@@ -956,6 +957,7 @@
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
+		D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationLegacyPageView.swift; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D25EE8CE2779E060003EA471 /* PlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
@@ -1037,6 +1039,7 @@
 		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
 		D2C605B926AB4C25003CA39F /* BlinkBuild */ = {isa = PBXFileReference; lastKnownFileType = text; name = BlinkBuild; path = xcfs/.build/checkouts/BlinkBuild; sourceTree = SOURCE_ROOT; };
+		D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPageView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
@@ -1277,7 +1280,6 @@
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
-				BDB72136274821C000EE819A /* Receipt.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1557,6 +1559,9 @@
 				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
 				BD81523E273DB964002BB169 /* Purchases.swift */,
 				BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */,
+				D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */,
+				BDB72136274821C000EE819A /* Receipt.swift */,
+				D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -2893,7 +2898,6 @@
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
-				BDB4836D276A6B1A002CA78D /* Receipt.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2975,6 +2979,7 @@
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
+				D2C83F2A278EF93C007FFED6 /* MigrationPageView.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
 				BD815240273DB964002BB169 /* SubscriptionNag.swift in Sources */,
 				BD9EA1FE271A148700874007 /* Migrator.swift in Sources */,
@@ -3045,6 +3050,7 @@
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
+				D253EB3D2790570E00BF8541 /* MigrationLegacyPageView.swift in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,

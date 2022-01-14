@@ -75,6 +75,7 @@ protocol Page: View {
 struct PageContainer<T: Page>: View {
   
   var onSwitchTabHandler: (_ idx: Int) -> ()
+  var onCloseHandler: (() -> ())? = nil
   
   var body: some View {
     GeometryReader { gr in
@@ -91,10 +92,28 @@ struct PageContainer<T: Page>: View {
             y: gr.frame(in: .local).maxY * 0.5
           )
       }
+    }.overlay {
+      if let closeHandler = onCloseHandler {
+        VStack {
+          HStack {
+            Spacer()
+            Button {
+              closeHandler()
+            } label: {
+              Image(systemName: "xmark.circle.fill")
+                .resizable()
+                .frame(width: 34, height: 34)
+            }
+            .tint(.secondary)
+            .opacity(0.5)
+            .padding()
+          }
+          Spacer()
+        }
+      }
     }
   }
 }
-
 
 
 struct PaywallView: View {
@@ -111,6 +130,12 @@ struct PaywallView: View {
     .indexViewStyle(.page(backgroundDisplayMode: .always))
     .disabled(model.purchaseInProgress || model.restoreInProgress)
   }
+  
+//  var body: some View {
+    //    TabView(selection: $tabIndex) {
+//    PageContainer<MigrationPageView>(onSwitchTabHandler: _onSwitchTab, onCloseHandler: {}).tag(0)
+    //    }
+//  }
   
   private func _onSwitchTab(_ idx: Int) {
     self.tabIndex = idx

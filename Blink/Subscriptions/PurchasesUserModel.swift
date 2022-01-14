@@ -34,16 +34,15 @@ import Combine
 import SwiftUI
 
 extension CompatibilityAccessManager.Entitlement {
-  static let classic = Self("blink_shell_classic")
-  static let plus = Self("blink_shell_plus")
+  static let unlimitedTimeAccess = Self("shell")
 }
 
 class PurchasesUserModel: ObservableObject {
-  @Published var classicAccess: EntitlementStatus = .inactive
-  @Published var plusAccess: EntitlementStatus = .inactive
+  @Published var unlimitedTimeAccess: EntitlementStatus = .inactive
   @Published var errorMessage: String = ""
   
   @Published var plusProduct: SKProduct? = nil
+  @Published var classicProduct: SKProduct? = nil
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
@@ -58,17 +57,10 @@ class PurchasesUserModel: ObservableObject {
   
   func refresh() {
     let manager = CompatibilityAccessManager.shared
-    manager.status(of: .classic).assign(to: &$classicAccess)
-    manager.status(of: .plus).assign(to: &$plusAccess)
+    manager.status(of: .unlimitedTimeAccess).assign(to: &$unlimitedTimeAccess)
     
-    if self.plusProduct == nil {
-      self.fetchPlusProduct()
-    }
-  }
-  
-  func restore() {
-    Purchases.shared.restoreTransactions { info, error in
-      
+    if self.plusProduct == nil || self.classicProduct == nil {
+      self.fetchProducts()
     }
   }
   
@@ -149,9 +141,21 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  func fetchPlusProduct() {
-    Purchases.shared.products(["blink_shell_plus_1y_1999"]) { products in
-      self.plusProduct = products.first
+  func fetchProducts() {
+    let plusId = SKProduct.productPlusId
+    let classicId = SKProduct.productClassicId
+    
+    Purchases.shared.products([plusId, classicId]) { products in
+      for product in products {
+        if product.productIdentifier == plusId {
+          self.plusProduct = product
+        }
+        
+        if product.productIdentifier == classicId {
+          self.classicProduct = product
+        }
+      }
+      
     }
   }
   
@@ -160,6 +164,14 @@ class PurchasesUserModel: ObservableObject {
 @objc public class PurchasesUserModelObjc: NSObject {
 
   @objc public static func preparePurchasesUserModel() {
-    PurchasesUserModel.shared.refresh()
+    if !FeatureFlags.checkReceipt {
+      PurchasesUserModel.shared.refresh()
+    }
   }
+}
+
+
+extension SKProduct {
+  static let productPlusId = "blink_shell_plus_1y_1999"
+  static let productClassicId = "blink_shell_classic_unlimited_0"
 }
