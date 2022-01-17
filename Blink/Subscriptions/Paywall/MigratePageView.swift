@@ -50,7 +50,14 @@ struct MigratePageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 30)
       rows()
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
-      MigrateButton()
+      HStack {
+        Spacer()
+        Button("Migrate", action: {
+          NotificationCenter.default.post(name: .openMigration, object: nil)
+        })
+        .buttonStyle(.borderedProminent)
+        Spacer()
+      }
       Spacer()
       if self.model.restoreInProgress {
         HStack {

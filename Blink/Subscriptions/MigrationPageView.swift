@@ -31,10 +31,14 @@
 
 import Foundation
 import SwiftUI
+import Purchases
+import Network
 
 struct MigrationPageView: Page {
   
   @ObservedObject var model: PurchasesUserModel = .shared
+  @State var alertErrorMessage: String = ""
+  @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
   
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
@@ -52,11 +56,31 @@ struct MigrationPageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        Button("Start Migration") { }
+        Button("Start Migration") {
+          let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")!
+          UIApplication.shared.open(url, completionHandler: { success in
+            if success {
+              alertErrorMessage = ""
+            } else {
+              alertErrorMessage = "Please install Blink 14 latest version first."
+            }
+          })
+        }
         .buttonStyle(.borderedProminent)
+        .alert(errorMessage: $alertErrorMessage)
         Spacer()
       }
       Spacer()
+      HStack {
+        Spacer()
+        Text(" Blink Classic \(_blinkVersion) ")
+          .bold()
+          .font(.footnote)
+          .foregroundColor(.white)
+          .background(.gray)
+          .cornerRadius(3)
+        Spacer()
+      }
       HStack {
         Spacer()
         Button("Privacy Policy", action: {}).padding(.trailing)
@@ -66,8 +90,9 @@ struct MigrationPageView: Page {
       }
       .font(.footnote)
       .padding(.bottom, self.horizontal ? 32 : 40)
+      
     }.padding()
-      .frame(maxWidth: horizontal ? 700 : 460)
+      .frame(maxWidth: horizontal ? 700 : 460)      
   }
   
   func header() -> some View {
@@ -86,11 +111,11 @@ struct MigrationPageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Verify reciept within Blink 14 app.")
+      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: model.recieptIsVerified)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: false)
+      CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: false)
+      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: model.dataCopied)
     }
   }
 }

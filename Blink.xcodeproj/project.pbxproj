@@ -155,7 +155,6 @@
 		BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3202728925C00C77798 /* FileSystem.swift */; };
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
-		BDC8D8C02790D35A00115FD5 /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BDCB7166268E1577007D7047 /* BlinkConfig.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB716B268E15A0007D7047 /* BKHosts.swift */; };
@@ -197,7 +196,6 @@
 		D2043EBE2771C283002E29AF /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBA2771C282002E29AF /* CheckmarkRow.swift */; };
 		D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBB2771C282002E29AF /* MigratePageView.swift */; };
 		D2043EC02771C283002E29AF /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBC2771C282002E29AF /* PaywallView.swift */; };
-		D2043EC12771C283002E29AF /* MigrateButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBD2771C283002E29AF /* MigrateButton.swift */; };
 		D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC42771C28D002E29AF /* PurchasePageView.swift */; };
 		D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC52771C28D002E29AF /* ShakeDetector.swift */; };
 		D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC62771C28D002E29AF /* TopupPageView.swift */; };
@@ -295,7 +293,7 @@
 		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D253EB3D2790570E00BF8541 /* MigrationLegacyPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */; };
+		D253EB3D2790570E00BF8541 /* MigrationLegacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25EE8CE2779E060003EA471 /* PlansView.swift */; };
@@ -867,7 +865,6 @@
 		D2043EBA2771C282002E29AF /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
 		D2043EBB2771C282002E29AF /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
 		D2043EBC2771C282002E29AF /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
-		D2043EBD2771C283002E29AF /* MigrateButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrateButton.swift; sourceTree = "<group>"; };
 		D2043EC42771C28D002E29AF /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
 		D2043EC52771C28D002E29AF /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
 		D2043EC62771C28D002E29AF /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
@@ -959,7 +956,7 @@
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
-		D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationLegacyPageView.swift; sourceTree = "<group>"; };
+		D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationLegacyView.swift; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D25EE8CE2779E060003EA471 /* PlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
@@ -1562,9 +1559,9 @@
 				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
 				BD81523E273DB964002BB169 /* Purchases.swift */,
 				BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */,
-				D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */,
 				BDB72136274821C000EE819A /* Receipt.swift */,
-				D253EB3C2790570E00BF8541 /* MigrationLegacyPageView.swift */,
+				D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */,
+				D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -1788,7 +1785,6 @@
 				D2043EC62771C28D002E29AF /* TopupPageView.swift */,
 				D2043EBA2771C282002E29AF /* CheckmarkRow.swift */,
 				D2043EBC2771C282002E29AF /* PaywallView.swift */,
-				D2043EBD2771C283002E29AF /* MigrateButton.swift */,
 				D2043EBB2771C282002E29AF /* MigratePageView.swift */,
 				D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */,
 			);
@@ -3015,7 +3011,6 @@
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
-				D2043EC12771C283002E29AF /* MigrateButton.swift in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,
@@ -3053,7 +3048,7 @@
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
-				D253EB3D2790570E00BF8541 /* MigrationLegacyPageView.swift in Sources */,
+				D253EB3D2790570E00BF8541 /* MigrationLegacyView.swift in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
@@ -3079,7 +3074,6 @@
 				BD815243273DBEDE002BB169 /* PurchasesUserModel.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
-				BDC8D8C02790D35A00115FD5 /* ArchiveAlertUI.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,

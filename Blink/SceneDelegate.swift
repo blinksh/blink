@@ -97,11 +97,32 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
   override init() {
     super.init()
     
-    NotificationCenter.default.addObserver(self, selector: #selector(_showPaywallIfNeeded), name: .subscriptionNag, object: nil)
+    let nc = NotificationCenter.default
+    nc.addObserver(self, selector: #selector(_showPaywallIfNeeded), name: .subscriptionNag, object: nil)
+    nc.addObserver(self, selector: #selector(_openMigration), name: .openMigration, object: nil)
   }
   
   deinit {
     NotificationCenter.default.removeObserver(self)
+  }
+  
+  @objc private func _openMigration() {
+    guard
+      let win = self.paywallWindow ?? self.window,
+      let ctrl = win.rootViewController
+    else {
+      return
+    }
+    
+    ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
+
+    // Start receipt exchange function.
+//    let model = ReceiptMigrationProgress(originalUserId: originalUserId)
+    //let view = ReceiptMigrationView(process: model)
+    let view = PageContainer<MigrationPageView>(onSwitchTabHandler: {_ in })
+    let c = StatusBarLessViewController(rootView: view)
+    c.modalPresentationStyle = .fullScreen
+    ctrl.present(c, animated: false)
   }
   
   @objc private func _showPaywallIfNeeded() {
@@ -479,7 +500,7 @@ extension SceneDelegate {
 
       // Start receipt exchange function.
       // Dismiss any view controller we are currently presenting
-      _ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
+      _spCtrl.presentedViewController?.dismiss(animated: false, completion: nil)
 
       // Start receipt exchange function.
       let model = ReceiptMigrationProgress(originalUserId: originalUserId)

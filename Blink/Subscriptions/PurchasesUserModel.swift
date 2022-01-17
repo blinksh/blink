@@ -46,6 +46,10 @@ class PurchasesUserModel: ObservableObject {
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
+  @Published var recieptIsVerified: Bool = false
+  @Published var zeroPriceUnlocked: Bool = false
+  @Published var dataCopied: Bool = false
+  
   private let _priceFormatter = NumberFormatter()
   
   private init() {
@@ -83,6 +87,21 @@ class PurchasesUserModel: ObservableObject {
   
   func purchasePlus() {
     guard let product = self.plusProduct else {
+      return
+    }
+   
+    withAnimation {
+      self.purchaseInProgress = true
+    }
+    
+    
+    Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
+      self.purchaseInProgress = false
+    }
+  }
+  
+  func purchaseClassic() {
+    guard let product = self.classicProduct else {
       return
     }
    

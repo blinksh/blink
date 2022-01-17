@@ -38,6 +38,7 @@ private let NagInterval: TimeInterval = 10
 
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
+  public static let openMigration = Notification.Name("openMigration")
 }
 
 

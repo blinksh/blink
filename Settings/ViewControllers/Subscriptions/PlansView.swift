@@ -102,14 +102,7 @@ struct PlansView: View {
           }
           HStack {
             Button("Migrate from Blink Classic App", action: {
-              let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")!
-              UIApplication.shared.open(url, completionHandler: { success in
-                if success {
-                  alertErrorMessage = ""
-                } else {
-                  alertErrorMessage = "Please install Blink 14 latest version first."
-                }
-              })
+              NotificationCenter.default.post(name: .openMigration, object: nil)
             })
           }.alert(errorMessage: $alertErrorMessage)
         }
