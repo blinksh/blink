@@ -138,23 +138,23 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                 modifierFlags: shortcut.modifiers,
                                 propertyList: ["Command": command.rawValue])
 
-        //        if #available(iOS 15.0, *) {
-        //          cmd.wantsPriorityOverSystemBehavior = true
-        //        }
-
-        if cmd.responds(to: NSSelectorFromString("setWantsPriorityOverSystemBehavior:")) {
-          cmd.setValue(NSNumber(true), forKey: "wantsPriorityOverSystemBehavior")
+        if #available(iOS 15.0, *) {
+          cmd.wantsPriorityOverSystemBehavior = true
         }
+        
+        
         attachedShortcuts.append(cmd)
         return cmd
       } else {
+        // We will handle dups via pressesBegan, no need to alert user.
+        
         // We notify the user and let the command go through as a UICommand
-        let alert = OwnAlertController(title: "Error building app menu", message: "The shortcut's '\(shortcut.title)' input is duplicated. This may prevent it from working. Please fix on Settings > Keyboard > Shortcuts", preferredStyle: .alert)
-        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(ok)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-          alert.present(animated: true, completion: nil)
-        }
+//        let alert = OwnAlertController(title: "Error building app menu", message: "The shortcut's '\(shortcut.title)' input is duplicated. This may prevent it from working. Please fix on Settings > Keyboard > Shortcuts", preferredStyle: .alert)
+//        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alert.addAction(ok)
+//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+//          alert.present(animated: true, completion: nil)
+//        }
       }
     }
     return UICommand(
