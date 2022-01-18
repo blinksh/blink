@@ -115,6 +115,57 @@ struct PageContainer<T: Page>: View {
   }
 }
 
+struct SinglePageContainer<T: Page>: View {
+  @Environment(\.presentationMode) var presentationMode
+  @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
+  
+  var body: some View {
+    GeometryReader { gr in
+      if gr.frame(in: .local).height < 400 {
+        T(horizontal: true, switchTab: {_ in})
+          .position(
+            x: gr.frame(in: .local).maxX * 0.5,
+            y: gr.frame(in: .local).maxY * 0.5
+          )
+      } else {
+        T(horizontal: false, switchTab: {_ in})
+          .position(
+            x: gr.frame(in: .local).maxX * 0.5,
+            y: gr.frame(in: .local).maxY * 0.5
+          )
+      }
+    }.overlay {
+        VStack {
+          HStack {
+            Spacer()
+            Button {
+              presentationMode.wrappedValue.dismiss()
+            } label: {
+              Image(systemName: "xmark.circle.fill")
+                .resizable()
+                .frame(width: 34, height: 34)
+            }
+            .tint(.secondary)
+            .opacity(0.5)
+            .padding()
+          }
+          Spacer()
+          HStack {
+            Spacer().frame(maxWidth: 20)
+            Text(" Blink \(_blinkVersion) ")
+              .bold()
+              .font(.footnote)
+              .foregroundColor(.white)
+              .background(.gray)
+              .cornerRadius(3)
+            Spacer()
+          }
+        }
+    }
+  }
+}
+
+
 
 struct PaywallView: View {
   @State private var tabIndex = 0
@@ -130,12 +181,6 @@ struct PaywallView: View {
     .indexViewStyle(.page(backgroundDisplayMode: .always))
     .disabled(model.purchaseInProgress || model.restoreInProgress)
   }
-  
-//  var body: some View {
-    //    TabView(selection: $tabIndex) {
-//    PageContainer<MigrationPageView>(onSwitchTabHandler: _onSwitchTab, onCloseHandler: {}).tag(0)
-    //    }
-//  }
   
   private func _onSwitchTab(_ idx: Int) {
     self.tabIndex = idx

@@ -116,13 +116,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     ctrl.presentedViewController?.dismiss(animated: false, completion: nil)
 
-    // Start receipt exchange function.
-//    let model = ReceiptMigrationProgress(originalUserId: originalUserId)
-    //let view = ReceiptMigrationView(process: model)
-    let view = PageContainer<MigrationPageView>(onSwitchTabHandler: {_ in })
+    let view = SinglePageContainer<MigrationPageView>()
     let c = StatusBarLessViewController(rootView: view)
-    c.modalPresentationStyle = .fullScreen
-    ctrl.present(c, animated: false)
+    c.modalPresentationStyle = .overFullScreen
+    ctrl.present(c, animated: true)
   }
   
   @objc private func _showPaywallIfNeeded() {

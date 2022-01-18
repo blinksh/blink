@@ -38,7 +38,7 @@ struct MigrationPageView: Page {
   
   @ObservedObject var model: PurchasesUserModel = .shared
   @State var alertErrorMessage: String = ""
-  @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
+  
   
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
@@ -71,16 +71,6 @@ struct MigrationPageView: Page {
         Spacer()
       }
       Spacer()
-      HStack {
-        Spacer()
-        Text(" Blink Classic \(_blinkVersion) ")
-          .bold()
-          .font(.footnote)
-          .foregroundColor(.white)
-          .background(.gray)
-          .cornerRadius(3)
-        Spacer()
-      }
       HStack {
         Spacer()
         Button("Privacy Policy", action: {}).padding(.trailing)

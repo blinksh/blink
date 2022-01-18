@@ -652,7 +652,7 @@ extension SpaceController {
   
   @objc func _onBlinkCommand(_ cmd: BlinkCommand) {
     guard foregroundActive,
-      let input = currentDevice?.view?.webView else {
+          let input = currentDevice?.view?.browserView ?? currentDevice?.view?.webView else {
       return
     }
     
