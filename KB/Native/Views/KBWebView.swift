@@ -121,20 +121,19 @@ class KBWebView: KBWebViewBase {
   }
   
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-    // Remap cmd+. from Escape back to cmd+.
-    if let key = presses.first?.key,
-       key.keyCode.rawValue == 55,
-       key.characters == "UIKeyInputEscape"
-    {
-       self.reportToolbarPress(key.modifierFlags.union(.command), keyId: "190:0")
-       return
-    }
-    
     guard
       let key = presses.first?.key,
       let (cmd, responder) = matchCommand(input: key.charactersIgnoringModifiers, flags: key.modifierFlags),
       let action = cmd.action
     else {
+      // Remap cmd+. from Escape back to cmd+.
+      if let key = presses.first?.key,
+         key.keyCode.rawValue == 55,
+         key.characters == "UIKeyInputEscape"
+      {
+        self.reportToolbarPress(key.modifierFlags.union(.command), keyId: "190:0")
+        return
+      }
       super.pressesBegan(presses, with: event)
       return
     }
