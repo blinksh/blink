@@ -48,8 +48,8 @@ class PurchasesUserModel: ObservableObject {
   @Published var recieptIsVerified: Bool = false
   @Published var zeroPriceUnlocked: Bool = false
   @Published var dataCopied: Bool = false
-  @Published var migrationStatus: MigrationStatus = .validating
   @Published var alertErrorMessage: String = ""
+  @Published var migrationStatus: MigrationStatus = .validating
   
   private let _priceFormatter = NumberFormatter()
   

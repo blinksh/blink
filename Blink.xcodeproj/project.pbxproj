@@ -292,7 +292,7 @@
 		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D253EB3D2790570E00BF8541 /* MigrationLegacyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */; };
+		D253EB3D2790570E00BF8541 /* LegacyMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25EE8CE2779E060003EA471 /* PlansView.swift */; };
@@ -955,7 +955,7 @@
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
-		D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationLegacyView.swift; sourceTree = "<group>"; };
+		D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMigrationView.swift; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D25EE8CE2779E060003EA471 /* PlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
@@ -1560,7 +1560,7 @@
 				BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */,
 				BDB72136274821C000EE819A /* Receipt.swift */,
 				D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */,
-				D253EB3C2790570E00BF8541 /* MigrationLegacyView.swift */,
+				D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -3046,7 +3046,7 @@
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
-				D253EB3D2790570E00BF8541 /* MigrationLegacyView.swift in Sources */,
+				D253EB3D2790570E00BF8541 /* LegacyMigrationView.swift in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,

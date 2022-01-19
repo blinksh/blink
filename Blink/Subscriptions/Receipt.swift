@@ -54,13 +54,13 @@ struct ReceiptMigrationView: View {
   var body: some View {
     GeometryReader { gr in
       if gr.frame(in: .local).height < 400 {
-        MigrationLegacyView(horizontal: true, model: process)
+        LegacyMigrationView(horizontal: true, model: process)
           .position(
             x: gr.frame(in: .local).maxX * 0.5,
             y: gr.frame(in: .local).maxY * 0.5
           )
       } else {
-        MigrationLegacyView(horizontal: false, model: process)
+        LegacyMigrationView(horizontal: false, model: process)
           .position(
             x: gr.frame(in: .local).maxX * 0.5,
             y: gr.frame(in: .local).maxY * 0.5
@@ -105,6 +105,8 @@ class ReceiptMigrationProgress: ObservableObject {
   @Published var recieptLocated: Bool = false
   @Published var recieptValidated: Bool = false
   @Published var migrationTokenGenerated: Bool = false
+  
+  @Published var migrationTokenUrl: URL? = nil
   
   
   enum Status {
@@ -175,6 +177,7 @@ class ReceiptMigrationProgress: ObservableObject {
           switch completion {
           case .finished:
             self.state = .done
+            self.openMigrationTokenUrl()
           case .failure(let error):
             print("Error performing request token migration - \(error)")
             switch error {
@@ -193,47 +196,55 @@ class ReceiptMigrationProgress: ObservableObject {
         receiveValue: { migrationToken in
           self.migrationTokenGenerated = true
           // Open blinkv15 with received value
+
           let migrationTokenString = migrationToken.base64EncodedString()
-          let migrationTokenUrl = URL(string: "blinkv15://validatereceipt?migrationToken=\(migrationTokenString)")!
-          UIApplication.shared.open(migrationTokenUrl) // { result in } // Alert if it cannot callback?
+          self.migrationTokenUrl = URL(string: "blinkv15://validatereceipt?migrationToken=\(migrationTokenString)")
         }
       )
   }
+  
+  func openMigrationTokenUrl() {
+    guard let url = self.migrationTokenUrl
+    else {
+      return
+    }
+    UIApplication.shared.open(url)
+  }
 }
 
-struct ReceiptMigrationOfferingView: View {
-  enum Status {
-    case validating
-    case accepted
-    case denied(error: Error)
-  }
-  
-  var encodedMigrationToken: Data
-  let originalUserId = Purchases.shared.appUserID
-  @State var migrationStatus = Status.validating
-  
-  var body: some View {
-    VStack {
-      switch(migrationStatus) {
-      case .validating:
-        Text("Validating...")
-      case .accepted:
-        Text("Hurray!!")
-      case .denied(let error):
-        Text("Invalid Migration Token \(error.localizedDescription)")
-      }
-    }
-    .onAppear(perform: {
-      do {
-        let migrationToken = try JSONDecoder().decode(MigrationToken.self, from: encodedMigrationToken)
-        try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
-        migrationStatus = .accepted
-      } catch {
-        migrationStatus = .denied(error: error)
-      }
-    })
-  }
-}
+//struct ReceiptMigrationOfferingView: View {
+//  enum Status {
+//    case validating
+//    case accepted
+//    case denied(error: Error)
+//  }
+//  
+//  var encodedMigrationToken: Data
+//  let originalUserId = Purchases.shared.appUserID
+//  @State var migrationStatus = Status.validating
+//  
+//  var body: some View {
+//    VStack {
+//      switch(migrationStatus) {
+//      case .validating:
+//        Text("Validating...")
+//      case .accepted:
+//        Text("Hurray!!")
+//      case .denied(let error):
+//        Text("Invalid Migration Token \(error.localizedDescription)")
+//      }
+//    }
+//    .onAppear(perform: {
+//      do {
+//        let migrationToken = try JSONDecoder().decode(MigrationToken.self, from: encodedMigrationToken)
+//        try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
+//        migrationStatus = .accepted
+//      } catch {
+//        migrationStatus = .denied(error: error)
+//      }
+//    })
+//  }
+//}
 
 struct MigrationToken: Codable {
   let token: String

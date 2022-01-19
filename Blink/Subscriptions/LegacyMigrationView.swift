@@ -32,7 +32,7 @@
 import Foundation
 import SwiftUI
 
-struct MigrationLegacyView: View {
+struct LegacyMigrationView: View {
   var horizontal: Bool
   @ObservedObject var model: ReceiptMigrationProgress
   
@@ -50,7 +50,11 @@ struct MigrationLegacyView: View {
       HStack {
         Spacer()
         switch model.state {
-        case .initial, .done: EmptyView()
+        case .initial:
+          EmptyView()
+        case .done:
+          Button("Transfer reciept") { model.openMigrationTokenUrl() }
+          .buttonStyle(.borderedProminent)
         case .locatingReciept, .validatingReciept, .generatingMigrationToken:
           ProgressView()
         case .receiptFetchFailure:
