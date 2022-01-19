@@ -145,6 +145,7 @@ final class BlinkItemReference: NSObject {
   func downloadStarted(_ c: AnyCancellable) {
     downloadingTask = c
     downloadingError = nil
+    evaluate()
   }
 
   func downloadCompleted(_ error: Error?) {

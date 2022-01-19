@@ -45,45 +45,8 @@ enum BlinkFilesProtocol: String {
 
 var logCancellables = Set<AnyCancellable>()
 
-func buildTranslator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
-  guard let rootData = Data(base64Encoded: encodedRootPath),
-        let rootPath = String(data: rootData, encoding: .utf8) else {
-    return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
-  }
 
-  // rootPath: ssh:host:root_folder
-  let components = rootPath.split(separator: ":")
-
-  // TODO At least two components. Tweak for sftp
-  let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
-  let pathAtFiles: String
-  let host: String?
-  if components.count == 2 {
-    pathAtFiles = String(components[1])
-    host = nil
-  } else {
-    pathAtFiles = String(components[2])
-    host = String(components[1])
-  }
-
-  switch remoteProtocol {
-  case .local:
-    return local(path: pathAtFiles)
-  case .sftp:
-    guard let host = host else {
-      return .fail(error: "Missing host in Translator route")
-    }
-    return sftp(host: host, path: pathAtFiles)
-  default:
-    return .fail(error: "Not implemented")
-  }
-}
-
-fileprivate func local(path: String) -> AnyPublisher<Translator, Error> {
-  return Local().walkTo(path)
-}
-
-fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Error> {
+func sftp(host: String, path: String) -> AnyPublisher<TranslatorReference, Error> {
   let log = BlinkLogger("SFTP")
   let hostName: String
   let config: SSHClientConfig
@@ -96,14 +59,30 @@ fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Er
   } catch {
     return .fail(error: "Configuration error - \(error)")
   }
+
+  var thread: Thread!
+  var runLoop: RunLoop? = nil
+
+  let threadIsReady = Future<RunLoop, Error> { promise in
+    thread = Thread {
+      let timer = Timer(timeInterval: TimeInterval(1), repeats: true) { _ in
+        //print("timer")
+      }
+      runLoop = RunLoop.current
+      RunLoop.current.add(timer, forMode: .default)
+      promise(.success(RunLoop.current))
+      CFRunLoopRun()
+      // Wrap it up
+      RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
+    }
+    thread.start()
+  }
   
-  // NOTE We use main queue as this is an extension. Should move it to a different one though,
-  // in case of future changes.
-  return Just(config).receive(on: DispatchQueue.main).flatMap {
-    SSHClient
-      .dial(hostName, with: $0)
+  return threadIsReady.flatMap { _ in
+    Just(()).receive(on: runLoop!).flatMap {
+      SSHClient
+      .dial(hostName, with: config)
       .print("Dialing...")
-    //.receive(on: FileTranslatorPool.shared.backgroundRunLoop)
       .flatMap { $0.requestSFTP() }
       .tryMap  { try SFTPTranslator(on: $0) }
       .mapError { error -> Error in
@@ -115,8 +94,16 @@ fileprivate func sftp(host: String, path: String) -> AnyPublisher<Translator, Er
                      log.error("Error walking to base path \(path): \(error)")
                      return NSFileProviderError(.noSuchItem)
                    }
+                   .map {
+                     TranslatorReference($0, cancel: {
+                       log.debug("Cancelling translator")
+                       let cfRunLoop = runLoop!.getCFRunLoop()
+                       CFRunLoopStop(cfRunLoop)
+                     })
+                   }
       }
       .eraseToAnyPublisher()
+    }
   }.eraseToAnyPublisher()
 }
 

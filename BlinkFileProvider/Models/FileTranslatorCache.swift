@@ -36,9 +36,23 @@ import Foundation
 import BlinkFiles
 
 
+class TranslatorReference {
+  let translator: Translator
+  let cancel: () -> Void
+
+  init(_ translator: Translator, cancel: @escaping (() -> Void)) {
+    self.translator = translator
+    self.cancel = cancel
+  }
+  
+  deinit {
+    cancel()
+  }
+}
+
 final class FileTranslatorCache {
   static let shared = FileTranslatorCache()
-  private var translators: [String: Translator] = [:]
+  private var translators: [String: TranslatorReference] = [:]
   private var references: [String: BlinkItemReference] = [:]
   private var fileList:   [String: [BlinkItemReference]] = [:]
   private var backgroundThread: Thread? = nil
@@ -57,17 +71,46 @@ final class FileTranslatorCache {
 
   static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
     // Check if we have it cached, if it is still working
-    if let translator = shared.translators[encodedRootPath],
-       translator.isConnected {
-      return .just(translator)
+    if let translatorRef = shared.translators[encodedRootPath],
+       translatorRef.translator.isConnected {
+      return .just(translatorRef.translator)
     }
 
-    return buildTranslator(for: encodedRootPath)
-      .map { t -> Translator in
-        // Next time, the translator does not need to be built again (authentication, etc...)
-        shared.translators[encodedRootPath] = t
-        return t
-      }.eraseToAnyPublisher()
+    guard let rootData = Data(base64Encoded: encodedRootPath),
+          let rootPath = String(data: rootData, encoding: .utf8) else {
+      return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
+    }
+
+    // rootPath: ssh:host:root_folder
+    let components = rootPath.split(separator: ":")
+
+    // TODO At least two components. Tweak for sftp
+    let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
+    let pathAtFiles: String
+    let host: String?
+    if components.count == 2 {
+      pathAtFiles = String(components[1])
+      host = nil
+    } else {
+      pathAtFiles = String(components[2])
+      host = String(components[1])
+    }
+    
+    switch remoteProtocol {
+    case .local:
+      return Local().walkTo(pathAtFiles)
+    case .sftp:
+      guard let host = host else {
+        return .fail(error: "Missing host in Translator route")
+      }
+      return sftp(host: host, path: pathAtFiles)
+        .map { tr -> Translator in
+          shared.translators[encodedRootPath] = tr
+          return tr.translator
+        }.eraseToAnyPublisher()
+    default:
+      return .fail(error: "Not implemented")
+    }
   }
 
   static func store(reference: BlinkItemReference) {

@@ -89,10 +89,10 @@ extension TranslatorFactories {
         return .fail(error: TranslatorError(message: "Configuration error - \(error)"))
       }
       
-      return Just(())
+      return Just(config)
         .receive(on: scheduler).flatMap {
           SSHClient
-            .dial(hostName, with: config)
+            .dial(hostName, with: $0)
             .print("Dialing...")
             .flatMap { $0.requestSFTP() }
             .tryMap  { try SFTPTranslator(on: $0) }
