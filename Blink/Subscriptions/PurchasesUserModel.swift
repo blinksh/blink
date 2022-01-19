@@ -39,7 +39,6 @@ extension CompatibilityAccessManager.Entitlement {
 
 class PurchasesUserModel: ObservableObject {
   @Published var unlimitedTimeAccess: EntitlementStatus = .inactive
-  @Published var errorMessage: String = ""
   
   @Published var plusProduct: SKProduct? = nil
   @Published var classicProduct: SKProduct? = nil
@@ -70,43 +69,18 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  func makePurchase(_ productId: String, successfulPurchase: @escaping () -> Void) {
-    Purchases.shared.products([productId]) { products in
-      guard let product = products.first else {
-        return
-      }
-      
-      Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
-        guard error == nil, !cancelled else {
-          return
-        }
-        
-        self.refresh()
-        successfulPurchase()
-      }
-    }
-  }
-  
   func purchasePlus() {
-    guard let product = self.plusProduct else {
-      return
-    }
-   
-    withAnimation {
-      self.purchaseInProgress = true
-    }
-    
-    
-    Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
-      self.purchaseInProgress = false
-    }
+    _purchase(product: plusProduct)
   }
   
   func purchaseClassic() {
-    guard let product = self.classicProduct else {
+    _purchase(product: classicProduct)
+  }
+  
+  private func _purchase(product: SKProduct?) {
+    guard let product = product else {
       return
     }
-   
     withAnimation {
       self.purchaseInProgress = true
     }
@@ -114,6 +88,7 @@ class PurchasesUserModel: ObservableObject {
     
     Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
       self.purchaseInProgress = false
+      self.refresh()
     }
   }
   
