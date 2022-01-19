@@ -83,19 +83,21 @@ final class FileTranslatorCache {
 
     // rootPath: ssh:host:root_folder
     let components = rootPath.split(separator: ":")
+    guard let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0])) else {
+      return .fail(error: "Not implemented")
+    }
 
-    // TODO At least two components. Tweak for sftp
-    let remoteProtocol = BlinkFilesProtocol(rawValue: String(components[0]))
     let pathAtFiles: String
     let host: String?
-    if components.count == 2 {
-      pathAtFiles = String(components[1])
+    if remoteProtocol == .local {
+      pathAtFiles = String(rootPath[components[1].startIndex...])
       host = nil
     } else {
-      pathAtFiles = String(components[2])
+      // The path will take the rest, independent of the components, because the colon is a valid character (not POSIX though)
+      pathAtFiles = String(rootPath[components[2].startIndex...])
       host = String(components[1])
     }
-    
+
     switch remoteProtocol {
     case .local:
       return Local().walkTo(pathAtFiles)
