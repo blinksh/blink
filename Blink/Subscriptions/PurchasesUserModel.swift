@@ -85,10 +85,9 @@ class PurchasesUserModel: ObservableObject {
       self.purchaseInProgress = true
     }
     
-    
     Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
-      self.purchaseInProgress = false
       self.refresh()
+      self.purchaseInProgress = false
     }
   }
   
@@ -100,41 +99,8 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  func formattedPlustPriceWithPeriod() -> String? {
-    guard let product = plusProduct else {
-      return nil
-    }
-    
-    _priceFormatter.locale = product.priceLocale
-    guard let priceStr = _priceFormatter.string(for: product.price) else {
-      return nil
-    }
-    
-    guard let period = product.subscriptionPeriod else {
-      return priceStr
-    }
-    
-    let n = period.numberOfUnits
-    
-    if n <= 1 {
-      switch period.unit {
-      case .day: return "\(priceStr)/day"
-      case .week: return "\(priceStr)/week"
-      case .month: return "\(priceStr)/month"
-      case .year: return "\(priceStr)/year"
-      @unknown default:
-        return priceStr
-      }
-    }
-    
-    switch period.unit {
-    case .day: return "\(priceStr) / \(n) days"
-    case .week: return "\(priceStr) / \(n) weeks"
-    case .month: return "\(priceStr) / \(n) months"
-    case .year: return "\(priceStr) / \(n) years"
-    @unknown default:
-      return priceStr
-    }
+  func formattedPlusPriceWithPeriod() -> String? {
+    plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
   }
   
   func fetchProducts() {
@@ -201,4 +167,37 @@ class PurchasesUserModel: ObservableObject {
 extension SKProduct {
   static let productPlusId = "blink_shell_plus_1y_1999"
   static let productClassicId = "blink_shell_classic_unlimited_0"
+  
+  func formattedPriceWithPeriod(priceFormatter: NumberFormatter) -> String? {
+    priceFormatter.locale = priceLocale
+    guard let priceStr = priceFormatter.string(for: price) else {
+      return nil
+    }
+    
+    guard let period = subscriptionPeriod else {
+      return priceStr
+    }
+    
+    let n = period.numberOfUnits
+    
+    if n <= 1 {
+      switch period.unit {
+      case .day: return "\(priceStr)/day"
+      case .week: return "\(priceStr)/week"
+      case .month: return "\(priceStr)/month"
+      case .year: return "\(priceStr)/year"
+      @unknown default:
+        return priceStr
+      }
+    }
+    
+    switch period.unit {
+    case .day: return "\(priceStr) / \(n) days"
+    case .week: return "\(priceStr) / \(n) weeks"
+    case .month: return "\(priceStr) / \(n) months"
+    case .year: return "\(priceStr) / \(n) years"
+    @unknown default:
+      return priceStr
+    }
+  }
 }

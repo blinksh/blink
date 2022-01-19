@@ -84,7 +84,7 @@ struct PurchasePageView: Page {
       } else {
         HStack {
           Spacer()
-          if let formattedPrice = model.formattedPlustPriceWithPeriod() {
+          if let formattedPrice = model.formattedPlusPriceWithPeriod() {
             Text("Plan auto-renews for \(formattedPrice) until canceled.")
               .font(.footnote)
           }

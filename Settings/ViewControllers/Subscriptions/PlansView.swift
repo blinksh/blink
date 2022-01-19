@@ -58,7 +58,7 @@ struct PlansView: View {
       if let _ = model.plusProduct {
         Section(
           header: Text("Blink+ PLAN"),
-          footer: Text("Plan auto-renews for \(model.formattedPlustPriceWithPeriod() ?? "") until canceled.")) {
+          footer: Text("Plan auto-renews for \(model.formattedPlusPriceWithPeriod() ?? "") until canceled.")) {
             HStack {
               Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
