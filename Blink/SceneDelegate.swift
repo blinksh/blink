@@ -441,59 +441,65 @@ extension SceneDelegate {
   // blinkv15:validatereceipt?migrationToken 
   // blinkv15:importarchive?data=
   private func _handleBlink15UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
-    guard sourceID == Blink14BundleID else {
+    guard
+      sourceID == Blink14BundleID,
+      let route = blinkUrl.host
+    else {
+      print("unhandled blink15UrlScheme", blinkUrl)
       return
     }
 
-    let route = blinkUrl.host
-
-    if route == "importarchive" {
-      guard let archiveB64 = blinkUrl
-          .getQueryStringParameter(param: "archive"),
+    switch route {
+    case "importarchive":
+      guard
+        let archiveB64 = blinkUrl.getQueryStringParameter(param: "archive"),
         let archiveData = Data(base64Encoded: archiveB64)
-        else {
+      else {
           return
-        }
+      }
 
       ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
                                                  archiveData: archiveData,
                                                  archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
-    } else if route == "validatereceipt" {
-      guard let migrationTokenString = blinkUrl
-        .getQueryStringParameter(param: "migrationToken"),
+    case "validatereceipt":
+      guard
+        let migrationTokenString = blinkUrl.getQueryStringParameter(param: "migrationToken"),
         let migrationTokenData = Data(base64Encoded: migrationTokenString)
-        else { return }
-      
-      // TODO Yury, need to connect here with the Dialog, offering the $0 unlock.
-      let view = ReceiptMigrationOfferingView(encodedMigrationToken: migrationTokenData)
-      _spCtrl.dismiss(animated: false, completion: {})
-      let ctrl = UIHostingController(rootView: view)
-      ctrl.modalPresentationStyle = .formSheet
-      _spCtrl.present(ctrl, animated: false)
+      else {
+        return
+      }
+      _openMigration()
+      PurchasesUserModel.shared.continueMigrationWith(migrationToken: migrationTokenData)
+    default:
+      print("unhandled blink15UrlScheme", blinkUrl)
     }
+
   }
 
   // blinkv14:validatereceipt?originalUserId
   private func _handleBlink14UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
     // Ignore if request did not come from Blink15
-    guard sourceID == Blink15BundleID else {
+    guard
+      sourceID == Blink15BundleID,
+      let route = blinkUrl.host
+    else {
       return
     }
-
-    if blinkUrl.host == "exportdata" {
-      guard let password = blinkUrl.getQueryStringParameter(param: "password"),
+    
+    switch route {
+    case "exportdata":
+      guard
+        let password = blinkUrl.getQueryStringParameter(param: "password"),
         let callbackURL = URL(string: "blinkv15://importarchive")
-        else { return }
-      
-      
-      // Request permission from the user, and then perform the migration
-      // TODO We should use the real userId
+      else {
+        return
+      }
       ArchiveAlertUI.presentImport(on: _spCtrl, cb: callbackURL, archivePassword: "Purchases.shared.appUserID")
-//      _spCtrl.present(alert, animated: false)
-    } else if blinkUrl.host == "validatereceipt" {
-      guard let originalUserId = blinkUrl
-        .getQueryStringParameter(param: "originalUserId") 
-        else { return }
+    case "validatereceipt":
+      guard let originalUserId = blinkUrl .getQueryStringParameter(param: "originalUserId")
+      else {
+        return
+      }
 
       // Start receipt exchange function.
       // Dismiss any view controller we are currently presenting
@@ -506,6 +512,8 @@ extension SceneDelegate {
       ctrl.modalPresentationStyle = .fullScreen
       _spCtrl.present(ctrl, animated: false)
       model.load()
+    default:
+      print("unhandled blink14UrlScheme", blinkUrl)
     }
   }
 
