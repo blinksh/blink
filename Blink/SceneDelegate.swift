@@ -438,7 +438,7 @@ fileprivate extension URL {
 
 // MARK: Manage the `scene(_:openURLContexts:)` actions
 extension SceneDelegate {
-  // blinkv15:validateReceipt?migrationToken 
+  // blinkv15:validatereceipt?migrationToken 
   // blinkv15:importarchive?data=
   private func _handleBlink15UrlScheme(with blinkUrl: URL, fromApp sourceID: String) {
     guard sourceID == Blink14BundleID else {

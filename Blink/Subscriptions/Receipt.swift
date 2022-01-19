@@ -183,7 +183,7 @@ class ReceiptMigrationProgress: ObservableObject {
           self.migrationTokenGenerated = true
           // Open blinkv15 with received value
           let migrationTokenString = migrationToken.base64EncodedString()
-          let migrationTokenUrl = URL(string: "blinkv15://validateReceipt?migrationToken=\(migrationTokenString)")!
+          let migrationTokenUrl = URL(string: "blinkv15://validatereceipt?migrationToken=\(migrationTokenString)")!
           UIApplication.shared.open(migrationTokenUrl) // { result in } // Alert if it cannot callback?
         }
       )

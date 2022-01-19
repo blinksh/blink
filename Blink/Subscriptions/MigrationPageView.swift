@@ -57,7 +57,7 @@ struct MigrationPageView: Page {
       HStack {
         Spacer()
         Button("Start Migration") {
-          let url = URL(string: "blinkv14://validateReceipt?originalUserId=\(Purchases.shared.appUserID)")!
+          let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
           UIApplication.shared.open(url, completionHandler: { success in
             if success {
               alertErrorMessage = ""
