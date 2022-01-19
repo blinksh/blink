@@ -455,9 +455,9 @@ extension SceneDelegate {
           return
         }
 
-//      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
-//                                                 archiveData: archiveData,
-//                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
+      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
+                                                 archiveData: archiveData,
+                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
     } else if route == "validatereceipt" {
       guard let migrationTokenString = blinkUrl
         .getQueryStringParameter(param: "migrationToken"),
@@ -488,8 +488,8 @@ extension SceneDelegate {
       
       // Request permission from the user, and then perform the migration
       // TODO We should use the real userId
-//      ArchiveAlertUI.presentImport(on: _spCtrl, cb: callbackURL, archivePassword: "Purchases.shared.appUserID")
-      //_spCtrl.present(alert, animated: false)
+      ArchiveAlertUI.presentImport(on: _spCtrl, cb: callbackURL, archivePassword: "Purchases.shared.appUserID")
+//      _spCtrl.present(alert, animated: false)
     } else if blinkUrl.host == "validatereceipt" {
       guard let originalUserId = blinkUrl
         .getQueryStringParameter(param: "originalUserId") 

@@ -297,6 +297,7 @@
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25EE8CE2779E060003EA471 /* PlansView.swift */; };
+		D265C3662796ED060069DEF7 /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -2953,6 +2954,7 @@
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
+				D265C3662796ED060069DEF7 /* ArchiveAlertUI.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
