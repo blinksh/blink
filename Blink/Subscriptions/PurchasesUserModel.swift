@@ -49,6 +49,8 @@ class PurchasesUserModel: ObservableObject {
   @Published var recieptIsVerified: Bool = false
   @Published var zeroPriceUnlocked: Bool = false
   @Published var dataCopied: Bool = false
+  @Published var migrationStatus: MigrationStatus = .validating
+  @Published var alertErrorMessage: String = ""
   
   private let _priceFormatter = NumberFormatter()
   
@@ -175,6 +177,37 @@ class PurchasesUserModel: ObservableObject {
         }
       }
       
+    }
+  }
+  
+  enum MigrationStatus {
+    case validating, accepted
+    case denied(error: Error)
+  }
+  
+  func startMigration() {
+    migrationStatus = .validating
+    let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
+    UIApplication.shared.open(url, completionHandler: { success in
+      if success {
+        self.alertErrorMessage = ""
+      } else {
+        self.alertErrorMessage = "Please install Blink 14 latest version first."
+      }
+    })
+  }
+  
+  func continueMigrationWith(migrationToken: Data) {
+    let originalUserId = Purchases.shared.appUserID
+
+    do {
+      let migrationToken = try JSONDecoder()
+        .decode(MigrationToken.self, from: migrationToken)
+      try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
+      migrationStatus = .accepted
+      purchaseClassic()
+    } catch {
+      migrationStatus = .denied(error: error)
     }
   }
   

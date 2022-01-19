@@ -57,14 +57,7 @@ struct MigrationPageView: Page {
       HStack {
         Spacer()
         Button("Start Migration") {
-          let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
-          UIApplication.shared.open(url, completionHandler: { success in
-            if success {
-              alertErrorMessage = ""
-            } else {
-              alertErrorMessage = "Please install Blink 14 latest version first."
-            }
-          })
+          model.startMigration()
         }
         .buttonStyle(.borderedProminent)
         .alert(errorMessage: $alertErrorMessage)
