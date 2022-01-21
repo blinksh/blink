@@ -113,6 +113,11 @@ class CodeFileSystem {
         var content = DispatchData.empty
         return file
           .read(max: Int(INT32_MAX))
+          .reduce(DispatchData.empty) { (prevValue, newValue) in
+            var n = prevValue
+            n.append(newValue)
+            return n
+          }
           .flatMap { dd -> AnyPublisher<Bool, Error> in
             content = dd
             return file.close()
