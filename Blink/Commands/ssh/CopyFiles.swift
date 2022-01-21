@@ -268,6 +268,7 @@ public class BlinkCopy: NSObject {
     let sshCommand: SSHCommand
     var params = [hostPath]
     let host: BKSSHHost
+    let config: SSHClientConfig
     
     do {
       // Pass verbosity
@@ -277,15 +278,13 @@ public class BlinkCopy: NSObject {
       }
       sshCommand = try SSHCommand.parse(params)
       host = try BKConfig().bkSSHHost(sshCommand.hostAlias, extending: sshCommand.bkSSHHost())
+      config = try SSHClientConfigProvider.config(host: host, using: device)
     } catch {
       let message = SSHCommand.message(for: error)
       return .fail(error: CommandError(message: message))
     }
 
-    let hostName = host.hostName ?? sshCommand.hostAlias
-    let config = SSHClientConfigProvider.config(host: host, using: device)
-
-    return SSHClient.dial(hostName, with: config)
+    return SSHClient.dial(host.hostName ?? sshCommand.hostAlias, with: config)
     //return SSHPool.dial(hostName, with: config, connectionOptions: sshOptions)
       .flatMap { $0.requestSFTP() }
       .tryMap  { try SFTPTranslator(on: $0) }

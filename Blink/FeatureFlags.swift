@@ -47,13 +47,13 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
   
   static let all: Self = [.developer, .testFlight, .appStore]
   
-  #if BLINK_PUBLISHING_OPTION_DEVELOPER
+#if BLINK_PUBLISHING_OPTION_DEVELOPER
   static var current: Self  = .developer
-  #elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
+#elseif BLINK_PUBLISHING_OPTION_TESTFLIGHT
   static var current: Self  = .testFlight
-  #else
+#else
   static var current: Self  = .appStore
-  #endif
+#endif
   
   var description: String {
     var result: [String] = []
