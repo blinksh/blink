@@ -104,16 +104,13 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func fetchProducts() {
-    let plusId = SKProduct.productPlusId
-    let classicId = SKProduct.productClassicId
-    
-    Purchases.shared.products([plusId, classicId]) { products in
+    Purchases.shared.products([ProductBlinkShellClassicID, ProductBlinkShellPlusID]) { products in
       for product in products {
-        if product.productIdentifier == plusId {
+        if product.productIdentifier == ProductBlinkShellPlusID {
           self.plusProduct = product
         }
         
-        if product.productIdentifier == classicId {
+        if product.productIdentifier == ProductBlinkShellClassicID {
           self.classicProduct = product
         }
       }
@@ -170,8 +167,8 @@ class PurchasesUserModel: ObservableObject {
 
 
 extension SKProduct {
-  static let productPlusId = "blink_shell_plus_1y_1999"
-  static let productClassicId = "blink_shell_classic_unlimited_0"
+//  static let productPlusId = "blink_shell_plus_1y_1999"
+//  static let productClassicId = "blink_shell_classic_unlimited_0"
   
   func formattedPriceWithPeriod(priceFormatter: NumberFormatter) -> String? {
     priceFormatter.locale = priceLocale

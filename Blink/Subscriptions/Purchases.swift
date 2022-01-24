@@ -47,7 +47,12 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
         unlockProductID: value.productIdentifier
       )
     }
-    delegate?.didUpdateEntitlements(source: self, entitlements: dict)
+    delegate?.didUpdateEntitlements(
+      source: self,
+      entitlements: dict,
+      activeSubscriptions: purchaserInfo.activeSubscriptions,
+      nonSubscriptionTransactions: Set(purchaserInfo.nonSubscriptionTransactions.map({$0.productId}))
+    )
   }
   
   public func startUpdates() {

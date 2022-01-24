@@ -35,30 +35,33 @@ import Purchases
 
 struct PlansView: View {
   
-  @State var alertErrorMessage: String = ""
-  @ObservedObject var model: PurchasesUserModel = .shared
+//  @State var alertErrorMessage: String = ""
+  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
   var body: some View {
     List {
-      Section("Free Plan") {
-        HStack {
-          Image(systemName: "checkmark.circle.fill")
-            .foregroundColor(.green)
-          Text("Access to all blink features")
-        }
-        HStack {
-          Image(systemName: "timer")
-            .foregroundColor(.orange)
-          Text("30 minutes time limit")
-        }
-        HStack {
-          Text("This is your current plan").foregroundColor(.green)
+      if _entitlements.unlimitedTimeAccess?.active == false {
+        Section("Free Plan") {
+          HStack {
+            Image(systemName: "checkmark.circle.fill")
+              .foregroundColor(.green)
+            Text("Access to all blink features")
+          }
+          HStack {
+            Image(systemName: "timer")
+              .foregroundColor(.orange)
+            Text("30 minutes time limit")
+          }
+          HStack {
+            Text("This is your current plan").foregroundColor(.green)
+          }
         }
       }
-      if let _ = model.plusProduct {
+      if let _ = _model.plusProduct {
         Section(
           header: Text("Blink+ PLAN"),
-          footer: Text("Plan auto-renews for \(model.formattedPlusPriceWithPeriod() ?? "") until canceled.")) {
+          footer: Text("Plan auto-renews for \(_model.formattedPlusPriceWithPeriod() ?? "") until canceled.")) {
             HStack {
               Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
@@ -75,12 +78,16 @@ struct PlansView: View {
               Text("Interruption free usage")
             }
             HStack {
-              if model.purchaseInProgress {
+              if _model.purchaseInProgress {
                 ProgressView()
               } else {
-                Button("Upgrade to Blink+ Plan", action: {
-                  model.purchasePlus()
-                })
+                if _entitlements.activeSubscriptions.contains(ProductBlinkShellPlusID) {
+                  Text("This is your current plan").foregroundColor(.green)
+                } else {
+                  Button("Upgrade to Blink+ Plan", action: {
+                    _model.purchasePlus()
+                  })
+                }
               }
             }
           }
@@ -101,12 +108,30 @@ struct PlansView: View {
             Text("Interruption free usage")
           }
           HStack {
-            Button("Migrate from Blink Classic App", action: {
-              NotificationCenter.default.post(name: .openMigration, object: nil)
-            })
-          }.alert(errorMessage: $alertErrorMessage)
+            if _entitlements.nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+              Text("Blink Classic Unlocked").foregroundColor(.green)
+            } else {
+              Button("Migrate from Blink Classic App", action: {
+                NotificationCenter.default.post(name: .openMigration, object: nil)
+              })
+            }
+          }
         }
       )
+      if _entitlements.unlimitedTimeAccess?.active == true {
+        Section("Free Plan") {
+          HStack {
+            Image(systemName: "checkmark.circle.fill")
+              .foregroundColor(.green)
+            Text("Access to all blink features")
+          }
+          HStack {
+            Image(systemName: "timer")
+              .foregroundColor(.orange)
+            Text("30 minutes time limit")
+          }
+        }
+      }
       Section {
         HStack {
           Button {

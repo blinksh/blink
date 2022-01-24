@@ -41,7 +41,12 @@ public struct Entitlement: Identifiable, Equatable, Hashable {
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
-  func didUpdateEntitlements(source: EntitlementsSource, entitlements :Dictionary<String, Entitlement>)
+  func didUpdateEntitlements(
+    source: EntitlementsSource,
+    entitlements :Dictionary<String, Entitlement>,
+    activeSubscriptions: Set<String>,
+    nonSubscriptionTransactions: Set<String>
+  )
 }
 
 public protocol EntitlementsSource: AnyObject {
@@ -49,13 +54,17 @@ public protocol EntitlementsSource: AnyObject {
   func startUpdates()
 }
 
-fileprivate let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
+let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
+let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
+let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 
 public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
   
   @Published var unlimitedTimeAccess: Entitlement? = nil
+  @Published var activeSubscriptions: Set<String> = .init()
+  @Published var nonSubscriptionTransactions: Set<String> = .init()
 
   private let _sources: [EntitlementsSource]
   
@@ -72,9 +81,15 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     }
   }
   
-  public func didUpdateEntitlements(source: EntitlementsSource, entitlements: Dictionary<String, Entitlement>) {
+  public func didUpdateEntitlements(
+    source: EntitlementsSource,
+    entitlements: Dictionary<String, Entitlement>,
+    activeSubscriptions: Set<String>,
+    nonSubscriptionTransactions: Set<String>
+  ) {
 
-    print(entitlements);
+    self.activeSubscriptions = activeSubscriptions
+    self.nonSubscriptionTransactions = nonSubscriptionTransactions
     let oldValue = self.unlimitedTimeAccess;
     if let newValue = entitlements[UnlimitedScreenTimeEntitlementID] {
       self.unlimitedTimeAccess = newValue
@@ -92,14 +107,13 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   public func currentPlanName() -> String {
-    switch unlimitedTimeAccess?.unlockProductID {
-    case "blink_shell_plus_1y_1999": return "Blink+ Plan"
-    case "blink_shell_classic_unlimited_0": return "Blink Classic Plan"
-    default: return "Free Plan"
+    if activeSubscriptions.contains(ProductBlinkShellPlusID) {
+      return "Blink+ Plan"
     }
-//    static let productPlusId = "blink_shell_plus_1y_1999"
-//    static let productClassicId = "blink_shell_classic_unlimited_0"
-//    switch unlimitedTimeAccess
+    if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+      return "Blink Classic Plan"
+    }
+    return "Free Plan"
   }
   
 }
