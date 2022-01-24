@@ -49,7 +49,7 @@ class SubscriptionNag: NSObject {
   private override init() {}
 
   @objc func start() {  
-    if PurchasesUserModel.shared.unlimitedTimeAccess.active {
+    if EntitlementsManager.shared.unlimitedTimeAccess?.active == false {
       return
     }
     
@@ -83,8 +83,14 @@ class SubscriptionNag: NSObject {
     start()
   }
 
-  func stop () {
+  func stop() {
     nagTimer.invalidate()
+  }
+  
+  func terminate() {
+    UserDefaults.standard.set(0, forKey: NagTimer)
+    nagTimer.invalidate()
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
   }
 }
 

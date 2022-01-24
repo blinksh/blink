@@ -33,13 +33,7 @@ import Purchases
 import Combine
 import SwiftUI
 
-extension CompatibilityAccessManager.Entitlement {
-  static let unlimitedTimeAccess = Self("shell")
-}
-
 class PurchasesUserModel: ObservableObject {
-  @Published var unlimitedTimeAccess: EntitlementStatus = .inactive
-  
   @Published var plusProduct: SKProduct? = nil
   @Published var classicProduct: SKProduct? = nil
   @Published var purchaseInProgress: Bool = false
@@ -47,6 +41,7 @@ class PurchasesUserModel: ObservableObject {
   
   @Published var recieptIsVerified: Bool = false
   @Published var zeroPriceUnlocked: Bool = false
+  @Published var recieptVerificationFailed = false
   @Published var dataCopied: Bool = false
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
@@ -61,8 +56,13 @@ class PurchasesUserModel: ObservableObject {
   static let shared = PurchasesUserModel()
   
   func refresh() {
-    let manager = CompatibilityAccessManager.shared
-    manager.status(of: .unlimitedTimeAccess).assign(to: &$unlimitedTimeAccess)
+   
+//    let manager = CompatibilityAccessManager.shared
+//
+//    manager.status(of: .unlimitedTimeAccess)
+//      .receive(on: DispatchQueue.main)
+//      .print("!!!!!!")
+//      .assign(to: &$unlimitedTimeAccess)
     
     if self.plusProduct == nil || self.classicProduct == nil {
       self.fetchProducts()
@@ -146,6 +146,8 @@ class PurchasesUserModel: ObservableObject {
         .decode(MigrationToken.self, from: migrationToken)
       try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
       migrationStatus = .accepted
+      recieptIsVerified = true
+      zeroPriceUnlocked = true
       purchaseClassic()
     } catch {
       migrationStatus = .denied(error: error)
@@ -157,8 +159,11 @@ class PurchasesUserModel: ObservableObject {
 @objc public class PurchasesUserModelObjc: NSObject {
 
   @objc public static func preparePurchasesUserModel() {
+    
     if !FeatureFlags.checkReceipt {
-      PurchasesUserModel.shared.refresh()
+      configureRevCat()
+      EntitlementsManager.shared.startUpdates()
+      _ = PurchasesUserModel.shared
     }
   }
 }

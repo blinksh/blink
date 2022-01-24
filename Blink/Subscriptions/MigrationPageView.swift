@@ -37,7 +37,7 @@ import Network
 struct MigrationPageView: Page {
   
   @ObservedObject var model: PurchasesUserModel = .shared
-  @State var alertErrorMessage: String = ""
+  @ObservedObject var entitlements: EntitlementsManager = .shared
   
   
   var horizontal: Bool
@@ -56,11 +56,29 @@ struct MigrationPageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        Button("Start Migration") {
-          model.startMigration()
+        if entitlements.unlimitedTimeAccess?.active == true {
+          Button("Migrate Data") {
+            model.purchaseClassic()
+          }
+          .buttonStyle(.borderedProminent)
+          .alert(errorMessage: $model.alertErrorMessage)
+        } else if model.zeroPriceUnlocked {
+          if model.purchaseInProgress {
+            ProgressView()
+          } else {
+            Button("Unlock with $0 Price") {
+              model.purchaseClassic()
+            }
+            .buttonStyle(.borderedProminent)
+            .alert(errorMessage: $model.alertErrorMessage)
+          }
+        } else {
+          Button("Start Migration") {
+            model.startMigration()
+          }
+          .buttonStyle(.borderedProminent)
+          .alert(errorMessage: $model.alertErrorMessage)
         }
-        .buttonStyle(.borderedProminent)
-        .alert(errorMessage: $alertErrorMessage)
         Spacer()
       }
       Spacer()
@@ -94,7 +112,7 @@ struct MigrationPageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: model.recieptIsVerified)
+      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: model.recieptIsVerified, failed: model.recieptVerificationFailed)
       Spacer().frame(maxHeight: 10)
       CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)

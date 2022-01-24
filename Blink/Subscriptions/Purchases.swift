@@ -35,49 +35,35 @@ import SystemConfiguration
 
 import Purchases
 
-public class AppStoreEntitlementsSource: EntitlementsSource {
-  public init() {
-    Purchases.logLevel = .debug
-    let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
-    Purchases.configure(withAPIKey: publicAPIKey)
-    print("RevCat UserID is \(Purchases.shared.appUserID)")
+public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, PurchasesDelegate {
+  public weak var delegate: EntitlementsSourceDelegate?
+  
+  public func purchases(_ purchases: Purchases, didReceiveUpdated purchaserInfo: Purchases.PurchaserInfo) {
+    var dict = Dictionary<String, Entitlement>()
+    for (key, value) in purchaserInfo.entitlements.all {      
+      dict[key] = Entitlement(
+        id: value.identifier,
+        active: value.isActive,
+        unlockProductID: value.productIdentifier
+      )
+    }
+    delegate?.didUpdateEntitlements(source: self, entitlements: dict)
   }
   
-  public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
-    let pub = PassthroughSubject<EntitlementStatus, Never>()
-    return pub.handleEvents(receiveRequest: { _ in
-      Purchases.shared.purchaserInfo { info, error in
-        pub.send(info?.status(of: entitlement) ?? .inactive)
-        // TODO: handle error?
-        pub.send(completion: .finished)
-      }
-    }).eraseToAnyPublisher()
+  public func startUpdates() {
+    Purchases.shared.delegate = self
   }
 }
 
 
-fileprivate extension Purchases.PurchaserInfo {
-  func status(of entitlement: CompatibilityAccessManager.Entitlement) -> EntitlementStatus {
-    let id = entitlement.id
-    let since = purchaseDate(forEntitlement: id)
-    let until = expirationDate(forEntitlement: id)
-    let active = entitlements[id]?.isActive == true
-    return EntitlementStatus(active: active, since: since, until: until)
-  }
+func configureRevCat() {
+  Purchases.logLevel = .debug
+  let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
+  Purchases.configure(
+    withAPIKey: publicAPIKey,
+    appUserID: nil,
+    observerMode: false,
+    userDefaults: UserDefaults.suite
+  )
+  print("RevCat UserID is \(Purchases.shared.appUserID)")
 }
-
-
-// TODO Assign on Sandbox?
-public class PreconfiguredEntitlementsSource: EntitlementsSource {
-  public init() {
-    Purchases.logLevel = .debug
-    let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
-    Purchases.configure(withAPIKey: publicAPIKey)
-    print("RevCat UserID is \(Purchases.shared.appUserID)")
-  }
-  
-  public func status(of entitlement: CompatibilityAccessManager.Entitlement) -> AnyPublisher<EntitlementStatus, Never> {
-    Just(.init(active: entitlement == .unlimitedTimeAccess)).eraseToAnyPublisher()
-  }
-}
-

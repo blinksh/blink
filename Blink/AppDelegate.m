@@ -87,7 +87,7 @@ void __setupProcessEnv() {
   [[UIView appearance] setTintColor:[UIColor blinkTint]];
   
   if (!FeatureFlags.checkReceipt) {
-    [SubscriptionNag.shared start];
+//    [SubscriptionNag.shared start];
   }
   
   signal(SIGPIPE, __on_pipebroken_signal);

@@ -43,6 +43,7 @@ struct SettingsView: View {
   @State private var _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
   @State private var _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
   @State private var _defaultUser = BKDefaults.defaultUserName() ?? ""
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
   var body: some View {
     List {
@@ -65,7 +66,8 @@ struct SettingsView: View {
           }, label: {
             Label("Subscription", systemImage: "bag")
             Spacer()
-            Text("Free Plan").foregroundColor(.secondary)
+            Text(_entitlements.currentPlanName())
+              .foregroundColor(.secondary)
           })
         }
       }

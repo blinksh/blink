@@ -107,7 +107,7 @@
 		BD81522D2739A91D002BB169 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD81522E2739A91D002BB169 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
 		BD815235273D7A09002BB169 /* Purchases in Frameworks */ = {isa = PBXBuildFile; productRef = BD815234273D7A09002BB169 /* Purchases */; };
-		BD81523F273DB964002BB169 /* CompatibilityAccessManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523C273DB964002BB169 /* CompatibilityAccessManager.swift */; };
+		BD81523F273DB964002BB169 /* EntitlementsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523C273DB964002BB169 /* EntitlementsManager.swift */; };
 		BD815240273DB964002BB169 /* SubscriptionNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523D273DB964002BB169 /* SubscriptionNag.swift */; };
 		BD815241273DB964002BB169 /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523E273DB964002BB169 /* Purchases.swift */; };
 		BD815243273DBEDE002BB169 /* PurchasesUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */; };
@@ -775,7 +775,7 @@
 		BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskMonitor.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD81521C27387D1F002BB169 /* Certificates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Certificates.swift; sourceTree = "<group>"; };
-		BD81523C273DB964002BB169 /* CompatibilityAccessManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompatibilityAccessManager.swift; sourceTree = "<group>"; };
+		BD81523C273DB964002BB169 /* EntitlementsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsManager.swift; sourceTree = "<group>"; };
 		BD81523D273DB964002BB169 /* SubscriptionNag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionNag.swift; sourceTree = "<group>"; };
 		BD81523E273DB964002BB169 /* Purchases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
 		BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasesUserModel.swift; sourceTree = "<group>"; };
@@ -1553,7 +1553,7 @@
 			isa = PBXGroup;
 			children = (
 				D2043EB62771C25D002E29AF /* Paywall */,
-				BD81523C273DB964002BB169 /* CompatibilityAccessManager.swift */,
+				BD81523C273DB964002BB169 /* EntitlementsManager.swift */,
 				BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */,
 				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
 				BD81523E273DB964002BB169 /* Purchases.swift */,
@@ -3039,7 +3039,7 @@
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
-				BD81523F273DB964002BB169 /* CompatibilityAccessManager.swift in Sources */,
+				BD81523F273DB964002BB169 /* EntitlementsManager.swift in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
