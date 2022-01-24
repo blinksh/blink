@@ -107,6 +107,10 @@ class PurchasesUserModel: ObservableObject {
     
   }
   
+  func openHelp() {
+    
+  }
+  
   func formattedPlusPriceWithPeriod() -> String? {
     plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
   }

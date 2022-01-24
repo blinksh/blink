@@ -36,8 +36,8 @@ import Network
 
 struct MigrationPageView: Page {
   
-  @ObservedObject var model: PurchasesUserModel = .shared
-  @ObservedObject var entitlements: EntitlementsManager = .shared
+  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
   
   var horizontal: Bool
@@ -56,37 +56,43 @@ struct MigrationPageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        if entitlements.unlimitedTimeAccess?.active == true {
+        if _entitlements.unlimitedTimeAccess?.active == true {
           Button("Migrate Data") {
-            model.purchaseClassic()
+            _model.purchaseClassic()
           }
           .buttonStyle(.borderedProminent)
-          .alert(errorMessage: $model.alertErrorMessage)
-        } else if model.zeroPriceUnlocked {
-          if model.purchaseInProgress {
+          .alert(errorMessage: $_model.alertErrorMessage)
+        } else if _model.zeroPriceUnlocked {
+          if _model.purchaseInProgress {
             ProgressView()
           } else {
             Button("Unlock with $0 Price") {
-              model.purchaseClassic()
+              _model.purchaseClassic()
             }
             .buttonStyle(.borderedProminent)
-            .alert(errorMessage: $model.alertErrorMessage)
+            .alert(errorMessage: $_model.alertErrorMessage)
           }
         } else {
           Button("Start Migration") {
-            model.startMigration()
+            _model.startMigration()
           }
           .buttonStyle(.borderedProminent)
-          .alert(errorMessage: $model.alertErrorMessage)
+          .alert(errorMessage: $_model.alertErrorMessage)
         }
         Spacer()
       }
       Spacer()
       HStack {
         Spacer()
-        Button("Privacy Policy", action: {}).padding(.trailing)
-        Button("Terms of Use", action: {}).padding(.trailing)
-        Button("Help", action: { })
+        Button("Privacy Policy", action: {
+          _model.openPrivacyAndPolicy()
+        }).padding(.trailing)
+        Button("Terms of Use", action: {
+          _model.openTermsOfUse()
+        }).padding(.trailing)
+        Button("Help", action: {
+          _model.openHelp();
+        })
         Spacer()
       }
       .font(.footnote)
@@ -112,11 +118,11 @@ struct MigrationPageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: model.recieptIsVerified, failed: model.recieptVerificationFailed)
+      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: _model.recieptIsVerified, failed: _model.recieptVerificationFailed)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: model.zeroPriceUnlocked)
+      CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: _model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: model.dataCopied)
+      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: _model.dataCopied)
     }
   }
 }

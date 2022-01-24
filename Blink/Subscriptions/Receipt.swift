@@ -216,40 +216,6 @@ class ReceiptMigrationProgress: ObservableObject {
   }
 }
 
-//struct ReceiptMigrationOfferingView: View {
-//  enum Status {
-//    case validating
-//    case accepted
-//    case denied(error: Error)
-//  }
-//  
-//  var encodedMigrationToken: Data
-//  let originalUserId = Purchases.shared.appUserID
-//  @State var migrationStatus = Status.validating
-//  
-//  var body: some View {
-//    VStack {
-//      switch(migrationStatus) {
-//      case .validating:
-//        Text("Validating...")
-//      case .accepted:
-//        Text("Hurray!!")
-//      case .denied(let error):
-//        Text("Invalid Migration Token \(error.localizedDescription)")
-//      }
-//    }
-//    .onAppear(perform: {
-//      do {
-//        let migrationToken = try JSONDecoder().decode(MigrationToken.self, from: encodedMigrationToken)
-//        try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
-//        migrationStatus = .accepted
-//      } catch {
-//        migrationStatus = .denied(error: error)
-//      }
-//    })
-//  }
-//}
-
 struct MigrationToken: Codable {
   let token: String
   let data:  String
@@ -381,7 +347,8 @@ enum SKStoreError: Error {
   func fetchReceiptURLPublisher() -> AnyPublisher<URL, Error> {
     let pub = PassthroughSubject<URL, Error>()
     _publisher = pub
-    return pub.handleEvents(
+    return pub.buffer(size: 1, prefetch: .byRequest, whenFull: .dropNewest)
+      .handleEvents(
       receiveCancel: {
         self._skReq?.delegate = nil
         self._skReq?.cancel()
