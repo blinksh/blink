@@ -34,7 +34,7 @@ import SwiftUI
 
 struct MigratePageView: Page {
   
-  @ObservedObject var model: PurchasesUserModel = .shared
+  @ObservedObject private var _model: PurchasesUserModel = .shared
   
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
@@ -59,7 +59,7 @@ struct MigratePageView: Page {
         Spacer()
       }
       Spacer()
-      if self.model.restoreInProgress {
+      if _model.restoreInProgress {
         HStack {
           Spacer()
           ProgressView(label: { Text("restoring purchases....") })
@@ -75,10 +75,14 @@ struct MigratePageView: Page {
         Spacer().frame(maxHeight:8)
         HStack {
           Spacer()
-          Button("Privacy Policy", action: {}).padding(.trailing)
-          Button("Terms of Use", action: {}).padding(.trailing)
+          Button("Privacy Policy", action: {
+            _model.openPrivacyAndPolicy()
+          }).padding(.trailing)
+          Button("Terms of Use", action: {
+            _model.openTermsOfUse()
+          }).padding(.trailing)
           Button("Restore", action: {
-            self.model.restorePurchases()
+            _model.restorePurchases()
           })
           Spacer()
         }

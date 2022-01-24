@@ -88,8 +88,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     nonSubscriptionTransactions: Set<String>
   ) {
 
+    // TODO: merge stategy from multiple sources
     self.activeSubscriptions = activeSubscriptions
     self.nonSubscriptionTransactions = nonSubscriptionTransactions
+    
     let oldValue = self.unlimitedTimeAccess;
     if let newValue = entitlements[UnlimitedScreenTimeEntitlementID] {
       self.unlimitedTimeAccess = newValue

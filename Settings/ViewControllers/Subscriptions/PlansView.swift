@@ -134,33 +134,34 @@ struct PlansView: View {
       }
       Section {
         HStack {
-          Button {
-
-          } label: {
-            Label("Restore Purchases", systemImage: "bag")
+          if _model.restoreInProgress {
+            ProgressView()
+            Text("restoring purchases....").padding(.leading, 10)
+          } else {
+            Button {
+              _model.restorePurchases()
+            } label: {
+              Label("Restore Purchases", systemImage: "bag")
+            }
           }
         }
         HStack {
           Button {
-            
+            _model.openPrivacyAndPolicy()
           } label: {
             Label("Privacy Policy", systemImage: "link")
           }
         }
         HStack {
           Button {
-            
+            _model.openTermsOfUse()
           } label: {
             Label("Terms of Use", systemImage: "link")
           }
         }
       }
-    }.navigationTitle("Subscription Plans")
-  }
-}
-
-struct PlansView_Previews: PreviewProvider {
-  static var previews: some View {
-    PlansView()
+    }
+    .disabled(_model.purchaseInProgress || _model.restoreInProgress)
+    .navigationTitle("Subscription Plans")
   }
 }

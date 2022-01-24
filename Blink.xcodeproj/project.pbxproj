@@ -198,7 +198,7 @@
 		D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC42771C28D002E29AF /* PurchasePageView.swift */; };
 		D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC52771C28D002E29AF /* ShakeDetector.swift */; };
 		D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC62771C28D002E29AF /* TopupPageView.swift */; };
-		D2043ECD2771DB9C002E29AF /* PaywallViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */; };
+		D2043ECD2771DB9C002E29AF /* StatusBarLessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
@@ -867,7 +867,7 @@
 		D2043EC42771C28D002E29AF /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
 		D2043EC52771C28D002E29AF /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
 		D2043EC62771C28D002E29AF /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
-		D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallViewController.swift; sourceTree = "<group>"; };
+		D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarLessViewController.swift; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
@@ -1265,6 +1265,7 @@
 				D29D6C3022DB9CA700A84173 /* TermController.swift */,
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
+				D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */,
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
 				D2BC514C2355C3AE0034FDD4 /* History.swift */,
 				D25D580F2358897B00D1BCAE /* Complete.swift */,
@@ -1784,7 +1785,6 @@
 				D2043EBA2771C282002E29AF /* CheckmarkRow.swift */,
 				D2043EBC2771C282002E29AF /* PaywallView.swift */,
 				D2043EBB2771C282002E29AF /* MigratePageView.swift */,
-				D2043ECC2771DB9C002E29AF /* PaywallViewController.swift */,
 			);
 			path = Paywall;
 			sourceTree = "<group>";
@@ -3075,7 +3075,7 @@
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
-				D2043ECD2771DB9C002E29AF /* PaywallViewController.swift in Sources */,
+				D2043ECD2771DB9C002E29AF /* StatusBarLessViewController.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */,

@@ -41,7 +41,6 @@ extension Notification.Name {
   public static let openMigration = Notification.Name("openMigration")
 }
 
-
 class SubscriptionNag: NSObject {
   @objc static let shared = SubscriptionNag()
   private var nagTimer = Timer()

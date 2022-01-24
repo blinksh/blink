@@ -34,7 +34,7 @@ import SwiftUI
 import Spinner
 
 struct PurchasePageView: Page {
-  @ObservedObject var model: PurchasesUserModel = .shared
+  @ObservedObject private var _model: PurchasesUserModel = .shared
   
   var horizontal: Bool
   var switchTab: (_ idx: Int) -> ()
@@ -52,13 +52,13 @@ struct PurchasePageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        if model.purchaseInProgress {
+        if _model.purchaseInProgress {
           ProgressView()
             .transition(.slide)
         } else {
-          if let _ = model.plusProduct {
+          if let _ = _model.plusProduct {
             Button("Subscribe now") {
-              model.purchasePlus()
+              _model.purchasePlus()
             }
             .buttonStyle(.borderedProminent)
             .transition(
@@ -75,7 +75,7 @@ struct PurchasePageView: Page {
         Spacer()
       }.frame(minHeight: 40)
       Spacer()
-      if model.restoreInProgress {
+      if _model.restoreInProgress {
         HStack {
           Spacer()
           ProgressView(label: { Text("restoring purchases....") })
@@ -84,7 +84,7 @@ struct PurchasePageView: Page {
       } else {
         HStack {
           Spacer()
-          if let formattedPrice = model.formattedPlusPriceWithPeriod() {
+          if let formattedPrice = _model.formattedPlusPriceWithPeriod() {
             Text("Plan auto-renews for \(formattedPrice) until canceled.")
               .font(.footnote)
           }
@@ -93,10 +93,14 @@ struct PurchasePageView: Page {
         Spacer().frame(maxHeight:8)
         HStack {
           Spacer()
-          Button("Privacy Policy", action: {}).padding(.trailing)
-          Button("Terms of Use", action: {}).padding(.trailing)
+          Button("Privacy Policy", action: {
+            _model.openPrivacyAndPolicy()
+          }).padding(.trailing)
+          Button("Terms of Use", action: {
+            _model.openTermsOfUse()
+          }).padding(.trailing)
           Button("Restore", action: {
-            self.model.restorePurchases()
+            _model.restorePurchases()
           })
           
           Spacer()

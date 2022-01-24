@@ -99,6 +99,14 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
+  func openPrivacyAndPolicy() {
+    
+  }
+  
+  func openTermsOfUse() {
+    
+  }
+  
   func formattedPlusPriceWithPeriod() -> String? {
     plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
   }
