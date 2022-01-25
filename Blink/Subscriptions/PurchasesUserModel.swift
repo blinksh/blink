@@ -43,6 +43,7 @@ class PurchasesUserModel: ObservableObject {
   @Published var zeroPriceUnlocked: Bool = false
   @Published var recieptVerificationFailed = false
   @Published var dataCopied: Bool = false
+  @Published var dataCopyFailed: Bool = false
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
   
@@ -136,6 +137,8 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func startMigration() {
+    startDataMigration()
+    return;
     migrationStatus = .validating
     let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
     UIApplication.shared.open(url, completionHandler: { success in
@@ -164,7 +167,7 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func startDataMigration() {
-    let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
+    let url = URL(string: "blinkv14://exportdata?password=\(Purchases.shared.appUserID)")!
     UIApplication.shared.open(url, completionHandler: { success in
       if success {
         self.alertErrorMessage = ""
@@ -190,8 +193,6 @@ class PurchasesUserModel: ObservableObject {
 
 
 extension SKProduct {
-//  static let productPlusId = "blink_shell_plus_1y_1999"
-//  static let productClassicId = "blink_shell_classic_unlimited_0"
   
   func formattedPriceWithPeriod(priceFormatter: NumberFormatter) -> String? {
     priceFormatter.locale = priceLocale

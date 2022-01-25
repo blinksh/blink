@@ -67,7 +67,11 @@ class ArchiveAlertUI {
     do {
       try archiveData.write(to: archiveURL)
       try Archive.recover(from: archiveURL, password: archivePassword)
+      PurchasesUserModel.shared.dataCopyFailed = false
+      PurchasesUserModel.shared.dataCopied = true
     } catch {
+      PurchasesUserModel.shared.dataCopyFailed = false
+      PurchasesUserModel.shared.dataCopied = false
       presentArchiveOperationFailed(on: ctrl, error: error)
     }
   }

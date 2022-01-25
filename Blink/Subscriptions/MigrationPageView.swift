@@ -122,7 +122,7 @@ struct MigrationPageView: Page {
       Spacer().frame(maxHeight: 10)
       CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: _model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: _model.dataCopied)
+      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: _model.dataCopied, failed: _model.dataCopyFailed)
     }
   }
 }

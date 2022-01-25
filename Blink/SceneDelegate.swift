@@ -461,10 +461,19 @@ extension SceneDelegate {
       else {
           return
       }
+      
+      guard
+        let win = self.paywallWindow ?? self.window,
+        let ctrl = win.rootViewController
+      else {
+        return
+      }
 
-      ArchiveAlertUI.performRecoveryWithFeedback(on: _spCtrl,
-                                                 archiveData: archiveData,
-                                                 archivePassword: "Purchases.shared.appUserID")//Purchases.shared.appUserID)
+      ArchiveAlertUI.performRecoveryWithFeedback(
+        on: ctrl.presentingViewController ?? ctrl,
+        archiveData: archiveData,
+        archivePassword: Purchases.shared.appUserID
+      )
     case "validatereceipt":
       guard
         let migrationTokenString = blinkUrl.getQueryStringParameter(param: "migrationToken"),
