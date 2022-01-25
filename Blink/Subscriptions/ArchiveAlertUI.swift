@@ -34,9 +34,11 @@ import Foundation
 
 class ArchiveAlertUI {
   static func presentImport(on ctrl: UIViewController, cb: URL, archivePassword: String) {
-    // TODO We could show bundleID
-    let alert = UIAlertController(title: "Export", message: "An application is requesting to export your data. Do you want to continue?",
-                                  preferredStyle: .alert)
+    let alert = UIAlertController(
+      title: "Data Export",
+      message: "An new Blink.app is requesting to export your data. Do you want to continue?",
+      preferredStyle: .alert
+    )
     alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: { _ in
       // Migration file to random location. Delete after read. Send to the callback.
       do {        
