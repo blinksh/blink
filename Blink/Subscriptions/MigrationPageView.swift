@@ -58,7 +58,7 @@ struct MigrationPageView: Page {
         Spacer()
         if _entitlements.unlimitedTimeAccess?.active == true {
           Button("Migrate Data") {
-            _model.purchaseClassic()
+            _model.startDataMigration()
           }
           .buttonStyle(.borderedProminent)
           .alert(errorMessage: $_model.alertErrorMessage)

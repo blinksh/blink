@@ -98,7 +98,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     }
     
     if oldValue == nil {
-      if self.unlimitedTimeAccess?.active == false {
+      if self.unlimitedTimeAccess == nil || self.unlimitedTimeAccess?.active == false {
         SubscriptionNag.shared.start()
       }
       

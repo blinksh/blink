@@ -47,8 +47,10 @@ class SubscriptionNag: NSObject {
 
   private override init() {}
 
-  @objc func start() {  
-    if EntitlementsManager.shared.unlimitedTimeAccess?.active == false {
+  @objc func start() {
+    let entitlements = EntitlementsManager.shared
+    guard entitlements.unlimitedTimeAccess == nil || entitlements.unlimitedTimeAccess?.active == false
+    else {
       return
     }
     

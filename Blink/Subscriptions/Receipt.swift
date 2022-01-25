@@ -345,6 +345,7 @@ enum SKStoreError: Error {
   private var _publisher: PassthroughSubject<URL, Error>? = nil
   
   func fetchReceiptURLPublisher() -> AnyPublisher<URL, Error> {
+    
     let pub = PassthroughSubject<URL, Error>()
     _publisher = pub
     return pub.buffer(size: 1, prefetch: .byRequest, whenFull: .dropNewest)

@@ -163,6 +163,17 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
+  func startDataMigration() {
+    let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
+    UIApplication.shared.open(url, completionHandler: { success in
+      if success {
+        self.alertErrorMessage = ""
+      } else {
+        self.alertErrorMessage = "Please install Blink 14 latest version first."
+      }
+    })
+  }
+  
 }
 
 @objc public class PurchasesUserModelObjc: NSObject {

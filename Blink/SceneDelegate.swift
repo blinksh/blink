@@ -129,6 +129,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     guard SubscriptionNag.shared.doShowPaywall() else {
       if let window = self.paywallWindow {
+        if window.rootViewController?.presentingViewController != nil {
+          // We are showing migration view. It will close itself
+          return
+        }
         UIView.animate(withDuration: 0.5) {
           window.layer.opacity = 0;
         } completion: { _ in
