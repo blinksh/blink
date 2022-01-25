@@ -47,24 +47,30 @@ struct MountEntry: Codable {
 }
 
 class TranslatorControl {
-  let translator: Translator
-  let connectionControl: SSHClientControl
+  var translator: Translator? = nil
+  var builder: AnyPublisher<Translator, Error>
+  var connectionControl: SSHClientControl? = nil
 
-  init(_ translator: Translator, connectionControl: SSHClientControl) {
-    self.translator = translator
-    self.connectionControl = connectionControl
+  var isConnected: Bool { translator?.isConnected ?? false  }
+
+  init(_ builder: AnyPublisher<Translator, Error>) {
+    self.builder = builder
   }
-  
+    //  init(_ translator: Translator, connectionControl: SSHClientControl) {
+//    self.translator = translator
+//    self.connectionControl = connectionControl
+//  }
+
   deinit {
-    self.connectionControl.cancel()
+    self.connectionControl?.cancel()
   }
 }
 
 public class CodeFileSystemService: CodeSocketDelegate {
-  
+
   let server: WebSocketServer
   let log: BlinkLogger
-  
+
   public let port: UInt16
   var tokens: [Int: MountEntry] = [:]
   var tokenIdx = 0;
@@ -73,11 +79,11 @@ public class CodeFileSystemService: CodeSocketDelegate {
 
   private let finishedCallback: ((Error?) -> ())
   func finished(_ error: Error?) { finishedCallback(error) }
-  
+
   public var state: NWListener.State {
     server.listener.state
   }
-  
+
   public func registerMount(name: String, root: String) -> Int {
     tokenIdx += 1
     tokens[tokenIdx] = MountEntry(name: name, root: root)
@@ -114,12 +120,12 @@ public class CodeFileSystemService: CodeSocketDelegate {
     self.port = port.rawValue
     self.server = try WebSocketServer(listenOn: port, tls: tls)
     self.finishedCallback = finished
-    
+
     self.log = CodeFileSystemLogger.log("FileSystem")
-    
+
     self.server.delegate = self
   }
-  
+
   func getRoot(token: Int, version: Int) -> WebSocketServer.ResponsePublisher {
     if let mount = self.tokens[token] {
       return .just((try! JSONEncoder().encode(mount), nil)).eraseToAnyPublisher()
@@ -174,29 +180,39 @@ public class CodeFileSystemService: CodeSocketDelegate {
     let rootPath = uri.rootPath
 
     if let host = rootPath.host,
-       let tRef = translators[host],
-       tRef.translator.isConnected {
-      return CodeFileSystem(.just(tRef.translator), uri: uri)
+       let tRef = translators[host] {
+      if tRef.translator != nil && tRef.isConnected {
+        return CodeFileSystem(tRef.builder, uri: uri)
+      } else if tRef.translator == nil {
+        return CodeFileSystem(tRef.builder, uri: uri)
+      }
     }
-    
+
+    // If we have a host, check the builders, otherwise it is local
+    // If there is a builder, check if there is a Translator it is connected
+
     switch(rootPath.protocolIdentifier) {
     case "blinksftp":
       guard let hostAlias = rootPath.host else {
         throw WebSocketError(message: "Missing host on rootpath")
       }
-
       let translator = AnyPublisher(SSHClient
         .dial(hostAlias, withConfigProvider: SSHClientFileProviderConfig.config)
         .flatMap { connControl in
           Just(connControl.connection)
             .flatMap { $0.requestSFTP() }
             .tryMap  { try SFTPTranslator(on: $0) }
+            .receive(on: self.server.queue)
             .map     { t -> Translator in
-              self.translators[hostAlias]  = TranslatorControl(t, connectionControl: connControl)
+              self.translators[hostAlias]?.translator = t
+              self.translators[hostAlias]?.connectionControl = connControl
               return t
             }
-        })
-      
+        }
+        .shareReplay(maxValues: 1)
+      )
+
+      translators[hostAlias] = TranslatorControl(translator)
       return CodeFileSystem(translator, uri: uri)
 
     case "blinkfs":
@@ -204,22 +220,22 @@ public class CodeFileSystemService: CodeSocketDelegate {
       return CodeFileSystem(.just(BlinkFiles.Local()), uri: uri)
     default:
       throw WebSocketError(message: "Unknown protocol - \(rootPath.protocolIdentifier)")
-    }        
-  }  
+    }
+  }
 }
 
 public struct RootPath {
   let url: URL // should be private
-  
+
   //var fullPath: String { url.absoluteString }
   var protocolIdentifier: String { url.scheme! }
   var host: String? { url.host }
   var filesAtPath: String { url.path }
-  
+
   init(_ rootPath: String) {
     self.url = URL(string: rootPath)!
   }
-  
+
   init(_ url: URL) {
     self.url = url
   }
@@ -241,13 +257,13 @@ class SSHClientFileProviderConfig {
 
     let host = try bkConfig.bkSSHHost(title)
     let hostName = host.hostName
-    
+
     if let signers = bkConfig.signer(forHost: host) {
       signers.forEach { (signer, name) in
         _ = agent.loadKey(signer, aka: name, constraints: consts)
       }
     }
-    
+
     for (signer, name) in bkConfig.defaultSigners() {
       _ = agent.loadKey(signer, aka: name, constraints: consts)
     }
@@ -281,7 +297,7 @@ struct CodeFileSystemLogger {
           .sinkToOutput()
         }
       )
-      
+
       let dateFormatter = DateFormatter()
       dateFormatter.dateFormat = "MMM dd YYYY, HH:mm:ss"
       if let file = try? FileLogging(to: BlinkPaths.blinkCodeErrorLogURL()) {
