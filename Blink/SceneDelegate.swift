@@ -507,7 +507,12 @@ extension SceneDelegate {
       else {
         return
       }
-      ArchiveAlertUI.presentImport(on: _spCtrl, cb: callbackURL, archivePassword: "Purchases.shared.appUserID")
+      _spCtrl.presentingViewController?.dismiss(animated: false, completion: nil)
+      ArchiveAlertUI.presentImport(
+        on: _spCtrl,
+        cb: callbackURL,
+        archivePassword: password
+      )
     case "validatereceipt":
       guard let originalUserId = blinkUrl .getQueryStringParameter(param: "originalUserId")
       else {
