@@ -167,6 +167,47 @@ public class SSHClient {
        ssh_options_parse_config(session, sshConfigPath) != SSH_OK {
       throw SSHError(title: "Could not parse config file at \(self.options.sshClientConfigPath ?? "<nil>") for session")
     }
+
+    if let ciphers = options.ciphers {
+      try _setSessionOption(SSH_OPTIONS_CIPHERS_C_S, options.ciphers)
+      try _setSessionOption(SSH_OPTIONS_CIPHERS_S_C, options.ciphers)
+    }
+
+    if let macs = options.macs {
+      try _setSessionOption(SSH_OPTIONS_HMAC_C_S, options.macs)
+      try _setSessionOption(SSH_OPTIONS_HMAC_S_C, options.macs)
+    }
+
+    if let bindAddress = options.bindAddress {
+      try _setSessionOption(SSH_OPTIONS_BINDADDR, options.bindAddress)
+    }
+
+    if let hostKeyAlgorithms = options.hostKeyAlgorithms {
+      try _setSessionOption(SSH_OPTIONS_HOSTKEYS, options.hostKeyAlgorithms)
+    }
+
+    if let kexAlgorithms = options.kexAlgorithms {
+      try _setSessionOption(SSH_OPTIONS_KEY_EXCHANGE, options.kexAlgorithms)
+    }
+
+    if var rekeyDataLimit = options.rekeyDataLimit {
+      // Note, there may also be a time limit, but the documented is the data.
+      try _setSessionOption(SSH_OPTIONS_REKEY_DATA, &rekeyDataLimit)
+    }
+
+    // These flags don't have any effect, and we complement them in our auth function.
+    // Keep them here for accuracy.    
+    if var kbdInteractiveAuthentication = options.kbdInteractiveAuthentication {
+      try _setSessionOption(SSH_OPTIONS_KBDINT_AUTH, &kbdInteractiveAuthentication)
+    }
+
+    if var passwordAuthentication = options.passwordAuthentication {
+      try _setSessionOption(SSH_OPTIONS_PASSWORD_AUTH, &passwordAuthentication)
+    }
+    
+    if var pubKeyAuthentication = options.pubKeyAuthentication {
+      try _setSessionOption(SSH_OPTIONS_PUBKEY_AUTH, &pubKeyAuthentication)
+    }
   }
   
   private func _setSessionOption(_ option: ssh_options_e, _ value: UnsafeRawPointer!) throws {
@@ -284,7 +325,6 @@ public class SSHClient {
       // If cancelled, the connection will be closed without being passed to the user or
       // once the command is dumped.
       .eraseToAnyPublisher()
-    
   }
   
   /**
@@ -300,7 +340,7 @@ public class SSHClient {
     var addr: sockaddr_storage = sockaddr_storage()
     var addr_len: socklen_t = socklen_t(MemoryLayout.size(ofValue: addr))
     
-    var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
+     var hostBuffer = [CChar](repeating: 0, count: Int(NI_MAXHOST))
     
     
     // Make local copy to avoid: "Overlapping accesses to 'addr', but modification requires exclusive access; consider copying to a local variable"
@@ -449,23 +489,27 @@ public class SSHClient {
     
     let methods = ssh_userauth_list(session, nil)
     
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PUBLICKEY)) != 0) {
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PUBLICKEY)) != 0
+          && self.options.pubKeyAuthentication != false) {
       appendMethod("publickey")
     }
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0) {
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0
+          && self.options.passwordAuthentication != false) {
       appendMethod("password")
     }
     // NOTE: For 2FA to work properly we should try keyboard-interactive before password.
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_INTERACTIVE)) != 0) {
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_INTERACTIVE)) != 0
+          && self.options.kbdInteractiveAuthentication != false) {
       appendMethod("keyboard-interactive")
     }
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0) {
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_PASSWORD)) != 0
+          && self.options.passwordAuthentication != false) {
       appendMethod("password-interactive")
     }
-    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_HOSTBASED)) != 0) {
+    if ((methods & Int32(bitPattern: SSH_AUTH_METHOD_HOSTBASED)) != 0
+          && self.options.hostbasedAuthentication != false) {
       appendMethod("hostbased")
-    }
-    
+    }    
     
     return authMethods
   }

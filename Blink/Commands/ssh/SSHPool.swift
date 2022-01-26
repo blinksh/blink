@@ -138,6 +138,8 @@ extension SSHPool {
 
     c.localTunnels.forEach  { (k, _) in deregister(localForward: k, on: connection) }
     c.remoteTunnels.forEach { (k, _) in deregister(remoteForward: k, on: connection) }
+    c.socks.forEach { (k, _) in deregister(socksBindAddress: k, on: connection) }
+
     // NOTE This is a workaround
     c.streams.forEach { (_, s) in s.cancel() }
     c.streams = []
@@ -219,6 +221,34 @@ extension SSHPool {
   }
 }
 
+// Dynamic Forward
+extension SSHPool {
+  static func register(_ server: SOCKSServer,
+                       bindAddressInfo: OptionalBindAddressInfo,
+                       on connection: SSH.SSHClient) {
+    let c = control(on: connection)
+    c?.socks[bindAddressInfo] = server
+  }
+
+  static func deregister(socksBindAddress: OptionalBindAddressInfo, on connection: SSH.SSHClient) {
+    guard let c = control(on: connection) else {
+      return
+    }
+    if let server = c.socks.removeValue(forKey: socksBindAddress) {
+      server.close()
+    }
+    shared.enforcePersistance(c)
+  }
+
+  static func contains(socksBindAddress: OptionalBindAddressInfo, on connection: SSH.SSHClient) -> Bool {
+    guard let c = control(on: connection) else {
+      return false
+    }
+    
+    return c.socks[socksBindAddress] != nil
+  }
+}
+
 extension SSHPool {
   static func register(stdioStream stream: SSH.Stream, runningCommand command: SSHCommand, on connection: SSH.SSHClient) {
     let c = control(on: connection)
@@ -246,14 +276,15 @@ fileprivate class SSHClientControl {
   var numShells: Int = 0
   //var shells: [(SSHCommand, SSH.Stream)] = []
 
-  var localTunnels:  [PortForwardInfo:TunnelControl] = [:]
-  var remoteTunnels: [PortForwardInfo:TunnelControl] = [:]
+  var localTunnels:  [PortForwardInfo:SSHPortForwardListener] = [:]
+  var remoteTunnels: [PortForwardInfo:SSHPortForwardClient] = [:]
+  var socks: [OptionalBindAddressInfo:SOCKSServer] = [:]
 
   var streams: [(SSHCommand, SSH.Stream)] = []
 
   var numChannels: Int {
     get {
-      return numShells + streams.count + localTunnels.count + remoteTunnels.count
+      return numShells + streams.count + localTunnels.count + remoteTunnels.count + socks.count
     }
   }
   
@@ -276,7 +307,7 @@ fileprivate class SSHClientControl {
     return self.host == host && config == self.config ? true : false
   }
 }
-
+/* 
 fileprivate protocol TunnelControl {
   func close()
 }
@@ -284,12 +315,19 @@ fileprivate protocol TunnelControl {
 extension SSHPortForwardListener: TunnelControl {}
 
 extension SSHPortForwardClient: TunnelControl {}
-
+ */
 extension PortForwardInfo: Hashable {
   public func hash(into hasher: inout Hasher) {
     hasher.combine(self.localPort)
     hasher.combine(self.bindAddress)
     hasher.combine(self.remotePort)
+  }
+}
+
+extension OptionalBindAddressInfo: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(self.bindAddress)
+    hasher.combine(self.port)
   }
 }
 

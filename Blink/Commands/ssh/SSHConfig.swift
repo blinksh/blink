@@ -136,8 +136,8 @@ struct SSHCommand: ParsableCommand {
             "Forward stdio to the specified destination",
             valueName: "host:port"
           ),
-          transform: { try StdioForwardInfo($0) })
-  var stdioHostAndPort: StdioForwardInfo?
+          transform: { try BindAddressInfo($0) })
+  var stdioHostAndPort: BindAddressInfo?
 
   @Option(
     name: [.customShort("o", allowingJoined: true)],
@@ -184,7 +184,7 @@ struct SSHCommand: ParsableCommand {
       valueName: "port"
     )
   )
-  var dynamicForwardingPort: UInt16?
+  var dynamicForward: [String] = []
   
   // Identity
   @Option(
@@ -299,9 +299,23 @@ extension SSHCommand {
       params["remoteforward"] = self.remoteForward
     }
 
+    if !self.dynamicForward.isEmpty {
+      params["dynamicforward"] = dynamicForward
+    }
+
     if agentForward {
       params["forwardagent"] = "yes"
     } 
+
+    if !command.isEmpty {
+      params["remotecommand"] = command.joined(separator: " ")
+    }
+
+    if disableTTY {
+      params["requesttty"] = "no"
+    } else if forceTTY {
+      params["requesttty"] = "force"
+    }
     
     return try BKSSHHost(content: params)
   }
@@ -323,38 +337,6 @@ extension SSHCommand {
     }
 
     return params
-  }
-}
-
-struct StdioForwardInfo: Equatable {
-  let remotePort: UInt16
-  let bindAddress: String
-
-  private let pattern = #"^(?<bindAddress>\[([\w:.]+)\]|([\w.]+)):(?<remotePort>\d+)$"#
-
-  init(_ info: String) throws {
-    let regex = try! NSRegularExpression(pattern: pattern)
-    
-    guard let match = regex.firstMatch(in: info,
-                                       range: NSRange(location: 0, length: info.count))
-    else {
-      throw ValidationError("Missing <bind_address>:<remoteport> for stdio forwarding.")
-    }
-    
-    guard let r = Range(match.range(withName: "remotePort"), in: info),
-          let remotePort = UInt16(info[r])
-    else {
-      throw ValidationError("Invalid remote port.")
-    }
-    self.remotePort = remotePort
-    
-    guard let r = Range(match.range(withName: "bindAddress"), in: info)
-    else {
-      throw ValidationError("Invalid bind address.")
-    }
-    var bindAddress = String(info[r])
-    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
-    self.bindAddress = bindAddress
   }
 }
 

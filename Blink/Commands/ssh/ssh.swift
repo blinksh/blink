@@ -68,7 +68,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   var forwardTunnels: [PortForwardInfo] = []
   var remoteTunnels: [PortForwardInfo] = []
   var proxyThread: Thread?
-  var socks: SOCKSServer? = nil
+  var socks: [OptionalBindAddressInfo] = []
 
   var outStream: DispatchOutputStream?
   var inStream: DispatchInputStream?
@@ -174,7 +174,8 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         }
 
         return self.startInteractiveSessions(conn,
-                                             command: cmd,
+                                             command: host.remoteCommand,
+                                             requestTTY: host.requestTty ?? .auto,
                                              withEnvVars: environment,
                                              sendAgent: host.forwardAgent ?? false)
       }
@@ -186,7 +187,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     // TODO Note, we are not merging localForward on host and cmd yet. There can also be -o.
     .flatMap { self.startForwardTunnels( (host.localForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
     .flatMap { self.startRemoteTunnels( (host.remoteForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
-    .flatMap { self.startDynamicForwarding($0, command: cmd) }
+    .flatMap { self.startDynamicForwarding( (host.dynamicForward ?? []), on: $0, exitOnFailure: host.exitOnForwardFailure ?? false) }
     .sink(receiveCompletion: { completion in
       switch completion {
       case .failure(let error):
@@ -219,10 +220,9 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       if cmd.startsSession { SSHPool.deregister(shellOn: conn) }
       forwardTunnels.forEach { SSHPool.deregister(localForward:  $0, on: conn) }
       remoteTunnels.forEach  { SSHPool.deregister(remoteForward: $0, on: conn) }
+      socks.forEach { SSHPool.deregister(socksBindAddress: $0, on: conn) }
     }
     
-    self.socks?.close()
-
     return exitCode
   }
 
@@ -242,31 +242,38 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
   }
 
   private func startInteractiveSessions(_ conn: SSH.SSHClient,
-                                        command: SSHCommand,
+                                        command: String?,
+                                        requestTTY: TTYBool,
                                         withEnvVars envVars: [String:String],
                                         sendAgent: Bool) -> SSHConnection {
     let rows = Int32(self.device.rows)
     let cols = Int32(self.device.cols)
     var pty: SSH.SSHClient.PTY? = nil
-    if command.forceTTY || (self.isTTY && !command.disableTTY && command.command.isEmpty) {
+    if (requestTTY != .no) && 
+       ( 
+         (requestTTY == .force) ||
+         // always request a TTY when standard input is a TTY
+         ((requestTTY == .yes) && self.isTTY) ||
+         // request a TTY when opening a login session
+         ((requestTTY == .auto) && command == nil)
+       ) {       
       pty = SSH.SSHClient.PTY(rows: rows, columns: cols)
       self.device.rawMode = true
     }
 
-    let session: AnyPublisher<SSH.Stream, Error>
-
+    // TERM is explicitely added
     var envVars = envVars
     envVars["TERM"] = String(cString: getenv("TERM"))
 
-    if command.command.isEmpty {
+    let session: AnyPublisher<SSH.Stream, Error>
+    if let command = command {
+      session = conn.requestExec(command: command, withPTY: pty,
+                                 withEnvVars: envVars,
+                                 withAgentForwarding: sendAgent)      
+    } else {      
       session = conn.requestInteractiveShell(withPTY: pty,
                                              withEnvVars: envVars,
                                              withAgentForwarding: sendAgent)
-    } else {
-      let exec = command.command.joined(separator: " ")
-      session = conn.requestExec(command: exec, withPTY: pty,
-                                 withEnvVars: envVars,
-                                 withAgentForwarding: sendAgent)
     }
 
     return session.tryMap { s in
@@ -299,7 +306,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       return .just(conn)
     }
     
-    return conn.requestForward(to: tunnel.bindAddress, port: Int32(tunnel.remotePort),
+    return conn.requestForward(to: tunnel.bindAddress, port: Int32(tunnel.port),
                           // Just informative.
                           from: "stdio", localPort: 22)
       .tryMap { s in
@@ -395,18 +402,26 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       .eraseToAnyPublisher()
   }
 
-  private func startDynamicForwarding(_ conn: SSH.SSHClient, command: SSHCommand) -> SSHConnection {
-    guard let port = command.dynamicForwardingPort else {
+  private func startDynamicForwarding(_ bindAddresses: [OptionalBindAddressInfo], on conn: SSH.SSHClient, exitOnFailure: Bool) -> SSHConnection {
+    let bindAddresses = bindAddresses.filter { !SSHPool.contains(socksBindAddress: $0, on: conn) }
+    if bindAddresses.isEmpty {
       return .just(conn)
     }
-    
-    do {
-      self.socks = try SOCKSServer(port, proxy: conn)
-    } catch {
-      return .fail(error: error)
-    }
-    
-    return .just(conn)
+
+    return bindAddresses.publisher
+      .flatMap(maxPublishers: .max(1)) { bindAddress -> AnyPublisher<Void, Error> in
+        do {
+          let server = try SOCKSServer(bindAddress.port, proxy: conn)
+          SSHPool.register(server, bindAddressInfo: bindAddress, on: conn)
+          self.socks.append(bindAddress)
+        } catch {
+          return .fail(error: error)
+        }
+        return .just(Void())
+      }
+      .last()
+      .map { conn }
+      .eraseToAnyPublisher()    
   }
   
   @objc public func sigwinch() {
