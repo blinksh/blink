@@ -139,8 +139,6 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func startMigration() {
-    startDataMigration()
-    return;
     migrationStatus = .validating
     let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
     UIApplication.shared.open(url, completionHandler: { success in

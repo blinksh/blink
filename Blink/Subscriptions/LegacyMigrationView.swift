@@ -83,7 +83,9 @@ struct LegacyMigrationView: View {
       Spacer()
       HStack {
         Spacer()
-        Button("Privacy Policy", action: {}).padding(.trailing)
+        Button("Privacy Policy", action: {
+          blink_openurl(URL(string: "https://blink.sh/pp")!)
+        }).padding(.trailing)
         Button("Terms of Use", action: {}).padding(.trailing)
         Button("Help", action: { })
         Spacer()
