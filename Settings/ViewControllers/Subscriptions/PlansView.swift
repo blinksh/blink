@@ -46,7 +46,7 @@ struct PlansView: View {
           HStack {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
-            Text("Access to all blink features")
+            Text("Access to all Blink features")
           }
           HStack {
             Image(systemName: "timer")
@@ -65,7 +65,7 @@ struct PlansView: View {
             HStack {
               Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
-              Text("Access to all blink features and services")
+              Text("Access to all Blink features and services")
             }
             HStack {
               Image(systemName: "suit.heart.fill")
@@ -95,12 +95,12 @@ struct PlansView: View {
       
       Section(
         header: Text("Blink Classic PLAN"),
-        footer: Text("After receipt verification with legacy `Blink.app` you will be able to access `basic plan` for zero cost purchase."),
+        footer: Text("After receipt verification with legacy `Blink.app` you will be able to access `classic plan` for zero cost purchase."),
         content: {
           HStack {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
-            Text("Access to all blink features you had in Blink Classic App")
+            Text("Access to all Blink features you had in Blink Shell 14 App")
           }
           HStack {
             Image(systemName: "infinity")
@@ -111,7 +111,7 @@ struct PlansView: View {
             if _entitlements.nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
               Text("Blink Classic Unlocked").foregroundColor(.green)
             } else {
-              Button("Migrate from Blink Classic App", action: {
+              Button("Migrate from Blink Shell 14 App", action: {
                 NotificationCenter.default.post(name: .openMigration, object: nil)
               })
             }
