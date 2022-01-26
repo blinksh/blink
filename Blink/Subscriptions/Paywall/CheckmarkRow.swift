@@ -47,7 +47,7 @@ struct CheckmarkRow: View {
     HStack(alignment: .firstTextBaseline) {
       Image(systemName: failed ? "exclamationmark.circle" : checked ? "checkmark.circle.fill" : "circle")
         .foregroundColor(failed ? .orange : .green)
-      Text(text).allowsTightening(true)
+      Text(text).fixedSize(horizontal: false, vertical: true)
       Spacer()
     }
   }
