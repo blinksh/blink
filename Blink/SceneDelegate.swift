@@ -131,7 +131,6 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
    
-    PurchasesUserModel.shared.paywallPageIndex = 2
     ctrl.presentedViewController?.dismiss(animated: true, completion: nil)
 
     if !SubscriptionNag.shared.doShowPaywall() {
