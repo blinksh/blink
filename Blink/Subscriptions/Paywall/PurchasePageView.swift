@@ -102,7 +102,6 @@ struct PurchasePageView: Page {
           Button("Restore", action: {
             _model.restorePurchases()
           })
-          
           Spacer()
         }
         .font(.footnote)
