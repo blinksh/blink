@@ -103,7 +103,7 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func openPrivacyAndPolicy() {
-    
+    blink_openurl(URL(string: "https://blink.sh/pp")!)
   }
   
   func openTermsOfUse() {
