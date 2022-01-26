@@ -68,7 +68,7 @@ struct MigratePageView: Page {
       } else {
         HStack {
           Spacer()
-          Text("$0 price for old blink users.")
+          Text("Zero cost for Blink Shell 14 users.")
             .font(.footnote)
           Spacer()
         }
@@ -96,22 +96,22 @@ struct MigratePageView: Page {
   func header() -> some View {
     Group {
       Spacer()
-      Text(self.horizontal ? "Migrate from old Blink.app" : "Migrate from\nold Blink.app")
+      Text(self.horizontal ? "Migrate from Blink Shell 14" : "Migrate from\nBlink Shell 14 app")
         .fontWeight(.bold)
         .font(.largeTitle)
       
       Spacer().frame(maxHeight: horizontal ? 24 : 30)
       
-      Text("Zero cost migration from old Blink.app. Unlock terminal features.")
+      Text("Get grandfathered in the future of Blink. Unlock terminal features.")
         .font(.title2)
     }
   }
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Access to all features you had on Blink Shell 14 and future updates.")
+      CheckmarkRow(text: "All features from Blink Shell 14 app.")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Code command support.")
+      CheckmarkRow(text: "Recieve updates and new features.")
       Spacer().frame(maxHeight: 10)
       CheckmarkRow(text: "Seamless usage. No interruptions.")
     }
