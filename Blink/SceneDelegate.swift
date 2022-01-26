@@ -100,6 +100,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let nc = NotificationCenter.default
     nc.addObserver(self, selector: #selector(_showPaywallIfNeeded), name: .subscriptionNag, object: nil)
     nc.addObserver(self, selector: #selector(_openMigration), name: .openMigration, object: nil)
+    nc.addObserver(self, selector: #selector(_closeMigration), name: .closeMigration, object: nil)
   }
   
   deinit {
@@ -120,6 +121,24 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     let c = StatusBarLessViewController(rootView: view)
     c.modalPresentationStyle = .overFullScreen
     ctrl.present(c, animated: true)
+  }
+  
+  @objc private func _closeMigration() {
+    guard
+      let win = self.paywallWindow ?? self.window,
+      let ctrl = win.rootViewController
+    else {
+      return
+    }
+   
+    PurchasesUserModel.shared.paywallPageIndex = 2
+    ctrl.presentedViewController?.dismiss(animated: true, completion: nil)
+
+    if !SubscriptionNag.shared.doShowPaywall() {
+      if let _ = paywallWindow {
+          self.paywallWindow = nil
+      }
+    }
   }
   
   @objc private func _showPaywallIfNeeded() {

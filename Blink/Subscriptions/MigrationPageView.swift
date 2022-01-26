@@ -56,7 +56,12 @@ struct MigrationPageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        if _entitlements.unlimitedTimeAccess?.active == true {
+        if _model.dataCopied {
+          Button("Close") {
+            _model.closeMigration()
+          }
+          .buttonStyle(.borderedProminent)
+        } else if _entitlements.unlimitedTimeAccess?.active == true {
           Button("Migrate Data") {
             _model.startDataMigration()
           }

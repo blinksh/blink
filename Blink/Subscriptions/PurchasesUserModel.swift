@@ -47,6 +47,8 @@ class PurchasesUserModel: ObservableObject {
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
   
+  @Published var paywallPageIndex: Int = 0
+  
   private let _priceFormatter = NumberFormatter()
   
   private init() {
@@ -175,6 +177,10 @@ class PurchasesUserModel: ObservableObject {
         self.alertErrorMessage = "Please install Blink 14 latest version first."
       }
     })
+  }
+  
+  func closeMigration() {
+    NotificationCenter.default.post(name: .closeMigration, object: nil)
   }
   
 }

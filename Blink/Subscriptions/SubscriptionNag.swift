@@ -39,6 +39,7 @@ private let NagInterval: TimeInterval = 10
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
   public static let openMigration = Notification.Name("openMigration")
+  public static let closeMigration = Notification.Name("closeMigration")
 }
 
 class SubscriptionNag: NSObject {

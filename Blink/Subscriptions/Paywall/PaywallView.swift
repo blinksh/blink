@@ -116,7 +116,6 @@ struct PageContainer<T: Page>: View {
 }
 
 struct SinglePageContainer<T: Page>: View {
-  @Environment(\.presentationMode) var presentationMode
   @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
   
   var body: some View {
@@ -139,7 +138,7 @@ struct SinglePageContainer<T: Page>: View {
           HStack {
             Spacer()
             Button {
-              presentationMode.wrappedValue.dismiss()
+              NotificationCenter.default.post(name: .closeMigration, object: nil)
             } label: {
               Image(systemName: "xmark.circle.fill")
                 .resizable()
@@ -168,22 +167,21 @@ struct SinglePageContainer<T: Page>: View {
 
 
 struct PaywallView: View {
-  @State private var tabIndex = 0
-  @ObservedObject private var model: PurchasesUserModel = .shared
+  @ObservedObject private var _model: PurchasesUserModel = .shared
   
   var body: some View {
-    TabView(selection: $tabIndex) {
+    TabView(selection: $_model.paywallPageIndex) {
       PageContainer<PurchasePageView>(onSwitchTabHandler: _onSwitchTab).tag(0)
       PageContainer<TopupPageView>(onSwitchTabHandler: _onSwitchTab).tag(1)
       PageContainer<MigratePageView>(onSwitchTabHandler: _onSwitchTab).tag(2)
     }
     .tabViewStyle(.page)
     .indexViewStyle(.page(backgroundDisplayMode: .always))
-    .disabled(model.purchaseInProgress || model.restoreInProgress)
+    .disabled(_model.purchaseInProgress || _model.restoreInProgress)
   }
   
   private func _onSwitchTab(_ idx: Int) {
-    self.tabIndex = idx
+    _model.paywallPageIndex = idx
   }
 }
 
