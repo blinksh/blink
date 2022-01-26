@@ -86,7 +86,7 @@ struct ReceiptMigrationView: View {
         Spacer()
         HStack {
           Spacer().frame(maxWidth: 20)
-          Text(" Blink Classic \(_blinkVersion) ")
+          Text(" Blink Shell \(_blinkVersion) ")
             .bold()
             .font(.footnote)
             .foregroundColor(.white)

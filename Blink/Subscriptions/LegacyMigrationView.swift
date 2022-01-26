@@ -53,7 +53,7 @@ struct LegacyMigrationView: View {
         case .initial:
           EmptyView()
         case .done:
-          Button("Transfer receipt") { model.openMigrationTokenUrl() }
+          Button("Continue") { model.openMigrationTokenUrl() }
           .buttonStyle(.borderedProminent)
         case .locatingReceipt, .validatingReceipt, .generatingMigrationToken:
           ProgressView()
@@ -99,13 +99,13 @@ struct LegacyMigrationView: View {
   func header() -> some View {
     Group {
       Spacer()
-      Text("Migration Process")
+      Text("Purchase validation")
         .fontWeight(.bold)
         .font(.largeTitle)
       
       Spacer().frame(maxHeight: horizontal ? 24 : 30)
       
-      Text(self.status())
+      Text("Checking your app receipt with the AppStore")
         .font(.title2)
     }
   }
@@ -122,11 +122,11 @@ struct LegacyMigrationView: View {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Locate receipt within Blink 14 app.", checked: model.receiptLocated, failed: model.state.receiptLocateFailed)
+      CheckmarkRow(text: "Locating receipt within Blink Shell 14 app.", checked: model.receiptLocated, failed: model.state.receiptLocateFailed)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Validate receipt.", checked: model.receiptValidated, failed: model.state.receiptValidationFailed)
+      CheckmarkRow(text: "Validating receipt.", checked: model.receiptValidated, failed: model.state.receiptValidationFailed)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Generate migration token.", checked: model.migrationTokenGenerated)
+      CheckmarkRow(text: "Generating migration token.", checked: model.migrationTokenGenerated)
     }
   }
 }
