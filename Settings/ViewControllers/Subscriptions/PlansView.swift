@@ -95,7 +95,7 @@ struct PlansView: View {
       
       Section(
         header: Text("Blink Classic PLAN"),
-        footer: Text("After reciept verification with legacy `Blink.app` you will be able to access `basic plan` for zero cost purchase."),
+        footer: Text("After receipt verification with legacy `Blink.app` you will be able to access `basic plan` for zero cost purchase."),
         content: {
           HStack {
             Image(systemName: "checkmark.circle.fill")

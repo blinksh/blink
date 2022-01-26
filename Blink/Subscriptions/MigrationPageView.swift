@@ -123,7 +123,7 @@ struct MigrationPageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Verify reciept within Blink 14 app.", checked: _model.recieptIsVerified, failed: _model.recieptVerificationFailed)
+      CheckmarkRow(text: "Verify receipt within Blink 14 app.", checked: _model.receiptIsVerified, failed: _model.receiptVerificationFailed)
       Spacer().frame(maxHeight: 10)
       CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: _model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)

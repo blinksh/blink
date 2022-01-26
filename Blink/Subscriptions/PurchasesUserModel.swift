@@ -39,9 +39,9 @@ class PurchasesUserModel: ObservableObject {
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
-  @Published var recieptIsVerified: Bool = false
+  @Published var receiptIsVerified: Bool = false
   @Published var zeroPriceUnlocked: Bool = false
-  @Published var recieptVerificationFailed = false
+  @Published var receiptVerificationFailed = false
   @Published var dataCopied: Bool = false
   @Published var dataCopyFailed: Bool = false
   @Published var alertErrorMessage: String = ""
@@ -158,7 +158,7 @@ class PurchasesUserModel: ObservableObject {
         .decode(MigrationToken.self, from: migrationToken)
       try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
       migrationStatus = .accepted
-      recieptIsVerified = true
+      receiptIsVerified = true
       zeroPriceUnlocked = true
       purchaseClassic()
     } catch {

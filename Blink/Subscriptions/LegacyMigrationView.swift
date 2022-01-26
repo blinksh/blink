@@ -53,9 +53,9 @@ struct LegacyMigrationView: View {
         case .initial:
           EmptyView()
         case .done:
-          Button("Transfer reciept") { model.openMigrationTokenUrl() }
+          Button("Transfer receipt") { model.openMigrationTokenUrl() }
           .buttonStyle(.borderedProminent)
-        case .locatingReciept, .validatingReciept, .generatingMigrationToken:
+        case .locatingReceipt, .validatingReceipt, .generatingMigrationToken:
           ProgressView()
         case .receiptFetchFailure:
           VStack {
@@ -112,8 +112,8 @@ struct LegacyMigrationView: View {
   
   func status() -> String {
     switch self.model.state {
-    case .locatingReciept: return "Locating reciept"
-    case .validatingReciept: return "Validating reciept"
+    case .locatingReceipt: return "Locating receipt"
+    case .validatingReceipt: return "Validating receipt"
     case .generatingMigrationToken: return "Generating migration token"
     case .done: return "All done"
     default: return ""
@@ -122,9 +122,9 @@ struct LegacyMigrationView: View {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Locate reciept within Blink 14 app.", checked: model.recieptLocated, failed: model.state.recieptLocateFailed)
+      CheckmarkRow(text: "Locate receipt within Blink 14 app.", checked: model.receiptLocated, failed: model.state.receiptLocateFailed)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Validate reciept.", checked: model.recieptValidated, failed: model.state.recieptValidationFailed)
+      CheckmarkRow(text: "Validate receipt.", checked: model.receiptValidated, failed: model.state.receiptValidationFailed)
       Spacer().frame(maxHeight: 10)
       CheckmarkRow(text: "Generate migration token.", checked: model.migrationTokenGenerated)
     }
