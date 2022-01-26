@@ -61,7 +61,7 @@ struct MigrationPageView: Page {
             _model.closeMigration()
           }
           .buttonStyle(.borderedProminent)
-        } else if _entitlements.unlimitedTimeAccess?.active == true {
+        } else if _entitlements.unlimitedTimeAccess.active == true {
           Button("Migrate Data") {
             _model.startDataMigration()
           }

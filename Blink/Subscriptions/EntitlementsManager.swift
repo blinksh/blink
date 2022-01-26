@@ -33,11 +33,18 @@ import Combine
 import Foundation
 import UIKit
 
+let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
+let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
+let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
+
+
 // Decoupled from RevCat Entitlement
 public struct Entitlement: Identifiable, Equatable, Hashable {
   public let id: String
   public var active: Bool
   public var unlockProductID: String?
+  
+  public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil)
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
@@ -54,17 +61,15 @@ public protocol EntitlementsSource: AnyObject {
   func startUpdates()
 }
 
-let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
-let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
-let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 
 public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
   
-  @Published var unlimitedTimeAccess: Entitlement? = nil
+  @Published var unlimitedTimeAccess: Entitlement = .inactiveUnlimitedScreenTime
   @Published var activeSubscriptions: Set<String> = .init()
   @Published var nonSubscriptionTransactions: Set<String> = .init()
+  @Published var isUnknownState: Bool = true
 
   private let _sources: [EntitlementsSource]
   
@@ -87,6 +92,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     activeSubscriptions: Set<String>,
     nonSubscriptionTransactions: Set<String>
   ) {
+    
+    defer {
+      self.isUnknownState = false
+    }
 
     // TODO: merge stategy from multiple sources
     self.activeSubscriptions = activeSubscriptions
@@ -97,14 +106,21 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
       self.unlimitedTimeAccess = newValue
     }
     
-    if oldValue == nil {
-      if self.unlimitedTimeAccess == nil || self.unlimitedTimeAccess?.active == false {
-        SubscriptionNag.shared.start()
+    if isUnknownState {
+      _updateSubscriptionNag()
+    } else {
+      if oldValue.active != self.unlimitedTimeAccess.active {
+        _updateSubscriptionNag()
       }
-      
-      if self.unlimitedTimeAccess?.active == true {
-        SubscriptionNag.shared.terminate()
-      }
+    }
+
+  }
+  
+  private func _updateSubscriptionNag() {
+    if self.unlimitedTimeAccess.active {
+      SubscriptionNag.shared.terminate()
+    } else {
+      SubscriptionNag.shared.start()
     }
   }
   

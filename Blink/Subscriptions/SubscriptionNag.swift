@@ -34,7 +34,7 @@ import Foundation
 
 private let NagTimer = "NagTimer"
 private let NagTimerMax = 3 * 60
-private let NagInterval: TimeInterval = 10
+private let NagInterval: TimeInterval = 1 // 10
 
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
@@ -50,7 +50,7 @@ class SubscriptionNag: NSObject {
 
   @objc func start() {
     let entitlements = EntitlementsManager.shared
-    guard entitlements.unlimitedTimeAccess == nil || entitlements.unlimitedTimeAccess?.active == false
+    guard entitlements.unlimitedTimeAccess.active == false
     else {
       return
     }

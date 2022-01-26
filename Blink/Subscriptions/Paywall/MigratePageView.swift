@@ -109,9 +109,11 @@ struct MigratePageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "All features of blink 14 without time limits.")
+      CheckmarkRow(text: "Access to all features you had on Blink Shell 14 and future updates.")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Code command support without time limits.")
+      CheckmarkRow(text: "Code command support.")
+      Spacer().frame(maxHeight: 10)
+      CheckmarkRow(text: "Seamless usage. No interruptions.")
     }
   }
 }

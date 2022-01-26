@@ -145,7 +145,7 @@ struct Archive {
         //try Data(contentsOf: keyURL.appendingPathExtension("pub"))
         let certBlob = try? Data(contentsOf: keysDirectoryURL.appendingPathComponent("\(keyName)-cert.pub"))
         var pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
-        let pubkeyComment = String(pubkeyComponents.remove(at: 2) ?? "")
+        let pubkeyComment = String(pubkeyComponents.remove(at: 2))
 
         let key = try SSHKey(fromFileBlob: keyBlob, passphrase: "", withPublicFileCertBlob: certBlob)
         let comment = (key.comment ?? "").isEmpty ? pubkeyComment : key.comment!
@@ -164,6 +164,11 @@ struct Archive {
     guard let destinationPath = FilePath(destinationURL) else {
       throw Error("Wrong destination path.")
     }
+    
+#if targetEnvironment(simulator)
+    debugPrint("simulator is not supported")
+#else
+    
 
     guard let archiveFileStream = ArchiveByteStream.fileStream(
       path: sourcePath,
@@ -212,6 +217,8 @@ struct Archive {
     } catch {
       throw Error("Error extracting archive elements. \(error)")
     }
+    
+#endif
   }
 
   private func copyAllDataToTmpDirectory() throws {

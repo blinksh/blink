@@ -41,7 +41,7 @@ struct PlansView: View {
   
   var body: some View {
     List {
-      if _entitlements.unlimitedTimeAccess?.active == false {
+      if _entitlements.unlimitedTimeAccess.active == false {
         Section("Free Plan") {
           HStack {
             Image(systemName: "checkmark.circle.fill")
@@ -118,7 +118,7 @@ struct PlansView: View {
           }
         }
       )
-      if _entitlements.unlimitedTimeAccess?.active == true {
+      if _entitlements.unlimitedTimeAccess.active == true {
         Section("Free Plan") {
           HStack {
             Image(systemName: "checkmark.circle.fill")

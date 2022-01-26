@@ -122,16 +122,18 @@ struct PurchasePageView: Page {
       
       Spacer().frame(maxHeight: horizontal ? 24 : 30)
       
-      Text("Leverage Blink‘s full power, without interruptions.")
+      Text("Leverage Blink’s full power, and make it your all day companion.")
         .font(.title2)
     }
   }
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Get access to new features and services.")
+      CheckmarkRow(text: "Access to all Blink Shell features and services.")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Continue supporting future updates.")
+      CheckmarkRow(text: "Seamless usage. No interruptions.")
+      Spacer().frame(maxHeight: 10)
+      CheckmarkRow(text: "Support Blink development.")
     }
   }
 }

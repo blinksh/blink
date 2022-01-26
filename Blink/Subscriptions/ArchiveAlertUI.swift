@@ -36,7 +36,7 @@ class ArchiveAlertUI {
   static func presentImport(on ctrl: UIViewController, cb: URL, archivePassword: String) {
     let alert = UIAlertController(
       title: "Data Export",
-      message: "An new Blink.app is requesting to export your data. Do you want to continue?",
+      message: "The new Blink.app is requesting permission to export your data. Do you want to continue?",
       preferredStyle: .alert
     )
     alert.addAction(UIAlertAction(title: "Continue", style: .default, handler: { _ in
