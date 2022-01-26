@@ -111,6 +111,18 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
   let compression: Bool
   let compressionLevel: Int
 
+  let ciphers: String?
+  let macs: String?
+  let bindAddress: String?
+  let hostKeyAlgorithms: String?
+  let rekeyDataLimit: UInt?
+  let kexAlgorithms: String?
+
+  let kbdInteractiveAuthentication: Bool?
+  let passwordAuthentication: Bool?
+  let pubKeyAuthentication: Bool?
+  let hostbasedAuthentication: Bool?
+
   // Offer a description based on what the final configuration is.
   public var description: String { """
   user: \(user)
@@ -147,7 +159,18 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
               logger: SSHLogPublisher? = nil,
               keepAliveInterval: Int? = nil,
               compression: Bool? = nil,
-              compressionLevel: Int? = nil) {
+              compressionLevel: Int? = nil,
+              ciphers: String? = nil,
+              macs: String? = nil,
+              bindAddress: String? = nil,
+              hostKeyAlgorithms: String? = nil,
+              rekeyDataLimit: UInt? = nil,
+              kexAlgorithms: String? = nil,
+              kbdInteractiveAuthentication: Bool? = nil,
+              passwordAuthentication: Bool? = nil,
+              pubKeyAuthentication: Bool? = nil,
+              hostbasedAuthentication: Bool? = nil
+              ) {
     // We do our own constructor because the automatic one cannot define optional params.
     self.user = user
     self.port = port ?? "22"
@@ -162,7 +185,16 @@ public struct SSHClientConfig: CustomStringConvertible, Equatable {
     self.connectionTimeout = connectionTimeout ?? 30
     self.compression = compression ?? false
     self.compressionLevel = compressionLevel ?? 6
-    
+    self.ciphers = ciphers
+    self.macs = macs
+    self.bindAddress = bindAddress
+    self.hostKeyAlgorithms = hostKeyAlgorithms
+    self.rekeyDataLimit = rekeyDataLimit 
+    self.kexAlgorithms = kexAlgorithms
+    self.kbdInteractiveAuthentication = kbdInteractiveAuthentication
+    self.passwordAuthentication = passwordAuthentication
+    self.pubKeyAuthentication = pubKeyAuthentication
+    self.hostbasedAuthentication = hostbasedAuthentication
     // TODO Disable Keep Alive for now. LibSSH is not processing correctly the messages
     // that may come back from the server.
     // self.keepAliveInterval = keepAliveInterval
