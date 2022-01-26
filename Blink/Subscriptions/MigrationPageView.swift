@@ -110,24 +110,24 @@ struct MigrationPageView: Page {
   func header() -> some View {
     Group {
       Spacer()
-      Text("Migration Process")
+      Text("Migration Assistant")
         .fontWeight(.bold)
         .font(.largeTitle)
       
       Spacer().frame(maxHeight: horizontal ? 24 : 30)
       
-      Text("Some oneliner of text")
+      Text("Make yourself at home in three simple steps.")
         .font(.title2)
     }
   }
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Verify receipt within Blink 14 app.", checked: _model.receiptIsVerified, failed: _model.receiptVerificationFailed)
+      CheckmarkRow(text: "Verify receipt within Blink Shell 14 app.", checked: _model.receiptIsVerified, failed: _model.receiptVerificationFailed)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Unlock $0 priced lifetime purchase.", checked: _model.zeroPriceUnlocked)
+      CheckmarkRow(text: "Unlock Zero cost lifetime purchase.", checked: _model.zeroPriceUnlocked)
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Copy settings from Blink 14 app.", checked: _model.dataCopied, failed: _model.dataCopyFailed)
+      CheckmarkRow(text: "Copy settings from Blink Shell 14 app.", checked: _model.dataCopied, failed: _model.dataCopyFailed)
     }
   }
 }
