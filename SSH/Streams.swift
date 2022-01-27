@@ -106,6 +106,7 @@ public class Stream : Reader, Writer, WriterTo {
         })
     
     stdinCancellable = input?.writeTo(instream)
+      .print("INSTREAM")
       .receive(on: client.rloop).sink(
         receiveCompletion: { completion in
           switch completion {
@@ -209,7 +210,8 @@ public class Stream : Reader, Writer, WriterTo {
   }
   
   deinit {
-    self.log.message("Stream Deinit", SSH_LOG_DEBUG)
+    print("Stream Deinit")
+    self.log.message("Stream Deinit", SSH_LOG_INFO)
     self.client.closeChannel(self.channel)
   }
 }
@@ -244,7 +246,7 @@ class OutStream {
     if self.isStderr == 1 {
       log.message("Errstream deinit", SSH_LOG_DEBUG)
     } else {
-      log.message("Outstream deinit", SSH_LOG_DEBUG)
+      log.message("Outstream deinit", SSH_LOG_INFO)
     }
   }
 }
@@ -475,7 +477,8 @@ extension OutStream: WriterTo {
 }
 
 class InStream {
-  let stream: Stream
+  let weakStream: Stream
+  var stream: Stream { weakStream }
   var channel: ssh_channel { stream.channel }
   var client: SSHClient { stream.client }
   var rloop: RunLoop { stream.client.rloop }
@@ -487,11 +490,11 @@ class InStream {
   // Internal stream reference. Make sure the channel is not freed while
   // the components may still exist.
   init(_ stream: Stream) {
-    self.stream = stream
+    self.weakStream = stream
   }
   
   deinit {
-    self.log.message("Instream deinit", SSH_LOG_DEBUG)
+    self.log.message("Instream deinit", SSH_LOG_INFO)
   }
 }
 

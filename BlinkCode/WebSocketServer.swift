@@ -46,7 +46,8 @@ public class WebSocketServer {
   var listenerMonitor: BackgroundTaskMonitor? = nil
   let log: BlinkLogger = CodeFileSystemLogger.log("CodeWebSocketServer")
   var listener: NWListener!
-  
+  var connections = [WebSocketConnection]()
+
   public init(listenOn port: NWEndpoint.Port, tls: Bool) throws {
     self.port = port
     self.tls = tls
@@ -56,7 +57,7 @@ public class WebSocketServer {
       self?.listener.cancel()
     })
   }
-  
+
   func startListening() {
     do {
       log.info("Starting WebSocket...")
@@ -68,9 +69,9 @@ public class WebSocketServer {
       }
       let websocketOptions = NWProtocolWebSocket.Options()
       parameters.defaultProtocolStack.applicationProtocols.insert(websocketOptions, at: 0)
-      
+
       self.listener = try NWListener(using: parameters, on: port)
-      
+
       listener.newConnectionHandler = { [weak self] in self?.handleNewConnection($0) }
       listener.stateUpdateHandler = { [weak self] in self?.handleStateUpdate($0) }
       listener.start(queue: queue)
@@ -78,7 +79,7 @@ public class WebSocketServer {
       self.delegate?.finished(error)
     }
   }
-  
+
   func handleStateUpdate(_ newState: NWListener.State) {
     log.info("WebSocket Listener \(newState)")
     if case .failed(let error) = newState {
@@ -94,7 +95,7 @@ public class WebSocketServer {
       }
     }
   }
-  
+
   func tlsOptions() throws -> NWProtocolTLS.Options {
     let tlsOptions = NWProtocolTLS.Options()
     let p12Data = Data(base64Encoded: p12Cert.replacingOccurrences(of: "\n", with: ""))!
@@ -105,10 +106,10 @@ public class WebSocketServer {
                             options as CFDictionary,
                             &rawItems)
     //guard status == errSecSuccess else { throw "Could not generate Identity from PKCS12" }
-    
+
     let items = rawItems! as! Array<Dictionary<String, Any>>
     let firstItem = items[0]
-    
+
     let secIdentity = firstItem[kSecImportItemIdentity as String] as! SecIdentity
 
     if let identity = sec_identity_create(secIdentity) {
@@ -117,12 +118,31 @@ public class WebSocketServer {
       sec_protocol_options_set_local_identity(tlsOptions.securityProtocolOptions, identity)
 //      sec_protocol_options_append_tls_ciphersuite( tlsOptions.securityProtocolOptions, tls_ciphersuite_t(rawValue: UInt16(TLS_AES_128_GCM_SHA256))! )
     }
-    
+
     return tlsOptions
   }
-  
+
   func handleNewConnection(_ conn: NWConnection) {
-    WebSocketConnection(conn, delegate).receiveNextMessage()
+    let wsconn = WebSocketConnection(conn, delegate)
+    connections.append(wsconn)
+
+    conn.stateUpdateHandler = { [weak self] newState in
+      guard let self = self else { return }
+
+      self.log.info("Connection state update - \(newState)")
+      switch newState {
+      case .failed(let error):
+        self.log.error("Connection failed - \(error)")
+        fallthrough
+      case .cancelled:
+        self.connections.removeAll { $0 === wsconn }
+      default:
+        break
+        // TODO if we associate to the translator, we need to notify the delegate.
+      }
+    }
+
+    wsconn.receiveNextMessage()
   }
 }
 
@@ -139,17 +159,11 @@ class WebSocketConnection {
     self.log = CodeFileSystemLogger.log("Connection \(conn.currentPath!.remoteEndpoint!.debugDescription)")
     conn.start(queue: queue)
   }
-  
+
   func receiveNextMessage() {
-    conn.stateUpdateHandler = { newState in
-      self.log.info("Connection state update - \(newState)")
-      if case .failed(let error) = newState {
-        self.log.error("Connection failed - \(error)")
-        self.conn.cancel()
-        // TODO if we associate to the translator, we need to notify the delegate.
-      }
-    }
-    conn.receiveMessage { (content, context, isComplete, error) in
+    conn.receiveMessage { [weak self] (content, context, isComplete, error) in
+      guard let self = self else { return }
+
       if let data = content,
          let context = context {
         if let metadata = context.protocolMetadata as?  [NWProtocolWebSocket.Metadata],
@@ -162,7 +176,7 @@ class WebSocketConnection {
       }
     }
   }
-  
+
   func handlePing(data: Data) {
     // Return a pong with the same data
     let metadata = NWProtocolWebSocket.Metadata(opcode: .pong)
@@ -170,49 +184,49 @@ class WebSocketConnection {
                                               metadata: [metadata])
     conn.send(content: data, contentContext: context, completion: .idempotent)
   }
-  
+
   func handleMessage(data: Data) {
     var buffer = data
 
-    // Log errors if malformed as this is just our service.    
+    // Log errors if malformed as this is just our service.
     guard buffer.count >= CodeSocketMessageHeader.encodedSize,
           let header = CodeSocketMessageHeader(buffer[0..<CodeSocketMessageHeader.encodedSize]) else {
             self.log.error("Wrong header")
             return
     }
     buffer = data.advanced(by: CodeSocketMessageHeader.encodedSize)
-    
+
     let messageHeaderTypes: [CodeSocketContentType] = [.Json, .Binary, .JsonWithBinary]
     guard messageHeaderTypes.contains(header.type) else {
       log.error("Wrong message type")
       return
     }
-    
+
     let operationId = header.operationId
     guard let payload = CodeSocketMessagePayload(buffer, type: header.type) else {
       log.error("Invalid payload")
       return
     }
-    
+
     guard let delegate = delegate else {
       return
     }
-    
-    // For completion, call the same removal as during cancel.
+
     cancellables[operationId] = delegate
       .handleMessage(encodedData: payload.encodedData,
                      binaryData:  payload.binaryData)
       .sink(
         receiveCompletion: { [weak self] completion in
+          guard let self = self else { return }
           switch completion {
           case .failure(let error):
-            self?.log.error("Error completing operation - \(error)")
+            self.log.error("Error completing operation - \(error)")
             if case is CodeFileSystemError = error {
-              self?.sendError(operationId: operationId,
+              self.sendError(operationId: operationId,
                              error: error as! CodeFileSystemError)
             }
           case .finished:
-            self?.cancellables.removeValue(forKey: operationId)
+            self.cancellables.removeValue(forKey: operationId)
             break
           }
         },
@@ -223,16 +237,16 @@ class WebSocketConnection {
         }
       )
   }
-  
+
   func sendMessage(operationId: UInt32,
                    encodedData: Data?,
                    binaryData: Data?) {
     let metadata = NWProtocolWebSocket.Metadata(opcode: .binary)
     let context = NWConnection.ContentContext(identifier: "binaryContext",
                                               metadata: [metadata])
-    
+
     let payload = CodeSocketMessagePayload(encodedData: encodedData, binaryData: binaryData)
-    
+
     let replyHeader = CodeSocketMessageHeader(type: payload.type,
                                               operationId: operationId,
                                               referenceId: operationId)
@@ -240,16 +254,16 @@ class WebSocketConnection {
               contentContext: context,
               completion: .idempotent)
   }
-  
+
   func sendError(operationId: UInt32,
                  error: CodeFileSystemError) {
     let metadata = NWProtocolWebSocket.Metadata(opcode: .binary)
     let context = NWConnection.ContentContext(identifier: "binaryContext",
                                               metadata: [metadata])
-    
+
     let encodedData = try? JSONEncoder().encode(error)
     let payload = CodeSocketMessagePayload(encodedData: encodedData)
-    
+
     let replyHeader = CodeSocketMessageHeader(type: .Error,
                                               operationId: operationId,
                                               referenceId: operationId)
@@ -307,17 +321,17 @@ protocol CodeSocketDelegate {
 
 struct CodeSocketMessageHeader {
   static var encodedSize: Int { (MemoryLayout<UInt32>.size * 2) + MemoryLayout<UInt8>.size }
-  
+
   let type: CodeSocketContentType
   let operationId: UInt32
   let referenceId: UInt32
-  
+
   init(type: CodeSocketContentType, operationId: UInt32, referenceId: UInt32) {
     self.type = type
     self.operationId = operationId
     self.referenceId = referenceId
   }
-  
+
   init?(_ data: Data) {
     var buffer = data
     guard let type = CodeSocketContentType(rawValue: UInt8.decode(&buffer)) else {
@@ -327,7 +341,7 @@ struct CodeSocketMessageHeader {
     self.operationId = UInt32.decode(&buffer)
     self.referenceId = UInt32.decode(&buffer)
   }
-  
+
   public var encoded: Data {
     Data(type.rawValue) + Data(operationId) + Data(referenceId)
   }
@@ -336,12 +350,12 @@ struct CodeSocketMessageHeader {
 struct CodeSocketMessagePayload {
   let encodedData:   Data
   let binaryData:    Data?
-  
+
   init?(_ data: Data, type: CodeSocketContentType) {
     var buffer = data
     var encodedData = Data()
     var binaryData: Data? = nil
-    
+
     var encodedLength: UInt32 = 0
     if type == .JsonWithBinary || type == .Json {
       if type == .JsonWithBinary {
@@ -351,22 +365,22 @@ struct CodeSocketMessagePayload {
       }
       encodedData = buffer[0..<encodedLength]
     }
-    
+
     if type == .JsonWithBinary || type == .Binary {
       // Advance only if we know there is further information
       buffer = buffer.advanced(by: Int(encodedLength))
       binaryData = buffer
     }
-    
+
     self.encodedData = encodedData
     self.binaryData = binaryData
   }
-  
+
   init(encodedData: Data?, binaryData: Data? = nil) {
     self.encodedData = encodedData ?? Data()
     self.binaryData  = binaryData
   }
-  
+
   var type: CodeSocketContentType {
     if !encodedData.isEmpty, let _ = binaryData {
       return .JsonWithBinary
@@ -377,7 +391,7 @@ struct CodeSocketMessagePayload {
       return .Json
     }
   }
-  
+
   var encoded: Data {
     switch type {
     case .JsonWithBinary:

@@ -33,41 +33,44 @@ import Combine
 import FileProvider
 import Foundation
 
+import BlinkConfig
 import BlinkFiles
+import SSH
 
 
-class TranslatorReference {
+class TranslatorControl {
   let translator: Translator
-  let cancel: () -> Void
+  let connectionControl: SSHClientControl
 
-  init(_ translator: Translator, cancel: @escaping (() -> Void)) {
+  init(_ translator: Translator, connectionControl: SSHClientControl) {
     self.translator = translator
-    self.cancel = cancel
+    self.connectionControl = connectionControl
   }
   
   deinit {
-    cancel()
+    self.connectionControl.cancel()
   }
 }
 
+enum BlinkFilesProtocol: String {
+  case ssh = "ssh"
+  case local = "local"
+  case sftp = "sftp"
+}
+
+var logCancellables = Set<AnyCancellable>()
+
+
 final class FileTranslatorCache {
   static let shared = FileTranslatorCache()
-  private var translators: [String: TranslatorReference] = [:]
+  private var translators: [String: TranslatorControl] = [:]
   private var references: [String: BlinkItemReference] = [:]
   private var fileList:   [String: [BlinkItemReference]] = [:]
   private var backgroundThread: Thread? = nil
   private var backgroundRunLoop: RunLoop = RunLoop.current
 
 
-  private init() {
-    // self.backgroundThread = Thread {
-    //   self.backgroundRunLoop = RunLoop.current
-    //   // TODO Probably need a timer. This may exit immediately
-    //   RunLoop.current.run()
-    // }
-
-    // self.backgroundThread!.start()
-  }
+  private init() {}
 
   static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
     // Check if we have it cached, if it is still working
@@ -105,10 +108,19 @@ final class FileTranslatorCache {
       guard let host = host else {
         return .fail(error: "Missing host in Translator route")
       }
-      return sftp(host: host, path: pathAtFiles)
-        .map { tr -> Translator in
-          shared.translators[encodedRootPath] = tr
-          return tr.translator
+      return SSHClient.dial(host, withConfigProvider: SSHClientConfigProvider.config)
+        .flatMap { connControl in
+          return Just(connControl.connection)
+            .flatMap { conn -> AnyPublisher<SFTPClient, Error> in
+              conn.handleSessionException = { error in print("SFTP Connection Exception \(error)") }
+              return conn.requestSFTP()
+            }
+            .tryMap { try SFTPTranslator(on: $0) }
+            .flatMap { $0.walkTo(pathAtFiles) }
+            .map { t -> Translator in
+              shared.translators[encodedRootPath] = TranslatorControl(t, connectionControl: connControl)
+              return t
+            }
         }.eraseToAnyPublisher()
     default:
       return .fail(error: "Not implemented")
@@ -117,11 +129,6 @@ final class FileTranslatorCache {
 
   static func store(reference: BlinkItemReference) {
     print("storing File BlinkItemReference : \(reference.itemIdentifier.rawValue)")
-//    let parent = reference.parentIdentifier.rawValue
-//    if shared.fileList[parent] == nil {
-//      shared.fileList[parent] = []
-//    }
-//    shared.fileList[parent]!.append(reference)
     shared.references[reference.itemIdentifier.rawValue] = reference
   }
   static func remove(reference: BlinkItemReference) {
@@ -148,5 +155,52 @@ final class FileTranslatorCache {
 
     // <encodedRootPath>/<path>/<to>/filename
     return shared.references[encodedPath]
+  }
+}
+
+
+class SSHClientConfigProvider {
+  
+  static func config(host title: String) throws -> (String, SSHClientConfig) {
+   
+    // NOTE This is just regular config initialization. Usually happens on AppDelegate, but the
+    // FileProvider doesn't get another chance.
+    BKHosts.loadHosts()
+    BKPubKey.loadIDS()
+    
+    let bkConfig = try BKConfig()
+    let agent = SSHAgent()
+    let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
+
+    let host = try bkConfig.bkSSHHost(title)
+    
+    if let signers = bkConfig.signer(forHost: host) {
+      signers.forEach { (signer, name) in
+        _ = agent.loadKey(signer, aka: name, constraints: consts)
+      }
+    } else {
+      for (signer, name) in bkConfig.defaultSigners() {
+        _ = agent.loadKey(signer, aka: name, constraints: consts)
+      }
+    }
+
+    var availableAuthMethods: [AuthMethod] = [AuthAgent(agent)]
+    if let password = host.password, !password.isEmpty {
+      availableAuthMethods.append(AuthPassword(with: password))
+    }
+    
+    let log = BlinkLogger("SSH")
+    let logger = PassthroughSubject<String, Never>()
+    logger.sink {
+      log.send($0)
+      
+    }.store(in: &logCancellables)
+
+
+    return (host.hostName ?? title,
+            host.sshClientConfig(authMethods: availableAuthMethods,
+                                 agent: agent,
+                                 logger: logger)
+    )
   }
 }

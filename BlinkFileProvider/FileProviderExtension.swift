@@ -203,8 +203,10 @@ class FileProviderExtension: NSFileProviderExtension {
           log.info("\(blinkItemReference.path) - completed")
           blinkItemReference.downloadCompleted(nil)
           completionHandler(nil)
+          NSFileProviderManager.default.signalEnumerator(for: blinkItemReference.itemIdentifier, completionHandler: { _ in })
         case .failure(let error):
           completionHandler(NSFileProviderError.operationError(dueTo: error))
+          NSFileProviderManager.default.signalEnumerator(for: blinkItemReference.itemIdentifier, completionHandler: { _ in })
         }
       }, receiveValue: { _ in })
 
