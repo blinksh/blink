@@ -81,15 +81,15 @@ struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringC
     }
     
     if self.contains(.legacyDeveloper) {
-      result.append("Developer Legacy")
+      result.append("v14 Developer")
     }
     
     if self.contains(.legacyTestFlight) {
-      result.append("Test Flight Legacy")
+      result.append("v14 Test Flight")
     }
     
     if self.contains(.legacyAppStore) {
-      result.append("App Store Legacy")
+      result.append("v14 App Store")
     }
     
     return "(" + result.joined(separator: ", ") + ")"
