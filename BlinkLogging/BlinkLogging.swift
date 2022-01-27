@@ -63,6 +63,8 @@ public enum BlinkLogLevel: Int, Comparable {
   case warn
   case error
   case fatal
+  // Skips or overrides.
+  case log
   
   public static func < (lhs: BlinkLogLevel, rhs: BlinkLogLevel) -> Bool {
     lhs.rawValue < rhs.rawValue
@@ -111,7 +113,8 @@ class BlinkLogger: Subject {
 }
 
 extension BlinkLogger {
-  public func send(_ message: String)   { self.send([.message: message]) }
+  public func send(_ message: String)   { self.send([.logLevel: BlinkLogLevel.log,
+                                                   .message: message,]) }
 
   public func trace(_ message: String)  { self.send([.logLevel: BlinkLogLevel.trace,
                                                    .message: message,]) }

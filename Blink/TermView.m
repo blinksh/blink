@@ -555,8 +555,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [data setValue:[NSNumber numberWithInt:BKNotificationTypeOsc] forKey:@"type"];
     [_device viewNotify:data];
   } else if ([operation isEqualToString:@"browser-ready"]) {
-      [_browserView ready];
-      [[NSNotificationCenter defaultCenter] postNotificationName:TermViewBrowserReadyNotificationKey object:self];
+    [_browserView ready];
+    [[NSNotificationCenter defaultCenter] postNotificationName:TermViewBrowserReadyNotificationKey object:self];
   } else if ([operation isEqualToString:@"ring-bell"]) {
     [_device viewDidReceiveBellRing];
     

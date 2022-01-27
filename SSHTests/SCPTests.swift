@@ -61,7 +61,7 @@ class SCPTests: XCTestCase {
     let expectation = self.expectation(description: "sftp")
     
     var connection: SSHClient?
-    var sftp: SFTPClient?
+    var sftp: SFTPTranslator?
     var scp: SCPClient?
     var totalWritten: UInt64 = 0
     
@@ -78,7 +78,10 @@ class SCPTests: XCTestCase {
     wait(for: [expectation], timeout: 15)
     
     let expectation2 = self.expectation(description: "scp")
-    let c2 = connection?.requestSFTP().flatMap { client -> AnyPublisher<Translator, Error> in
+    let c2 = connection?
+      .requestSFTP()
+      .tryMap  { try SFTPTranslator(on: $0) }
+      .flatMap { client -> AnyPublisher<Translator, Error> in
       sftp = client
       return sftp!.walkTo("Xcode_12.0.1.xip")
     }.flatMap { sourceFile in
@@ -111,7 +114,7 @@ class SCPTests: XCTestCase {
     let expectation = self.expectation(description: "scp")
     
     var connection: SSHClient?
-    var sftp: SFTPClient?
+    var sftp: SFTPTranslator?
     var scp: SCPClient?
     //var totalWritten = 0
     var filesWritten = 0
@@ -134,7 +137,9 @@ class SCPTests: XCTestCase {
       .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
         connectionSFTP = conn
         return conn.requestSFTP()
-      }.flatMap { client -> AnyPublisher<Translator, Error> in
+      }
+      .tryMap { try SFTPTranslator(on: $0) }
+      .flatMap { client -> AnyPublisher<Translator, Error> in
         sftp = client
         return sftp!.walkTo("playgrounds")
       }.flatMap { dir in
@@ -164,7 +169,7 @@ class SCPTests: XCTestCase {
     let expectation = self.expectation(description: "scp")
     
     var connection: SSHClient?
-    var sftp: SFTPClient?
+    var sftp: SFTPTranslator?
     var scp: SCPClient?
     
     let c1 = SSHClient.dialWithTestConfig()
@@ -183,6 +188,7 @@ class SCPTests: XCTestCase {
     let expectation2 = self.expectation(description: "sftp")
     let c2 = connection?
       .requestSFTP()
+      .tryMap { try SFTPTranslator(on: $0) }
       .flatMap { client -> AnyPublisher<Translator, Error> in
       sftp = client
       return sftp!.walkTo("/tmp/test")

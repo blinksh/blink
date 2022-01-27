@@ -76,13 +76,15 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
   @objc public class func buildMenu(with builder: UIMenuBuilder) {
     // We will embed our own textSize inside View, so just remove to avoid collisions.
     builder.remove(menu: .textSize)
+    
+    let kbConfig = KBTracker.shared.loadConfig()
 
     attachedShortcuts = []
-    let shellMenuCommands:  [UICommand] = ShellMenu.allCases.map  { generate(Command(rawValue: $0.rawValue)!) }
-    let editMenuCommands:   [UICommand] = EditMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
+    let shellMenuCommands:  [UICommand] = ShellMenu.allCases.map  { _generate(Command(rawValue: $0.rawValue)!, with: kbConfig) }
+    let editMenuCommands:   [UICommand] = EditMenu.allCases.map   { _generate(Command(rawValue: $0.rawValue)!, with: kbConfig) }
       + Self.remainingStandardEditMenuCommands()
-    let viewMenuCommands:   [UICommand] = ViewMenu.allCases.map   { generate(Command(rawValue: $0.rawValue)!) }
-    let windowMenuCommands: [UICommand] = WindowMenu.allCases.map { generate(Command(rawValue: $0.rawValue)!) }
+    let viewMenuCommands:   [UICommand] = ViewMenu.allCases.map   { _generate(Command(rawValue: $0.rawValue)!, with: kbConfig) }
+    let windowMenuCommands: [UICommand] = WindowMenu.allCases.map { _generate(Command(rawValue: $0.rawValue)!, with: kbConfig) }
 
     builder.insertSibling(UIMenu(title: "Shell",
                                  image: nil,
@@ -112,8 +114,7 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
     
   }
   
-  private class func generate(_ command: Command) -> UICommand {
-    let kbConfig = KBTracker.shared.loadConfig()
+  private class func _generate(_ command: Command, with kbConfig: KBConfig) -> UICommand {
 
     // For the action to be different, we are passing it as part of the PropertyList.
     // If the shortcut has already been assigned, then we define it as UICommand.
@@ -138,23 +139,23 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
                                 modifierFlags: shortcut.modifiers,
                                 propertyList: ["Command": command.rawValue])
 
-        //        if #available(iOS 15.0, *) {
-        //          cmd.wantsPriorityOverSystemBehavior = true
-        //        }
-
-        if cmd.responds(to: NSSelectorFromString("setWantsPriorityOverSystemBehavior:")) {
-          cmd.setValue(NSNumber(true), forKey: "wantsPriorityOverSystemBehavior")
+        if #available(iOS 15.0, *) {
+          cmd.wantsPriorityOverSystemBehavior = true
         }
+        
+        
         attachedShortcuts.append(cmd)
         return cmd
       } else {
+        // We will handle dups via pressesBegan, no need to alert user.
+        
         // We notify the user and let the command go through as a UICommand
-        let alert = OwnAlertController(title: "Error building app menu", message: "The shortcut's '\(shortcut.title)' input is duplicated. This may prevent it from working. Please fix on Settings > Keyboard > Shortcuts", preferredStyle: .alert)
-        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
-        alert.addAction(ok)
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
-          alert.present(animated: true, completion: nil)
-        }
+//        let alert = OwnAlertController(title: "Error building app menu", message: "The shortcut's '\(shortcut.title)' input is duplicated. This may prevent it from working. Please fix on Settings > Keyboard > Shortcuts", preferredStyle: .alert)
+//        let ok = UIAlertAction(title: "OK", style: .default, handler: nil)
+//        alert.addAction(ok)
+//        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 1) {
+//          alert.present(animated: true, completion: nil)
+//        }
       }
     }
     return UICommand(

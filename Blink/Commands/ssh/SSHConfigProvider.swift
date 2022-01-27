@@ -61,16 +61,16 @@ class SSHClientConfigProvider {
   var logCancel: AnyCancellable? = nil
   let config: BKConfig
   
-  fileprivate init(using device: TermDevice) {
+  fileprivate init(using device: TermDevice) throws {
     self.device = device
-    self.config = BKConfig()
+    self.config = try BKConfig()
 
     logCancel = logger.sink { [weak self] in self?.printLn($0, err: true) }
   }
   
   // Return HostName, SSHClientConfig for the server
-  static func config(host: BKSSHHost, using device: TermDevice) -> SSHClientConfig {
-    let prov = SSHClientConfigProvider(using: device)
+  static func config(host: BKSSHHost, using device: TermDevice) throws -> SSHClientConfig {
+    let prov = try SSHClientConfigProvider(using: device)
 
     let agent = prov.agent(for: host)
 

@@ -121,8 +121,10 @@ class FileProviderExtension: NSFileProviderExtension {
 
   override func persistentIdentifierForItem(at url: URL) -> NSFileProviderItemIdentifier? {
     BlinkLogger("persistentIdentifierForItem").debug("\(url.path)")
-    let blinkItem = BlinkItemIdentifier(url: url)
-    return blinkItem.itemIdentifier
+    guard let ref = FileTranslatorCache.reference(url: url) else {
+      return nil
+    }
+    return ref.itemIdentifier
   }
 
   override func providePlaceholder(at url: URL, completionHandler: @escaping (Error?) -> Void) {
@@ -175,21 +177,22 @@ class FileProviderExtension: NSFileProviderExtension {
   override func startProvidingItem(at url: URL, completionHandler: @escaping ((_ error: Error?) -> Void)) {
     // 1 - From URL we get the identifier.
     let log = BlinkLogger("startProvidingItem")
-    let blinkIdentifier = BlinkItemIdentifier(url: url)
-    guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
+    //let blinkIdentifier = BlinkItemIdentifier(url: url)
+    guard let blinkItemReference = FileTranslatorCache.reference(url: url) else {
+    //guard let blinkItemReference = FileTranslatorCache.reference(identifier: blinkIdentifier) else {
       // TODO Proper error types (NSError)
       completionHandler("Does not have a reference to copy")
       return
     }
 
-    log.info("\(blinkIdentifier.path) - start")
+    log.info("\(blinkItemReference.path) - start")
 
     // 2 local translator
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
 
     // 3 remote - From the identifier, we get the translator and walk to the remote.
-    let srcTranslator = FileTranslatorCache.translator(for: blinkIdentifier.encodedRootPath)
-    let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkIdentifier.path) }
+    let srcTranslator = FileTranslatorCache.translator(for: blinkItemReference.encodedRootPath)
+    let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkItemReference.path) }
       .flatMap { fileTranslator in
         // 4 - Start the copy
         return destTranslator.flatMap { $0.copy(from: [fileTranslator],
@@ -197,11 +200,13 @@ class FileProviderExtension: NSFileProviderExtension {
       }.sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
-          log.info("\(blinkIdentifier.path) - completed")
+          log.info("\(blinkItemReference.path) - completed")
           blinkItemReference.downloadCompleted(nil)
           completionHandler(nil)
+          NSFileProviderManager.default.signalEnumerator(for: blinkItemReference.itemIdentifier, completionHandler: { _ in })
         case .failure(let error):
           completionHandler(NSFileProviderError.operationError(dueTo: error))
+          NSFileProviderManager.default.signalEnumerator(for: blinkItemReference.itemIdentifier, completionHandler: { _ in })
         }
       }, receiveValue: { _ in })
 

@@ -42,7 +42,6 @@ class KBWebView: KBWebViewBase {
   private(set) var webViewReady = false
   private(set) var blinkKeyCommands: [BlinkCommand] = []
   private(set) var allBlinkKeyCommands: [BlinkCommand] = []
-  private var _grabsCtrlSpace = false
   
   func configure(_ cfg: KBConfig) {
     _buildCommands(cfg)
@@ -57,7 +56,6 @@ class KBWebView: KBWebViewBase {
   }
   
   func _buildCommands(_ cfg: KBConfig) {
-    _grabsCtrlSpace = false
     
     self.blinkKeyCommands.removeAll()
     self.allBlinkKeyCommands.removeAll()
@@ -72,9 +70,6 @@ class KBWebView: KBWebViewBase {
         propertyList: nil
       )
       cmd.bindingAction = shortcut.action
-      if shortcut.input == " " && shortcut.modifiers.contains([UIKeyModifierFlags.control]) {
-        _grabsCtrlSpace = true
-      }
       
       allBlinkKeyCommands.append(cmd)
       
@@ -126,23 +121,19 @@ class KBWebView: KBWebViewBase {
   }
   
   override func pressesBegan(_ presses: Set<UIPress>, with event: UIPressesEvent?) {
-    // Remap cmd+. from Escape back to cmd+.
-    if let key = presses.first?.key,
-       key.keyCode.rawValue == 55,
-       key.characters == "UIKeyInputEscape"
-    {
-       self.reportToolbarPress(key.modifierFlags.union(.command), keyId: "190:0")
-       return
-    }
-    
     guard
-      _grabsCtrlSpace,
       let key = presses.first?.key,
-      key.keyCode == .keyboardSpacebar,
-      key.modifierFlags.contains(.control),
-      let (cmd, responder) = matchCommand(input: " ", flags: key.modifierFlags),
+      let (cmd, responder) = matchCommand(input: key.charactersIgnoringModifiers, flags: key.modifierFlags),
       let action = cmd.action
     else {
+      // Remap cmd+. from Escape back to cmd+.
+      if let key = presses.first?.key,
+         key.keyCode.rawValue == 55,
+         key.characters == "UIKeyInputEscape"
+      {
+        self.reportToolbarPress(key.modifierFlags.union(.command), keyId: "190:0")
+        return
+      }
       super.pressesBegan(presses, with: event)
       return
     }
