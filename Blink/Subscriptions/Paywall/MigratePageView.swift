@@ -111,9 +111,9 @@ struct MigratePageView: Page {
     GroupBox() {
       CheckmarkRow(text: "All features from Blink Shell 14 app.")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Recieve updates and new features.")
+      CheckmarkRow(text: "Recieve updates and new features.", checkedIcon: "calendar")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Seamless usage. No interruptions.")
+      CheckmarkRow(text: "Seamless usage. No interruptions.", checkedIcon: "infinity")
     }
   }
 }

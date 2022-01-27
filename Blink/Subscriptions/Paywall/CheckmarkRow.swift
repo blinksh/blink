@@ -37,16 +37,38 @@ struct CheckmarkRow: View {
   let checked: Bool
   let failed: Bool
   
-  init(text: String, checked: Bool = true, failed: Bool = false) {
+  let failedIcon: String
+  let checkedIcon: String
+  let uncheckedIcon: String
+  
+  let iconColor: Color
+  let iconFailedColor: Color
+  
+  init(
+    text: String,
+    checked: Bool = true,
+    failed: Bool = false,
+    failedIcon: String = "exclamationmark.circle",
+    checkedIcon: String = "checkmark.circle.fill",
+    uncheckedIcon: String = "circle",
+    iconColor: Color = .green,
+    iconFailedColor: Color = .orange
+  ) {
     self.text = text
     self.checked = checked
     self.failed = failed
+    self.uncheckedIcon = uncheckedIcon
+    self.checkedIcon = checkedIcon
+    self.failedIcon = failedIcon
+    self.iconColor = iconColor
+    self.iconFailedColor = iconFailedColor
   }
   
   var body: some View {
     HStack(alignment: .firstTextBaseline) {
-      Image(systemName: failed ? "exclamationmark.circle" : checked ? "checkmark.circle.fill" : "circle")
-        .foregroundColor(failed ? .orange : .green)
+      Image(systemName: failed ? failedIcon : checked ? checkedIcon : uncheckedIcon)
+        .foregroundColor(failed ? iconFailedColor : iconColor)
+        .frame(maxWidth: 26)
       Text(text).fixedSize(horizontal: false, vertical: true)
       Spacer()
     }

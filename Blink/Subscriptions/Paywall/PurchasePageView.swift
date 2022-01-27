@@ -130,9 +130,9 @@ struct PurchasePageView: Page {
     GroupBox() {
       CheckmarkRow(text: "Access to all Blink Shell features and services.")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Seamless usage. No interruptions.")
+      CheckmarkRow(text: "Seamless usage. No interruptions.", checkedIcon: "infinity")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Support Blink development.")
+      CheckmarkRow(text: "Support Blink development.", checkedIcon: "suit.heart.fill", iconColor: .red)
     }
   }
 }
