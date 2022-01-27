@@ -101,16 +101,19 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
     }
     
     let host: BKSSHHost
+    let hostName: String
+    let config: SSHClientConfig
     do {
       let commandHost = try cmd.bkSSHHost()
       host = try BKConfig().bkSSHHost(cmd.hostAlias, extending: commandHost)
+      hostName = host.hostName ?? cmd.hostAlias
+      config = try SSHClientConfigProvider.config(host: host, using: device)
     } catch {
       print("Configuration error - \(error)", to: &stderr)
       return -1
     }
 
-    let hostName = host.hostName ?? cmd.hostAlias
-    let config = SSHClientConfigProvider.config(host: host, using: device)
+
     // The HostName is the defined by "host", or the one from the command.
 
     if cmd.printConfiguration {

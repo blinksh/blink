@@ -91,8 +91,9 @@ public class BlinkSSHAgentAdd: NSObject {
   let currentRunLoop = RunLoop.current
   
   public func start(_ argc: Int32, argv: [String]) -> Int32 {
-    let bkConfig = BKConfig()
+    let bkConfig: BKConfig
     do {
+      bkConfig = try BKConfig()
       command = try BlinkSSHAgentAddCommand.parse(Array(argv[1...]))
     } catch {
       let message = BlinkSSHAgentAddCommand.message(for: error)

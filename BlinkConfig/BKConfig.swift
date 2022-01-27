@@ -44,13 +44,13 @@ public struct BKConfig {
 
   private let _allHosts: [BKHosts]
   private let _allIdentities: [BKPubKey]
-  private let bkSSHConfig: SSHConfig?
+  private let bkSSHConfig: SSHConfig
 
   // TODO Config files
-  public init() {
+  public init() throws {
     _allHosts = BKHosts.allHosts()
     _allIdentities = BKPubKey.all()
-    bkSSHConfig = try? SSHConfig.parse(url: BlinkPaths.blinkGlobalSSHConfigFileURL())
+    bkSSHConfig = try SSHConfig.parse(url: BlinkPaths.blinkGlobalSSHConfigFileURL())
   }
 
   private func _host(_ host: String) -> BKHosts? {
@@ -59,10 +59,8 @@ public struct BKConfig {
 
   // Return the stored configuration given the host.
   // The root for the configuration is now the file sequence from .blink/ssh_config.
-  public func bkSSHHost(_ alias: String) throws -> BKSSHHost? {
-    guard var sshConfig = try? bkSSHConfig?.resolve(alias: alias) else {
-      return nil
-    }
+  public func bkSSHHost(_ alias: String) throws -> BKSSHHost {
+    var sshConfig = try bkSSHConfig.resolve(alias: alias)
 
     // Add protected data (password)
     if let password = _host(alias)?.password {
@@ -73,7 +71,7 @@ public struct BKConfig {
   }
   
   public func bkSSHHost(_ alias: String, extending baseHost: BKSSHHost) throws -> BKSSHHost {
-    guard let sshConfigHost = try self.bkSSHHost(alias) else {
+    guard let sshConfigHost = try? self.bkSSHHost(alias) else {
       return baseHost
     }
     
