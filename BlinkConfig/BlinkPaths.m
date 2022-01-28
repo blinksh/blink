@@ -62,7 +62,7 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   NSFileManager *fm = [NSFileManager defaultManager];
   NSString *path = [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
   if (path == nil) {
-    groupID = @"group.com.carloscabanero";
+    groupID = @"group.Com.CarlosCabanero.BlinkShell";
     return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
   }
   return path;
