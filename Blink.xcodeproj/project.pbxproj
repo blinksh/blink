@@ -121,10 +121,7 @@
 		BD8D897425DC534F00E55D9E /* id_ecdsa.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897025DC534F00E55D9E /* id_ecdsa.pub */; };
 		BD8D897525DC534F00E55D9E /* user_key-cert.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897125DC534F00E55D9E /* user_key-cert.pub */; };
 		BD8DB62A279B1EC800497C88 /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB629279B1EC800497C88 /* SSHClient.swift */; };
-		BD8DB633279B24FA00497C88 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = BD8DB632279B24FA00497C88 /* ArgumentParser */; };
-		BD8DB635279B254400497C88 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = BD8DB634279B254400497C88 /* ArgumentParser */; };
 		BD8DB642279B2FA200497C88 /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB641279B2FA200497C88 /* SSHClient.swift */; };
-		BD8DB644279B3A6E00497C88 /* ArgumentParser in Frameworks */ = {isa = PBXBuildFile; productRef = BD8DB643279B3A6E00497C88 /* ArgumentParser */; };
 		BD8DB647279B512900497C88 /* CodeFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB645279B512900497C88 /* CodeFileSystem.swift */; };
 		BD8DB648279B512900497C88 /* CodeFileSystemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB646279B512900497C88 /* CodeFileSystemService.swift */; };
 		BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */; };
@@ -1123,7 +1120,6 @@
 			files = (
 				98E7D0E4263971C000758CF9 /* BlinkFiles.framework in Frameworks */,
 				BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */,
-				BD8DB635279B254400497C88 /* ArgumentParser in Frameworks */,
 				BDCB7184268E160F007D7047 /* BlinkConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1142,7 +1138,6 @@
 				BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */,
 				BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */,
 				BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */,
-				BD8DB644279B3A6E00497C88 /* ArgumentParser in Frameworks */,
 				BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1160,7 +1155,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BD8DB633279B24FA00497C88 /* ArgumentParser in Frameworks */,
 				BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */,
 				BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */,
 			);
@@ -2255,7 +2249,6 @@
 			);
 			name = BlinkFileProvider;
 			packageProductDependencies = (
-				BD8DB634279B254400497C88 /* ArgumentParser */,
 			);
 			productName = BlinkFileProvider;
 			productReference = 98271250262E4BDB00F883FA /* BlinkFileProvider.appex */;
@@ -2296,7 +2289,6 @@
 			);
 			name = BlinkCode;
 			packageProductDependencies = (
-				BD8DB643279B3A6E00497C88 /* ArgumentParser */,
 			);
 			productName = BlinkCode;
 			productReference = BDBFA3052728914F00C77798 /* BlinkCode.framework */;
@@ -2337,7 +2329,6 @@
 			name = BlinkConfig;
 			packageProductDependencies = (
 				BDCB7193268E175A007D7047 /* SSHConfig */,
-				BD8DB632279B24FA00497C88 /* ArgumentParser */,
 			);
 			productName = BlinkConfig;
 			productReference = BDCB715E268E1577007D7047 /* BlinkConfig.framework */;
@@ -4703,18 +4694,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */;
 			productName = Atomics;
-		};
-		BD8DB632279B24FA00497C88 /* ArgumentParser */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ArgumentParser;
-		};
-		BD8DB634279B254400497C88 /* ArgumentParser */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ArgumentParser;
-		};
-		BD8DB643279B3A6E00497C88 /* ArgumentParser */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ArgumentParser;
 		};
 		BDCB7193268E175A007D7047 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
