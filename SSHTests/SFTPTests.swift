@@ -61,12 +61,10 @@ class SFTPTests: XCTestCase {
   func testRequest() throws {
     let list = SSHClient
       .dialWithTestConfig()
-      .flatMap() { connection -> AnyPublisher<SFTPClient, Error> in
-        connection.requestSFTP()
-      }
-      .flatMap() { client -> AnyPublisher<[[FileAttributeKey : Any]], Error> in
-        client
-          .walkTo("~")
+      .flatMap() { $0.requestSFTP() }
+      .tryMap()  { try SFTPTranslator(on: $0) }
+      .flatMap() { t -> AnyPublisher<[[FileAttributeKey : Any]], Error> in
+        t.walkTo("~")
           .flatMap { $0.directoryFilesAndAttributes() }
           .eraseToAnyPublisher()
       }
@@ -81,25 +79,19 @@ class SFTPTests: XCTestCase {
   func testRead() throws {
     let expectation = self.expectation(description: "Buffer Written")
     
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+    //var connection: SSHClient?
+    //var sftp: SFTPClient?
     
     let cancellable = SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        sftp = client
-        return client.walkTo("linux.tar.xz")
-      }.flatMap() { item -> AnyPublisher<File, Error> in
-        return item.open(flags: O_RDONLY)
-      }.flatMap() { file in
-        return file.read(max: SSIZE_MAX)
-      }
+      .flatMap() { $0.requestSFTP() }
+      .tryMap { try SFTPTranslator(on: $0) }
+      .flatMap { $0.walkTo("linux.tar.xz") }
+      .flatMap { $0.open(flags: O_RDONLY) }
+      .flatMap { $0.read(max: SSIZE_MAX) }
+      .reduce(0, { $0 + $1.count } )
       .assertNoFailure()
-      .sink { data in
-        XCTAssertTrue(data.count == 109078664, "Wrote \(data.count)")
+      .sink { count in
+        XCTAssertTrue(count == 109078664, "Wrote \(count)")
 
         expectation.fulfill()
       }
@@ -110,23 +102,16 @@ class SFTPTests: XCTestCase {
   func testWriteTo() throws {
     let expectation = self.expectation(description: "Buffer Written")
     
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+    //var connection: SSHClient?
+    //var sftp: SFTPClient?
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
     let cancellable = SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        sftp = client
-        // TODO Create a random file first, or use one from a previous test.
-        return client.walkTo("linux.tar.xz")
-      }.flatMap() { item -> AnyPublisher<File, Error> in
-        return item.open(flags: O_RDONLY)
-      }.flatMap() { f -> AnyPublisher<Int, Error> in
+      .flatMap { $0.requestSFTP() }
+      .tryMap  { try SFTPTranslator(on: $0) }
+      .flatMap { $0.walkTo("linux.tar.xz") }
+      .flatMap { $0.open(flags: O_RDONLY) }.flatMap() { f -> AnyPublisher<Int, Error> in
         let file = f as! SFTPFile
         return file.writeTo(buffer)
       }.assertNoFailure()
@@ -150,23 +135,18 @@ class SFTPTests: XCTestCase {
   func testWrite() throws {
     let expectation = self.expectation(description: "Buffer Written")
     
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+    //var connection: SSHClient?
+    //var sftp: SFTPClient?
     var totalWritten = 0
     
     let gen = RandomInputGenerator(fast: true)
     
     let cancellable = SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        sftp = client
-        return client.walkTo("/tmp")
-      }.flatMap() { dir -> AnyPublisher<File, Error> in
-        return dir.create(name: "newfile", flags: O_WRONLY, mode: S_IRWXU)
-      }.flatMap() { file in
+      .flatMap() { $0.requestSFTP() }
+      .tryMap()  { try SFTPTranslator(on: $0) }
+      .flatMap() { $0.walkTo("/tmp") }
+      .flatMap() { $0.create(name: "newfile", flags: O_WRONLY, mode: S_IRWXU) }
+      .flatMap() { file in
         return gen.read(max: 5 * 1024 * 1024)
           .flatMap() { data in
             return file.write(data, max: data.count)
@@ -194,24 +174,22 @@ class SFTPTests: XCTestCase {
   func testWriteToWriter() throws {
     let expectation = self.expectation(description: "Buffer Written")
     
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+//    var connection: SSHClient?
+    var translator: SFTPTranslator?
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
     let cancellable = SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<File, Error> in
-        sftp = client
+      .flatMap() { $0.requestSFTP() }
+      .tryMap()  { try SFTPTranslator(on: $0) }
+      .flatMap() { t -> AnyPublisher<File, Error> in
+        translator = t
         // TODO Create a random file first, or use one from a previous test.
-        return client.walkTo("linux.tar.xz")
+        return t.walkTo("linux.tar.xz")
           .flatMap { $0.open(flags: O_RDONLY) }.eraseToAnyPublisher()
       }.flatMap() { f -> AnyPublisher<Int, Error> in
         let file = f as! SFTPFile
-        return sftp!.walkTo("/tmp/")
+        return translator!.walkTo("/tmp/")
           .flatMap { $0.create(name: "linux.tar.xz", flags: O_WRONLY, mode: S_IRWXU) }
           .flatMap() { file.writeTo($0) }.eraseToAnyPublisher()
       }.sink(receiveCompletion: { completion in
@@ -232,25 +210,20 @@ class SFTPTests: XCTestCase {
     // TODO Cleanup
   }
   
-  // Make sure we run this one last
+  // Z Makes sure we run this one last
   func testZRemove() throws {
     let expectation = self.expectation(description: "Removed")
     
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+//    var connection: SSHClient?
+//    var sftp: SFTPClient?
     let buffer = MemoryBuffer(fast: true)
     var totalWritten = 0
     
     let cancellable = SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        return client.walkTo("/tmp/linux.tar.xz")
-      }.flatMap() { file in
-        return file.remove()
-      }
+      .flatMap() { $0.requestSFTP() }
+      .tryMap()  { try SFTPTranslator(on: $0) }
+      .flatMap() { $0.walkTo("/tmp/linux.tar.xz") }
+      .flatMap() { $0.remove() }
       .sink(receiveCompletion: { completion in
         switch completion {
         case .finished:
@@ -308,8 +281,8 @@ class SFTPTests: XCTestCase {
   func testCopyAsASource() {
     continueAfterFailure = false
 
-    var connection: SSHClient?
-    var sftp: SFTPClient?
+//    var connection: SSHClient?
+//    var sftp: SFTPClient?
     let local = Local()
     
     try? FileManager.default.removeItem(atPath: "/tmp/test/copy_test")
@@ -317,15 +290,10 @@ class SFTPTests: XCTestCase {
     
     let copied = self.expectation(description: "Copied structure")
     SSHClient.dialWithTestConfig()
-      .flatMap() { conn -> AnyPublisher<SFTPClient, Error> in
-        print("Received connection")
-        connection = conn
-        return conn.requestSFTP()
-      }.flatMap() { client -> AnyPublisher<Translator, Error> in
-        sftp = client
-        // TODO Create a random file first, or use one from a previous test.
-        return client.walkTo("copy_test")
-      }.flatMap() { f -> CopyProgressInfoPublisher in
+      .flatMap() { $0.requestSFTP() }
+      .tryMap()  { try SFTPTranslator(on: $0) }
+      .flatMap() { $0.walkTo("copy_test") }
+      .flatMap() { f -> CopyProgressInfoPublisher in
         return local.walkTo("/tmp/test").flatMap { $0.copy(from: [f]) }.eraseToAnyPublisher()
       }.sink(receiveCompletion: { completion in
         switch completion {
@@ -353,13 +321,14 @@ class SFTPTests: XCTestCase {
       .requestExec(command: "rm -rf ~/test")
       .sink(test: self)
     
-    let sftp = connection?
+    let translator = connection?
       .requestSFTP()
+      .tryMap { try SFTPTranslator(on: $0) }
       .exactOneOutput(test: self)
     
     var completion: Any? = nil
     
-    sftp?
+    translator?
       .walkTo("/home/no-password")
       .flatMap() { f -> CopyProgressInfoPublisher in
         local.walkTo("/tmp/test").flatMap { f.copy(from: [$0]) }.eraseToAnyPublisher()

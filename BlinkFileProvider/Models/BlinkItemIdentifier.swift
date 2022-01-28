@@ -57,30 +57,6 @@ struct BlinkItemIdentifier {
   init(_ identifier: String) {
     self.init(NSFileProviderItemIdentifier(identifier))
   }
-  
-  init(url: URL) {
-    let manager = NSFileProviderManager.default
-    let containerPath = manager.documentStorageURL.path
-
-    // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
-    // file://<containerPath>/<encodedRootPath>/path/filename
-    // Remove containerPath, split and get encodedRootPath.
-    var encodedPath = url.path
-    encodedPath.removeFirst(containerPath.count)
-    if encodedPath.hasPrefix("/") {
-      encodedPath.removeFirst()
-    }
-    
-    // <encodedRootPath>/<encodedPath>/filename
-    // <encodedRootPath>/<path>/<to>/filename
-    let parts = encodedPath.split(separator: "/", maxSplits: 1, omittingEmptySubsequences: false).map(String.init)
-    self.encodedRootPath = parts[0]
-    if parts.count > 1 {
-      self.path = parts[1]
-    } else {
-      self.path = ""
-    }
-  }
 
   // file://<containerPath>/<encodedRootPath>/path/to/filename
   var url: URL {

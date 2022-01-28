@@ -320,9 +320,7 @@ struct HostView: View {
         Field("ProxyCmd",  $_proxyCmd,  next: "ProxyJump", placeholder: "ssh -W %h:%p bastion", enabled: _enabled)
         Field("ProxyJump", $_proxyJump, next: "Server",    placeholder: "bastion1,bastion2", enabled: _enabled)
         
-        if FeatureFlags.sshConfigAttachments {
-          FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
-        }
+        FieldTextArea("SSH Config", $_sshConfigAttachment, enabled: _enabled)
       }
       
       Section(header: Text("MOSH")) {

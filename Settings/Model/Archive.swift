@@ -158,17 +158,15 @@ struct Archive {
   }
 
   static func extract(from archiveURL: URL, password: String, to destinationURL: URL) throws {
+#if targetEnvironment(simulator)
+    throw Error("Simulator")
+#else
     guard let sourcePath = FilePath(archiveURL) else {
       throw Error("Wrong source path.")
     }
     guard let destinationPath = FilePath(destinationURL) else {
       throw Error("Wrong destination path.")
     }
-    
-#if targetEnvironment(simulator)
-    debugPrint("simulator is not supported")
-#else
-    
 
     guard let archiveFileStream = ArchiveByteStream.fileStream(
       path: sourcePath,
@@ -217,7 +215,6 @@ struct Archive {
     } catch {
       throw Error("Error extracting archive elements. \(error)")
     }
-    
 #endif
   }
 

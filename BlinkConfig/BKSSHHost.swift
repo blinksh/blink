@@ -241,3 +241,39 @@ public struct PortForwardInfo: Equatable, SSHValue {
     self.bindAddress = bindAddress
   }
 }
+
+public struct BindAddressInfo: Equatable {
+  public let remotePort: UInt16
+  public let bindAddress: String
+
+  private let pattern = #"^(?<bindAddress>\[([\w:.]+)\]|([\w.]+)):(?<remotePort>\d+)$"#
+
+  fileprivate init(castSSHValue val: String) throws {
+    try self.init(val)
+  }
+
+  public init(_ info: String) throws {
+    let regex = try! NSRegularExpression(pattern: pattern)
+    
+    guard let match = regex.firstMatch(in: info,
+                                       range: NSRange(location: 0, length: info.count))
+    else {
+      throw BKSSHHost.ValidationError(message: "Missing <bind_address>:<remoteport> for stdio forwarding.")
+    }
+    
+    guard let r = Range(match.range(withName: "remotePort"), in: info),
+          let remotePort = UInt16(info[r])
+    else {
+      throw BKSSHHost.ValidationError(message: "Invalid remote port.")
+    }
+    self.remotePort = remotePort
+    
+    guard let r = Range(match.range(withName: "bindAddress"), in: info)
+    else {
+      throw BKSSHHost.ValidationError(message: "Invalid bind address.")
+    }
+    var bindAddress = String(info[r])
+    bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
+    self.bindAddress = bindAddress
+  }
+}

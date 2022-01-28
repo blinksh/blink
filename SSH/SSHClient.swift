@@ -789,6 +789,14 @@ public class SSHClient {
     }
   }
   
+  func closeSFTP(_ sftp: sftp_session) {
+    self.rloop.perform {
+      let _ = self
+      self.log.message("Closing sftp channel", SSH_LOG_INFO)
+      sftp_free(sftp)
+    }
+  }
+  
   deinit {
     self.log.message("Session deinit", SSH_LOG_INFO)
     ssh_free(session)

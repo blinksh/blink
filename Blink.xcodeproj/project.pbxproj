@@ -95,9 +95,7 @@
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
-		BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCED26D9802900054338 /* TranslatorFactory.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
-		BD67FC80272DF19B00C1EE75 /* TranslatorFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */; };
 		BD67FC81272DF22700C1EE75 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		BD67FC85272E3FF800C1EE75 /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
 		BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
@@ -106,12 +104,8 @@
 		BD81522027387D1F002BB169 /* Certificates.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81521C27387D1F002BB169 /* Certificates.swift */; };
 		BD81522D2739A91D002BB169 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD81522E2739A91D002BB169 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
-		BD815235273D7A09002BB169 /* Purchases in Frameworks */ = {isa = PBXBuildFile; productRef = BD815234273D7A09002BB169 /* Purchases */; };
-		BD81523F273DB964002BB169 /* EntitlementsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523C273DB964002BB169 /* EntitlementsManager.swift */; };
-		BD815240273DB964002BB169 /* SubscriptionNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523D273DB964002BB169 /* SubscriptionNag.swift */; };
-		BD815241273DB964002BB169 /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD81523E273DB964002BB169 /* Purchases.swift */; };
-		BD815243273DBEDE002BB169 /* PurchasesUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */; };
 		BD8152542743FF84002BB169 /* skstore.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8152532743FF84002BB169 /* skstore.swift */; };
+		BD835DD427A0BD19002C37D7 /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */; };
 		BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */; };
 		BD896F8926CFDB17004313E6 /* Atomics in Frameworks */ = {isa = PBXBuildFile; productRef = BD896F8826CFDB17004313E6 /* Atomics */; };
 		BD8BBF5525F829B00084705F /* SEKeyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8BBF0825F819970084705F /* SEKeyTests.swift */; };
@@ -126,6 +120,10 @@
 		BD8D897325DC534F00E55D9E /* user_key in Resources */ = {isa = PBXBuildFile; fileRef = BD8D896F25DC534F00E55D9E /* user_key */; };
 		BD8D897425DC534F00E55D9E /* id_ecdsa.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897025DC534F00E55D9E /* id_ecdsa.pub */; };
 		BD8D897525DC534F00E55D9E /* user_key-cert.pub in Resources */ = {isa = PBXBuildFile; fileRef = BD8D897125DC534F00E55D9E /* user_key-cert.pub */; };
+		BD8DB62A279B1EC800497C88 /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB629279B1EC800497C88 /* SSHClient.swift */; };
+		BD8DB642279B2FA200497C88 /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB641279B2FA200497C88 /* SSHClient.swift */; };
+		BD8DB647279B512900497C88 /* CodeFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB645279B512900497C88 /* CodeFileSystem.swift */; };
+		BD8DB648279B512900497C88 /* CodeFileSystemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB646279B512900497C88 /* CodeFileSystemService.swift */; };
 		BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */; };
 		BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */; };
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
@@ -144,14 +142,11 @@
 		BD9EA216271F83B400874007 /* BlinkLoggingTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */; };
 		BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20A271F62ED00874007 /* BlinkLogging.swift */; };
 		BD9EA218271F846400874007 /* Publisher.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9EA20C271F664D00874007 /* Publisher.swift */; };
-		BDB48369276A5B13002CA78D /* ReceiptTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB48368276A5B13002CA78D /* ReceiptTests.swift */; };
-		BDB72137274821C000EE819A /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB72136274821C000EE819A /* Receipt.swift */; };
 		BDBFA30D2728914F00C77798 /* BlinkCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; };
 		BDBFA3122728914F00C77798 /* BlinkCodeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3112728914F00C77798 /* BlinkCodeTests.swift */; };
 		BDBFA3132728914F00C77798 /* BlinkCode.h in Headers */ = {isa = PBXBuildFile; fileRef = BDBFA3072728914F00C77798 /* BlinkCode.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		BDBFA31E272891DE00C77798 /* WebSocketServerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */; };
 		BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA31F2728925C00C77798 /* WebSocketServer.swift */; };
-		BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDBFA3202728925C00C77798 /* FileSystem.swift */; };
 		BDBFA3232728927000C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDBFA3282728927E00C77798 /* BlinkFiles.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABBAF25C9AECF00E1CC2C /* BlinkFiles.framework */; };
 		BDCB7165268E1577007D7047 /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
@@ -192,13 +187,6 @@
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2011CD626A6FF9F002E4E85 /* Alert.swift */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
-		D2043EBE2771C283002E29AF /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBA2771C282002E29AF /* CheckmarkRow.swift */; };
-		D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBB2771C282002E29AF /* MigratePageView.swift */; };
-		D2043EC02771C283002E29AF /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EBC2771C282002E29AF /* PaywallView.swift */; };
-		D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC42771C28D002E29AF /* PurchasePageView.swift */; };
-		D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC52771C28D002E29AF /* ShakeDetector.swift */; };
-		D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043EC62771C28D002E29AF /* TopupPageView.swift */; };
-		D2043ECD2771DB9C002E29AF /* StatusBarLessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
@@ -292,11 +280,8 @@
 		D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = D2499BEB2362EFD40009C701 /* cpp.cpp */; };
 		D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; };
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D253EB3D2790570E00BF8541 /* LegacyMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
-		D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25EE8CE2779E060003EA471 /* PlansView.swift */; };
-		D265C3662796ED060069DEF7 /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -318,7 +303,6 @@
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29568B921BE629100480A83 /* bk_getopts.c in Sources */ = {isa = PBXBuildFile; fileRef = D29568B821BE629100480A83 /* bk_getopts.c */; };
-		D297DF002774962600A20265 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D297DEFF2774962600A20265 /* SettingsView.swift */; };
 		D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */; };
 		D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29D6C3022DB9CA700A84173 /* TermController.swift */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
@@ -333,6 +317,25 @@
 		D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611D23AB5ACD00BE6585 /* UIApplication+Version.m */; };
 		D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */; };
 		D2AC6749220303D900177BC5 /* openurl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AC6742220303D900177BC5 /* openurl.m */; };
+		D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E5D27A2BAD600DED28D /* StatusBarLessViewController.swift */; };
+		D2AD8E7027A2BAFA00DED28D /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */; };
+		D2AD8E7127A2BAFA00DED28D /* MigrationPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */; };
+		D2AD8E7227A2BAFA00DED28D /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6327A2BAFA00DED28D /* Receipt.swift */; };
+		D2AD8E7327A2BAFA00DED28D /* SubscriptionNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */; };
+		D2AD8E7427A2BAFA00DED28D /* EntitlementsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */; };
+		D2AD8E7527A2BAFA00DED28D /* PurchasesUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */; };
+		D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6727A2BAFA00DED28D /* Purchases.swift */; };
+		D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */; };
+		D2AD8E7827A2BAFA00DED28D /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */; };
+		D2AD8E7927A2BAFA00DED28D /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */; };
+		D2AD8E7A27A2BAFA00DED28D /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */; };
+		D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */; };
+		D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */; };
+		D2AD8E7D27A2BAFA00DED28D /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */; };
+		D2AD8E8227A2C79B00DED28D /* Purchases in Frameworks */ = {isa = PBXBuildFile; productRef = D2AD8E8127A2C79B00DED28D /* Purchases */; };
+		D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8327A2C80C00DED28D /* SettingsView.swift */; };
+		D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8627A2C81900DED28D /* PlansView.swift */; };
+		D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8727A2C81900DED28D /* ExplanationView.swift */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
@@ -373,7 +376,6 @@
 		D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C24436239104250082C69C /* ShortcutsConfigView.swift */; };
 		D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		D2C7710826EA49AA001B5659 /* openssl.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		D2C83F2A278EF93C007FFED6 /* MigrationPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */; };
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
@@ -404,7 +406,6 @@
 		D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9525CA99AD00F2225D /* libssh2.xcframework */; };
 		D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334EC825C1C04700385378 /* ssh_cmd.xcframework */; };
 		D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */; };
-		D2FD6D05277B184F007414E3 /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2FD6D04277B184F007414E3 /* ExplanationView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -769,17 +770,12 @@
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
-		BD44DCED26D9802900054338 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
-		BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TranslatorFactory.swift; sourceTree = "<group>"; };
 		BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskMonitor.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD81521C27387D1F002BB169 /* Certificates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Certificates.swift; sourceTree = "<group>"; };
-		BD81523C273DB964002BB169 /* EntitlementsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsManager.swift; sourceTree = "<group>"; };
-		BD81523D273DB964002BB169 /* SubscriptionNag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionNag.swift; sourceTree = "<group>"; };
-		BD81523E273DB964002BB169 /* Purchases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
-		BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PurchasesUserModel.swift; sourceTree = "<group>"; };
 		BD8152532743FF84002BB169 /* skstore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = skstore.swift; sourceTree = "<group>"; };
+		BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileTranslatorCache.swift; sourceTree = "<group>"; };
 		BD8BBF0825F819970084705F /* SEKeyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SEKeyTests.swift; sourceTree = "<group>"; };
 		BD8BBFAF25F947710084705F /* Keys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Keys.swift; sourceTree = "<group>"; };
@@ -792,6 +788,10 @@
 		BD8D896F25DC534F00E55D9E /* user_key */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = user_key; sourceTree = "<group>"; };
 		BD8D897025DC534F00E55D9E /* id_ecdsa.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = id_ecdsa.pub; sourceTree = "<group>"; };
 		BD8D897125DC534F00E55D9E /* user_key-cert.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "user_key-cert.pub"; sourceTree = "<group>"; };
+		BD8DB629279B1EC800497C88 /* SSHClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHClient.swift; sourceTree = "<group>"; };
+		BD8DB641279B2FA200497C88 /* SSHClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHClient.swift; sourceTree = "<group>"; };
+		BD8DB645279B512900497C88 /* CodeFileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeFileSystem.swift; sourceTree = "<group>"; };
+		BD8DB646279B512900497C88 /* CodeFileSystemService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeFileSystemService.swift; sourceTree = "<group>"; };
 		BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentAdd.swift; sourceTree = "<group>"; };
 		BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentPool.swift; sourceTree = "<group>"; };
 		BD9BF7E3262A6B0300B02074 /* SOCKS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKS.swift; sourceTree = "<group>"; };
@@ -807,8 +807,6 @@
 		BD9EA20A271F62ED00874007 /* BlinkLogging.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkLogging.swift; sourceTree = "<group>"; };
 		BD9EA20C271F664D00874007 /* Publisher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Publisher.swift; sourceTree = "<group>"; };
 		BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkLoggingTests.swift; sourceTree = "<group>"; };
-		BDB48368276A5B13002CA78D /* ReceiptTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReceiptTests.swift; sourceTree = "<group>"; };
-		BDB72136274821C000EE819A /* Receipt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Receipt.swift; sourceTree = "<group>"; };
 		BDB8BEA726E008190093BF48 /* OwnAlertController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OwnAlertController.swift; sourceTree = "<group>"; };
 		BDBFA3052728914F00C77798 /* BlinkCode.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkCode.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDBFA3072728914F00C77798 /* BlinkCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BlinkCode.h; sourceTree = "<group>"; };
@@ -816,8 +814,6 @@
 		BDBFA3112728914F00C77798 /* BlinkCodeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkCodeTests.swift; sourceTree = "<group>"; };
 		BDBFA31D272891DE00C77798 /* WebSocketServerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServerTests.swift; sourceTree = "<group>"; };
 		BDBFA31F2728925C00C77798 /* WebSocketServer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebSocketServer.swift; sourceTree = "<group>"; };
-		BDBFA3202728925C00C77798 /* FileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FileSystem.swift; sourceTree = "<group>"; };
-		BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveAlertUI.swift; sourceTree = "<group>"; };
 		BDCB715E268E1577007D7047 /* BlinkConfig.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = BlinkConfig.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		BDCB7161268E1577007D7047 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BDCB716B268E15A0007D7047 /* BKHosts.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKHosts.swift; sourceTree = "<group>"; };
@@ -861,13 +857,6 @@
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
 		D2011CD626A6FF9F002E4E85 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingConfigView.swift; sourceTree = "<group>"; };
-		D2043EBA2771C282002E29AF /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
-		D2043EBB2771C282002E29AF /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
-		D2043EBC2771C282002E29AF /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
-		D2043EC42771C28D002E29AF /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
-		D2043EC52771C28D002E29AF /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
-		D2043EC62771C28D002E29AF /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
-		D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatusBarLessViewController.swift; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
@@ -955,10 +944,8 @@
 		D2496F3B20038B3300E75FE9 /* hterm_all.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.min.js; sourceTree = "<group>"; };
 		D2496F402003941B00E75FE9 /* term.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = term.js; sourceTree = "<group>"; };
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
-		D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LegacyMigrationView.swift; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
-		D25EE8CE2779E060003EA471 /* PlansView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
@@ -985,7 +972,6 @@
 		D29392B62004D785001FB2AA /* hterm_all.patches.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = hterm_all.patches.js; sourceTree = "<group>"; };
 		D29568B721BE629100480A83 /* bk_getopts.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = bk_getopts.h; sourceTree = "<group>"; };
 		D29568B821BE629100480A83 /* bk_getopts.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = bk_getopts.c; sourceTree = "<group>"; };
-		D297DEFF2774962600A20265 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserController.swift; sourceTree = "<group>"; };
 		D29D6C3022DB9CA700A84173 /* TermController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TermController.swift; sourceTree = "<group>"; };
 		D29FE548208DC860004679D0 /* commandDictionary.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = commandDictionary.plist; sourceTree = "<group>"; };
@@ -998,6 +984,24 @@
 		D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIApplication+Version.h"; sourceTree = "<group>"; };
 		D2AC6742220303D900177BC5 /* openurl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = openurl.m; sourceTree = "<group>"; };
 		D2AC674A22031EE600177BC5 /* openurl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openurl.h; sourceTree = "<group>"; };
+		D2AD8E5D27A2BAD600DED28D /* StatusBarLessViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarLessViewController.swift; sourceTree = "<group>"; };
+		D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveAlertUI.swift; sourceTree = "<group>"; };
+		D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationPageView.swift; sourceTree = "<group>"; };
+		D2AD8E6327A2BAFA00DED28D /* Receipt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Receipt.swift; sourceTree = "<group>"; };
+		D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionNag.swift; sourceTree = "<group>"; };
+		D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsManager.swift; sourceTree = "<group>"; };
+		D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasesUserModel.swift; sourceTree = "<group>"; };
+		D2AD8E6727A2BAFA00DED28D /* Purchases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
+		D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyMigrationView.swift; sourceTree = "<group>"; };
+		D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
+		D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
+		D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
+		D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
+		D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
+		D2AD8E8327A2C80C00DED28D /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		D2AD8E8627A2C81900DED28D /* PlansView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
+		D2AD8E8727A2C81900DED28D /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
@@ -1037,7 +1041,6 @@
 		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
 		D2C605B926AB4C25003CA39F /* BlinkBuild */ = {isa = PBXFileReference; lastKnownFileType = text; name = BlinkBuild; path = xcfs/.build/checkouts/BlinkBuild; sourceTree = SOURCE_ROOT; };
-		D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MigrationPageView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
@@ -1068,7 +1071,6 @@
 		D2F64C9425CA99AD00F2225D /* openssl.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = openssl.xcframework; path = xcfs/.build/artifacts/xcfs/openssl.xcframework; sourceTree = SOURCE_ROOT; };
 		D2F64C9525CA99AD00F2225D /* libssh2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = libssh2.xcframework; path = xcfs/.build/artifacts/xcfs/libssh2.xcframework; sourceTree = SOURCE_ROOT; };
 		D2FCB4DC2339F9DB00A88108 /* UIScrollView+Paging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIScrollView+Paging.swift"; sourceTree = "<group>"; };
-		D2FD6D04277B184F007414E3 /* ExplanationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		EA0BA18B1C0CC57B00719C1A /* Blink.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Blink.app; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -1206,13 +1208,13 @@
 				D2B9E21E268084E40084B2C4 /* Machines in Frameworks */,
 				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
+				D2AD8E8227A2C79B00DED28D /* Purchases in Frameworks */,
 				D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
 				07FABBC425C9AECF00E1CC2C /* BlinkFiles.framework in Frameworks */,
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				D2F64CA925CAA92700F2225D /* curl_ios_static.framework in Frameworks */,
-				BD815235273D7A09002BB169 /* Purchases in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
 				D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */,
 				07FAB90F25C8E94E00E1CC2C /* ArgumentParser in Frameworks */,
@@ -1231,7 +1233,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
-				BD81523B273DB964002BB169 /* Subscriptions */,
+				D2AD8E6027A2BAFA00DED28D /* Subscriptions */,
 				BD9EA1ED2719D28800874007 /* Migrator */,
 				D215AC282335218E00E164C3 /* WebKit */,
 				D265FBC7231904B50017EAC4 /* Foundation */,
@@ -1242,6 +1244,7 @@
 				0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */,
 				0716B53C1CFFAB9300268B5B /* Info.plist */,
 				D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */,
+				D2AD8E5D27A2BAD600DED28D /* StatusBarLessViewController.swift */,
 				0716B5291CFFAB9300268B5B /* AppDelegate.h */,
 				0716B52A1CFFAB9300268B5B /* AppDelegate.m */,
 				0716B52C1CFFAB9300268B5B /* LaunchScreen.storyboard */,
@@ -1265,7 +1268,6 @@
 				D29D6C3022DB9CA700A84173 /* TermController.swift */,
 				D2887A5522DC676F00701BD5 /* SpaceController.swift */,
 				D2887A5D22DCA6D500701BD5 /* SceneDelegate.swift */,
-				D2043ECC2771DB9C002E29AF /* StatusBarLessViewController.swift */,
 				D248E67522DDDF130057FE67 /* UIStateRestorable.swift */,
 				D2BC514C2355C3AE0034FDD4 /* History.swift */,
 				D25D580F2358897B00D1BCAE /* Complete.swift */,
@@ -1493,8 +1495,9 @@
 		98271251262E4BDB00F883FA /* BlinkFileProvider */ = {
 			isa = PBXGroup;
 			children = (
-				BD9EA17C2718D6C400874007 /* NSFileProviderError.swift */,
 				98E7D0AF2638B3AE00758CF9 /* Models */,
+				BD8DB628279B1EC800497C88 /* SSH */,
+				BD9EA17C2718D6C400874007 /* NSFileProviderError.swift */,
 				98271252262E4BDB00F883FA /* FileProviderExtension.swift */,
 				98271256262E4BDB00F883FA /* FileProviderEnumerator.swift */,
 				98271258262E4BDB00F883FA /* Info.plist */,
@@ -1506,7 +1509,6 @@
 		98E7D0AF2638B3AE00758CF9 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				BD44DCED26D9802900054338 /* TranslatorFactory.swift */,
 				BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */,
 				98E7D0BD2638B46400758CF9 /* BlinkItemReference.swift */,
 				BD896F7A26CEAD37004313E6 /* FileTranslatorCache.swift */,
@@ -1550,29 +1552,12 @@
 			path = Security;
 			sourceTree = "<group>";
 		};
-		BD81523B273DB964002BB169 /* Subscriptions */ = {
+		BD835DCF27A0BD19002C37D7 /* Publisher */ = {
 			isa = PBXGroup;
 			children = (
-				D2043EB62771C25D002E29AF /* Paywall */,
-				BD81523C273DB964002BB169 /* EntitlementsManager.swift */,
-				BDC8D8BC2790D35A00115FD5 /* ArchiveAlertUI.swift */,
-				BD81523D273DB964002BB169 /* SubscriptionNag.swift */,
-				BD81523E273DB964002BB169 /* Purchases.swift */,
-				BD815242273DBEDE002BB169 /* PurchasesUserModel.swift */,
-				BDB72136274821C000EE819A /* Receipt.swift */,
-				D2C83F29278EF93C007FFED6 /* MigrationPageView.swift */,
-				D253EB3C2790570E00BF8541 /* LegacyMigrationView.swift */,
+				BD835DD027A0BD19002C37D7 /* ReplaySubject.swift */,
 			);
-			path = Subscriptions;
-			sourceTree = "<group>";
-		};
-		BD815248273EFA1A002BB169 /* Subscriptions */ = {
-			isa = PBXGroup;
-			children = (
-				D25EE8CE2779E060003EA471 /* PlansView.swift */,
-				D2FD6D04277B184F007414E3 /* ExplanationView.swift */,
-			);
-			path = Subscriptions;
+			path = Publisher;
 			sourceTree = "<group>";
 		};
 		BD8D898025DC535600E55D9E /* keys */ = {
@@ -1587,6 +1572,23 @@
 			);
 			name = keys;
 			sourceTree = "<group>";
+		};
+		BD8DB628279B1EC800497C88 /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				BD8DB629279B1EC800497C88 /* SSHClient.swift */,
+			);
+			path = SSH;
+			sourceTree = "<group>";
+		};
+		BD8DB640279B2FA200497C88 /* SSH */ = {
+			isa = PBXGroup;
+			children = (
+				BD8DB641279B2FA200497C88 /* SSHClient.swift */,
+			);
+			name = SSH;
+			path = BlinkFileProvider/SSH;
+			sourceTree = SOURCE_ROOT;
 		};
 		BD9EA1CA2718E19000874007 /* BlinkFileProviderUI */ = {
 			isa = PBXGroup;
@@ -1620,9 +1622,11 @@
 		BDBFA3062728914F00C77798 /* BlinkCode */ = {
 			isa = PBXGroup;
 			children = (
+				BD835DCF27A0BD19002C37D7 /* Publisher */,
+				BD8DB640279B2FA200497C88 /* SSH */,
 				BD81521C27387D1F002BB169 /* Certificates.swift */,
-				BD67FC7F272DF19B00C1EE75 /* TranslatorFactory.swift */,
-				BDBFA3202728925C00C77798 /* FileSystem.swift */,
+				BD8DB645279B512900497C88 /* CodeFileSystem.swift */,
+				BD8DB646279B512900497C88 /* CodeFileSystemService.swift */,
 				BDBFA31F2728925C00C77798 /* WebSocketServer.swift */,
 				BDBFA3072728914F00C77798 /* BlinkCode.h */,
 				BD67FC78272B30F300C1EE75 /* Messages.swift */,
@@ -1716,6 +1720,7 @@
 		C9B2E0031D6B612300B89F69 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
+				D2AD8E8327A2C80C00DED28D /* SettingsView.swift */,
 				C94E9B611D6BA21C00DA4DD6 /* DismissSegue.h */,
 				C94E9B621D6BA21C00DA4DD6 /* DismissSegue.m */,
 				C9B2E0041D6B612300B89F69 /* Settings.storyboard */,
@@ -1724,7 +1729,6 @@
 				C9B2E0111D6B612300B89F69 /* Network */,
 				C9B2E0141D6B612300B89F69 /* ViewControllers */,
 				803B99E2258381B200DC99C8 /* SettingsHostingController.swift */,
-				D297DEFF2774962600A20265 /* SettingsView.swift */,
 			);
 			path = Settings;
 			sourceTree = "<group>";
@@ -1762,7 +1766,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
-				BD815248273EFA1A002BB169 /* Subscriptions */,
+				D2AD8E8527A2C81900DED28D /* Subscriptions */,
 				D2B0BD172720311B00485854 /* Gestures */,
 				803B99CB2582865500DC99C8 /* Notifications */,
 				B7A4875F1DC7BD29007BA809 /* BKDefaultUser */,
@@ -1774,19 +1778,6 @@
 				B75112C71DE4A7680040C693 /* UserConfiguration */,
 			);
 			path = ViewControllers;
-			sourceTree = "<group>";
-		};
-		D2043EB62771C25D002E29AF /* Paywall */ = {
-			isa = PBXGroup;
-			children = (
-				D2043EC42771C28D002E29AF /* PurchasePageView.swift */,
-				D2043EC52771C28D002E29AF /* ShakeDetector.swift */,
-				D2043EC62771C28D002E29AF /* TopupPageView.swift */,
-				D2043EBA2771C282002E29AF /* CheckmarkRow.swift */,
-				D2043EBC2771C282002E29AF /* PaywallView.swift */,
-				D2043EBB2771C282002E29AF /* MigratePageView.swift */,
-			);
-			path = Paywall;
 			sourceTree = "<group>";
 		};
 		D215AC282335218E00E164C3 /* WebKit */ = {
@@ -1885,7 +1876,6 @@
 				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
 				BD8BBF0825F819970084705F /* SEKeyTests.swift */,
 				BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */,
-				BDB48368276A5B13002CA78D /* ReceiptTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -1913,6 +1903,44 @@
 				D28B0336243EF5F2008F38F6 /* Set+UIScene.swift */,
 			);
 			path = UIKit;
+			sourceTree = "<group>";
+		};
+		D2AD8E6027A2BAFA00DED28D /* Subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */,
+				D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */,
+				D2AD8E6327A2BAFA00DED28D /* Receipt.swift */,
+				D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */,
+				D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */,
+				D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */,
+				D2AD8E6727A2BAFA00DED28D /* Purchases.swift */,
+				D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */,
+				D2AD8E6927A2BAFA00DED28D /* Paywall */,
+			);
+			path = Subscriptions;
+			sourceTree = "<group>";
+		};
+		D2AD8E6927A2BAFA00DED28D /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */,
+				D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */,
+				D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */,
+				D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */,
+				D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */,
+				D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
+		D2AD8E8527A2C81900DED28D /* Subscriptions */ = {
+			isa = PBXGroup;
+			children = (
+				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
+				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
+			);
+			path = Subscriptions;
 			sourceTree = "<group>";
 		};
 		D2B0BD172720311B00485854 /* Gestures */ = {
@@ -2260,6 +2288,8 @@
 				BD67FC88272E3FF800C1EE75 /* PBXTargetDependency */,
 			);
 			name = BlinkCode;
+			packageProductDependencies = (
+			);
 			productName = BlinkCode;
 			productReference = BDBFA3052728914F00C77798 /* BlinkCode.framework */;
 			productType = "com.apple.product-type.framework";
@@ -2406,7 +2436,7 @@
 				07FAB90E25C8E94E00E1CC2C /* ArgumentParser */,
 				D2B9E21D268084E40084B2C4 /* Machines */,
 				D2B9E221268085050084B2C4 /* BuildCLI */,
-				BD815234273D7A09002BB169 /* Purchases */,
+				D2AD8E8127A2C79B00DED28D /* Purchases */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2472,6 +2502,7 @@
 					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
+						DevelopmentTeam = "$(TEAM_ID)";
 						LastSwiftMigration = 0830;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
@@ -2514,7 +2545,7 @@
 			mainGroup = EA0BA1821C0CC57B00719C1A;
 			packageReferences = (
 				BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */,
-				BD815233273D7A09002BB169 /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -2804,7 +2835,7 @@
 				BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */,
 				BD9EA1802718D6C400874007 /* NSFileProviderError.swift in Sources */,
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
-				BD44DCF126D9802900054338 /* TranslatorFactory.swift in Sources */,
+				BD8DB62A279B1EC800497C88 /* SSHClient.swift in Sources */,
 				BD9EA20B271F62ED00874007 /* BlinkLogging.swift in Sources */,
 				BD896F7B26CEAD37004313E6 /* FileTranslatorCache.swift in Sources */,
 				98E7D0BE2638B46400758CF9 /* BlinkItemReference.swift in Sources */,
@@ -2826,12 +2857,14 @@
 			files = (
 				BD81522D2739A91D002BB169 /* BlinkLogging.swift in Sources */,
 				BD81522E2739A91D002BB169 /* Publisher.swift in Sources */,
-				BDBFA3222728925C00C77798 /* FileSystem.swift in Sources */,
-				BD67FC80272DF19B00C1EE75 /* TranslatorFactory.swift in Sources */,
+				BD8DB648279B512900497C88 /* CodeFileSystemService.swift in Sources */,
+				BD835DD427A0BD19002C37D7 /* ReplaySubject.swift in Sources */,
+				BD8DB642279B2FA200497C88 /* SSHClient.swift in Sources */,
 				BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */,
 				BDBFA3212728925C00C77798 /* WebSocketServer.swift in Sources */,
 				BD67FC9B2732D4D300C1EE75 /* BackgroundTaskMonitor.swift in Sources */,
 				BD81522027387D1F002BB169 /* Certificates.swift in Sources */,
+				BD8DB647279B512900497C88 /* CodeFileSystem.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2883,7 +2916,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				BDB48369276A5B13002CA78D /* ReceiptTests.swift in Sources */,
 				BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
@@ -2912,14 +2944,18 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D2AD8E7D27A2BAFA00DED28D /* CheckmarkRow.swift in Sources */,
+				D2AD8E7527A2BAFA00DED28D /* PurchasesUserModel.swift in Sources */,
 				BD9EA212271F824900874007 /* Publisher.swift in Sources */,
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */,
+				D2AD8E7A27A2BAFA00DED28D /* ShakeDetector.swift in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */,
 				BD8152542743FF84002BB169 /* skstore.swift in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
+				D2AD8E7027A2BAFA00DED28D /* ArchiveAlertUI.swift in Sources */,
 				D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */,
 				803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */,
 				D2C2441C238E44AB0082C69C /* NavButton.swift in Sources */,
@@ -2950,8 +2986,8 @@
 				C94437571D8311960096F84E /* BKResource.m in Sources */,
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
-				D265C3662796ED060069DEF7 /* ArchiveAlertUI.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
+				D2AD8E7927A2BAFA00DED28D /* PaywallView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
@@ -2966,41 +3002,39 @@
 				D2DDD70B2657E35C00DAB52A /* build.swift in Sources */,
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
+				D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */,
 				D266A9DC272A77A100C85EED /* code.swift in Sources */,
 				D2C24425238E44AB0082C69C /* KeyModifierPicker.swift in Sources */,
 				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
-				BD815241273DB964002BB169 /* Purchases.swift in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
 				D241CBDC23040734003D64A5 /* KBKeyViewVertical2.swift in Sources */,
-				D2C83F2A278EF93C007FFED6 /* MigrationPageView.swift in Sources */,
 				D2C24423238E44AB0082C69C /* KBWebView.swift in Sources */,
-				BD815240273DB964002BB169 /* SubscriptionNag.swift in Sources */,
 				BD9EA1FE271A148700874007 /* Migrator.swift in Sources */,
 				D2C24417238E44AB0082C69C /* KeyConfig.swift in Sources */,
 				D28F301A21AD8A6B00E5259F /* DeviceInfo.m in Sources */,
-				D2043EC02771C283002E29AF /* PaywallView.swift in Sources */,
 				D2179F2F2136DBC600B0850A /* geo.m in Sources */,
 				D2C24414238E44AB0082C69C /* KeyAction.swift in Sources */,
 				D28B0337243EF5F2008F38F6 /* Set+UIScene.swift in Sources */,
 				D241CBD423040734003D64A5 /* KBView.swift in Sources */,
 				D2F330DA20A7127B0074ADD7 /* open.m in Sources */,
 				C9B2E0321D6B612400B89F69 /* BKFont.m in Sources */,
-				D2043EBE2771C283002E29AF /* CheckmarkRow.swift in Sources */,
 				D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */,
 				BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */,
 				074F30791D062A2800A73445 /* main.m in Sources */,
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
-				D2043ECB2771C28D002E29AF /* TopupPageView.swift in Sources */,
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
+				D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */,
+				D2AD8E7327A2BAFA00DED28D /* SubscriptionNag.swift in Sources */,
 				BD3E1E53278D190500333C44 /* Archive.swift in Sources */,
 				D2C24419238E44AB0082C69C /* KeyConfigPairView.swift in Sources */,
+				D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */,
 				D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */,
-				D25EE8CF2779E060003EA471 /* PlansView.swift in Sources */,
 				07FAB8F525C8E6C500E1CC2C /* SSHConfigProvider.swift in Sources */,
+				D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
@@ -3012,7 +3046,6 @@
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,
-				D2043EC92771C28D002E29AF /* PurchasePageView.swift in Sources */,
 				D2F330CA20A6CB840074ADD7 /* help.m in Sources */,
 				D28C357626A56DDF00202C4D /* FileProviderDomain.swift in Sources */,
 				D241CBD223040734003D64A5 /* KBDevice.swift in Sources */,
@@ -3027,7 +3060,6 @@
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
-				D2043ECA2771C28D002E29AF /* ShakeDetector.swift in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
 				D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */,
@@ -3036,17 +3068,16 @@
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
+				D2AD8E7827A2BAFA00DED28D /* TopupPageView.swift in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
-				BD81523F273DB964002BB169 /* EntitlementsManager.swift in Sources */,
 				07E3AEB01D8F6758007BC086 /* BKFeedbackViewController.m in Sources */,
 				B7D450361DD3A87200CE0DBE /* BKiCloudSyncHandler.m in Sources */,
 				D248E67622DDDF130057FE67 /* UIStateRestorable.swift in Sources */,
 				C9B2E0341D6B612400B89F69 /* BKTheme.m in Sources */,
 				D241CBD123040734003D64A5 /* KBKeyViewArrows.swift in Sources */,
 				D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */,
-				D253EB3D2790570E00BF8541 /* LegacyMigrationView.swift in Sources */,
 				D2C24415238E44AB0082C69C /* KeyCode.swift in Sources */,
 				D2F330CC20A6D98C0074ADD7 /* config.m in Sources */,
 				D241CBDB23040734003D64A5 /* KBAccessoryView.swift in Sources */,
@@ -3060,37 +3091,38 @@
 				D2C24413238E44AB0082C69C /* KeyConfigPair.swift in Sources */,
 				D2FCB4DD2339F9DB00A88108 /* UIScrollView+Paging.swift in Sources */,
 				D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */,
+				D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2C24420238E44AB0082C69C /* Chevron.swift in Sources */,
+				D2AD8E7427A2BAFA00DED28D /* EntitlementsManager.swift in Sources */,
 				D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */,
 				D2C24416238E44AB0082C69C /* KBConfig.swift in Sources */,
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
+				D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */,
+				D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
-				D2FD6D05277B184F007414E3 /* ExplanationView.swift in Sources */,
-				BD815243273DBEDE002BB169 /* PurchasesUserModel.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
 				D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */,
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
-				D2043ECD2771DB9C002E29AF /* StatusBarLessViewController.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
-				D2043EBF2771C283002E29AF /* MigratePageView.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
-				D297DF002774962600A20265 /* SettingsView.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
+				D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */,
+				D2AD8E7227A2BAFA00DED28D /* Receipt.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
+				D2AD8E7127A2BAFA00DED28D /* MigrationPageView.swift in Sources */,
 				D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */,
 				D2C2441A238E44AB0082C69C /* KeySection.swift in Sources */,
 				079635871D0E6602000473B1 /* TermView.m in Sources */,
-				BDB72137274821C000EE819A /* Receipt.swift in Sources */,
 				D241CBE6230562E9003D64A5 /* KBSizes.swift in Sources */,
 				D241CBD023040734003D64A5 /* KBKeyViewFlexible.swift in Sources */,
 			);
@@ -3267,7 +3299,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3286,10 +3318,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).SSH";
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.SSH;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -3317,7 +3349,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3332,9 +3364,9 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).SSH";
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.SSH;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SWIFT_VERSION = 5.0;
@@ -3365,7 +3397,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = SSHTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3399,7 +3431,7 @@
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = SSHTests/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.4;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -3429,7 +3461,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3448,10 +3480,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFiles";
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.BlinkFiles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -3481,7 +3513,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3496,9 +3528,9 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFiles";
+				PRODUCT_BUNDLE_IDENTIFIER = com.carloscabanero.BlinkFiles;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -3600,7 +3632,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3614,10 +3646,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkShellFileProvider";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -3646,7 +3678,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
@@ -3656,9 +3688,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkShellFileProvider";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProvider;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = NO;
@@ -3684,7 +3716,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -3701,10 +3733,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProviderUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
@@ -3731,7 +3763,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -3744,9 +3776,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkFileProviderUI;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -3945,7 +3977,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -3964,10 +3996,10 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkConfig";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -3999,7 +4031,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = HV2S48975V;
 				DYLIB_COMPATIBILITY_VERSION = 1;
@@ -4014,9 +4046,9 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkConfig";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkConfig;
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				"PROVISIONING_PROFILE_SPECIFIER[sdk=macosx*]" = "";
@@ -4244,7 +4276,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
@@ -4258,10 +4290,10 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkShellIntents";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkIntents;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -4289,7 +4321,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkIntents/Info.plist;
@@ -4299,9 +4331,9 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkShellIntents";
+				PRODUCT_BUNDLE_IDENTIFIER = Com.CarlosCabanero.BlinkShell.BlinkIntents;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 				SUPPORTS_MACCATALYST = YES;
@@ -4426,7 +4458,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4443,7 +4475,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -4468,7 +4500,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 411;
+				CURRENT_PROJECT_VERSION = 429;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				DEVELOPMENT_TEAM = "$(TEAM_ID)";
@@ -4480,7 +4512,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.5;
+				MARKETING_VERSION = 14.0.7;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -4635,20 +4667,20 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		BD815233273D7A09002BB169 /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
-			};
-		};
 		BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-atomics.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 0.0.3;
+			};
+		};
+		D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -4658,11 +4690,6 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = ArgumentParser;
 		};
-		BD815234273D7A09002BB169 /* Purchases */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = BD815233273D7A09002BB169 /* XCRemoteSwiftPackageReference "purchases-ios" */;
-			productName = Purchases;
-		};
 		BD896F8826CFDB17004313E6 /* Atomics */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */;
@@ -4671,6 +4698,11 @@
 		BDCB7193268E175A007D7047 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SSHConfig;
+		};
+		D2AD8E8127A2C79B00DED28D /* Purchases */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = Purchases;
 		};
 		D2B9E21D268084E40084B2C4 /* Machines */ = {
 			isa = XCSwiftPackageProductDependency;

@@ -48,17 +48,17 @@ struct SettingsView: View {
   var body: some View {
     List {
       if FeatureFlags.checkReceipt {
-        Section(header: Text("Information"), footer: Text("Upgrade is free for you. Thanks for your support. ❤️")) {
-          NavigationLink(destination: {
-            ScrollView {
-              ExplanationView()
-            }
-          }, label: {
-            Label("New Blink.app", systemImage: "exclamationmark.circle")
-            Spacer()
-            Image(systemName: "questionmark.circle").foregroundColor(Color(UIColor.blinkTint))
-          })
-        }
+//        Section(header: Text("Information"), footer: Text("Upgrade is free for you. Thanks for your support. ❤️")) {
+//          NavigationLink(destination: {
+//            ScrollView {
+//              ExplanationView()
+//            }
+//          }, label: {
+//            Label("New Blink.app", systemImage: "exclamationmark.circle")
+//            Spacer()
+//            Image(systemName: "questionmark.circle").foregroundColor(Color(UIColor.blinkTint))
+//          })
+//        }
       } else {
         Section("Subscription") {
           NavigationLink(destination: {
