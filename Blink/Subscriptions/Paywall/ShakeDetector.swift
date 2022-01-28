@@ -32,11 +32,14 @@
 import Foundation
 import CoreMotion
 import simd;
+import SwiftUI
 
 
 class ShakeDetector: ObservableObject {
   private let _m = CMMotionManager()
   private var _timer: Timer = Timer()
+  private var _shakeHintCounter = 0;
+  @Published var shakeHintIsOn: Bool = false
   
   private var _prevValue: SIMD3<Double>? = nil
   @Published var progress: Double = 0.3
@@ -120,7 +123,26 @@ class ShakeDetector: ObservableObject {
       p -= 0.001;
     }
     
-    p =  min(max(p, 0), 1.0)
+    p = min(max(p, 0), 1.0)
+    if p == 0 {
+      _shakeHintCounter += 1;
+    } else {
+      _shakeHintCounter = 0;
+    }
+    
+    if _shakeHintCounter == 0 {
+      self.shakeHintIsOn = false
+    }
+    
+    let i = _shakeHintCounter % 900
+    
+    if i == 60 * 2 {
+      self.shakeHintIsOn = true
+    }
+    
+    if i == 60 * 2 + 20 {
+      self.shakeHintIsOn = false
+    }
   }
 }
 

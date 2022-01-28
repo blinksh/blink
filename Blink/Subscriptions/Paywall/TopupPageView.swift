@@ -69,7 +69,14 @@ struct TopupPageView: Page {
       Spacer()
       HStack {
         Spacer()
-        Text("Shake your device until the bar is filled.")
+        Text("Shake")
+          .font(.footnote)
+          .scaleEffect(tracker.shakeHintIsOn ? 1.4 : 1.0)
+          .offset(x: 3, y: tracker.shakeHintIsOn ? -10 : 0)
+          .animation(Animation.default.speed(4).repeatCount(3), value: tracker.shakeHintIsOn)
+        
+        
+        Text("your device until the bar is filled.")
           .font(.footnote)
         Spacer()
       }
