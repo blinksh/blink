@@ -74,6 +74,13 @@ class ShakeDetector: ObservableObject {
     _m.stopAccelerometerUpdates()
   }
   
+  func startOver() {
+    if progress == 0 {
+      _doTrack = false
+      progress = 0.3
+    }
+  }
+  
   
   private func _onTimerTick() {
       var p = self.progress
@@ -134,7 +141,7 @@ class ShakeDetector: ObservableObject {
       self.shakeHintIsOn = false
     }
     
-    let i = _shakeHintCounter % 900
+    let i = _shakeHintCounter % 500
     
     if i == 60 * 2 {
       self.shakeHintIsOn = true

@@ -100,6 +100,9 @@ struct TopupPageView: Page {
       .padding(.bottom, self.horizontal ? 32 : 40)
     }.padding()
       .frame(maxWidth: horizontal ? 700 : 460)
+      .onTapGesture {
+        tracker.startOver()
+      }
   }
   
   func header() -> some View {
