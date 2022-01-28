@@ -32,8 +32,6 @@
 import Combine
 import Foundation
 
-import ArgumentParser
-
 import BlinkConfig
 import SSH
 
@@ -87,16 +85,11 @@ extension SSHClient {
       let output = DispatchOutputStream(stream: sockOut)
       let input = DispatchInputStream(stream: sockIn)
 
-      // NOPE In this case we will have the client configuration + the configuration from the Command.
-      // TODO This needs proper "shell" parsing
-      guard let proxyCommand = try? ProxyCommand.parse(Array(command.components(separatedBy: " ")[1...])) else {
+      guard let proxyCommand = try? ProxyCommand(command) else {
         print("Could not parse Proxy Command")
         return
       }
-      guard let destination = proxyCommand.stdioHostAndPort else {
-        print("No stdio on proxy tunnel found")
-        return
-      }
+      let destination = proxyCommand.stdioForward
 
       let cancelProxy = { (error: Error?) in
         // This is necessary in order to propagate when the streams close.
@@ -165,68 +158,46 @@ extension SSHClient {
   }
 }
 
-struct ProxyCommand: ParsableCommand {
-  // Login name
-  @Option(
-    name: [.customShort("l", allowingJoined: true)],
-    help: .init(
-      "Login name. This option can also be specified at the host",
-      valueName: "login_name"
-    )
-  )
-  var loginName: String?
-
-  // Jumps
-  @Option(
-    name: [.customShort("J")],
-    help: .init(
-      "Jump Hosts in a comma separated list",
-      valueName: "destination"
-    )
-  )
-  var proxyJump: String?
-
-  // Stdio forward
-  @Option(name: [.customShort("W")],
-          help: .init(
-            "Forward stdio to the specified destination",
-            valueName: "host:port"
-          ),
-          transform: { try BindAddressInfo($0) })
-  var stdioHostAndPort: BindAddressInfo?
-
-  // Connect to User at Host
-  @Argument(help: "[user@]host[#port]")
-  var userAtHost: String
-  var hostAlias: String {
-    get {
-      let comps = userAtHost.components(separatedBy: "@")
-      let hostAndPort = comps[comps.count - 1]
-      let compsHost = hostAndPort.components(separatedBy: "#")
-      return compsHost[0]
-    }
+fileprivate struct ProxyCommand {
+  struct Error: Swift.Error {
+    let description: String
   }
-  var user: String? {
-    get {
-      // Login name preference over user@host
-      if let user = loginName {
-        return user
-      }
-      var comps = userAtHost.components(separatedBy: "@")
-      if comps.count > 1 {
-        comps.removeLast()
-        return comps.joined(separator: "@")
-      }
-      return nil
+  
+  let jumpHost: String?
+  let stdioForward: BindAddressInfo
+  let hostAlias: String
+  
+  // The command we receive is pre-fabricated by LibSSH, so we just parse.
+  // ssh -J l,l -W [127.0.0.1]:22 l
+  private let pattern =
+    #"ssh (-J (?<JumpHost>.*))? (-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
+  init(_ command: String) throws {
+    let regex = try NSRegularExpression(pattern: pattern)
+    let matchRange = NSRange(command.startIndex..., in: command)
+
+    guard
+      let match = regex.firstMatch(in: command,
+                                   range: matchRange)
+    else {
+      throw Error(description: "Invalid ProxyCommand \(command)")
     }
-  }
-  var port: UInt16? {
-    get {
-//      if let port = customPort {
-//        return port
-//      }
-      let comps = userAtHost.components(separatedBy: "#")
-      return comps.count > 1 ? UInt16(comps[1]) : nil
+    
+    if let r = Range(match.range(withName: "JumpHost"), in: command) {
+      self.jumpHost = String(command[r])
+    } else {
+      self.jumpHost = nil
+    }
+    
+    if let r = Range(match.range(withName: "StdioForward"), in: command) {
+      self.stdioForward = try BindAddressInfo(String(command[r]))
+    } else {
+      throw Error(description: "Missing forward. \(command)")
+    }
+    
+    if let r = Range(match.range(withName: "HostAlias"), in: command) {
+      self.hostAlias = String(command[r])
+    } else {
+      throw Error(description: "Missing forward. \(command)")
     }
   }
 }
