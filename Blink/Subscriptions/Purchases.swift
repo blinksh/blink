@@ -34,6 +34,7 @@ import Foundation
 import SystemConfiguration
 
 import Purchases
+import BlinkConfig
 
 public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, PurchasesDelegate {
   public weak var delegate: EntitlementsSourceDelegate?
@@ -63,9 +64,8 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
 
 func configureRevCat() {
   Purchases.logLevel = .debug
-  let publicAPIKey = Bundle.main.object(forInfoDictionaryKey: "RevCatPublicKey") as! String
   Purchases.configure(
-    withAPIKey: publicAPIKey,
+    withAPIKey: XCConfig.infoPlistRevCatPubliKey(),
     appUserID: nil,
     observerMode: false,
     userDefaults: UserDefaults.suite

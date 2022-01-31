@@ -30,27 +30,38 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
-import BlinkConfig
+#import "XCConfig.h"
 
-enum UDKeys: String {
-  case machinesToken
+@implementation XCConfig
+
++ (NSString *)_valueForKey:(NSString *)key {
+  NSBundle *bundle = [NSBundle bundleForClass:[XCConfig self]];
+  return [bundle objectForInfoDictionaryKey:key];
 }
 
-extension UserDefaults {
-  static var suiteName: String  { XCConfig.infoPlistFullGroupID() } // = "group.Com.CarlosCabanero.BlinkShell"
-  static let suite = UserDefaults(suiteName: suiteName)!
-  
-  var machinesToken: [String: Any]? {
-    get {
-      object(forKey: UDKeys.machinesToken.rawValue) as? [String: Any]
-    }
-    set {
-      if let token = newValue {
-        setValue(token, forKey: UDKeys.machinesToken.rawValue)
-      } else {
-        setValue(nil, forKey: UDKeys.machinesToken.rawValue)
-      }
-    }
-  }
++ (NSString *) infoPlistRevCatPubliKey {
+  return [self _valueForKey:@"BLINK_REVCAT_PUBKEY"];
 }
+
++ (NSString *) infoPlistKeyChainID1 {
+  return [self _valueForKey:@"BLINK_KEYCHAIN_ID1"];
+}
+
++ (NSString *) infoPlistCloudID {
+  return [self _valueForKey:@"BLINK_CLOUD_ID"];
+}
+
++ (NSString *) infoPlistFullCloudID {
+  return [NSString stringWithFormat:@"iCloud.%@", [self infoPlistCloudID]];
+}
+
++ (NSString *) infoPlistGroupID {
+  return [self _valueForKey:@"BLINK_GROUP_ID"];
+}
+
++ (NSString *) infoPlistFullGroupID {
+  return [NSString stringWithFormat:@"group.%@", [self infoPlistGroupID]];
+}
+
+
+@end

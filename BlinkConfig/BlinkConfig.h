@@ -42,5 +42,6 @@ FOUNDATION_EXPORT const unsigned char BlinkConfigVersionString[];
 #import <BlinkConfig/BKHosts.h>
 #import <BlinkConfig/BKPubKey.h>
 #import <BlinkConfig/BlinkPaths.h>
+#import <BlinkConfig/XCConfig.h>
 
 

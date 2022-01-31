@@ -224,6 +224,9 @@
 		D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */; };
 		D21DEE51260E1DCF00D8E640 /* KeyPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */; };
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
+		D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D22378FC27A7B8DA002D5C6D /* XCConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = D22378FD27A7B8DA002D5C6D /* XCConfig.m */; };
+		D223790027A7BDBA002D5C6D /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
 		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
@@ -563,6 +566,13 @@
 			remoteGlobalIDString = D218068625CC277900B98902;
 			remoteInfo = AppKitBridge;
 		};
+		D223790227A7BDBA002D5C6D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = BDCB715D268E1577007D7047;
+			remoteInfo = BlinkConfig;
+		};
 		D24AFD5A222410E700CFD3C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
@@ -645,16 +655,6 @@
 				D2BF5F732659522C0070F839 /* BlinkIntents.appex in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D2A65709268D9FCB002E6ED7 /* Embed Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-			);
-			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -892,6 +892,8 @@
 		D21DEE49260DD3FE00D8E640 /* NewSEKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSEKeyView.swift; sourceTree = "<group>"; };
 		D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyDetailsView.swift; sourceTree = "<group>"; };
 		D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyPickerView.swift; sourceTree = "<group>"; };
+		D22378FC27A7B8DA002D5C6D /* XCConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = XCConfig.h; sourceTree = "<group>"; };
+		D22378FD27A7B8DA002D5C6D /* XCConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XCConfig.m; sourceTree = "<group>"; };
 		D22A353626C1474200943C71 /* BKMiniLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKMiniLog.h; sourceTree = "<group>"; };
 		D22A353726C1474200943C71 /* BKMiniLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKMiniLog.m; sourceTree = "<group>"; };
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
@@ -1187,6 +1189,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D2B9E220268084F10084B2C4 /* Machines in Frameworks */,
+				D223790027A7BDBA002D5C6D /* BlinkConfig.framework in Frameworks */,
 				D2BF5F6C2659522C0070F839 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1666,6 +1669,8 @@
 				D22A353626C1474200943C71 /* BKMiniLog.h */,
 				D22A353726C1474200943C71 /* BKMiniLog.m */,
 				BDCB7161268E1577007D7047 /* Info.plist */,
+				D22378FC27A7B8DA002D5C6D /* XCConfig.h */,
+				D22378FD27A7B8DA002D5C6D /* XCConfig.m */,
 			);
 			path = BlinkConfig;
 			sourceTree = "<group>";
@@ -2146,6 +2151,7 @@
 				BDCB717E268E15A2007D7047 /* BKHosts.h in Headers */,
 				BDCB717C268E15A2007D7047 /* BKPubKey.h in Headers */,
 				BDCB718D268E16CE007D7047 /* BlinkConfig.h in Headers */,
+				D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */,
 				BDCB717A268E15A2007D7047 /* UICKeyChainStore.h in Headers */,
 				BDCB7180268E15A2007D7047 /* BlinkPaths.h in Headers */,
 			);
@@ -2394,11 +2400,11 @@
 				D2BF5F662659522C0070F839 /* Sources */,
 				D2BF5F672659522C0070F839 /* Frameworks */,
 				D2BF5F682659522C0070F839 /* Resources */,
-				D2A65709268D9FCB002E6ED7 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				D223790327A7BDBA002D5C6D /* PBXTargetDependency */,
 			);
 			name = BlinkIntents;
 			packageProductDependencies = (
@@ -2886,6 +2892,7 @@
 				BDCB7179268E15A2007D7047 /* BKHosts.m in Sources */,
 				BDCB7182268E15A2007D7047 /* SEKey.swift in Sources */,
 				BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */,
+				D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */,
 				BDCB7181268E15A2007D7047 /* BKPubKey.m in Sources */,
 				BDCB7183268E15A2007D7047 /* BKConfig.swift in Sources */,
 				BDCB717D268E15A2007D7047 /* BKPubKey.swift in Sources */,
@@ -3233,6 +3240,11 @@
 			target = D218068625CC277900B98902 /* AppKitBridge */;
 			targetProxy = D218069D25CC27C100B98902 /* PBXContainerItemProxy */;
 		};
+		D223790327A7BDBA002D5C6D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = BDCB715D268E1577007D7047 /* BlinkConfig */;
+			targetProxy = D223790227A7BDBA002D5C6D /* PBXContainerItemProxy */;
+		};
 		D24AFD5B222410E700CFD3C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "MBProgressHUD Framework";
@@ -3317,7 +3329,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).SSH";
@@ -3362,7 +3374,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).SSH";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -3475,7 +3487,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFiles";
@@ -3522,7 +3534,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFiles";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -3637,7 +3649,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
@@ -3678,7 +3690,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3722,7 +3734,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
@@ -3764,7 +3776,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3979,7 +3991,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkConfig";
@@ -4028,7 +4040,7 @@
 					"@executable_path/Frameworks",
 					"@loader_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkConfig";
 				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
@@ -4265,7 +4277,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkIntents";
@@ -4305,7 +4317,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkIntents";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4450,7 +4462,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -4486,7 +4498,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 14.0.7;
+				MARKETING_VERSION = 15.0.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;

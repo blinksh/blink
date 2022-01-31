@@ -35,6 +35,7 @@
 #import "BKUserConfigurationManager.h"
 #import "Reachability.h"
 #import "BlinkPaths.h"
+#import <BlinkConfig/XCConfig.h>
 
 @import CloudKit;
 @import UIKit;
@@ -42,7 +43,7 @@
 
 NSString const *BKiCloudSyncDeletedHosts = @"deletedHosts";
 NSString const *BKiCloudSyncDeletedKeys = @"deletedKeys";
-NSString *BKiCloudContainerIdentifier = @"iCloud.com.carloscabanero.blinkshell";
+NSString *BKiCloudContainerIdentifier;// MOVED to init @"iCloud.com.carloscabanero.blinkshell";
 NSString *BKiCloudZoneName = @"DefaultZone";
 
 static NSMutableDictionary *syncItems = nil;
@@ -74,6 +75,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
 {
   self = [super init];
   if (self) {
+    
+    BKiCloudContainerIdentifier = [XCConfig infoPlistFullCloudID];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:kReachabilityChangedNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(checkForReachabilityAndSync:) name:UIApplicationDidBecomeActiveNotification object:nil];
     _internetReachable = [Reachability reachabilityForInternetConnection];

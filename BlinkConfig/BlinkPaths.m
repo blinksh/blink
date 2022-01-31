@@ -30,11 +30,13 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BlinkPaths.h"
+#import "XCConfig.h"
 
 @implementation BlinkPaths
 
 NSString *__homePath = nil;
 NSString *__documentsPath = nil;
+NSString *__groupContainerPath = nil;
 NSString *__iCloudsDriveDocumentsPath = nil;
 
 + (NSString *)homePath {
@@ -58,20 +60,21 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 }
 
 + (NSString *)groupContainerPath {
-  NSString *groupID = @"group.sh.blink";
-  NSFileManager *fm = [NSFileManager defaultManager];
-  NSString *path = [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
-  if (path == nil) {
-    groupID = @"group.Com.CarlosCabanero.BlinkShell";
-    return [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+  if (__groupContainerPath == nil) {
+
+    NSString *groupID = [XCConfig infoPlistFullGroupID];
+    
+    NSFileManager *fm = [NSFileManager defaultManager];
+    NSString *path = [fm containerURLForSecurityApplicationGroupIdentifier:groupID].path;
+    __groupContainerPath = path;
   }
-  return path;
+  return __groupContainerPath;
 }
 
 + (NSString *)iCloudDriveDocuments
 {
   if (__iCloudsDriveDocumentsPath == nil) {
-    NSString *iCloudID = @"iCloud.sh.blink.blinkshell";
+    NSString *iCloudID = [XCConfig infoPlistFullCloudID];
     NSFileManager *fm = [NSFileManager defaultManager];
     NSString *path = [[fm URLForUbiquityContainerIdentifier:iCloudID] URLByAppendingPathComponent:@"Documents"].path;
     [self _ensureFolderAtPath:path];

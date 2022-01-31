@@ -30,27 +30,19 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
-import BlinkConfig
+#import <Foundation/Foundation.h>
 
-enum UDKeys: String {
-  case machinesToken
-}
+NS_ASSUME_NONNULL_BEGIN
 
-extension UserDefaults {
-  static var suiteName: String  { XCConfig.infoPlistFullGroupID() } // = "group.Com.CarlosCabanero.BlinkShell"
-  static let suite = UserDefaults(suiteName: suiteName)!
-  
-  var machinesToken: [String: Any]? {
-    get {
-      object(forKey: UDKeys.machinesToken.rawValue) as? [String: Any]
-    }
-    set {
-      if let token = newValue {
-        setValue(token, forKey: UDKeys.machinesToken.rawValue)
-      } else {
-        setValue(nil, forKey: UDKeys.machinesToken.rawValue)
-      }
-    }
-  }
-}
+@interface XCConfig : NSObject
+
++ (NSString *) infoPlistRevCatPubliKey;
++ (NSString *) infoPlistKeyChainID1;
++ (NSString *) infoPlistCloudID;
++ (NSString *) infoPlistFullCloudID;
++ (NSString *) infoPlistGroupID;
++ (NSString *) infoPlistFullGroupID;
+
+@end
+
+NS_ASSUME_NONNULL_END
