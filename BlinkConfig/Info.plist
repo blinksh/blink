@@ -2,12 +2,12 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>BLINK_KEYCHAIN_ID1</key>
-	<string>$(KEYCHAIN_ID1)</string>
-	<key>BLINK_GROUP_ID</key>
-	<string>$(GROUP_ID)</string>
 	<key>BLINK_CLOUD_ID</key>
 	<string>$(CLOUD_ID)</string>
+	<key>BLINK_GROUP_ID</key>
+	<string>$(GROUP_ID)</string>
+	<key>BLINK_KEYCHAIN_ID1</key>
+	<string>$(KEYCHAIN_ID1)</string>
 	<key>BLINK_REVCAT_PUBKEY</key>
 	<string>$(REVCAT_PUBKEY)</string>
 	<key>CFBundleDevelopmentRegion</key>
