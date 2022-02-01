@@ -61,14 +61,16 @@ struct SettingsView: View {
 //        }
       } else {
         Section("Subscription") {
-          NavigationLink(destination: {
+          Row {
+            HStack {
+              Label("Subscription", systemImage: "bag")
+              Spacer()
+              Text(_entitlements.currentPlanName())
+                  .foregroundColor(.secondary)
+            }
+          } details: {
             PlansView()
-          }, label: {
-            Label("Subscription", systemImage: "bag")
-            Spacer()
-            Text(_entitlements.currentPlanName())
-              .foregroundColor(.secondary)
-          })
+          }
         }
       }
       Section("Connect") {
