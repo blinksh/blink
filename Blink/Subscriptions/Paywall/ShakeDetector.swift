@@ -113,7 +113,7 @@ class ShakeDetector: ObservableObject {
       return;
     }
 
-    let threshold = 1.2;
+    let threshold = 1.0;
     
     var p = self.progress
     defer {
