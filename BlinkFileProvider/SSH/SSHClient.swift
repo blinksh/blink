@@ -111,7 +111,7 @@ extension SSHClient {
               cancelProxy(error)
             }
             return connControl.connection.requestForward(to: destination.bindAddress,
-                                                         port: Int32(destination.remotePort),
+                                                         port: Int32(destination.port),
                                                          from: "blinkJumpHost",
                                                          localPort: 22)
           }
