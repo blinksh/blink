@@ -176,13 +176,9 @@ struct CodeCommand: NonStdIOCommand {
       return
     }
 
-    io.print(Self.discussion)
-    io.print("Press enter to continue.")
-    sleep(5000)
-    // ERROR: This just exits as is, without waiting.
-    guard let _ = io.in_.readLine() else {
-      throw CommandError(message: "Stdin abort.")
-    }
+    print(Self.discussion)
+    print("Press enter to continue.")
+    let _ = io.in_.readLine()
   }
 }
 
@@ -193,6 +189,7 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
   let io = NonStdIO.standart
+  io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
   
