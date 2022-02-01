@@ -178,6 +178,10 @@ struct PaywallView: View {
     .tabViewStyle(.page)
     .indexViewStyle(.page(backgroundDisplayMode: .always))
     .disabled(_model.purchaseInProgress || _model.restoreInProgress)
+    .onTapGesture {
+      // Just in case hide kb on tap
+      _ = KBTracker.shared.input?.resignFirstResponder()
+    }
   }
   
   private func _onSwitchTab(_ idx: Int) {

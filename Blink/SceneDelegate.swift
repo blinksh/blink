@@ -165,6 +165,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       return
     }
     
+    _ = KBTracker.shared.input?.resignFirstResponder()
+    
     guard self.paywallWindow == nil else {
       return
     }
@@ -364,6 +366,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     term.resumeIfNeeded()
     term.view?.setNeedsLayout()
+    
+    if let paywallWindow = paywallWindow {
+      paywallWindow.makeKeyAndVisible()
+      return;
+    }
     
     // We can present config or stuck view. 
     guard spCtrl.presentedViewController == nil else {
