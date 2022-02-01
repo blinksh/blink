@@ -83,8 +83,16 @@ enum FileLocationPathOrURL {
 struct CodeCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(
     commandName: "code",
-    abstract: "Starts code editor"
+    abstract: "Starts code editor",
+    discussion: discussion
   )
+  static let discussion = """
+    To connect your Code instance to the Blink File System,
+    please install the blink-fs extension from the Marketplace.
+    To close, use your Blink close tab shortcut (default Cmd-W).
+    For more information, please read:
+    blink.sh/docs/code/getting-started
+    """
 
   @OptionGroup var verboseOptions: VerboseOptions
   var io = NonStdIO.standart
@@ -110,6 +118,8 @@ struct CodeCommand: NonStdIOCommand {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     
     var path: FileLocationPath
+
+    try showBlinkFSWarning()
     
     switch pathOrUrl {
     case .url(var url):
@@ -128,7 +138,7 @@ struct CodeCommand: NonStdIOCommand {
       path = p
     default:
       DispatchQueue.main.async {
-        let url = URL(string: "https://github.dev/blinksh/blink/blob/raw/CODE.md")!
+        let url = URL(string: "https://vscode.dev/github/blinksh/blink/blob/raw/CODE.md")!
         session.device.view.addBrowserWebView(url, agent: "")
       }
       return
@@ -158,6 +168,20 @@ struct CodeCommand: NonStdIOCommand {
     DispatchQueue.main.async {
       let agent = "BlinkSH/15 (wss;\(port);\(token))"
       session.device.view.addBrowserWebView(url, agent: agent)
+    }
+  }
+
+  func showBlinkFSWarning() throws {
+    if FileManager.default.fileExists(atPath: BlinkPaths.blinkCodeErrorLogURL().path, isDirectory: nil) {
+      return
+    }
+
+    io.print(Self.discussion)
+    io.print("Press enter to continue.")
+    sleep(5000)
+    // ERROR: This just exits as is, without waiting.
+    guard let _ = io.in_.readLine() else {
+      throw CommandError(message: "Stdin abort.")
     }
   }
 }
