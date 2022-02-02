@@ -107,11 +107,11 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func openTermsOfUse() {
-    
+    blink_openurl(URL(string: "https://blink.sh/blink-gpl")!)
   }
   
   func openHelp() {
-    
+    blink_openurl(URL(string: "https://blink.sh/docs")!)
   }
   
   func formattedPlusPriceWithPeriod() -> String? {
