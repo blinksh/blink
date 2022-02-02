@@ -43,15 +43,19 @@ struct PlansView: View {
     List {
       if _entitlements.unlimitedTimeAccess.active == false {
         Section("Free Plan") {
-          HStack {
+          Label {
+            Text("Access to all Blink features")
+          } icon: {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
-            Text("Access to all Blink features")
+            
           }
-          HStack {
+          Label {
+            Text("30 minutes time limit")
+          } icon: {
             Image(systemName: "timer")
               .foregroundColor(.orange)
-            Text("30 minutes time limit")
+            
           }
           HStack {
             Text("This is your current plan").foregroundColor(.green)
@@ -62,20 +66,25 @@ struct PlansView: View {
         Section(
           header: Text("Blink+ PLAN"),
           footer: Text("Plan auto-renews for \(_model.formattedPlusPriceWithPeriod() ?? "") until canceled.")) {
-            HStack {
+            Label {
+              Text("Access to all Blink features and services")
+            } icon: {
               Image(systemName: "checkmark.circle.fill")
                 .foregroundColor(.green)
-              Text("Access to all Blink features and services")
             }
-            HStack {
+            Label {
+              Text("Support Blink development")
+            } icon: {
               Image(systemName: "suit.heart.fill")
                 .foregroundColor(.red)
-              Text("Support Blink development")
+              
             }
-            HStack {
+            Label {
+              Text("Interruption free usage")
+            } icon: {
               Image(systemName: "infinity")
                 .foregroundColor(.green)
-              Text("Interruption free usage")
+              
             }
             HStack {
               if _model.purchaseInProgress {
@@ -97,21 +106,26 @@ struct PlansView: View {
         header: Text("Blink Classic PLAN"),
         footer: Text("After receipt verification with `Blink Shell 14 app` you will be able to access `Blink Classic Plan` for zero cost purchase."),
         content: {
-          HStack {
+          Label {
+            Text("All features from Blink Shell 14 app.")
+          } icon: {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
-            Text("All features from Blink Shell 14 app.")
           }
-          HStack {
+          Label {
+            Text("Interruption free usage")
+          } icon: {
             Image(systemName: "infinity")
               .foregroundColor(.green)
-            Text("Interruption free usage")
           }
-          HStack {
-            if _entitlements.nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+          
+          if _entitlements.nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+            HStack {
               Text("Blink Classic Unlocked").foregroundColor(.green)
-            } else {
-              Button("Migrate from Blink Shell 14 App", action: {
+            }
+          } else {
+            HStack {
+              Button("Migrate from Blink Shell 14 app", action: {
                 NotificationCenter.default.post(name: .openMigration, object: nil)
               })
             }
@@ -120,15 +134,17 @@ struct PlansView: View {
       )
       if _entitlements.unlimitedTimeAccess.active == true {
         Section("Free Plan") {
-          HStack {
+          Label {
+            Text("Access to all blink features")
+          } icon: {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
-            Text("Access to all blink features")
           }
-          HStack {
+          Label {
+            Text("30 minutes time limit")
+          } icon: {
             Image(systemName: "timer")
               .foregroundColor(.orange)
-            Text("30 minutes time limit")
           }
         }
       }
@@ -159,9 +175,23 @@ struct PlansView: View {
             Label("Terms of Use", systemImage: "link")
           }
         }
+        if _model.dataCopied {
+          Label {
+            Text("Settings Copied From Blink Shell 14 app")
+          } icon: {
+            Image(systemName: "tray.full.fill")
+          }.foregroundColor(.green)
+        } else {
+          Button {
+            _model.startDataMigration()
+          } label: {
+            Label("Copy Settings From Blink Shell 14 app", systemImage: "tray.and.arrow.down.fill")
+          }
+        }
       }
     }
     .disabled(_model.purchaseInProgress || _model.restoreInProgress)
+    .alert(errorMessage: $_model.alertErrorMessage)
     .navigationTitle("Subscription Plans")
   }
 }
