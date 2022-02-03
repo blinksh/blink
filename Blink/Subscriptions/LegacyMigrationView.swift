@@ -86,8 +86,12 @@ struct LegacyMigrationView: View {
         Button("Privacy Policy", action: {
           blink_openurl(URL(string: "https://blink.sh/pp")!)
         }).padding(.trailing)
-        Button("Terms of Use", action: {}).padding(.trailing)
-        Button("Help", action: { })
+        Button("Terms of Use", action: {
+          blink_openurl(URL(string: "https://blink.sh/blink-gpl")!)
+        }).padding(.trailing)
+        Button("Help", action: {
+          blink_openurl(URL(string: "https://blink.sh/docs")!)
+        })
         Spacer()
       }
       .font(.footnote)
