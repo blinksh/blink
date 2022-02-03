@@ -320,6 +320,7 @@ class SpaceController: UIViewController {
   
   @objc func _didBecomeKeyWindow() {
     guard
+      presentedViewController == nil,
       let window = view.window,
       window.isKeyWindow
     else {

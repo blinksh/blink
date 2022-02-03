@@ -37,6 +37,13 @@ struct BlinkItemIdentifier {
   let path: String
   let encodedRootPath: String
 
+  var rootPath: String? {
+    guard let rootData = Data(base64Encoded: encodedRootPath),
+      let rootPath = String(data: rootData, encoding: .utf8) else {
+        return nil
+      }
+      return rootPath
+  }
   // <encodedRootPath>/path/to, name = filename. -> <encodedRootPath>/path/to/filename
   init(parentItemIdentifier: BlinkItemIdentifier, filename: String) {
     self.encodedRootPath = parentItemIdentifier.encodedRootPath

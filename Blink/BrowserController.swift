@@ -65,6 +65,11 @@ import WebKit
     
     navigationItem.rightBarButtonItems = [
       UIBarButtonItem(
+        barButtonSystemItem: .close,
+        target: self,
+        action: #selector(_close)
+      ),
+      UIBarButtonItem(
         barButtonSystemItem: .refresh,
         target: self,
         action: #selector(_reload)
@@ -94,6 +99,12 @@ import WebKit
   
   @objc func _reload() {
     webView?.reloadFromOrigin()
+  }
+  
+  @objc func _close() {
+    self.dismiss(animated: true) {
+        
+    }
   }
   
   @objc func _openBrowser() {

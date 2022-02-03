@@ -191,7 +191,7 @@ class FileProviderExtension: NSFileProviderExtension {
     let destTranslator = Local().cloneWalkTo(url.deletingLastPathComponent().path)
 
     // 3 remote - From the identifier, we get the translator and walk to the remote.
-    let srcTranslator = FileTranslatorCache.translator(for: blinkItemReference.encodedRootPath)
+    let srcTranslator = FileTranslatorCache.translator(for: BlinkItemIdentifier(blinkItemReference.itemIdentifier))
     let downloadTask = srcTranslator.flatMap { $0.cloneWalkTo(blinkItemReference.path) }
       .flatMap { fileTranslator in
         // 4 - Start the copy
@@ -290,7 +290,7 @@ class FileProviderExtension: NSFileProviderExtension {
     let srcTranslator = Local().cloneWalkTo(localFileURLPath)
 
     // 2. translator for remote target path
-    let destTranslator = FileTranslatorCache.translator(for: parentBlinkIdentifier.encodedRootPath)
+    let destTranslator = FileTranslatorCache.translator(for: parentBlinkIdentifier)
       .flatMap { $0.cloneWalkTo(parentBlinkIdentifier.path) }
 
     let c = destTranslator.flatMap { remotePathTranslator in
@@ -346,7 +346,7 @@ class FileProviderExtension: NSFileProviderExtension {
       parentBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier)
     }
 
-    let translator = FileTranslatorCache.translator(for: parentBlinkIdentifier.encodedRootPath)
+    let translator = FileTranslatorCache.translator(for: parentBlinkIdentifier)
 
     var directoryBlinkIdentifier = BlinkItemIdentifier(parentItemIdentifier: parentBlinkIdentifier, filename: directoryName)
 
@@ -404,7 +404,7 @@ class FileProviderExtension: NSFileProviderExtension {
       return
     }
 
-    FileTranslatorCache.translator(for: blinkItemIdentifier.encodedRootPath)
+    FileTranslatorCache.translator(for: blinkItemIdentifier)
       .flatMap { t in
         t.cloneWalkTo(blinkItemIdentifier.path)
          .flatMap { $0.wstat([.name: itemName]) }
@@ -480,7 +480,7 @@ class FileProviderExtension: NSFileProviderExtension {
       .eraseToAnyPublisher()
     }
 
-    FileTranslatorCache.translator(for: blinkItemIdentifier.encodedRootPath)
+    FileTranslatorCache.translator(for: blinkItemIdentifier)
       .flatMap {
         $0.cloneWalkTo(blinkItemIdentifier.path)
           .flatMap { delete([$0]) }
