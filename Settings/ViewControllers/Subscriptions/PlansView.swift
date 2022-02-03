@@ -77,14 +77,12 @@ struct PlansView: View {
             } icon: {
               Image(systemName: "suit.heart.fill")
                 .foregroundColor(.red)
-              
             }
-            Label {
+            Label { 
               Text("Interruption free usage")
             } icon: {
               Image(systemName: "infinity")
                 .foregroundColor(.green)
-              
             }
             HStack {
               if _model.purchaseInProgress {
@@ -107,7 +105,7 @@ struct PlansView: View {
         footer: Text("After receipt verification with `Blink Shell 14 app` you will be able to access `Blink Classic Plan` for zero cost purchase."),
         content: {
           Label {
-            Text("All features from Blink Shell 14 app.")
+            Text("All features from Blink Shell 14 app")
           } icon: {
             Image(systemName: "checkmark.circle.fill")
               .foregroundColor(.green)
@@ -149,6 +147,21 @@ struct PlansView: View {
         }
       }
       Section {
+        if _model.dataCopied {
+          Label {
+            Text("Settings Copied From Blink Shell 14 app")
+          } icon: {
+            Image(systemName: "tray.full.fill")
+          }.foregroundColor(.green)
+        } else {
+          Button {
+            _model.startDataMigration()
+          } label: {
+            Label("Copy Settings From Blink Shell 14 app", systemImage: "tray.and.arrow.down.fill")
+          }
+        }
+      }
+      Section {
         HStack {
           if _model.restoreInProgress {
             ProgressView()
@@ -173,19 +186,6 @@ struct PlansView: View {
             _model.openTermsOfUse()
           } label: {
             Label("Terms of Use", systemImage: "link")
-          }
-        }
-        if _model.dataCopied {
-          Label {
-            Text("Settings Copied From Blink Shell 14 app")
-          } icon: {
-            Image(systemName: "tray.full.fill")
-          }.foregroundColor(.green)
-        } else {
-          Button {
-            _model.startDataMigration()
-          } label: {
-            Label("Copy Settings From Blink Shell 14 app", systemImage: "tray.and.arrow.down.fill")
           }
         }
       }
