@@ -72,15 +72,16 @@ final class FileTranslatorCache {
 
   private init() {}
 
-  static func translator(for encodedRootPath: String) -> AnyPublisher<Translator, Error> {
+  static func translator(for identifier: BlinkItemIdentifier) -> AnyPublisher<Translator, Error> {
+    let encodedRootPath = identifier.encodedRootPath
+
     // Check if we have it cached, if it is still working
     if let translatorRef = shared.translators[encodedRootPath],
        translatorRef.translator.isConnected {
       return .just(translatorRef.translator)
     }
 
-    guard let rootData = Data(base64Encoded: encodedRootPath),
-          let rootPath = String(data: rootData, encoding: .utf8) else {
+    guard let rootPath = identifier.rootPath else {
       return Fail(error: "Wrong encoded identifier for Translator").eraseToAnyPublisher()
     }
 

@@ -10,9 +10,9 @@
 				<key>NSExtensionFileProviderActionActivationRule</key>
 				<string>TRUEPREDICATE</string>
 				<key>NSExtensionFileProviderActionIdentifier</key>
-				<string>com.mycompany.FileProviderUI.CustomAction</string>
+				<string>$(BUNDLE_ID).Code</string>
 				<key>NSExtensionFileProviderActionName</key>
-				<string>Custom Action</string>
+				<string>Code</string>
 			</dict>
 		</array>
 		<key>NSExtensionMainStoryboard</key>

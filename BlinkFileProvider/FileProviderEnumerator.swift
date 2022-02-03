@@ -55,7 +55,7 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
     self.log = BlinkLogger("enumeratorFor \(path)")
     self.log.debug("Initialized")
 
-    self.translator = FileTranslatorCache.translator(for: domain.pathRelativeToDocumentStorage)
+    self.translator = FileTranslatorCache.translator(for: self.identifier)
       .flatMap { t -> AnyPublisher<Translator, Error> in
         path.isEmpty ? .just(t.clone()) : t.cloneWalkTo(path)
       }.eraseToAnyPublisher()

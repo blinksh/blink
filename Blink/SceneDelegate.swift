@@ -213,6 +213,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       _handleSshUrlScheme(with: sshUrlScheme)
     } else if let xCallbackUrl = URLContexts.first(where: { $0.url.scheme == "blinkshell" })?.url {
       _handleXcallbackUrl(with: xCallbackUrl)
+    } else if let codeUrlScheme = URLContexts.first(where: { $0.url.scheme == "vscode" })?.url {
+      _handleCodeUrlScheme(with: codeUrlScheme)
     }
   }
   
@@ -591,7 +593,7 @@ extension SceneDelegate {
        // No running command or shell found running, run the SSH command on the
        // available shell
        term.termDevice.write(sshCommand)
-       return;
+       return
     }
     
     // If a SSH/mosh connection is already open in the current terminal shell
@@ -710,6 +712,62 @@ extension SceneDelegate {
     }
   }
   
-  
-  
+  // vscode://<path_to_file>
+  // vscode://<repository>
+  // vscode://github.codespaces/connect?name=
+  // vscode://file/path/to/file/file.ext:55:20
+  private func _handleCodeUrlScheme(with url: URL) {
+    guard let fileProtocol = url.host else {
+      return
+    }
+
+    var codeCommand = "code "
+    var urlPath = url.path
+    if ["sftp", "local"].contains(fileProtocol) {
+      if fileProtocol == "sftp" {
+        // host/ -> host:/;  host/~ -> host:~/
+        let components = url.pathComponents
+        if components.count < 2 {
+          return
+        }
+        let hostName = components[1]
+        codeCommand += "\(hostName):"
+        urlPath = url.pathComponents[2...].joined(separator: "/")
+        if urlPath.isEmpty {
+          urlPath = "/"
+        }
+      }
+      codeCommand += "\(urlPath)"
+    } else if fileProtocol.lowercased() == "github.codespaces",
+              url.path == "/connect",
+              let codespaceName = url.getQueryStringParameter(param: "name") {
+      codeCommand += "https://\(codespaceName).github.dev"
+    }
+    else {
+      codeCommand += url.absoluteString
+    }
+
+    // Call 'code'
+    guard let term = _spCtrl.currentTerm() else {
+      return
+    }
+
+    guard term.isRunningCmd() else {
+      // No running command or shell found running, run the SSH command on the
+      // available shell
+      term.termDevice.write(codeCommand)
+      term.termDevice.write("\n")
+      return
+    }
+
+    _spCtrl.newShellAction()
+    guard let newTerm = _spCtrl.currentTerm() else {
+      return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+      newTerm.termDevice.write(codeCommand)
+      term.termDevice.write("\n")
+    }
+  }
 }
