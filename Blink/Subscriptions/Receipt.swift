@@ -95,6 +95,8 @@ struct ReceiptMigrationView: View {
           Spacer()
         }
       }
+    }.onTapGesture {
+      KBTracker.shared.input?.resignFirstResponder()
     }
   }
 }

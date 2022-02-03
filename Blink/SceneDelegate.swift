@@ -147,7 +147,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     guard SubscriptionNag.shared.doShowPaywall() else {
       if let window = self.paywallWindow {
-        if window.rootViewController?.presentingViewController != nil {
+        if window.rootViewController?.presentedViewController != nil {
           // We are showing migration view. It will close itself
           return
         }
@@ -495,7 +495,7 @@ extension SceneDelegate {
       }
 
       ArchiveAlertUI.performRecoveryWithFeedback(
-        on: ctrl.presentingViewController ?? ctrl,
+        on: ctrl.presentedViewController ?? ctrl,
         archiveData: archiveData,
         archivePassword: Purchases.shared.appUserID
       )
@@ -532,7 +532,7 @@ extension SceneDelegate {
       else {
         return
       }
-      _spCtrl.presentingViewController?.dismiss(animated: false, completion: nil)
+      _spCtrl.presentedViewController?.dismiss(animated: false, completion: nil)
       ArchiveAlertUI.presentImport(
         on: _spCtrl,
         cb: callbackURL,
