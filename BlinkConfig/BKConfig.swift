@@ -71,9 +71,7 @@ public struct BKConfig {
   }
   
   public func bkSSHHost(_ alias: String, extending baseHost: BKSSHHost) throws -> BKSSHHost {
-    guard let sshConfigHost = try? self.bkSSHHost(alias) else {
-      return baseHost
-    }
+    let sshConfigHost = try self.bkSSHHost(alias)
     
     return try baseHost.merge(sshConfigHost)
   }
