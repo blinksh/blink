@@ -79,16 +79,16 @@ public struct BKSSHHost {
     let message: String
     public var description: String { message }
   }
-  
+
   public init(content: [String: Any]) throws {
     self.content = content
-    
+
     func castValue<T: SSHValue>(_ value: Any) throws -> T {
       // Values must be mapped to a String
       let value = value as! String
       return try T(castSSHValue: value)
     }
-    
+
     func castList<T: SSHValue>(_ value: Any) throws -> [T] {
       if let list = value as? [String] {
         return try list.map { try T(castSSHValue: $0) }
@@ -98,11 +98,11 @@ public struct BKSSHHost {
           .map { try T(castSSHValue: String($0)) }
       }
     }
-    
+
     for (key, value) in content {
       do {
         let key = key.lowercased()
-        
+
         switch key {
         case "bindaddress":                   self.bindAddress                  = try castValue(value)
         case "ciphers":                       self.ciphers                      = try castValue(value)
@@ -138,7 +138,7 @@ public struct BKSSHHost {
         case "sendenv":                       self.sendEnv                      = try castList(value)
         case "stricthostkeychecking":         self.strictHostKeyChecking        = try castValue(value)
         case "user":                          self.user                         = try castValue(value)
-        
+
         default:
           // Skip unknown
           break
@@ -257,7 +257,7 @@ public enum ControlMasterOption: String, SSHValue {
   case autoask  = "autoask"
   case yes      = "yes"
   case no       = "no"
-  
+
   fileprivate init(castSSHValue val: String) throws {
     guard let _ = ControlMasterOption(rawValue: val) else {
       throw BKSSHHost.ValidationError(message: "Value must be auto, ask, autoask, yes or no")
@@ -266,20 +266,20 @@ public enum ControlMasterOption: String, SSHValue {
   }
 }
 
+fileprivate let AddressPattern = #"^((?<localPort>\d+)(:|\s))?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
+
 public struct PortForwardInfo: Equatable, SSHValue {
   public let remotePort: UInt16
   public let bindAddress: String
   public let localPort: UInt16
-  
-  private let pattern = #"^((?<localPort>\d+)(:|\s))?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
 
   fileprivate init(castSSHValue val: String) throws {
     try self.init(val)
   }
-  
+
   public init(_ info: String) throws {
-    let regex = try! NSRegularExpression(pattern: pattern)
-    
+    let regex = try! NSRegularExpression(pattern: AddressPattern)
+
     guard let match = regex.firstMatch(in: info,
                                        range: NSRange(location: 0, length: info.count))
     else {
@@ -291,14 +291,14 @@ public struct PortForwardInfo: Equatable, SSHValue {
       throw BKSSHHost.ValidationError(message: "Invalid local port.")
     }
     self.localPort = localPort
-    
+
     guard let r = Range(match.range(withName: "remotePort"), in: info),
           let remotePort = UInt16(info[r])
     else {
       throw BKSSHHost.ValidationError(message: "Invalid remote port.")
     }
     self.remotePort = remotePort
-    
+
     guard let r = Range(match.range(withName: "bindAddress"), in: info)
     else {
       throw BKSSHHost.ValidationError(message: "Invalid bind address.")
@@ -319,7 +319,7 @@ public struct BindAddressInfo: Equatable, SSHValue {
 
   public init(_ info: String) throws {
     let addr = try OptionalBindAddressInfo(info)
-    
+
     guard let bindAddress = addr.bindAddress else {
       throw BKSSHHost.ValidationError(message: "Invalid bind address.")
     }
@@ -333,34 +333,40 @@ public struct OptionalBindAddressInfo: Equatable, SSHValue {
   public let port: UInt16
   public let bindAddress: String?
 
-  private let pattern = #"^(?<bindAddress>\[([\w:.]+)\]|([\w.]+):)?(?<port>\d+)$"#
-
   fileprivate init(castSSHValue val: String) throws {
     try self.init(val)
   }
 
   public init(_ info: String) throws {
-    let regex = try! NSRegularExpression(pattern: pattern)
-    
+    if let port = UInt16(info) {
+      self.port = port
+      self.bindAddress = nil
+      return
+    }
+
+    let regex = try! NSRegularExpression(pattern: AddressPattern)
+
     guard let match = regex.firstMatch(in: info,
                                        range: NSRange(location: 0, length: info.count))
     else {
       throw BKSSHHost.ValidationError(message: "Missing <bind_address>:<remoteport>.")
     }
-    
-    guard let r = Range(match.range(withName: "port"), in: info),
+
+    guard let r = Range(match.range(withName: "remotePort"), in: info),
           let port = UInt16(info[r])
     else {
       throw BKSSHHost.ValidationError(message: "Invalid remote port.")
     }
     self.port = port
-    
-    var bindAddress: String? = nil
+
     if let r = Range(match.range(withName: "bindAddress"), in: info) {
-      bindAddress = String(info[r])
-      bindAddress!.removeAll(where: { $0 == "[" || $0 == "]" })
+      var bindAddress = String(info[r])
+      bindAddress.removeAll(where: { $0 == "[" || $0 == "]" })
+      self.bindAddress = bindAddress
+    } else {
+      throw BKSSHHost.ValidationError(message: "Invalid bind address.")
     }
-    self.bindAddress = bindAddress
+
   }
 }
 
@@ -378,7 +384,7 @@ public struct BytesNumber: SSHValue {
     }
 
     var number = try UInt(castSSHValue: String(val.dropLast()))
-    
+
     switch lastChar {
     case "G":
       number = number * 1024
