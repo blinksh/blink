@@ -131,6 +131,8 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
     return NO;
   }
   
+  [BKDefaults saveGlobalSSHConfig];
+  
   return result;
 }
 

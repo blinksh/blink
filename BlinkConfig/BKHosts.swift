@@ -64,9 +64,9 @@ extension BKHosts {
           let components = line
             .trimmingCharacters(in: .whitespaces)
             .components(separatedBy: CharacterSet(charactersIn: " \t"))
-          if components.count == 2,
+          if components.count >= 2,
              components[0] != "#" {
-            cfg.append((components[0], components[1]))
+            cfg.append((components[0], components[1...].joined(separator: " ")))
           }
         }
       }
