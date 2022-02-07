@@ -45,6 +45,7 @@
 + (NSString *) ssh;
 
 + (NSURL *) blinkURL;
++ (NSURL *) sshURL;
 + (NSURL *) blinkSSHConfigFileURL;
 + (NSURL *) blinkGlobalSSHConfigFileURL;
 + (NSURL *) blinkKBConfigURL;

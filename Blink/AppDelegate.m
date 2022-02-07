@@ -80,10 +80,7 @@ void __setupProcessEnv() {
   [Migrator perform];
   [BlinkPaths cleanedSymlinksInHomeDirectory];
 
-  [BKDefaults loadDefaults];
-  [BKPubKey loadIDS];
-  [BKHosts loadHosts];
-  [self _loadProfileVars];
+  [AppDelegate reloadDefaults];
   [[UIView appearance] setTintColor:[UIColor blinkTint]];
   
   if (!FeatureFlags.checkReceipt) {
@@ -150,7 +147,14 @@ void __setupProcessEnv() {
 //
 //}
 
-- (void)_loadProfileVars {
++ (void)reloadDefaults {
+  [BKDefaults loadDefaults];
+  [BKPubKey loadIDS];
+  [BKHosts loadHosts];
+  [AppDelegate _loadProfileVars];
+}
+
++ (void)_loadProfileVars {
   NSCharacterSet *whiteSpace = [NSCharacterSet whitespaceCharacterSet];
   NSString *profile = [NSString stringWithContentsOfFile:[BlinkPaths blinkProfileFile] encoding:NSUTF8StringEncoding error:nil];
   [profile enumerateLinesUsingBlock:^(NSString * _Nonnull line, BOOL * _Nonnull stop) {

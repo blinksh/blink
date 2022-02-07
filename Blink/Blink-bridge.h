@@ -65,5 +65,6 @@ extern void ios_exit(int errorCode) __dead2; // set error code and exits from th
 #import "UICKeyChainStore.h"
 #import "BKiCloudSyncHandler.h"
 #import "UIApplication+Version.h"
+#import "AppDelegate.h"
 
 #endif /* Blink_bridge_h */

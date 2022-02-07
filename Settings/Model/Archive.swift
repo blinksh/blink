@@ -223,10 +223,11 @@ struct Archive {
     
     // Copy everything
     let blinkURL = BlinkPaths.blinkURL()!
-
+    let sshURL   = BlinkPaths.sshURL()!
+    
     // .blink folder
     try fm.copyItem(at: blinkURL, to: tmpDirectoryURL.appendingPathComponent(".blink"))
-    try fm.copyItem(at: blinkURL, to: tmpDirectoryURL.appendingPathComponent(".ssh"))
+    try fm.copyItem(at: sshURL, to: tmpDirectoryURL.appendingPathComponent(".ssh"))
     try? fm.removeItem(at: tmpDirectoryURL.appendingPathComponent(".blink/keys"))
     // TODO Remove the keys file, as keys cannot be imported to other app. Not sure this is true
     // within the same version of the app, even across devices, something to test.

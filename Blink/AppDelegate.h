@@ -33,4 +33,6 @@
 
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
++ (void)reloadDefaults;
+
 @end

@@ -61,8 +61,6 @@ class ArchiveAlertUI {
     ctrl.present(alert, animated: false, completion: nil)
   }
 
-  // TODO How do we get the password here?
-  // One way would be to use a shared secret, without being a random password.
   static func performRecoveryWithFeedback(on ctrl: UIViewController, archiveData: Data, archivePassword: String) {
     // Put the archive on a temporary file.
     let archiveURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(ProcessInfo().globallyUniqueString)
@@ -71,6 +69,7 @@ class ArchiveAlertUI {
       try Archive.recover(from: archiveURL, password: archivePassword)
       PurchasesUserModel.shared.dataCopyFailed = false
       PurchasesUserModel.shared.dataCopied = true
+      AppDelegate.reloadDefaults()
     } catch {
       PurchasesUserModel.shared.dataCopyFailed = false
       PurchasesUserModel.shared.dataCopied = false

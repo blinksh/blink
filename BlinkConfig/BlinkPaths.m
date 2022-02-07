@@ -143,6 +143,11 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [NSURL fileURLWithPath:[self blink]];
 }
 
++ (NSURL *)sshURL
+{
+  return [NSURL fileURLWithPath:[self ssh]];
+}
+
 + (NSString *)blinkKeysFile
 {
   return [[self blink] stringByAppendingPathComponent:@"keys"];
