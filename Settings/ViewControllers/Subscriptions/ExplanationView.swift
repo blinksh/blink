@@ -49,7 +49,8 @@ Now that Christmas has come and passed, many people have opened up a brand new i
 
 """).padding().padding([.leading, .trailing])
         Button {
-          
+          let url = URL(string: "https://itunes.apple.com/app/id1594898306")!
+          blink_openurl(url)
         } label: {
           Label("Download Now", systemImage: "applelogo")
         }
