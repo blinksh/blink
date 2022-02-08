@@ -51,7 +51,7 @@ struct PlansView: View {
             
           }
           Label {
-            Text("30 minutes time limit")
+            Text("Subscription nags 3x day max.")
           } icon: {
             Image(systemName: "timer")
               .foregroundColor(.orange)
