@@ -32,7 +32,9 @@
 import Foundation
 
 
-private let NagTimer = "NagTimer"
+private let NagTimer       = "NagTimer"
+private let NagTimestamp   = "NagTimestamp"
+private let NagNumDisplays = "NagNumDisplays"
 private let NagTimerMax = 3 * 60
 private let NagInterval: TimeInterval = 10 // 1
 
@@ -55,6 +57,16 @@ class SubscriptionNag: NSObject {
       return
     }
     
+    // Set the timestamp if it was less than 24h ago.
+    let now = Date()
+    if !(_nagDate()...Calendar.current.date(byAdding: .day, value: 1, to: _nagDate())!)
+        .contains(now) {
+      UserDefaults.standard.set(now.timeIntervalSince1970, forKey: NagTimestamp)
+      UserDefaults.standard.set(0, forKey: NagNumDisplays)
+    } else if _nagNumDisplays() >= 3 {
+      return
+    }
+    
     self.nagTimer.invalidate()
     self.nagTimer = Timer.scheduledTimer(
       withTimeInterval: NagInterval,
@@ -62,6 +74,7 @@ class SubscriptionNag: NSObject {
     ) { _ in
       if self.doShowPaywall() {
         self.stop()
+        UserDefaults.standard.set(self._nagNumDisplays() + 1, forKey: NagNumDisplays)
         NotificationCenter.default.post(name: .subscriptionNag, object: nil)
         return
       }
@@ -79,10 +92,22 @@ class SubscriptionNag: NSObject {
     UserDefaults.standard.integer(forKey: NagTimer)
   }
 
+  private func _nagNumDisplays() -> Int {
+    UserDefaults.standard.integer(forKey: NagNumDisplays)
+  }
+  
+  private func _nagDate() -> Date {
+    Date(timeIntervalSince1970: TimeInterval(UserDefaults.standard.integer(forKey: NagTimestamp)))
+  }
+  
   func restart() {
-    UserDefaults.standard.set(0, forKey: NagTimer)
-    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-    start()
+    if _nagNumDisplays() < 3 {
+      UserDefaults.standard.set(0, forKey: NagTimer)
+      NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+      start()
+    } else {
+      terminate()
+    }
   }
 
   func stop() {
