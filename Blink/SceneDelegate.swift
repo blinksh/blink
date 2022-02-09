@@ -287,7 +287,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.window = window
     
     window.rootViewController = _spCtrl
-    window.isHidden = false    
+    window.isHidden = false
+    
+    // Await until scene and streams are ready
+    // NOTE We could also store the contexts and use them later.
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+      self.scene(scene, openURLContexts: connectionOptions.urlContexts)
+    }
   }
   
   func sceneDidBecomeActive(_ scene: UIScene) {
