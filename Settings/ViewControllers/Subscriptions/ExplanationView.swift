@@ -35,26 +35,36 @@ import SwiftUI
 struct ExplanationView: View {
     var body: some View {
       VStack {
-        Text("Why we are doing this").font(.largeTitle)
+        Text("Letter from dev team").font(.largeTitle)
         Spacer().frame(maxHeight: 30)
         Text("""
-This is **markdown** explaining all the things.
-           
-Now that Christmas has come and passed, many people have opened up a brand new iPhone, iPad, Mac, Apple TV, or Apple Watch over the past few days. In this article we've rounded up the current best deals on official Apple iPhone cases, Apple Watch bands, power bricks, MagSafe accessories, and more, which should all be helpful for new Apple device owners. The sales below will be found at Amazon.
+Today we are releasing Blink Shell 15. It is a new app, and it is a free download with all the features, including Code, available to everyone.
 
-Now that Christmas has come and passed, many people have opened up a brand new iPhone, iPad, Mac, Apple TV, or Apple Watch over the past few days. In this article we've rounded up the current best deals on official Apple iPhone cases, Apple Watch bands, power bricks, MagSafe accessories, and more, which should all be helpful for new Apple device owners. The sales below will be found at Amazon.
+The only catch? Free-casual users are shown three subscription nags in the first 90 minutes of use per day. After that, no interruptions.
 
-Now that Christmas has come and passed, many people have opened up a brand new iPhone, iPad, Mac, Apple TV, or Apple Watch over the past few days. In this article we've rounded up the current best deals on official Apple iPhone cases, Apple Watch bands, power bricks, MagSafe accessories, and more, which should all be helpful for new Apple device owners. The sales below will be found at Amazon.
+If you purchased the previous Blink app, we grandfather you in the new version of the app. You will continue receiving updates and features, just like before. It is our way to thank you for your support all these years!
 
+It is time to push things forward as when we first launched. Blink Code is just the first step. Our Blink Plus subscription will support us and plug you into the future of Blink.
 
-""").padding().padding([.leading, .trailing])
+Purchasing Blink Plus will help us improve our terminal and create new services that we would not be able to do otherwise. We need more resources. It is time to go big or go home.
+
+See you on Blink Shell 15!
+
+""").padding([.top, .leading, .trailing]).padding([.top, .leading, .trailing])
+        HStack {
+          Spacer()
+          VStack {
+            Text("_Carlos and Yury_")
+            Text("_9 Feb 2022_")
+          }
+        }.padding([.leading, .bottom, .trailing]).padding([.bottom, .leading, .trailing])
         Button {
           let url = URL(string: "https://itunes.apple.com/app/id1594898306")!
           blink_openurl(url)
         } label: {
           Label("Download Now", systemImage: "applelogo")
         }
-        Spacer()
+        Spacer(minLength: 80)
       }
     }
 }
