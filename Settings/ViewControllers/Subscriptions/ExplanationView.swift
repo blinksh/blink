@@ -40,15 +40,15 @@ struct ExplanationView: View {
         Text("""
 Today we are releasing Blink Shell 15. It is a new app, and it is a free download with all the features, including Code, available to everyone.
 
-The only catch? Free-casual users are shown three subscription nags in the first 90 minutes of use per day. After that, no interruptions.
+The only catch? Free-casual users will be shown three subscription opportunities in the first 90 minutes of usage per day. After that, no interruptions.
 
-If you purchased the previous Blink app, we grandfather you in the new version of the app. You will continue receiving updates and features, just like before. It is our way to thank you for your support all these years!
+If you purchased the previous Blink app, you are grandfathered in the new version. You will continue receiving updates and features, just like before. It is our way to **THANK YOU** for being early adopters and for sticking with us all these years!
 
-It is time to push things forward as when we first launched. Blink Code is just the first step. Our Blink Plus subscription will support us and plug you into the future of Blink.
+With Blink Shell 15, we are again taking the lead on what you can do with your iOS device. Code is just the first step. Our Blink Plus subscription will support us and plug you into the future of Blink.
 
-Purchasing Blink Plus will help us improve our terminal and create new services that we would not be able to do otherwise. We need more resources. It is time to go big or go home.
+Please consider subscribing to Blink Plus. You will help us improve our terminal and create new services. We need more resources, and we are counting on you to fuel our growth! It is time to go big or go home, and we are up to the challenge.
 
-See you on Blink Shell 15!
+See you on Blink Shell 15 and beyond!
 
 """).padding([.top, .leading, .trailing]).padding([.top, .leading, .trailing])
         HStack {
