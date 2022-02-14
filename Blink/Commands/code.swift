@@ -91,7 +91,7 @@ struct CodeCommand: NonStdIOCommand {
     please install the blink-fs extension from the Marketplace.
     To close, use your Blink close tab shortcut (default Cmd-W).
     For more information, please read:
-    blink.sh/docs/code/getting-started
+    https://docs.blink.sh/advanced/code
     """
 
   @OptionGroup var verboseOptions: VerboseOptions
