@@ -133,27 +133,37 @@ struct Archive {
 
     defer { try? fm.removeItem(at: keysDirectoryURL) }
 
-    try keyNames.forEach { keyName in
-      if BKPubKey.withID(keyName) != nil {
-        throw Error("Key already exists \(keyName)")
-      }
-
+    var failedKeys = [String]()
+    keyNames.forEach { keyName in
       do {
+        if BKPubKey.withID(keyName) != nil {
+          throw Error("Key already exists \(keyName)")
+        }
+
         // Import and store
         let keyURL = keysDirectoryURL.appendingPathComponent(keyName)
         let keyBlob = try Data(contentsOf: keyURL)
         //try Data(contentsOf: keyURL.appendingPathExtension("pub"))
         let certBlob = try? Data(contentsOf: keysDirectoryURL.appendingPathComponent("\(keyName)-cert.pub"))
-        var pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
-        let pubkeyComment = String(pubkeyComponents.remove(at: 2))
-
+        let pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
+        var pubkeyComment = ""
+        if pubkeyComponents.count >= 3 {
+          pubkeyComment = pubkeyComponents[2...].joined(separator: " ")
+        }
         let key = try SSHKey(fromFileBlob: keyBlob, passphrase: "", withPublicFileCertBlob: certBlob)
-        let comment = (key.comment ?? "").isEmpty ? pubkeyComment : key.comment!
-
-        try BKPubKey.addKeychainKey(id: keyName, key: key, comment: comment)
+        if let comment = key.comment,
+           !comment.isEmpty {
+          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: comment)
+        } else {
+          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: pubkeyComment)
+        }
       } catch {
-        throw Error("Error importing key \(keyName)")
+        failedKeys.append(keyName)
       }
+    }
+    
+    if !failedKeys.isEmpty {
+      throw Error("The following keys failed to migrate, please move them manually: \(failedKeys.joined(separator: ", "))")
     }
   }
 
