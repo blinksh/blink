@@ -127,7 +127,7 @@ class ShakeDetector: ObservableObject {
     if d > threshold {
       p += 0.003
     } else {
-      p -= 0.001;
+      p += 0.0002;
     }
     
     p = min(max(p, 0), 1.0)

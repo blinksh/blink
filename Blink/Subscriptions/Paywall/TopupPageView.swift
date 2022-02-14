@@ -76,7 +76,7 @@ struct TopupPageView: Page {
           .animation(Animation.default.speed(4).repeatCount(3), value: tracker.shakeHintIsOn)
         
         
-        Text("your device until the bar is filled.")
+        Text("your device to fill bar faster.")
           .font(.footnote)
         Spacer()
       }
