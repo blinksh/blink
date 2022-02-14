@@ -245,7 +245,7 @@ fileprivate class KeysObservable: ObservableObject {
     }
     
     guard
-      let blob = string.data(using: .utf8)
+      let blob = SSHKey.sanitize(key: string).data(using: .utf8)
     else {
       return _showError(message: "Can't convert to data")
     }
