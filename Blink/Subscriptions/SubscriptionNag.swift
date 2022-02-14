@@ -36,7 +36,7 @@ private let NagTimer       = "NagTimer"
 private let NagTimestamp   = "NagTimestamp"
 private let NagNumDisplays = "NagNumDisplays"
 private let NagTimerMax = 3 * 60
-private let NagInterval: TimeInterval =  1// 10 // 1
+private let NagInterval: TimeInterval = 10 // 1
 
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
