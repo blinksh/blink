@@ -128,11 +128,19 @@ struct PurchasePageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "Access to all Blink Shell features and services.")
+      if horizontal {
+        CheckmarkRow(text: "Access to all Blink.app features and Blink+ services")
+      } else {
+        CheckmarkRow(text: "Access to all Blink.app features")
+      }
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Seamless usage. No interruptions.", checkedIcon: "infinity")
+      CheckmarkRow(text: "Interruption free usage", checkedIcon: "infinity")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Support Blink development.", checkedIcon: "suit.heart.fill", iconColor: .red)
+      if !horizontal {
+        CheckmarkRow(text: "Access to future Blink+ services", checkedIcon: "plus")
+        Spacer().frame(maxHeight: 10)
+      }
+      CheckmarkRow(text: "Support Blink development", checkedIcon: "suit.heart.fill", iconColor: .red)
     }
   }
 }

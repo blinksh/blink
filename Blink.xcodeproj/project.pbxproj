@@ -390,6 +390,7 @@
 		D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */; };
 		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
+		D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */; };
 		D2DDD70B2657E35C00DAB52A /* build.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DDD70A2657E35C00DAB52A /* build.swift */; };
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
@@ -1057,6 +1058,7 @@
 		D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuth.swift; sourceTree = "<group>"; };
 		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
+		D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkClassicPlanView.swift; sourceTree = "<group>"; };
 		D2DDD70A2657E35C00DAB52A /* build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = build.swift; sourceTree = "<group>"; };
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
 		D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase.pub"; sourceTree = "<group>"; };
@@ -1950,6 +1952,7 @@
 			children = (
 				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
 				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
+				D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -2980,6 +2983,7 @@
 				D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
+				D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2C2441B238E44AB0082C69C /* NavView.swift in Sources */,
 				D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */,

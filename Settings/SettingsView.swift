@@ -73,6 +73,13 @@ struct SettingsView: View {
           } details: {
             PlansView()
           }
+          Row {
+            HStack {
+              Label("For Blink 14 Owners", systemImage: "14.square")
+            }
+          } details: {
+            BlinkClassPlanView()
+          }
         }
       }
       Section("Connect") {

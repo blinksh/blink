@@ -52,7 +52,7 @@ struct MigratePageView: Page {
       Spacer().frame(maxHeight: horizontal ? 20 : 54)
       HStack {
         Spacer()
-        Button("Migrate", action: {
+        Button("Start Migration", action: {
           NotificationCenter.default.post(name: .openMigration, object: nil)
         })
         .buttonStyle(.borderedProminent)
@@ -68,8 +68,8 @@ struct MigratePageView: Page {
       } else {
         HStack {
           Spacer()
-          Text("Zero cost for Blink Shell 14 users.")
-            .font(.footnote)
+          Text("If you already migrated on a different device, do Restore Purchase instead")
+            .font(.footnote).multilineTextAlignment(.center)
           Spacer()
         }
         Spacer().frame(maxHeight:8)
@@ -96,7 +96,7 @@ struct MigratePageView: Page {
   func header() -> some View {
     Group {
       Spacer()
-      Text(self.horizontal ? "Migrate from Blink Shell 14" : "Migrate from\nBlink Shell 14 app")
+      Text(self.horizontal ? "For Blink 14 Owners" : "For Blink 14\nOwners")
         .fontWeight(.bold)
         .font(.largeTitle)
       
@@ -109,11 +109,12 @@ struct MigratePageView: Page {
   
   func rows() -> some View {
     GroupBox() {
-      CheckmarkRow(text: "All features from Blink Shell 14 app.")
+      CheckmarkRow(text: "Access to all Blink.app features")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Recieve updates and new features.", checkedIcon: "calendar")
+      CheckmarkRow(text: "Interruption free usage", checkedIcon: "infinity")
       Spacer().frame(maxHeight: 10)
-      CheckmarkRow(text: "Seamless usage. No interruptions.", checkedIcon: "infinity")
+      CheckmarkRow(text: "Zero cost lifetime purchase", checkedIcon: "bag")
+      Spacer().frame(maxHeight: 10)
     }
   }
 }
