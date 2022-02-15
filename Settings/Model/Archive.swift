@@ -119,52 +119,15 @@ struct Archive {
 
   // Recover from an archive file. This operation may overwrite current configuration.
   static func recover(from archiveURL: URL, password: String) throws {
-    let fm = FileManager.default
-
     // Extract
     let homeURL = URL(fileURLWithPath: BlinkPaths.homePath())
     try extract(from: archiveURL, password: password, to: homeURL)
 
     // Import information (keys)
-    let keysDirectoryURL = homeURL.appendingPathComponent(".keys", isDirectory: true)
-    let keyNames = try fm.contentsOfDirectory(at: keysDirectoryURL, includingPropertiesForKeys: nil)
-      .filter { $0.lastPathComponent.split(separator: ".").count == 1 }
-      .map { $0.lastPathComponent }
-
-    defer { try? fm.removeItem(at: keysDirectoryURL) }
-
-    var failedKeys = [String]()
-    keyNames.forEach { keyName in
-      do {
-        if BKPubKey.withID(keyName) != nil {
-          throw Error("Key already exists \(keyName)")
-        }
-
-        // Import and store
-        let keyURL = keysDirectoryURL.appendingPathComponent(keyName)
-        let keyBlob = try Data(contentsOf: keyURL)
-        //try Data(contentsOf: keyURL.appendingPathExtension("pub"))
-        let certBlob = try? Data(contentsOf: keysDirectoryURL.appendingPathComponent("\(keyName)-cert.pub"))
-        let pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
-        var pubkeyComment = ""
-        if pubkeyComponents.count >= 3 {
-          pubkeyComment = pubkeyComponents[2...].joined(separator: " ")
-        }
-        let key = try SSHKey(fromFileBlob: keyBlob, passphrase: "", withPublicFileCertBlob: certBlob)
-        if let comment = key.comment,
-           !comment.isEmpty {
-          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: comment)
-        } else {
-          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: pubkeyComment)
-        }
-      } catch {
-        failedKeys.append(keyName)
-      }
-    }
+    try recoverKeys(from: homeURL)
     
-    if !failedKeys.isEmpty {
-      throw Error("The following keys failed to migrate, please move them manually: \(failedKeys.joined(separator: ", "))")
-    }
+    BKHosts.loadHosts()
+    BKHosts.resetHostsiCloudInformation()
   }
 
   static func extract(from archiveURL: URL, password: String, to destinationURL: URL) throws {
@@ -228,6 +191,49 @@ struct Archive {
 #endif
   }
 
+  static func recoverKeys(from homeURL: URL) throws {
+    let fm = FileManager.default
+    let keysDirectoryURL = homeURL.appendingPathComponent(".keys", isDirectory: true)
+    let keyNames = try fm.contentsOfDirectory(at: keysDirectoryURL, includingPropertiesForKeys: nil)
+      .filter { $0.lastPathComponent.split(separator: ".").count == 1 }
+      .map { $0.lastPathComponent }
+
+    defer { try? fm.removeItem(at: keysDirectoryURL) }
+
+    var failedKeys = [String]()
+    keyNames.forEach { keyName in
+      do {
+        if BKPubKey.withID(keyName) != nil {
+          throw Error("Key already exists \(keyName)")
+        }
+
+        // Import and store
+        let keyURL = keysDirectoryURL.appendingPathComponent(keyName)
+        let keyBlob = try Data(contentsOf: keyURL)
+        //try Data(contentsOf: keyURL.appendingPathExtension("pub"))
+        let certBlob = try? Data(contentsOf: keysDirectoryURL.appendingPathComponent("\(keyName)-cert.pub"))
+        let pubkeyComponents = try String(contentsOf: keyURL.appendingPathExtension("pub")).split(separator: " ")
+        var pubkeyComment = ""
+        if pubkeyComponents.count >= 3 {
+          pubkeyComment = pubkeyComponents[2...].joined(separator: " ")
+        }
+        let key = try SSHKey(fromFileBlob: keyBlob, passphrase: "", withPublicFileCertBlob: certBlob)
+        if let comment = key.comment,
+           !comment.isEmpty {
+          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: comment)
+        } else {
+          try BKPubKey.addKeychainKey(id: keyName, key: key, comment: pubkeyComment)
+        }
+      } catch {
+        failedKeys.append(keyName)
+      }
+    }
+    
+    if !failedKeys.isEmpty {
+      throw Error("The following keys failed to migrate, please move them manually: \(failedKeys.joined(separator: ", "))")
+    }
+
+  }
   private func copyAllDataToTmpDirectory() throws {
     let fm = FileManager.default
     

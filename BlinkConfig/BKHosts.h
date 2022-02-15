@@ -64,7 +64,9 @@ enum BKMoshPrediction {
 
 + (instancetype)withHost:(NSString *)ID;
 + (void)loadHosts NS_SWIFT_NAME(loadHosts());
++ (void)resetHostsiCloudInformation;
 + (BOOL)saveHosts;
++ (BOOL)forceSaveHosts;
 + (instancetype)saveHost:(NSString *)host
              withNewHost:(NSString *)newHost
                 hostName:(NSString *)hostName
@@ -89,6 +91,7 @@ enum BKMoshPrediction {
 + (CKRecord *)recordFromHost:(BKHosts *)host;
 + (BKHosts *)hostFromRecord:(CKRecord *)hostRecord;
 + (instancetype)withiCloudId:(CKRecordID *)record;
+
 
 - (id)initWithAlias:(NSString *)alias
            hostName:(NSString *)hostName

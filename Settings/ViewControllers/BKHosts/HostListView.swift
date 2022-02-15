@@ -235,7 +235,7 @@ fileprivate class HostsObservable: ObservableObject {
       
       allHosts?.remove(h.host)
     }
-    BKHosts.save()
+    BKHosts.forceSave()
     filteredList.remove(atOffsets: indexSet)
     reloadHosts()
   }

@@ -300,14 +300,23 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
   [BKHosts saveHosts];
 }
 
-+ (BOOL)saveHosts
++ (BOOL)saveHosts {
+  return [self saveHostsAndEnforce:false];
+}
+
++ (BOOL)forceSaveHosts {
+  return [self saveHostsAndEnforce:true];
+}
+
++ (BOOL)saveHostsAndEnforce:(BOOL)force
 {
-  if (!__hosts) {
+  // App may start in the background and Hosts file may not load, causing hosts to be empty.
+  // Then the user would load the app, and the Hosts would be empty, overwriting a never read hosts file.
+  // This way we differentiate if saving is due to user, or part of the UI flow.
+  if (!__hosts && !force) {
     return NO;
   }
   
-  [self saveAllToSSHConfig];
-
   NSError *error = nil;
   NSData *data = [NSKeyedArchiver archivedDataWithRootObject:__hosts
                                        requiringSecureCoding:YES
@@ -326,7 +335,21 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
     return NO;
   }
   
+  [self saveAllToSSHConfig];
+
   return result;
+}
+
+// Used when importing hosts. Dumps iCloud information so Hosts list is considered new against it.
++ (void)resetHostsiCloudInformation
+{
+  for (BKHosts *host in __hosts) {
+    host.iCloudRecordId = nil;
+    host.iCloudConflictCopy = nil;
+    host.iCloudConflictDetected = nil;
+  }
+  
+  [self saveHosts];
 }
 
 + (void)loadHosts {
