@@ -121,7 +121,7 @@
 	<string>storing commands</string>
 	<key>NSUbiquitousContainers</key>
 	<dict>
-		<key>iCloud.com.carloscabanero.blinkshell</key>
+		<key>iCloud.sh.blink.blinkshell</key>
 		<dict>
 			<key>NSUbiquitousContainerIsDocumentScopePublic</key>
 			<true/>
