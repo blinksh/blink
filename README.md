@@ -81,10 +81,14 @@ We made a ton easier to build and install Blink yourself on your iOS devices thr
 git clone --recursive https://github.com/blinksh/blink.git && \
     cd blink && ./get_frameworks.sh && \
     rm -rf Blink.xcodeproj/project.xcworkspace/xcshareddata/
+```
 
-2. Do the following
-cd blink
+2. Change developer ids
+
+```bash
 cp template_setup.xcconfig developer_setup.xcconfig
+```
+
 edit developer_setup.xcconfig (change apple developer id etc).
 
 3. Open the project in XCode
