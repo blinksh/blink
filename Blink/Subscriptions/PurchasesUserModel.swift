@@ -114,6 +114,10 @@ class PurchasesUserModel: ObservableObject {
     blink_openurl(URL(string: "https://blink.sh/docs")!)
   }
   
+  func openMigrationHelp() {
+    blink_openurl(URL(string: "https://docs.blink.sh/migration")!)
+  }
+  
   func formattedPlusPriceWithPeriod() -> String? {
     plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
   }
