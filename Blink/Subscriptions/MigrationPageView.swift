@@ -89,17 +89,19 @@ struct MigrationPageView: Page {
       Spacer()
       HStack {
         Spacer()
+        Button {
+          _model.openMigrationHelp();
+        } label: {
+          Label("Migration help", systemImage: "questionmark.circle.fill")
+        }.padding(.trailing)
         Button("Privacy Policy", action: {
           _model.openPrivacyAndPolicy()
         }).padding(.trailing)
         Button("Terms of Use", action: {
           _model.openTermsOfUse()
-        }).padding(.trailing)
-        Button("Help", action: {
-          _model.openHelp();
         })
         Spacer()
-      }
+      }.multilineTextAlignment(.center)
       .font(.footnote)
       .padding(.bottom, self.horizontal ? 32 : 40)
       
