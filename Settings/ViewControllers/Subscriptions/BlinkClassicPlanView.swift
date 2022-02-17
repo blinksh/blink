@@ -63,7 +63,7 @@ struct BlinkClassPlanView: View {
           }
         })
       Section(
-        footer: Text("After receipt verification with `Blink Shell 14 app` you will be able to access `Blink Classic Plan` for zero cost purchase.\n\nIf you already migrated on a different device, do _Restore Purchases_ instead"),
+        footer: Text("After receipt verification with `Blink 14.app` you will be able to access `Blink Classic Plan` for zero cost purchase.\n\nIf you already migrated on a different device, do _Restore Purchases_ instead"),
         content:  {
           if _entitlements.nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
             HStack {
@@ -90,7 +90,7 @@ struct BlinkClassPlanView: View {
         }
         if _model.dataCopied {
           Label {
-            Text("Settings Copied From Blink Shell 14 app")
+            Text("Settings Copied From Blink 14.app")
           } icon: {
             Image(systemName: "tray.full.fill")
           }.foregroundColor(.green)
@@ -98,7 +98,7 @@ struct BlinkClassPlanView: View {
           Button {
             _model.startDataMigration()
           } label: {
-            Label("Copy Settings From Blink Shell 14 app", systemImage: "tray.and.arrow.down.fill")
+            Label("Copy Only Settings from Blink 14", systemImage: "tray.and.arrow.down.fill")
           }
         }
       }
