@@ -85,6 +85,9 @@ class SubscriptionNag: NSObject {
   }
   
   func doShowPaywall() -> Bool {
+    if ProcessInfo().isMacCatalystApp {
+      return false
+    }
     return _nagCount() > NagTimerMax
   }
   

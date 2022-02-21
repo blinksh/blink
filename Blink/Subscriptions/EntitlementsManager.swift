@@ -117,6 +117,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   private func _updateSubscriptionNag() {
+    if ProcessInfo().isMacCatalystApp {
+      SubscriptionNag.shared.terminate()
+      return
+    }
     if self.unlimitedTimeAccess.active {
       SubscriptionNag.shared.terminate()
     } else {
