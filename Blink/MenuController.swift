@@ -169,6 +169,9 @@ fileprivate var attachedShortcuts: [UIKeyCommand] = []
   // As we are rewriting the edit menu, if the standard sequences are not defined,
   // we add them here so they can go through the normal flow, and let our terminal map.
   private class func remainingStandardEditMenuCommands() -> [UICommand] {
+    if ProcessInfo().isMacCatalystApp {
+      return []
+    }
     let copyCommand = UIKeyCommand(
       title: "",
       action: #selector(UIResponder.copy(_:)),
