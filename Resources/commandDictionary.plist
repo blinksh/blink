@@ -93,13 +93,13 @@
 		<string>n</string>
 		<string>no</string>
 	</array>
-  <key>ed</key>
-  <array>
-    <string>text.framework/text</string>
-    <string>ed_main</string>
-    <string>p:sx</string>
-    <string>file</string>
-  </array>
+	<key>ed</key>
+	<array>
+		<string>text.framework/text</string>
+		<string>ed_main</string>
+		<string>p:sx</string>
+		<string>file</string>
+	</array>
 	<key>egrep</key>
 	<array>
 		<string>text.framework/text</string>
@@ -163,13 +163,13 @@
 		<string>46ac:dilnm:rst:vVwCDN:R:TW:</string>
 		<string>no</string>
 	</array>
-  <key>ifconfig</key>
-  <array>
-    <string>network_ios.framework/network_ios</string>
-    <string>ifconfig_main</string>
-    <string>abdlmruv</string>
-    <string>no</string>
-  </array>
+	<key>ifconfig</key>
+	<array>
+		<string>network_ios.framework/network_ios</string>
+		<string>ifconfig_main</string>
+		<string>abdlmruv</string>
+		<string>no</string>
+	</array>
 	<key>link</key>
 	<array>
 		<string>files.framework/files</string>
@@ -464,5 +464,12 @@
 		<string>0E:I:J:L:n:oP:pR:s:tx</string>
 		<string>no</string>
 	</array>
+  <key>wol</key>
+  <array>
+    <string>network_ios.framework/network_ios</string>
+    <string>_Z8wol_mainiPKPc</string>
+    <string>hqb:p:d:</string>
+    <string>no</string>
+  </array>
 </dict>
 </plist>
