@@ -67,6 +67,7 @@ class CaptureController: UIViewController {
     for input in inputs {
       for mod in mods {
         let cmd = UIKeyCommand(input: input, modifierFlags: UIKeyModifierFlags(rawValue: mod), action: #selector(_capture(cmd:)))
+        cmd.wantsPriorityOverSystemBehavior = true
         result.append(cmd)
       }
     }
