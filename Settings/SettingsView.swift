@@ -164,6 +164,16 @@ struct SettingsView: View {
         } details: {
           SupportView()
         }
+        HStack {
+          Button {
+            BKLinkActions.sendToAppStore()
+          } label: {
+            Label("Rate Blink", systemImage: "star")
+          }
+          
+          Spacer()
+          Text("App Store").foregroundColor(.secondary)
+        }
       }
       
       Section {
