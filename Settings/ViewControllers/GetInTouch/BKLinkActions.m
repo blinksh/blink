@@ -51,7 +51,7 @@
 
 + (void)sendToGitHub:(NSString *)location
 {
-  NSURL *githubURL = [NSURL URLWithString:@"https://github.com/BlinkSh"];
+  NSURL *githubURL = [NSURL URLWithString:@"https://github.com/blinksh"];
   if (location) {
     githubURL = [githubURL URLByAppendingPathComponent:location];
   }
@@ -60,7 +60,7 @@
 
 + (void)sendToAppStore
 {
-  NSURL *appStoreLink = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1156707581?action=write-review"];
+  NSURL *appStoreLink = [NSURL URLWithString:@"itms-apps://itunes.apple.com/app/id1594898306?action=write-review"];
   [[UIApplication sharedApplication] openURL:appStoreLink options:@{} completionHandler:nil];
 }
 
@@ -73,6 +73,11 @@
 
 + (void)sendToDiscord {
   NSURL *url = [NSURL URLWithString:@"https://discord.gg/ZTtMfvK"];
+  blink_openurl(url);
+}
+
++ (void)sendToReddit {
+  NSURL *url = [NSURL URLWithString:@"https://www.reddit.com/r/BlinkShell"];
   blink_openurl(url);
 }
 

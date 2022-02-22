@@ -154,10 +154,11 @@ struct SettingsView: View {
       }
       
       Section("Get in touch") {
-        RowWithStoryBoardId(content: {
+        Row {
           Label("Feedback", systemImage: "bubble.left")
-        }, storyBoardId: "BKFeedbackViewController")
-        
+        } details: {
+          FeedbackView()
+        }
         RowWithStoryBoardId(content: {
           Label("Support", systemImage: "book")
         }, storyBoardId: "BKSupportViewController")

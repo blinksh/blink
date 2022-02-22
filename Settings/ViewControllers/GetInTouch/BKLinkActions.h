@@ -38,6 +38,7 @@
 + (void)sendToAppStore;
 + (void)sendToEmailApp;
 + (void)sendToDiscord;
++ (void)sendToReddit;
 + (void)sendToDiscordSupport;
 
 @end
