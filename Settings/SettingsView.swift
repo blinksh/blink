@@ -159,9 +159,11 @@ struct SettingsView: View {
         } details: {
           FeedbackView()
         }
-        RowWithStoryBoardId(content: {
+        Row {
           Label("Support", systemImage: "book")
-        }, storyBoardId: "BKSupportViewController")
+        } details: {
+          SupportView()
+        }
       }
       
       Section {

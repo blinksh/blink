@@ -15,7 +15,6 @@
 		0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F1281D06324200AB5438 /* libcurses.tbd */; };
 		074F30791D062A2800A73445 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 074F30781D062A2800A73445 /* main.m */; };
 		079635871D0E6602000473B1 /* TermView.m in Sources */ = {isa = PBXBuildFile; fileRef = 079635841D0E6602000473B1 /* TermView.m */; };
-		07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */; };
 		07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */; };
 		07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 07E3AEC51D9190CF007BC086 /* BKAboutViewController.m */; };
 		07E3AECD1D9191B4007BC086 /* about.html in Resources */ = {isa = PBXBuildFile; fileRef = 07E3AEC71D9191B4007BC086 /* about.html */; };
@@ -396,6 +395,7 @@
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
 		D2DE9CA626EA1CC000A0B29C /* BKMiniLog.m in Sources */ = {isa = PBXBuildFile; fileRef = D22A353726C1474200943C71 /* BKMiniLog.m */; };
 		D2E5454527C4C83C002635A2 /* FeedbackView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E5454427C4C83C002635A2 /* FeedbackView.swift */; };
+		D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E5454927C4D422002635A2 /* SupportView.swift */; };
 		D2E66D142695B100007D42AA /* HostListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2E66D132695B100007D42AA /* HostListView.swift */; };
 		D2EC7B4C25DBC922008B6B3C /* XCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */; };
 		D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */; };
@@ -675,8 +675,6 @@
 		0795F29B1DC11C6B00CC8B83 /* Blink.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Blink.entitlements; sourceTree = "<group>"; };
 		079635831D0E6602000473B1 /* TermView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TermView.h; sourceTree = "<group>"; };
 		079635841D0E6602000473B1 /* TermView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = TermView.m; sourceTree = "<group>"; };
-		07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSupportViewController.h; sourceTree = "<group>"; };
-		07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSupportViewController.m; sourceTree = "<group>"; };
 		07E3AEB41D8F6E2E007BC086 /* BKLinkActions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKLinkActions.h; sourceTree = "<group>"; };
 		07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKLinkActions.m; sourceTree = "<group>"; };
 		07E3AEC41D9190CF007BC086 /* BKAboutViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKAboutViewController.h; sourceTree = "<group>"; };
@@ -1063,6 +1061,7 @@
 		D2DE0DDD260331F300A69B6F /* NewKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyView.swift; sourceTree = "<group>"; };
 		D2E4F92920B2BB4500B30F7B /* curl_ios_static.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = curl_ios_static.xcodeproj; path = ios_system/curl_ios_static.xcodeproj; sourceTree = "<group>"; };
 		D2E5454427C4C83C002635A2 /* FeedbackView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeedbackView.swift; sourceTree = "<group>"; };
+		D2E5454927C4D422002635A2 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
 		D2E66D132695B100007D42AA /* HostListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HostListView.swift; sourceTree = "<group>"; };
 		D2EC7B4B25DBC922008B6B3C /* XCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XCTestCase.swift; sourceTree = "<group>"; };
 		D2ED4A6E239BB12E000DC67F /* KeyCaptureView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyCaptureView.swift; sourceTree = "<group>"; };
@@ -1365,11 +1364,10 @@
 		07E3AEAA1D8F64C6007BC086 /* GetInTouch */ = {
 			isa = PBXGroup;
 			children = (
-				07E3AEB11D8F6775007BC086 /* BKSupportViewController.h */,
-				07E3AEB21D8F6775007BC086 /* BKSupportViewController.m */,
 				07E3AEB41D8F6E2E007BC086 /* BKLinkActions.h */,
 				07E3AEB51D8F6E2E007BC086 /* BKLinkActions.m */,
 				D2E5454427C4C83C002635A2 /* FeedbackView.swift */,
+				D2E5454927C4D422002635A2 /* SupportView.swift */,
 			);
 			path = GetInTouch;
 			sourceTree = "<group>";
@@ -3024,6 +3022,7 @@
 				D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */,
 				07FAB8F025C8E6C500E1CC2C /* Helpers.swift in Sources */,
 				C989E5561D6CC4A1003E0079 /* BKAppearanceViewController.m in Sources */,
+				D2E5454A27C4D422002635A2 /* SupportView.swift in Sources */,
 				D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */,
 				B7A487691DC7C48D007BA809 /* UIDevice+DeviceName.m in Sources */,
 				D2C2441D238E44AB0082C69C /* DefaultRow.swift in Sources */,
@@ -3052,7 +3051,6 @@
 				07FAB8F525C8E6C500E1CC2C /* SSHConfigProvider.swift in Sources */,
 				D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
-				07E3AEB31D8F6775007BC086 /* BKSupportViewController.m in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
