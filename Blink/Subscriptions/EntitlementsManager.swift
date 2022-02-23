@@ -117,7 +117,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   private func _updateSubscriptionNag() {
-    if ProcessInfo().isMacCatalystApp {
+    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
       SubscriptionNag.shared.terminate()
       return
     }

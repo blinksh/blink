@@ -34,8 +34,8 @@ import Foundation
 
 // Feature flags definition
 extension FeatureFlags {
+  @objc static let noSubscriptionNag     = _enabled(for: .testFlight)
   @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
-  @objc static let blinkCode             = _enabled(for: .developer, .testFlight, .appStore, .legacyDeveloper, .legacyTestFlight)
   @objc static let checkReceipt          = _enabled(for: .legacy)
 }
 
