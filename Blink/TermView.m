@@ -179,20 +179,23 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [self addSubview:_webView];
 }
 
-- (void)addBrowserWebView:(NSURL *)url agent: (NSString *)agent
+- (void)addBrowserWebView:(NSURL *)url agent: (NSString *)agent injectUIO: (BOOL) injectUIO
 {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
-  configuration.limitsNavigationsToAppBoundDomains = true;
   
-  NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
-  NSString * script =  [NSString stringWithContentsOfURL:scriptURL];
-  WKUserScript *userScript = [[WKUserScript alloc] initWithSource:script injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly: YES];
+  if (injectUIO) {
+    configuration.limitsNavigationsToAppBoundDomains = true;
+    
+    NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
+    NSString * script =  [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
+    WKUserScript *userScript = [[WKUserScript alloc] initWithSource:script injectionTime:WKUserScriptInjectionTimeAtDocumentStart forMainFrameOnly: YES];
 
-  [configuration.userContentController addUserScript:userScript];
-  [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
-//  configuration.limitsNavigationsToAppBoundDomains = YES;
+    [configuration.userContentController addUserScript:userScript];
+    [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
+  }
+  //  configuration.limitsNavigationsToAppBoundDomains = YES;
 
 
   _browserView = [[VSCodeInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -204,30 +207,34 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   _browserView.UIDelegate = self;
   _browserView.navigationDelegate = self;
   
-  _browserView.scrollView.delaysContentTouches = NO;
-  _browserView.scrollView.canCancelContentTouches = NO;
-  [_browserView.scrollView setScrollEnabled:NO];
-  [_browserView.scrollView.panGestureRecognizer setEnabled:NO];
-//   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
-//  [_webView addInteraction:_gestureInteraction];
+  if (injectUIO) {
   
-  UIPanGestureRecognizer *rec = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_pan:)];
-  rec.maximumNumberOfTouches = 1;
-  rec.cancelsTouchesInView = YES;
-  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-  rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-  rec.delegate = self;
-  
-  
-  UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
-//  rec2.maximumNumberOfTouches = 1;
-  rec2.cancelsTouchesInView = YES;
-  //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
-  rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
-  rec2.delegate = self;
-  
-  [_browserView addGestureRecognizer:rec];
-  [_browserView addGestureRecognizer:rec2];
+    _browserView.scrollView.delaysContentTouches = NO;
+    _browserView.scrollView.canCancelContentTouches = NO;
+    [_browserView.scrollView setScrollEnabled:NO];
+    [_browserView.scrollView.panGestureRecognizer setEnabled:NO];
+  //   _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
+  //  [_webView addInteraction:_gestureInteraction];
+    
+    UIPanGestureRecognizer *rec = [[UIPanGestureRecognizer alloc] initWithTarget:self action:@selector(_pan:)];
+    rec.maximumNumberOfTouches = 1;
+    rec.cancelsTouchesInView = YES;
+    rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    rec.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+    rec.delegate = self;
+    
+    
+    UITapGestureRecognizer *rec2 = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_pan2:)];
+  //  rec2.maximumNumberOfTouches = 1;
+    rec2.cancelsTouchesInView = YES;
+    //  rec.allowedScrollTypesMask = UIScrollTypeMaskAll;
+    rec2.allowedTouchTypes = @[@(UITouchTypeIndirectPointer)];
+    rec2.delegate = self;
+    
+    [_browserView addGestureRecognizer:rec];
+    [_browserView addGestureRecognizer:rec2];
+      
+  }
 
   [self addSubview:_browserView];
   [_browserView setOpaque:NO];
@@ -261,8 +268,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (WKWebView *)webView:(WKWebView *)webView createWebViewWithConfiguration:(WKWebViewConfiguration *)configuration forNavigationAction:(WKNavigationAction *)navigationAction windowFeatures:(WKWindowFeatures *)windowFeatures {
-  
-  
+ 
   BrowserController * ctrl = [[BrowserController alloc] init];
   
   WKWebView * wv = [[WKWebView alloc] initWithFrame:ctrl.view.bounds configuration:configuration];

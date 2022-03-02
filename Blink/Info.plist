@@ -86,6 +86,8 @@
 			<string>Blink</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
+				<string>https</string>
+				<string>http</string>
 				<string>ssh</string>
 				<string>blinkshell</string>
 				<string>${BLINK_MIGRATION_SCHEME}</string>

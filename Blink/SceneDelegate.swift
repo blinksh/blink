@@ -215,6 +215,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       _handleXcallbackUrl(with: xCallbackUrl)
     } else if let codeUrlScheme = URLContexts.first(where: { $0.url.scheme == "vscode" })?.url {
       _handleCodeUrlScheme(with: codeUrlScheme)
+    } else if let httpScheme = URLContexts.first(where: { $0.url.scheme == "http" || $0.url.scheme == "https"})?.url {
+      _handleCodeUrlScheme(with: httpScheme)
     }
   }
   
@@ -773,7 +775,19 @@ extension SceneDelegate {
 
     DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
       newTerm.termDevice.write(codeCommand)
-      term.termDevice.write("\n")
+      newTerm.termDevice.write("\n")
+    }
+  }
+  
+  private func _handleHttpUrlScheme(with url: URL) {
+    _spCtrl.newShellAction()
+    guard let newTerm = _spCtrl.currentTerm() else {
+      return
+    }
+
+    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5) {
+      newTerm.termDevice.write(url.absoluteString)
+      newTerm.termDevice.write("\n")
     }
   }
 }

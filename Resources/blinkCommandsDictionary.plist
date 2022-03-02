@@ -156,6 +156,13 @@
 		<string></string>
 		<string>no</string>
 	</array>
+	<key>browse</key>
+	<array>
+		<string>MAIN</string>
+		<string>browse_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>xcall</key>
 	<array>
 		<string>MAIN</string>

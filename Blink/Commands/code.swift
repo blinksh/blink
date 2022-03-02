@@ -131,7 +131,7 @@ struct CodeCommand: NonStdIOCommand {
         url = URL(string: str)!
       }
       DispatchQueue.main.async {
-        session.device.view.addBrowserWebView(url, agent: "")
+        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     case .fileLocationPath(let p):
@@ -139,7 +139,7 @@ struct CodeCommand: NonStdIOCommand {
     default:
       DispatchQueue.main.async {
         let url = URL(string: "https://vscode.dev/github/blinksh/blink/blob/raw/CODE.md")!
-        session.device.view.addBrowserWebView(url, agent: "")
+        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     }
@@ -167,7 +167,7 @@ struct CodeCommand: NonStdIOCommand {
     let url = vscodeURL ?? URL(string: "https://vscode.dev")!
     DispatchQueue.main.async {
       let agent = "BlinkSH/15 (wss;\(port);\(token))"
-      session.device.view.addBrowserWebView(url, agent: agent)
+      session.device.view.addBrowserWebView(url, agent: agent, injectUIO: true)
     }
   }
 

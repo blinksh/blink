@@ -29,73 +29,59 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-
 import Foundation
-import StoreKit
-
-import ArgumentParser
-
-import BlinkConfig
 import NonStdIO
+import ArgumentParser
+import BlinkCode
+import Network
 
 
-struct SKStoreCmd: NonStdIOCommand {
+struct BrowseCommand: NonStdIOCommand {
   static var configuration = CommandConfiguration(
-    commandName: "skstore",
-    abstract: "SKStorage",
-    shouldDisplay: false
+    commandName: "browser",
+    abstract: "Opens web page",
+    discussion: discussion
   )
-  
+  static let discussion = """
+    
+    """
+
   @OptionGroup var verboseOptions: VerboseOptions
   var io = NonStdIO.standart
 
   @Argument(
-    help: "attribute"
-  )
-  var attribute: String
-  var infoURL: URL { BlinkPaths.blinkURL().appendingPathComponent(".receiptInfo") }
-  
-  func run() throws {
-    let sema = DispatchSemaphore(value: 0)
-    
-    if attribute != "" {
-      return
-    }
-    
-    let sk = SKStore()
-    var error: Error? = nil
-
-    let c = sk.fetchReceiptURLPublisher()
-      .tryMap { url in 
-        let d = try Data(contentsOf: url, options: .alwaysMapped)
-        let str = d.base64EncodedString(options: [])
-        try str.write(to: infoURL, atomically: false, encoding: .utf8)
+    help: "Path to connect to or http(s) vscode like editor url",
+    transform: {
+      guard let url = URL(string: $0) else {
+        throw ArgumentParser.ValidationError("Invalid vscode url")
       }
-      .sink(receiveCompletion: { completion in
-        if case .failure(let err) = completion {
-          error = err
-        }
-        sema.signal()
-      }, receiveValue: { _ in })
+      return url
+    }
 
-    sema.wait()
+  )
+  var url: URL?
+
+  mutating func run() throws {
+    let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
     
-    if let error = error {
-      throw error
+    let url = url ?? URL(string: "https://google.com")!
+    DispatchQueue.main.async {
+      session.device.view.addBrowserWebView(url, agent: "", injectUIO: false)
     }
   }
 }
 
 
-@_cdecl("skstore_main")
-public func skstore_main(argc: Int32, argv: Argv) -> Int32 {
-  setvbuf(thread_stdin, nil, _IONBF, 0)
+@_cdecl("browse_main")
+public func browse_main(argc: Int32, argv: Argv) -> Int32 {
+  setvbuf(thread_stdin,  nil, _IONBF, 0)
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
 
   let io = NonStdIO.standart
+  io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
   
-  return SKStoreCmd.main(Array(argv.args(count: argc)[1...]), io: io)
+  return BrowseCommand.main(Array(argv.args(count: argc)[1...]), io: io)
 }

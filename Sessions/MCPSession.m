@@ -164,8 +164,19 @@
     [HistoryObj appendIfNeededWithCommand:cmdline];
   }
   
+  
+  
+  NSString *mayBeURLString = [cmdline stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+  
+  NSURL *mayBeHttpURL = [NSURL URLWithString:mayBeURLString];
+  NSString *scheme = mayBeHttpURL.scheme.lowercaseString;
+  if ([@"http" isEqual: scheme] || [@"https" isEqual:scheme]) {
+    cmdline = [NSString stringWithFormat:@"browse %@", mayBeURLString];
+  }
+  
   NSArray *arr = [cmdline componentsSeparatedByString:@" "];
   NSString *cmd = arr[0];
+  
   
   [self setActiveSession];
   
