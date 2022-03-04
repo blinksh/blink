@@ -226,6 +226,7 @@
 	</array>
 	<key>WKAppBoundDomains</key>
 	<array>
+		<string>microsoftonline.com</string>
 		<string>codesandbox.io</string>
 		<string>azureedge.net</string>
 		<string>gitpod.io</string>
