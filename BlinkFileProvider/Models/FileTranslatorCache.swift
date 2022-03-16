@@ -65,7 +65,7 @@ final class FileTranslatorCache {
   static let shared = FileTranslatorCache()
   private var translators: [String: TranslatorControl] = [:]
   private var references: [String: BlinkItemReference] = [:]
-  private var fileList:   [String: [BlinkItemReference]] = [:]
+  private var fileList = [String: [BlinkItemReference]]()
   private var backgroundThread: Thread? = nil
   private var backgroundRunLoop: RunLoop = RunLoop.current
 
@@ -131,7 +131,16 @@ final class FileTranslatorCache {
   static func store(reference: BlinkItemReference) {
     print("storing File BlinkItemReference : \(reference.itemIdentifier.rawValue)")
     shared.references[reference.itemIdentifier.rawValue] = reference
+    if reference.itemIdentifier != .rootContainer {
+      if var list = shared.fileList[reference.parentItemIdentifier.rawValue] {
+        list.append(reference)
+        shared.fileList[reference.parentItemIdentifier.rawValue] = list
+      } else {
+        shared.fileList[reference.parentItemIdentifier.rawValue] = [reference]
+      }
+    }
   }
+  
   static func remove(reference: BlinkItemReference) {
     shared.references.removeValue(forKey: reference.itemIdentifier.rawValue)
   }
@@ -142,20 +151,27 @@ final class FileTranslatorCache {
   }
 
   static func reference(url: URL) -> BlinkItemReference? {
-    let manager = NSFileProviderManager.default
-    let containerPath = manager.documentStorageURL.path
-
-    // file://<containerPath>/<encodedRootPath>/<encodedPath>/filename
-    // file://<containerPath>/<encodedRootPath>/path/filename
-    // Remove containerPath, split and get encodedRootPath.
-    var encodedPath = url.path
-    encodedPath.removeFirst(containerPath.count)
-    if encodedPath.hasPrefix("/") {
-      encodedPath.removeFirst()
+    // containerPath may not be the same when accessing for different app. It may have a /private prefix.
+    // To obtain the reference, we delete up to File Provider Storage.
+    // file://<containerPath>/File Provider Storage/<encodedRootPath>/<encodedPath>/filename
+    // file://<containerPath>/File Provider Storage/<encodedRootPath>/path/filename
+    let encodedPath = url.path
+    guard let range: Range<String.Index> = encodedPath.range(of: "File Provider Storage/") else {
+      return nil
     }
 
-    // <encodedRootPath>/<path>/<to>/filename
-    return shared.references[encodedPath]
+    var cleanPath = encodedPath[range.upperBound...]
+    if cleanPath.hasPrefix("/") {
+      cleanPath.removeFirst()
+    }
+
+    return shared.references[String(cleanPath)]
+  }
+  
+  static func updatedItems(container: BlinkItemIdentifier, since anchor: UInt) -> [BlinkItemReference]? {
+    shared.fileList[container.itemIdentifier.rawValue]?.filter {
+      anchor < $0.syncAnchor
+    }
   }
 }
 
