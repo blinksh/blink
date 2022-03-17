@@ -92,6 +92,7 @@ extension Translator {
     }.eraseToAnyPublisher()
   }
   
+  // Self can be a File or a directory.
   fileprivate func copyElement(from t: Translator, args: CopyArguments) -> CopyProgressInfoPublisher {
     return Just(t)
       .flatMap() { $0.stat() }
@@ -123,7 +124,8 @@ extension Translator {
           
           // When checkTimes, copy the file only if the modificationDate is different
           if args.checkTimes {
-            return self.cloneWalkTo(name)
+            let fileTranslator = self.isDirectory ? self.cloneWalkTo(name) : .just(self)
+            return fileTranslator
               .flatMap { $0.stat() }
               .catch { _ in Just([:]) }
               .flatMap { localAttributes -> CopyProgressInfoPublisher in
@@ -197,9 +199,18 @@ extension Translator {
                             size: NSNumber,
                             attributes: FileAttributes) -> CopyProgressInfoPublisher {
 
-    let fullFile = (self.current as NSString).appendingPathComponent(name)
+    let fullFile: String
+    let file: AnyPublisher<File, Error>
+    // If we are in a directory, we create the file, otherwise we open truncated.
+    if self.isDirectory {
+      fullFile = (self.current as NSString).appendingPathComponent(name)
+      file = self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
+    } else {
+      fullFile = self.current
+      file = self.open(flags: O_WRONLY | O_TRUNC)
+    }
     
-    return self.create(name: name, flags: O_WRONLY, mode: S_IRWXU)
+    return file
       .flatMap { destination -> CopyProgressInfoPublisher in
         if size == 0 {
           return .just(CopyProgressInfo(name: fullFile, written:0, size: 0))
@@ -217,7 +228,10 @@ extension Translator {
             case .attributes(let source):
               return Publishers.Zip(source.close(), destination.close())
                 // TODO From the File, we could offer the Translator itself.
-                .flatMap { _ in self.cloneWalkTo(name).flatMap { $0.wstat(attributes) } }
+                .flatMap { _ in self.isDirectory ?
+                  self.cloneWalkTo(name).flatMap { $0.wstat(attributes) }.eraseToAnyPublisher() :
+                  self.wstat(attributes)
+                }
                 .map { _ in CopyProgressInfo(name: fullFile, written: 0, size: size.uint64Value) }
                 .eraseToAnyPublisher()
             }
