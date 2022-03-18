@@ -36,17 +36,7 @@ import Combine
 import BlinkConfig
 
 
-fileprivate let HostKeyChangedWarningMessage = """
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-@    WARNING: REMOTE HOST IDENTIFICATION HAS CHANGED!     @
-@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
-Host key for server changed. It is now: Public key hash %@.
-
-An attacker might change the default server key to confuse your client into thinking the key does not exist. It is also possible that the host key has just been changed. In that case, you can replace it or remove it
-    using ssh-keygen -R.\n
-"""
-
-fileprivate let HostKeyChangedReplaceRequestMessage = "Accepting the following prompt will add a new entry for this server. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedWarningMessage = "@@WARNING! REMOTE IDENTIFICATION HAS CHANGED. New Public key hash: %@. Accepting the following prompt will add a new entry for this host. Do you trust the host key? [Y/n]: "
 
 fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
 
@@ -161,12 +151,10 @@ extension SSHClientConfigProvider {
   func cliVerifyHostCallback(_ prompt: SSH.VerifyHost) -> AnyPublisher<InteractiveResponse, Error> {
     var response: SSH.InteractiveResponse = .negative
 
-    var messageToShow: String = ""
-
+    let messageToShow: String
     switch prompt {
     case .changed(serverFingerprint: let serverFingerprint):
-      let headerMessage = String(format: HostKeyChangedWarningMessage, serverFingerprint)
-      messageToShow = String(format: "%@\n%@", headerMessage, HostKeyChangedReplaceRequestMessage)
+      messageToShow = String(format: HostKeyChangedWarningMessage, serverFingerprint)
     case .unknown(serverFingerprint: let serverFingerprint):
       messageToShow = String(format: HostKeyChangedUnknownRequestMessage, serverFingerprint)
     case .notFound(serverFingerprint: let serverFingerprint):
