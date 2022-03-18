@@ -85,12 +85,6 @@ extension SSHClient {
       let output = DispatchOutputStream(stream: sockOut)
       let input = DispatchInputStream(stream: sockIn)
 
-      guard let proxyCommand = try? ProxyCommand(command) else {
-        print("Could not parse Proxy Command")
-        return
-      }
-      let destination = proxyCommand.stdioForward
-
       let cancelProxy = { (error: Error?) in
         // This is necessary in order to propagate when the streams close.
         // Not clear yet where there is a copy of the socket.
@@ -102,6 +96,14 @@ extension SSHClient {
         proxyStream?.cancel()
         proxyStream = nil
       }
+
+      guard let proxyCommand = try? ProxyCommand(command) else {
+        print("Could not parse Proxy Command")
+        cancelProxy(nil)
+        return
+      }
+      
+      let destination = proxyCommand.stdioForward
 
       proxyCancellable =
         SSHClient.dial(proxyCommand.hostAlias, withConfigProvider: configProvider)
