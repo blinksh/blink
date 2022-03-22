@@ -39,7 +39,7 @@ fileprivate extension UIView {
     if self.backgroundColor != nil {
       self.backgroundColor = color
     }
-    
+
     for v in subviews {
       v.setRecursiveBg(color: color)
     }
@@ -62,6 +62,8 @@ fileprivate class PhotoOverlayController: UIImagePickerController {
   }
 }
 
+
+
 fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   private let _ctrl = PhotoOverlayController()
   fileprivate var controller: UIViewController { _ctrl }
@@ -76,6 +78,21 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   var safeFrame: CGRect = .zero {
     didSet {
       _positionBackInSafeFrameIfNeeded()
+    }
+  }
+  
+  struct State {
+      var frame: CGRect
+      var flipped: Bool
+  }
+  
+  var state: State {
+    get {
+      State(frame: frame, flipped: _flipped)
+    }
+    set {
+      self.frame = newValue.frame
+      self._flipped = newValue.flipped
     }
   }
   
@@ -366,21 +383,81 @@ fileprivate extension CGPoint {
 }
 
 class FaceCamManager {
-  private let _view: FaceCamView
+  private var _view: FaceCamView?
   private var _spaceCtrl: SpaceController? = nil
+  private var _state: FaceCamView.State = .init(frame: .zero, flipped: false)
   
   init() {
     _view = FaceCamView(frame: CGRect(origin: .zero, size: CGSize(width: 80, height: 80)))
+    
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(moveToBackground(notificationInfo:)),
+                                           name: UIWindowScene.didEnterBackgroundNotification,
+                                           object: nil)
+    
+    NotificationCenter.default.addObserver(self,
+                                           selector: #selector(moveToForeground(notificationInfo:)),
+                                           name: UIWindowScene.willEnterForegroundNotification,
+                                           object: nil)
+  }
+  
+  deinit {
+    NotificationCenter.default.removeObserver(self)
   }
   
   private static var __shared: FaceCamManager? = nil
+  
+  
+  @objc func moveToBackground(notificationInfo: NSNotification) {
+    guard let scene = notificationInfo.object as? UIWindowScene,
+          scene == _spaceCtrl?.view.window?.windowScene else {
+      return
+    }
+    if let view = _view {
+      view.controller.view.removeFromSuperview()
+      view.controller.removeFromParent()
+      view.removeFromSuperview()
+      _state = view.state
+    }
+    
+    _view = nil;
+  }
+  
+  @objc func moveToForeground(notificationInfo: NSNotification) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 ) {
+      
+      guard let spaceCtrl = self._spaceCtrl,
+            let scene = notificationInfo.object as? UIWindowScene,
+            scene == spaceCtrl.view.window?.windowScene
+      else {
+        return
+      }
+            
+      let view = FaceCamView(frame: CGRect(origin: .zero, size: CGSize(width: 80, height: 80)))
+      self._view = view
+      view.state = self._state
+      
+      
+      spaceCtrl.view.addSubview(view)
+      spaceCtrl.addChild(view.controller)
+      
+      view.layer.opacity = 0;
+      
+      UIView.animate(withDuration: 0.5, delay: 0.5, options: []) {
+        view.layer.opacity = 1
+      }
+
+    }
+    
+  }
   
   static func attach(spaceCtrl: SpaceController) {
     if __shared == nil {
       __shared = .init()
     } else {
-      __shared?._view.removeFromSuperview()
-      __shared?._view.controller.removeFromParent()
+      __shared?._view?.controller.view.removeFromSuperview()
+      __shared?._view?.controller.removeFromParent()
+      __shared?._view?.removeFromSuperview()
     }
     
     guard let shared = __shared
@@ -392,7 +469,9 @@ class FaceCamManager {
     
     let safeFrame = spaceCtrl.safeFrame
     
-    let view = shared._view
+    guard let view = shared._view else {
+      return
+    }
     
     
     view.center = CGPoint(
@@ -419,14 +498,15 @@ class FaceCamManager {
   static func update(in spaceCtrl: SpaceController) {
     guard let shared = __shared,
           let ctrl = shared._spaceCtrl,
-          ctrl == spaceCtrl
+          ctrl == spaceCtrl,
+          let view = shared._view
     else {
       return
     }
-    
-    shared._view.safeFrame = spaceCtrl.safeFrame
-    spaceCtrl.view.bringSubviewToFront(shared._view)
-    shared._view.setNeedsLayout()
+   
+    view.safeFrame = spaceCtrl.safeFrame
+    spaceCtrl.view.bringSubviewToFront(view)
+    view.setNeedsLayout()
   }
   
   static func turnOff() {
@@ -435,7 +515,9 @@ class FaceCamManager {
       return
     }
     
-    let view = shared._view
+    guard let view = shared._view else {
+      return
+    }
     
     UIView.animate(
       withDuration: 0.3,
