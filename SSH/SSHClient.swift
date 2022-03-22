@@ -414,10 +414,20 @@ public class SSHClient {
       }.eraseToAnyPublisher()
       
       
-    /// The server gave use a key of a type while we had an other type recorded. It is a possible attack.
+    /// The server gave use a key of a type while we had another type recorded. It is a possible attack.
     case SSH_KNOWN_HOSTS_OTHER:
-      // Stop connection because we could not verify the authenticity. And we could make the other side dispaly it.
-      return .fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack."))
+      return self.options.requestVerifyHostCallback!(.changed(serverFingerprint: serverFingerprint)).flatMap { answer -> AnyPublisher<SSHClient, Error> in
+        if answer == .affirmative {
+          let rc = ssh_session_update_known_hosts(self.session)
+          if rc != SSH_OK {
+            return .fail(error: SSHError(title: "Could not update known_hosts file."))
+          }
+          return .just(self)
+        }
+        
+        return .fail(error: SSHError(title: "Could not verify host authenticity."))
+      }.eraseToAnyPublisher()
+    //  return .fail(error: SSHError(title: "The server gave use a key of a type while we had an other type recorded. It is a possible attack."))
     /// There had been an eror checking the host.
     case SSH_KNOWN_HOSTS_ERROR:
       return .fail(error: SSHError(title: "Could not verify host authenticity."))

@@ -174,7 +174,8 @@ public class BlinkCopy: NSObject {
 
     let destTranslator = (destProtocol == .local) ? localTranslator(to: command.destination.filePath) :
       remoteTranslator(toFilePath: command.destination.filePath, atHost: command.destination.hostPath!, using: destProtocol, isSource: false)
-
+    
+    // Source
     let sourceProtocol = command.source.proto ?? defaultRemoteProtocol
     let sourceTranslator = (sourceProtocol == .local) ? localTranslator(to: command.source.filePath) :
       remoteTranslator(toFilePath: command.source.filePath, atHost: command.source.hostPath!, using: sourceProtocol)
@@ -192,21 +193,46 @@ public class BlinkCopy: NSObject {
     copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
       rootFilePath = d.current
       
-      return sourceTranslator.flatMap {
-        $0.translatorsMatching(path: self.command.source.filePath)
-      }
+      return sourceTranslator
+        .flatMap {
+          $0.cloneWalkTo(self.command.source.filePath)
+        }
+        .flatMap {
+          $0.translatorsMatching(path: self.command.source.filePath)
+        }
         .reduce([] as [Translator]) { (all, t) in
           var new = all
           new.append(t)
           return new
         }
-        .tryMap { source in
+        .tryMap { source -> [Translator] in
           if source.count == 0 {
             throw CommandError(message: "Source not found")
           }
           return source
         }
-        .flatMap { d.copy(from: $0, args: copyArguments) }.eraseToAnyPublisher()
+        .flatMap { source -> AnyPublisher<([Translator], Translator), Error> in
+          // Walk on destination, and it may have to be a directory or a file.
+          return d.cloneWalkTo(self.command.destination.filePath)
+            .tryCatch { error -> AnyPublisher<Translator, Error> in
+              // If we are copying a single item, then we can create a file for it.
+              guard source.count == 1 else {
+                throw error
+              }
+              let newFileName = (self.command.destination.filePath as NSString).lastPathComponent
+              let parentPath = (self.command.destination.filePath as NSString).deletingLastPathComponent
+              return d.cloneWalkTo(parentPath)
+                .flatMap { $0.create(name: newFileName, flags: O_WRONLY, mode: S_IRWXU) }
+                .flatMap { $0.close() }
+                .flatMap { _ in d.cloneWalkTo(self.command.destination.filePath) }
+                .eraseToAnyPublisher()
+            }
+            .map { (source, $0) }
+            .eraseToAnyPublisher()
+        }
+        .flatMap {
+          $1.copy(from: $0, args: copyArguments)
+        }.eraseToAnyPublisher()
     }.sink(receiveCompletion: { completion in
       if case let .failure(error) = completion {
         print("Copy failed. \(error)", to: &self.stderr)
@@ -260,7 +286,7 @@ public class BlinkCopy: NSObject {
   }
 
   func localTranslator(to path: String) -> AnyPublisher<Translator, Error> {
-    return BlinkFiles.Local().cloneWalkTo(path)
+    return .just(BlinkFiles.Local())
   }
 
   func remoteTranslator(toFilePath filePath: String, atHost hostPath: String, using proto: BlinkFilesProtocols, isSource: Bool = true) -> AnyPublisher<Translator, Error> {

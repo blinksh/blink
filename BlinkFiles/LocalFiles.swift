@@ -41,7 +41,7 @@ public struct LocalFileError: Error {
 }
 
 public class Local : Translator {
-  public var isDirectory: Bool
+  public var isDirectory: Bool { fileType == .typeDirectory }
   public var isConnected: Bool { true }
 
   static let files = FileManager()
@@ -56,7 +56,6 @@ public class Local : Translator {
     // Default local path
     self.root    = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true)[0]
     self.fileType = .typeDirectory
-    self.isDirectory = true
     self.current = root
   }
 

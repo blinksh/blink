@@ -109,9 +109,9 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
       .flatMap {
         // 2. Stat both local and remote files.
         // For remote, if the file is a link, then stat to know the real attributes
-        Publishers.Zip($0.directoryFilesAndAttributesResolvingLinks(),
+        Publishers.Zip($0.isDirectory ? $0.directoryFilesAndAttributesResolvingLinks() : AnyPublisher($0.stat().collect()),
                          Local().walkTo(self.identifier.url.path)
-                          .flatMap { $0.directoryFilesAndAttributes() }
+                        .flatMap { $0.isDirectory ? $0.directoryFilesAndAttributes() : AnyPublisher($0.stat().collect()) }
                           .catch { _ in AnyPublisher.just([]) })
       }
       .map { (remoteFilesAttributes, localFilesAttributes) -> [BlinkItemReference] in
@@ -153,24 +153,40 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
         }).store(in: &cancellableBag)
   }
 
-//  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
-//    /* TODO:
-//     - query the server for updates since the passed-in sync anchor
-//
-//     If this is an enumerator for the active set:
-//     - note the changes in your local database
-//
-//     - inform the observer about item deletions and updates (modifications + insertions)
-//     - inform the observer when you have finished enumerating up to a subsequent sync anchor
-//     */
-//    // Schedule changes
-//
-//    print("\(self.identifier.path) - Enumerating changes at \(currentAnchor) anchor")
-//    let data = "\(currentAnchor)".data(using: .utf8)
-//    observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
-//
-//  }
-//
+  func enumerateChanges(for observer: NSFileProviderChangeObserver, from anchor: NSFileProviderSyncAnchor) {
+    /* TODO:
+     - query the server for updates since the passed-in sync anchor
+
+     If this is an enumerator for the active set:
+     - note the changes in your local database
+
+     - inform the observer about item deletions and updates (modifications + insertions)
+     - inform the observer when you have finished enumerating up to a subsequent sync anchor
+     */
+    // Schedule changes
+
+    let anchor = UInt(String(data: anchor.rawValue, encoding: .utf8)!)!
+    self.log.info("Enumerating changes at \(anchor) anchor")
+    
+    guard let ref = FileTranslatorCache.reference(identifier: self.identifier) else {
+      observer.finishEnumeratingWithError("Op not supported")
+      return
+    }
+    
+    if let updatedItems = FileTranslatorCache.updatedItems(container: self.identifier, since: anchor) {
+      // Atm only update changes, no deletion as we don't provide tombstone values.
+      self.log.info("\(updatedItems.count) items updated.")
+      observer.didUpdate(updatedItems)
+    } else if anchor < ref.syncAnchor {
+      observer.didUpdate([ref])
+    }
+    
+    let newAnchor = ref.syncAnchor
+    let data = "\(newAnchor)".data(using: .utf8)
+    
+    observer.finishEnumeratingChanges(upTo: NSFileProviderSyncAnchor(data!), moreComing: false)
+  }
+
 
   /**
    Request the current sync anchor.
@@ -195,12 +211,15 @@ class FileProviderEnumerator: NSObject, NSFileProviderEnumerator {
    reasons, but are really required. System performance will be severely degraded if
    they are not implemented.
   */
-//  func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
-//
-//    // todo
-//    print("\(self.identifier.path) - Requested \(currentAnchor) anchor")
-//
-//    let data = "\(currentAnchor)".data(using: .utf8)
-//    completionHandler(NSFileProviderSyncAnchor(data!))
-//  }
+  func currentSyncAnchor(completionHandler: @escaping (NSFileProviderSyncAnchor?) -> Void) {
+
+    guard let ref = FileTranslatorCache.reference(identifier: self.identifier) else {
+      completionHandler(nil)
+      return
+    }
+    self.log.info("Requested anchor \(ref.syncAnchor)")
+
+    let data = "\(ref.syncAnchor)".data(using: .utf8)
+    completionHandler(NSFileProviderSyncAnchor(data!))
+  }
 }

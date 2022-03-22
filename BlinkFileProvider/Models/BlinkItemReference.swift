@@ -55,6 +55,8 @@ final class BlinkItemReference: NSObject {
   var isUploaded: Bool = false
   var uploadingError: Error? = nil
 
+  var syncAnchor: UInt = 0
+    
   // MARK: - Enumerator Entry Point:
   // Requires attributes. If you only have the Identifier, you need to go to the DB.
   // Identifier format <encodedRootPath>/path/to/more/components/filename
@@ -76,6 +78,14 @@ final class BlinkItemReference: NSObject {
       self.local = local
     }
     evaluate()
+    updateSyncAnchor()
+  }
+  
+  // Sync anchor of the container is increased when an item inside it changes.
+  // The sync anchor for an item itself is the one that updated the parent.
+  private func updateSyncAnchor() {
+    self.parentItem?.syncAnchor += 1
+    self.syncAnchor = self.parentItem?.syncAnchor ?? self.syncAnchor + 1
   }
 
   private func evaluate() {
@@ -93,12 +103,15 @@ final class BlinkItemReference: NSObject {
       return
     }
 
-    if remoteModified > localModified {
+    // Floor modified times as on some platforms it is a dobule with decimals
+    let epochRemote = floor(remoteModified.timeIntervalSince1970)
+    let epochLocal =  floor(localModified.timeIntervalSince1970)
+    if epochRemote > epochLocal {
       primary = remote!
       replica = local
       isDownloaded = false
       isUploaded = true
-    } else if remoteModified == localModified {
+    } else if epochRemote == epochLocal {
       primary = remote!
       replica = local
       isDownloaded = true
@@ -112,6 +125,11 @@ final class BlinkItemReference: NSObject {
     }
   }
 
+  var parentItem: BlinkItemReference? {
+    FileTranslatorCache
+      .reference(identifier: BlinkItemIdentifier(self.parentItemIdentifier))
+  }
+  
   var path: String {
     identifier.path
   }
@@ -145,6 +163,7 @@ final class BlinkItemReference: NSObject {
   func downloadStarted(_ c: AnyCancellable) {
     downloadingTask = c
     downloadingError = nil
+    updateSyncAnchor()
     evaluate()
   }
 
@@ -156,13 +175,15 @@ final class BlinkItemReference: NSObject {
     }
 
     local = remote
-    evaluate()
     downloadingTask = nil
+    updateSyncAnchor()
+    evaluate()
   }
 
   func uploadStarted(_ c: AnyCancellable) {
     uploadingTask = c
     uploadingError = nil
+    updateSyncAnchor()
   }
 
   func uploadCompleted(_ error: Error?) {
@@ -173,8 +194,9 @@ final class BlinkItemReference: NSObject {
     }
 
     remote = local
-    evaluate()
     uploadingTask = nil
+    updateSyncAnchor()
+    evaluate()
   }
 }
 
