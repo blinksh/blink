@@ -35,7 +35,7 @@
 #include "ios_error.h"
 #include "openurl.h"
 
-NSArray<NSString *> *__blink_known_browsers() {
+NSArray<NSString *> *__blink_known_browsers(void) {
   return @[
            @"brave",
            @"firefox",

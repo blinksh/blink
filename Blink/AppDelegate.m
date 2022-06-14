@@ -58,7 +58,7 @@ void __on_pipebroken_signal(int signum){
   NSLog(@"PIPE is broken");
 }
 
-void __setupProcessEnv() {
+void __setupProcessEnv(void) {
   
   NSBundle *mainBundle = [NSBundle mainBundle];
   int forceOverwrite = 1;

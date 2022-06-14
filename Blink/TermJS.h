@@ -61,22 +61,22 @@ NSString *term_paste(NSString *str) {
   return [NSString stringWithFormat:@"term_paste(%@);", _encodeString(str)];
 }
 
-NSString *term_clear()
+NSString *term_clear(void)
 {
   return @"term_clear();";
 }
 
-NSString *term_reset()
+NSString *term_reset(void)
 {
   return @"term_reset();";
 }
 
-NSString *term_focus()
+NSString *term_focus(void)
 {
   return @"term_focus();";
 }
 
-NSString *term_blur()
+NSString *term_blur(void)
 {
   return @"term_blur();";
 }
@@ -90,17 +90,17 @@ NSString *term_setWidth(NSInteger count)
   return [NSString stringWithFormat:@"term_setWidth(\"%ld\");", (long)count];
 }
 
-NSString *term_increaseFontSize()
+NSString *term_increaseFontSize(void)
 {
   return @"term_increaseFontSize();";
 }
 
-NSString *term_decreaseFontSize()
+NSString *term_decreaseFontSize(void)
 {
   return @"term_decreaseFontSize();";
 }
 
-NSString *term_resetFontSize()
+NSString *term_resetFontSize(void)
 {
   return @"term_resetFontSize();";
 }
@@ -115,7 +115,7 @@ NSString *term_setFontSize(NSNumber *newSize)
   return [NSString stringWithFormat:@"term_setFontSize(\"%@\");", newSize];
 }
 
-NSString *term_getCurrentSelection()
+NSString *term_getCurrentSelection(void)
 {
   return @"term_getCurrentSelection();";
 }
@@ -151,7 +151,7 @@ NSString *term_appendUserCss(NSString *css)
   return [NSString stringWithFormat:@"term_appendUserCss(%@)", _encodeString(css)];
 }
 
-NSString *term_cleanSelection()
+NSString *term_cleanSelection(void)
 {
   return @"term_cleanSelection();";
 }
@@ -161,7 +161,7 @@ NSString *term_modifySelection(NSString *direction, NSString *granularity)
   return [NSString stringWithFormat:@"term_modifySelection(%@, %@);", _encodeString(direction), _encodeString(granularity)];
 }
 
-NSString *term_modifySideSelection()
+NSString *term_modifySideSelection(void)
 {
   return @"term_modifySideSelection();";
 }
@@ -179,7 +179,7 @@ NSString *term_apiResponse(NSString *name, NSString *response) {
 }
 
 
-NSString *term_restore() {
+NSString *term_restore(void) {
   return @"term_restore();";
 }
 

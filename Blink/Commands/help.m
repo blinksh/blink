@@ -38,7 +38,7 @@
 #include <Blink-Swift.h>
 #include "MCPSession.h"
 
-void __print_commands() {
+void __print_commands(void) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   if (!session) {
     return;

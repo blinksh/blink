@@ -37,12 +37,12 @@
 #import <UserNotifications/UserNotifications.h>
 
 
-NSString * _preauthorize_check_geo_premissions() {
+NSString * _preauthorize_check_geo_premissions(void) {
   if (!CLLocationManager.locationServicesEnabled) {
     return @"Location services are disabled on this device.";
   }
   
-  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
+  CLAuthorizationStatus status = [[CLLocationManager alloc] init].authorizationStatus;
   switch(status) {
     case kCLAuthorizationStatusNotDetermined:
       return nil;
@@ -59,12 +59,12 @@ NSString * _preauthorize_check_geo_premissions() {
   return nil;
 }
 
-NSString * _prestart_check_geo_premissions() {
+NSString * _prestart_check_geo_premissions(void) {
   if (!CLLocationManager.locationServicesEnabled) {
     return @"Location services are disabled on this device.";
   }
   
-  CLAuthorizationStatus status = CLLocationManager.authorizationStatus;
+  CLAuthorizationStatus status = [[CLLocationManager alloc] init].authorizationStatus;
   switch(status) {
     case kCLAuthorizationStatusNotDetermined:
       return @"Please run `geo authorize` command first.";
