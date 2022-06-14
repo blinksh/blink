@@ -344,7 +344,6 @@
 		D2B9E21E268084E40084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21D268084E40084B2C4 /* Machines */; };
 		D2B9E222268085050084B2C4 /* BuildCLI in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E221268085050084B2C4 /* BuildCLI */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
-		D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7B265953090070F839 /* Intents.intentdefinition */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
 		D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C243FA238E44AB0082C69C /* KeyModifier.swift */; };
@@ -991,7 +990,6 @@
 		D2B9E21C268084D00084B2C4 /* Promise */ = {isa = PBXFileReference; lastKnownFileType = text; name = Promise; path = xcfs/.build/checkouts/Promise; sourceTree = SOURCE_ROOT; };
 		D2BC514C2355C3AE0034FDD4 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		D2BF5F6B2659522C0070F839 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		D2BF5F7B265953090070F839 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = blinkCommandsDictionary.plist; sourceTree = "<group>"; };
 		D2C243FA238E44AB0082C69C /* KeyModifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeyModifier.swift; sourceTree = "<group>"; };
@@ -1249,7 +1247,6 @@
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
-				D2BF5F7B265953090070F839 /* Intents.intentdefinition */,
 				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
@@ -2989,7 +2986,6 @@
 				07E3AEB61D8F6E2E007BC086 /* BKLinkActions.m in Sources */,
 				D2ED4A6F239BB12E000DC67F /* KeyCaptureView.swift in Sources */,
 				D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */,
-				D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */,
 				BD9EA211271F824500874007 /* BlinkLogging.swift in Sources */,
 				D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */,
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,

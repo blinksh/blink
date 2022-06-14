@@ -135,9 +135,6 @@
 	</dict>
 	<key>NSUserActivityTypes</key>
 	<array>
-		<string>MachineStartIntent</string>
-		<string>MachineStatusIntent</string>
-		<string>MachineStopIntent</string>
 		<string>com.blink.cmdline</string>
 		<string>com.blink.session</string>
 	</array>
