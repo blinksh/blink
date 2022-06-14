@@ -41,7 +41,7 @@ public struct CopyError : Error {
 public struct CopyAttributesFlag: OptionSet {
   public var rawValue: UInt
   
-  public static let none = CopyAttributesFlag(rawValue: 0)
+  public static let none = CopyAttributesFlag([])
   public static let timestamp = CopyAttributesFlag(rawValue: 1 << 0)
   public static let permissions = CopyAttributesFlag(rawValue: 1 << 1)
   

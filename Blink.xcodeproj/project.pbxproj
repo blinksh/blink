@@ -225,7 +225,6 @@
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D22378FC27A7B8DA002D5C6D /* XCConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = D22378FD27A7B8DA002D5C6D /* XCConfig.m */; };
-		D223790027A7BDBA002D5C6D /* BlinkConfig.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDCB715E268E1577007D7047 /* BlinkConfig.framework */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
 		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
@@ -343,16 +342,10 @@
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2B9E21E268084E40084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21D268084E40084B2C4 /* Machines */; };
-		D2B9E220268084F10084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21F268084F10084B2C4 /* Machines */; };
 		D2B9E222268085050084B2C4 /* BuildCLI in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E221268085050084B2C4 /* BuildCLI */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
-		D2BF5F6C2659522C0070F839 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2BF5F6B2659522C0070F839 /* Intents.framework */; };
-		D2BF5F6F2659522C0070F839 /* IntentHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F6E2659522C0070F839 /* IntentHandler.swift */; };
-		D2BF5F732659522C0070F839 /* BlinkIntents.appex in Embed PlugIns */ = {isa = PBXBuildFile; fileRef = D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		D2BF5F7C265953090070F839 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7B265953090070F839 /* Intents.intentdefinition */; };
-		D2BF5F7D265953090070F839 /* Intents.intentdefinition in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7B265953090070F839 /* Intents.intentdefinition */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
-		D2BF5F80265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
 		D2C24412238E44AB0082C69C /* KeyModifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C243FA238E44AB0082C69C /* KeyModifier.swift */; };
 		D2C24413238E44AB0082C69C /* KeyConfigPair.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2C243FB238E44AB0082C69C /* KeyConfigPair.swift */; };
@@ -569,13 +562,6 @@
 			remoteGlobalIDString = D218068625CC277900B98902;
 			remoteInfo = AppKitBridge;
 		};
-		D223790227A7BDBA002D5C6D /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = BDCB715D268E1577007D7047;
-			remoteInfo = BlinkConfig;
-		};
 		D24AFD5A222410E700CFD3C1 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0732F1051D062BF700AB5438 /* MBProgressHUD.xcodeproj */;
@@ -603,13 +589,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = BDBFA3042728914F00C77798;
 			remoteInfo = BlinkCode;
-		};
-		D2BF5F712659522C0070F839 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = EA0BA1831C0CC57B00719C1A /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = D2BF5F692659522C0070F839;
-			remoteInfo = BlinkIntents;
 		};
 		D2E4F92D20B2BB4500B30F7B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -655,7 +634,6 @@
 				D218069C25CC27C100B98902 /* AppKitBridge.bundle in Embed PlugIns */,
 				9827126B262E4BDB00F883FA /* BlinkFileProvider.appex in Embed PlugIns */,
 				BD9EA1D32718E19000874007 /* BlinkFileProviderUI.appex in Embed PlugIns */,
-				D2BF5F732659522C0070F839 /* BlinkIntents.appex in Embed PlugIns */,
 			);
 			name = "Embed PlugIns";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1012,11 +990,7 @@
 		D2B9E218268084C60084B2C4 /* Spinner */ = {isa = PBXFileReference; lastKnownFileType = text; name = Spinner; path = xcfs/.build/checkouts/Spinner; sourceTree = SOURCE_ROOT; };
 		D2B9E21C268084D00084B2C4 /* Promise */ = {isa = PBXFileReference; lastKnownFileType = text; name = Promise; path = xcfs/.build/checkouts/Promise; sourceTree = SOURCE_ROOT; };
 		D2BC514C2355C3AE0034FDD4 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
-		D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = BlinkIntents.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2BF5F6B2659522C0070F839 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
-		D2BF5F6E2659522C0070F839 /* IntentHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntentHandler.swift; sourceTree = "<group>"; };
-		D2BF5F702659522C0070F839 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		D2BF5F742659522C0070F839 /* BlinkIntents.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = BlinkIntents.entitlements; sourceTree = "<group>"; };
 		D2BF5F7B265953090070F839 /* Intents.intentdefinition */ = {isa = PBXFileReference; lastKnownFileType = file.intentdefinition; path = Intents.intentdefinition; sourceTree = "<group>"; };
 		D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaults.swift; sourceTree = "<group>"; };
 		D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = blinkCommandsDictionary.plist; sourceTree = "<group>"; };
@@ -1186,16 +1160,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D2BF5F672659522C0070F839 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D2B9E220268084F10084B2C4 /* Machines in Frameworks */,
-				D223790027A7BDBA002D5C6D /* BlinkConfig.framework in Frameworks */,
-				D2BF5F6C2659522C0070F839 /* Intents.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1963,16 +1927,6 @@
 			path = Gestures;
 			sourceTree = "<group>";
 		};
-		D2BF5F6D2659522C0070F839 /* BlinkIntents */ = {
-			isa = PBXGroup;
-			children = (
-				D2BF5F742659522C0070F839 /* BlinkIntents.entitlements */,
-				D2BF5F6E2659522C0070F839 /* IntentHandler.swift */,
-				D2BF5F702659522C0070F839 /* Info.plist */,
-			);
-			path = BlinkIntents;
-			sourceTree = "<group>";
-		};
 		D2C243F7238E44960082C69C /* KB */ = {
 			isa = PBXGroup;
 			children = (
@@ -2087,7 +2041,6 @@
 				D218068825CC277900B98902 /* AppKitBridge */,
 				BD9EA1CA2718E19000874007 /* BlinkFileProviderUI */,
 				98271251262E4BDB00F883FA /* BlinkFileProvider */,
-				D2BF5F6D2659522C0070F839 /* BlinkIntents */,
 				BDCB715F268E1577007D7047 /* BlinkConfig */,
 				BDD6D13827594BF900E76F1F /* BlinkConfigTests */,
 				BDBFA3062728914F00C77798 /* BlinkCode */,
@@ -2115,7 +2068,6 @@
 				07FABBB725C9AECF00E1CC2C /* BlinkFilesTests.xctest */,
 				D218068725CC277900B98902 /* AppKitBridge.bundle */,
 				98271250262E4BDB00F883FA /* BlinkFileProvider.appex */,
-				D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */,
 				BDCB715E268E1577007D7047 /* BlinkConfig.framework */,
 				BD9EA1C92718E19000874007 /* BlinkFileProviderUI.appex */,
 				BDBFA3052728914F00C77798 /* BlinkCode.framework */,
@@ -2401,27 +2353,6 @@
 			productReference = D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		D2BF5F692659522C0070F839 /* BlinkIntents */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = D2BF5F7A2659522C0070F839 /* Build configuration list for PBXNativeTarget "BlinkIntents" */;
-			buildPhases = (
-				D2BF5F662659522C0070F839 /* Sources */,
-				D2BF5F672659522C0070F839 /* Frameworks */,
-				D2BF5F682659522C0070F839 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				D223790327A7BDBA002D5C6D /* PBXTargetDependency */,
-			);
-			name = BlinkIntents;
-			packageProductDependencies = (
-				D2B9E21F268084F10084B2C4 /* Machines */,
-			);
-			productName = BlinkIntents;
-			productReference = D2BF5F6A2659522C0070F839 /* BlinkIntents.appex */;
-			productType = "com.apple.product-type.app-extension";
-		};
 		EA0BA18A1C0CC57B00719C1A /* Blink */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = EA0BA1AD1C0CC57C00719C1A /* Build configuration list for PBXNativeTarget "Blink" */;
@@ -2440,7 +2371,6 @@
 				07FABBC325C9AECF00E1CC2C /* PBXTargetDependency */,
 				D218069E25CC27C100B98902 /* PBXTargetDependency */,
 				9827126A262E4BDB00F883FA /* PBXTargetDependency */,
-				D2BF5F722659522C0070F839 /* PBXTargetDependency */,
 				BDCB7164268E1577007D7047 /* PBXTargetDependency */,
 				BD9EA1D22718E19000874007 /* PBXTargetDependency */,
 				D2A9B2FA272E6F26009FCBDE /* PBXTargetDependency */,
@@ -2511,9 +2441,6 @@
 						ProvisioningStyle = Automatic;
 						TestTargetID = EA0BA18A1C0CC57B00719C1A;
 					};
-					D2BF5F692659522C0070F839 = {
-						CreatedOnToolsVersion = 12.5;
-					};
 					EA0BA18A1C0CC57B00719C1A = {
 						CreatedOnToolsVersion = 7.1.1;
 						DevelopmentTeam = "$(TEAM_ID)";
@@ -2583,7 +2510,6 @@
 				07FABBB625C9AECF00E1CC2C /* BlinkFilesTests */,
 				D218068625CC277900B98902 /* AppKitBridge */,
 				9827124F262E4BDB00F883FA /* BlinkFileProvider */,
-				D2BF5F692659522C0070F839 /* BlinkIntents */,
 				BDCB715D268E1577007D7047 /* BlinkConfig */,
 				BD9EA1C82718E19000874007 /* BlinkFileProviderUI */,
 				BDBFA3042728914F00C77798 /* BlinkCode */,
@@ -2711,13 +2637,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		D265FBB82317DD3C0017EAC4 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D2BF5F682659522C0070F839 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -2942,16 +2861,6 @@
 				D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */,
 				D20CBA5B2360327900D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		D2BF5F662659522C0070F839 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				D2BF5F7D265953090070F839 /* Intents.intentdefinition in Sources */,
-				D2BF5F6F2659522C0070F839 /* IntentHandler.swift in Sources */,
-				D2BF5F80265BA0A80070F839 /* UserDefaults.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3250,11 +3159,6 @@
 			target = D218068625CC277900B98902 /* AppKitBridge */;
 			targetProxy = D218069D25CC27C100B98902 /* PBXContainerItemProxy */;
 		};
-		D223790327A7BDBA002D5C6D /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = BDCB715D268E1577007D7047 /* BlinkConfig */;
-			targetProxy = D223790227A7BDBA002D5C6D /* PBXContainerItemProxy */;
-		};
 		D24AFD5B222410E700CFD3C1 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = "MBProgressHUD Framework";
@@ -3269,11 +3173,6 @@
 			isa = PBXTargetDependency;
 			target = BDBFA3042728914F00C77798 /* BlinkCode */;
 			targetProxy = D2A9B2F9272E6F26009FCBDE /* PBXContainerItemProxy */;
-		};
-		D2BF5F722659522C0070F839 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = D2BF5F692659522C0070F839 /* BlinkIntents */;
-			targetProxy = D2BF5F712659522C0070F839 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -4257,87 +4156,6 @@
 			};
 			name = Release;
 		};
-		D2BF5F752659522C0070F839 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = BlinkIntents/BlinkIntents.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 535;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				GCC_PREPROCESSOR_DEFINITIONS = (
-					"DEBUG=1",
-					"$(inherited)",
-				);
-				INFOPLIST_FILE = BlinkIntents/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 15.0.7;
-				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkIntents";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
-				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		D2BF5F762659522C0070F839 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_SEARCH_USER_PATHS = NO;
-				CLANG_ANALYZER_NONNULL = YES;
-				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
-				CLANG_ENABLE_OBJC_WEAK = YES;
-				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
-				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
-				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
-				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
-				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
-				CODE_SIGN_ENTITLEMENTS = BlinkIntents/BlinkIntents.entitlements;
-				CODE_SIGN_IDENTITY = "iPhone Developer";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 535;
-				GCC_C_LANGUAGE_STANDARD = gnu11;
-				INFOPLIST_FILE = BlinkIntents/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@executable_path/../../Frameworks",
-				);
-				MARKETING_VERSION = 15.0.7;
-				MTL_FAST_MATH = YES;
-				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkIntents";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
-				SUPPORTS_MACCATALYST = YES;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 		EA0BA1AB1C0CC57C00719C1A /* Debug */ = {
 			isa = XCBuildConfiguration;
 			baseConfigurationReference = D27D01232615F1BD00128C23 /* developer_setup.xcconfig */;
@@ -4633,15 +4451,6 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		D2BF5F7A2659522C0070F839 /* Build configuration list for PBXNativeTarget "BlinkIntents" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				D2BF5F752659522C0070F839 /* Debug */,
-				D2BF5F762659522C0070F839 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Debug;
-		};
 		EA0BA1861C0CC57B00719C1A /* Build configuration list for PBXProject "Blink" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -4701,10 +4510,6 @@
 			productName = Purchases;
 		};
 		D2B9E21D268084E40084B2C4 /* Machines */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Machines;
-		};
-		D2B9E21F268084F10084B2C4 /* Machines */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Machines;
 		};

@@ -320,7 +320,7 @@ public class SSHPortForwardClient {
     self.log.message("Reverse stream received. Establishing connection and piping stream", SSH_LOG_INFO)
 
     self.streams.append(stream)
-    var conn = NWConnection(host: self.forwardHost, port: self.localPort, using: .tcp)
+    let conn = NWConnection(host: self.forwardHost, port: self.localPort, using: .tcp)
     conn.stateUpdateHandler = { [weak self] (state: NWConnection.State) in
       guard let self = self else {
         return

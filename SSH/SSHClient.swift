@@ -169,25 +169,25 @@ public class SSHClient {
     }
 
     if let ciphers = options.ciphers {
-      try _setSessionOption(SSH_OPTIONS_CIPHERS_C_S, options.ciphers)
-      try _setSessionOption(SSH_OPTIONS_CIPHERS_S_C, options.ciphers)
+      try _setSessionOption(SSH_OPTIONS_CIPHERS_C_S, ciphers)
+      try _setSessionOption(SSH_OPTIONS_CIPHERS_S_C, ciphers)
     }
 
     if let macs = options.macs {
-      try _setSessionOption(SSH_OPTIONS_HMAC_C_S, options.macs)
-      try _setSessionOption(SSH_OPTIONS_HMAC_S_C, options.macs)
+      try _setSessionOption(SSH_OPTIONS_HMAC_C_S, macs)
+      try _setSessionOption(SSH_OPTIONS_HMAC_S_C, macs)
     }
 
     if let bindAddress = options.bindAddress {
-      try _setSessionOption(SSH_OPTIONS_BINDADDR, options.bindAddress)
+      try _setSessionOption(SSH_OPTIONS_BINDADDR, bindAddress)
     }
 
     if let hostKeyAlgorithms = options.hostKeyAlgorithms {
-      try _setSessionOption(SSH_OPTIONS_HOSTKEYS, options.hostKeyAlgorithms)
+      try _setSessionOption(SSH_OPTIONS_HOSTKEYS, hostKeyAlgorithms)
     }
 
     if let kexAlgorithms = options.kexAlgorithms {
-      try _setSessionOption(SSH_OPTIONS_KEY_EXCHANGE, options.kexAlgorithms)
+      try _setSessionOption(SSH_OPTIONS_KEY_EXCHANGE, kexAlgorithms)
     }
 
     if var rekeyDataLimit = options.rekeyDataLimit {

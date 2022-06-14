@@ -138,7 +138,7 @@ public class SCPClient: CopierFrom, CopierTo {
 extension SCPClient {
   // Perform copy with SCPClient as Sink, Translator as Source
   public func copy(from ts: [Translator], args: CopyArguments = CopyArguments()) -> CopyProgressInfoPublisher {
-    var directoryLevel = self.currentDirectoryLevel
+    let directoryLevel = self.currentDirectoryLevel
     
     return ts.publisher.compactMap { t in
       return t.fileType == .typeDirectory || t.fileType == .typeRegular ? t : nil
