@@ -608,7 +608,7 @@ extension SFTPFile: BlinkFiles.Reader, BlinkFiles.WriterTo {
 extension SFTPFile: BlinkFiles.Writer {
   // TODO Take into account length
   public func write(_ buf: DispatchData, max length: Int) -> AnyPublisher<Int, Error> {
-    var pb = PassthroughSubject<Int, Error>()
+    let pb = PassthroughSubject<Int, Error>()
     
     func writeLoop(_ w: DispatchData, _ wn: DispatchData) {
       if self.file == nil {

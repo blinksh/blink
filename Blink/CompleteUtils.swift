@@ -76,9 +76,9 @@ struct CompleteUtils {
       return CompleteToken()
     }
     
-    var buf = Array(input)
-    var len = buf.count
-    var cursor = max(min(cursor, len), 0)
+    let buf = Array(input)
+    let len = buf.count
+    let cursor = max(min(cursor, len), 0)
     var start = 0;
     var end = 0;
     var i = 0;
