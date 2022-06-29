@@ -168,7 +168,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
-  configuration.limitsNavigationsToAppBoundDomains = YES;
+//  configuration.limitsNavigationsToAppBoundDomains = YES;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -186,7 +186,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   
   if (injectUIO) {
-    configuration.limitsNavigationsToAppBoundDomains = true;
+//    configuration.limitsNavigationsToAppBoundDomains = true;
     
     NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
     NSString * script =  [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
@@ -195,7 +195,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [configuration.userContentController addUserScript:userScript];
     [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
   }
-  //  configuration.limitsNavigationsToAppBoundDomains = YES;
+//    configuration.limitsNavigationsToAppBoundDomains = YES;
 
 
   _browserView = [[VSCodeInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];

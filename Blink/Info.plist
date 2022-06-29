@@ -221,17 +221,5 @@
 			<string>blink</string>
 		</dict>
 	</array>
-	<key>WKAppBoundDomains</key>
-	<array>
-		<string>microsoftonline.com</string>
-		<string>codesandbox.io</string>
-		<string>azureedge.net</string>
-		<string>gitpod.io</string>
-		<string>github.dev</string>
-		<string>github.com</string>
-		<string>vsassets.io</string>
-		<string>vscode.dev</string>
-		<string>vscode-webview.net</string>
-	</array>
 </dict>
 </plist>
