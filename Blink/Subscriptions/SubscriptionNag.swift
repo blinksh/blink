@@ -35,7 +35,7 @@ import Foundation
 private let NagTimer       = "NagTimer"
 private let NagTimestamp   = "NagTimestamp"
 private let NagNumDisplays = "NagNumDisplays"
-private let NagTimerMax = 3 * 60
+private let NagTimerMax = 2 * 60
 private let NagInterval: TimeInterval = 10 // 1
 
 extension Notification.Name {
