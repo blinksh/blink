@@ -252,13 +252,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
   NSURLCredential *cred = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
 
-  if ([challenge.protectionSpace.host isEqual: @"localhost"]) {
-    // Let localhost go through.
-    completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
-    return;
-  }
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    if ([challenge.protectionSpace.host isEqual: @"localhost"]) {
+      // Let localhost go through.
+      completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+      return;
+    }
+    
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
+  });
   
-  completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
 }
 
 
