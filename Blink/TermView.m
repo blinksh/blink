@@ -281,8 +281,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   UINavigationController *navCtrl = [[UINavigationController alloc] initWithRootViewController:ctrl];
   
   SpaceController *sp = (SpaceController *)self.window.rootViewController;
-  [sp showViewController:navCtrl sender:self];
-  [wv becomeFirstResponder];
+  // dispatch async presenting controller in order to avoid
+  // 'NSInternalInconsistencyException', reason: 'Received request for main thread, but there is no current keyboard task executing.'
+  // issue #1501
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [sp showViewController:navCtrl sender:self];
+    [wv becomeFirstResponder];
+  });
   
   return wv;
 }
