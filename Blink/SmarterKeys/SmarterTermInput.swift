@@ -273,6 +273,7 @@ class CaretHider {
     
     let proxyItem = UIBarButtonItem(customView: _kbProxy)
     let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
+    
     item.leadingBarButtonGroups = []
     item.trailingBarButtonGroups = [group]
   }

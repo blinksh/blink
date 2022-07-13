@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,30 +29,35 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import <Foundation/Foundation.h>
 
-
-#import "Session.h"
 #import "TokioSignals.h"
 
 
-@class MCPParams;
-@class BlinkSSH;
+extern void signal_release(void * signals);
+extern void signal_send(void * signals, int signal);
+extern void signal_winsize(void * signals, struct winsize *winsize);
 
-@interface MCPSession : Session
 
-@property (strong) MCPParams *sessionParams;
-@property (readonly) dispatch_queue_t cmdQueue;
-@property (strong) TokioSignals *tokioSignals;
+@implementation TokioSignals {
+}
 
-- (void)registerSSHClient:(id __weak)sshClient;
-- (void)unregisterSSHClient:(id __weak)sshClient;
+- (void) signalCtrlC {
+  if (_signals) {
+    signal_send(_signals, 0);
+  }
+}
 
-- (void)enqueueCommand:(NSString *)cmd;
-- (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord;
-- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
-- (bool)isRunningCmd;
+- (void) signalWinsize:(struct winsize)winsize {
+  if (_signals) {
+    signal_winsize(_signals, &winsize);
+  }
+}
 
-- (void)updateAllowedPaths;
+- (void)dealloc {
+  if (_signals) {
+    signal_release(_signals);
+    _signals = NULL;
+  }
+}
 
 @end

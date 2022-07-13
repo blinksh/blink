@@ -1,8 +1,8 @@
-////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////
 //
 // B L I N K
 //
-// Copyright (C) 2016-2018 Blink Mobile Shell Project
+// Copyright (C) 2016-2019 Blink Mobile Shell Project
 //
 // This file is part of Blink.
 //
@@ -29,30 +29,20 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
+
 #import <Foundation/Foundation.h>
+#import "TermView.h"
+#import "TermDevice.h"
 
 
-#import "Session.h"
-#import "TokioSignals.h"
+NS_ASSUME_NONNULL_BEGIN
 
-
-@class MCPParams;
-@class BlinkSSH;
-
-@interface MCPSession : Session
-
-@property (strong) MCPParams *sessionParams;
-@property (readonly) dispatch_queue_t cmdQueue;
-@property (strong) TokioSignals *tokioSignals;
-
-- (void)registerSSHClient:(id __weak)sshClient;
-- (void)unregisterSSHClient:(id __weak)sshClient;
-
-- (void)enqueueCommand:(NSString *)cmd;
-- (void)enqueueCommand:(NSString *)cmd skipHistoryRecord: (BOOL) skipHistoryRecord;
-- (void)enqueueXCallbackCommand:(NSString *)cmd xCallbackSuccessUrl:(NSURL *)xCallbackSuccessUrl;
-- (bool)isRunningCmd;
-
-- (void)updateAllowedPaths;
+@interface TokioSignals : NSObject {
+  @public void *_signals;
+}
+- (void) signalCtrlC;
+- (void) signalWinsize:(struct winsize)winsize;
 
 @end
+
+NS_ASSUME_NONNULL_END

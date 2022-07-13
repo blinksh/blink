@@ -291,6 +291,9 @@
 		D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2673734265BD77B002036FF /* BuildCLIConfig.swift */; };
 		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
 		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
+		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
+		D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150C287F0C2200D31F4E /* TokioSignals.m */; };
+		D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2771510287F0EA200D31F4E /* libbuild_cli.a */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D27D0118261202A400128C23 /* KeyUIError.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27D0117261202A400128C23 /* KeyUIError.swift */; };
@@ -935,6 +938,10 @@
 		D2673734265BD77B002036FF /* BuildCLIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildCLIConfig.swift; sourceTree = "<group>"; };
 		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
 		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
+		D277150A287F0C2100D31F4E /* build.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = build.m; sourceTree = "<group>"; };
+		D277150B287F0C2200D31F4E /* TokioSignals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TokioSignals.h; sourceTree = "<group>"; };
+		D277150C287F0C2200D31F4E /* TokioSignals.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TokioSignals.m; sourceTree = "<group>"; };
+		D2771510287F0EA200D31F4E /* libbuild_cli.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libbuild_cli.a; sourceTree = "<group>"; };
 		D27AD9BB222FDD3D00379872 /* xcall.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = xcall.m; sourceTree = "<group>"; };
 		D27AD9BD222FDD5700379872 /* xcall.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = xcall.h; sourceTree = "<group>"; };
 		D27BBA1A20529FFF00AEA303 /* TermStream.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermStream.h; sourceTree = "<group>"; };
@@ -1194,6 +1201,7 @@
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
 				BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */,
 				D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */,
+				D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1281,6 +1289,7 @@
 		0732F04F1D062BB300AB5438 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D2771510287F0EA200D31F4E /* libbuild_cli.a */,
 				BDB72CB127A9C08500DCC446 /* StoreKit.framework */,
 				BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */,
 				D2C605B926AB4C25003CA39F /* BlinkBuild */,
@@ -2010,6 +2019,9 @@
 				D2C8D30921B544B100AC39C3 /* say.m */,
 				D2AC674A22031EE600177BC5 /* openurl.h */,
 				D2AC6742220303D900177BC5 /* openurl.m */,
+				D277150A287F0C2100D31F4E /* build.m */,
+				D277150B287F0C2200D31F4E /* TokioSignals.h */,
+				D277150C287F0C2200D31F4E /* TokioSignals.m */,
 				D27AD9BD222FDD5700379872 /* xcall.h */,
 				D27AD9BB222FDD3D00379872 /* xcall.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
@@ -2892,6 +2904,7 @@
 				D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2FBEC0B27CF505D00FD974A /* browse.swift in Sources */,
+				D277150D287F0C2200D31F4E /* build.m in Sources */,
 				D2C2441B238E44AB0082C69C /* NavView.swift in Sources */,
 				D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */,
 				D2E66D142695B100007D42AA /* HostListView.swift in Sources */,
@@ -2976,6 +2989,7 @@
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
+				D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D26A37F026A0AB7000534A4D /* facecam.swift in Sources */,
 				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,
@@ -4276,7 +4290,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 545;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4292,7 +4306,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 15.0.9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				MARKETING_VERSION = 15.0.10;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -4317,7 +4335,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 544;
+				CURRENT_PROJECT_VERSION = 545;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -4328,7 +4346,11 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 15.0.9;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/Frameworks",
+				);
+				MARKETING_VERSION = 15.0.10;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;

@@ -307,8 +307,8 @@ struct BuildSSHCopyID: NonStdIOCommand {
 }
 
 
-@_cdecl("build_main")
-public func build_main(argc: Int32, argv: Argv) -> Int32 {
+@_cdecl("build_main_old")
+public func build_main_old(argc: Int32, argv: Argv) -> Int32 {
   setvbuf(thread_stdin, nil, _IONBF, 0)
   setvbuf(thread_stdout, nil, _IONBF, 0)
   setvbuf(thread_stderr, nil, _IONBF, 0)
