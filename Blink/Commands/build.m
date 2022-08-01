@@ -52,15 +52,18 @@ void tokio_open_url(char *url) {
   blink_openurl([NSURL URLWithString:str]);
 }
 
-void tokio_start_mosh(char *key, char *host, char port) {
+void tokio_start_mosh(char * key, char * host, char * port) {
   MCPSession *session = (__bridge MCPSession *)thread_context;
   if (!session) {
     return;
   }
   
-  NSString * cmd = [NSString stringWithFormat:@"mosh --key %@ %@:%@", @(key), @(host), @(port)];
+  NSString * cmd = [NSString stringWithFormat:@"mosh -I build -k %@ -p %@ %@", @(key), @(port), @(host)];
 
-  [session enqueueCommand:cmd skipHistoryRecord:YES];
+  dispatch_async(session.cmdQueue, ^{
+    [session enqueueCommand:cmd skipHistoryRecord:YES];
+  });
+//
 }
 
 extern int blink_build_cmd(int argc, char *argv[], struct IOSEnv * env, void ** signals);

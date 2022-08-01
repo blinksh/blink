@@ -216,8 +216,7 @@
     [self setActiveSession];
     ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
     
-    setenv("COLUMNS", [@(_device->win.ws_col) stringValue].UTF8String, 1);
-    setenv("LINES", [@(_device->win.ws_row) stringValue].UTF8String, 1);
+    ios_setWindowSize((int)self.device.cols, (int)self.device.rows, _sessionUUID.UTF8String);
 
     ios_system(cmdline.UTF8String);
     _currentCmd = nil;
@@ -298,6 +297,7 @@
 
 - (void)sigwinch
 {
+  ios_setWindowSize((int)self.device.cols, (int)self.device.rows, _sessionUUID.UTF8String);
   [_childSession sigwinch];
   dispatch_sync(_sshQueue, ^{
     for (id client in _sshClients) {
@@ -378,7 +378,12 @@
         }
         [self setActiveSession];
 //        ios_setStreams(_cmdStream.in, _cmdStream.out, _cmdStream.err);
-        ios_kill();
+          if (_tokioSignals) {
+            [_tokioSignals signalCtrlC];
+              _tokioSignals = nil;
+          } else {
+            ios_kill();
+        }
       }
       return YES;
     } else {
