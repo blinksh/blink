@@ -41,6 +41,8 @@
 #include "xcall.h"
 #include "Blink-Swift.h"
 
+extern void build_auto_start_wg_ports();
+
 
 @import CloudKit;
 
@@ -93,6 +95,7 @@ void __setupProcessEnv(void) {
   dispatch_async(bgQueue, ^{
     [BlinkPaths linkDocumentsIfNeeded];
     [BlinkPaths linkICloudDriveIfNeeded];
+    
   });
 
   sideLoading = false; // Turn off extra commands from iOS system
@@ -132,6 +135,8 @@ void __setupProcessEnv(void) {
   [_NSFileProviderManager syncWithBKHosts];
   
   [PurchasesUserModelObjc preparePurchasesUserModel];
+  
+  build_auto_start_wg_ports();
   
   return YES;
 }

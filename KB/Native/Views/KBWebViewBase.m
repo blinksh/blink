@@ -323,7 +323,7 @@ NSString *_encodeString(NSString *str);
       @selector(toggleFontPanel:) == action ||
       @selector(select:) == action ||
       @selector(selectAll:) == action ||
-      @selector(_share:) == action ||
+//      @selector(_share:) == action ||
       @selector(toggleUnderline:) == action) {
     return NO;
   }
