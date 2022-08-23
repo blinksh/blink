@@ -208,6 +208,8 @@ class SpaceController: UIViewController {
   
   
   override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
+    // IOS ISSUE: editingInteractionConfiguration doesn't called anymore in iOS/PadOS 16....
+    // Moved attach to focus.
     DispatchQueue.main.async {
       self._attachHUD()
     }
@@ -247,6 +249,7 @@ class SpaceController: UIViewController {
     
     nc.addObserver(self, selector: #selector(_UISceneWillEnterForegroundNotification(_:)),
                    name: UIScene.willEnterForegroundNotification, object: nil)
+    
   }
                    
   @objc func _UISceneDidEnterBackgroundNotification(_ n: Notification) {
@@ -455,6 +458,7 @@ class SpaceController: UIViewController {
     device.attachInput(deviceView.webView)
     deviceView.webView.reportFocus(true)
     device.focus()
+    _attachHUD()
     if input != KBTracker.shared.input {
       input?.reportFocus(false)
     }
