@@ -46,6 +46,7 @@ enum KBDevice {
   case in10_5
   case in10_9 // iPad Air 4 (2020)
   case in11
+  case in11_MoreSpace
   case in12_9
   
 
@@ -56,6 +57,7 @@ enum KBDevice {
     case .in10_5:  return .iPad_10_5(lang: lang)
     case .in10_9:  return .iPad_11(lang: lang)
     case .in11:    return .iPad_11(lang: lang)
+    case .in11_MoreSpace:    return .iPad_11(lang: lang)
     case .in12_9:  return .iPad_12_9(lang: lang)
     default: return .iPhone(lang: lang)
     }
@@ -75,6 +77,7 @@ enum KBDevice {
     case .in10_5: return portrait ? .portrait_iPad_10_5  : .landscape_iPad_10_5
     case .in10_9: return portrait ? .portrait_iPad_10_9  : .landscape_iPad_10_9
     case .in11:   return portrait ? .portrait_iPad_11    : .landscape_iPad_11
+    case .in11_MoreSpace:   return portrait ? .portrait_iPad_11_MoreSpace    : .landscape_iPad_11_MoreSpace
     case .in12_9: return portrait ? .portrait_iPad_12_9  : .landscape_iPad_12_9
     }
   }
@@ -96,6 +99,7 @@ enum KBDevice {
     case 1112: return .in10_5
     case 1180: return .in10_9
     case 1194: return .in11
+    case 1389: return .in11_MoreSpace
     case 1366: return .in12_9
 
     default:   return .in9_7

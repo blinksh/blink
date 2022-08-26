@@ -288,7 +288,6 @@
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D266A9DA27295ECE00C85EED /* blink-uio.min.js in Resources */ = {isa = PBXBuildFile; fileRef = D266A9D627295ECE00C85EED /* blink-uio.min.js */; };
 		D266A9DC272A77A100C85EED /* code.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266A9DB272A77A100C85EED /* code.swift */; };
-		D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2673734265BD77B002036FF /* BuildCLIConfig.swift */; };
 		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
 		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
 		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
@@ -345,7 +344,6 @@
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
 		D2B9E21E268084E40084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21D268084E40084B2C4 /* Machines */; };
-		D2B9E222268085050084B2C4 /* BuildCLI in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E221268085050084B2C4 /* BuildCLI */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
@@ -384,7 +382,6 @@
 		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
 		D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */; };
-		D2DDD70B2657E35C00DAB52A /* build.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DDD70A2657E35C00DAB52A /* build.swift */; };
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
@@ -935,7 +932,6 @@
 		D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NSCoder+CodingKey.swift"; sourceTree = "<group>"; };
 		D266A9D627295ECE00C85EED /* blink-uio.min.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = "blink-uio.min.js"; sourceTree = "<group>"; };
 		D266A9DB272A77A100C85EED /* code.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = code.swift; sourceTree = "<group>"; };
-		D2673734265BD77B002036FF /* BuildCLIConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildCLIConfig.swift; sourceTree = "<group>"; };
 		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
 		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
 		D277150A287F0C2100D31F4E /* build.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = build.m; sourceTree = "<group>"; };
@@ -1035,7 +1031,6 @@
 		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
 		D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkClassicPlanView.swift; sourceTree = "<group>"; };
-		D2DDD70A2657E35C00DAB52A /* build.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = build.swift; sourceTree = "<group>"; };
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
 		D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase.pub"; sourceTree = "<group>"; };
 		D2DE0DDD260331F300A69B6F /* NewKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyView.swift; sourceTree = "<group>"; };
@@ -1172,7 +1167,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D2B9E222268085050084B2C4 /* BuildCLI in Frameworks */,
 				D28DB3AC210B110C008A1139 /* libcompression.tbd in Frameworks */,
 				D2334F0225C1C28F00385378 /* ssh_cmd.xcframework in Frameworks */,
 				D2334F0625C1C28F00385378 /* text.xcframework in Frameworks */,
@@ -1255,7 +1249,6 @@
 				D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */,
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
-				D2673734265BD77B002036FF /* BuildCLIConfig.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
@@ -2025,7 +2018,6 @@
 				D27AD9BD222FDD5700379872 /* xcall.h */,
 				D27AD9BB222FDD3D00379872 /* xcall.m */,
 				D2F330D120A6EF020074ADD7 /* showkey.m */,
-				D2DDD70A2657E35C00DAB52A /* build.swift */,
 				D2FBEC0727CF505D00FD974A /* browse.swift */,
 				D26A37EF26A0AB7000534A4D /* facecam.swift */,
 				D266A9DB272A77A100C85EED /* code.swift */,
@@ -2388,7 +2380,6 @@
 			packageProductDependencies = (
 				07FAB90E25C8E94E00E1CC2C /* ArgumentParser */,
 				D2B9E21D268084E40084B2C4 /* Machines */,
-				D2B9E221268085050084B2C4 /* BuildCLI */,
 				D2AD8E8127A2C79B00DED28D /* Purchases */,
 			);
 			productName = Blink;
@@ -2898,7 +2889,6 @@
 				07F670731D05EEE200C0A53C /* MoshSession.m in Sources */,
 				07F670721D05EEE200C0A53C /* MCPSession.m in Sources */,
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
-				D2673735265BD77B002036FF /* BuildCLIConfig.swift in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
 				D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */,
@@ -2936,7 +2926,6 @@
 				BD9EA1FF271A148700874007 /* 1400Migration.swift in Sources */,
 				D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */,
 				D241CBD823040734003D64A5 /* KBLayout.swift in Sources */,
-				D2DDD70B2657E35C00DAB52A /* build.swift in Sources */,
 				D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */,
 				D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */,
 				D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */,
@@ -3555,7 +3544,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 563;
+				CURRENT_PROJECT_VERSION = 565;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3600,7 +3589,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 563;
+				CURRENT_PROJECT_VERSION = 565;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3637,7 +3626,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 561;
+				CURRENT_PROJECT_VERSION = 565;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3683,7 +3672,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 561;
+				CURRENT_PROJECT_VERSION = 565;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlinkFileProviderUI/Info.plist;
@@ -4290,7 +4279,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 563;
+				CURRENT_PROJECT_VERSION = 565;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4335,7 +4324,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 563;
+				CURRENT_PROJECT_VERSION = 565;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -4536,10 +4525,6 @@
 		D2B9E21D268084E40084B2C4 /* Machines */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = Machines;
-		};
-		D2B9E221268085050084B2C4 /* BuildCLI */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = BuildCLI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
