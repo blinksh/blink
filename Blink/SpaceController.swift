@@ -208,9 +208,10 @@ class SpaceController: UIViewController {
   
   
   override var editingInteractionConfiguration: UIEditingInteractionConfiguration {
-    DispatchQueue.main.async {
-      self._attachHUD()
-    }
+// iOS 16 doesn't call this method anymore.
+//    DispatchQueue.main.async {
+//      self._attachHUD()
+//    }
     return .default
   }
   
@@ -455,6 +456,7 @@ class SpaceController: UIViewController {
     device.attachInput(deviceView.webView)
     deviceView.webView.reportFocus(true)
     device.focus()
+    _attachHUD()
     if input != KBTracker.shared.input {
       input?.reportFocus(false)
     }
