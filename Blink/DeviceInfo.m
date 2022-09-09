@@ -60,7 +60,7 @@
     
     NSString *marketingName = self.marketingName;
     
-    _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"];
+    _hasNotch = [marketingName hasPrefix:@"iPhone X"] || [marketingName hasPrefix:@"iPhone 11"] || [marketingName hasPrefix:@"iPhone 12"] || [marketingName hasPrefix:@"iPhone 13"] || [marketingName hasPrefix:@"iPhone 14"];
     _hasCorners = _hasNotch || [_machine hasPrefix:@"iPad8"] || [_machine hasPrefix:@"iPad13"] || [_machine hasPrefix:@"iPad14"] || [marketingName hasPrefix:@"Mac"];
     
   }
@@ -132,6 +132,13 @@
     @"iPhone14,3" : @"iPhone 13 Pro Max",
     @"iPhone14,4" : @"iPhone 13 Mini",
     @"iPhone14,5" : @"iPhone 13",
+    
+    @"iPhone14,6":  @"iPhone SE (3rd generation)",
+    @"iPhone14,7":  @"iPhone 14",
+    @"iPhone14,8":  @"iPhone 14 Plus",
+    @"iPhone15,2":  @"iPhone 14 Pro",
+    @"iPhone15,3":  @"iPhone 14 Pro Max",
+    
                        
     @"iPad4,1"   : @"iPad Air",          // 5th Generation iPad (iPad Air) - Wifi
     @"iPad4,2"   : @"iPad Air",          // 5th Generation iPad (iPad Air) - Cellular
