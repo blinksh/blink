@@ -56,6 +56,7 @@ static UICKeyChainStore *__get_keychain() {
 @implementation BKPubKey {
   NSString *_privateKeyRef;
   NSString *_tag;
+  NSData *_rawAttestationObject;
 }
 
 
@@ -141,7 +142,10 @@ static UICKeyChainStore *__get_keychain() {
                           publicKey:(NSString *)publicKey
                             keyType:(NSString *)keyType
                            certType:(NSString *)certType
-                        storageType:(BKPubKeyStorageType)storageType {
+               rawAttestationObject:(nullable NSData *)rawAttestationObject
+                             rpId:(nullable NSString *)rpId
+                        storageType:(BKPubKeyStorageType)storageType
+{
 
   if (self = [super init]) {
     _ID = ID;
@@ -149,6 +153,8 @@ static UICKeyChainStore *__get_keychain() {
     _publicKey = publicKey;
     _keyType = keyType;
     _certType = certType;
+    _rawAttestationObject = rawAttestationObject;
+    _rpId = rpId;
     _storageType = storageType;
   }
   
@@ -188,6 +194,9 @@ static UICKeyChainStore *__get_keychain() {
   _privateKeyRef = [coder decodeObjectOfClasses:strings forKey:@"privateKeyRef"];
   _publicKey = [coder decodeObjectOfClasses:strings forKey:@"publicKey"];
   
+  _rawAttestationObject = [coder decodeObjectOfClass:NSData.class forKey:@"rawAttestationObject"];
+  _rpId = [coder decodeObjectOfClasses:strings forKey:@"rpId"];
+  
   if (!_tag) {
     _tag = [NSProcessInfo processInfo].globallyUniqueString;
   }
@@ -210,6 +219,9 @@ static UICKeyChainStore *__get_keychain() {
   
   [coder encodeObject:_privateKeyRef forKey:@"privateKeyRef"];
   [coder encodeObject:_publicKey forKey:@"publicKey"];
+  
+  [coder encodeObject:_rawAttestationObject forKey:@"rawAttestationObject"];
+  [coder encodeObject:_rpId forKey:@"rpId"];
 }
 
 + (NSString *)_shortKeyTypeNameFromSshKeyTypeName:(NSString *)keyTypeName {
@@ -230,7 +242,10 @@ static UICKeyChainStore *__get_keychain() {
     @"ssh-dss-cert-v01@openssh.com": @"DSA-CERT",
     @"ecdsa-sha2-nistp256-cert-v01@openssh.com": @"ECDSA-CERT",
     @"ecdsa-sha2-nistp384-cert-v01@openssh.com": @"ECDSA-CERT",
-    @"ecdsa-sha2-nistp521-cert-v01@openssh.com": @"ECDSA-CERT"
+    @"ecdsa-sha2-nistp521-cert-v01@openssh.com": @"ECDSA-CERT",
+    // SK
+    @"sk-ecdsa-sha2-nistp256@openssh.com" : @"ECDSA-SK",
+    @"sk-ecdsa-sha2-nistp256-cert-v01@openssh.com" : @"ECDSA-SK-CERT",
   };
   return map[keyTypeName];
 }
@@ -291,6 +306,8 @@ static UICKeyChainStore *__get_keychain() {
       break;
     }
     case BKPubKeyStorageTypeSecureEnclave:
+    case BKPubKeyStorageTypePlatformKey:
+    case BKPubKeyStorageTypeSecurityKey:
       return nil;
     default:
       return nil;

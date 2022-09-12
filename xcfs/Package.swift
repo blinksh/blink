@@ -14,8 +14,8 @@ var binaryTargets: [PackageDescription.Target] = [
   ),
   (
     "LibSSH",
-    "509bf7d6ece0bafeb108e8dd3d310779911f297f1628bb9a3bc753a8f33dbe07",
-    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.5/LibSSH-static.xcframework.zip"
+    "d41fbdd749a74ec6d5f728f94ab33281193b68b81db242e13e43993f4d6de58f",
+    "https://github.com/blinksh/libssh-apple/releases/download/v0.9.6/LibSSH-static.xcframework.zip"
   ),
   (
     "OpenSSH",
@@ -81,7 +81,6 @@ _ = Package(
   dependencies: [
     .package(url: "https://github.com/yury/FMake", from: "0.0.15"),
     .package(url: "https://github.com/blinksh/swift-argument-parser", .upToNextMinor(from: "0.5.1")),
-    .package(url: "https://github.com/blinksh/BlinkBuild", from: "0.0.22"),
     .package(url: "https://github.com/yury/SSHConfig", from: "0.0.5"),
   ],
   

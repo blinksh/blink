@@ -225,6 +225,7 @@
 		D21FD78725D69242005DEB13 /* libz.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D218074525CD4B0E00B98902 /* libz.tbd */; };
 		D22378FE27A7B8DA002D5C6D /* XCConfig.h in Headers */ = {isa = PBXBuildFile; fileRef = D22378FC27A7B8DA002D5C6D /* XCConfig.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = D22378FD27A7B8DA002D5C6D /* XCConfig.m */; };
+		D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */; };
 		D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1321495DAE00D26AC3 /* udptunnel.m */; };
 		D2334D1D21495DAE00D26AC3 /* host2ip.c in Sources */ = {isa = PBXBuildFile; fileRef = D2334D1421495DAE00D26AC3 /* host2ip.c */; };
 		D2334EEE25C1C28F00385378 /* awk.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECF25C1C04700385378 /* awk.xcframework */; };
@@ -290,6 +291,7 @@
 		D266A9DC272A77A100C85EED /* code.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266A9DB272A77A100C85EED /* code.swift */; };
 		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
 		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
+		D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */; };
 		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
 		D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150C287F0C2200D31F4E /* TokioSignals.m */; };
 		D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2771510287F0EA200D31F4E /* libbuild_cli.a */; };
@@ -314,6 +316,7 @@
 		D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
+		D2A6398928CFA0B90066FD18 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2A6398828CFA0B90066FD18 /* SwiftCBOR */; };
 		D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A80978270713D200CD0FAF /* FeatureFlags.swift */; };
 		D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; };
 		D2A9B2F8272E6F26009FCBDE /* BlinkCode.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
@@ -340,6 +343,8 @@
 		D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8627A2C81900DED28D /* PlansView.swift */; };
 		D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8727A2C81900DED28D /* ExplanationView.swift */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
+		D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */; };
+		D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2AE682928D06076003E4338 /* SwiftCBOR */; };
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
@@ -874,6 +879,7 @@
 		D22378FD27A7B8DA002D5C6D /* XCConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = XCConfig.m; sourceTree = "<group>"; };
 		D22A353626C1474200943C71 /* BKMiniLog.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKMiniLog.h; sourceTree = "<group>"; };
 		D22A353726C1474200943C71 /* BKMiniLog.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKMiniLog.m; sourceTree = "<group>"; };
+		D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewPasskeyView.swift; sourceTree = "<group>"; };
 		D2334D1321495DAE00D26AC3 /* udptunnel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = udptunnel.m; sourceTree = "<group>"; };
 		D2334D1421495DAE00D26AC3 /* host2ip.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = host2ip.c; sourceTree = "<group>"; };
 		D2334D1521495DAE00D26AC3 /* host2ip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = host2ip.h; sourceTree = "<group>"; };
@@ -934,6 +940,7 @@
 		D266A9DB272A77A100C85EED /* code.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = code.swift; sourceTree = "<group>"; };
 		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
 		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
+		D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSecurityKeyView.swift; sourceTree = "<group>"; };
 		D277150A287F0C2100D31F4E /* build.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = build.m; sourceTree = "<group>"; };
 		D277150B287F0C2200D31F4E /* TokioSignals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TokioSignals.h; sourceTree = "<group>"; };
 		D277150C287F0C2200D31F4E /* TokioSignals.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TokioSignals.m; sourceTree = "<group>"; };
@@ -986,6 +993,7 @@
 		D2AD8E8627A2C81900DED28D /* PlansView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
 		D2AD8E8727A2C81900DED28D /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
+		D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnKey.swift; sourceTree = "<group>"; };
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
@@ -1138,6 +1146,7 @@
 			files = (
 				BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */,
 				BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */,
+				D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1190,6 +1199,7 @@
 				D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */,
 				07FAB90F25C8E94E00E1CC2C /* ArgumentParser in Frameworks */,
 				D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */,
+				D2A6398928CFA0B90066FD18 /* SwiftCBOR in Frameworks */,
 				D24AFD58222410E700CFD3C1 /* MBProgressHUD.framework in Frameworks */,
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
@@ -1640,6 +1650,7 @@
 				BDCB7161268E1577007D7047 /* Info.plist */,
 				D22378FC27A7B8DA002D5C6D /* XCConfig.h */,
 				D22378FD27A7B8DA002D5C6D /* XCConfig.m */,
+				D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */,
 			);
 			path = BlinkConfig;
 			sourceTree = "<group>";
@@ -1686,7 +1697,9 @@
 				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
 				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
 				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
+				D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */,
 				D27D0117261202A400128C23 /* KeyUIError.swift */,
+				D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */,
 			);
 			path = BKPubKey;
 			sourceTree = "<group>";
@@ -2296,6 +2309,7 @@
 			name = BlinkConfig;
 			packageProductDependencies = (
 				BDCB7193268E175A007D7047 /* SSHConfig */,
+				D2AE682928D06076003E4338 /* SwiftCBOR */,
 			);
 			productName = BlinkConfig;
 			productReference = BDCB715E268E1577007D7047 /* BlinkConfig.framework */;
@@ -2381,6 +2395,7 @@
 				07FAB90E25C8E94E00E1CC2C /* ArgumentParser */,
 				D2B9E21D268084E40084B2C4 /* Machines */,
 				D2AD8E8127A2C79B00DED28D /* Purchases */,
+				D2A6398828CFA0B90066FD18 /* SwiftCBOR */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2487,6 +2502,7 @@
 			packageReferences = (
 				BD896F8726CFDB17004313E6 /* XCRemoteSwiftPackageReference "swift-atomics" */,
 				D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -2819,6 +2835,7 @@
 				BDCB7179268E15A2007D7047 /* BKHosts.m in Sources */,
 				BDCB7182268E15A2007D7047 /* SEKey.swift in Sources */,
 				BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */,
+				D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */,
 				D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */,
 				BDCB7181268E15A2007D7047 /* BKPubKey.m in Sources */,
 				BDCB7183268E15A2007D7047 /* BKConfig.swift in Sources */,
@@ -2918,6 +2935,7 @@
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
+				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,
 				BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */,
 				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
 				D241CBDA23040734003D64A5 /* KBTraits.swift in Sources */,
@@ -2967,6 +2985,7 @@
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
+				D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
@@ -3544,7 +3563,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3589,7 +3608,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3626,7 +3645,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3672,7 +3691,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlinkFileProviderUI/Info.plist;
@@ -4279,7 +4298,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4290,7 +4309,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4324,13 +4343,13 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 567;
+				CURRENT_PROJECT_VERSION = 569;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = "";
 				INFOPLIST_FILE = Blink/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4493,6 +4512,14 @@
 				minimumVersion = 0.0.3;
 			};
 		};
+		D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/unrelentingtech/SwiftCBOR";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
@@ -4517,10 +4544,20 @@
 			isa = XCSwiftPackageProductDependency;
 			productName = SSHConfig;
 		};
+		D2A6398828CFA0B90066FD18 /* SwiftCBOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
+			productName = SwiftCBOR;
+		};
 		D2AD8E8127A2C79B00DED28D /* Purchases */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = Purchases;
+		};
+		D2AE682928D06076003E4338 /* SwiftCBOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
+			productName = SwiftCBOR;
 		};
 		D2B9E21D268084E40084B2C4 /* Machines */ = {
 			isa = XCSwiftPackageProductDependency;
