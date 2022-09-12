@@ -230,7 +230,10 @@ static UICKeyChainStore *__get_keychain() {
     @"ssh-dss-cert-v01@openssh.com": @"DSA-CERT",
     @"ecdsa-sha2-nistp256-cert-v01@openssh.com": @"ECDSA-CERT",
     @"ecdsa-sha2-nistp384-cert-v01@openssh.com": @"ECDSA-CERT",
-    @"ecdsa-sha2-nistp521-cert-v01@openssh.com": @"ECDSA-CERT"
+    @"ecdsa-sha2-nistp521-cert-v01@openssh.com": @"ECDSA-CERT",
+    // SK
+    @"sk-ecdsa-sha2-nistp256@openssh.com" : @"ECDSA-SK",
+    @"sk-ecdsa-sha2-nistp256-cert-v01@openssh.com" : @"ECDSA-SK-CERT",
   };
   return map[keyTypeName];
 }

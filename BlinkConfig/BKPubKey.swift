@@ -91,6 +91,27 @@ public extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
+  static func addPasskey(id: String, tag: String, comment: String) throws {
+    let key = try SEKey.create(tagged: tag)
+    
+    let keyType = key.sshKeyType
+    let publicKey = try key.publicKey.authorizedKey(withComment: comment)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: keyType.shortName,
+        certType: nil,
+        storageType: BKPubKeyStorageTypeSecureEnclave
+      )
+    else {
+      return
+    }
+    
+    BKPubKey.addCard(card);
+  }
+  
   static func removeCard(card: BKPubKey) {
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {
       try? SEKey.delete(tag: card.tag)

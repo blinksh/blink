@@ -37,14 +37,15 @@ typedef enum: NSUInteger {
   BKPubKeyStorageTypeKeyChain = 0,
   BKPubKeyStorageTypeSecureEnclave,
   BKPubKeyStorageTypeiCloudKeyChain,
-  BKPubKeyStorageTypeYubiKey,
+  BKPubKeyStorageTypePlatformKey, // passkey
+  BKPubKeyStorageTypeSecurityKey,
   BKPubKeyStorageTypeDistributed, // Bunkr master key
 } BKPubKeyStorageType;
 
 @interface BKPubKey : NSObject <NSSecureCoding, UIActivityItemSource>
 
 @property (nonnull) NSString *ID; // unique name of the key
-@property (nonnull) NSString *tag; // unique name of the key
+@property (nonnull) NSString *tag; // unique identifier of the key
 @property (readonly, nonnull)  NSString *publicKey;
 @property (readonly, nullable) NSString *keyType;
 @property (readonly, nullable) NSString *certType;

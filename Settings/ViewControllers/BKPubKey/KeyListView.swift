@@ -61,7 +61,7 @@ struct KeyRow: View {
               .foregroundColor(.secondary)
           }
           Spacer()
-          Text(card.key.storageType == BKPubKeyStorageTypeKeyChain ? "Keychain" : "SE")
+          Text(card.key.storageType.shortName())
             .font(.system(.subheadline))
         }
       },
@@ -87,6 +87,57 @@ struct KeySortView: View {
   }
 }
 
+struct NewKeyMenuView: View {
+  
+  fileprivate var state: KeysObservable
+  
+  var body: some View {
+    Menu {
+      Section(header: Text("Add key")) {
+        Button {
+          self.state.modal = .newPasskey
+        } label: {
+          Label("Passkey", systemImage: "person.badge.key")
+        }
+        
+        Button {
+          self.state.modal = .newSecurityKey
+        } label: {
+            Label("Security Key", systemImage: "key")
+        }
+        
+        Button {
+          self.state.modal = .newSEKey
+        } label: {
+            Label("Secure Enclave", systemImage: "memorychip")
+        }
+        
+        Divider()
+        Button {
+          self.state.modal = .newKey
+        } label: {
+          Label("Generate new", systemImage: "wand.and.rays.inverse")
+        }
+        
+        Button {
+          self.state.importFromClipboard()
+        } label: {
+          Label("Import from clipboard", systemImage: "doc.on.clipboard")
+        }
+        Button {
+          self.state.filePickerIsPresented = true
+        } label: {
+          Label("Import from file", systemImage: "doc.text")
+        }
+        
+      }
+    } label: {
+      Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center)
+    }
+      .symbolRenderingMode(.hierarchical)
+  }
+}
+
 struct KeyListView: View {
   @StateObject private var _state = KeysObservable()
   
@@ -100,22 +151,7 @@ struct KeyListView: View {
     .navigationBarItems(
       trailing: HStack {
         KeySortView(sortType: $_state.sortType)
-        Button(
-          action: { _state.actionSheetIsPresented = true },
-          label: { Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center) }
-        )
-        .actionSheet(isPresented: $_state.actionSheetIsPresented) {
-            ActionSheet(
-              title: Text("Add key"),
-              buttons: [
-                .default(Text("Generate New")) { _state.modal = .newKey },
-                .default(Text("Generate New in SE")) { _state.modal = .newSEKey },
-                .default(Text("Import from clipboard")) { _state.importFromClipboard() },
-                .default(Text("Import from a file")) { _state.filePickerIsPresented = true },
-                .cancel()
-              ]
-            )
-        }
+        NewKeyMenuView(state: _state)
       }
     )
     .navigationBarTitle("Keys")
@@ -146,6 +182,16 @@ struct KeyListView: View {
             onSuccess: _state.onModalSuccess
           )
         case .newSEKey:
+          NewSEKeyView(
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
+          )
+        case .newPasskey:
+          NewPasskeyView(
+            onCancel: _state.onModalCancel,
+            onSuccess: _state.onModalSuccess
+          )
+        case .newSecurityKey:
           NewSEKeyView(
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
@@ -283,6 +329,8 @@ fileprivate enum KeyModals: Identifiable {
   case saveImportedKey(ImportKeyObservable)
   case newKey
   case newSEKey
+  case newPasskey
+  case newSecurityKey
   
   var id: Int {
     switch self {
@@ -290,6 +338,8 @@ fileprivate enum KeyModals: Identifiable {
     case .saveImportedKey: return 1
     case .newKey: return 2
     case .newSEKey: return 3
+    case .newPasskey: return 4
+    case .newSecurityKey: return 5
     }
   }
 }
@@ -310,5 +360,20 @@ extension View {
         }
       )
     )
+  }
+}
+
+
+extension BKPubKeyStorageType {
+  public func shortName() -> String {
+    switch self {
+    case BKPubKeyStorageTypeKeyChain: return "Keychain"
+    case BKPubKeyStorageTypeSecureEnclave: return "SE"
+    case BKPubKeyStorageTypeiCloudKeyChain: return "iCloud Keychain"
+    case BKPubKeyStorageTypeSecurityKey: return "SK"
+    case BKPubKeyStorageTypePlatformKey: return "Passkey"
+    default:
+      return ""
+    }
   }
 }
