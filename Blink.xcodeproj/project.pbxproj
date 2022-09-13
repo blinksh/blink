@@ -343,6 +343,8 @@
 		D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8627A2C81900DED28D /* PlansView.swift */; };
 		D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8727A2C81900DED28D /* ExplanationView.swift */; };
 		D2AD9ADE22DB80DE00861F66 /* SessionRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */; };
+		D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */; };
+		D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2AE682928D06076003E4338 /* SwiftCBOR */; };
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
@@ -991,6 +993,7 @@
 		D2AD8E8627A2C81900DED28D /* PlansView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlansView.swift; sourceTree = "<group>"; };
 		D2AD8E8727A2C81900DED28D /* ExplanationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExplanationView.swift; sourceTree = "<group>"; };
 		D2AD9ADD22DB80DE00861F66 /* SessionRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRegistry.swift; sourceTree = "<group>"; };
+		D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthnKey.swift; sourceTree = "<group>"; };
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
@@ -1143,6 +1146,7 @@
 			files = (
 				BDCB718E268E173D007D7047 /* SSH.framework in Frameworks */,
 				BDCB7194268E175A007D7047 /* SSHConfig in Frameworks */,
+				D2AE682A28D06076003E4338 /* SwiftCBOR in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1646,6 +1650,7 @@
 				BDCB7161268E1577007D7047 /* Info.plist */,
 				D22378FC27A7B8DA002D5C6D /* XCConfig.h */,
 				D22378FD27A7B8DA002D5C6D /* XCConfig.m */,
+				D2AE682728D05FD0003E4338 /* WebAuthnKey.swift */,
 			);
 			path = BlinkConfig;
 			sourceTree = "<group>";
@@ -2304,6 +2309,7 @@
 			name = BlinkConfig;
 			packageProductDependencies = (
 				BDCB7193268E175A007D7047 /* SSHConfig */,
+				D2AE682928D06076003E4338 /* SwiftCBOR */,
 			);
 			productName = BlinkConfig;
 			productReference = BDCB715E268E1577007D7047 /* BlinkConfig.framework */;
@@ -2829,6 +2835,7 @@
 				BDCB7179268E15A2007D7047 /* BKHosts.m in Sources */,
 				BDCB7182268E15A2007D7047 /* SEKey.swift in Sources */,
 				BDCB7178268E15A2007D7047 /* BKHosts.swift in Sources */,
+				D2AE682828D05FD0003E4338 /* WebAuthnKey.swift in Sources */,
 				D22378FF27A7B8DA002D5C6D /* XCConfig.m in Sources */,
 				BDCB7181268E15A2007D7047 /* BKPubKey.m in Sources */,
 				BDCB7183268E15A2007D7047 /* BKConfig.swift in Sources */,
@@ -4546,6 +4553,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = Purchases;
+		};
+		D2AE682928D06076003E4338 /* SwiftCBOR */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
+			productName = SwiftCBOR;
 		};
 		D2B9E21D268084E40084B2C4 /* Machines */ = {
 			isa = XCSwiftPackageProductDependency;

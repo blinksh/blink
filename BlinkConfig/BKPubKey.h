@@ -50,6 +50,7 @@ typedef enum: NSUInteger {
 @property (readonly, nullable) NSString *keyType;
 @property (readonly, nullable) NSString *certType;
 @property (readonly) BKPubKeyStorageType storageType;
+@property (readonly, nullable) NSData * rawAttestationObject;
 
 - (nullable NSString *)loadPrivateKey;
 - (nullable NSString *)loadCertificate;
@@ -62,6 +63,7 @@ typedef enum: NSUInteger {
                           publicKey:(nonnull NSString *)publicKey
                             keyType:(nonnull NSString *)keyType
                            certType:(nullable NSString *)certType
+               rawAttestationObject:(nullable NSData *)rawAttestationObject
                         storageType:(BKPubKeyStorageType)storageType;
 
 + (void)loadIDS;

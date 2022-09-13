@@ -56,6 +56,7 @@ static UICKeyChainStore *__get_keychain() {
 @implementation BKPubKey {
   NSString *_privateKeyRef;
   NSString *_tag;
+  NSData *_rawAttestationObject;
 }
 
 
@@ -141,6 +142,7 @@ static UICKeyChainStore *__get_keychain() {
                           publicKey:(NSString *)publicKey
                             keyType:(NSString *)keyType
                            certType:(NSString *)certType
+               rawAttestationObject:(nullable NSData *)rawAttestationObject
                         storageType:(BKPubKeyStorageType)storageType {
 
   if (self = [super init]) {
@@ -149,6 +151,7 @@ static UICKeyChainStore *__get_keychain() {
     _publicKey = publicKey;
     _keyType = keyType;
     _certType = certType;
+    _rawAttestationObject = rawAttestationObject;
     _storageType = storageType;
   }
   
@@ -188,6 +191,8 @@ static UICKeyChainStore *__get_keychain() {
   _privateKeyRef = [coder decodeObjectOfClasses:strings forKey:@"privateKeyRef"];
   _publicKey = [coder decodeObjectOfClasses:strings forKey:@"publicKey"];
   
+  _rawAttestationObject = [coder decodeObjectOfClass:NSData.class forKey:@"rawAttestationObject"];
+  
   if (!_tag) {
     _tag = [NSProcessInfo processInfo].globallyUniqueString;
   }
@@ -210,6 +215,8 @@ static UICKeyChainStore *__get_keychain() {
   
   [coder encodeObject:_privateKeyRef forKey:@"privateKeyRef"];
   [coder encodeObject:_publicKey forKey:@"publicKey"];
+  
+  [coder encodeObject:_rawAttestationObject forKey:@"rawAttestationObject"];
 }
 
 + (NSString *)_shortKeyTypeNameFromSshKeyTypeName:(NSString *)keyTypeName {
@@ -294,6 +301,8 @@ static UICKeyChainStore *__get_keychain() {
       break;
     }
     case BKPubKeyStorageTypeSecureEnclave:
+    case BKPubKeyStorageTypePlatformKey:
+    case BKPubKeyStorageTypeSecurityKey:
       return nil;
     default:
       return nil;

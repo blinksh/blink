@@ -175,32 +175,23 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    let tag = registration.credentialID.base64EncodedString()
-    
-    let f = try! CBOR.decode([UInt8](registration.rawAttestationObject!))!
-    let authData = f["authData"]!
-    if case CBOR.byteString(let bytes) = authData {
-        // Process bytes
-        let res = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
-        let rawSSHPublicKey = try! WebAuthnSSH.coseToSshPubKey(cborPubKey: res.rawCredentialData!, rpId: domain)
-    
-        // TODO: Call smth like
-        // try BKPubKey.addSEKey(id: keyID, comment: comment)
-        //
-        // add tag instead of generation
-
-        onSuccess()
-      
-    } else {
-        self.errorMessage = "ERROR decoding authenticator data"
-        return
+    guard let rawAttestationObject = registration.rawAttestationObject
+    else {
+      self.errorMessage = "No Attestation Object."
+      return
     }
     
+    let tag = registration.credentialID.base64EncodedString()
     
+    do {
+      
+      try BKPubKey.addPasskey(id: self.keyName, tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
     
+      onSuccess()
+    } catch {
+      self.errorMessage = error.localizedDescription
+    }
     
-    
-    onSuccess()
   }
   
 }
