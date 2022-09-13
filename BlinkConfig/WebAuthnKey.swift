@@ -56,7 +56,7 @@ public class WebAuthnKey: Signer {
 }
 
 extension WebAuthnKey : PublicKey {
-  public var type: String { "sk-ecdsa-sha2-nistp256" }
+  public var type: String { "sk-ecdsa-sha2-nistp256@openssh.com" }
   
   public func encode() throws -> Data {
     
@@ -66,7 +66,9 @@ extension WebAuthnKey : PublicKey {
       
       let auth = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
       
-      return try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: "blink.sh")
+      let blob = try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: "blink.sh")
+      
+      return SSHEncode.data(from: blob)
     }
     
     throw WebAuthnError.keyTypeError("?")
