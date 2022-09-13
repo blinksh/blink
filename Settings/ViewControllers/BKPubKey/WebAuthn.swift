@@ -35,6 +35,40 @@ import AuthenticationServices
 import SSH
 import SwiftCBOR
 
+// TODO To make this work on Files.app, we may have to move it to BlinkConfig,
+// but this will require to have a window handler.
+public class WebAuthnKey: Signer {
+  public init() {
+  }
+  
+  public var publicKey: SSH.PublicKey { self }
+  
+  public func sign(_ message: Data, algorithm: String?) throws -> Data {
+    Data()
+  }
+  
+  public var comment: String? = nil
+  
+  public var sshKeyType: SSH.SSHKeyType = .ecdsa
+}
+
+extension WebAuthnKey : PublicKey {
+  public var type: String { "sk-ecdsa-sha2-nistp256" }
+  
+  public func encode() throws -> Data {
+//    Authenticator Data
+//    9d667270fdd60a8fe8902a26ab49ed19c89e02ee8a4574bb62f4366d6fe987f55d0000000000000000000000000000000000000000001411435c321599dc8b56cf5847603ce907017c1cdaa5010203262001215820b8e0c4a6aa98dd012652ef34818bdde366e7e8fe2d1f183584616a2f019eea8a2258203d329134d271248f6242af75479e25a3e562594a744df5b24d68a5df19403463
+//    Credential
+//    a5010203262001215820b8e0c4a6aa98dd012652ef34818bdde366e7e8fe2d1f183584616a2f019eea8a2258203d329134d271248f6242af75479e25a3e562594a744df5b24d68a5df19403463
+    
+    let authData = Data(hex: "9d667270fdd60a8fe8902a26ab49ed19c89e02ee8a4574bb62f4366d6fe987f55d0000000000000000000000000000000000000000001411435c321599dc8b56cf5847603ce907017c1cdaa5010203262001215820b8e0c4a6aa98dd012652ef34818bdde366e7e8fe2d1f183584616a2f019eea8a2258203d329134d271248f6242af75479e25a3e562594a744df5b24d68a5df19403463")!
+    
+    let auth = WebAuthnSSH.decodeAuthenticatorData(authData: authData, expectCredential: true)
+    
+    return try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: "blink.sh")
+  }
+}
+
 struct AuthenticatorData {
     let rpIdHash: Data
     let flags: UInt8
@@ -205,5 +239,21 @@ extension Data {
     func hexEncodedString(options: HexEncodingOptions = []) -> String {
         let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
         return self.map { String(format: format, $0) }.joined()
+    }
+}
+
+extension Data {
+    init?(hex: String) {
+        guard hex.count.isMultiple(of: 2) else {
+            return nil
+        }
+        
+        let chars = hex.map { $0 }
+        let bytes = stride(from: 0, to: chars.count, by: 2)
+            .map { String(chars[$0]) + String(chars[$0 + 1]) }
+            .compactMap { UInt8($0, radix: 16) }
+        
+        guard hex.count / bytes.count == 2 else { return nil }
+        self.init(bytes)
     }
 }

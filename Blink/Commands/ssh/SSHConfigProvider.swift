@@ -140,6 +140,9 @@ extension SSHClientConfigProvider {
       }
     }
     
+    let webauthn = WebAuthnKey()
+    _ = agent.loadKey(webauthn, aka: "webauthn", constraints: consts)
+    
     // Link to Default Agent
     agent.linkTo(agent: SSHAgentPool.defaultAgent)
     return agent
