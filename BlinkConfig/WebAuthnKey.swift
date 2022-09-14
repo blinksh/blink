@@ -42,14 +42,17 @@ public protocol InputPrompter {
 }
 
 public class WebAuthnKey: NSObject {
+  let rpId: String
   let rawAttestationObject: Data
+  
   var termView: UIView? = nil
   //var authAnchor: ASPresentationAnchor? = nil
   let signaturePub = PassthroughSubject<Data, Error>()
 
   public var comment: String? = nil
   
-  public init(rawAttestationObject: Data) throws {
+  public init(rpId: String, rawAttestationObject: Data) throws {
+    self.rpId = rpId
     self.rawAttestationObject = rawAttestationObject
   }
 }
@@ -73,7 +76,7 @@ extension WebAuthnKey: Signer {
     }
     
     // TODO Ideally, the creation should be done here too, so the domain is not hard-coded
-    let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: "blink.sh")
+    let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
     
     // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
     let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: message)
@@ -81,6 +84,7 @@ extension WebAuthnKey: Signer {
     let authController = ASAuthorizationController(authorizationRequests: [assertionRequest])
     authController.delegate = self
     authController.presentationContextProvider = self
+    
     
     if #available(iOS 16.0, *) {
       let semaphore = DispatchSemaphore(value: 0)
@@ -160,7 +164,7 @@ extension WebAuthnKey : PublicKey {
       
       let auth = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
       
-      let blob = try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: "blink.sh")
+      let blob = try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: rpId)
       
       return SSHEncode.data(from: blob)
     }

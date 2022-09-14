@@ -73,7 +73,7 @@ struct NewPasskeyView: View {
       
       Section(
         header: Text("INFORMATION"),
-        footer: Text("....")
+        footer: Text("Based on industry standards for account authentication, passkeys are easier to use than passwords and far more secure. Adopt passkeys to give people a simple, secure way to sign in to your apps and websites across platforms — with no passwords required.")
       ) { }
     }
     .listStyle(GroupedListStyle())
@@ -117,7 +117,7 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
     self.onSuccess = onSuccess
     errorMessage = ""
     let keyID = keyName.trimmingCharacters(in: .whitespacesAndNewlines)
-    let comment = keyComment.trimmingCharacters(in: .whitespacesAndNewlines)
+    
     
     do {
       if keyID.isEmpty {
@@ -131,7 +131,9 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
       let challenge = Data()
       let userID = Data(keyID.utf8)
       
-      let platformPubkeyProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: domain)
+      let rpId = "\(keyID)@\(domain)"
+      
+      let platformPubkeyProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
       
       let passkeyRequest = platformPubkeyProvider.createCredentialRegistrationRequest(
           challenge: challenge,
@@ -182,10 +184,12 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
     }
     
     let tag = registration.credentialID.base64EncodedString()
+    let comment = keyComment.trimmingCharacters(in: .whitespacesAndNewlines)
+    let keyID = keyName.trimmingCharacters(in: .whitespacesAndNewlines)
     
     do {
       
-      try BKPubKey.addPasskey(id: self.keyName, tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
+      try BKPubKey.addPasskey(id: keyID, rpId: "\(keyID)@\(domain)", tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
     
       onSuccess()
     } catch {

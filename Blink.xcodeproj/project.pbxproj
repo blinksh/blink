@@ -315,7 +315,6 @@
 		D2A0C2172600D16300F0DF97 /* Protobuf_C_.xcframework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = D2334ECB25C1C04700385378 /* Protobuf_C_.xcframework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */; };
 		D2A52227231304FF0010AC04 /* UIGestureRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */; };
-		D2A6398628CF8FF40066FD18 /* WebAuthn.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A6398528CF8FF40066FD18 /* WebAuthn.swift */; };
 		D2A6398928CFA0B90066FD18 /* SwiftCBOR in Frameworks */ = {isa = PBXBuildFile; productRef = D2A6398828CFA0B90066FD18 /* SwiftCBOR */; };
 		D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2A80978270713D200CD0FAF /* FeatureFlags.swift */; };
 		D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BDBFA3052728914F00C77798 /* BlinkCode.framework */; };
@@ -968,7 +967,6 @@
 		D2A0C63E20AAD98D001CF38F /* ios_error.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ios_error.h; sourceTree = "<group>"; };
 		D2A5221D230D279B0010AC04 /* SmarterTermInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SmarterTermInput.swift; sourceTree = "<group>"; };
 		D2A52226231304FE0010AC04 /* UIGestureRecognizer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UIGestureRecognizer.swift; sourceTree = "<group>"; };
-		D2A6398528CF8FF40066FD18 /* WebAuthn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebAuthn.swift; sourceTree = "<group>"; };
 		D2A80978270713D200CD0FAF /* FeatureFlags.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlags.swift; sourceTree = "<group>"; };
 		D2AB611D23AB5ACD00BE6585 /* UIApplication+Version.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIApplication+Version.m"; sourceTree = "<group>"; };
 		D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIApplication+Version.h"; sourceTree = "<group>"; };
@@ -1699,7 +1697,6 @@
 				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
 				D27D0117261202A400128C23 /* KeyUIError.swift */,
 				D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */,
-				D2A6398528CF8FF40066FD18 /* WebAuthn.swift */,
 			);
 			path = BKPubKey;
 			sourceTree = "<group>";
@@ -2980,7 +2977,6 @@
 				D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */,
 				07FAB8F525C8E6C500E1CC2C /* SSHConfigProvider.swift in Sources */,
 				D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */,
-				D2A6398628CF8FF40066FD18 /* WebAuthn.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,

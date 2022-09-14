@@ -58,6 +58,7 @@ public extension BKPubKey {
         keyType: key.sshKeyType.shortName,
         certType: nil,
         rawAttestationObject: nil,
+        rpId: nil,
         storageType: BKPubKeyStorageTypeKeyChain
       ),
       let privateKey = String(data: try key.privateKeyFileBlob(), encoding: .utf8)
@@ -84,6 +85,7 @@ public extension BKPubKey {
         keyType: keyType.shortName,
         certType: nil,
         rawAttestationObject: nil,
+        rpId: nil,
         storageType: BKPubKeyStorageTypeSecureEnclave
       )
     else {
@@ -95,13 +97,13 @@ public extension BKPubKey {
   
   static func addPasskey(
     id: String,
+    rpId: String,
     tag: String,
     rawAttestationObject: Data,
     comment: String
   ) throws {
     
-    
-    let key = try WebAuthnKey(rawAttestationObject: rawAttestationObject)
+    let key = try WebAuthnKey(rpId: rpId, rawAttestationObject: rawAttestationObject)
     
     let keyType = key.sshKeyType
     let publicKey = try key.publicKey.authorizedKey(withComment: comment)
@@ -113,6 +115,7 @@ public extension BKPubKey {
         keyType: keyType.shortName,
         certType: nil,
         rawAttestationObject: rawAttestationObject,
+        rpId: rpId,
         storageType: BKPubKeyStorageTypePlatformKey
       )
     else {
@@ -160,12 +163,13 @@ extension Collection where Element == BKPubKey {
     
     if card.storageType == BKPubKeyStorageTypePlatformKey {
       guard
-        let rawAttestationObject = card.rawAttestationObject
+        let rawAttestationObject = card.rawAttestationObject,
+        let rpId = card.rpId
       else {
         return nil
       }
 
-      return try? WebAuthnKey(rawAttestationObject: rawAttestationObject)
+      return try? WebAuthnKey(rpId:rpId, rawAttestationObject: rawAttestationObject)
     }
     
     return nil

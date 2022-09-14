@@ -143,7 +143,9 @@ static UICKeyChainStore *__get_keychain() {
                             keyType:(NSString *)keyType
                            certType:(NSString *)certType
                rawAttestationObject:(nullable NSData *)rawAttestationObject
-                        storageType:(BKPubKeyStorageType)storageType {
+                             rpId:(nullable NSString *)rpId
+                        storageType:(BKPubKeyStorageType)storageType
+{
 
   if (self = [super init]) {
     _ID = ID;
@@ -152,6 +154,7 @@ static UICKeyChainStore *__get_keychain() {
     _keyType = keyType;
     _certType = certType;
     _rawAttestationObject = rawAttestationObject;
+    _rpId = rpId;
     _storageType = storageType;
   }
   
@@ -192,6 +195,7 @@ static UICKeyChainStore *__get_keychain() {
   _publicKey = [coder decodeObjectOfClasses:strings forKey:@"publicKey"];
   
   _rawAttestationObject = [coder decodeObjectOfClass:NSData.class forKey:@"rawAttestationObject"];
+  _rpId = [coder decodeObjectOfClasses:strings forKey:@"rpId"];
   
   if (!_tag) {
     _tag = [NSProcessInfo processInfo].globallyUniqueString;
@@ -217,6 +221,7 @@ static UICKeyChainStore *__get_keychain() {
   [coder encodeObject:_publicKey forKey:@"publicKey"];
   
   [coder encodeObject:_rawAttestationObject forKey:@"rawAttestationObject"];
+  [coder encodeObject:_rpId forKey:@"rpId"];
 }
 
 + (NSString *)_shortKeyTypeNameFromSshKeyTypeName:(NSString *)keyTypeName {
