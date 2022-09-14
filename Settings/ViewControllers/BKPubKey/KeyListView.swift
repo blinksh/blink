@@ -192,7 +192,7 @@ struct KeyListView: View {
             onSuccess: _state.onModalSuccess
           )
         case .newSecurityKey:
-          NewSEKeyView(
+          NewSecurityKeyView(
             onCancel: _state.onModalCancel,
             onSuccess: _state.onModalSuccess
           )

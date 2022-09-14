@@ -36,12 +36,12 @@ import CryptoKit
 import AuthenticationServices
 import SwiftCBOR
 
-struct NewPasskeyView: View {
+struct NewSecurityKeyView: View {
   @EnvironmentObject private var _nav: Nav
   let onCancel: () -> Void
   let onSuccess: () -> Void
   
-  @StateObject private var _state = NewPasskeyObservable()
+  @StateObject private var _state = NewSecurityKeyObservable()
   
   var body: some View {
     List {
@@ -73,7 +73,7 @@ struct NewPasskeyView: View {
       
       Section(
         header: Text("INFORMATION"),
-        footer: Text("Based on industry standards for account authentication, passkeys are easier to use than passwords and far more secure. Adopt passkeys to give people a simple, secure way to sign in to your apps and websites across platforms — with no passwords required.")
+        footer: Text("...")
       ) { }
     }
     .listStyle(GroupedListStyle())
@@ -82,7 +82,7 @@ struct NewPasskeyView: View {
       trailing: Button("Create", action: _createKey)
       .disabled(!_state.isValid)
     )
-    .navigationBarTitle("New Passkey")
+    .navigationBarTitle("New Security Key")
     .alert(errorMessage: $_state.errorMessage)
     .onAppear(perform: {
       FixedTextField.becomeFirstReponder(id: "keyName")
@@ -99,9 +99,7 @@ struct NewPasskeyView: View {
   }
 }
 
-let domain = "blink.sh"
-
-fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
+fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
   
   @Published var keyName = ""
@@ -133,15 +131,16 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
       
       let rpId = "\(keyID)@\(domain)"
       
-      let platformPubkeyProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
+      let provider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
       
-      let passkeyRequest = platformPubkeyProvider.createCredentialRegistrationRequest(
-          challenge: challenge,
-          name: keyID,
-          userID: userID
+      let request = provider.createCredentialRegistrationRequest(
+        challenge: challenge, displayName: keyID, name: keyID, userID: userID
       )
       
-      let authController = ASAuthorizationController(authorizationRequests: [ passkeyRequest ] )
+      request.credentialParameters = [ .init(algorithm: ASCOSEAlgorithmIdentifier.ES256) ]
+      
+      let authController = ASAuthorizationController(authorizationRequests: [ request ] )
+      
       authController.delegate = self
       authController.presentationContextProvider = anchor
       authController.performRequests()
@@ -153,14 +152,7 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
 }
 
 
-extension UIWindow: ASAuthorizationControllerPresentationContextProviding {
-  public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-    self
-  }
-}
-
-
-extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
+extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
   func authorizationController(
     controller: ASAuthorizationController,
     didCompleteWithError error: Error
@@ -189,7 +181,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
     
     do {
       
-      try BKPubKey.addPasskey(id: keyID, rpId: "\(keyID)@\(domain)", tag: tag, rawAttestationObject: rawAttestationObject, comment: comment)
+      try BKPubKey.addSecurityKey(id: keyID, rpId: "\(keyID)@\(domain)", tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
     
       onSuccess()
     } catch {

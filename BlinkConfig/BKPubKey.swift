@@ -125,6 +125,36 @@ public extension BKPubKey {
     BKPubKey.addCard(card);
   }
   
+  static func addSecurityKey(
+    id: String,
+    rpId: String,
+    tag: String,
+    rawAttestationObject: Data,
+    comment: String
+  ) throws {
+    
+    let key = try SKWebAuthnKey(rpId: rpId, rawAttestationObject: rawAttestationObject)
+    
+    let keyType = key.sshKeyType
+    let publicKey = try key.publicKey.authorizedKey(withComment: comment)
+    guard
+      let card = BKPubKey(
+        id: id,
+        tag: tag,
+        publicKey: publicKey,
+        keyType: keyType.shortName,
+        certType: nil,
+        rawAttestationObject: rawAttestationObject,
+        rpId: rpId,
+        storageType: BKPubKeyStorageTypeSecurityKey
+      )
+    else {
+      return
+    }
+    
+    BKPubKey.addCard(card);
+  }
+  
   static func removeCard(card: BKPubKey) {
     if card.storageType == BKPubKeyStorageTypeSecureEnclave {
       try? SEKey.delete(tag: card.tag)
@@ -170,6 +200,17 @@ extension Collection where Element == BKPubKey {
       }
 
       return try? WebAuthnKey(rpId:rpId, rawAttestationObject: rawAttestationObject)
+    }
+    
+    if card.storageType == BKPubKeyStorageTypeSecurityKey {
+      guard
+        let rawAttestationObject = card.rawAttestationObject,
+        let rpId = card.rpId
+      else {
+        return nil
+      }
+
+      return try? SKWebAuthnKey(rpId:rpId, rawAttestationObject: rawAttestationObject)
     }
     
     return nil

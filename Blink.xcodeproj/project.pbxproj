@@ -291,6 +291,7 @@
 		D266A9DC272A77A100C85EED /* code.swift in Sources */ = {isa = PBXBuildFile; fileRef = D266A9DB272A77A100C85EED /* code.swift */; };
 		D26A37F026A0AB7000534A4D /* facecam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D26A37EF26A0AB7000534A4D /* facecam.swift */; };
 		D275492D26A033CC0039CC95 /* FaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D275492C26A033CC0039CC95 /* FaceCam.swift */; };
+		D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */; };
 		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
 		D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150C287F0C2200D31F4E /* TokioSignals.m */; };
 		D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2771510287F0EA200D31F4E /* libbuild_cli.a */; };
@@ -939,6 +940,7 @@
 		D266A9DB272A77A100C85EED /* code.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = code.swift; sourceTree = "<group>"; };
 		D26A37EF26A0AB7000534A4D /* facecam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = facecam.swift; sourceTree = "<group>"; };
 		D275492C26A033CC0039CC95 /* FaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceCam.swift; sourceTree = "<group>"; };
+		D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewSecurityKeyView.swift; sourceTree = "<group>"; };
 		D277150A287F0C2100D31F4E /* build.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = build.m; sourceTree = "<group>"; };
 		D277150B287F0C2200D31F4E /* TokioSignals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TokioSignals.h; sourceTree = "<group>"; };
 		D277150C287F0C2200D31F4E /* TokioSignals.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TokioSignals.m; sourceTree = "<group>"; };
@@ -1695,6 +1697,7 @@
 				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
 				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
 				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
+				D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */,
 				D27D0117261202A400128C23 /* KeyUIError.swift */,
 				D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */,
 			);
@@ -2982,6 +2985,7 @@
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
 				D27AD9BC222FDD3D00379872 /* xcall.m in Sources */,
 				D29568B921BE629100480A83 /* bk_getopts.c in Sources */,
+				D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,

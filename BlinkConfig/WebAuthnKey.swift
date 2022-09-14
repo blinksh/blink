@@ -55,13 +55,34 @@ public class WebAuthnKey: NSObject {
     self.rpId = rpId
     self.rawAttestationObject = rawAttestationObject
   }
+  
+  func signAuthorizationRequest(_ message: Data) -> ASAuthorizationRequest {
+    // TODO Ideally, the creation should be done here too, so the domain is not hard-coded
+    let credentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
+    
+    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
+    return credentialProvider.createCredentialAssertionRequest(challenge: message)
+  }
 }
+
+public class SKWebAuthnKey: WebAuthnKey {
+  override func signAuthorizationRequest(_ message: Data) -> ASAuthorizationRequest {
+    
+    let credentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
+    
+    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
+    return credentialProvider.createCredentialAssertionRequest(challenge: message)
+  }
+}
+
 
 extension WebAuthnKey: InputPrompter {
   public func setPromptOnView(_ view: UIView) {
     self.termView = view
   }
 }
+
+
 
 extension WebAuthnKey: Signer {
   public var publicKey: SSH.PublicKey { self }
@@ -74,14 +95,8 @@ extension WebAuthnKey: Signer {
     guard self.termView != nil else {
       throw WebAuthnError.clientError("Prompt not configured for request")
     }
-    
-    // TODO Ideally, the creation should be done here too, so the domain is not hard-coded
-    let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
-    
-    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
-    let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: message)
-    
-    let authController = ASAuthorizationController(authorizationRequests: [assertionRequest])
+
+    let authController = ASAuthorizationController(authorizationRequests: [self.signAuthorizationRequest(message)])
     authController.delegate = self
     authController.presentationContextProvider = self
     
@@ -122,25 +137,30 @@ extension WebAuthnKey: Signer {
 }
 
 extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
-  public func authorizationController(controller: ASAuthorizationController,
-                                      didCompleteWithAuthorization authorization: ASAuthorization) {
-    switch authorization.credential {
-    case let credentialAssertion as ASAuthorizationPlatformPublicKeyCredentialAssertion:
-      let rawClientData = credentialAssertion.rawClientDataJSON
-      let authData = WebAuthnSSH.decodeAuthenticatorData(authData: credentialAssertion.rawAuthenticatorData, expectCredential: false)
-      let rawSignature = credentialAssertion.signature!
-      print("Signature Data")
-      print(rawSignature.hexEncodedString())
-      
-      let webAuthnSig = try! WebAuthnSSH.reformatSignature(rawSignature, rawClientData: rawClientData, auth: authData)
-      
-      // TODO We should validate the CredentialID, to be sure we signed with the proper key,
-      // before we fail or ask the user to retry.
-      signaturePub.send(webAuthnSig)
-      signaturePub.send(completion: .finished)
-    default:
-      signaturePub.send(completion: .failure(WebAuthnError.signatureError("Unexpected operation")))
+  public func authorizationController(
+    controller: ASAuthorizationController,
+    didCompleteWithAuthorization authorization: ASAuthorization
+  ) {
+    
+    guard
+      let credentialAssertion = authorization.credential as? ASAuthorizationPublicKeyCredentialAssertion,
+      let rawSignature = credentialAssertion.signature
+    else {
+      return signaturePub.send(completion: .failure(WebAuthnError.signatureError("Unexpected operation")))
     }
+
+    let rawClientData = credentialAssertion.rawClientDataJSON
+    let authData = WebAuthnSSH.decodeAuthenticatorData(
+      authData: credentialAssertion.rawAuthenticatorData,
+      expectCredential: false
+    )
+    
+    let webAuthnSig = try! WebAuthnSSH.reformatSignature(rawSignature, rawClientData: rawClientData, auth: authData)
+    
+    // TODO We should validate the CredentialID, to be sure we signed with the proper key,
+    // before we fail or ask the user to retry.
+    signaturePub.send(webAuthnSig)
+    signaturePub.send(completion: .finished)
   }
   
   public func authorizationController(controller: ASAuthorizationController,
@@ -157,19 +177,7 @@ extension WebAuthnKey : PublicKey {
   public var type: String { "sk-ecdsa-sha2-nistp256@openssh.com" }
   
   public func encode() throws -> Data {
-    
-    let f = try! CBOR.decode([UInt8](self.rawAttestationObject))!
-    let authData = f["authData"]!
-    if case CBOR.byteString(let bytes) = authData {
-      
-      let auth = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
-      
-      let blob = try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: rpId)
-      
-      return SSHEncode.data(from: blob)
-    }
-    
-    throw WebAuthnError.keyTypeError("?")
+    try WebAuthnSSH.sshKeyFromRawAttestationObject(rawAttestationObject: self.rawAttestationObject, rpId: rpId)
   }
 }
 
@@ -190,8 +198,6 @@ struct ClientData: Decodable {
     // let crossOrigin: bool
 }
 
-
-
 public enum WebAuthnSSH {
     static func decodeClientData(_ data: Data) -> ClientData? {
         print("Client Data")
@@ -200,20 +206,8 @@ public enum WebAuthnSSH {
         return try? JSONDecoder().decode(ClientData.self, from: data)
     }
     
-//    static func decodeAttestationData(attData: Data) {
-//        let f = try! CBOR.decode([UInt8](attData))!
-//        let authData = f["authData"]!
-//        print(authData)
-//        if case CBOR.byteString(let bytes) = authData {
-//            // Process bytes
-//            let res = decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
-//        }
-//    }
     
     static func decodeAuthenticatorData(authData: Data, expectCredential: Bool) -> AuthenticatorData {
-        print("Authenticator Data")
-        print(authData.hexEncodedString())
-        
         let rpIdHash = authData[0..<32]
         let flags: UInt8 = authData[32]
         var count: UInt32 = 0
@@ -230,12 +224,10 @@ public enum WebAuthnSSH {
             // https://forums.swift.org/t/how-to-handle-endianess/53558/4
             credentialIdLength = UInt16(bigEndian: credentialIdLength)
             offset += 2
-            let credentialId = authData[offset..<offset+Int(credentialIdLength)]
+            // let credentialId = authData[offset..<offset+Int(credentialIdLength)]
             offset += Int(credentialIdLength)
             // CTAP2 canonical CBOR encoded pubkey
             let rawCredentialData = authData[offset...]
-            print("Credential")
-            print(rawCredentialData.hexEncodedString())
             return AuthenticatorData(rpIdHash: rpIdHash, flags: flags, count: count, aaguid: aaguid, credentialIdLength: credentialIdLength, rawCredentialData: rawCredentialData, extensions: nil)
         } else {
             // Extensions, can be ignored for now.
@@ -262,14 +254,14 @@ public enum WebAuthnSSH {
               case CBOR.byteString(let y) = py else {
             throw WebAuthnError.keyTypeError("Could not find point x, y")
         }
-        return SSHEncode.data(from: "sk-ecdsa-sha2-nistp256@openssh.com") +
+        let blob = SSHEncode.data(from: "sk-ecdsa-sha2-nistp256@openssh.com") +
         SSHEncode.data(from: "nistp256") +
         // 0x04 - Uncompressed point format
         // -2   - x
         // -3   - y
         SSHEncode.data(from: Data([0x04]) + Data(x) + Data(y)) +
         SSHEncode.data(from: rpId)
-        
+        return SSHEncode.data(from: blob)
     }
     
     static func reformatSignature(_ signature: Data,
@@ -285,7 +277,7 @@ public enum WebAuthnSSH {
             throw WebAuthnError.signatureError("Not an ASN.1 sequence")
         }
         
-        let seqLength: UInt8 = signature[1]
+//        let seqLength: UInt8 = signature[1]
         let r: UInt8 = signature[2]
         if r != 0x02 {
             throw WebAuthnError.signatureError("Signature r not an ASN.1 integer")
@@ -327,6 +319,21 @@ public enum WebAuthnSSH {
         SSHEncode.data(from: String(data: rawClientData, encoding: .utf8)!) +
         ext
     }
+ 
+  public static func sshKeyFromRawAttestationObject(rawAttestationObject: Data, rpId: String) throws -> Data {
+    let f = try! CBOR.decode([UInt8](rawAttestationObject))!
+    let authData = f["authData"]!
+    if case CBOR.byteString(let bytes) = authData {
+      
+      let auth = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
+      
+      return try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: rpId)
+    }
+    
+    throw WebAuthnError.signatureError("?")
+
+  }
+  
     
 }
 
