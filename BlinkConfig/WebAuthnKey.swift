@@ -30,29 +30,123 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 
-import Foundation
 import AuthenticationServices
+import Combine
+import Foundation
 import SSH
 import SwiftCBOR
 
-// TODO To make this work on Files.app, we may have to move it to BlinkConfig,
-// but this will require to have a window handler.
-public class WebAuthnKey: Signer {
+
+public protocol InputPrompter {
+  func setPromptOnView(_ view: UIView)
+}
+
+public class WebAuthnKey: NSObject {
   let rawAttestationObject: Data
+  var termView: UIView? = nil
+  //var authAnchor: ASPresentationAnchor? = nil
+  let signaturePub = PassthroughSubject<Data, Error>()
+
+  public var comment: String? = nil
   
   public init(rawAttestationObject: Data) throws {
     self.rawAttestationObject = rawAttestationObject
   }
-  
+}
+
+extension WebAuthnKey: InputPrompter {
+  public func setPromptOnView(_ view: UIView) {
+    self.termView = view
+  }
+}
+
+extension WebAuthnKey: Signer {
   public var publicKey: SSH.PublicKey { self }
-  
+  public var sshKeyType: SSH.SSHKeyType { .ecdsaSK }
+
+  // TODO We are going to block here to get the user's input.
+  // If this works, the Agent may have to be the one blocking, offering
+  // an async interface to the Signers and Constraints.
   public func sign(_ message: Data, algorithm: String?) throws -> Data {
-    Data()
+    guard self.termView != nil else {
+      throw WebAuthnError.clientError("Prompt not configured for request")
+    }
+    
+    // TODO Ideally, the creation should be done here too, so the domain is not hard-coded
+    let publicKeyCredentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: "blink.sh")
+    
+    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
+    let assertionRequest = publicKeyCredentialProvider.createCredentialAssertionRequest(challenge: message)
+    
+    let authController = ASAuthorizationController(authorizationRequests: [assertionRequest])
+    authController.delegate = self
+    authController.presentationContextProvider = self
+    
+    if #available(iOS 16.0, *) {
+      let semaphore = DispatchSemaphore(value: 0)
+      var signature: Data? = nil
+      var error: Error? = nil
+      // TODO Send it on main for now
+      let cancel = Just(authController)
+        .receive(on: DispatchQueue.main)
+        .flatMap { authController in
+          authController.performRequests(options: .preferImmediatelyAvailableCredentials)
+          return self.signaturePub
+        }
+        .sink(receiveCompletion: { completion in
+        switch completion {
+        case .failure(let err):
+          error = err
+        case .finished:
+          break
+        }
+        semaphore.signal()
+      }, receiveValue: { signature = $0 })
+      
+      semaphore.wait()
+      
+      guard let signature = signature else {
+        throw error!
+      }
+      
+      return signature
+    } else {
+      // Fallback on earlier versions
+      throw WebAuthnError.clientError("Requires iOS >= 16")
+    }
+  }
+}
+
+extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControllerPresentationContextProviding {
+  public func authorizationController(controller: ASAuthorizationController,
+                                      didCompleteWithAuthorization authorization: ASAuthorization) {
+    switch authorization.credential {
+    case let credentialAssertion as ASAuthorizationPlatformPublicKeyCredentialAssertion:
+      let rawClientData = credentialAssertion.rawClientDataJSON
+      let authData = WebAuthnSSH.decodeAuthenticatorData(authData: credentialAssertion.rawAuthenticatorData, expectCredential: false)
+      let rawSignature = credentialAssertion.signature!
+      print("Signature Data")
+      print(rawSignature.hexEncodedString())
+      
+      let webAuthnSig = try! WebAuthnSSH.reformatSignature(rawSignature, rawClientData: rawClientData, auth: authData)
+      
+      // TODO We should validate the CredentialID, to be sure we signed with the proper key,
+      // before we fail or ask the user to retry.
+      signaturePub.send(webAuthnSig)
+      signaturePub.send(completion: .finished)
+    default:
+      signaturePub.send(completion: .failure(WebAuthnError.signatureError("Unexpected operation")))
+    }
   }
   
-  public var comment: String? = nil
+  public func authorizationController(controller: ASAuthorizationController,
+                                      didCompleteWithError error: Error) {
+    signaturePub.send(completion: .failure(error))
+  }
   
-  public var sshKeyType: SSH.SSHKeyType = .ecdsaSK
+  public func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
+    return self.termView!.window!
+  }
 }
 
 extension WebAuthnKey : PublicKey {
