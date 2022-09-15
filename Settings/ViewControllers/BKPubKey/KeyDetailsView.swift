@@ -307,7 +307,10 @@ struct KeyDetailsView: View {
       }
       
       Section() {
-        Button(action: _deleteCard, label: { Label("Delete", systemImage: "trash")})
+        Button(
+          action: _deleteCard,
+          label: { Label("Delete", systemImage: "trash").foregroundColor(.red)}
+        )
           .accentColor(.red)
       }
     }
