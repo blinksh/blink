@@ -88,17 +88,15 @@ struct SortButton<T>: View where T: Equatable {
     Button {
       self.sortType = self.sortType == asc ? desc : asc
     } label: {
-      Label(label, systemImage: self.systemImage)
-    }
-  }
-  
-  var systemImage: String {
-    if self.sortType == asc {
-      return "chevron.up"
-    } else if self.sortType == desc {
-      return "chevron.down"
-    } else {
-      return ""
+      HStack {
+        Text(label)
+        Spacer()
+        if self.sortType == asc {
+          Image(systemName: "chevron.up")
+        } else if self.sortType == desc {
+          Image(systemName: "chevron.down")
+        }
+      }
     }
   }
 }
