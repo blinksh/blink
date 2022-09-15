@@ -46,7 +46,6 @@ public class WebAuthnKey: NSObject {
   let rawAttestationObject: Data
   
   var termView: UIView? = nil
-  //var authAnchor: ASPresentationAnchor? = nil
   let signaturePub = PassthroughSubject<Data, Error>()
 
   public var comment: String? = nil
@@ -56,22 +55,16 @@ public class WebAuthnKey: NSObject {
     self.rawAttestationObject = rawAttestationObject
   }
   
-  func signAuthorizationRequest(_ message: Data) -> ASAuthorizationRequest {
-    // TODO Ideally, the creation should be done here too, so the domain is not hard-coded
+  func signAuthorizationRequest(_ challenge: Data) -> ASAuthorizationRequest {
     let credentialProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
-    
-    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
-    return credentialProvider.createCredentialAssertionRequest(challenge: message)
+    return credentialProvider.createCredentialAssertionRequest(challenge: challenge)
   }
 }
 
 public class SKWebAuthnKey: WebAuthnKey {
-  override func signAuthorizationRequest(_ message: Data) -> ASAuthorizationRequest {
-    
+  override func signAuthorizationRequest(_ challenge: Data) -> ASAuthorizationRequest {
     let credentialProvider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
-    
-    // TODO I don't think we need to generate a "SSHSIG" message with the content, but tracking here in case...
-    return credentialProvider.createCredentialAssertionRequest(challenge: message)
+    return credentialProvider.createCredentialAssertionRequest(challenge: challenge)
   }
 }
 
@@ -81,7 +74,6 @@ extension WebAuthnKey: InputPrompter {
     self.termView = view
   }
 }
-
 
 
 extension WebAuthnKey: Signer {
@@ -200,12 +192,8 @@ struct ClientData: Decodable {
 
 public enum WebAuthnSSH {
     static func decodeClientData(_ data: Data) -> ClientData? {
-        print("Client Data")
-        print(data.hexEncodedString())
-        // Decode JSON from Data
         return try? JSONDecoder().decode(ClientData.self, from: data)
     }
-    
     
     static func decodeAuthenticatorData(authData: Data, expectCredential: Bool) -> AuthenticatorData {
         let rpIdHash = authData[0..<32]
@@ -321,38 +309,37 @@ public enum WebAuthnSSH {
     }
  
   public static func sshKeyFromRawAttestationObject(rawAttestationObject: Data, rpId: String) throws -> Data {
-    let f = try! CBOR.decode([UInt8](rawAttestationObject))!
-    let authData = f["authData"]!
-    if case CBOR.byteString(let bytes) = authData {
-      
-      let auth = WebAuthnSSH.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
-      
-      return try WebAuthnSSH.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: rpId)
+    guard
+      let cbor = try? CBOR.decode([UInt8](rawAttestationObject)),
+      let authData = cbor["authData"],
+      case CBOR.byteString(let bytes) = authData
+    else {
+      throw WebAuthnError.invalidAttestationObject("Invalid CBOR Data")
     }
-    
-    throw WebAuthnError.signatureError("?")
-
+      
+    let auth = Self.decodeAuthenticatorData(authData: Data(bytes), expectCredential: true)
+      
+    return try Self.coseToSshPubKey(cborPubKey: auth.rawCredentialData!, rpId: rpId)
   }
-  
-    
 }
 
 enum WebAuthnError: Error {
-    case keyTypeError(String)
-    case signatureError(String)
-    case clientError(String)
+  case keyTypeError(String)
+  case invalidAttestationObject(String)
+  case signatureError(String)
+  case clientError(String)
 }
 
 extension Data {
-    struct HexEncodingOptions: OptionSet {
-        let rawValue: Int
-        static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
-    }
-    
-    func hexEncodedString(options: HexEncodingOptions = []) -> String {
-        let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
-        return self.map { String(format: format, $0) }.joined()
-    }
+  struct HexEncodingOptions: OptionSet {
+    let rawValue: Int
+    static let upperCase = HexEncodingOptions(rawValue: 1 << 0)
+  }
+  
+  func hexEncodedString(options: HexEncodingOptions = []) -> String {
+    let format = options.contains(.upperCase) ? "%02hhX" : "%02hhx"
+    return self.map { String(format: format, $0) }.joined()
+  }
 }
 
 extension Data {
