@@ -88,6 +88,14 @@ public enum SSHKeyType: Int32 {
     case .ed25519SKCert: return "ED25519-SK-CERT"
     }
   }
+  
+  public var shortUnderscoredName: String {
+    self.shortName.replacingOccurrences(of: "-", with: "_")
+  }
+  
+  public var defaultKeyName: String {
+    "id_\(shortUnderscoredName.lowercased())"
+  }
 }
 
 

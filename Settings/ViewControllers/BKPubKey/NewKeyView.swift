@@ -43,7 +43,7 @@ struct NewKeyView: View {
     List {
       Section(
         header: Text("NAME"),
-        footer: Text("Default key must be named `id_\(_state.keyType.shortName.lowercased())`")
+        footer: Text("Default key must be named `\(_state.keyType.defaultKeyName)`")
       ) {
         FixedTextField(
           "Enter a name for the key",
