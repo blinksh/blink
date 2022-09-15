@@ -221,7 +221,7 @@ struct KeyDetailsView: View {
     List {
       Section(
         header: Text("NAME"),
-        footer: Text("Default key must be named `id_\(card.keyType?.lowercased() ?? "")`")
+        footer: Text("Default key must be named `id_\(card.keyType?.lowercased().replacingOccurrences(of: "-", with: "_") ?? "")`")
       ) {
         FixedTextField(
           "Enter a name for the key",
