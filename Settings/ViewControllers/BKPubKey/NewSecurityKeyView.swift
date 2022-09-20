@@ -129,7 +129,7 @@ fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
       let challenge = Data()
       let userID = Data(keyID.utf8)
       
-      let rpId = "\(keyID)@\(domain)"
+      let rpId = rpIdWith(keyID: keyID)
       
       let provider = ASAuthorizationSecurityKeyPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
       
@@ -181,7 +181,7 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
     
     do {
       
-      try BKPubKey.addSecurityKey(id: keyID, rpId: "\(keyID)@\(domain)", tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
+      try BKPubKey.addSecurityKey(id: keyID, rpId: rpIdWith(keyID: keyID), tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
     
       onSuccess()
     } catch {
