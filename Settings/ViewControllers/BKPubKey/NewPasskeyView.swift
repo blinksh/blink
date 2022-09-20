@@ -101,6 +101,10 @@ struct NewPasskeyView: View {
 
 let domain = "blink.sh"
 
+func rpIdWith(keyID: String) -> String {
+  "\(keyID)@\(domain)"
+}
+
 fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
   
@@ -131,7 +135,7 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
       let challenge = Data()
       let userID = Data(keyID.utf8)
       
-      let rpId = "\(keyID)@\(domain)"
+      let rpId = rpIdWith(keyID: keyID)
       
       let platformPubkeyProvider = ASAuthorizationPlatformPublicKeyCredentialProvider(relyingPartyIdentifier: rpId)
       
@@ -189,7 +193,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
     
     do {
       
-      try BKPubKey.addPasskey(id: keyID, rpId: "\(keyID)@\(domain)", tag: tag, rawAttestationObject: rawAttestationObject, comment: comment)
+      try BKPubKey.addPasskey(id: keyID, rpId: rpIdWith(keyID: keyID), tag: tag, rawAttestationObject: rawAttestationObject, comment: comment)
     
       onSuccess()
     } catch {
