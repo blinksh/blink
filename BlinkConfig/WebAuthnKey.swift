@@ -46,7 +46,8 @@ public class WebAuthnKey: NSObject {
   let rawAttestationObject: Data
   
   var termView: UIView? = nil
-  let signaturePub = PassthroughSubject<Data, Error>()
+  //var authAnchor: ASPresentationAnchor? = nil
+  var signaturePub: PassthroughSubject<Data, Error>!
 
   public var comment: String? = nil
   
@@ -97,12 +98,13 @@ extension WebAuthnKey: Signer {
       let semaphore = DispatchSemaphore(value: 0)
       var signature: Data? = nil
       var error: Error? = nil
+      self.signaturePub = PassthroughSubject<Data, Error>()
       // TODO Send it on main for now
       let cancel = Just(authController)
         .receive(on: DispatchQueue.main)
         .flatMap { authController in
           authController.performRequests(options: .preferImmediatelyAvailableCredentials)
-          return self.signaturePub
+          return self.signaturePub!
         }
         .sink(receiveCompletion: { completion in
         switch completion {
@@ -166,7 +168,7 @@ extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControl
 }
 
 extension WebAuthnKey : PublicKey {
-  public var type: String { "sk-ecdsa-sha2-nistp256@openssh.com" }
+  public var type: String { "webauthn-sk-ecdsa-sha2-nistp256@openssh.com" }
   
   public func encode() throws -> Data {
     try WebAuthnSSH.sshKeyFromRawAttestationObject(rawAttestationObject: self.rawAttestationObject, rpId: rpId)
@@ -242,7 +244,7 @@ public enum WebAuthnSSH {
               case CBOR.byteString(let y) = py else {
             throw WebAuthnError.keyTypeError("Could not find point x, y")
         }
-        let blob = SSHEncode.data(from: "sk-ecdsa-sha2-nistp256@openssh.com") +
+        let blob = SSHEncode.data(from: "webauthn-sk-ecdsa-sha2-nistp256@openssh.com") +
         SSHEncode.data(from: "nistp256") +
         // 0x04 - Uncompressed point format
         // -2   - x

@@ -77,7 +77,7 @@ public func blink_ssh_add(argc: Int32, argv: Argv) -> Int32 {
   let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
   let cmd = BlinkSSHAgentAdd()
   session.registerSSHClient(cmd)
-  let rc = cmd.start(argc, argv: argv.args(count: argc))
+  let rc = cmd.start(argc, argv: argv.args(count: argc), session: session)
   session.unregisterSSHClient(cmd)
 
   return rc
@@ -90,7 +90,7 @@ public class BlinkSSHAgentAdd: NSObject {
   var stderr = OutputStream(file: thread_stderr)
   let currentRunLoop = RunLoop.current
   
-  public func start(_ argc: Int32, argv: [String]) -> Int32 {
+  public func start(_ argc: Int32, argv: [String], session: MCPSession) -> Int32 {
     let bkConfig: BKConfig
     do {
       bkConfig = try BKConfig()
@@ -145,6 +145,9 @@ public class BlinkSSHAgentAdd: NSObject {
     
     // Default case: add key
     if let (signer, name) = bkConfig.signer(forIdentity: command.keyName ?? "id_rsa") {
+      if let signer = signer as? BlinkConfig.InputPrompter {
+        signer.setPromptOnView(session.device.view)
+      }
       SSHAgentPool.addKey(signer, named: name)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0
