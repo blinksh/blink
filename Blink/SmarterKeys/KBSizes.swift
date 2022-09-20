@@ -123,6 +123,11 @@ extension KBSizes {
     Self(kb: (.height, padding: 4, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 58, wide: 76)))
   }
   
+  static var portrait_iPad_10_2_MoreSpace: Self {
+    // TODO: tune kb layout
+    Self(kb: (.height, padding: 4, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 58, wide: 76)))
+  }
+  
   static var portrait_iPad_10_9: Self {
     Self(kb: (.height, padding: 6, spacer: 0), key: (_fonts, _insets, .corner, widths: (.icon, key: 56, wide: 82)))
   }
@@ -176,6 +181,11 @@ extension KBSizes {
   }
   
   static var landscape_iPad_10_5: Self {
+    Self(kb: (.height, padding: 4, spacer: 1), key: (_fonts, _insets, .corner, widths: (.icon, key: 74, wide: 96)))
+  }
+  
+  static var landscape_iPad_10_2_MoreSpace: Self {
+    // TODO: tune kb layout
     Self(kb: (.height, padding: 4, spacer: 1), key: (_fonts, _insets, .corner, widths: (.icon, key: 74, wide: 96)))
   }
   
