@@ -168,7 +168,7 @@ extension WebAuthnKey: ASAuthorizationControllerDelegate, ASAuthorizationControl
 }
 
 extension WebAuthnKey : PublicKey {
-  public var type: String { "webauthn-sk-ecdsa-sha2-nistp256@openssh.com" }
+  public var type: String { "sk-ecdsa-sha2-nistp256@openssh.com" }
   
   public func encode() throws -> Data {
     try WebAuthnSSH.sshKeyFromRawAttestationObject(rawAttestationObject: self.rawAttestationObject, rpId: rpId)
@@ -244,7 +244,7 @@ public enum WebAuthnSSH {
               case CBOR.byteString(let y) = py else {
             throw WebAuthnError.keyTypeError("Could not find point x, y")
         }
-        let blob = SSHEncode.data(from: "webauthn-sk-ecdsa-sha2-nistp256@openssh.com") +
+        let blob = SSHEncode.data(from: "sk-ecdsa-sha2-nistp256@openssh.com") +
         SSHEncode.data(from: "nistp256") +
         // 0x04 - Uncompressed point format
         // -2   - x

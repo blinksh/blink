@@ -94,16 +94,18 @@ struct NewKeyMenuView: View {
   var body: some View {
     Menu {
       Section(header: Text("Add key")) {
-        Button {
-          self.state.modal = .newPasskey
-        } label: {
-          Label("Passkey", systemImage: "person.badge.key")
-        }
-        
-        Button {
-          self.state.modal = .newSecurityKey
-        } label: {
+        if #available(iOS 16.0, *) {
+          Button {
+            self.state.modal = .newPasskey
+          } label: {
+            Label("Passkey", systemImage: "person.badge.key")
+          }
+          
+          Button {
+            self.state.modal = .newSecurityKey
+          } label: {
             Label("Security Key", systemImage: "key")
+          }
         }
         
         Button {
