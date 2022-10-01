@@ -214,9 +214,9 @@ extension FileLocationPath {
       if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
         filePath = "~/\(filePath)"
       }
-      if filePath.last == "/" {
-        filePath.removeLast()
-      }
+//      if filePath.last == "/" {
+//        filePath.removeLast()
+//      }
       
       return try? URI(string: uriProtocolIdentifier + host + "/\(filePath)")
     }
