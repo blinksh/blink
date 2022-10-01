@@ -165,7 +165,7 @@ public class SSHAgent {
   }
 
   func encodedRing() throws -> [Data] {
-    (try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.signer.comment ?? "") }) +
+    (try ring.map { (try $0.signer.publicKey.encode()) + SSHEncode.data(from: $0.name) }) +
       (try superAgent?.encodedRing() ?? [])
   }
 
