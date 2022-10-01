@@ -113,6 +113,8 @@ extension SSHClientConfigProvider {
   }
   
   fileprivate func authPrompt(_ prompt: Prompt) -> AnyPublisher<[String], Error> {
+    self.printLn(prompt.instruction, err: true)
+
     return prompt.userPrompts.publisher.tryMap { question -> String in
       guard let input = self.device.readline(question.prompt, secure: true) else {
         throw CommandError(message: "Couldn't read input")
