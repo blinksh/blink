@@ -44,7 +44,7 @@ class CodeFileSystem {
   init(_ t: AnyPublisher<Translator, Error>, uri: URI) {
     self.translator = t
     self.uri = uri
-    self.log = CodeFileSystemLogger.log("\(uri.rootPath.host)")
+    self.log = CodeFileSystemLogger.log("\(uri.host)")
   }
 
   func stat() -> WebSocketServer.ResponsePublisher {
@@ -194,7 +194,7 @@ class CodeFileSystem {
     let path = self.uri.rootPath.filesAtPath
     self.log.debug("createDirectory \(path)")
     
-    let parentUri = URI(rootPath: self.uri.rootPath.parent)
+    let parentUri = self.uri.parent
     let parent  = parentUri.rootPath.filesAtPath
     let dirName = (path as NSString).lastPathComponent
 
@@ -229,7 +229,7 @@ class CodeFileSystem {
     // Walk to file and apply overwrite
     // Stat to new location. Or fail.
     let newParent = newUri.rootPath.parent.filesAtPath
-    let newName   = newUri.rootPath.url.lastPathComponent
+    let newName   = newUri.rootPath.lastPathComponent
     
     return translator
       .flatMap {
@@ -239,7 +239,7 @@ class CodeFileSystem {
       .flatMap { oldT in
         self.translator.flatMap {
             $0.cloneWalkTo(newParent)
-            .mapError { _ in CodeFileSystemError.fileNotFound(uri: URI(rootPath: newUri.rootPath.parent)) }
+            .mapError { _ in CodeFileSystemError.fileNotFound(uri: newUri.parent) }
           }
         // Will take the easy route for now.
         // We try the stat, and will figure out if in case it is a file, we have to
