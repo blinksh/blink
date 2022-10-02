@@ -173,7 +173,7 @@ public class SFTPTranslator: BlinkFiles.Translator {
     var absPath = path
 
     // First cleanup the ~, and walk from rootPath
-    if absPath == "~" {
+    if absPath.last == "~" {
       absPath = String(self.rootPath)
     } else if let range = absPath.range(of: "~/", options: [.backwards]) {
       absPath.removeSubrange(absPath.startIndex..<range.upperBound)
