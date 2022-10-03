@@ -36,11 +36,11 @@ import Combine
 import BlinkConfig
 
 
-fileprivate let HostKeyChangedWarningMessage = "@@WARNING! REMOTE IDENTIFICATION HAS CHANGED. New Public key hash: %@. Accepting the following prompt will add a new entry for this host. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedWarningMessage = "@@WARNING! REMOTE IDENTIFICATION HAS CHANGED.\nNew Public key hash: %@.\nAccepting the following prompt will add a new entry for this host.\nDo you trust the host key? [Y/n]: "
 
-fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedUnknownRequestMessage = "Public key hash: %@.\nThe server is unknown.\nDo you trust the host key? [Y/n]: "
 
-fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@. The server is unknown. Do you trust the host key? [Y/n]: "
+fileprivate let HostKeyChangedNotFoundRequestMessage = "Public key hash: %@.\nThe server is unknown.\nDo you trust the host key? [Y/n]: "
 // Having access from CLI
 // Having access from UI. Some parameters must already exist, others need to be tweaked.
 // Pass it a host and get everything necessary to connect, but some functions still need to be setup.
