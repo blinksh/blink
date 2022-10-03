@@ -151,7 +151,7 @@ struct CodeCommand: NonStdIOCommand {
       throw CommandError(message: "Could not parse path.")
     }
 
-    let token = fp.service.registerMount(name: "xxx", root: rootURI.absoluteString)
+    let token = fp.service.registerMount(name: "xxx", root: rootURI)
     
     var observer: NSObjectProtocol = NSObject()
     observer = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
@@ -199,9 +199,11 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
 extension FileLocationPath {
   // blinkfs:/path
   // blinksftp://user@host:port/path
-  fileprivate var codeFileSystemURI: URL? {
+  
+  // TODO This is called URI but returns a URL. For our context, it is important that this is a URI
+  fileprivate var codeFileSystemURI: URI? {
     if proto == .local {
-      return URL(string: uriProtocolIdentifier +
+      return try? URI(string: uriProtocolIdentifier +
                  filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
     } else {
       // "/user@host#port" -> "/user@host:port"
@@ -212,7 +214,11 @@ extension FileLocationPath {
       if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
         filePath = "~/\(filePath)"
       }
-      return URL(string: uriProtocolIdentifier + host)?.appendingPathComponent(filePath)
+//      if filePath.last == "/" {
+//        filePath.removeLast()
+//      }
+      
+      return try? URI(string: uriProtocolIdentifier + host + "/\(filePath)")
     }
   }
 

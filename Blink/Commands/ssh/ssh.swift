@@ -148,10 +148,13 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         return -1
       }
     } else {
+      // Disable CM on -W, this way we attach it to the main connection only
+      let useControlMaster = (cmd.stdioHostAndPort != nil) ? .no : (host.controlMaster ?? .no)
+      
       connect = SSHPool.dial(
         hostName,
         with: config,
-        withControlMaster: host.controlMaster ?? .no,
+        withControlMaster: useControlMaster,
         withProxy: { [weak self] in
           guard let self = self
           else {
@@ -273,7 +276,7 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       session = conn.requestExec(command: command, withPTY: pty,
                                  withEnvVars: envVars,
                                  withAgentForwarding: sendAgent)      
-    } else {      
+    } else {
       session = conn.requestInteractiveShell(withPTY: pty,
                                              withEnvVars: envVars,
                                              withAgentForwarding: sendAgent)
@@ -319,16 +322,18 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
         s.connect(stdout: outStream, stdin: inStream)
 
         s.handleCompletion = {
+          print("Stdio Tunnel completed")
           SSHPool.deregister(allTunnelsForConnection: conn)
+          self.kill()
           //SSHPool.deregister(runningCommand: command, on: conn)
         }
         s.handleFailure = { error in
+          print("Stdio Tunnel completed")
           SSHPool.deregister(allTunnelsForConnection: conn)
+          self.kill()
           //SSHPool.deregister(runningCommand: command, on: conn)
         }
         
-        // TODO Check this out again. The tunnel is already stored, so we can close the process.
-        self.kill()
         return conn
       }.eraseToAnyPublisher()
   }

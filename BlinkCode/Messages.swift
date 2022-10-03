@@ -32,6 +32,7 @@
 
 import Foundation
 
+import Base32Kit
 
 enum CodeFileSystemAction: String, Codable {
   case getRoot
@@ -140,27 +141,89 @@ struct CreateDirectoryFileSystemRequest: Codable {
   }
 }
 
-struct URI {
+public struct URI {
+  let host: String?
+  let protocolId: String
   let rootPath: RootPath
+  
+  var parent: URI {
+    URI(host: host, protocolId: protocolId, rootPath: self.rootPath.parent)
+  }
+  
+  private init(host: String?, protocolId: String, rootPath: RootPath) {
+    self.host = host
+    self.protocolId = protocolId
+    self.rootPath = rootPath
+  }
+  
+  public init(string: String) throws {
+    guard let url = URL(string: string)
+    else {
+      throw WebSocketError(message: "Not a valid URI")
+    }
+    let protocolId = url.scheme!
+    // The host's URL is not case-sensitive, but our URI is, so we extract it here.
+    let urlComponents = string.components(separatedBy: "://")
+    let isFileURL = urlComponents.count == 1
+    
+    let host: String?
+    if isFileURL {
+      host = nil
+    } else {
+      host = urlComponents[1].components(separatedBy: "/")[0]
+    }
+
+    self.init(host: host, protocolId: protocolId, rootPath: RootPath(url))
+  }
 }
 
 // <protocol>://<host>/<path>
 // <protocol>:/<path>
+// TODO We should have tests on what the URIs and RootPaths are expecting of each other.
 extension URI: Codable {
-  init(from decoder: Decoder) throws {
-    let str = try String(from: decoder)
-    
-    guard let url = URL(string: str)
-    else {
-      throw WebSocketError(message: "Not a valid URI")
+  private init(stringWithEncodedHost string: String) throws {
+    let urlComponents = string.components(separatedBy: "://")
+    guard urlComponents.count > 1 else {
+      try self.init(string: string)
+      return
     }
 
-    self.init(rootPath: RootPath(url))
+//    let host = urlComponents[1].components(separatedBy: "/")[0]
+
+    let encodedHost = urlComponents[1].components(separatedBy: "/")[0]
+    var paddedEncodedHost = encodedHost.uppercased()
+    if paddedEncodedHost.count % 8 != 0 {
+      paddedEncodedHost.append(String(repeating: "=", count: 8 - encodedHost.count % 8))
+    }
+    guard let host = try? Base32.decode(string: paddedEncodedHost) else {
+      throw WebSocketError(message: "Invalid Host encoding in URI")
+    }
+
+    let string = string.replacingOccurrences(of: encodedHost, with: host)
+    print("DECODED string \(string)")
+    try self.init(string: string)
+  }
+
+  public init(from decoder: Decoder) throws {
+    try self.init(stringWithEncodedHost: try String(from: decoder))
+    //try self.init(string: try String(from: decoder))
   }
   
-  func encode(to encoder: Encoder) throws {
+  public func encode(to encoder: Encoder) throws {
     //var container = encoder.unkeyedContainer()
-    let output = rootPath.url.absoluteString
+    let output: String
+    if let host = host {
+      // Encode as b32 as URLs are case-insensitive
+      let encodedHost = Base32.encode(string: host)
+        .replacingOccurrences(of: "=", with: "")
+      print("ENCODED host \(Base32.encode(string:host))")
+
+      output = "\(protocolId)://\(encodedHost)\(rootPath.filesAtPath)"
+    } else {
+      output = "\(protocolId):/\(rootPath.filesAtPath)"
+    }
+    
+    print("ENCODED \(output)")
     try output.encode(to: encoder)
   }
 }
