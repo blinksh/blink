@@ -330,7 +330,7 @@ function term_setFontSize(size) {
 
 function term_setFontFamily(name, fontSizeDetectionMethod) {
   window.fontSizeDetectionMethod = fontSizeDetectionMethod;
-  term_set('font-family', name + ', "DejaVu Sans Mono"');
+  term_set('font-family', name + ', "DejaVu Sans Mono", monospace');
 }
 
 function term_appendUserCss(css) {
