@@ -825,7 +825,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (WKUserScript *)_termInitScriptWith:(MCPParams *)params;
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
-  BKFont *font = [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
+  BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
+  BKFont *font = lockdownMode ? nil : [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
   NSString *fontFamily = font.name;
   NSString *content = font.content;
   if (font && font.isCustom && content) {
@@ -853,7 +854,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   }
   [script addObject:@"};"];
 
-  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning())];
+  [script addObject:term_init(UIAccessibilityIsVoiceOverRunning(), lockdownMode)];
 
   return [[WKUserScript alloc] initWithSource:
           [script componentsJoinedByString:@"\n"]

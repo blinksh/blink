@@ -145,14 +145,19 @@ function term_setup(accessibilityEnabled) {
   t.decorate(document.getElementById('terminal'));
 }
 
-function term_init(accessibilityEnabled) {
+function term_init(accessibilityEnabled, lockdownMode) {
   term_setupDefaults();
   try {
     applyUserSettings();
     //    var bgColor = term_get('background-color');
     //    document.body.style.backgroundColor = bgColor;
     //    document.body.parentNode.style.backgroundColor = bgColor;
-    waitForFontFamily(term_setup);
+    if (lockdownMode) {
+      term_set('font-family', 'monospace');
+      term_setup();
+    } else {
+      waitForFontFamily(term_setup);
+    }
   } catch (e) {
     _postMessage('alert', {
       title: 'Error',
