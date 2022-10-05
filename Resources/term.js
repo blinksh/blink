@@ -154,7 +154,7 @@ function term_init(accessibilityEnabled, lockdownMode) {
     //    document.body.parentNode.style.backgroundColor = bgColor;
     if (lockdownMode) {
       term_set('font-family', 'monospace');
-      term_setup();
+      term_setup(accessibilityEnabled);
     } else {
       waitForFontFamily(term_setup);
     }
@@ -335,7 +335,7 @@ function term_setFontSize(size) {
 
 function term_setFontFamily(name, fontSizeDetectionMethod) {
   window.fontSizeDetectionMethod = fontSizeDetectionMethod;
-  term_set('font-family', name + ', "DejaVu Sans Mono", monospace');
+  term_set('font-family', name + ', "DejaVu Sans Mono"');
 }
 
 function term_appendUserCss(css) {
