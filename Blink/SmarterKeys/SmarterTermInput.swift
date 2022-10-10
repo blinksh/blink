@@ -100,8 +100,12 @@ class TextInputAssistantItem: UITextInputAssistantItem {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    
-    kbView.setNeedsLayout()
+   
+    if let value = self.spaceController?.interfaceOrientation.isPortrait {
+      kbView.traits.isPortrait = value  //scene.interfaceOrientation.isPortrait
+    }
+//    kbView.setNeedsLayout()
+//    kbView.layoutIfNeeded()
   }
   
   func shouldUseWKCopyAndPaste() -> Bool {
