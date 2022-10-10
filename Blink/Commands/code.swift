@@ -200,11 +200,10 @@ extension FileLocationPath {
   // blinkfs:/path
   // blinksftp://user@host:port/path
   
-  // TODO This is called URI but returns a URL. For our context, it is important that this is a URI
   fileprivate var codeFileSystemURI: URI? {
     if proto == .local {
       return try? URI(string: uriProtocolIdentifier +
-                 filePath.addingPercentEncoding(withAllowedCharacters: .urlHostAllowed)!)
+                      filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
     } else {
       // "/user@host#port" -> "/user@host:port"
       guard let hostPath = hostPath else {
@@ -214,9 +213,6 @@ extension FileLocationPath {
       if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
         filePath = "~/\(filePath)"
       }
-//      if filePath.last == "/" {
-//        filePath.removeLast()
-//      }
       
       return try? URI(string: uriProtocolIdentifier + host + "/\(filePath)")
     }
