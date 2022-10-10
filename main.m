@@ -32,6 +32,30 @@
 #import <UIKit/UIKit.h>
 #import "AppDelegate.h"
 #import <objc/runtime.h>
+#import <Foundation/Foundation.h>
+#import <Blink-Swift.h>
+
+@interface _Tracker : NSObject
+
+@end
+
+@implementation _Tracker
+
+- (instancetype)init {
+  self = [super init];
+  [KBTracker shared].isHardwareKB =  [[[UIDevice currentDevice] valueForKeyPath:@"_isHardwareKeyboardAvailable"] boolValue];
+  return self;
+}
+
+- (void)_kbChanged {
+  [KBTracker shared].isHardwareKB = [[[UIDevice currentDevice] valueForKeyPath:@"_isHardwareKeyboardAvailable"] boolValue];
+}
+
+@end
+
+_Tracker *__tracker;
+
+static void *CTX = &CTX;
 
 int main(int argc, char * argv[]) {
   @autoreleasepool {
@@ -44,6 +68,11 @@ int main(int argc, char * argv[]) {
       return NO;
     });
     method_setImplementation(method, override);
+
+    __tracker = [[_Tracker alloc] init];
+    NSNotificationCenter *nc = [NSNotificationCenter defaultCenter];
+    [nc addObserver:__tracker selector:@selector(_kbChanged) name:@"_UIDeviceHardwareKeyboardAvailabilityDidChangeNotification" object:nil];
+
   }
   
   @autoreleasepool { 

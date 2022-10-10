@@ -61,6 +61,12 @@ class SpaceController: UIViewController {
   private weak var _termViewToFocus: TermView? = nil
   var stuckKeyCode: KeyCode? = nil
   
+  private var _kbTrackerView = UIView()
+  
+  public var trackingKBFrame: CGRect? {
+    self.view.window?.screen.coordinateSpace.convert(_kbTrackerView.frame, from: self.view.coordinateSpace)
+  }
+  
   var safeFrame: CGRect {
     _overlay.frame
   }
@@ -92,6 +98,7 @@ class SpaceController: UIViewController {
         }
       }
     }
+    self.view.sendSubviewToBack(_kbTrackerView);
   }
   
   private func forEachActive(block:(TermController) -> ()) {
@@ -162,6 +169,8 @@ class SpaceController: UIViewController {
     _viewportsController.delegate = self
     
     
+    
+    
     addChild(_viewportsController)
     
     if let v = _viewportsController.view {
@@ -188,6 +197,16 @@ class SpaceController: UIViewController {
       _viewportsController.setViewControllers([term], direction: .forward, animated: false)
     }
     
+    _kbTrackerView.translatesAutoresizingMaskIntoConstraints = false;
+   
+    self.view.addSubview(_kbTrackerView)
+    
+    _kbTrackerView.leadingAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.leadingAnchor).isActive = true;
+    _kbTrackerView.widthAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.widthAnchor).isActive = true;
+    _kbTrackerView.heightAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.heightAnchor).isActive = true;
+    _kbTrackerView.bottomAnchor.constraint(equalTo: self.view.keyboardLayoutGuide.bottomAnchor).isActive = true;
+    self.view.keyboardLayoutGuide.followsUndockedKeyboard = true;
+//    _kbTrackerView.backgroundColor = UIColor.yellow
 //    view.addSubview(_faceCam)
 //    addChild(_faceCam.controller)
   }
