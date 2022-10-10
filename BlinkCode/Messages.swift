@@ -220,7 +220,7 @@ extension URI: Codable {
 
       output = "\(protocolId)://\(encodedHost)\(rootPath.filesAtPath)"
     } else {
-      output = "\(protocolId):/\(rootPath.filesAtPath)"
+      output = "\(protocolId):\(rootPath.filesAtPath)"
     }
     
     print("ENCODED \(output)")
