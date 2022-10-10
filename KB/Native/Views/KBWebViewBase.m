@@ -288,6 +288,7 @@ NSString *_encodeString(NSString *str);
 
 - (BOOL)becomeFirstResponder {
   BOOL res = [super becomeFirstResponder];
+  
   if (res) {
     [self reportFocus:YES];
   }
@@ -374,6 +375,10 @@ NSString *_encodeString(NSString *str);
 
 - (void)ready {
   [self removeAssistantsFromView];
+}
+
+- (void)removeAssistantsFromContentView {
+  [self _removeAssistantsFromView:self.scrollView];
 }
 
 - (void)removeAssistantsFromView {

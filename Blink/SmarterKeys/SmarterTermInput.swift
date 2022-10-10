@@ -47,10 +47,15 @@ class CaretHider {
   }
 }
 
+class TextInputAssistantItem: UITextInputAssistantItem {
+  
+}
 
 @objc class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
+  var _proxyBarButtonItem: UIBarButtonItem!
+  var _barButtonItemGroup: UIBarButtonItemGroup!
   
   lazy var _kbProxy: KBProxy = {
     KBProxy(kbView: self.kbView)
@@ -68,8 +73,12 @@ class CaretHider {
   
   override init(frame: CGRect, configuration: WKWebViewConfiguration) {
     
+    
     super.init(frame: frame, configuration: configuration)
 
+
+    _proxyBarButtonItem = UIBarButtonItem(customView: _kbProxy)
+    _barButtonItemGroup = UIBarButtonItemGroup(barButtonItems: [_proxyBarButtonItem], representativeItem: nil)
     
     kbView.keyInput = self
     kbView.lang = textInputMode?.primaryLanguage ?? ""
@@ -80,7 +89,7 @@ class CaretHider {
 
     
     if traitCollection.userInterfaceIdiom == .pad {
-      _setupAssistantItem()
+//      _setupAssistantItem()
     } else {
       _setupAccessoryView()
     }
@@ -91,7 +100,6 @@ class CaretHider {
   
   override func layoutSubviews() {
     super.layoutSubviews()
-    
     
     kbView.setNeedsLayout()
   }
@@ -128,12 +136,21 @@ class CaretHider {
   
   override var inputAssistantItem: UITextInputAssistantItem {
     let item = super.inputAssistantItem
-    if item.trailingBarButtonGroups.count > 1 {
-      item.trailingBarButtonGroups = [item.trailingBarButtonGroups[0]]
-    }
-    if item.trailingBarButtonGroups.count > 0 {
+    if KBTracker.shared.isHardwareKB {
+      item.trailingBarButtonGroups = []
+      item.leadingBarButtonGroups = []
+    } else if _barButtonItemGroup != nil {
+      item.leadingBarButtonGroups = []
+      if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
+        item.trailingBarButtonGroups = [_barButtonItemGroup]
+      }
+      kbView.isHidden = false
+      
+    } else {
+      item.trailingBarButtonGroups = []
       item.leadingBarButtonGroups = []
     }
+    
     kbView.setNeedsLayout()
     return item
   }
@@ -143,6 +160,7 @@ class CaretHider {
     sync(traits: KBTracker.shared.kbTraits, device: KBTracker.shared.kbDevice, hideSmartKeysWithHKB: KBTracker.shared.hideSmartKeysWithHKB)
     
     let res = super.becomeFirstResponder()
+    
     if !webViewReady {
       return res
     }
@@ -171,32 +189,34 @@ class CaretHider {
   }
   
   func _refreshInputViews() {
-    guard
-      traitCollection.userInterfaceIdiom == .pad,
-      let assistantItem = contentView()?.inputAssistantItem
-      else {
-        if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-          _removeSmartKeys()
-        }
-        contentView()?.reloadInputViews()
-        kbView.reset()
-        //      _inputAccessoryView?.invalidateIntrinsicContentSize()
-        reportStateReset()
-        return;
-    }
+    return
     
-    
-    assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
-    contentView()?.reloadInputViews()
-    if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-      _removeSmartKeys()
-    }
-    contentView()?.reloadInputViews()
-    kbView.reset()
-    reportStateReset()
-    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
-    contentView()?.reloadInputViews()
-    kbView.isHidden = false
+//    guard
+//      traitCollection.userInterfaceIdiom == .pad,
+//      let assistantItem = contentView()?.inputAssistantItem
+//      else {
+//        if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
+//          _removeSmartKeys()
+//        }
+//        contentView()?.reloadInputViews()
+//        kbView.reset()
+//        //      _inputAccessoryView?.invalidateIntrinsicContentSize()
+//        reportStateReset()
+//        return;
+//    }
+//
+//
+////    assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
+//    contentView()?.reloadInputViews()
+//    if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
+//      _removeSmartKeys()
+//    }
+//    contentView()?.reloadInputViews()
+//    kbView.reset()
+//    reportStateReset()
+//    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
+//    contentView()?.reloadInputViews()
+//    kbView.isHidden = false
   }
   
   override func resignFirstResponder() -> Bool {
@@ -205,12 +225,15 @@ class CaretHider {
       device?.blur()
       kbView.isHidden = true
       _inputAccessoryView?.isHidden = true
-      reloadInputViews()
+//      reloadInputViews()
     }
     return res
   }
   
   func _setupAccessoryView() {
+    if isHardwareKB {
+      return
+    }
     inputAssistantItem.leadingBarButtonGroups = []
     inputAssistantItem.trailingBarButtonGroups = []
     if let _ = _inputAccessoryView as? KBAccessoryView {
@@ -248,10 +271,11 @@ class CaretHider {
       }
     }
     
-    if hideSmartKeysWithHKB && traits.isHKBAttached {
-      _removeSmartKeys()
-      return
-    }
+    // TODO: Only on iphone
+//    if hideSmartKeysWithHKB && traits.isHKBAttached {
+//      _removeSmartKeys()
+//      return
+//    }
     
     if traits.isFloatingKB {
       _setupAccessoryView()
@@ -259,8 +283,8 @@ class CaretHider {
     }
     
     if traitCollection.userInterfaceIdiom == .pad {
-      needToReload = inputAssistantItem.trailingBarButtonGroups.count != 1
-      _setupAssistantItem()
+//      needToReload = inputAssistantItem.trailingBarButtonGroups.count != 1
+//      _setupAssistantItem()
     } else {
       needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
       _setupAccessoryView()
@@ -268,15 +292,18 @@ class CaretHider {
     
   }
   
-  func _setupAssistantItem() {
-    let item = inputAssistantItem
-    
-    let proxyItem = UIBarButtonItem(customView: _kbProxy)
-    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
-    
-    item.leadingBarButtonGroups = []
-    item.trailingBarButtonGroups = [group]
-  }
+//  func _setupAssistantItem() {
+//    let item = inputAssistantItem
+//
+////    let proxyItem = UIBarButtonItem(customView: _kbProxy)
+////    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
+//
+////    item.leadingBarButtonGroups = []
+////    item.trailingBarButtonGroups = [group]
+//
+//    item.leadingBarButtonGroups = []
+//    item.trailingBarButtonGroups = []
+//  }
   
   func _removeSmartKeys() {
     _inputAccessoryView = UIView(frame: .zero)

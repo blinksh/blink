@@ -88,7 +88,7 @@ NSTimer *__debounceTimer = nil;
   UIEdgeInsets deviceMargins = window.safeAreaInsets;// UIEdgeInsetsZero;// ctrl.viewDeviceSafeMargins;
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
-  CGFloat slideOverVerticalMargin = (mainScreen.bounds.size.height - window.bounds.size.height) * 0.5;
+  CGRect windowRect = [window.coordinateSpace convertRect:window.bounds toCoordinateSpace:mainScreen.coordinateSpace];
   
   UIEdgeInsets result = UIEdgeInsetsZero;
   
@@ -149,12 +149,10 @@ NSTimer *__debounceTimer = nil;
     }
   }
   
-  result.bottom = MAX(result.bottom, __mainWindowKBBottomInset);
+  CGFloat relative = __mainWindowKBBottomInset - (CGRectGetMaxY(mainScreen.bounds) - CGRectGetMaxY(windowRect));
   
-  if (slideOverVerticalMargin > 0 && result.bottom > slideOverVerticalMargin) {
-    result.bottom -= slideOverVerticalMargin;
-  }
-  
+  result.bottom = MAX(result.bottom, relative);
+    
   return result;
 }
 
