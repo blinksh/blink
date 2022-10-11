@@ -111,7 +111,7 @@ struct NewKeyMenuView: View {
         Button {
           self.state.modal = .newSEKey
         } label: {
-            Label("Secure Enclave", systemImage: "memorychip")
+          Label("Secure Enclave", systemImage: "memorychip")
         }
         
         Divider()
@@ -136,7 +136,8 @@ struct NewKeyMenuView: View {
     } label: {
       Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center)
     }
-      .symbolRenderingMode(.hierarchical)
+//      .symbolRenderingMode(.hierarchical)
+      
   }
 }
 
