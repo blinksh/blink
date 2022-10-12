@@ -2,12 +2,11 @@
 name: "\U0001F41B Bug report"
 about: Something's not working as expected
 title: ''
-labels: support
+labels: bug
 assignees: ''
 
 ---
-
-<!-- Before you submit your issue, please make sure you followed the checklist and check the appropriate boxes by putting an x in the [ ]: [x] -->
+<!-- For support, questions and ideas, please use our [Discussions](http://github.com/blinksh/blink/discussions). If you are ready to submit an issue, please make sure you followed the checklist and check the appropriate boxes by putting an x in the [ ]: [x] -->
 
 ### Checklist
 

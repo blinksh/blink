@@ -168,7 +168,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   WKWebViewConfiguration *configuration = [[WKWebViewConfiguration alloc] init];
   configuration.selectionGranularity = WKSelectionGranularityCharacter;
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
-  configuration.limitsNavigationsToAppBoundDomains = YES;
+//  configuration.limitsNavigationsToAppBoundDomains = YES;
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -186,7 +186,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
   
   if (injectUIO) {
-    configuration.limitsNavigationsToAppBoundDomains = true;
+//    configuration.limitsNavigationsToAppBoundDomains = true;
     
     NSURL *scriptURL = [[NSBundle mainBundle] URLForResource:@"blink-uio.min" withExtension:@"js"];
     NSString * script =  [NSString stringWithContentsOfURL:scriptURL encoding:NSUTF8StringEncoding error:nil];
@@ -195,7 +195,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [configuration.userContentController addUserScript:userScript];
     [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
   }
-  //  configuration.limitsNavigationsToAppBoundDomains = YES;
+//    configuration.limitsNavigationsToAppBoundDomains = YES;
 
 
   _browserView = [[VSCodeInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
@@ -252,13 +252,16 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 - (void)webView:(WKWebView *)webView didReceiveAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition, NSURLCredential * _Nullable))completionHandler {
   NSURLCredential *cred = [[NSURLCredential alloc] initWithTrust:challenge.protectionSpace.serverTrust];
 
-  if ([challenge.protectionSpace.host isEqual: @"localhost"]) {
-    // Let localhost go through.
-    completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
-    return;
-  }
+  dispatch_async(dispatch_get_global_queue(QOS_CLASS_USER_INITIATED, 0), ^{
+    if ([challenge.protectionSpace.host isEqual: @"localhost"]) {
+      // Let localhost go through.
+      completionHandler(NSURLSessionAuthChallengeUseCredential, cred);
+      return;
+    }
+    
+    completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
+  });
   
-  completionHandler(NSURLSessionAuthChallengePerformDefaultHandling, cred);
 }
 
 
@@ -278,8 +281,13 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   UINavigationController *navCtrl = [[UINavigationController alloc] initWithRootViewController:ctrl];
   
   SpaceController *sp = (SpaceController *)self.window.rootViewController;
-  [sp showViewController:navCtrl sender:self];
-  [wv becomeFirstResponder];
+  // dispatch async presenting controller in order to avoid
+  // 'NSInternalInconsistencyException', reason: 'Received request for main thread, but there is no current keyboard task executing.'
+  // issue #1501
+  dispatch_async(dispatch_get_main_queue(), ^{
+    [sp showViewController:navCtrl sender:self];
+    [wv becomeFirstResponder];
+  });
   
   return wv;
 }

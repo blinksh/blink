@@ -64,6 +64,7 @@ int help_main(int argc, char *argv[]) {
     @"  mosh: mosh client.",
     @"  ssh: ssh client.",
     @"  config: Setup ssh keys, hosts, keyboard, etc.",
+    @"  code: code editor. (don't forget install blink-fs extension)",
     @"  help: Prints this.",
     @"  exit: Close this shell.",
     @"",
