@@ -90,6 +90,7 @@ struct KeySortView: View {
 struct NewKeyMenuView: View {
   
   fileprivate var state: KeysObservable
+  fileprivate var title: String? = nil
   
   var body: some View {
     Menu {
@@ -134,7 +135,11 @@ struct NewKeyMenuView: View {
         
       }
     } label: {
-      Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center)
+      if let title = self.title {
+        Label(title, systemImage: "plus")
+      } else {
+        Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center)
+      }
     }
 //      .symbolRenderingMode(.hierarchical)
       
@@ -145,16 +150,28 @@ struct KeyListView: View {
   @StateObject private var _state = KeysObservable()
   
   var body: some View {
-    List {
-      ForEach(_state.list, id: \.name) {
-        KeyRow(card: $0, reloadCards: _state.reloadCards)
-      }.onDelete(perform: _state.deleteKeys)
+    Group {
+      if _state.list.isEmpty {
+        VStack {
+          Spacer()
+          NewKeyMenuView(state: _state, title: "Add new Key")
+          Spacer()
+        }
+      } else {
+        List {
+          ForEach(_state.list, id: \.name) {
+            KeyRow(card: $0, reloadCards: _state.reloadCards)
+          }.onDelete(perform: _state.deleteKeys)
+        }
+      }
     }
     .listStyle(InsetGroupedListStyle())
     .navigationBarItems(
       trailing: HStack {
-        KeySortView(sortType: $_state.sortType)
-        NewKeyMenuView(state: _state)
+        if !_state.list.isEmpty {
+          KeySortView(sortType: $_state.sortType)
+          NewKeyMenuView(state: _state)
+        }
       }
     )
     .navigationBarTitle("Keys")
