@@ -287,6 +287,10 @@
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */; };
+		D264D2B228F84592002B1B14 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AF28F84592002B1B14 /* WhatsNewView.swift */; };
+		D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B028F84592002B1B14 /* UnavailErrorView.swift */; };
+		D264D2B428F84592002B1B14 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B128F84592002B1B14 /* Models.swift */; };
+		D264D2B628F84724002B1B14 /* whatsnew.m in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B528F84724002B1B14 /* whatsnew.m */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -936,6 +940,10 @@
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyFeaturesAccessLetterView.swift; sourceTree = "<group>"; };
+		D264D2AF28F84592002B1B14 /* WhatsNewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		D264D2B028F84592002B1B14 /* UnavailErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnavailErrorView.swift; sourceTree = "<group>"; };
+		D264D2B128F84592002B1B14 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
+		D264D2B528F84724002B1B14 /* whatsnew.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = whatsnew.m; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
@@ -1222,6 +1230,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D264D2AE28F8457A002B1B14 /* WhatsNew */,
 				D2AD8E6027A2BAFA00DED28D /* Subscriptions */,
 				BD9EA1ED2719D28800874007 /* Migrator */,
 				D215AC282335218E00E164C3 /* WebKit */,
@@ -1861,6 +1870,16 @@
 			path = KeyViews;
 			sourceTree = "<group>";
 		};
+		D264D2AE28F8457A002B1B14 /* WhatsNew */ = {
+			isa = PBXGroup;
+			children = (
+				D264D2AF28F84592002B1B14 /* WhatsNewView.swift */,
+				D264D2B128F84592002B1B14 /* Models.swift */,
+				D264D2B028F84592002B1B14 /* UnavailErrorView.swift */,
+			);
+			path = WhatsNew;
+			sourceTree = "<group>";
+		};
 		D265FBBB2317DD3C0017EAC4 /* BlinkTests */ = {
 			isa = PBXGroup;
 			children = (
@@ -2023,6 +2042,7 @@
 				D240806020BC8DF800F30099 /* tool_main.c */,
 				D2F330D320A6F1DF0074ADD7 /* clear.m */,
 				D2F330CB20A6D98C0074ADD7 /* config.m */,
+				D264D2B528F84724002B1B14 /* whatsnew.m */,
 				D2F330C920A6CB840074ADD7 /* help.m */,
 				D2F330D920A7127B0074ADD7 /* open.m */,
 				D2EFE1EE20B7FAFC0087888B /* link_files.m */,
@@ -2946,6 +2966,7 @@
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
+				D264D2B428F84592002B1B14 /* Models.swift in Sources */,
 				D22B16D828CF6ED20004EEC1 /* NewPasskeyView.swift in Sources */,
 				BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */,
 				D2C244352390FEEF0082C69C /* KeyBindingAction.swift in Sources */,
@@ -2999,6 +3020,7 @@
 				D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */,
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
+				D264D2B228F84592002B1B14 /* WhatsNewView.swift in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,
@@ -3008,6 +3030,7 @@
 				07FAB8F325C8E6C500E1CC2C /* SSHPool.swift in Sources */,
 				D23EA945260379EB00BCF1FF /* KeyListView.swift in Sources */,
 				D2334D1C21495DAE00D26AC3 /* udptunnel.m in Sources */,
+				D264D2B628F84724002B1B14 /* whatsnew.m in Sources */,
 				D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BKDefaults.m in Sources */,
 				D26A37F026A0AB7000534A4D /* facecam.swift in Sources */,
@@ -3064,6 +3087,7 @@
 				D248E67E22DE14100057FE67 /* SessionParams.swift in Sources */,
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
+				D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,

@@ -79,6 +79,13 @@
 		<string></string>
 		<string>no</string>
 	</array>
+	<key>whatsnew</key>
+	<array>
+		<string>MAIN</string>
+		<string>whatsnew_main</string>
+		<string></string>
+		<string>no</string>
+	</array>
 	<key>clear</key>
 	<array>
 		<string>MAIN</string>
