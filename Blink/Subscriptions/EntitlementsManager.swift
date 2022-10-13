@@ -34,6 +34,8 @@ import Foundation
 import UIKit
 
 let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
+let EarlyAccessFeaturesEntitlementID = "early_access_features"
+
 let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
 let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 
@@ -45,6 +47,8 @@ public struct Entitlement: Identifiable, Equatable, Hashable {
   public var unlockProductID: String?
   
   public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil)
+  
+  public static var earlyAccessFeatures = Self(id: EarlyAccessFeaturesEntitlementID, active: false, unlockProductID: nil)
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
@@ -67,6 +71,8 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
   
   @Published var unlimitedTimeAccess: Entitlement = .inactiveUnlimitedScreenTime
+  @Published var earlyAccessFeatures: Entitlement = .earlyAccessFeatures
+  
   @Published var activeSubscriptions: Set<String> = .init()
   @Published var nonSubscriptionTransactions: Set<String> = .init()
   @Published var isUnknownState: Bool = true
@@ -104,6 +110,8 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     let oldValue = self.unlimitedTimeAccess;
     if let newValue = entitlements[UnlimitedScreenTimeEntitlementID] {
       self.unlimitedTimeAccess = newValue
+    } else if let newValue = entitlements[EarlyAccessFeaturesEntitlementID] {
+      self.earlyAccessFeatures = newValue
     }
     
     if isUnknownState {

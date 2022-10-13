@@ -152,8 +152,6 @@ class KBTracker: NSObject {
     
     defer {
       kbTraits.isFloatingKB = isFloatingKB
-//      kbTraits.isHKBAttached = !isOnScreenKB
-      
       input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
     }
     
@@ -187,23 +185,23 @@ class KBTracker: NSObject {
   
   
   @objc private func _keyboardWillChangeFrame(_ notification: Notification) {
-    debugPrint("_keyboardWillChangeFrame");
+//    debugPrint("_keyboardWillChangeFrame");
   }
   
   @objc private func _keyboardDidChangeFrame(_ notification: Notification) {
 //    debugPrint("_keyboardDidChangeFrame", notification.userInfo);
-    debugPrint("_keyboardDidChangeFrame");
+//    debugPrint("_keyboardDidChangeFrame");
     
     guard
       let userInfo = notification.userInfo,
       let kbFrameEnd = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? CGRect,
-      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect,
+      let kbFrameBegin = userInfo[UIResponder.keyboardFrameBeginUserInfoKey] as? CGRect //,
 //      let kbFrameCenterBegin = userInfo["UIKeyboardCenterBeginUserInfoKey"] as? CGRect,
-      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool
+//      let isLocal = userInfo[UIResponder.keyboardIsLocalUserInfoKey] as? Bool
       else {
         return
     }
-    
+        
     let screenMaxY = UIScreen.main.bounds.size.height
     
     var bottomInset: CGFloat = 0
@@ -213,13 +211,13 @@ class KBTracker: NSObject {
       let idiom = UIDevice.current.userInterfaceIdiom
       
       if idiom == UIUserInterfaceIdiom.pad {
-        print("floating_frame", fr, kbFrameEnd, kbFrameBegin)
+        
         
         if kbFrameBegin.isEmpty {
 //          kbTraits.isFloatingKB = true
 //          kbDevice = .in6_5
 //          kbTraits.isPortrait = true
-
+          print("floating_frame", fr, kbFrameEnd, kbFrameBegin)
           bottomInset = 0
         }
       }
@@ -268,24 +266,24 @@ class KBTracker: NSObject {
 
   @objc private func _keyboardWillShow(_ notification: Notification) {
 //    debugPrint("_keyboardWillShow", notification.userInfo)
-    debugPrint("_keyboardWillShow")
+//    debugPrint("_keyboardWillShow")
 //    _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardWillHide(_ notification: Notification) {
 //    debugPrint("_keyboardWillHide", notification.userInfo)
-    debugPrint("_keyboardWillHide")
+//    debugPrint("_keyboardWillHide")
 //    _setupWithKBNotification(notification: notification)
   }
   
   @objc private func _keyboardDidHide(_ notification: Notification) {
 //    debugPrint("_keyboardDidHide", notification.userInfo)
-    debugPrint("_keyboardDidHide")
+//    debugPrint("_keyboardDidHide")
   }
   
   @objc private func _keyboardDidShow(_ notification: Notification) {
 //    debugPrint("_keyboardDidShow", notification.userInfo)
-    debugPrint("_keyboardDidShow")
+//    debugPrint("_keyboardDidShow")
   }
   
 }

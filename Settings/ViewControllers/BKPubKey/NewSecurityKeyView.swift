@@ -36,6 +36,7 @@ import CryptoKit
 import AuthenticationServices
 import SwiftCBOR
 
+@available(iOS 16.0, *)
 struct NewSecurityKeyView: View {
   @EnvironmentObject private var _nav: Nav
   let onCancel: () -> Void
@@ -44,49 +45,57 @@ struct NewSecurityKeyView: View {
   @StateObject private var _state = NewSecurityKeyObservable()
   
   var body: some View {
-    List {
-      Section(
-        header: Text("NAME"),
-        footer: Text("Default key must be named `id_ecdsa_sk`")
-      ) {
-        FixedTextField(
-          "Enter a name for the key",
-          text: $_state.keyName,
-          id: "keyName",
-          nextId: "keyComment",
-          autocorrectionType: .no,
-          autocapitalizationType: .none
-        )
+    NavigationStack(path: $_state.steps) {
+      List {
+        Section(
+          header: Text("NAME"),
+          footer: Text("Default key must be named `id_ecdsa_sk`")
+        ) {
+          FixedTextField(
+            "Enter a name for the key",
+            text: $_state.keyName,
+            id: "keyName",
+            nextId: "keyComment",
+            autocorrectionType: .no,
+            autocapitalizationType: .none
+          )
+        }
+        
+        Section(header: Text("COMMENT (OPTIONAL)")) {
+          FixedTextField(
+            "Comment for your key",
+            text: $_state.keyComment,
+            id: "keyComment",
+            returnKeyType: .continue,
+            onReturn: _createKey,
+            autocorrectionType: .no,
+            autocapitalizationType: .none
+          )
+        }
+        
+        Section(
+          header: Text("INFORMATION"),
+          footer: Text("...")
+        ) { }
       }
-      
-      Section(header: Text("COMMENT (OPTIONAL)")) {
-        FixedTextField(
-          "Comment for your key",
-          text: $_state.keyComment,
-          id: "keyComment",
-          returnKeyType: .continue,
-          onReturn: _createKey,
-          autocorrectionType: .no,
-          autocapitalizationType: .none
-        )
-      }
-      
-      Section(
-        header: Text("INFORMATION"),
-        footer: Text("...")
-      ) { }
+      .listStyle(GroupedListStyle())
+      .navigationBarItems(
+        leading: Button("Cancel", action: onCancel),
+        trailing: Button("Create", action: _createKey)
+          .disabled(!_state.isValid)
+      )
+      .navigationBarTitle("New Security Key")
+      .alert(errorMessage: $_state.errorMessage)
+      .onAppear(perform: {
+        FixedTextField.becomeFirstReponder(id: "keyName")
+      })
+      .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
+        switch step {
+        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans)
+        case .Plans: PlansView()
+        }
+      })
     }
-    .listStyle(GroupedListStyle())
-    .navigationBarItems(
-      leading: Button("Cancel", action: onCancel),
-      trailing: Button("Create", action: _createKey)
-      .disabled(!_state.isValid)
-    )
-    .navigationBarTitle("New Security Key")
-    .alert(errorMessage: $_state.errorMessage)
-    .onAppear(perform: {
-      FixedTextField.becomeFirstReponder(id: "keyName")
-    })
   }
   
   private func _createKey() {
@@ -101,11 +110,16 @@ struct NewSecurityKeyView: View {
 
 fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
+  @Published var steps: [EarlyFeatureAccessSteps] = []
   
   @Published var keyName = ""
   @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorMessage = ""
+  
+  func presentPlans() {
+    self.steps.append(.Plans)
+  }
   
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -172,6 +186,12 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
     guard let rawAttestationObject = registration.rawAttestationObject
     else {
       self.errorMessage = "No Attestation Object."
+      return
+    }
+    
+    guard false// EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    else {
+      self.steps = [.Letter]
       return
     }
     

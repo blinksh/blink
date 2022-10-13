@@ -137,7 +137,7 @@ struct PurchasePageView: Page {
       CheckmarkRow(text: "Interruption free usage", checkedIcon: "infinity")
       Spacer().frame(maxHeight: 10)
       if !horizontal {
-        CheckmarkRow(text: "Access to future Blink+ services", checkedIcon: "plus")
+        CheckmarkRow(text: "Early Access Blink+ features and services", checkedIcon: "plus")
         Spacer().frame(maxHeight: 10)
       }
       CheckmarkRow(text: "Support Blink development", checkedIcon: "suit.heart.fill", iconColor: .red)

@@ -141,8 +141,6 @@ struct NewKeyMenuView: View {
         Image(systemName: "plus").frame(width: 38, height: 38, alignment: .center)
       }
     }
-//      .symbolRenderingMode(.hierarchical)
-      
   }
 }
 
@@ -154,7 +152,9 @@ struct KeyListView: View {
       if _state.list.isEmpty {
         VStack {
           Spacer()
+          Image(systemName: "key").imageScale(.large).opacity(0.7)
           NewKeyMenuView(state: _state, title: "Add new Key")
+            .padding(.init(top: 12, leading: 0, bottom: 20, trailing: 0))
           Spacer()
         }
       } else {
@@ -207,15 +207,23 @@ struct KeyListView: View {
             onSuccess: _state.onModalSuccess
           )
         case .newPasskey:
-          NewPasskeyView(
-            onCancel: _state.onModalCancel,
-            onSuccess: _state.onModalSuccess
-          )
+          if #available(iOS 16.0, *) {
+            NewPasskeyView(
+              onCancel: _state.onModalCancel,
+              onSuccess: _state.onModalSuccess
+            )
+          } else {
+            EmptyView()
+          }
         case .newSecurityKey:
-          NewSecurityKeyView(
-            onCancel: _state.onModalCancel,
-            onSuccess: _state.onModalSuccess
-          )
+          if #available(iOS 16.0, *) {
+            NewSecurityKeyView(
+              onCancel: _state.onModalCancel,
+              onSuccess: _state.onModalSuccess
+            )
+          } else {
+            EmptyView()
+          }
         }
       }
     }

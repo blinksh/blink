@@ -34,8 +34,9 @@ import SwiftUI
 import SSH
 import CryptoKit
 import AuthenticationServices
-import SwiftCBOR
+//import SwiftCBOR
 
+@available(iOS 16.0, *)
 struct NewPasskeyView: View {
   @EnvironmentObject private var _nav: Nav
   let onCancel: () -> Void
@@ -44,50 +45,60 @@ struct NewPasskeyView: View {
   @StateObject private var _state = NewPasskeyObservable()
   
   var body: some View {
-    List {
-      Section(
-        header: Text("NAME"),
-        footer: Text("Default key must be named `id_ecdsa_sk`")
-      ) {
-        FixedTextField(
-          "Enter a name for the key",
-          text: $_state.keyName,
-          id: "keyName",
-          nextId: "keyComment",
-          autocorrectionType: .no,
-          autocapitalizationType: .none
-        )
+    NavigationStack(path: $_state.steps) {
+      List {
+        Section(
+          header: Text("NAME"),
+          footer: Text("Default key must be named `id_ecdsa_sk`")
+        ) {
+          FixedTextField(
+            "Enter a name for the key",
+            text: $_state.keyName,
+            id: "keyName",
+            nextId: "keyComment",
+            autocorrectionType: .no,
+            autocapitalizationType: .none
+          )
+        }
+        
+        Section(header: Text("COMMENT (OPTIONAL)")) {
+          FixedTextField(
+            "Comment for your key",
+            text: $_state.keyComment,
+            id: "keyComment",
+            returnKeyType: .continue,
+            onReturn: _createKey,
+            autocorrectionType: .no,
+            autocapitalizationType: .none
+          )
+        }
+        
+        Section(
+          header: Text("INFORMATION"),
+          footer: Text("Based on industry standards for account authentication, passkeys are easier to use than passwords and far more secure. Adopt passkeys to give people a simple, secure way to sign in to your apps and websites across platforms — with no passwords required.")
+        ) { }
       }
-      
-      Section(header: Text("COMMENT (OPTIONAL)")) {
-        FixedTextField(
-          "Comment for your key",
-          text: $_state.keyComment,
-          id: "keyComment",
-          returnKeyType: .continue,
-          onReturn: _createKey,
-          autocorrectionType: .no,
-          autocapitalizationType: .none
-        )
-      }
-      
-      Section(
-        header: Text("INFORMATION"),
-        footer: Text("Based on industry standards for account authentication, passkeys are easier to use than passwords and far more secure. Adopt passkeys to give people a simple, secure way to sign in to your apps and websites across platforms — with no passwords required.")
-      ) { }
+      .listStyle(GroupedListStyle())
+      .navigationBarItems(
+        leading: Button("Cancel", action: onCancel),
+        trailing: Button("Create", action: _createKey)
+        .disabled(!_state.isValid)
+      )
+      .navigationBarTitle("New Passkey")
+      .alert(errorMessage: $_state.errorMessage)
+      .onAppear(perform: {
+        FixedTextField.becomeFirstReponder(id: "keyName")
+      })
+      .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
+        switch step {
+        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans)
+          case .Plans: PlansView()
+        }
+      })
     }
-    .listStyle(GroupedListStyle())
-    .navigationBarItems(
-      leading: Button("Cancel", action: onCancel),
-      trailing: Button("Create", action: _createKey)
-      .disabled(!_state.isValid)
-    )
-    .navigationBarTitle("New Passkey")
-    .alert(errorMessage: $_state.errorMessage)
-    .onAppear(perform: {
-      FixedTextField.becomeFirstReponder(id: "keyName")
-    })
   }
+  
+  
   
   private func _createKey() {
     guard let window = _nav.navController.presentedViewController?.view.window else {
@@ -107,6 +118,7 @@ func rpIdWith(keyID: String) -> String {
 
 fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
+  @Published var steps: [EarlyFeatureAccessSteps] = []
   
   @Published var keyName = ""
   @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
@@ -116,6 +128,11 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
+  
+  func presentPlans() {
+    self.steps.append(.Plans)
+  }
+
   
   func createKey(anchor: ASPresentationAnchor, onSuccess: @escaping () -> Void) {
     self.onSuccess = onSuccess
@@ -187,13 +204,25 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
+    guard false// EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    else {
+      self.steps = [.Letter]
+      return
+    }
+    
     let tag = registration.credentialID.base64EncodedString()
     let comment = keyComment.trimmingCharacters(in: .whitespacesAndNewlines)
     let keyID = keyName.trimmingCharacters(in: .whitespacesAndNewlines)
     
     do {
       
-      try BKPubKey.addPasskey(id: keyID, rpId: rpIdWith(keyID: keyID), tag: tag, rawAttestationObject: rawAttestationObject, comment: comment)
+      try BKPubKey.addPasskey(
+        id: keyID,
+        rpId: rpIdWith(keyID: keyID),
+        tag: tag,
+        rawAttestationObject: rawAttestationObject,
+        comment: comment
+      )
     
       onSuccess()
     } catch {
