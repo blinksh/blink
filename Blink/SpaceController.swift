@@ -925,6 +925,27 @@ extension SpaceController {
     }
   }
   
+  @objc func showWhatsNewAction() {
+    if let shadowWindow = ShadowWindow.shared,
+      view.window == shadowWindow {
+      
+      _ = currentDevice?.view?.webView.resignFirstResponder()
+      
+      let spCtrl = shadowWindow.windowScene?.windows.first?.rootViewController as? SpaceController
+      spCtrl?.showWhatsNewAction()
+      
+      return
+    }
+    
+    DispatchQueue.main.async {
+//      let navCtrl = UINavigationController()
+//      navCtrl.navigationBar.prefersLargeTitles = true
+      let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+//      navCtrl.setViewControllers([root], animated: false)
+      self.present(root, animated: true, completion: nil)
+    }
+  }
+  
   private func _addTerm(term: TermController, animated: Bool = true) {
     SessionRegistry.shared.track(session: term)
     term.delegate = self
