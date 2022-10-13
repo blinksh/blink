@@ -78,7 +78,7 @@ struct PlansView: View {
                 .foregroundColor(.green)
             }
             Label {
-              Text("Access to future Blink+ services")
+              Text("Early Access Blink+ features and services")
             } icon: {
               Image(systemName: "plus")
                 .foregroundColor(.green)

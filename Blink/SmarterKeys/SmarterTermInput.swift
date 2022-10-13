@@ -47,10 +47,6 @@ class CaretHider {
   }
 }
 
-class TextInputAssistantItem: UITextInputAssistantItem {
-  
-}
-
 @objc class SmarterTermInput: KBWebView {
   
   var kbView = KBView()
@@ -101,11 +97,10 @@ class TextInputAssistantItem: UITextInputAssistantItem {
   override func layoutSubviews() {
     super.layoutSubviews()
    
-    if let value = self.spaceController?.interfaceOrientation.isPortrait {
-      kbView.traits.isPortrait = value  //scene.interfaceOrientation.isPortrait
+    if let value = self.window?.windowScene?.interfaceOrientation.isPortrait  {
+      kbView.traits.isPortrait = value
     }
-//    kbView.setNeedsLayout()
-//    kbView.layoutIfNeeded()
+    kbView.setNeedsLayout()
   }
   
   func shouldUseWKCopyAndPaste() -> Bool {
@@ -121,7 +116,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
 //    device?.focus()
     kbView.isHidden = false
     kbView.invalidateIntrinsicContentSize()
-//    _refreshInputViews()
     
     if let v = selectionView() {
       _caretHider = CaretHider(view: v)
@@ -147,6 +141,7 @@ class TextInputAssistantItem: UITextInputAssistantItem {
       item.leadingBarButtonGroups = []
       if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
         item.trailingBarButtonGroups = [_barButtonItemGroup]
+        self.contentView()?.reloadInputViews()
       }
       kbView.isHidden = false
       
@@ -155,7 +150,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
       item.leadingBarButtonGroups = []
     }
     
-    kbView.setNeedsLayout()
     return item
   }
   
@@ -172,7 +166,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
     device?.focus()
     kbView.isHidden = false
     setNeedsLayout()
-    _refreshInputViews()
     
     _inputAccessoryView?.isHidden = false
 
@@ -192,36 +185,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
     reportStateReset(device?.view?.hasSelection ?? false)
   }
   
-  func _refreshInputViews() {
-    return
-    
-//    guard
-//      traitCollection.userInterfaceIdiom == .pad,
-//      let assistantItem = contentView()?.inputAssistantItem
-//      else {
-//        if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-//          _removeSmartKeys()
-//        }
-//        contentView()?.reloadInputViews()
-//        kbView.reset()
-//        //      _inputAccessoryView?.invalidateIntrinsicContentSize()
-//        reportStateReset()
-//        return;
-//    }
-//
-//
-////    assistantItem.leadingBarButtonGroups = [.init(barButtonItems: [UIBarButtonItem()], representativeItem: nil)]
-//    contentView()?.reloadInputViews()
-//    if (KBTracker.shared.hideSmartKeysWithHKB && kbView.traits.isHKBAttached) {
-//      _removeSmartKeys()
-//    }
-//    contentView()?.reloadInputViews()
-//    kbView.reset()
-//    reportStateReset()
-//    // Double reload inputs fixes: https://github.com/blinksh/blink/issues/803
-//    contentView()?.reloadInputViews()
-//    kbView.isHidden = false
-  }
   
   override func resignFirstResponder() -> Bool {
     let res = super.resignFirstResponder()
@@ -229,7 +192,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
       device?.blur()
       kbView.isHidden = true
       _inputAccessoryView?.isHidden = true
-//      reloadInputViews()
     }
     return res
   }
@@ -253,7 +215,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
   func sync(traits: KBTraits, device: KBDevice, hideSmartKeysWithHKB: Bool) {
     kbView.kbDevice = device
     
-    var needToReload = false
     defer {
       
       kbView.traits = traits
@@ -268,11 +229,6 @@ class TextInputAssistantItem: UITextInputAssistantItem {
         }
       }
       
-      if needToReload {
-        DispatchQueue.main.async {
-          self._refreshInputViews()
-        }
-      }
     }
     
     // TODO: Only on iphone
@@ -286,11 +242,8 @@ class TextInputAssistantItem: UITextInputAssistantItem {
       return
     }
     
-    if traitCollection.userInterfaceIdiom == .pad {
-//      needToReload = inputAssistantItem.trailingBarButtonGroups.count != 1
-//      _setupAssistantItem()
-    } else {
-      needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
+    if traitCollection.userInterfaceIdiom != .pad {
+//      needToReload = (_inputAccessoryView as? KBAccessoryView) == nil
       _setupAccessoryView()
     }
     
@@ -449,7 +402,8 @@ extension SmarterTermInput {
 extension SmarterTermInput {
   
   @objc private func _updateSettings() {
-//    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+    KBSound.isMutted = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigMuteSmartKeysPlaySound)
+    
 //    let hideSmartKeysWithHKB = !BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigShowSmartKeysWithXKeyBoard)
 //    
 //    if hideSmartKeysWithHKB != hideSmartKeysWithHKB {

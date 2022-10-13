@@ -286,6 +286,7 @@
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
+		D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */; };
 		D265FBC52317E5090017EAC4 /* SessionParamsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */; };
 		D265FBC62317E54C0017EAC4 /* SessionParams.swift in Sources */ = {isa = PBXBuildFile; fileRef = D248E67D22DE14100057FE67 /* SessionParams.swift */; };
 		D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
@@ -934,6 +935,7 @@
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
+		D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyFeaturesAccessLetterView.swift; sourceTree = "<group>"; };
 		D265FBBA2317DD3C0017EAC4 /* BlinkTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = BlinkTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D265FBBE2317DD3C0017EAC4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionParamsTests.swift; sourceTree = "<group>"; };
@@ -1701,8 +1703,8 @@
 				D21DEE45260CB03900D8E640 /* PassphraseView.swift */,
 				D21DEE4E260DD60D00D8E640 /* KeyDetailsView.swift */,
 				D21DEE50260E1DCF00D8E640 /* KeyPickerView.swift */,
-				D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */,
 				D27D0117261202A400128C23 /* KeyUIError.swift */,
+				D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */,
 				D22B16D728CF6ED20004EEC1 /* NewPasskeyView.swift */,
 			);
 			path = BKPubKey;
@@ -1928,6 +1930,7 @@
 		D2AD8E8527A2C81900DED28D /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
+				D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */,
 				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
 				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
 				D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */,
@@ -2938,6 +2941,7 @@
 				D27D0118261202A400128C23 /* KeyUIError.swift in Sources */,
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
+				D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */,
 				D2AD8E7927A2BAFA00DED28D /* PaywallView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
@@ -3570,7 +3574,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 585;
+				CURRENT_PROJECT_VERSION = 595;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3615,7 +3619,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 585;
+				CURRENT_PROJECT_VERSION = 595;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3652,7 +3656,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 587;
+				CURRENT_PROJECT_VERSION = 595;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3698,7 +3702,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 587;
+				CURRENT_PROJECT_VERSION = 595;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlinkFileProviderUI/Info.plist;
@@ -4305,7 +4309,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 587;
+				CURRENT_PROJECT_VERSION = 595;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4350,7 +4354,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 587;
+				CURRENT_PROJECT_VERSION = 595;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
