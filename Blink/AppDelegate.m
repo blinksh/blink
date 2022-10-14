@@ -310,12 +310,20 @@ void __setupProcessEnv(void) {
 
 #pragma mark - Scenes
 
-- (UISceneConfiguration *)application:(UIApplication *)application configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession options:(UISceneConnectionOptions *)options {
-  
-  
-  return [UISceneConfiguration configurationWithName:@"main" sessionRole:connectingSceneSession.role];
-  
+- (UISceneConfiguration *) application:(UIApplication *)application
+configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
+                               options:(UISceneConnectionOptions *)options {
+  for (NSUserActivity * activity in options.userActivities) {
+    if ([activity.activityType isEqual:@"com.blink.whatsnew"]) {
+      return [UISceneConfiguration configurationWithName:@"whatsnew"
+                                             sessionRole:connectingSceneSession.role];
+    }
+  }
+  return [UISceneConfiguration configurationWithName:@"main"
+                                         sessionRole:connectingSceneSession.role];
 }
+
+
 
 - (void)application:(UIApplication *)application didDiscardSceneSessions:(NSSet<UISceneSession *> *)sceneSessions {
   [SpaceController onDidDiscardSceneSessions: sceneSessions];

@@ -137,6 +137,7 @@
 	<array>
 		<string>com.blink.cmdline</string>
 		<string>com.blink.session</string>
+		<string>com.blink.whatsnew</string>
 	</array>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
@@ -151,6 +152,12 @@
 					<string>main</string>
 					<key>UISceneDelegateClassName</key>
 					<string>Blink.SceneDelegate</string>
+				</dict>
+				<dict>
+          <key>UISceneConfigurationName</key>
+          <string>whatsnew</string>
+					<key>UISceneDelegateClassName</key>
+					<string>Blink.WhatsNewSceneDelegate</string>
 				</dict>
 			</array>
 			<key>UIWindowSceneSessionRoleExternalDisplay</key>
