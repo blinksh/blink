@@ -33,7 +33,7 @@ import SwiftUI
 
 
 struct WhatsNewView<ViewModel: RowsProvider>: View {
-    @ObservedObject var rowsProvider: ViewModel
+    @StateObject var rowsProvider: ViewModel
     @State var error: Error?
     
     @ViewBuilder

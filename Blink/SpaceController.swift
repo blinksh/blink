@@ -878,11 +878,14 @@ extension SpaceController {
   }
   
   @objc func _newWindowAction() {
+    let options = UIWindowScene.ActivationRequestOptions()
+    options.requestingScene = self.view.window?.windowScene
+    
     UIApplication
       .shared
       .requestSceneSessionActivation(nil,
                                      userActivity: nil,
-                                     options: nil,
+                                     options: options,
                                      errorHandler: nil)
   }
   
@@ -938,11 +941,28 @@ extension SpaceController {
     }
     
     DispatchQueue.main.async {
-//      let navCtrl = UINavigationController()
-//      navCtrl.navigationBar.prefersLargeTitles = true
-      let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
-//      navCtrl.setViewControllers([root], animated: false)
-      self.present(root, animated: true, completion: nil)
+      if UIApplication.shared.supportsMultipleScenes {
+        var opened: UISceneSession? = nil
+        for session in UIApplication.shared.openSessions {
+          if session.configuration.name == "whatsnew" {
+            opened = session
+            break
+          }
+        }
+        let options = UIWindowScene.ActivationRequestOptions()
+        options.preferredPresentationStyle = .prominent
+        options.requestingScene = self.view.window?.windowScene;
+        
+        let activity = NSUserActivity(activityType: "com.blink.whatsnew")
+        
+        UIApplication.shared.requestSceneSessionActivation(opened, userActivity: activity, options: options)
+      } else { 
+//        let navCtrl = UINavigationController()
+//        navCtrl.navigationBar.prefersLargeTitles = true
+        let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+//        navCtrl.setViewControllers([root], animated: false)
+        self.present(root, animated: true, completion: nil)
+      }
     }
   }
   
