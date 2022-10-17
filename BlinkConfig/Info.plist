@@ -10,6 +10,8 @@
 	<string>$(KEYCHAIN_ID1)</string>
 	<key>BLINK_REVCAT_PUBKEY</key>
 	<string>$(REVCAT_PUBKEY)</string>
+	<key>BLINK_WHATS_NEW_URL</key>
+	<string>$(WHATS_NEW_URL)</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleExecutable</key>
