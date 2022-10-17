@@ -35,6 +35,7 @@ import SSH
 import CryptoKit
 import AuthenticationServices
 import SwiftCBOR
+import BlinkConfig
 
 @available(iOS 16.0, *)
 struct NewSecurityKeyView: View {

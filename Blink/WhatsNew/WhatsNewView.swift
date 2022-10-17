@@ -70,6 +70,8 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
                     .padding()
                     .redacted(reason: rowsProvider.hasFetchedData ? [] : .placeholder )
                 }
+//            }.refreshable {
+//              await fetchData()
             }
         }
     }
