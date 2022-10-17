@@ -150,13 +150,10 @@ struct KeyListView: View {
   var body: some View {
     Group {
       if _state.list.isEmpty {
-        VStack {
-          Spacer()
-          Image(systemName: "key").imageScale(.large).opacity(0.7)
-          NewKeyMenuView(state: _state, title: "Add new Key")
-            .padding(.init(top: 12, leading: 0, bottom: 20, trailing: 0))
-          Spacer()
-        }
+        EmptyStateView(
+          action:NewKeyMenuView(state: _state, title: "Add new Key"),
+          systemIconName: "key"
+        )
       } else {
         List {
           ForEach(_state.list, id: \.name) {
