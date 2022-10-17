@@ -31,6 +31,7 @@
 
 import Foundation
 import SwiftUI
+import BlinkConfig
 
 
 protocol RowsProvider: ObservableObject {
@@ -44,7 +45,7 @@ class RowsViewModel: RowsProvider {
     @Published var rows = [WhatsNewRow]()
     @Published var hasFetchedData = false
     @Published var error: Error?
-    private let url = URL(string: "https://us-central1-blink-363718.cloudfunctions.net/whatsNew")!
+    private let url = URL(string: XCConfig.infoPlistWhatsNewURL())!
 
     @MainActor
     func fetchData() async throws {
