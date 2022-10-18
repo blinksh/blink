@@ -66,6 +66,7 @@ int help_main(int argc, char *argv[]) {
     @"  config: Setup ssh keys, hosts, keyboard, etc.",
     @"  code: code editor. (don't forget install blink-fs extension)",
     @"  help: Prints this.",
+    @"  whatsnew: Discover new features.",
     @"  exit: Close this shell.",
     @"",
     @"Gestures:",
