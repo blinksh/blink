@@ -51,7 +51,7 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
             // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
             GeometryReader { metrics in
                 ScrollView {
-                    LazyVStack {
+                    VStack {
                         ForEach(rowsProvider.rows) { row in
                             switch row {
                             case .oneCol(let feature):
@@ -64,6 +64,8 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
                                         FeatureStack(features: left)
                                         FeatureStack(features: right)
                                     }.frame(maxWidth: .infinity)
+                            case .versionInfo(let info):
+                                VersionSeparator(info: info)
                             }
                         }
                     }
@@ -201,11 +203,48 @@ struct BasicFeatureCard: View {
                 }
             }
         }
+        .onTapGesture {
+            if let url = feature.link {
+                UIApplication.shared.open(url)
+            }
+        }
         .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
         .background(
           RoundedRectangle(cornerRadius: 15, style: .continuous)
             .foregroundColor(palette.background)
             .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
         )
+    }
+}
+
+struct VersionSeparator: View {
+  let info: VersionInfo
+  
+  var body: some View {
+    HStack {
+      Spacer()
+      Button(action: {
+               if let url = info.link {
+                 UIApplication.shared.open(url)
+               }
+             }) {
+        Text("View all changes in \(info.number)")
+        Image(systemName: "arrow.forward.circle")
+          .imageScale(.medium)
+        
+      }
+        .font(.callout)
+        //.fontWeight(.bold)
+        .foregroundColor(.blue)
+        .buttonStyle(.borderless)
+      
+    }.padding(20)
+  }
+}
+
+struct WhatsNewView_Previews: PreviewProvider {
+    static var previews: some View {
+        WhatsNewView(rowsProvider: RowsViewModelDemo())
+        // ContentView(rowsProvider: RowsViewModel())
     }
 }
