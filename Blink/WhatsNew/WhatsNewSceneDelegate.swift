@@ -34,6 +34,13 @@ import Foundation
 import UIKit
 import SwiftUI
 
+class FocusableVC<T: View>: UIHostingController<T> {
+  override var canBecomeFirstResponder: Bool { true }
+  override var prefersStatusBarHidden: Bool { true }
+  public override var prefersHomeIndicatorAutoHidden: Bool { true }
+}
+
+
 class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
   var window: UIWindow? = nil
  
@@ -46,7 +53,7 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     let window = UIWindow(windowScene: windowScene)
     self.window = window
     
-    let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+    let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
 
     
     window.rootViewController =  root
