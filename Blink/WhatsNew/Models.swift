@@ -58,13 +58,13 @@ class RowsViewModel: RowsProvider {
 
 let RowSamples = [
   WhatsNewRow.oneCol(
-      Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .blue, symbol: "globe")
-    )
-    ,
+    Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"))
+  ),
+  WhatsNewRow.versionInfo(VersionInfo(number: "1.0.0", link: URL(string:"http://blink.sh"))),
     WhatsNewRow.twoCol(
-      [Feature(title: "Passkeys", description: "Cool keys on your phone.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .orange, symbol: "person.badge.key.fill")],
-        [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: nil, color: .purple, symbol: "globe"),
-         Feature(title: "Simple", description: "No Munch", image: nil, color: .yellow, symbol: "ladybug.fill")]
+      [Feature(title: "Passkeys", description: "Cool keys on your phone.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .orange, symbol: "person.badge.key.fill", link: nil)],
+      [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: nil, color: .purple, symbol: "globe", link: nil),
+       Feature(title: "Simple", description: "No Munch", image: nil, color: .yellow, symbol: "ladybug.fill", link: nil)]
     )
 ]
 
@@ -87,6 +87,7 @@ enum WhatsNewRow: Identifiable {
     // Or maybe a singleCol would be a "separator" as a banner.
     case oneCol(Feature)
     case twoCol([Feature], [Feature])
+    case versionInfo(VersionInfo)
 
     var id: String {
         switch self {
@@ -94,6 +95,8 @@ enum WhatsNewRow: Identifiable {
             return feature.title
         case .twoCol(let left, _):
             return left.reduce(String(), { $0.appending($1.title) })
+        case .versionInfo(let info):
+            return info.number
         }
     }
 }
@@ -102,6 +105,7 @@ extension WhatsNewRow: Decodable {
     enum CodingKeys: CodingKey {
         case oneCol
         case twoCol
+        case versionInfo
     }
     
     enum CodingError: Error {
@@ -120,6 +124,9 @@ extension WhatsNewRow: Decodable {
                 throw CodingError.decoding("twoCol has wrong amount of columns")
             }
             self = .twoCol(value[0], value[1])
+        case .versionInfo:
+            let value = try container.decode(VersionInfo.self, forKey: .versionInfo)
+            self = .versionInfo(value)
         default:
             throw CodingError.decoding("Unknown field \(container)")
         }
@@ -140,4 +147,11 @@ struct Feature: Identifiable, Decodable {
     let image: URL?
     let color: FeatureColor
     let symbol: String
+    let link: URL?
+}
+
+struct VersionInfo: Identifiable, Decodable {
+    var id: String { number }
+    let number: String
+    let link: URL?
 }
