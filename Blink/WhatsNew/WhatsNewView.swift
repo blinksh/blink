@@ -174,16 +174,18 @@ struct BasicFeatureCard: View {
     var body: some View {
         let palette = feature.colorPalette(for: colorScheme)
         
-        VStack(spacing: 15) {
+        VStack(spacing: 0) {
             HStack {
                 VStack {
                     Image(systemName: feature.symbol)
                         .imageScale(.large)
                         .foregroundColor(palette.iconForeground)
                         .padding()
-                        .background(palette.iconBackground)
-                        .cornerRadius(15)
-                    // NOTE No other idea to align to the top
+
+                        .background(
+                          RoundedRectangle(cornerRadius: 12, style: .continuous)
+                            .foregroundColor(palette.iconBackground)
+                          )
                     Spacer()
                 }
                 VStack(alignment:.leading) {
@@ -214,6 +216,8 @@ struct BasicFeatureCard: View {
             .foregroundColor(palette.background)
             .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
         )
+        .padding(.bottom, 15)
+        
     }
 }
 
