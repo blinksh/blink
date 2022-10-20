@@ -150,7 +150,9 @@ struct BasicFeatureCard: View {
     let palette = feature.colorPalette(for: colorScheme)
     
     Button(action: {
-      
+      if let url = feature.link {
+        UIApplication.shared.open(url)
+      }
     }, label: {
       VStack(alignment: .leading, spacing: 0) {
         HStack(alignment: .top, spacing: 0) {
@@ -178,19 +180,14 @@ struct BasicFeatureCard: View {
           }
         }
       }
-      //    .onTapGesture {
-      //      if let url = feature.link {
-      //        UIApplication.shared.open(url)
-      //      }
-      //    }
       .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
       .background(
         RoundedRectangle(cornerRadius: 15, style: .continuous)
           .foregroundColor(palette.background)
           .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
       )
-    }).buttonStyle(ScaleButtonStyle())
-    
+    })
+    .buttonStyle(ScaleButtonStyle())
     .padding(.bottom, 15)
     
   }
