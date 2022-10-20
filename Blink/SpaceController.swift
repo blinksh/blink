@@ -959,11 +959,10 @@ extension SpaceController {
         let activity = NSUserActivity(activityType: "com.blink.whatsnew")
         
         UIApplication.shared.requestSceneSessionActivation(opened, userActivity: activity, options: options)
-      } else { 
-//        let navCtrl = UINavigationController()
-//        navCtrl.navigationBar.prefersLargeTitles = true
+      } else {
+        // Reset version when opening.
+        WhatsNewInfo.setNewVersion()
         let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
-//        navCtrl.setViewControllers([root], animated: false)
         self.present(root, animated: true, completion: nil)
       }
     }
