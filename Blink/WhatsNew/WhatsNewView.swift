@@ -51,19 +51,21 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
             // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
             GeometryReader { metrics in
                 ScrollView {
-                    VStack {
-                        ForEach(rowsProvider.rows) { row in
+                  VStack(alignment: .leading) {
+                    ForEach(rowsProvider.rows, id: \.id) { row in
                             switch row {
                             case .oneCol(let feature):
-                                BasicFeatureCard(feature: feature).frame(maxWidth: .infinity)
+                                BasicFeatureCard(feature: feature)
                             case .twoCol(let left, let right):
-                                LazyVGrid(columns: [
-                                    GridItem(
-                                        .adaptive(minimum: max(metrics.size.width * 0.47, 300))
-                                    )]) {
-                                        FeatureStack(features: left)
-                                        FeatureStack(features: right)
-                                    }.frame(maxWidth: .infinity)
+                              if metrics.size.width > 665 {
+                                HStack(alignment: .top, spacing: 15) {
+                                  FeatureStack(features: left)
+                                  FeatureStack(features: right)
+                                }
+                              } else {
+                                FeatureStack(features: left)
+                                FeatureStack(features: right)
+                              }
                             case .versionInfo(let info):
                                 VersionSeparator(info: info)
                             }
@@ -107,118 +109,65 @@ extension Feature {
 struct FeatureStack: View {
   let features: [Feature]
   var body: some View {
-    VStack(alignment:.leading, spacing: 15) {
-      ForEach(features) { feature in
+    
+    VStack(alignment:.leading) {
+      ForEach(features, id: \.id) { feature in
         BasicFeatureCard(feature: feature)
       }
     }
+    
   }
 }
 
-protocol FeatureColorPalette {
-    var background: Color { get }
-    var iconBackground: Color { get }
-    var iconForeground: Color { get }
-}
-
-struct LightBlueColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.99, green: 1.0, blue: 1.0) }
-    var iconBackground: Color { Color(red: 0.87, green: 0.93, blue: 1.0) }
-    var iconForeground: Color { Color(red: 0.09, green: 0.47, blue: 0.95) }
-}
-
-struct LightOrangeColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 1, green: 0.982, blue: 0.979) }
-    var iconBackground: Color { Color(red: 1, green: 0.88, blue: 0.858) }
-    var iconForeground: Color { Color(red: 1.00, green: 0.27, blue: 0.13) }
-}
-
-struct LightYellowColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 1, green: 0.993, blue: 0.975) }
-    var iconBackground: Color { Color(red: 1, green: 0.929, blue: 0.746)}
-    var iconForeground: Color { Color(red: 1.00, green: 0.72, blue: 0.00) }
-}
-
-struct LightPurpleColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.993, green: 0.983, blue: 1) }
-    var iconBackground: Color { Color(red: 0.954, green: 0.896, blue: 1)}
-    var iconForeground: Color { Color(red: 0.62, green: 0.13, blue: 1.00) }
-}
-
-class DarkColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.11, green: 0.122, blue: 0.137) }
-    var iconBackground: Color { Color(red: 0.022, green: 0.033, blue: 0.042) }
-    var iconForeground: Color { .white }
-}
-
-class DarkBlueColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightBlueColorPalette().iconForeground }
-}
-
-class DarkOrangeColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightOrangeColorPalette().iconForeground }
-}
-
-class DarkYellowColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightYellowColorPalette().iconForeground }
-}
-
-class DarkPurpleColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightPurpleColorPalette().iconForeground }
-}
 
 struct BasicFeatureCard: View {
-    @Environment(\.colorScheme) var colorScheme
+  @Environment(\.colorScheme) var colorScheme
     
-    let feature: Feature
-    var body: some View {
-        let palette = feature.colorPalette(for: colorScheme)
-        
-        VStack(spacing: 0) {
-            HStack {
-                VStack {
-                    Image(systemName: feature.symbol)
-                        .imageScale(.large)
-                        .foregroundColor(palette.iconForeground)
-                        .padding()
-
-                        .background(
-                          RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .foregroundColor(palette.iconBackground)
-                          )
-                    Spacer()
-                }
-                VStack(alignment:.leading) {
-                    Text(feature.title).font(.system(.headline, design: .rounded))
-                    Text(feature.description).font(.system(.subheadline))
-                    Spacer()
-                }
-                Spacer()
-            }.frame(alignment: .leading)
-
-            if let imageURL = feature.image {
-                AsyncImage(url: imageURL) {
-                    $0.resizable()
-                        .scaledToFill()
-                } placeholder: {
-                    palette.iconBackground
-                }
-            }
+  let feature: Feature
+  
+  var body: some View {
+    let palette = feature.colorPalette(for: colorScheme)
+    
+    VStack(alignment: .leading, spacing: 0) {
+      HStack(alignment: .top, spacing: 0) {
+        Image(systemName: feature.symbol)
+          .imageScale(.large)
+          .foregroundColor(palette.iconForeground)
+          .padding()
+          .background(
+            RoundedRectangle(cornerRadius: 13, style: .continuous)
+              .foregroundColor(palette.iconBackground)
+          )
+        VStack(alignment:.leading) {
+          Text(feature.title).font(.system(.headline, design: .rounded))
+          Text(feature.description).font(.system(.subheadline))
+        }.padding(.leading, 15)
+      }
+      HStack { Spacer() }.frame(height: 15)
+      Spacer(minLength: 15)
+      
+      if let imageURL = feature.image {
+        AsyncImage(url: imageURL) {
+          $0.resizable().scaledToFit()
+        } placeholder: {
+          palette.iconBackground
         }
-        .onTapGesture {
-            if let url = feature.link {
-                UIApplication.shared.open(url)
-            }
-        }
-        .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-        .background(
-          RoundedRectangle(cornerRadius: 15, style: .continuous)
-            .foregroundColor(palette.background)
-            .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
-        )
-        .padding(.bottom, 15)
-        
+      }
     }
+    .onTapGesture {
+      if let url = feature.link {
+        UIApplication.shared.open(url)
+      }
+    }
+    .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+    .background(
+      RoundedRectangle(cornerRadius: 15, style: .continuous)
+        .foregroundColor(palette.background)
+        .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
+    )
+    
+    .padding(.bottom, 15)
+  }
 }
 
 struct VersionSeparator: View {

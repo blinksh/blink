@@ -250,6 +250,7 @@
 		D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */; };
 		D23742CA21106ADF00366359 /* bench.m in Sources */ = {isa = PBXBuildFile; fileRef = D23742C921106ADF00366359 /* bench.m */; };
 		D238675426EA76E6003A82A1 /* OwnAlertController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDB8BEA726E008190093BF48 /* OwnAlertController.swift */; };
+		D23890BD2900175100B5CEA6 /* FeatureColorPallete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23890BC2900175100B5CEA6 /* FeatureColorPallete.swift */; };
 		D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23A7B24233C934900B3B66D /* UIColor+isLight.swift */; };
 		D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */; };
 		D23D258823438B15002850CA /* UIColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D23D258723438B15002850CA /* UIColor.swift */; };
@@ -906,6 +907,7 @@
 		D2334F0A25C1C3A000385378 /* OpenSSH.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; name = OpenSSH.xcframework; path = xcfs/.build/artifacts/xcfs/OpenSSH.xcframework; sourceTree = SOURCE_ROOT; };
 		D235579622CE07D20094AADB /* Blink-bridge.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Blink-bridge.h"; sourceTree = "<group>"; };
 		D23742C921106ADF00366359 /* bench.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = bench.m; sourceTree = "<group>"; };
+		D23890BC2900175100B5CEA6 /* FeatureColorPallete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureColorPallete.swift; sourceTree = "<group>"; };
 		D23A7B24233C934900B3B66D /* UIColor+isLight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+isLight.swift"; sourceTree = "<group>"; };
 		D23AA643223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BKXCallBackUrlConfigurationViewController.h; sourceTree = "<group>"; };
 		D23AA644223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BKXCallBackUrlConfigurationViewController.m; sourceTree = "<group>"; };
@@ -1882,6 +1884,7 @@
 				D264D2B128F84592002B1B14 /* Models.swift */,
 				D264D2B028F84592002B1B14 /* UnavailErrorView.swift */,
 				D264D2B728F96C66002B1B14 /* WhatsNewSceneDelegate.swift */,
+				D23890BC2900175100B5CEA6 /* FeatureColorPallete.swift */,
 			);
 			path = WhatsNew;
 			sourceTree = "<group>";
@@ -2927,6 +2930,7 @@
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */,
 				D2AD8E7A27A2BAFA00DED28D /* ShakeDetector.swift in Sources */,
+				D23890BD2900175100B5CEA6 /* FeatureColorPallete.swift in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */,
