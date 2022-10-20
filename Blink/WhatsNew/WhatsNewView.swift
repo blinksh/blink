@@ -34,71 +34,74 @@ import CachedAsyncImage
 
 
 struct WhatsNewView<ViewModel: RowsProvider>: View {
-    @StateObject var rowsProvider: ViewModel
-    @State var error: Error?
-    
-    @ViewBuilder
-    var body: some View {
-        if let _ = error {
-            UnavailErrorView(retry: fetchData)
-        } else if !rowsProvider.hasFetchedData {
-            ProgressView().task {
-                await fetchData()
-            }
-        } else {
-          // Refs https://developer.apple.com/videos/play/wwdc2020/10031/
-          // https://www.reddit.com/r/SwiftUI/comments/jseuwb/how_to_make_a_lazyvstack_with_dynamic_items_width/
-          // NOTE We could use a StickyHeader for the versions
-          // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
-          GeometryReader {
-            let size = $0.size
-            let hPadding = max(15, (size.width - 820) * 0.5);
-            ScrollView {
-              VStack(alignment: .leading) {
-                ForEach(rowsProvider.rows) { row in
-                  switch row {
-                  case .oneCol(let feature):
-                    BasicFeatureCard(feature: feature)
-                  case .twoCol(let left, let right):
-                    if size.width > 665 {
-                      HStack(alignment: .top, spacing: 15) {
-                        FeatureStack(features: left)
-                        FeatureStack(features: right)
-                      }
-                    } else {
-                      FeatureStack(features: left)
-                      FeatureStack(features: right)
-                    }
-                  case .versionInfo(let info):
-                    VersionSeparator(info: info)
+  @StateObject var rowsProvider: ViewModel
+  @State var error: Error?
+  var ipad = false
+  
+  @ViewBuilder
+  var body: some View {
+    if let _ = error {
+      UnavailErrorView(retry: fetchData)
+    } else if !rowsProvider.hasFetchedData {
+      ProgressView().task {
+        await fetchData()
+      }
+    } else {
+      // Refs https://developer.apple.com/videos/play/wwdc2020/10031/
+      // https://www.reddit.com/r/SwiftUI/comments/jseuwb/how_to_make_a_lazyvstack_with_dynamic_items_width/
+      // NOTE We could use a StickyHeader for the versions
+      // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
+      GeometryReader {
+        let size = $0.size
+        let hPadding = max(15, (size.width - 820) * 0.5);
+        ScrollView {
+          VStack(alignment: .leading) {
+            ForEach(rowsProvider.rows) { row in
+              switch row {
+              case .oneCol(let feature):
+                BasicFeatureCard(feature: feature)
+              case .twoCol(let left, let right):
+                if size.width > 665 {
+                  HStack(alignment: .top, spacing: 15) {
+                    FeatureStack(features: left)
+                    FeatureStack(features: right)
                   }
+                } else {
+                  FeatureStack(features: left)
+                  FeatureStack(features: right)
                 }
+              case .versionInfo(let info):
+                VersionSeparator(info: info)
               }
-              .redacted(reason: rowsProvider.hasFetchedData ? [] : .placeholder )
-              .padding(.init(top: 15, leading: hPadding, bottom: 15, trailing: hPadding))
             }
           }
-          .overlay(alignment: .top) {
-            Rectangle()
-              .frame(height: 24)
-              .foregroundColor(Color(UIColor.systemBackground))
-              .background(.regularMaterial)
-              .opacity(0.3)
-              .ignoresSafeArea()
-              .allowsHitTesting(false)
-          }
+          .redacted(reason: rowsProvider.hasFetchedData ? [] : .placeholder )
+          .padding(.init(top: 15, leading: hPadding, bottom: 15, trailing: hPadding))
         }
-    }
-    
-    private func fetchData() async {
-        do {
-            self.error = nil
-            try await rowsProvider.fetchData()
-        } catch (let err) {
-            self.error = err
-            print("Error!")
+      }
+      .overlay(alignment: .top) {
+        if self.ipad {
+          Rectangle()
+            .frame(height: 24)
+            .foregroundColor(Color(UIColor.systemBackground))
+            .background(.regularMaterial)
+            .opacity(0.3)
+            .ignoresSafeArea()
+            .allowsHitTesting(false)
         }
+      }
     }
+  }
+  
+  private func fetchData() async {
+    do {
+      self.error = nil
+      try await rowsProvider.fetchData()
+    } catch (let err) {
+      self.error = err
+      print("Error!")
+    }
+  }
 }
 
 extension Feature {

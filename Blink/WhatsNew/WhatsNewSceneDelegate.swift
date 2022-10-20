@@ -54,7 +54,7 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     let window = UIWindow(windowScene: windowScene)
     self.window = window
     
-    let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+    let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel(), ipad: true))
     
 
     // Reset version when opening.
