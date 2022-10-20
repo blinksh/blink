@@ -37,7 +37,7 @@ import SwiftUI
 class FocusableVC<T: View>: UIHostingController<T> {
   override var canBecomeFirstResponder: Bool { true }
   override var prefersStatusBarHidden: Bool { true }
-  public override var prefersHomeIndicatorAutoHidden: Bool { true }
+  public override var prefersHomeIndicatorAutoHidden: Bool { false }
 }
 
 
@@ -54,6 +54,7 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     self.window = window
     
     let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+    
 
     // Reset version when opening.
     WhatsNewInfo.setNewVersion()

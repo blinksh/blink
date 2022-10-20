@@ -46,38 +46,38 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
                 await fetchData()
             }
         } else {
-            // Refs https://developer.apple.com/videos/play/wwdc2020/10031/
-            // https://www.reddit.com/r/SwiftUI/comments/jseuwb/how_to_make_a_lazyvstack_with_dynamic_items_width/
-            // NOTE We could use a StickyHeader for the versions
-            // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
-            GeometryReader { metrics in
-                ScrollView {
-                  VStack(alignment: .leading) {
-                    ForEach(rowsProvider.rows, id: \.id) { row in
-                            switch row {
-                            case .oneCol(let feature):
-                                BasicFeatureCard(feature: feature)
-                            case .twoCol(let left, let right):
-                              if metrics.size.width > 665 {
-                                HStack(alignment: .top, spacing: 15) {
-                                  FeatureStack(features: left)
-                                  FeatureStack(features: right)
-                                }
-                              } else {
-                                FeatureStack(features: left)
-                                FeatureStack(features: right)
-                              }
-                            case .versionInfo(let info):
-                                VersionSeparator(info: info)
-                            }
-                        }
+          // Refs https://developer.apple.com/videos/play/wwdc2020/10031/
+          // https://www.reddit.com/r/SwiftUI/comments/jseuwb/how_to_make_a_lazyvstack_with_dynamic_items_width/
+          // NOTE We could use a StickyHeader for the versions
+          // https://prafullkumar77.medium.com/swiftui-how-to-make-sticky-header-with-grid-stack-views-c3505cea6400
+          GeometryReader {
+            let size = $0.size
+            let hPadding = max(15, (size.width - 820) * 0.5);
+            ScrollView {
+              VStack(alignment: .leading) {
+                ForEach(rowsProvider.rows) { row in
+                  switch row {
+                  case .oneCol(let feature):
+                    BasicFeatureCard(feature: feature)
+                  case .twoCol(let left, let right):
+                    if size.width > 665 {
+                      HStack(alignment: .top, spacing: 15) {
+                        FeatureStack(features: left)
+                        FeatureStack(features: right)
+                      }
+                    } else {
+                      FeatureStack(features: left)
+                      FeatureStack(features: right)
                     }
-                    .padding()
-                    .redacted(reason: rowsProvider.hasFetchedData ? [] : .placeholder )
+                  case .versionInfo(let info):
+                    VersionSeparator(info: info)
+                  }
                 }
-//            }.refreshable {
-//              await fetchData()
+              }
+              .redacted(reason: rowsProvider.hasFetchedData ? [] : .placeholder )
+              .padding(.init(top: 15, leading: hPadding, bottom: 15, trailing: hPadding))
             }
+          }
         }
     }
     
@@ -112,7 +112,7 @@ struct FeatureStack: View {
   var body: some View {
     
     VStack(alignment:.leading) {
-      ForEach(features, id: \.id) { feature in
+      ForEach(features) { feature in
         BasicFeatureCard(feature: feature)
       }
     }
@@ -148,7 +148,7 @@ struct BasicFeatureCard: View {
       Spacer(minLength: 15)
       
       if let imageURL = feature.image {
-        CachedAsyncImage(url: imageURL) {
+        CachedAsyncImage(url: imageURL, urlCache: .imageCache) {
           $0.resizable().scaledToFit()
         } placeholder: {
           palette.iconBackground
