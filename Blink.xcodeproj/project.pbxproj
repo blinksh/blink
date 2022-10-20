@@ -318,6 +318,7 @@
 		D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2903F3B239BBF5D005F991B /* KeyShortcut.swift */; };
 		D29392B72004D785001FB2AA /* hterm_all.patches.js in Resources */ = {isa = PBXBuildFile; fileRef = D29392B62004D785001FB2AA /* hterm_all.patches.js */; };
 		D29568B921BE629100480A83 /* bk_getopts.c in Sources */ = {isa = PBXBuildFile; fileRef = D29568B821BE629100480A83 /* bk_getopts.c */; };
+		D297F00F29012FDB002A24F9 /* CachedAsyncImage in Frameworks */ = {isa = PBXBuildFile; productRef = D297F00E29012FDB002A24F9 /* CachedAsyncImage */; };
 		D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29B4A8D274D1E9F00C66ED9 /* BrowserController.swift */; };
 		D29D6C3122DB9CA700A84173 /* TermController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D29D6C3022DB9CA700A84173 /* TermController.swift */; };
 		D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D29FE548208DC860004679D0 /* commandDictionary.plist */; };
@@ -1218,6 +1219,7 @@
 				0732F1291D06324200AB5438 /* libcurses.tbd in Frameworks */,
 				D2F64CA925CAA92700F2225D /* curl_ios_static.framework in Frameworks */,
 				0732F1271D06323A00AB5438 /* libz.tbd in Frameworks */,
+				D297F00F29012FDB002A24F9 /* CachedAsyncImage in Frameworks */,
 				D2F64CB125CAAAD100F2225D /* ssh_cmd.xcframework in Frameworks */,
 				07FAB90F25C8E94E00E1CC2C /* ArgumentParser in Frameworks */,
 				D2334EFA25C1C28F00385378 /* network_ios.xcframework in Frameworks */,
@@ -2437,6 +2439,7 @@
 				D2AD8E8127A2C79B00DED28D /* Purchases */,
 				D2A6398828CFA0B90066FD18 /* SwiftCBOR */,
 				BD7AFC4028E8E98C004BCDA4 /* Base32Kit */,
+				D297F00E29012FDB002A24F9 /* CachedAsyncImage */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -2545,6 +2548,7 @@
 				D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */,
 				D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */,
 				BD7AFC3F28E8E98C004BCDA4 /* XCRemoteSwiftPackageReference "Base32Kit" */,
+				D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */,
 			);
 			productRefGroup = EA0BA18C1C0CC57B00719C1A /* Products */;
 			projectDirPath = "";
@@ -4571,6 +4575,14 @@
 				minimumVersion = 0.0.3;
 			};
 		};
+		D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/lorenzofiamingo/swiftui-cached-async-image";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 		D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/unrelentingtech/SwiftCBOR";
@@ -4612,6 +4624,11 @@
 		BDCB7193268E175A007D7047 /* SSHConfig */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = SSHConfig;
+		};
+		D297F00E29012FDB002A24F9 /* CachedAsyncImage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D297F00D29012FDB002A24F9 /* XCRemoteSwiftPackageReference "swiftui-cached-async-image" */;
+			productName = CachedAsyncImage;
 		};
 		D2A6398828CFA0B90066FD18 /* SwiftCBOR */ = {
 			isa = XCSwiftPackageProductDependency;

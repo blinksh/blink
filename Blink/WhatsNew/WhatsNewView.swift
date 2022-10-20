@@ -30,6 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import SwiftUI
+import CachedAsyncImage
 
 
 struct WhatsNewView<ViewModel: RowsProvider>: View {
@@ -147,7 +148,7 @@ struct BasicFeatureCard: View {
       Spacer(minLength: 15)
       
       if let imageURL = feature.image {
-        AsyncImage(url: imageURL) {
+        CachedAsyncImage(url: imageURL) {
           $0.resizable().scaledToFit()
         } placeholder: {
           palette.iconBackground
