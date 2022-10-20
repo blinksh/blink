@@ -469,6 +469,11 @@ extension TermController: SuspendableSession {
       device: _termDevice,
       andParams: _sessionParams)
     
+    if WhatsNewInfo.mustDisplayVersionPrompt() {
+      _termDevice.writeOutLn(WhatsNewInfo.Prompt)
+      WhatsNewInfo.versionPromptDisplayed()
+    }
+    
     _session?.delegate = self
     _session?.execute(withArgs: "")
     
