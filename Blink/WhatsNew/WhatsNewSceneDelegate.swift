@@ -36,7 +36,8 @@ import SwiftUI
 
 class FocusableVC<T: View>: UIHostingController<T> {
   override var canBecomeFirstResponder: Bool { true }
-  override var prefersStatusBarHidden: Bool { true }
+  override var prefersStatusBarHidden: Bool { false }
+  override var preferredStatusBarStyle: UIStatusBarStyle { .default }
   public override var prefersHomeIndicatorAutoHidden: Bool { false }
 }
 
@@ -59,7 +60,7 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     // Reset version when opening.
     WhatsNewInfo.setNewVersion()
     
-    window.rootViewController =  root
+    window.rootViewController = root
     window.isHidden = false
   }
  

@@ -941,7 +941,10 @@ extension SpaceController {
     }
     
     DispatchQueue.main.async {
+      _ = KBTracker.shared.input?.resignFirstResponder();
+      
       if UIApplication.shared.supportsMultipleScenes {
+        
         var opened: UISceneSession? = nil
         for session in UIApplication.shared.openSessions {
           if session.configuration.name == "whatsnew" {
