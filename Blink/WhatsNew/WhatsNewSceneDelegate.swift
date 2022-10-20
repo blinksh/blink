@@ -55,6 +55,8 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
 
+    // Reset version when opening.
+    WhatsNewInfo.setNewVersion()
     
     window.rootViewController =  root
     window.isHidden = false
