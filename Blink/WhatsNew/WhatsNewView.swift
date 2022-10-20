@@ -33,6 +33,14 @@ import SwiftUI
 import CachedAsyncImage
 
 
+struct ScaleButtonStyle: ButtonStyle {
+    func makeBody(configuration: Configuration) -> some View {
+        configuration.label
+        .scaleEffect(configuration.isPressed ? 0.95 : 1)
+        .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+    }
+}
+
 struct WhatsNewView<ViewModel: RowsProvider>: View {
   @StateObject var rowsProvider: ViewModel
   @State var error: Error?
@@ -141,45 +149,50 @@ struct BasicFeatureCard: View {
   var body: some View {
     let palette = feature.colorPalette(for: colorScheme)
     
-    VStack(alignment: .leading, spacing: 0) {
-      HStack(alignment: .top, spacing: 0) {
-        Image(systemName: feature.symbol)
-          .imageScale(.large)
-          .foregroundColor(palette.iconForeground)
-          .padding()
-          .background(
-            RoundedRectangle(cornerRadius: 13, style: .continuous)
-              .foregroundColor(palette.iconBackground)
-          )
-        VStack(alignment:.leading) {
-          Text(feature.title).font(.system(.headline, design: .rounded))
-          Text(feature.description).font(.system(.subheadline))
-        }.padding(.leading, 15)
-      }
-      HStack { Spacer() }.frame(height: 15)
-      Spacer(minLength: 15)
+    Button(action: {
       
-      if let imageURL = feature.image {
-        CachedAsyncImage(url: imageURL, urlCache: .imageCache) {
-          $0.resizable().scaledToFit()
-        } placeholder: {
-          palette.iconBackground
+    }, label: {
+      VStack(alignment: .leading, spacing: 0) {
+        HStack(alignment: .top, spacing: 0) {
+          Image(systemName: feature.symbol)
+            .imageScale(.large)
+            .foregroundColor(palette.iconForeground)
+            .padding()
+            .background(
+              RoundedRectangle(cornerRadius: 13, style: .continuous)
+                .foregroundColor(palette.iconBackground)
+            )
+          VStack(alignment:.leading) {
+            Text(feature.title).font(.system(.headline, design: .rounded))
+            Text(feature.description).font(.system(.subheadline))
+          }.padding(.leading, 15)
+        }
+        HStack { Spacer() }.frame(height: 15)
+        Spacer(minLength: 15)
+        
+        if let imageURL = feature.image {
+          CachedAsyncImage(url: imageURL, urlCache: .imageCache) {
+            $0.resizable().scaledToFit()
+          } placeholder: {
+            palette.iconBackground
+          }
         }
       }
-    }
-    .onTapGesture {
-      if let url = feature.link {
-        UIApplication.shared.open(url)
-      }
-    }
-    .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
-    .background(
-      RoundedRectangle(cornerRadius: 15, style: .continuous)
-        .foregroundColor(palette.background)
-        .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
-    )
+      //    .onTapGesture {
+      //      if let url = feature.link {
+      //        UIApplication.shared.open(url)
+      //      }
+      //    }
+      .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
+      .background(
+        RoundedRectangle(cornerRadius: 15, style: .continuous)
+          .foregroundColor(palette.background)
+          .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
+      )
+    }).buttonStyle(ScaleButtonStyle())
     
     .padding(.bottom, 15)
+    
   }
 }
 
