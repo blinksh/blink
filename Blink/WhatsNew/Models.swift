@@ -33,6 +33,10 @@ import Foundation
 import SwiftUI
 import BlinkConfig
 
+extension URLCache {
+    static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
+}
+
 
 protocol RowsProvider: ObservableObject {
     var rows: [WhatsNewRow] { get }
@@ -113,7 +117,7 @@ extension WhatsNewRow: Decodable {
     }
     
     init(from decoder: Decoder) throws {
-        var container = try decoder.container(keyedBy: CodingKeys.self)
+        let container = try decoder.container(keyedBy: CodingKeys.self)
         switch container.allKeys.first {
         case .oneCol:
             let value = try container.decode(Feature.self, forKey: .oneCol)
