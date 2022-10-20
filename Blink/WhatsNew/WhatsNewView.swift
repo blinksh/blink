@@ -78,6 +78,15 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
               .padding(.init(top: 15, leading: hPadding, bottom: 15, trailing: hPadding))
             }
           }
+          .overlay(alignment: .top) {
+            Rectangle()
+              .frame(height: 24)
+              .foregroundColor(Color(UIColor.systemBackground))
+              .background(.regularMaterial)
+              .opacity(0.3)
+              .ignoresSafeArea()
+              .allowsHitTesting(false)
+          }
         }
     }
     
