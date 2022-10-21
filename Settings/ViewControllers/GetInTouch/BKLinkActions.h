@@ -40,5 +40,6 @@
 + (void)sendToDiscord;
 + (void)sendToReddit;
 + (void)sendToDiscordSupport;
++ (void)sendToGithubDiscussions;
 
 @end

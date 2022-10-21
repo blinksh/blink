@@ -86,4 +86,10 @@
   blink_openurl(url);
 }
 
++ (void)sendToGithubDiscussions {
+  NSURL *url = [NSURL URLWithString:@"https://github.com/blinksh/blink/discussions"];
+  blink_openurl(url);
+}
+
+
 @end

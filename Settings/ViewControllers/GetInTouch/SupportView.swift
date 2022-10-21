@@ -79,6 +79,17 @@ struct SupportView: View {
             Spacer()
             Text("#support").foregroundColor(.secondary)
           }
+          
+          HStack {
+            Button {
+              BKLinkActions.sendToGithubDiscussions()
+            } label: {
+              Label("GitHub", systemImage: "exclamationmark.bubble")
+            }
+            
+            Spacer()
+            Text("Discussions").foregroundColor(.secondary)
+          }
         }
       }
       .listStyle(.grouped)
