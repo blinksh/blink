@@ -33,10 +33,11 @@ import Foundation
 import SwiftUI
 import BlinkConfig
 
+import Purchases
+
 extension URLCache {
     static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
 }
-
 
 protocol RowsProvider: ObservableObject {
     var rows: [WhatsNewRow] { get }
@@ -49,11 +50,29 @@ class RowsViewModel: RowsProvider {
     @Published var rows = [WhatsNewRow]()
     @Published var hasFetchedData = false
     @Published var error: Error?
-    private let url = URL(string: XCConfig.infoPlistWhatsNewURL())!
 
     @MainActor
     func fetchData() async throws {
-      let (data, _) = try await URLSession.shared.data(from: url)
+      let tier = {
+        switch EntitlementsManager.shared.customerTier() {
+        case .Plus:
+          return "plus"
+        case .Classic:
+          return "classic"
+        case .TestFlight:
+          return "testflight"
+        case .Free:
+          return "free"
+        }
+      }
+      
+      var urlComponents = URLComponents(string: XCConfig.infoPlistWhatsNewURL())!
+      urlComponents.queryItems = [
+        URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
+        URLQueryItem(name: "customer_tier", value: tier())
+      ]
+      
+      let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
       let decoder = JSONDecoder()
       rows = try decoder.decode([WhatsNewRow].self, from: data)
       hasFetchedData = true

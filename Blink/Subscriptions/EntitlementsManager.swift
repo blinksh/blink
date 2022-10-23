@@ -146,4 +146,24 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     return "Free Plan"
   }
   
+  public func customerTier() -> CustomerTier {
+    if activeSubscriptions.contains(ProductBlinkShellPlusID) {
+      return CustomerTier.Plus
+    }
+    if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
+      return CustomerTier.Classic
+    }
+    if PublishingOptions.current == .testFlight {
+      return CustomerTier.TestFlight
+    }
+    
+    return CustomerTier.Free
+  }
+}
+
+public enum CustomerTier {
+  case Free
+  case Plus
+  case Classic
+  case TestFlight
 }
