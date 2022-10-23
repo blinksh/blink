@@ -157,32 +157,44 @@ struct BasicFeatureCard: View {
       VStack(alignment: .leading, spacing: 0) {
         HStack(alignment: .top, spacing: 0) {
           Image(systemName: feature.symbol)
-            .imageScale(.large)
+            .font(.system(size: 25))
+            //.imageScale(.large)
             .foregroundColor(palette.iconForeground)
+            //.frame(width: 70, height: 70)
             .padding()
             .background(
-              RoundedRectangle(cornerRadius: 13, style: .continuous)
+              RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .foregroundColor(palette.iconBackground)
             )
-          VStack(alignment:.leading) {
-            Text(feature.title).font(.system(.headline, design: .rounded))
-            Text(feature.description).font(.system(.subheadline))
+//          VStack(alignment:.leading) {
+//            Text(feature.title).font(.system(.headline, design: .rounded))
+//            Text(feature.description).font(.system(.subheadline))
+          VStack(alignment: .leading, spacing: 0.2) {
+            Text(feature.title).font(.system(.headline))
+            Text(feature.description).font(.system(.body))
           }.padding(.leading, 15)
         }
         HStack { Spacer() }.frame(height: 15)
-        Spacer(minLength: 15)
+        Spacer(minLength: 5)
         
-        if let imageURL = feature.image {
+        if let images = feature.images,
+           // Atm just a single image
+           let imageURL = images[0] {
           CachedAsyncImage(url: imageURL, urlCache: .imageCache) {
-            $0.resizable().scaledToFit()
+            $0.resizable().scaledToFit().cornerRadius(8)
+              .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                  .stroke(Color(UIColor.systemGray2), lineWidth: 1)
+              )
           } placeholder: {
             palette.iconBackground
           }
+          .padding(EdgeInsets(top: 0, leading: 0, bottom: 15, trailing: 0))
         }
       }
       .padding(EdgeInsets(top: 15, leading: 15, bottom: 0, trailing: 15))
       .background(
-        RoundedRectangle(cornerRadius: 15, style: .continuous)
+        RoundedRectangle(cornerRadius: 21, style: .continuous)
           .foregroundColor(palette.background)
           .shadow(color: Color(red: 0, green: 0, blue: 0, opacity: 0.13), radius: 45)
       )

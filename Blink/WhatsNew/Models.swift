@@ -74,20 +74,21 @@ class RowsViewModel: RowsProvider {
       
       let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
       let decoder = JSONDecoder()
-      rows = try decoder.decode([WhatsNewRow].self, from: data)
+      let doc = try decoder.decode(WhatsNewDoc.self, from: data)
+      rows = doc.rows
       hasFetchedData = true
     }
 }
 
 let RowSamples = [
   WhatsNewRow.oneCol(
-    Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"))
+    Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: [URL(string: "https://whatsnew/test.png")!], color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"), availability: nil)
   ),
   WhatsNewRow.versionInfo(VersionInfo(number: "1.0.0", link: URL(string:"http://blink.sh"))),
     WhatsNewRow.twoCol(
-      [Feature(title: "Passkeys", description: "Cool keys on your phone.", image: URL(string: "https://blink-363718.web.app/whatsnew/test.png")!, color: .orange, symbol: "person.badge.key.fill", link: nil)],
-      [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", image: nil, color: .purple, symbol: "globe", link: nil),
-       Feature(title: "Simple", description: "No Munch", image: nil, color: .yellow, symbol: "ladybug.fill", link: nil)]
+      [Feature(title: "Passkeys", description: "Cool keys on your phone.", images: [URL(string: "https://whatsnew/test.png")!], color: .orange, symbol: "person.badge.key.fill", link: nil, availability: .earlyAccess)],
+      [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: nil, color: .purple, symbol: "globe", link: nil, availability: nil),
+       Feature(title: "Simple", description: "No Munch", images: nil, color: .yellow, symbol: "ladybug.fill", link: nil, availability: nil)]
     )
 ]
 
@@ -102,6 +103,11 @@ class RowsViewModelDemo: RowsProvider {
         try await Task.sleep(nanoseconds: 2_000_000_000)
         hasFetchedData = true
     }
+}
+
+struct WhatsNewDoc: Decodable {
+    let ver: String
+    let rows: [WhatsNewRow]
 }
 
 enum WhatsNewRow: Identifiable {
@@ -163,14 +169,21 @@ enum FeatureColor: String, Decodable {
     case purple = "purple"
 }
 
+// A feature may be available on Early Access (atm Plus), or
+// for Build users, etc...
+enum FeatureAvailability: String, Decodable {
+    case earlyAccess = "early_access"
+}
+
 struct Feature: Identifiable, Decodable {
     let title: String
     let description: String
     var id: String { title }
-    let image: URL?
+    let images: [URL]?
     let color: FeatureColor
     let symbol: String
     let link: URL?
+    let availability: FeatureAvailability?
 }
 
 struct VersionInfo: Identifiable, Decodable {

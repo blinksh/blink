@@ -99,6 +99,7 @@
 		BD67FC89272E401000C1EE75 /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		BD67FC9B2732D4D300C1EE75 /* BackgroundTaskMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */; };
 		BD74A7A7290061DE00ED01CF /* WhatsNewInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7A6290061DE00ED01CF /* WhatsNewInfo.swift */; };
+		BD74A7C22905BD5800ED01CF /* WhatsNewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */; };
 		BD7810A52640C36100114700 /* NWConnection+WriterTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */; };
 		BD7AFC4128E8E98C004BCDA4 /* Base32Kit in Frameworks */ = {isa = PBXBuildFile; productRef = BD7AFC4028E8E98C004BCDA4 /* Base32Kit */; };
 		BD7AFC4328E8E9A9004BCDA4 /* Base32Kit in Frameworks */ = {isa = PBXBuildFile; productRef = BD7AFC4228E8E9A9004BCDA4 /* Base32Kit */; };
@@ -766,6 +767,7 @@
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
 		BD67FC9A2732D4D300C1EE75 /* BackgroundTaskMonitor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundTaskMonitor.swift; sourceTree = "<group>"; };
 		BD74A7A6290061DE00ED01CF /* WhatsNewInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewInfo.swift; sourceTree = "<group>"; };
+		BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WhatsNewModelTests.swift; sourceTree = "<group>"; };
 		BD7810A42640C36100114700 /* NWConnection+WriterTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NWConnection+WriterTo.swift"; sourceTree = "<group>"; };
 		BD81521C27387D1F002BB169 /* Certificates.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Certificates.swift; sourceTree = "<group>"; };
 		BD8152532743FF84002BB169 /* skstore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = skstore.swift; sourceTree = "<group>"; };
@@ -1902,6 +1904,7 @@
 				D265FBC42317E5090017EAC4 /* SessionParamsTests.swift */,
 				BD8BBF0825F819970084705F /* SEKeyTests.swift */,
 				BD9EA215271F83B400874007 /* BlinkLoggingTests.swift */,
+				BD74A7C12905BD5800ED01CF /* WhatsNewModelTests.swift */,
 			);
 			path = BlinkTests;
 			sourceTree = "<group>";
@@ -2913,6 +2916,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				BD74A7C22905BD5800ED01CF /* WhatsNewModelTests.swift in Sources */,
 				BD9EA217271F846100874007 /* BlinkLogging.swift in Sources */,
 				D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */,
 				D243F17E2602438D00097A2F /* XCTestCase.swift in Sources */,
@@ -4187,6 +4191,7 @@
 					"$(inherited)",
 				);
 				INFOPLIST_FILE = BlinkTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -4221,6 +4226,7 @@
 				CURRENT_PROJECT_VERSION = 543;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkTests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.4;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
