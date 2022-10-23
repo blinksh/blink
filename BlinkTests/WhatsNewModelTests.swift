@@ -98,8 +98,8 @@ final class WhatsNewModelTests: XCTestCase {
 ]
 }
 """.data(using: .utf8)!
-      let doc = try! JSONDecoder().decode(WhatsNewDoc.self, from: data)
-      print(doc.rows)
+    let doc = try! JSONDecoder().decode(WhatsNewDoc.self, from: data)
+    print(doc.rows)
   }
 
 }

@@ -36,48 +36,48 @@ import BlinkConfig
 import Purchases
 
 extension URLCache {
-    static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
+  static let imageCache = URLCache(memoryCapacity: 512*1000*1000, diskCapacity: 10*1000*1000*1000)
 }
 
 protocol RowsProvider: ObservableObject {
-    var rows: [WhatsNewRow] { get }
-    var hasFetchedData: Bool { get }
-
-    func fetchData() async throws
+  var rows: [WhatsNewRow] { get }
+  var hasFetchedData: Bool { get }
+  
+  func fetchData() async throws
 }
 
 class RowsViewModel: RowsProvider {
-    @Published var rows = [WhatsNewRow]()
-    @Published var hasFetchedData = false
-    @Published var error: Error?
-
-    @MainActor
-    func fetchData() async throws {
-      let tier = {
-        switch EntitlementsManager.shared.customerTier() {
-        case .Plus:
-          return "plus"
-        case .Classic:
-          return "classic"
-        case .TestFlight:
-          return "testflight"
-        case .Free:
-          return "free"
-        }
+  @Published var rows = [WhatsNewRow]()
+  @Published var hasFetchedData = false
+  @Published var error: Error?
+  
+  @MainActor
+  func fetchData() async throws {
+    let tier = {
+      switch EntitlementsManager.shared.customerTier() {
+      case .Plus:
+        return "plus"
+      case .Classic:
+        return "classic"
+      case .TestFlight:
+        return "testflight"
+      case .Free:
+        return "free"
       }
-      
-      var urlComponents = URLComponents(string: XCConfig.infoPlistWhatsNewURL())!
-      urlComponents.queryItems = [
-        URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
-        URLQueryItem(name: "customer_tier", value: tier())
-      ]
-      
-      let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
-      let decoder = JSONDecoder()
-      let doc = try decoder.decode(WhatsNewDoc.self, from: data)
-      rows = doc.rows
-      hasFetchedData = true
     }
+    
+    var urlComponents = URLComponents(string: XCConfig.infoPlistWhatsNewURL())!
+    urlComponents.queryItems = [
+      URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
+      URLQueryItem(name: "customer_tier", value: tier())
+    ]
+    
+    let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
+    let decoder = JSONDecoder()
+    let doc = try decoder.decode(WhatsNewDoc.self, from: data)
+    rows = doc.rows
+    hasFetchedData = true
+  }
 }
 
 let RowSamples = [
@@ -85,109 +85,109 @@ let RowSamples = [
     Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: [URL(string: "https://whatsnew/test.png")!], color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"), availability: nil)
   ),
   WhatsNewRow.versionInfo(VersionInfo(number: "1.0.0", link: URL(string:"http://blink.sh"))),
-    WhatsNewRow.twoCol(
-      [Feature(title: "Passkeys", description: "Cool keys on your phone.", images: [URL(string: "https://whatsnew/test.png")!], color: .orange, symbol: "person.badge.key.fill", link: nil, availability: .earlyAccess)],
-      [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: nil, color: .purple, symbol: "globe", link: nil, availability: nil),
-       Feature(title: "Simple", description: "No Munch", images: nil, color: .yellow, symbol: "ladybug.fill", link: nil, availability: nil)]
-    )
+  WhatsNewRow.twoCol(
+    [Feature(title: "Passkeys", description: "Cool keys on your phone.", images: [URL(string: "https://whatsnew/test.png")!], color: .orange, symbol: "person.badge.key.fill", link: nil, availability: .earlyAccess)],
+    [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: nil, color: .purple, symbol: "globe", link: nil, availability: nil),
+     Feature(title: "Simple", description: "No Munch", images: nil, color: .yellow, symbol: "ladybug.fill", link: nil, availability: nil)]
+  )
 ]
 
 class RowsViewModelDemo: RowsProvider {
-    @Published var rows = [WhatsNewRow]()
-    @Published var hasFetchedData = false
-    static var baseURL = URL(fileURLWithPath: "")
-    
-    @MainActor
-    func fetchData() async throws{
-        rows = RowSamples
-        try await Task.sleep(nanoseconds: 2_000_000_000)
-        hasFetchedData = true
-    }
+  @Published var rows = [WhatsNewRow]()
+  @Published var hasFetchedData = false
+  static var baseURL = URL(fileURLWithPath: "")
+  
+  @MainActor
+  func fetchData() async throws{
+    rows = RowSamples
+    try await Task.sleep(nanoseconds: 2_000_000_000)
+    hasFetchedData = true
+  }
 }
 
 struct WhatsNewDoc: Decodable {
-    let ver: String
-    let rows: [WhatsNewRow]
+  let ver: String
+  let rows: [WhatsNewRow]
 }
 
 enum WhatsNewRow: Identifiable {
-    // NOTE We may want to have something more "abstract" than a "feature".
-    // Items can also be "banners".
-    // Or maybe a singleCol would be a "separator" as a banner.
-    case oneCol(Feature)
-    case twoCol([Feature], [Feature])
-    case versionInfo(VersionInfo)
-
-    var id: String {
-        switch self {
-        case .oneCol(let feature):
-            return feature.title
-        case .twoCol(let left, _):
-            return left.reduce(String(), { $0.appending($1.title) })
-        case .versionInfo(let info):
-            return info.number
-        }
+  // NOTE We may want to have something more "abstract" than a "feature".
+  // Items can also be "banners".
+  // Or maybe a singleCol would be a "separator" as a banner.
+  case oneCol(Feature)
+  case twoCol([Feature], [Feature])
+  case versionInfo(VersionInfo)
+  
+  var id: String {
+    switch self {
+    case .oneCol(let feature):
+      return feature.title
+    case .twoCol(let left, _):
+      return left.reduce(String(), { $0.appending($1.title) })
+    case .versionInfo(let info):
+      return info.number
     }
+  }
 }
 
 extension WhatsNewRow: Decodable {
-    enum CodingKeys: CodingKey {
-        case oneCol
-        case twoCol
-        case versionInfo
+  enum CodingKeys: CodingKey {
+    case oneCol
+    case twoCol
+    case versionInfo
+  }
+  
+  enum CodingError: Error {
+    case decoding(String)
+  }
+  
+  init(from decoder: Decoder) throws {
+    let container = try decoder.container(keyedBy: CodingKeys.self)
+    switch container.allKeys.first {
+    case .oneCol:
+      let value = try container.decode(Feature.self, forKey: .oneCol)
+      self = .oneCol(value)
+    case .twoCol:
+      let value = try container.decode([[Feature]].self, forKey: .twoCol)
+      if value.count != 2 {
+        throw CodingError.decoding("twoCol has wrong amount of columns")
+      }
+      self = .twoCol(value[0], value[1])
+    case .versionInfo:
+      let value = try container.decode(VersionInfo.self, forKey: .versionInfo)
+      self = .versionInfo(value)
+    default:
+      throw CodingError.decoding("Unknown field \(container)")
     }
-    
-    enum CodingError: Error {
-        case decoding(String)
-    }
-    
-    init(from decoder: Decoder) throws {
-        let container = try decoder.container(keyedBy: CodingKeys.self)
-        switch container.allKeys.first {
-        case .oneCol:
-            let value = try container.decode(Feature.self, forKey: .oneCol)
-            self = .oneCol(value)
-        case .twoCol:
-            let value = try container.decode([[Feature]].self, forKey: .twoCol)
-            if value.count != 2 {
-                throw CodingError.decoding("twoCol has wrong amount of columns")
-            }
-            self = .twoCol(value[0], value[1])
-        case .versionInfo:
-            let value = try container.decode(VersionInfo.self, forKey: .versionInfo)
-            self = .versionInfo(value)
-        default:
-            throw CodingError.decoding("Unknown field \(container)")
-        }
-    }
+  }
 }
 
 enum FeatureColor: String, Decodable {
-    case blue = "blue"
-    case orange = "orange"
-    case yellow = "yellow"
-    case purple = "purple"
+  case blue = "blue"
+  case orange = "orange"
+  case yellow = "yellow"
+  case purple = "purple"
 }
 
 // A feature may be available on Early Access (atm Plus), or
 // for Build users, etc...
 enum FeatureAvailability: String, Decodable {
-    case earlyAccess = "early_access"
+  case earlyAccess = "early_access"
 }
 
 struct Feature: Identifiable, Decodable {
-    let title: String
-    let description: String
-    var id: String { title }
-    let images: [URL]?
-    let color: FeatureColor
-    let symbol: String
-    let link: URL?
-    let availability: FeatureAvailability?
+  let title: String
+  let description: String
+  var id: String { title }
+  let images: [URL]?
+  let color: FeatureColor
+  let symbol: String
+  let link: URL?
+  let availability: FeatureAvailability?
 }
 
 struct VersionInfo: Identifiable, Decodable {
-    var id: String { number }
-    let number: String
-    let link: URL?
+  var id: String { number }
+  let number: String
+  let link: URL?
 }

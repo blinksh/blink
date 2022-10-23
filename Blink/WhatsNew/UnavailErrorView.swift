@@ -32,28 +32,28 @@
 import SwiftUI
 
 struct UnavailErrorView: View {
-    var retry: () async -> ()
-    var body: some View {
-        VStack {
-            Text("Couldn't perform the request. Please try again.")
-                .font(.title)
-                .multilineTextAlignment(.center)
-                .foregroundColor(.gray)
-            Button(action: { Task { await retry() } }) {
-                Image(systemName: "arrow.triangle.2.circlepath.circle")
-                    .imageScale(.large)
-                Text("Retry")
-            }
-            .foregroundColor(.gray)
-            .buttonStyle(.bordered)
-        }
-        .padding(50)
-
+  var retry: () async -> ()
+  var body: some View {
+    VStack {
+      Text("Couldn't perform the request. Please try again.")
+        .font(.title)
+        .multilineTextAlignment(.center)
+        .foregroundColor(.gray)
+      Button(action: { Task { await retry() } }) {
+        Image(systemName: "arrow.triangle.2.circlepath.circle")
+          .imageScale(.large)
+        Text("Retry")
+      }
+      .foregroundColor(.gray)
+      .buttonStyle(.bordered)
     }
+    .padding(50)
+    
+  }
 }
 
 struct UnavailErrorView_Previews: PreviewProvider {
-    static var previews: some View {
-        UnavailErrorView(retry: {})
-    }
+  static var previews: some View {
+    UnavailErrorView(retry: {})
+  }
 }
