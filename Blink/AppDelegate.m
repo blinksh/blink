@@ -70,8 +70,8 @@ void __setupProcessEnv(void) {
   NSString *locales_path = [mainBundle pathForResource:@"locales" ofType:@"bundle"];
   setenv("PATH_LOCALE", locales_path.UTF8String, forceOverwrite);
   setlocale(LC_ALL, "UTF-8");
-  setenv("TERM", "xterm-256color", 0);
-  setenv("LANG", "en_US.UTF-8", 0);
+  setenv("TERM", "xterm-256color", forceOverwrite);
+  setenv("LANG", "en_US.UTF-8", forceOverwrite);
   
   ssh_threads_set_callbacks(ssh_threads_get_pthread());
   ssh_init();
@@ -102,7 +102,8 @@ void __setupProcessEnv(void) {
   initializeEnvironment(); // initialize environment variables for iOS system
   dispatch_async(bgQueue, ^{
     addCommandList([[NSBundle mainBundle] pathForResource:@"blinkCommandsDictionary" ofType:@"plist"]); // Load blink commands to ios_system
-      __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+    __setupProcessEnv(); // we should call this after ios_system initializeEnvironment to override its defaults.
+    [AppDelegate _loadProfileVars];
   });
   
   NSString *homePath = BlinkPaths.homePath;
