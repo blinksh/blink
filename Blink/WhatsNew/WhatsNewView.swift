@@ -34,11 +34,11 @@ import CachedAsyncImage
 
 
 struct ScaleButtonStyle: ButtonStyle {
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-        .scaleEffect(configuration.isPressed ? 0.95 : 1)
-        .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
-    }
+  func makeBody(configuration: Configuration) -> some View {
+    configuration.label
+      .scaleEffect(configuration.isPressed ? 0.95 : 1)
+      .animation(.easeOut(duration: 0.15), value: configuration.isPressed)
+  }
 }
 
 struct WhatsNewView<ViewModel: RowsProvider>: View {
@@ -113,18 +113,18 @@ struct WhatsNewView<ViewModel: RowsProvider>: View {
 }
 
 extension Feature {
-    fileprivate func colorPalette(for scheme: ColorScheme) -> FeatureColorPalette {
-        switch color {
-        case .blue:
-            return scheme == .light ? LightBlueColorPalette() : DarkBlueColorPalette()
-        case .yellow:
-            return scheme == .light ? LightYellowColorPalette() : DarkYellowColorPalette()
-        case .orange:
-            return scheme == .light ? LightOrangeColorPalette() : DarkOrangeColorPalette()
-        case .purple:
-            return scheme == .light ? LightPurpleColorPalette() : DarkPurpleColorPalette()
-        }
+  fileprivate func colorPalette(for scheme: ColorScheme) -> FeatureColorPalette {
+    switch color {
+    case .blue:
+      return scheme == .light ? LightBlueColorPalette() : DarkBlueColorPalette()
+    case .yellow:
+      return scheme == .light ? LightYellowColorPalette() : DarkYellowColorPalette()
+    case .orange:
+      return scheme == .light ? LightOrangeColorPalette() : DarkOrangeColorPalette()
+    case .purple:
+      return scheme == .light ? LightPurpleColorPalette() : DarkPurpleColorPalette()
     }
+  }
 }
 
 struct FeatureStack: View {
@@ -143,7 +143,7 @@ struct FeatureStack: View {
 
 struct BasicFeatureCard: View {
   @Environment(\.colorScheme) var colorScheme
-    
+  
   let feature: Feature
   
   var body: some View {
@@ -158,17 +158,17 @@ struct BasicFeatureCard: View {
         HStack(alignment: .top, spacing: 0) {
           Image(systemName: feature.symbol)
             .font(.system(size: 25))
-            //.imageScale(.large)
+          //.imageScale(.large)
             .foregroundColor(palette.iconForeground)
-            //.frame(width: 70, height: 70)
+          //.frame(width: 70, height: 70)
             .padding()
             .background(
               RoundedRectangle(cornerRadius: 8, style: .continuous)
                 .foregroundColor(palette.iconBackground)
             )
-//          VStack(alignment:.leading) {
-//            Text(feature.title).font(.system(.headline, design: .rounded))
-//            Text(feature.description).font(.system(.subheadline))
+          //          VStack(alignment:.leading) {
+          //            Text(feature.title).font(.system(.headline, design: .rounded))
+          //            Text(feature.description).font(.system(.subheadline))
           VStack(alignment: .leading, spacing: 0.2) {
             Text(feature.title).font(.system(.headline))
             Text(feature.description).font(.system(.body))
@@ -212,27 +212,27 @@ struct VersionSeparator: View {
     HStack {
       Spacer()
       Button(action: {
-               if let url = info.link {
-                 UIApplication.shared.open(url)
-               }
-             }) {
+        if let url = info.link {
+          UIApplication.shared.open(url)
+        }
+      }) {
         Text("View all changes in \(info.number)")
         Image(systemName: "arrow.forward.circle")
           .imageScale(.medium)
         
       }
-        .font(.callout)
-        //.fontWeight(.bold)
-        .foregroundColor(.blue)
-        .buttonStyle(.borderless)
+      .font(.callout)
+      //.fontWeight(.bold)
+      .foregroundColor(.blue)
+      .buttonStyle(.borderless)
       
     }.padding(20)
   }
 }
 
 struct WhatsNewView_Previews: PreviewProvider {
-    static var previews: some View {
-        WhatsNewView(rowsProvider: RowsViewModelDemo())
-        // ContentView(rowsProvider: RowsViewModel())
-    }
+  static var previews: some View {
+    WhatsNewView(rowsProvider: RowsViewModelDemo())
+    // ContentView(rowsProvider: RowsViewModel())
+  }
 }

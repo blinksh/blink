@@ -33,53 +33,53 @@ import SwiftUI;
 import Foundation
 
 protocol FeatureColorPalette {
-    var background: Color { get }
-    var iconBackground: Color { get }
-    var iconForeground: Color { get }
+  var background: Color { get }
+  var iconBackground: Color { get }
+  var iconForeground: Color { get }
 }
 
 struct LightBlueColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.99, green: 1.0, blue: 1.0) }
-    var iconBackground: Color { Color(red: 0.87, green: 0.93, blue: 1.0) }
-    var iconForeground: Color { Color(red: 0.09, green: 0.47, blue: 0.95) }
+  var background: Color { Color(red: 0.99, green: 1.0, blue: 1.0) }
+  var iconBackground: Color { Color(red: 0.87, green: 0.93, blue: 1.0) }
+  var iconForeground: Color { Color(red: 0.09, green: 0.47, blue: 0.95) }
 }
 
 struct LightOrangeColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 1, green: 0.982, blue: 0.979) }
-    var iconBackground: Color { Color(red: 1, green: 0.88, blue: 0.858) }
-    var iconForeground: Color { Color(red: 1.00, green: 0.27, blue: 0.13) }
+  var background: Color { Color(red: 1, green: 0.982, blue: 0.979) }
+  var iconBackground: Color { Color(red: 1, green: 0.88, blue: 0.858) }
+  var iconForeground: Color { Color(red: 1.00, green: 0.27, blue: 0.13) }
 }
 
 struct LightYellowColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 1, green: 0.993, blue: 0.975) }
-    var iconBackground: Color { Color(red: 1, green: 0.929, blue: 0.746)}
-    var iconForeground: Color { Color(red: 1.00, green: 0.72, blue: 0.00) }
+  var background: Color { Color(red: 1, green: 0.993, blue: 0.975) }
+  var iconBackground: Color { Color(red: 1, green: 0.929, blue: 0.746)}
+  var iconForeground: Color { Color(red: 1.00, green: 0.72, blue: 0.00) }
 }
 
 struct LightPurpleColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.993, green: 0.983, blue: 1) }
-    var iconBackground: Color { Color(red: 0.954, green: 0.896, blue: 1)}
-    var iconForeground: Color { Color(red: 0.62, green: 0.13, blue: 1.00) }
+  var background: Color { Color(red: 0.993, green: 0.983, blue: 1) }
+  var iconBackground: Color { Color(red: 0.954, green: 0.896, blue: 1)}
+  var iconForeground: Color { Color(red: 0.62, green: 0.13, blue: 1.00) }
 }
 
 class DarkColorPalette: FeatureColorPalette {
-    var background: Color { Color(red: 0.11, green: 0.122, blue: 0.137) }
-    var iconBackground: Color { Color(red: 0.022, green: 0.033, blue: 0.042) }
-    var iconForeground: Color { .white }
+  var background: Color { Color(red: 0.11, green: 0.122, blue: 0.137) }
+  var iconBackground: Color { Color(red: 0.022, green: 0.033, blue: 0.042) }
+  var iconForeground: Color { .white }
 }
 
 class DarkBlueColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightBlueColorPalette().iconForeground }
+  override var iconForeground: Color { LightBlueColorPalette().iconForeground }
 }
 
 class DarkOrangeColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightOrangeColorPalette().iconForeground }
+  override var iconForeground: Color { LightOrangeColorPalette().iconForeground }
 }
 
 class DarkYellowColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightYellowColorPalette().iconForeground }
+  override var iconForeground: Color { LightYellowColorPalette().iconForeground }
 }
 
 class DarkPurpleColorPalette: DarkColorPalette {
-    override var iconForeground: Color { LightPurpleColorPalette().iconForeground }
+  override var iconForeground: Color { LightPurpleColorPalette().iconForeground }
 }
