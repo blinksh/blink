@@ -47,7 +47,7 @@ struct EarlyFeaturesAccessLetterView<ViewModel: RowsProvider>: View {
     VStack {
       GridView(rowsProvider: rowsProvider)
       if rowsProvider.hasFetchedData {
-        Button("Get Blink Plus", action: presentPlans)
+        Button("Upgrade to Blink Plus", action: presentPlans)
           .buttonStyle(.borderedProminent)
       }
     }

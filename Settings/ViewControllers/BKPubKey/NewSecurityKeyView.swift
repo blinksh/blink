@@ -191,7 +191,7 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    guard false// EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
     else {
       self.steps = [.Letter]
       return
@@ -203,7 +203,7 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
     
     do {
       
-      try BKPubKey.addSecurityKey(id: keyID, rpId: rpIdWith(keyID: keyID), tag: tag, rawAttestationObject: rawAttestationObject, comment: self.keyComment)
+      try BKPubKey.addSecurityKey(id: keyID, rpId: rpIdWith(keyID: keyID), tag: tag, rawAttestationObject: rawAttestationObject, comment: comment)
     
       onSuccess()
     } catch {
