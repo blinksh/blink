@@ -179,7 +179,7 @@ struct BasicFeatureCard: View {
         
         if let images = feature.images,
            // Atm just a single image
-           let imageURL = images[0] {
+           let imageURL = images.first {
           CachedAsyncImage(url: imageURL, urlCache: .imageCache) {
             $0.resizable().scaledToFit().cornerRadius(8)
               .overlay(
