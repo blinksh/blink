@@ -36,5 +36,6 @@
 
 + (NSString *)blinkVersion;
 + (NSString *)blinkShortVersion;
++ (NSString *)blinkMajorVersion;
 
 @end
