@@ -52,4 +52,11 @@
   return [NSString stringWithFormat:@"v%@.%@", majorVersion, minorVersion];
 }
 
++ (NSString *)blinkMajorVersion {
+  NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
+  NSString *majorVersion = [infoDictionary objectForKey:@"CFBundleShortVersionString"];
+  return [NSString stringWithFormat:@"v%@", majorVersion];
+}
+
+
 @end

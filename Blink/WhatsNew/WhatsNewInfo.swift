@@ -40,7 +40,7 @@ class WhatsNewInfo {
   static private let MaxDisplayCount = 5
   static private let LastVersionKey = "LastVersionDisplay"
   static private let CountVersionDisplayKey = "CountVersionDisplayKey"
-  static private var Version: String { UIApplication.blinkShortVersion() }
+  static private var Version: String { UIApplication.blinkMajorVersion() }
 
   private init() {}
 
