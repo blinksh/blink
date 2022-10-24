@@ -47,9 +47,18 @@ protocol RowsProvider: ObservableObject {
 }
 
 class RowsViewModel: RowsProvider {
+  
+  let baseURL: String
+  let additionalParams: [URLQueryItem]
+  
   @Published var rows = [WhatsNewRow]()
   @Published var hasFetchedData = false
   @Published var error: Error?
+  
+  init(baseURL: String, additionalParams: [URLQueryItem] = []) {
+    self.baseURL = baseURL
+    self.additionalParams = additionalParams
+  }
   
   @MainActor
   func fetchData() async throws {
@@ -66,11 +75,11 @@ class RowsViewModel: RowsProvider {
       }
     }
     
-    var urlComponents = URLComponents(string: XCConfig.infoPlistWhatsNewURL())!
+    var urlComponents = URLComponents(string: baseURL)!
     urlComponents.queryItems = [
       URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
       URLQueryItem(name: "customer_tier", value: tier())
-    ]
+    ] + additionalParams
     
     let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
     let decoder = JSONDecoder()

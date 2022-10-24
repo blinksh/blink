@@ -43,6 +43,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *) infoPlistGroupID;
 + (NSString *) infoPlistFullGroupID;
 + (NSString *) infoPlistWhatsNewURL;
++ (NSString *) infoPlistConversionOpportunityURL;
 
 @end
 
