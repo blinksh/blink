@@ -43,7 +43,7 @@ struct NewPasskeyView: View {
   let onSuccess: () -> Void
   
   @StateObject private var _state = NewPasskeyObservable()
-  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "security_keys_feature")])
+  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "passkeys_feature")])
   
   var body: some View {
     NavigationStack(path: $_state.steps) {

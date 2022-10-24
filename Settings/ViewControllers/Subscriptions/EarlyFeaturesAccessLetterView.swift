@@ -49,6 +49,9 @@ struct EarlyFeaturesAccessLetterView<ViewModel: RowsProvider>: View {
       if rowsProvider.hasFetchedData {
         Button("Upgrade to Blink Plus", action: presentPlans)
           .buttonStyle(.borderedProminent)
+          .buttonBorderShape(.capsule)
+          .padding()
+        Spacer()
       }
     }
     .navigationBarTitleDisplayMode(.inline)
