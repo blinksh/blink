@@ -205,7 +205,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    guard false// EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
     else {
       self.steps = [.Letter]
       return
