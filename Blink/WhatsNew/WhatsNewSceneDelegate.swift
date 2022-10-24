@@ -54,9 +54,8 @@ class WhatsNewSceneDelegate: UIResponder, UIWindowSceneDelegate {
     let window = UIWindow(windowScene: windowScene)
     self.window = window
     
-    let root = FocusableVC(rootView: WhatsNewView(rowsProvider: RowsViewModel(), ipad: true))
+    let root = FocusableVC(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL()), ipad: true))
     
-
     // Reset version when opening.
     WhatsNewInfo.setNewVersion()
     

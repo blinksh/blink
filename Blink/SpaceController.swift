@@ -962,7 +962,7 @@ extension SpaceController {
       } else {
         // Reset version when opening.
         WhatsNewInfo.setNewVersion()
-        let root = UIHostingController(rootView: WhatsNewView(rowsProvider: RowsViewModel()))
+        let root = UIHostingController(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL())))
         self.present(root, animated: true, completion: nil)
       }
     }

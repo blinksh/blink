@@ -290,7 +290,7 @@
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
 		D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */; };
-		D264D2B228F84592002B1B14 /* WhatsNewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AF28F84592002B1B14 /* WhatsNewView.swift */; };
+		D264D2B228F84592002B1B14 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AF28F84592002B1B14 /* GridView.swift */; };
 		D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B028F84592002B1B14 /* UnavailErrorView.swift */; };
 		D264D2B428F84592002B1B14 /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B128F84592002B1B14 /* Models.swift */; };
 		D264D2B628F84724002B1B14 /* whatsnew.m in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B528F84724002B1B14 /* whatsnew.m */; };
@@ -949,7 +949,7 @@
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
 		D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyFeaturesAccessLetterView.swift; sourceTree = "<group>"; };
-		D264D2AF28F84592002B1B14 /* WhatsNewView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WhatsNewView.swift; sourceTree = "<group>"; };
+		D264D2AF28F84592002B1B14 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		D264D2B028F84592002B1B14 /* UnavailErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnavailErrorView.swift; sourceTree = "<group>"; };
 		D264D2B128F84592002B1B14 /* Models.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Models.swift; sourceTree = "<group>"; };
 		D264D2B528F84724002B1B14 /* whatsnew.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = whatsnew.m; sourceTree = "<group>"; };
@@ -1886,7 +1886,7 @@
 		D264D2AE28F8457A002B1B14 /* WhatsNew */ = {
 			isa = PBXGroup;
 			children = (
-				D264D2AF28F84592002B1B14 /* WhatsNewView.swift */,
+				D264D2AF28F84592002B1B14 /* GridView.swift */,
 				D264D2B128F84592002B1B14 /* Models.swift */,
 				D264D2B028F84592002B1B14 /* UnavailErrorView.swift */,
 				D264D2B728F96C66002B1B14 /* WhatsNewSceneDelegate.swift */,
@@ -3043,7 +3043,7 @@
 				07E3AEC61D9190CF007BC086 /* BKAboutViewController.m in Sources */,
 				D2F330D620A6F4F50074ADD7 /* history.m in Sources */,
 				BD74A7A7290061DE00ED01CF /* WhatsNewInfo.swift in Sources */,
-				D264D2B228F84592002B1B14 /* WhatsNewView.swift in Sources */,
+				D264D2B228F84592002B1B14 /* GridView.swift in Sources */,
 				D2EFE1F520B7FAFC0087888B /* link_files.m in Sources */,
 				D2C24418238E44AB0082C69C /* KBConfigView.swift in Sources */,
 				D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */,

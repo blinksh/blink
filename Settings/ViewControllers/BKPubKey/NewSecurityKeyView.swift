@@ -44,6 +44,7 @@ struct NewSecurityKeyView: View {
   let onSuccess: () -> Void
   
   @StateObject private var _state = NewSecurityKeyObservable()
+  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "security_keys_feature")])
   
   var body: some View {
     NavigationStack(path: $_state.steps) {
@@ -76,7 +77,7 @@ struct NewSecurityKeyView: View {
         
         Section(
           header: Text("INFORMATION"),
-          footer: Text("...")
+          footer: Text("Use Secure Keys to authenticate using specialized hardware, like Yubikey or the Titan key. Blink uses the new Web Authentication standard, which may not be supported by all servers.\nFor more information, visit [docs.blink.sh](https://docs.blink.sh/advanced/webauthn).")
         ) { }
       }
       .listStyle(GroupedListStyle())
@@ -92,7 +93,7 @@ struct NewSecurityKeyView: View {
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
         switch step {
-        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans)
+        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans, rowsProvider: _provider)
         case .Plans: PlansView()
         }
       })

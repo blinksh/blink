@@ -37,21 +37,21 @@ enum EarlyFeatureAccessSteps {
   case Letter, Plans
 }
 
-struct EarlyFeaturesAccessLetterView: View {
+
+struct EarlyFeaturesAccessLetterView<ViewModel: RowsProvider>: View {
   let presentPlans: () -> ();
+  
+  @StateObject var rowsProvider: ViewModel
   
   var body: some View {
     VStack {
-      Text("Early Access Feature").font(.largeTitle)
-      Spacer().frame(maxHeight: 30)
-      Text("""
-Passkeys and Security Keys are early access feature for **Blink+ Plan** and Test Flight users.
-
-Some other explonation text here ...
-""").padding([.top, .leading, .trailing]).padding([.top, .leading, .trailing])
-      Button("Checkout", action: presentPlans)
-        .padding([.top]).padding([.top, .bottom])
+      GridView(rowsProvider: rowsProvider)
+      if rowsProvider.hasFetchedData {
+        Button("Get Blink Plus", action: presentPlans)
+          .buttonStyle(.borderedProminent)
+      }
     }
+    .navigationBarTitleDisplayMode(.inline)
   }
   
 }

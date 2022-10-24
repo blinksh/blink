@@ -41,7 +41,7 @@ struct ScaleButtonStyle: ButtonStyle {
   }
 }
 
-struct WhatsNewView<ViewModel: RowsProvider>: View {
+struct GridView<ViewModel: RowsProvider>: View {
   @StateObject var rowsProvider: ViewModel
   @State var error: Error?
   var ipad = false
@@ -232,7 +232,7 @@ struct VersionSeparator: View {
 
 struct WhatsNewView_Previews: PreviewProvider {
   static var previews: some View {
-    WhatsNewView(rowsProvider: RowsViewModelDemo())
+    GridView(rowsProvider: RowsViewModelDemo())
     // ContentView(rowsProvider: RowsViewModel())
   }
 }

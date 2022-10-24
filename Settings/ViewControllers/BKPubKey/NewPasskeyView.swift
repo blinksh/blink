@@ -43,6 +43,7 @@ struct NewPasskeyView: View {
   let onSuccess: () -> Void
   
   @StateObject private var _state = NewPasskeyObservable()
+  @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "security_keys_feature")])
   
   var body: some View {
     NavigationStack(path: $_state.steps) {
@@ -75,7 +76,7 @@ struct NewPasskeyView: View {
         
         Section(
           header: Text("INFORMATION"),
-          footer: Text("Based on industry standards for account authentication, passkeys are easier to use than passwords and far more secure. Adopt passkeys to give people a simple, secure way to sign in to your apps and websites across platforms — with no passwords required.")
+          footer: Text("Passkeys are ECDSA keys that use the new Web Authentication standard for authentication. They are very new and may not be supported by all servers.\nFor more information, visit [docs.blink.sh](https://docs.blink.sh/advanced/webauthn).")
         ) { }
       }
       .listStyle(GroupedListStyle())
@@ -91,8 +92,8 @@ struct NewPasskeyView: View {
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
         switch step {
-        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans)
-          case .Plans: PlansView()
+        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans, rowsProvider: _provider)
+        case .Plans: PlansView()
         }
       })
     }
