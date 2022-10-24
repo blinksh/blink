@@ -35,3 +35,4 @@ SWIFT_ACTIVE_COMPILATION_CONDITIONS[config=Release] = BLINK_PUBLISHING_OPTION_TE
 BLINK_MIGRATION_SCHEME = blinkv15
 
 WHATS_NEW_URL = http:/$()/localhost/whats-new
+CONVERSION_OPPORTUNITY_URL = http:/$()/localhost/conversionOpportunity
