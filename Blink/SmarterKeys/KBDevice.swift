@@ -94,9 +94,11 @@ enum KBDevice {
     case 667:  return .in4_7
     case 736:  return .in5_5
     case 812:  return .in5_8 // iPhone 11 Pro
-    case 844:  return .in6_1 // iPhone 12 Pro
+    case 844:  return .in6_1 // iPhone 12 Pro, iPhone 14
+    case 852:  return .in6_1 // iPhone 14 Pro
     case 896:  return .in6_5 // iPhone 11 Pro Max
-    case 926:  return .in6_7 // iPhone 12 Pro Max
+    case 926:  return .in6_7 // iPhone 12 Pro Max, iPhone 14 Plus
+    case 932:  return .in6_7 // iPhone 14 Pro Max
     case 1024: return .in9_7
     case 1080: return .in10_2
     // TODO: tune kb layout check real wideSizeSize instead of 1085
