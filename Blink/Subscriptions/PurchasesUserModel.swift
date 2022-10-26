@@ -99,6 +99,10 @@ class PurchasesUserModel: ObservableObject {
     Purchases.shared.restoreTransactions { info, error in
       self.refresh()
       self.restoreInProgress = false
+      
+      if let error {
+        self.alertErrorMessage = error.localizedDescription
+      }
     }
   }
   
