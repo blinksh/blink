@@ -943,28 +943,28 @@ extension SpaceController {
     DispatchQueue.main.async {
       _ = KBTracker.shared.input?.resignFirstResponder();
       
-      if UIApplication.shared.supportsMultipleScenes {
-        
-        var opened: UISceneSession? = nil
-        for session in UIApplication.shared.openSessions {
-          if session.configuration.name == "whatsnew" {
-            opened = session
-            break
-          }
-        }
-        let options = UIWindowScene.ActivationRequestOptions()
-        options.preferredPresentationStyle = .prominent
-        options.requestingScene = self.view.window?.windowScene;
-        
-        let activity = NSUserActivity(activityType: "com.blink.whatsnew")
-        
-        UIApplication.shared.requestSceneSessionActivation(opened, userActivity: activity, options: options)
-      } else {
+//      if UIApplication.shared.supportsMultipleScenes {
+//
+//        var opened: UISceneSession? = nil
+//        for session in UIApplication.shared.openSessions {
+//          if session.configuration.name == "whatsnew" {
+//            opened = session
+//            break
+//          }
+//        }
+//        let options = UIWindowScene.ActivationRequestOptions()
+//        options.preferredPresentationStyle = .prominent
+//        options.requestingScene = self.view.window?.windowScene;
+//
+//        let activity = NSUserActivity(activityType: "com.blink.whatsnew")
+//
+//        UIApplication.shared.requestSceneSessionActivation(opened, userActivity: activity, options: options)
+//      } else {
         // Reset version when opening.
         WhatsNewInfo.setNewVersion()
         let root = UIHostingController(rootView: GridView(rowsProvider: RowsViewModel(baseURL: XCConfig.infoPlistWhatsNewURL())))
         self.present(root, animated: true, completion: nil)
-      }
+//      }
     }
   }
   
