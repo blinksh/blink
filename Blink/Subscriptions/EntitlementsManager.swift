@@ -110,7 +110,9 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     let oldValue = self.unlimitedTimeAccess;
     if let newValue = entitlements[UnlimitedScreenTimeEntitlementID] {
       self.unlimitedTimeAccess = newValue
-    } else if let newValue = entitlements[EarlyAccessFeaturesEntitlementID] {
+    }
+    
+    if let newValue = entitlements[EarlyAccessFeaturesEntitlementID] {
       self.earlyAccessFeatures = newValue
     }
     
