@@ -62,6 +62,17 @@ class RowsViewModel: RowsProvider {
   
   @MainActor
   func fetchData() async throws {
+    let url = URL(string: baseURL)!
+    let (data, _) = try await URLSession.shared.data(from: url.customerTierURL(additionalParams: additionalParams))
+    let decoder = JSONDecoder()
+    let doc = try decoder.decode(WhatsNewDoc.self, from: data)
+    rows = doc.rows
+    hasFetchedData = true
+  }
+}
+
+extension URL {
+  func customerTierURL(additionalParams: [URLQueryItem] = []) -> URL {
     let tier = {
       switch EntitlementsManager.shared.customerTier() {
       case .Plus:
@@ -74,45 +85,40 @@ class RowsViewModel: RowsProvider {
         return "free"
       }
     }
-    
-    var urlComponents = URLComponents(string: baseURL)!
-    urlComponents.queryItems = [
+    var components = URLComponents(url: self, resolvingAgainstBaseURL: false)!
+    components.queryItems = [
       URLQueryItem(name: "pid", value: Purchases.shared.appUserID),
       URLQueryItem(name: "customer_tier", value: tier())
     ] + additionalParams
     
-    let (data, _) = try await URLSession.shared.data(from: urlComponents.url!)
-    let decoder = JSONDecoder()
-    let doc = try decoder.decode(WhatsNewDoc.self, from: data)
-    rows = doc.rows
-    hasFetchedData = true
+    return components.url!
   }
 }
 
-let RowSamples = [
-  WhatsNewRow.oneCol(
-    Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: [URL(string: "https://whatsnew/test.png")!], color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"), availability: nil)
-  ),
-  WhatsNewRow.versionInfo(VersionInfo(number: "1.0.0", link: URL(string:"http://blink.sh"))),
-  WhatsNewRow.twoCol(
-    [Feature(title: "Passkeys", description: "Cool keys on your phone.", images: [URL(string: "https://whatsnew/test.png")!], color: .orange, symbol: "person.badge.key.fill", link: nil, availability: .earlyAccess)],
-    [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: nil, color: .purple, symbol: "globe", link: nil, availability: nil),
-     Feature(title: "Simple", description: "No Munch", images: nil, color: .yellow, symbol: "ladybug.fill", link: nil, availability: nil)]
-  )
-]
+//let RowSamples = [
+//  WhatsNewRow.oneCol(
+//    Feature(title: "Your terminal, your way", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: [URL(string: "https://whatsnew/test.png")!], color: .blue, symbol: "globe", link: URL(string: "http://blink.sh"), availability: nil)
+//  ),
+//  WhatsNewRow.versionInfo(VersionInfo(number: "1.0.0", link: URL(string:"http://blink.sh"))),
+//  WhatsNewRow.twoCol(
+//    [Feature(title: "Passkeys", description: "Cool keys on your phone.", images: [URL(string: "https://whatsnew/test.png")!], color: .orange, symbol: "person.badge.key.fill", link: nil, availability: .earlyAccess)],
+//    [Feature(title: "Other Passkeys", description: "You can rock your own terminal and roll your own themes beyond our included ones.", images: nil, color: .purple, symbol: "globe", link: nil, availability: nil),
+//     Feature(title: "Simple", description: "No Munch", images: nil, color: .yellow, symbol: "ladybug.fill", link: nil, availability: nil)]
+//  )
+//]
 
-class RowsViewModelDemo: RowsProvider {
-  @Published var rows = [WhatsNewRow]()
-  @Published var hasFetchedData = false
-  static var baseURL = URL(fileURLWithPath: "")
-  
-  @MainActor
-  func fetchData() async throws{
-    rows = RowSamples
-    try await Task.sleep(nanoseconds: 2_000_000_000)
-    hasFetchedData = true
-  }
-}
+//class RowsViewModelDemo: RowsProvider {
+//  @Published var rows = [WhatsNewRow]()
+//  @Published var hasFetchedData = false
+//  static var baseURL = URL(fileURLWithPath: "")
+//
+//  @MainActor
+//  func fetchData() async throws{
+//    rows = RowSamples
+//    try await Task.sleep(nanoseconds: 2_000_000_000)
+//    hasFetchedData = true
+//  }
+//}
 
 struct WhatsNewDoc: Decodable {
   let ver: String

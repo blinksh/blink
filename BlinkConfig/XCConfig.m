@@ -51,7 +51,6 @@
   return [self _valueForKey:@"BLINK_CONVERSION_OPPORTUNITY_URL"];
 }
 
-
 + (NSString *) infoPlistKeyChainID1 {
   return [self _valueForKey:@"BLINK_KEYCHAIN_ID1"];
 }

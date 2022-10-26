@@ -230,9 +230,9 @@ struct VersionSeparator: View {
   }
 }
 
-struct WhatsNewView_Previews: PreviewProvider {
-  static var previews: some View {
-    GridView(rowsProvider: RowsViewModelDemo())
-    // ContentView(rowsProvider: RowsViewModel())
-  }
-}
+//struct WhatsNewView_Previews: PreviewProvider {
+//  static var previews: some View {
+//    GridView(rowsProvider: RowsViewModelDemo())
+//    // ContentView(rowsProvider: RowsViewModel())
+//  }
+//}
