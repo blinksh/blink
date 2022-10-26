@@ -30,13 +30,14 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 import Foundation
+import BlinkConfig
 
 
 private let NagTimer       = "NagTimer"
 private let NagTimestamp   = "NagTimestamp"
 private let NagNumDisplays = "NagNumDisplays"
 private let NagTimerMax = 2 * 60
-private let NagInterval: TimeInterval = 10 // 1
+private let NagInterval: TimeInterval = 10
 
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
@@ -74,8 +75,31 @@ class SubscriptionNag: NSObject {
     ) { _ in
       if self.doShowPaywall() {
         self.stop()
-        UserDefaults.standard.set(self._nagNumDisplays() + 1, forKey: NagNumDisplays)
+        let numDisplays = self._nagNumDisplays() + 1;
+        UserDefaults.standard.set(numDisplays, forKey: NagNumDisplays)
         NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+        let value: String;
+        if numDisplays == 1 {
+          value = "first_display"
+        } else if numDisplays == 2 {
+          value = "second_display"
+        } else {
+          value = "third_display"
+        }
+        DispatchQueue.global().async {
+          guard let url = URL(string: XCConfig.infoPlistConversionOpportunityURL()) else {
+            return
+          }
+          let request = URLRequest(url: url.customerTierURL(
+            additionalParams: [URLQueryItem(name: "conversion_stage", value: value)]
+          ))
+          
+          URLSession.shared.dataTask(with: request) { _, _, error in
+            if let error {
+              debugPrint("data task error", error)
+            }
+          }.resume()
+        }
         return
       }
       let nag = self._nagCount() + 1
