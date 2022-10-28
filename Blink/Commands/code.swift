@@ -137,8 +137,10 @@ struct CodeCommand: NonStdIOCommand {
     case .fileLocationPath(let p):
       path = p
     default:
+      // Start vscode.dev without blink-fs but with inject user IO.
+      // This is useful to connect to vscode tunnels (remote server) from vscode.dev.
       DispatchQueue.main.async {
-        let url = URL(string: "https://vscode.dev/github/blinksh/blink/blob/raw/CODE.md")!
+        let url = URL(string: "https://vscode.dev")!
         session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
