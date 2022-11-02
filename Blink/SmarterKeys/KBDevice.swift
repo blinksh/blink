@@ -88,18 +88,40 @@ enum KBDevice {
   static func detect() -> Self {
     let size = UIScreen.main.bounds.size
     let wideSideSize = Int(max(size.height, size.width))
+    
+    // ZD  - Zoom Default
+    // ZLT - Zoom Larger Text
+    // ZMS - Zoom More Space
+    //
+    // checked devices lists
+    // |  N | Device               |   ZD |  ZLT |  ZMS |
+    // +----+----------------------+------+------+------+
+    // |  1 | iPhone Mini 12       |  812 |  693 |      |
+    // |  2 | iPhone 12            |  844 |  693 |      |
+    // |  3 | iPhone 12 Pro        |  844 |  693 |      |
+    // |  4 | iPhone 12 Pro Max    |  926 |  812 |      |
+    // |  5 | iPhone 14            |  844 |  693 |      |
+    // |  6 | iPhone 14 Plus       |  926 |  812 |      |
+    // |  7 | iPhone 14 Pro        |  852 |  693 |      |
+    // |  8 | iPhone 14 Pro Max    |  932 |  812 |      |
+    // |  9 | iPhone SE 3d-gen     |  667 |  568 |      |
+    // | 10 | iPhone SE 3d-gen     |  667 |  568 |      |
+    // | 11 | iPad Pro 11" 3d-gen  | 1194 |      | 1389 |
+    // | 12 | iPad Pro 12" 6th-gen | 1366 | 1024 | 1590 |
+    // +----+----------------------+------+------+------+
   
     switch wideSideSize {
     case 568:  return .in4
     case 667:  return .in4_7
+    case 693:  return .in5_8 // iPhone 12 mini ZLT, iPhone 12 ZLT, iPhone 12 Pro ZLT
     case 736:  return .in5_5
-    case 812:  return .in5_8 // iPhone 11 Pro
+    case 812:  return .in5_8 // iPhone 11 Pro, iPhone 12 Pro Max ZLT
     case 844:  return .in6_1 // iPhone 12 Pro, iPhone 14
     case 852:  return .in6_1 // iPhone 14 Pro
     case 896:  return .in6_5 // iPhone 11 Pro Max
     case 926:  return .in6_7 // iPhone 12 Pro Max, iPhone 14 Plus
     case 932:  return .in6_7 // iPhone 14 Pro Max
-    case 1024: return .in9_7
+    case 1024: return .in9_7 // iPad 12.9 ZLT
     case 1080: return .in10_2
     // TODO: tune kb layout check real wideSizeSize instead of 1085
     case 1112: return .in10_5
@@ -108,8 +130,15 @@ enum KBDevice {
     case 1194: return .in11
     case 1389: return .in11_MoreSpace
     case 1366: return .in12_9
+    case 1590: return .in12_9 // iPad 12.9 ZMS
 
-    default:   return .in9_7
+    default:
+      print("KBDevice: unknown device with size:", size)
+      if UIDevice.current.userInterfaceIdiom == .pad {
+        return .in9_7
+      } else {
+        return .in5_8
+      }
     }
   }
     
