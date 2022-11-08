@@ -76,6 +76,8 @@ We can't wait to receive your valuable feedback. Enjoy!
 
 We made a ton easier to build and install Blink yourself on your iOS devices through XCode. We provide a precompiled package with all the libraries for the master branch. Here are the steps:
 
+0. Check `xcode-select -p` is pointing to Xcode.app (`/Applications/Xcode.app/Contents/Developer`) not command tools.
+
 1. Run the following command:
 ```bash
 git clone --recursive https://github.com/blinksh/blink.git && \
