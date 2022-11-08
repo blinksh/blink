@@ -85,6 +85,13 @@ NSTimer *__debounceTimer = nil;
   }
   
   UIScreen *mainScreen = UIScreen.mainScreen;
+  
+  // We are on external display with stage mode on.
+  // Fix for #1621
+  if (mainScreen != window.screen) {
+    return window.safeAreaInsets;
+  }
+  
   UIEdgeInsets deviceMargins = window.safeAreaInsets;// UIEdgeInsetsZero;// ctrl.viewDeviceSafeMargins;
   
   BOOL fullScreen = CGRectEqualToRect(mainScreen.bounds, window.bounds);
