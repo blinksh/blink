@@ -141,6 +141,29 @@ struct CreateDirectoryFileSystemRequest: Codable {
   }
 }
 
+
+struct RootPath {
+  private let url: URL // should be private
+
+  //var fullPath: String { url.absoluteString }
+  //var protocolIdentifier: String { url.scheme! }
+  //var host: String? { url.host }
+  var filesAtPath: String { url.path }
+  var lastPathComponent: String { url.lastPathComponent }
+  
+  init(_ rootPath: String) {
+    self.url = URL(string: rootPath)!
+  }
+
+  init(_ url: URL) {
+    self.url = url
+  }
+
+  var parent: RootPath {
+    return RootPath(url.deletingLastPathComponent())
+  }
+}
+
 public struct URI {
   let host: String?
   let protocolId: String
