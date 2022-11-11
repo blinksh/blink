@@ -213,10 +213,12 @@ extension FileLocationPath {
       }
       let host = "/\(hostPath.replacingOccurrences(of: "#", with: ":"))"
       if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
-        filePath = "~/\(filePath)"
+        filePath = "/~/\(filePath)"
+      } else if filePath.isEmpty || filePath.starts(with: "~/"){
+        filePath = "/~/"
       }
       
-      return try? URI(string: uriProtocolIdentifier + host + "/\(filePath)")
+      return try? URI(string: uriProtocolIdentifier + host + "\(filePath)")
     }
   }
 
