@@ -266,7 +266,7 @@ public enum ControlMasterOption: String, SSHValue {
   }
 }
 
-fileprivate let AddressPattern = #"^((?<localPort>\d+)(:|\s))?(?<bindAddress>\[([\w:.]+)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
+fileprivate let AddressPattern = #"^((?<localPort>\d+)(:|\s))?(?<bindAddress>\[([\w:.][\w:.-]*)\]|([\w.][\w.-]*)):(?<remotePort>\d+)$"#
 
 public struct PortForwardInfo: Equatable, SSHValue {
   public let remotePort: UInt16
