@@ -130,8 +130,9 @@ struct CodeCommand: NonStdIOCommand {
         str = "https://github.dev/" + str[githubCom.endIndex...]
         url = URL(string: str)!
       }
+      let view = session.device?.view
       DispatchQueue.main.async {
-        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
+        view?.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     case .fileLocationPath(let p):
@@ -139,9 +140,10 @@ struct CodeCommand: NonStdIOCommand {
     default:
       // Start vscode.dev without blink-fs but with inject user IO.
       // This is useful to connect to vscode tunnels (remote server) from vscode.dev.
+      let url = URL(string: "https://vscode.dev")!
+      let view = session.device?.view
       DispatchQueue.main.async {
-        let url = URL(string: "https://vscode.dev")!
-        session.device.view.addBrowserWebView(url, agent: "", injectUIO: true)
+        view?.addBrowserWebView(url, agent: "", injectUIO: true)
       }
       return
     }
@@ -167,9 +169,10 @@ struct CodeCommand: NonStdIOCommand {
     }
 
     let url = vscodeURL ?? URL(string: "https://vscode.dev")!
+    let agent = "BlinkSH/15 (wss;\(port);\(token))"
+    let view = session.device?.view
     DispatchQueue.main.async {
-      let agent = "BlinkSH/15 (wss;\(port);\(token))"
-      session.device.view.addBrowserWebView(url, agent: agent, injectUIO: true)
+      view?.addBrowserWebView(url, agent: agent, injectUIO: true)
     }
   }
 
