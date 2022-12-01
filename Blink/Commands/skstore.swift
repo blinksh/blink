@@ -58,7 +58,7 @@ struct SKStoreCmd: NonStdIOCommand {
   func run() throws {
     let sema = DispatchSemaphore(value: 0)
     
-    if attribute != "" {
+    if attribute != "blink-rules" {
       return
     }
     

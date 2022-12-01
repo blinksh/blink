@@ -4,13 +4,13 @@ import PackageDescription
 var binaryTargets: [PackageDescription.Target] = [
   ( 
     "Protobuf_C_",
-    "a90dbb75b3ef12224d66cddee28073066e0cab6453f79392d8f954b5904b8790",
-    "https://github.com/blinksh/protobuf-apple/releases/download/v3.14.0/Protobuf_C_-static.xcframework.zip"
+    "a74e23890cf2093047544e18e999f493cf90be42a0ebd1bf5d4c0252d7cf377a",
+    "https://github.com/blinksh/protobuf-apple/releases/download/v3.21.1/Protobuf_C_-static.xcframework.zip"
   ),
   (
     "mosh",
-    "f564b29d11bed18b64c780f90bfd9fd188f145dd849565f90664f3023808370d",
-    "https://github.com/blinksh/mosh-apple/releases/download/v1.3.2/mosh.xcframework.zip"
+    "cd92212248429478a0f24346ca48397191409be0c8692b067a13eb9b17e50f27",
+    "https://github.com/blinksh/mosh-apple/releases/download/v1.4.0/mosh.xcframework.zip"
   ),
   (
     "LibSSH",

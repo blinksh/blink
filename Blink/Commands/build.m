@@ -58,7 +58,7 @@ void tokio_start_mosh(char * key, char * host, char * port) {
     return;
   }
   
-  NSString * cmd = [NSString stringWithFormat:@"mosh -I build -k %@ -p %@ %@", @(key), @(port), @(host)];
+  NSString * cmd = [NSString stringWithFormat:@"mosh -o -I build -k %@ -p %@ %@", @(key), @(port), @(host)];
 
   dispatch_async(session.cmdQueue, ^{
     [session enqueueCommand:cmd skipHistoryRecord:YES];

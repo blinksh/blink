@@ -309,6 +309,7 @@ static BKiCloudSyncHandler *sharedHandler = nil;
            password:updatedHost.password
             hostKey:updatedHost.key
          moshServer:updatedHost.moshServer
+   moshPredictOverwrite:updatedHost.moshPredictOverwrite
       moshPortRange:moshPortRange
          startUpCmd:updatedHost.moshStartup prediction:updatedHost.prediction.intValue
            proxyCmd:updatedHost.proxyCmd

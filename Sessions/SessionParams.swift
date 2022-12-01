@@ -68,6 +68,7 @@ import UIKit
   @objc var port: String? = nil
   @objc var key: String? = nil
   @objc var predictionMode: String? = nil
+  @objc var predictOverwrite: String? = nil
   @objc var startupCmd: String? = nil
   @objc var serverPath: String? = nil
   @objc var experimentalRemoteIp: String? = nil
@@ -81,6 +82,7 @@ import UIKit
     case port
     case key
     case predictionMode
+    case predictOverwrite
     case startupCmd
     case serverPath
     case experimentalRemoteIp
@@ -93,6 +95,7 @@ import UIKit
     coder.bk_encode(port, for: Key.port)
     coder.bk_encode(key, for: Key.key)
     coder.bk_encode(predictionMode, for: Key.predictionMode)
+    coder.bk_encode(predictOverwrite, for: Key.predictOverwrite)
     coder.bk_encode(startupCmd, for: Key.startupCmd)
     coder.bk_encode(serverPath, for: Key.serverPath)
     coder.bk_encode(experimentalRemoteIp, for: Key.experimentalRemoteIp)
@@ -105,6 +108,7 @@ import UIKit
     self.port = coder.bk_decode(for: Key.port)
     self.key = coder.bk_decode(for: Key.key)
     self.predictionMode = coder.bk_decode(for: Key.predictionMode)
+    self.predictOverwrite = coder.bk_decode(for: Key.predictOverwrite)
     self.startupCmd = coder.bk_decode(for: Key.startupCmd)
     self.serverPath = coder.bk_decode(for: Key.serverPath)
     self.experimentalRemoteIp = coder.bk_decode(for: Key.experimentalRemoteIp)

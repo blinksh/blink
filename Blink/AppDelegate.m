@@ -41,7 +41,8 @@
 #include "xcall.h"
 #include "Blink-Swift.h"
 
-extern void build_auto_start_wg_ports();
+extern void build_auto_start_wg_ports(void);
+extern void rebind_ports(void);
 
 
 @import CloudKit;
@@ -271,9 +272,13 @@ void __setupProcessEnv(void) {
 
 - (void)_cancelApplicationSuspend {
   [self _cancelApplicationSuspendTask];
-  
+ 
   // We can't resume if we don't have access to protected data
   if (UIApplication.sharedApplication.isProtectedDataAvailable) {
+    if (_suspendedMode) {
+      rebind_ports();
+    }
+
     _suspendedMode = NO;
   }
 }

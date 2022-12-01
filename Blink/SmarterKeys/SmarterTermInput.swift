@@ -34,7 +34,10 @@ import Combine
 
 class CaretHider {
   var _cancelable: AnyCancellable? = nil
+  weak var _view: UIView?
+  
   init(view: UIView) {
+    _view = view;
     _cancelable = view.layer.publisher(for: \.sublayers).sink { (layers) in
       if let caretView = view.value(forKeyPath: "caretView") as? UIView {
         caretView.isHidden = true
@@ -43,6 +46,21 @@ class CaretHider {
       if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
         floatingView.isHidden = true
       }
+    }
+  }
+  
+  func show() {
+    guard let view = _view
+    else {
+      return
+    }
+    
+    if let caretView = view.value(forKeyPath: "caretView") as? UIView {
+      caretView.isHidden = false
+    }
+
+    if let floatingView = view.value(forKeyPath: "floatingCaretView") as? UIView {
+      floatingView.isHidden = false
     }
   }
 }
@@ -124,6 +142,21 @@ class CaretHider {
   
   func reset() {
     
+  }
+   
+  override func showCaret() {
+    _caretHider?.show()
+    _caretHider = nil
+  }
+  
+  override func hideCaret() {
+    if let _ = _caretHider {
+      return
+    }
+    
+    if let v = selectionView() {
+      _caretHider = CaretHider(view: v)
+    }
   }
   
   func reportLang() {

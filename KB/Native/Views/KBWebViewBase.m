@@ -405,6 +405,15 @@ NSString *_encodeString(NSString *str);
   [self onMods];
 }
 
+- (void)hideCaret {
+  
+}
+
+- (void)showCaret {
+  
+}
+
+
 - (void)userContentController:(WKUserContentController *)userContentController
       didReceiveScriptMessage:(WKScriptMessage *)message {
 
@@ -450,7 +459,13 @@ NSString *_encodeString(NSString *str);
     [self onCommand: body[@"command"]];
   } else if ([@"selection" isEqual:op]) {
     [self onSelection:body];
+  } else if ([@"hide-caret" isEqual:op]) {
+    [self hideCaret];
+  } else if ([@"show-caret" isEqual:op]) {
+    [self showCaret];
   }
+  
+  
   
 }
 
