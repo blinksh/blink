@@ -49,6 +49,7 @@ enum BKMoshPrediction {
 @property (readonly) NSString *password;
 @property (nonatomic, strong) NSString *key;
 @property (nonatomic, strong) NSString *moshServer;
+@property (nonatomic, strong) NSString *moshPredictOverwrite;
 @property (nonatomic, strong) NSNumber *moshPort;
 @property (nonatomic, strong) NSNumber *moshPortEnd;
 @property (nonatomic, strong) NSString *moshStartup;
@@ -75,6 +76,7 @@ enum BKMoshPrediction {
                 password:(NSString *)password
                  hostKey:(NSString *)hostKey
               moshServer:(NSString *)moshServer
+    moshPredictOverwrite:(NSString *)moshPredictOverwrite
            moshPortRange:(NSString *)moshPortRange
               startUpCmd:(NSString *)startUpCmd
               prediction:(enum BKMoshPrediction)prediction
@@ -101,6 +103,7 @@ enum BKMoshPrediction {
             hostKey:(NSString *)hostKey
          moshServer:(NSString *)moshServer
       moshPortRange:(NSString *)moshPortRange
+moshPredictOverwrite:(NSString *)moshPredictOverwrite
          startUpCmd:(NSString *)startUpCmd
          prediction:(enum BKMoshPrediction)prediction
            proxyCmd:(NSString *)proxyCmd

@@ -69,6 +69,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)canBeFocused;
 
+- (void)hideCaret;
+
+- (void)showCaret;
+
 
 @end
 

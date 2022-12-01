@@ -65,6 +65,7 @@ extension BKMoshPrediction: Hashable {
 
 struct MoshPredictionPickerView: View {
   @Binding var currentValue: BKMoshPrediction
+  @Binding var overwriteValue: Bool
   
   var body: some View {
     List {
@@ -77,6 +78,11 @@ struct MoshPredictionPickerView: View {
           }
           .contentShape(Rectangle())
           .onTapGesture { currentValue = value }
+        }
+      }
+      Section(footer: Text("Prediction overwrites instead of inserting")) {
+        HStack {
+          Toggle("Overwrite", isOn: $overwriteValue)
         }
       }
     }

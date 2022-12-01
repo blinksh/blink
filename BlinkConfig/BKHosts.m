@@ -66,6 +66,7 @@ static UICKeyChainStore *__get_keychain() {
   _passwordRef = [coder decodeObjectOfClasses:strings forKey:@"passwordRef"];
   _key = [coder decodeObjectOfClasses:strings forKey:@"key"];
   _moshServer = [coder decodeObjectOfClasses:strings forKey:@"moshServer"];
+  _moshPredictOverwrite = [coder decodeObjectOfClasses:strings forKey:@"moshPredictOverwrite"];
   _moshPort = [coder decodeObjectOfClasses:numbers forKey:@"moshPort"];
   _moshPortEnd = [coder decodeObjectOfClasses:numbers forKey:@"moshPortEnd"];
   _moshStartup = [coder decodeObjectOfClasses:strings forKey:@"moshStartup"];
@@ -89,6 +90,7 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_passwordRef forKey:@"passwordRef"];
   [encoder encodeObject:_key forKey:@"key"];
   [encoder encodeObject:_moshServer forKey:@"moshServer"];
+  [encoder encodeObject:_moshPredictOverwrite forKey:@"moshPredictOverwrite"];
   [encoder encodeObject:_moshPort forKey:@"moshPort"];
   [encoder encodeObject:_moshPortEnd forKey:@"moshPortEnd"];
   [encoder encodeObject:_moshStartup forKey:@"moshStartup"];
@@ -102,20 +104,21 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_fpDomainsJSON forKey:@"fpDomainsJSON"];
 }
 
-- (id)initWithAlias:(NSString *)alias
-           hostName:(NSString *)hostName
-            sshPort:(NSString *)sshPort
-               user:(NSString *)user
-        passwordRef:(NSString *)passwordRef
-            hostKey:(NSString *)hostKey
-         moshServer:(NSString *)moshServer
-      moshPortRange:(NSString *)moshPortRange
-         startUpCmd:(NSString *)startUpCmd
-         prediction:(enum BKMoshPrediction)prediction
-           proxyCmd:(NSString *)proxyCmd
-          proxyJump:(NSString *)proxyJump
-sshConfigAttachment:(NSString *)sshConfigAttachment
-      fpDomainsJSON:(NSString *)fpDomainsJSON
+-  (id)initWithAlias:(NSString *)alias
+            hostName:(NSString *)hostName
+             sshPort:(NSString *)sshPort
+                user:(NSString *)user
+         passwordRef:(NSString *)passwordRef
+             hostKey:(NSString *)hostKey
+          moshServer:(NSString *)moshServer
+moshPredictOverwrite:(NSString *)moshPredictOverwrite
+       moshPortRange:(NSString *)moshPortRange
+          startUpCmd:(NSString *)startUpCmd
+          prediction:(enum BKMoshPrediction)prediction
+            proxyCmd:(NSString *)proxyCmd
+           proxyJump:(NSString *)proxyJump
+ sshConfigAttachment:(NSString *)sshConfigAttachment
+       fpDomainsJSON:(NSString *)fpDomainsJSON
 {
   self = [super init];
   if (self) {
@@ -129,6 +132,9 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
     _key = hostKey;
     if (![moshServer isEqualToString:@""]) {
       _moshServer = moshServer;
+    }
+    if (![moshPredictOverwrite isEqualToString:@""]) {
+      _moshPredictOverwrite = moshPredictOverwrite;
     }
     if (![moshPortRange isEqualToString:@""]) {
       NSArray<NSString *> *parts = [moshPortRange componentsSeparatedByString:@":"];
@@ -205,6 +211,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                 password:(NSString *)password
                  hostKey:(NSString *)hostKey
               moshServer:(NSString *)moshServer
+    moshPredictOverwrite:(NSString *)moshPredictOverwrite
            moshPortRange:(NSString *)moshPortRange
               startUpCmd:(NSString *)startUpCmd
               prediction:(enum BKMoshPrediction)prediction
@@ -229,6 +236,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                                 passwordRef:pwdRef
                                     hostKey:hostKey
                                  moshServer:moshServer
+                       moshPredictOverwrite:moshPredictOverwrite
                               moshPortRange:moshPortRange
                                  startUpCmd:startUpCmd
                                  prediction:prediction
@@ -250,6 +258,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
     bkHost.passwordRef = pwdRef;
     bkHost.key = hostKey;
     bkHost.moshServer = moshServer;
+    bkHost.moshPredictOverwrite = moshPredictOverwrite;
     bkHost.moshPort = nil;
     bkHost.moshPortEnd = nil;
     if (![moshPortRange isEqualToString:@""]) {
@@ -393,6 +402,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
   [hostRecord setValue:host.moshPort forKey:@"moshPort"];
   [hostRecord setValue:host.moshPortEnd forKey:@"moshPortEnd"];
   [hostRecord setValue:host.moshServer forKey:@"moshServer"];
+  [hostRecord setValue:host.moshPredictOverwrite forKey:@"moshPredictOverwrite"];
   [hostRecord setValue:host.moshStartup forKey:@"moshStartup"];
   [hostRecord setValue:host.password forKey:@"password"];
   [hostRecord setValue:host.passwordRef forKey:@"passwordRef"];
@@ -424,6 +434,7 @@ sshConfigAttachment:(NSString *)sshConfigAttachment
                                      passwordRef:[hostRecord valueForKey:@"passwordRef"]
                                          hostKey:[hostRecord valueForKey:@"key"]
                                       moshServer:[hostRecord valueForKey:@"moshServer"]
+                            moshPredictOverwrite:[hostRecord valueForKey:@"moshPredictOverwrite"]
                                    moshPortRange:moshPortRange
                                       startUpCmd:[hostRecord valueForKey:@"moshStartup"]
                                       prediction:[[hostRecord valueForKey:@"prediction"] intValue]

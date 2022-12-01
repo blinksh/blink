@@ -54,10 +54,12 @@ static const char *usage_format =
 "-a              --predict=always     use local echo even on fast links\r\n"
 "-n              --predict=never      never use local echo\r\n"
 "\r\n"
+"-o              --predict-overwrite  prediction overwrites instead of inserting\r\n"
+"\r\n"
 "-k              --key=<MOSH_KEY>     MOSH_KEY to connect without ssh\r\n"
 "-p PORT[:PORT2] --port=PORT[:PORT2]  server-side UDP port (range)\r\n"
 "-P NUM                               ssh connection port\r\n"
-"-T                                   do not allocate a pseudo tty on ssh connection\r\n"
+"-T              --no-ssh-pty         do not allocate a pseudo tty on ssh connection\r\n"
 "-2                                   use ssh2 command\r\n"
 "-I id                                ssh authentication identity name\r\n"
 //  "        --ssh=COMMAND        ssh command to run when setting up session\r\n"
@@ -67,7 +69,7 @@ static const char *usage_format =
 "                --verbose            verbose mode\r\n"
 "                --help               this message\r\n"
 "\r\n"
-" --experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
+"--experimental-remote-ip={remote|local}    method used to discover the IP address that the mosh-client connects to \r\n"
 "                                            (default: local)\r\n"
 "\r\n";
 
@@ -120,6 +122,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
     {"ip", optional_argument, 0, 'i'},
     {"key", optional_argument, 0, 'k'},
     {"no-ssh-pty", optional_argument, 0, 'T'},
+    {"predict-overwrite", no_argument, 0, 'o'},
     //{"ssh", required_argument, 0, 'S'},
     {"verbose", no_argument, &_debug, 1},
     {"help", no_argument, &help, 1},
@@ -133,7 +136,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   while (1) {
     int option_index = 0;
-    int c = getopt_long(argc, argv, "anp:I:P:k:T2", long_options, &option_index);
+    int c = getopt_long(argc, argv, "anop:I:P:k:T2", long_options, &option_index);
     if (c == -1) {
       break;
     }
@@ -155,6 +158,9 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
       break;
       case 'p':
       self.sessionParams.port = [NSString stringWithFormat:@"%s", optarg];
+      break;
+      case 'o':
+      self.sessionParams.predictOverwrite = @"yes";
       break;
       case 'k':
       self.sessionParams.key = [NSString stringWithFormat:@"%s", optarg];
@@ -290,7 +296,8 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
             [self.sessionParams.key UTF8String],
             [self.sessionParams.predictionMode UTF8String],
             encodedState.bytes,
-            encodedState.length
+            encodedState.length,
+            [self.sessionParams.predictOverwrite UTF8String]
             );
   
   [_device setRawMode:NO];
@@ -330,6 +337,7 @@ void __state_callback(const void *context, const void *buffer, size_t size) {
   
   NSString *predictionMode = host.prediction ? predictionModeStrings[host.prediction] : nil;
   self.sessionParams.predictionMode = self.sessionParams.predictionMode ?: predictionMode;
+  self.sessionParams.predictOverwrite = self.sessionParams.predictOverwrite ?: host.moshPredictOverwrite;
 }
 
 - (NSString *)getMoshServerStringCmd:(NSString *)server
