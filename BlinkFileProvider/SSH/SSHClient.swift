@@ -165,13 +165,15 @@ fileprivate struct ProxyCommand {
     let description: String
   }
   
+  let jumpHost: String?
   let stdioForward: BindAddressInfo
   let hostAlias: String
   
-  // The command we receive is pre-fabricated by LibSSH, so we just parse.
-  // ssh -W [127.0.0.1]:22 l
+  // The command we receive is pre-fabricated by LibSSH, so we capture
+  // looped JumpHosts, StdioForward and HostAlias in that order.
+  // ssh -J l,l -W [127.0.0.1]:22 l
   private let pattern =
-    #"ssh (-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
+    #"ssh (-J (?<JumpHost>.*) )?(-W (?<StdioForward>.*)) (?<HostAlias>.*)"#
   init(_ command: String) throws {
     let regex = try NSRegularExpression(pattern: pattern)
     let matchRange = NSRange(command.startIndex..., in: command)
@@ -181,6 +183,12 @@ fileprivate struct ProxyCommand {
                                    range: matchRange)
     else {
       throw Error(description: "Invalid ProxyCommand \(command)")
+    }
+    
+    if let r = Range(match.range(withName: "JumpHost"), in: command) {
+      self.jumpHost = String(command[r])
+    } else {
+      self.jumpHost = nil
     }
     
     if let r = Range(match.range(withName: "StdioForward"), in: command) {
