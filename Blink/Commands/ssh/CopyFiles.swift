@@ -37,8 +37,6 @@ import Foundation
 import ArgumentParser
 import BlinkFiles
 import SSH
-import NonStdIO
-
 
 fileprivate let Version = "1.0.1"
 

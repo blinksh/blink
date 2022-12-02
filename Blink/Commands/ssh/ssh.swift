@@ -35,7 +35,6 @@ import SSH
 import Combine
 import Dispatch
 import ios_system
-import NonStdIO
 
 @_cdecl("blink_ssh_main")
 public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {

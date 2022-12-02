@@ -289,6 +289,9 @@
 		D24AFD59222410E700CFD3C1 /* MBProgressHUD.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 0732F10D1D062BF700AB5438 /* MBProgressHUD.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		D259479C269C671F008B5305 /* MoshPredictionPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */; };
 		D25D58102358897B00D1BCAE /* Complete.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25D580F2358897B00D1BCAE /* Complete.swift */; };
+		D25DE9C02939EB36008246EB /* NonStdIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BD2939EB36008246EB /* NonStdIO.swift */; };
+		D25DE9C12939EB36008246EB /* NonStdIO+ArgumentParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BE2939EB36008246EB /* NonStdIO+ArgumentParser.swift */; };
+		D25DE9C22939EB36008246EB /* NonStdIO+Spinner.swift in Sources */ = {isa = PBXBuildFile; fileRef = D25DE9BF2939EB36008246EB /* NonStdIO+Spinner.swift */; };
 		D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */; };
 		D264D2B228F84592002B1B14 /* GridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2AF28F84592002B1B14 /* GridView.swift */; };
 		D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D264D2B028F84592002B1B14 /* UnavailErrorView.swift */; };
@@ -360,7 +363,6 @@
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
-		D2B9E21E268084E40084B2C4 /* Machines in Frameworks */ = {isa = PBXBuildFile; productRef = D2B9E21D268084E40084B2C4 /* Machines */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
@@ -948,6 +950,9 @@
 		D2499BEB2362EFD40009C701 /* cpp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = cpp.cpp; sourceTree = "<group>"; };
 		D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoshPredictionPickerView.swift; sourceTree = "<group>"; };
 		D25D580F2358897B00D1BCAE /* Complete.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Complete.swift; sourceTree = "<group>"; };
+		D25DE9BD2939EB36008246EB /* NonStdIO.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NonStdIO.swift; sourceTree = "<group>"; };
+		D25DE9BE2939EB36008246EB /* NonStdIO+ArgumentParser.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NonStdIO+ArgumentParser.swift"; sourceTree = "<group>"; };
+		D25DE9BF2939EB36008246EB /* NonStdIO+Spinner.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "NonStdIO+Spinner.swift"; sourceTree = "<group>"; };
 		D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EarlyFeaturesAccessLetterView.swift; sourceTree = "<group>"; };
 		D264D2AF28F84592002B1B14 /* GridView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GridView.swift; sourceTree = "<group>"; };
 		D264D2B028F84592002B1B14 /* UnavailErrorView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UnavailErrorView.swift; sourceTree = "<group>"; };
@@ -1048,7 +1053,6 @@
 		D2C244322390FB830082C69C /* KeyBinding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBinding.swift; sourceTree = "<group>"; };
 		D2C244342390FEEF0082C69C /* KeyBindingAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyBindingAction.swift; sourceTree = "<group>"; };
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
-		D2C605B926AB4C25003CA39F /* BlinkBuild */ = {isa = PBXFileReference; lastKnownFileType = text; name = BlinkBuild; path = xcfs/.build/checkouts/BlinkBuild; sourceTree = SOURCE_ROOT; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
@@ -1209,7 +1213,6 @@
 				D2334EF825C1C28F00385378 /* mosh.xcframework in Frameworks */,
 				D218076325CD4FDC00B98902 /* LibSSH.xcframework in Frameworks */,
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
-				D2B9E21E268084E40084B2C4 /* Machines in Frameworks */,
 				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
 				D2AD8E8227A2C79B00DED28D /* Purchases in Frameworks */,
@@ -1242,6 +1245,7 @@
 		0716B5231CFFAB9300268B5B /* Blink */ = {
 			isa = PBXGroup;
 			children = (
+				D25DE9C32939EB63008246EB /* NonStdIO */,
 				D264D2AE28F8457A002B1B14 /* WhatsNew */,
 				D2AD8E6027A2BAFA00DED28D /* Subscriptions */,
 				BD9EA1ED2719D28800874007 /* Migrator */,
@@ -1322,7 +1326,6 @@
 				D2771510287F0EA200D31F4E /* libbuild_cli.a */,
 				BDB72CB127A9C08500DCC446 /* StoreKit.framework */,
 				BDB72CAC27A9BFB500DCC446 /* StoreKit.framework */,
-				D2C605B926AB4C25003CA39F /* BlinkBuild */,
 				D218074525CD4B0E00B98902 /* libz.tbd */,
 				D248EC542689EAD7009FD817 /* SSHConfig */,
 				D2334ECF25C1C04700385378 /* awk.xcframework */,
@@ -1883,6 +1886,16 @@
 			path = KeyViews;
 			sourceTree = "<group>";
 		};
+		D25DE9C32939EB63008246EB /* NonStdIO */ = {
+			isa = PBXGroup;
+			children = (
+				D25DE9BD2939EB36008246EB /* NonStdIO.swift */,
+				D25DE9BE2939EB36008246EB /* NonStdIO+ArgumentParser.swift */,
+				D25DE9BF2939EB36008246EB /* NonStdIO+Spinner.swift */,
+			);
+			path = NonStdIO;
+			sourceTree = "<group>";
+		};
 		D264D2AE28F8457A002B1B14 /* WhatsNew */ = {
 			isa = PBXGroup;
 			children = (
@@ -2438,7 +2451,6 @@
 			name = Blink;
 			packageProductDependencies = (
 				07FAB90E25C8E94E00E1CC2C /* ArgumentParser */,
-				D2B9E21D268084E40084B2C4 /* Machines */,
 				D2AD8E8127A2C79B00DED28D /* Purchases */,
 				D2A6398828CFA0B90066FD18 /* SwiftCBOR */,
 				BD7AFC4028E8E98C004BCDA4 /* Base32Kit */,
@@ -2975,6 +2987,7 @@
 				D2903F3C239BBF5D005F991B /* KeyShortcut.swift in Sources */,
 				D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */,
 				D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */,
+				D25DE9C12939EB36008246EB /* NonStdIO+ArgumentParser.swift in Sources */,
 				D25D58102358897B00D1BCAE /* Complete.swift in Sources */,
 				B7D4503C1DD4706000CE0DBE /* Reachability.m in Sources */,
 				B752EE2E1DFEF45300E305C8 /* BKSecurityConfigurationViewController.m in Sources */,
@@ -3059,6 +3072,7 @@
 				D26A37F026A0AB7000534A4D /* facecam.swift in Sources */,
 				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
+				D25DE9C22939EB36008246EB /* NonStdIO+Spinner.swift in Sources */,
 				07FAB8F125C8E6C500E1CC2C /* CopyFiles.swift in Sources */,
 				07F670751D05EEE200C0A53C /* Session.m in Sources */,
 				C989E5581D6CC4A1003E0079 /* BKThemeCreateViewController.m in Sources */,
@@ -3102,6 +3116,7 @@
 				D2887A5622DC676F00701BD5 /* SpaceController.swift in Sources */,
 				D2AC6749220303D900177BC5 /* openurl.m in Sources */,
 				D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */,
+				D25DE9C02939EB36008246EB /* NonStdIO.swift in Sources */,
 				D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */,
 				D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
@@ -3622,7 +3637,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 635;
+				CURRENT_PROJECT_VERSION = 637;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3667,7 +3682,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 635;
+				CURRENT_PROJECT_VERSION = 637;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -4359,7 +4374,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 635;
+				CURRENT_PROJECT_VERSION = 637;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4404,7 +4419,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 635;
+				CURRENT_PROJECT_VERSION = 637;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -4650,10 +4665,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
 			productName = SwiftCBOR;
-		};
-		D2B9E21D268084E40084B2C4 /* Machines */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = Machines;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

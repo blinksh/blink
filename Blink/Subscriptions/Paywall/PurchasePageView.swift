@@ -31,7 +31,7 @@
 
 import Foundation
 import SwiftUI
-import Spinner
+//import Spinner
 
 struct PurchasePageView: Page {
   @ObservedObject private var _model: PurchasesUserModel = .shared
