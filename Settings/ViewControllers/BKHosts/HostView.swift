@@ -35,6 +35,7 @@ import CloudKit
 struct FileDomainView: View {
   @EnvironmentObject private var _nav: Nav
   var domain: FileProviderDomain
+  var alias: String
   let refreshList: () -> ()
   @State private var _displayName: String = ""
   @State private var _remotePath: String = ""
@@ -47,6 +48,15 @@ struct FileDomainView: View {
         Field("Name", $_displayName, next: "Path", placeholder: "Required")
         Field("Path", $_remotePath,  next: "",     placeholder: "root folder on the remote")
       }
+      // Disabled for now. Although the cached can be erased, the cache in memory will still remain and that
+      // will mess with state. Deleting the domain itself is the way to go.
+//      Section {
+//        Button(
+//          action: _eraseCache,
+//          label: { Label("Erase location cache", systemImage: "trash").foregroundColor(.red)}
+//        )
+//          .accentColor(.red)
+//      }
     }
     .listStyle(GroupedListStyle())
     .navigationBarTitle("Files.app Location")
@@ -84,10 +94,17 @@ struct FileDomainView: View {
       throw FormValidationError.general(message: "Name is required", field: "Name")
     }
   }
+  
+  private func _eraseCache() {
+    if let nsDomain = domain.nsFileProviderDomain(alias: alias) {
+      _NSFileProviderManager.clearFileProviderCache(nsDomain)
+    }
+  }
 }
 
 fileprivate struct FileDomainRow: View {
   let domain: FileProviderDomain
+  let alias: String
   let refreshList: () -> ()
   
   var body: some View {
@@ -100,7 +117,7 @@ fileprivate struct FileDomainRow: View {
         }
       },
       details: {
-        FileDomainView(domain: domain, refreshList: refreshList)
+        FileDomainView(domain: domain, alias: alias, refreshList: refreshList)
       }
     )
   }
@@ -262,6 +279,9 @@ struct HostView: View {
   
   private var _iCloudVersion: Bool
   private var _reloadList: () -> ()
+  private var _cleanAlias: String {
+    _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+  }
   
   
   init(host: BKHosts?, iCloudVersion: Bool = false, reloadList: @escaping () -> ()) {
@@ -272,7 +292,7 @@ struct HostView: View {
   }
   
   private func _usageHint() -> String {
-    var alias = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+    var alias = _cleanAlias
     if alias.count < 2 {
       alias = "[alias]"
     }
@@ -342,13 +362,13 @@ struct HostView: View {
       }.disabled(!_enabled)
       
       Section(header: Label("Files.app", systemImage: "folder")) {
-        ForEach(_domains, content: { FileDomainRow(domain: $0, refreshList: _refreshDomainsList) })
+        ForEach(_domains, content: { FileDomainRow(domain: $0, alias: _cleanAlias, refreshList: _refreshDomainsList) })
           .onDelete { indexSet in
             _domains.remove(atOffsets: indexSet)
           }
         Button(
           action: {
-            let displayName = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+            let displayName = _cleanAlias
             _domains.append(FileProviderDomain(
               id:UUID(),
               displayName: displayName.isEmpty ? "Location Name" : displayName,
@@ -425,7 +445,7 @@ struct HostView: View {
   }
   
   private func _validate() throws {
-    let cleanAlias = _alias.trimmingCharacters(in: .whitespacesAndNewlines)
+    let cleanAlias = _cleanAlias
     
     if cleanAlias.isEmpty {
       throw FormValidationError.general(
@@ -465,7 +485,7 @@ struct HostView: View {
   private func _saveHost() {
     let savedHost = BKHosts.saveHost(
       _host?.host.trimmingCharacters(in: .whitespacesAndNewlines),
-      withNewHost: _alias.trimmingCharacters(in: .whitespacesAndNewlines),
+      withNewHost: _cleanAlias,
       hostName: _hostName.trimmingCharacters(in: .whitespacesAndNewlines),
       sshPort: _port.trimmingCharacters(in: .whitespacesAndNewlines),
       user: _user.trimmingCharacters(in: .whitespacesAndNewlines),

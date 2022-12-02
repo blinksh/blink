@@ -92,13 +92,15 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
   var displayName: String
   var remotePath: String
   var proto: String
-  
+  // Alias is not part of the domain as we don't want to serialize it under the host itself.
+
   init(id: UUID, displayName: String, remotePath: String, proto: String) {
     self.id = id
     self.displayName = displayName
     self.remotePath = remotePath
     self.proto = proto
   }
+  
   
   func nsFileProviderDomain(alias: String) -> _NSFileProviderDomain? {
     _NSFileProviderDomain(
@@ -180,6 +182,7 @@ class FileProviderDomain: Identifiable, Codable, Equatable {
     
     for nsDomain in domainsToRemove {
       _NSFileProviderManager.remove(nsDomain) { err in
+        _NSFileProviderManager.clearFileProviderCache(nsDomain)
         if let err = err {
           print("failed to remove domain", err)
         }
@@ -207,5 +210,10 @@ extension _NSFileProviderManager {
       }
       FileProviderDomain._syncDomainsForAllHosts(nsDomains: nsDomains)
     }
+  }
+  
+  static func clearFileProviderCache(_ nsDomain: _NSFileProviderDomain) {
+    let path = Self.default.documentStorageURL.appendingPathComponent(nsDomain.pathRelativeToDocumentStorage)
+    try! FileManager.default.removeItem(at: path)
   }
 }
