@@ -35,6 +35,7 @@ import FileProvider
 import MobileCoreServices
 
 import BlinkFiles
+import UniformTypeIdentifiers
 
 
 // Goal is to bridge the Identifier to the underlying BlinkFiles system, and to offer
@@ -217,32 +218,30 @@ extension BlinkItemReference: NSFileProviderItem {
   var isTrashed: Bool { false }
   var isUploading: Bool { uploadingTask != nil }
 
-  // iOS14
-  //  var contentType: UTType
-
-  var typeIdentifier: String {
+  var contentType: UTType {
     guard let type = primary[.type] as? FileAttributeType else {
       print("\(itemIdentifier) missing type")
-      return ""
+      return UTType.data
     }
     if type == .typeDirectory {
-      return kUTTypeFolder as String
+      return UTType.directory
     }
 
     let pathExtension = (filename as NSString).pathExtension
-    guard let typeIdentifier = (UTTypeCreatePreferredIdentifierForTag(
-      kUTTagClassFilenameExtension,
-      pathExtension as CFString,
-      nil
-    )?.takeRetainedValue() as String?) else {
-      return kUTTypeItem as String
+    if let type = UTType(filenameExtension: pathExtension) {
+      return type
+    } else {
+      return UTType.item
     }
 
-    if typeIdentifier.starts(with: "dyn") {
-      return kUTTypeItem as String
-    }
-
-    return typeIdentifier
+    // Old API would assign dyn when converting to unknown types.
+    // https://stackoverflow.com/questions/43518514/why-is-uttypecreatepreferredidentifierfortag-returning-strange-uti
+    // It looks like this is not necessary anymore as we will receive always a valid type or we can return item directly.
+    // Leaving here for now as reference in case we cause a regression.
+    //    if typeIdentifier.starts(with: "dyn") {
+    //      return kUTTypeItem as String
+    //    }
+    //
   }
 
   var capabilities: NSFileProviderItemCapabilities {
