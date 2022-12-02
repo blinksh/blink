@@ -32,11 +32,8 @@
 
 import Foundation
 import StoreKit
-
 import ArgumentParser
-
 import BlinkConfig
-import NonStdIO
 
 
 struct SKStoreCmd: NonStdIOCommand {
