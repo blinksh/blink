@@ -218,6 +218,7 @@ class FileProviderExtension: NSFileProviderExtension {
         case .failure(let error):
           log.error("\(error)")
           completionHandler(NSFileProviderError.operationError(dueTo: error))
+          self.stopProvidingItem(at: url)
           self.signalEnumerator(for: blinkItemReference.parentItemIdentifier)
         }
       }, receiveValue: { _ in })
@@ -325,8 +326,6 @@ class FileProviderExtension: NSFileProviderExtension {
         }
 
         blinkItemReference.uploadCompleted(nil)
-        // NOTE: In theory, we should enumerate changes again. But when trying that,
-        // the state of the file would not change.
         log.info("Upload completed \(localFileURLPath)")
         completionHandler(blinkItemReference, nil)
         self.signalEnumerator(for: blinkItemReference.parentItemIdentifier)
@@ -558,8 +557,10 @@ class FileProviderExtension: NSFileProviderExtension {
             log.error("\(error)")
             completionHandler(NSFileProviderError.operationError(dueTo: error))
           } else {
-            // NOTE We may want to delete the other references as well.
+            // NOTE We may want to delete the other references as well. But as this is an in-memory cache,
+            // just deleting the parent reference should be enough.
             FileTranslatorCache.remove(reference: blinkItemReference)
+            _ = try? FileManager.default.removeItem(at: blinkItemReference.url)
             completionHandler(nil)
           }
         },
