@@ -76,9 +76,9 @@ int build_main(int argc, char *argv[]) {
   }
   
   struct IOSEnv env = {
-      .stdin_fd = ios_stdinFd(),
-      .stdout_fd = ios_stdoutFd(),
-      .stderr_fd = ios_stderrFd(),
+      .stdin_fd = fileno(ios_stdin()),
+      .stdout_fd = fileno(ios_stdout()),
+      .stderr_fd = fileno(ios_stderr()),
       .cwd = [NSFileManager.defaultManager currentDirectoryPath].UTF8String,
       .open_url_fn = tokio_open_url,
       .start_mosh_fn = tokio_start_mosh,
