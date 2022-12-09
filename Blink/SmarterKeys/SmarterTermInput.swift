@@ -286,7 +286,7 @@ class CaretHider {
 //    let item = inputAssistantItem
 //
 ////    let proxyItem = UIBarButtonItem(customView: _kbProxy)
-////    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], representativeItem: nil)
+////    let group = UIBarButtonItemGroup(barButtonItems: [proxyItem], presentativeItem: nil)
 //
 ////    item.leadingBarButtonGroups = []
 ////    item.trailingBarButtonGroups = [group]
