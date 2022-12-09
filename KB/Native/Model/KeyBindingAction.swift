@@ -167,6 +167,10 @@ enum KeyBindingAction: Codable, Identifiable {
       .hex("7E", comment: "Press ~"),
       .hex("7C", comment: "Press |"),
       .hex("5C", comment: "Press \\"),
+      .press(.w, [.command]),
+      .press(.t, [.command]),
+//      .press(.left, [.shift, .command]),
+//      .press(.right, [.shift, .command]),
     ]
   }
   

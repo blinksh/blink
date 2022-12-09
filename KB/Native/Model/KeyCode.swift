@@ -74,6 +74,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
   case circumflex   = "Circumflex"
   case underscore   = "Underscore"
   case unidentified = "Unidentified"
+  case w = "w"
+  case t = "t"
   
   var isOption: Bool {
     switch self {
@@ -112,6 +114,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     case .circumflex: return "^"
     case .underscore: return "_"
     case .unidentified: return "?"
+    case .w: return "w"
+    case .t: return "t"
     default: return rawValue
     }
   }
@@ -201,6 +205,8 @@ enum KeyCode: String, Codable, CaseIterable, Identifiable {
     // Mapped to 6 and -, as those are applying the same combination.
     case .circumflex: return 54
     case .underscore: return 189
+    case .w: return 87
+    case .t: return 84
     }
   }
   
