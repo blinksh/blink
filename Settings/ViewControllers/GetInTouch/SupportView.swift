@@ -61,16 +61,6 @@ struct SupportView: View {
         Section(header:Text("Contact us")) {
           HStack {
             Button {
-              BKLinkActions.sendToEmailApp()
-            } label: {
-              Label("Email", systemImage: "mail")
-            }
-            
-            Spacer()
-            Text("support@blink.sh").foregroundColor(.secondary)
-          }
-          HStack {
-            Button {
               BKLinkActions.sendToDiscordSupport()
             } label: {
               Label("Discord", systemImage: "ellipsis.bubble")
