@@ -100,7 +100,6 @@ class CaretHider {
     // Assume hardware kb by default, since sometimes we don't have kbframe change events
     // if shortcuts toggle in Settings.app is off.
     kbView.traits.isHKBAttached = true
-
     
     if traitCollection.userInterfaceIdiom == .pad {
 //      _setupAssistantItem()
@@ -174,7 +173,14 @@ class CaretHider {
       item.leadingBarButtonGroups = []
       if item.trailingBarButtonGroups.first != _barButtonItemGroup || item.trailingBarButtonGroups.count != 1 {
         item.trailingBarButtonGroups = [_barButtonItemGroup]
-        self.contentView()?.reloadInputViews()
+        
+        // Reload input views later. Fixes crash for detaching/attaching KB
+        if let contentView = self.contentView() {
+          DispatchQueue.main.async {
+            contentView.reloadInputViews()
+          }
+        }
+        
       }
       kbView.isHidden = false
       
