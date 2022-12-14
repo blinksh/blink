@@ -35,6 +35,7 @@ import SwiftUI
 
 class PurchasesUserModel: ObservableObject {
   @Published var plusProduct: SKProduct? = nil
+  @Published var buildProduct: SKProduct? = nil
   @Published var classicProduct: SKProduct? = nil
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
@@ -135,6 +136,10 @@ class PurchasesUserModel: ObservableObject {
         
         if product.productIdentifier == ProductBlinkShellClassicID {
           self.classicProduct = product
+        }
+        
+        if product.productIdentifier == ProductBlinkBuildBasicID {
+          self.buildProduct = product
         }
       }
       

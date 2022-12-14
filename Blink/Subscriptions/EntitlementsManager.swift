@@ -35,9 +35,11 @@ import UIKit
 
 let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
 let EarlyAccessFeaturesEntitlementID = "early_access_features"
+let BuildEntitlementID = "build"
 
 let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
 let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
+let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
 
 
 // Decoupled from RevCat Entitlement
@@ -49,6 +51,8 @@ public struct Entitlement: Identifiable, Equatable, Hashable {
   public static var inactiveUnlimitedScreenTime = Self(id: UnlimitedScreenTimeEntitlementID, active: false, unlockProductID: nil)
   
   public static var earlyAccessFeatures = Self(id: EarlyAccessFeaturesEntitlementID, active: false, unlockProductID: nil)
+  
+  public static var build = Self(id: BuildEntitlementID, active: false, unlockProductID: nil)
 }
 
 public protocol EntitlementsSourceDelegate: AnyObject {
@@ -72,6 +76,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
   @Published var unlimitedTimeAccess: Entitlement = .inactiveUnlimitedScreenTime
   @Published var earlyAccessFeatures: Entitlement = .earlyAccessFeatures
+  @Published var build: Entitlement = .build
   
   @Published var activeSubscriptions: Set<String> = .init()
   @Published var nonSubscriptionTransactions: Set<String> = .init()
@@ -114,6 +119,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     
     if let newValue = entitlements[EarlyAccessFeaturesEntitlementID] {
       self.earlyAccessFeatures = newValue
+    }
+    
+    if let newValue = entitlements[BuildEntitlementID] {
+      self.build = newValue
     }
     
     if isUnknownState {
