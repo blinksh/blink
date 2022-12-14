@@ -75,6 +75,16 @@ struct SettingsView: View {
           }
           Row {
             HStack {
+              Label("Build", systemImage: "hammer.circle")
+              Spacer()
+              Text("")
+                  .foregroundColor(.secondary)
+            }
+          } details: {
+            BuildView()
+          }
+          Row {
+            HStack {
               Label("For Blink 14 Owners", systemImage: "14.square")
             }
           } details: {

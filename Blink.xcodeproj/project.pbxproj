@@ -363,6 +363,8 @@
 		D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B0BD1B2720312C00485854 /* GesturesView.swift */; };
 		D2B1F8DD23265A0600634D67 /* CommandsHUDView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */; };
 		D2B1F8DF23265A4700634D67 /* CommandControl.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B1F8DE23265A4700634D67 /* CommandControl.swift */; };
+		D2B788852949C53100F19E4F /* BuildView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788842949C53100F19E4F /* BuildView.swift */; };
+		D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2B788872949E8CA00F19E4F /* BuildRegion.swift */; };
 		D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BC514C2355C3AE0034FDD4 /* History.swift */; };
 		D2BF5F7F265BA0A80070F839 /* UserDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2BF5F7E265BA0A80070F839 /* UserDefaults.swift */; };
 		D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */ = {isa = PBXBuildFile; fileRef = D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */; };
@@ -1024,6 +1026,8 @@
 		D2B0BD1B2720312C00485854 /* GesturesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GesturesView.swift; sourceTree = "<group>"; };
 		D2B1F8DC23265A0600634D67 /* CommandsHUDView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandsHUDView.swift; sourceTree = "<group>"; };
 		D2B1F8DE23265A4700634D67 /* CommandControl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandControl.swift; sourceTree = "<group>"; };
+		D2B788842949C53100F19E4F /* BuildView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildView.swift; sourceTree = "<group>"; };
+		D2B788872949E8CA00F19E4F /* BuildRegion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BuildRegion.swift; sourceTree = "<group>"; };
 		D2B9E218268084C60084B2C4 /* Spinner */ = {isa = PBXFileReference; lastKnownFileType = text; name = Spinner; path = xcfs/.build/checkouts/Spinner; sourceTree = SOURCE_ROOT; };
 		D2B9E21C268084D00084B2C4 /* Promise */ = {isa = PBXFileReference; lastKnownFileType = text; name = Promise; path = xcfs/.build/checkouts/Promise; sourceTree = SOURCE_ROOT; };
 		D2BC514C2355C3AE0034FDD4 /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
@@ -1783,6 +1787,7 @@
 		C9B2E0141D6B612300B89F69 /* ViewControllers */ = {
 			isa = PBXGroup;
 			children = (
+				D2B788862949E8A400F19E4F /* Build */,
 				D2AD8E8527A2C81900DED28D /* Subscriptions */,
 				D2B0BD172720311B00485854 /* Gestures */,
 				803B99CB2582865500DC99C8 /* Notifications */,
@@ -1983,6 +1988,7 @@
 				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
 				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
 				D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */,
+				D2B788842949C53100F19E4F /* BuildView.swift */,
 			);
 			path = Subscriptions;
 			sourceTree = "<group>";
@@ -1993,6 +1999,14 @@
 				D2B0BD1B2720312C00485854 /* GesturesView.swift */,
 			);
 			path = Gestures;
+			sourceTree = "<group>";
+		};
+		D2B788862949E8A400F19E4F /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				D2B788872949E8CA00F19E4F /* BuildRegion.swift */,
+			);
+			path = Build;
 			sourceTree = "<group>";
 		};
 		D2C243F7238E44960082C69C /* KB */ = {
@@ -3085,6 +3099,7 @@
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
 				D2AD8E7827A2BAFA00DED28D /* TopupPageView.swift in Sources */,
+				D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
 				D2C24437239104250082C69C /* ShortcutsConfigView.swift in Sources */,
@@ -3127,6 +3142,7 @@
 				D23A7B25233C934900B3B66D /* UIColor+isLight.swift in Sources */,
 				D2499BEC2362EFD40009C701 /* cpp.cpp in Sources */,
 				D264D2B328F84592002B1B14 /* UnavailErrorView.swift in Sources */,
+				D2B788852949C53100F19E4F /* BuildView.swift in Sources */,
 				D20CBA5A2360324100D93301 /* CompleteUtils.swift in Sources */,
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
