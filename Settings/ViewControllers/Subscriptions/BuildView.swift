@@ -69,7 +69,7 @@ struct BuildView: View {
   
   var body: some View {
     List {
-      if _entitlements.earlyAccessFeatures.active == false {
+      if _entitlements.earlyAccessFeatures.active == true {
         Section("Setup your build") {
           Row(
             content: {
@@ -181,7 +181,7 @@ fileprivate class BuildViewModel: ObservableObject {
         "email": self.email,
         "region": self.region.rawValue,
         "rev_cat_user_id": revCatID,
-        "reciept_b64": receiptB64
+        "receipt_b64": receiptB64
       ]
       
       let json = try JSONSerialization.data(withJSONObject: params)
