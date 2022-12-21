@@ -45,6 +45,7 @@ enum BuildRegion: String {
 }
 
 extension BuildRegion {
+  
   @ViewBuilder
   func full_title_label() -> some View {
     Label(self.full_title(), systemImage: systemImage())
