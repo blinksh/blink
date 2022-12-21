@@ -33,9 +33,10 @@ import Purchases
 import Combine
 import SwiftUI
 
+@MainActor
 class PurchasesUserModel: ObservableObject {
   @Published var plusProduct: SKProduct? = nil
-  @Published var buildProduct: SKProduct? = nil
+  @Published var buildBasicProduct: SKProduct? = nil
   @Published var classicProduct: SKProduct? = nil
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
@@ -47,6 +48,15 @@ class PurchasesUserModel: ObservableObject {
   @Published var dataCopyFailed: Bool = false
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
+  
+  @Published var email: String = "" {
+    didSet {
+      emailIsValid = email.contains("@")
+    }
+  }
+  @Published var emailIsValid: Bool = false
+  @Published var region: BuildRegion = BuildRegion.USEast0
+  
   
   @Published var paywallPageIndex: Int = 0
   
@@ -68,9 +78,72 @@ class PurchasesUserModel: ObservableObject {
 //      .print("!!!!!!")
 //      .assign(to: &$unlimitedTimeAccess)
     
-    if self.plusProduct == nil || self.classicProduct == nil {
+    if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
       self.fetchProducts()
     }
+  }
+  
+
+  func purchaseBuildBasic() async {
+    guard let product = buildBasicProduct else {
+      print("product should be loaded")
+      return
+    }
+    
+    guard emailIsValid else {
+      alertErrorMessage = "Valid Email is Required"
+      return
+    }
+    
+    withAnimation {
+      self.purchaseInProgress = true
+    }
+    
+    defer {
+      self.refresh()
+      self.purchaseInProgress = false
+    }
+    
+    do {
+      let (_transaction, info, canceled) = try await Purchases.shared.purchaseProduct(product)
+      if canceled {
+        return
+      }
+      
+      guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
+            FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
+        return
+      }
+      
+      let receiptData = try Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
+      
+      let receiptB64 = receiptData.base64EncodedString(options: [])
+      let revCatID = Purchases.shared.appUserID
+      
+      let params = [
+        "email": self.email,
+        "region": self.region.rawValue,
+        "rev_cat_user_id": revCatID,
+        "receipt_b64": receiptB64
+      ]
+      
+      let json = try JSONSerialization.data(withJSONObject: params)
+      
+      var request = URLRequest(
+        url: URL(string: "https://raw.api.blink.build/accounts/signup")!
+      )
+      request.httpMethod = "POST"
+      request.httpBody = json
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+      
+      var (data, response) = try await URLSession.shared.data(for: request)
+      
+      print(data, response)
+      
+    } catch {
+      self.alertErrorMessage = error.localizedDescription
+    }
+    
   }
   
   func purchasePlus() {
@@ -127,22 +200,27 @@ class PurchasesUserModel: ObservableObject {
     plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
   }
   
+  func formattedBuildPriceWithPeriod() -> String? {
+    buildBasicProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
+  }
+  
   func fetchProducts() {
-    Purchases.shared.products([ProductBlinkShellClassicID, ProductBlinkShellPlusID]) { products in
+    Purchases.shared.products([
+      ProductBlinkShellClassicID,
+      ProductBlinkShellPlusID,
+      ProductBlinkBuildBasicID
+    ]) { products in
       for product in products {
-        if product.productIdentifier == ProductBlinkShellPlusID {
+        let productID = product.productIdentifier
+        
+        if productID == ProductBlinkShellPlusID {
           self.plusProduct = product
-        }
-        
-        if product.productIdentifier == ProductBlinkShellClassicID {
+        } else if productID == ProductBlinkShellClassicID {
           self.classicProduct = product
-        }
-        
-        if product.productIdentifier == ProductBlinkBuildBasicID {
-          self.buildProduct = product
+        } else if productID == ProductBlinkBuildBasicID {
+          self.buildBasicProduct = product
         }
       }
-      
     }
   }
   

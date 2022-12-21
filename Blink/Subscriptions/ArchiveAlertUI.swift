@@ -61,6 +61,7 @@ class ArchiveAlertUI {
     ctrl.present(alert, animated: false, completion: nil)
   }
 
+  @MainActor
   static func performRecoveryWithFeedback(on ctrl: UIViewController, archiveData: Data, archivePassword: String) {
     // Put the archive on a temporary file.
     let archiveURL = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent(ProcessInfo().globallyUniqueString)

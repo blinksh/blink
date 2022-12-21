@@ -32,6 +32,7 @@
 
 import SwiftUI
 import Purchases
+import Charts
 
 struct BuildRegionPickerView: View {
   @Binding var currentValue: BuildRegion
@@ -59,38 +60,209 @@ struct BuildRegionPickerView: View {
   }
 }
 
+struct BasicMachineSection: View {
+  let formattedPrice: String
+  var body: some View {
+    Section(
+      header: Text("Build Machine"),
+      footer: Text("Plan auto-renews for \(formattedPrice) until canceled.")
+    ) {
+      Label {
+        Text("8 GiB of RAM")
+      } icon: {
+        Image(systemName: "memorychip")
+          .foregroundColor(.green)
+        
+      }
+      Label {
+        Text("4 vCPUs")
+      } icon: {
+        Image(systemName: "cpu")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("5,000 GiB Transfer")
+      } icon: {
+        Image(systemName: "network")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("160 GiB Ephemeral SSD")
+      } icon: {
+        Image(systemName: "internaldrive")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("2 GiB Main Cloud Disk")
+      } icon: {
+        Image(systemName: "externaldrive.badge.icloud")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("50 Hours")
+      } icon: {
+        Image(systemName: "timer")
+          .foregroundColor(.green)
+      }
+    }
+  }
+}
 
 struct BuildView: View {
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
-  @EnvironmentObject private var _nav: Nav
+  var body: some View {
+    if _entitlements.build.active {
+      BuildAccountView()
+    } else {
+      BuildPurchaseView()
+    }
+  }
+}
+
+struct BuildAccountView: View {
+  
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
-  @StateObject private var _viewModel = BuildViewModel()
+  
+  @ViewBuilder
+  func list() -> some View {
+    if #available(iOS 16.0, *) {
+      Chart {
+        BarMark(
+          x: .value("Mount", "Mon"),
+          y: .value("Value", 3)
+        )
+        BarMark(
+          x: .value("Mount", "Tue"),
+          y: .value("Value", 4)
+        )
+        BarMark(
+          x: .value("Mount", "Wed"),
+          y: .value("Value", 7)
+        )
+        BarMark(
+          x: .value("Mount", "Thu"),
+          y: .value("Value", 2)
+        )
+        
+        BarMark(
+          x: .value("Mount", "Fri"),
+          y: .value("Value", 7)
+        )
+        BarMark(
+          x: .value("Mount", "Sat"),
+          y: .value("Value", 8)
+        )
+        BarMark(
+          x: .value("Mount", "Sun"),
+          y: .value("Value", 9)
+        )
+        RuleMark(
+          y: .value("Average", 5.7)
+        )
+        .foregroundStyle(.yellow)
+        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [3, 5]))
+        .annotation(position: .trailing, alignment: .leading) {
+          Text("avg")
+            .font(.caption2)
+            .foregroundStyle(.yellow)
+        }
+      }
+      .frame(height: 100)
+    } else {
+      EmptyView()
+    }
+  }
   
   var body: some View {
     List {
+      Section(header: Text("Account")) {
+        Label {
+          Text(verbatim: "yury@build.sh")
+        } icon: {
+          Image(systemName: "envelope.badge")
+            .symbolRenderingMode(.monochrome)
+        }
+        _model.region.full_title_label()
+      }
+      Section(header: Text("Usage")) {
+        list().accentColor(.green)
+      }
+    }
+    .alert(errorMessage: $_model.alertErrorMessage)
+    .navigationTitle("Blink Build")
+  }
+}
+
+struct BuildPurchaseView: View {
+  
+  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  
+  
+  var body: some View {
+    List {
+      BasicMachineSection(formattedPrice: _model.formattedBuildPriceWithPeriod() ?? "")
       if _entitlements.earlyAccessFeatures.active == true {
-        Section("Setup your build") {
+        Section() {
           Row(
             content: {
-              _viewModel.region.full_title_label()
+              _model.region.full_title_label()
             },
             details: {
-              BuildRegionPickerView(currentValue: $_viewModel.region)
+              BuildRegionPickerView(currentValue: $_model.region)
             }
           )
           Label {
             TextField(
-              "Email for Notifications", text: $_viewModel.email
+              "Your Email for Notifications", text: $_model.email
             )
             .textContentType(.emailAddress)
             .keyboardType(.emailAddress)
-            .submitLabel(.next)
+            .submitLabel(.go)
             .onSubmit {
-              self._next()
+              Task {
+                await _model.purchaseBuildBasic()
+              }
             }
           } icon: {
-            Image(systemName: "envelope")
+            Image(systemName: "envelope.badge")
+              .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
+          }
+        }
+      } else {
+        Section() {
+          Label {
+            Text("This is Early Access Blink+ Service")
+          } icon: {
+            Image(systemName: "plus")
+              .foregroundColor(.green)
+          }
+          Row {
+            HStack {
+              Label {
+                Text("Compare Plans")
+              } icon: {
+                Image(systemName: "bag.badge.questionmark")
+                  .foregroundColor(.green)
+              }
+              Spacer()
+              Text(_entitlements.currentPlanName())
+                .foregroundColor(.secondary)
+            }
+          } details: {
+            PlansView()
+          }
+        }
+      }
+      
+      Section() {
+        HStack {
+          Button {
+            _model.openPrivacyAndPolicy()
+          } label: {
+            Label("Learn More about Blink Build", systemImage: "questionmark")
           }
         }
       }
@@ -98,6 +270,7 @@ struct BuildView: View {
       if let _ = _model.plusProduct {
         
       }
+      
       Section {
         HStack {
           if _model.restoreInProgress {
@@ -131,78 +304,15 @@ struct BuildView: View {
     .alert(errorMessage: $_model.alertErrorMessage)
     .navigationTitle("Blink Build")
     .toolbar {
-      Button("Next") {
-        self._next()
-      }.disabled(!_viewModel.readyForPurchase())
-    }
-  }
-  
-  private func _next() {
-//    let rootView = self.details().environmentObject(self.nav)
-    let vc = UIHostingController(rootView: PurchaseBuildView(viewModel: _viewModel))
-    _nav.navController.pushViewController(vc, animated: true)
-  }
-}
-
-fileprivate struct PurchaseBuildView: View {
-  @StateObject var viewModel: BuildViewModel;
-  
-  var body: some View {
-    Button("Purchase") {
-      Task {
-        await viewModel.purchaseTask()
+      if _model.purchaseInProgress {
+        ProgressView()
+      } else {
+        Button("Subscribe") {
+          Task {
+            await _model.purchaseBuildBasic()
+          }
+        }.disabled(!_model.emailIsValid || _model.restoreInProgress)
       }
     }
-  }
-}
-
-
-fileprivate class BuildViewModel: ObservableObject {
-  @Published var email: String = ""
-  @Published var region: BuildRegion = BuildRegion.USEast0
-  
-  func readyForPurchase() -> Bool {
-    email.contains("@")
-  }
-  
-  func purchaseTask() async {
-    guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
-          FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
-      return
-    }
-
-    do {
-      let receiptData = try Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
-      
-      let receiptB64 = receiptData.base64EncodedString(options: [])
-      let revCatID = Purchases.shared.appUserID
-      
-      let params = [
-        "email": self.email,
-        "region": self.region.rawValue,
-        "rev_cat_user_id": revCatID,
-        "receipt_b64": receiptB64
-      ]
-      
-      let json = try JSONSerialization.data(withJSONObject: params)
-      
-      var request = URLRequest(
-        url: URL(string: "https://raw.api.blink.build/accounts/signup")!
-      )
-      request.httpMethod = "POST"
-      request.httpBody = json
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      
-      var (data, response) = try await URLSession.shared.data(for: request)
-      
-      print(data, response)
-      
-      
-    }
-    catch {
-      print("error: " + error.localizedDescription)
-    }
-    
-    
   }
 }

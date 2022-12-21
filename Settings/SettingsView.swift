@@ -68,7 +68,7 @@ struct SettingsView: View {
               Label("Subscription", systemImage: "bag")
               Spacer()
               Text(_entitlements.currentPlanName())
-                  .foregroundColor(.secondary)
+                .foregroundColor(.secondary)
             }
           } details: {
             PlansView()
@@ -77,8 +77,8 @@ struct SettingsView: View {
             HStack {
               Label("Build", systemImage: "hammer.circle")
               Spacer()
-              Text("")
-                  .foregroundColor(.secondary)
+              Text("") // TODO: show status?
+                .foregroundColor(.secondary)
             }
           } details: {
             BuildView()
