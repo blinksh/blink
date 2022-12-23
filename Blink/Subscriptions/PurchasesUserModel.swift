@@ -130,15 +130,27 @@ class PurchasesUserModel: ObservableObject {
       let json = try JSONSerialization.data(withJSONObject: params)
       
       var request = URLRequest(
-        url: URL(string: "https://raw.api.blink.build/accounts/signup")!
+        url: URL(string: "https://raw.api.blink.build/application/signup")!
       )
       request.httpMethod = "POST"
       request.httpBody = json
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
       
       var (data, response) = try await URLSession.shared.data(for: request)
+      // 409 account exists
+      // 200 ok
       
-      print(data, response)
+      guard let response = response as? HTTPURLResponse else {
+        print("hmm")
+        return
+      }
+      
+      if response.statusCode == 200 {
+        let obj = try JSONSerialization.jsonObject(with: data)
+        var url = BlinkPaths.blinkBuildTokenURL()!
+        try data.write(to: url)
+      }
+      
       
     } catch {
       self.alertErrorMessage = error.localizedDescription
@@ -152,6 +164,52 @@ class PurchasesUserModel: ObservableObject {
   
   func purchaseClassic() {
     _purchase(product: classicProduct)
+  }
+  
+  private func getBuildAccessToken() async {
+    do {
+      
+      guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
+            FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
+        return
+      }
+      
+      let receiptData = try Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
+      
+      let receiptB64 = receiptData.base64EncodedString(options: [])
+      let revCatID = Purchases.shared.appUserID
+      
+      let params = [
+        "receipt_b64": receiptB64
+      ]
+      
+      let json = try JSONSerialization.data(withJSONObject: params)
+      
+      var request = URLRequest(
+        url: URL(string: "https://raw.api.blink.build/application/signin")!
+      )
+      request.httpMethod = "POST"
+      request.httpBody = json
+      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
+      
+      var (data, response) = try await URLSession.shared.data(for: request)
+      // 409 account exists
+      // 200 OK?
+      
+      guard let response = response as? HTTPURLResponse else {
+        print("hmm")
+        return
+      }
+      
+      if response.statusCode == 200 {
+        let obj = try JSONSerialization.jsonObject(with: data)
+        var url = BlinkPaths.blinkBuildTokenURL()!
+        try data.write(to: url)
+      }
+
+    } catch {
+      
+    }
   }
   
   private func _purchase(product: SKProduct?) {
@@ -173,6 +231,14 @@ class PurchasesUserModel: ObservableObject {
     Purchases.shared.restoreTransactions { info, error in
       self.refresh()
       self.restoreInProgress = false
+      
+      if EntitlementsManager.shared.build.active {
+        
+        Task {
+          await self.getBuildAccessToken()
+        }
+        
+      }
       
       if let error {
         self.alertErrorMessage = error.localizedDescription

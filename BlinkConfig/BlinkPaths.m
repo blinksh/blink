@@ -118,6 +118,13 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return dotBlink;
 }
 
++ (NSString *)blinkBuild {
+  NSString *dotBlinkBuild = [[self homePath] stringByAppendingPathComponent:@".blink-build"];
+  [self _ensureFolderAtPath:dotBlinkBuild];
+  return dotBlinkBuild;
+}
+
+
 + (NSString *)ssh {
   NSString *dotSSH = [[self homePath] stringByAppendingPathComponent:@".ssh"];
   [self _ensureFolderAtPath:dotSSH];
@@ -142,6 +149,18 @@ NSString *__iCloudsDriveDocumentsPath = nil;
 {
   return [NSURL fileURLWithPath:[self blink]];
 }
+
++ (NSURL *)blinkBuildURL
+{
+  return [NSURL fileURLWithPath:[self blinkBuild]];
+}
+
++ (NSURL *)blinkBuildTokenURL
+{
+  NSString *url = [self blinkBuild];
+  return [NSURL fileURLWithPath:[url stringByAppendingPathComponent:@".build.token"]];
+}
+
 
 + (NSURL *)sshURL
 {

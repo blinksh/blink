@@ -41,10 +41,14 @@
 
 // ~/.blink
 + (NSString *) blink;
+// ~/.blink-build
++ (NSString *)blinkBuild;
 // ~/.ssh
 + (NSString *) ssh;
 
 + (NSURL *) blinkURL;
++ (NSURL *) blinkBuildURL;
++ (NSURL *) blinkBuildTokenURL;
 + (NSURL *) sshURL;
 + (NSURL *) blinkSSHConfigFileURL;
 + (NSURL *) blinkGlobalSSHConfigFileURL;
