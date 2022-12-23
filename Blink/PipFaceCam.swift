@@ -34,38 +34,52 @@ import Foundation
 import UIKit
 import AVKit
 
-fileprivate extension UIView {
-  func setRecursiveBg(color: UIColor) {
-    layer.removeAllAnimations()
-    if self.backgroundColor != nil {
-      self.backgroundColor = color
-    }
-
-    for v in subviews {
-      v.setRecursiveBg(color: color)
-    }
+class SampleBufferFaceCamView: UIView {
+  override class var layerClass: AnyClass {
+    AVSampleBufferDisplayLayer.self
+  }
+  
+  var sampleBufferDisplayLayer: AVSampleBufferDisplayLayer {
+    layer as! AVSampleBufferDisplayLayer
   }
 }
 
-fileprivate class PhotoOverlayController: UIImagePickerController {
-  override func viewDidLayoutSubviews() {
-    super.viewDidLayoutSubviews()
-    view?.setRecursiveBg(color: UIColor.clear)
-  }
+class PipFaceCamViewController: AVPictureInPictureVideoCallViewController {
+  private let _view = SampleBufferFaceCamView()
   
   override func viewDidLoad() {
     super.viewDidLoad()
-    sourceType = .camera
-    cameraDevice = .front
-    allowsEditing = false
-    showsCameraControls = false
-    view?.setRecursiveBg(color: UIColor.blinkTint)
+    self.view = _view
+    _view.layer.transform = CATransform3DMakeScale(1.0, -1.0, 1.0)
+    _view.layer.contentsGravity = .resizeAspect
+    self.preferredContentSize = CGSize(width: 1440, height: 1080)
+  }
+  
+  func enqueue(_ sbuf: CMSampleBuffer) { 
+    DispatchQueue.main.async {
+      if self._view.sampleBufferDisplayLayer.isReadyForMoreMediaData {
+        self._view.sampleBufferDisplayLayer.enqueue(sbuf)
+      }
+    }
+  }
+  
+  override func viewDidLayoutSubviews() {
+    super.viewDidLayoutSubviews()
+    
+    guard let sup = self.view.superview else {
+      return
+    }
+    
+    if let camView = sup as? FaceCamView {
+      
+    } else {
+      self.view.frame = sup.bounds
+    }
   }
 }
 
 fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
-  private let _ctrl = PhotoOverlayController()
-  fileprivate var controller: UIViewController { _ctrl }
+  private let _ctrl: PipFaceCamViewController
   private let _tapRecognizer = UITapGestureRecognizer()
   private let _doubleTapRecognizer = UITapGestureRecognizer()
   private let _panRecognizer = UIPanGestureRecognizer()
@@ -74,6 +88,10 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
   private let _longPressRecognizer = UILongPressGestureRecognizer()
   private let _placeholder = UIImageView(image: UIImage(systemName: "eyes"))
   private var _flipped = false
+  
+  var controller: PipFaceCamViewController {
+    return _ctrl
+  }
 
   var safeFrame: CGRect = .zero {
     didSet {
@@ -96,7 +114,8 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
     }
   }
   
-  override init(frame: CGRect) {
+  init(frame: CGRect, ctrl: PipFaceCamViewController) {
+    _ctrl = ctrl
     super.init(frame: frame)
         
     addSubview(_placeholder)
@@ -187,55 +206,37 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
     
   override func layoutSubviews() {
     super.layoutSubviews()
+
+    // skipping relayout when app is snapshoting
+    if self.isHidden {
+      return
+    }
+    
     layer.cornerRadius = bounds.width * 0.5
     
     _placeholder.center = CGPoint(x: bounds.width * 0.5, y: bounds.height * 0.5)
-   
-    #if targetEnvironment(macCatalyst)
+    
+
     if _flipped {
-      _ctrl.view.transform = CGAffineTransform(scaleX: -1, y: 1);
+      _ctrl.view.transform = CGAffineTransform(scaleX: -1, y: -1);
+      _placeholder.transform = CGAffineTransform(scaleX: -1, y: 1);
     } else {
-      _ctrl.view.transform = CGAffineTransform(scaleX: 1, y: 1);
+      _ctrl.view.transform = CGAffineTransform(scaleX: 1, y: -1);
+      _placeholder.transform = CGAffineTransform(scaleX: 1, y: 1);
     }
-    let width = bounds.width * 16.0/9.0
-    _ctrl.view.frame = CGRect(x: (bounds.width - width) * 0.5, y: 0, width: width, height: bounds.height)
-    #else
     
     let isPortait = (window?.windowScene?.interfaceOrientation ?? .landscapeLeft).isPortrait
     
-    if traitCollection.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
-      // try to center on face on ipads
-      var offset = bounds.width / 3.0
-      if isPortait {
-        offset = 0
-      }
-      if _flipped {
-        _ctrl.view.transform = CGAffineTransform(scaleX: -1, y: 1);
-        _placeholder.transform = CGAffineTransform(scaleX: -1, y: 1);
-        _ctrl.view.frame = CGRect(x: 0, y: 0, width: bounds.width + offset, height: bounds.height)
-      } else {
-        _ctrl.view.transform = CGAffineTransform(scaleX: 1, y: 1);
-        _placeholder.transform = CGAffineTransform(scaleX: 1, y: 1);
-        _ctrl.view.frame = CGRect(x: -offset, y: 0, width: bounds.width + offset, height: bounds.height)
-        
-      }
-      
-      
-    } else  {      
-      if _flipped {
-        _ctrl.view.transform = CGAffineTransform(scaleX: -1, y: 1);
-        _placeholder.transform = CGAffineTransform(scaleX: -1, y: 1);
-      } else {
-        _placeholder.transform = CGAffineTransform(scaleX: 1, y: 1);
-        _ctrl.view.transform = CGAffineTransform(scaleX: 1, y: 1);
-      }
-
-      let height = bounds.width * 4.0/3.0
+    if isPortait {
+      _ctrl.view.transform = _ctrl.view.transform.rotated(by: -CGFloat.pi / 2.0)
+      let height = bounds.height * 1440.0 / 1080.0
       _ctrl.view.frame = CGRect(x: 0, y: (bounds.height - height) * 0.5, width: bounds.width, height: height)
+      _ctrl.preferredContentSize = CGSize(width: 1080, height: 1440)
+    } else {
+      let width = bounds.width * 1440.0 / 1080.0
+      _ctrl.view.frame = CGRect(x: (bounds.width - width) * 0.5, y: 0, width: width, height: bounds.height)
+      _ctrl.preferredContentSize = CGSize(width: 1440, height: 1080)
     }
-    #endif
-    
-    
   }
   
   @objc func _doubleTap(recognizer: UITapGestureRecognizer) {
@@ -359,105 +360,134 @@ fileprivate final class FaceCamView: UIView, UIGestureRecognizerDelegate {
     true
   }
   
+  func attach() {
+    self.addSubview(_ctrl.view)
+    self.setNeedsLayout()
+    self.layoutIfNeeded()
+  }
+  
   
 }
 
-
-extension CGPoint {
-  var magnitude: CGFloat {
-    sqrt(pow(x, 2) + pow(y, 2))
-  }
-  
-  mutating func offset(by: CGPoint) {
-    x += by.x
-    y += by.y
-  }
-  
-  func offsetted(by: CGFloat) -> CGPoint {
-    var result = self
-    result.x += by
-    result.y += by
-    return result
-  }
-}
-
-
-class FaceCamManager {
-  private var _view: FaceCamView?
+class PipFaceCamManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate, AVPictureInPictureControllerDelegate {
   private var _spaceCtrl: SpaceController? = nil
-  private var _state: FaceCamView.State = .init(frame: .zero, flipped: false)
+  private var _session: AVCaptureSession
+  private var _queue = DispatchQueue(label: "pip queue")
+  private var _pipVideoVC = PipFaceCamViewController()
+  fileprivate var _pipCtrl: AVPictureInPictureController
+  private var _view: FaceCamView
+  fileprivate var stopLayout = false
   
-  init() {
-    _view = FaceCamView(frame: CGRect(origin: .zero, size: CGSize(width: 80, height: 80)))
+  override init() {
     
-    NotificationCenter.default.addObserver(self,
-                                           selector: #selector(moveToBackground(notificationInfo:)),
-                                           name: UIWindowScene.didEnterBackgroundNotification,
-                                           object: nil)
+    _view = FaceCamView(frame: .zero, ctrl: _pipVideoVC)
+    let session = AVCaptureSession()
+    _session = session
     
-    NotificationCenter.default.addObserver(self,
-                                           selector: #selector(moveToForeground(notificationInfo:)),
-                                           name: UIWindowScene.willEnterForegroundNotification,
-                                           object: nil)
+    let pipContentSource = AVPictureInPictureController.ContentSource(
+      activeVideoCallSourceView: _pipVideoVC.view,
+      contentViewController: _pipVideoVC
+    )
+    _pipCtrl = AVPictureInPictureController(contentSource: pipContentSource)
+    _pipCtrl.canStartPictureInPictureAutomaticallyFromInline = true
+    
+    super.init()
+    _pipCtrl.delegate = self
+    
+    let devices = AVCaptureDevice.devices()
+    
+    let videoDevice = devices.first(where: { d in d.position == .front})
+    
+    guard let videoDevice = videoDevice else { return }
+    
+    
+    do {
+      for format in videoDevice.formats {
+        if !format.isVideoBinned {
+          continue
+        }
+        if !format.isCenterStageSupported {
+          continue
+        }
+        let desc = format.formatDescription
+        let dim = desc.dimensions
+        // most square resolution. Works well with circle shape
+        if dim.width == 1440 && dim.height == 1080  {
+          try! videoDevice.lockForConfiguration()
+          let frameDuration = CMTime(value: 1, timescale: 30)
+          videoDevice.activeFormat = format
+          videoDevice.activeVideoMaxFrameDuration = frameDuration
+          videoDevice.activeVideoMinFrameDuration = frameDuration
+          videoDevice.unlockForConfiguration()
+          break
+        }
+        
+      }
+      
+      session.beginConfiguration()
+      
+      session.sessionPreset = .inputPriority
+    
+      // Wrap the audio device in a capture device input.
+      let videoInput = try AVCaptureDeviceInput(device: videoDevice)
+      // If the input can be added, add it to the session.
+      if session.canAddInput(videoInput) {
+        session.addInput(videoInput)
+      }
+      
+      let output = AVCaptureVideoDataOutput()
+      output.alwaysDiscardsLateVideoFrames = true
+      output.setSampleBufferDelegate(self, queue: _queue)
+      output.automaticallyConfiguresOutputBufferDimensions = false
+      output.deliversPreviewSizedOutputBuffers = false
+      
+      if session.canAddOutput(output) {
+        session.addOutput(output)
+      }
+      
+      if #available(iOS 16.0, *) {
+        session.isMultitaskingCameraAccessEnabled = true
+      } else {
+        // Fallback on earlier versions
+      }
+      
+      session.commitConfiguration()
+      _queue.async {
+        session.startRunning()
+      }
+    } catch {
+      // Configuration failed. Handle error.
+    }
+    
   }
   
-  deinit {
-    NotificationCenter.default.removeObserver(self)
+  func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
+      _pipVideoVC.enqueue(sampleBuffer)
+    
   }
   
-  private static var __shared: FaceCamManager? = nil
+  fileprivate static var __shared: PipFaceCamManager? = nil
   
-  
-  @objc func moveToBackground(notificationInfo: NSNotification) {
-    guard let scene = notificationInfo.object as? UIWindowScene,
-          scene == _spaceCtrl?.view.window?.windowScene else {
+  static func update(in spaceCtrl: SpaceController) {
+    guard let shared = __shared,
+          let ctrl = shared._spaceCtrl,
+          ctrl == spaceCtrl
+    else {
       return
     }
-    if let view = _view {
-      view.controller.view.removeFromSuperview()
-      view.controller.removeFromParent()
-      view.removeFromSuperview()
-      _state = view.state
+   
+    if shared._pipCtrl.isPictureInPictureActive == false {
+      shared._view.safeFrame = spaceCtrl.safeFrame
+      spaceCtrl.view.bringSubviewToFront(shared._view)
+      shared._view.setNeedsLayout()
     }
-    
-    _view = nil;
-  }
-  
-  @objc func moveToForeground(notificationInfo: NSNotification) {
-    DispatchQueue.main.asyncAfter(deadline: .now() + 1.0 ) {
-      
-      guard let spaceCtrl = self._spaceCtrl,
-            let scene = notificationInfo.object as? UIWindowScene,
-            scene == spaceCtrl.view.window?.windowScene
-      else {
-        return
-      }
-            
-      let view = FaceCamView(frame: CGRect(origin: .zero, size: CGSize(width: 80, height: 80)))
-      self._view = view
-      view.state = self._state
-      
-      
-      spaceCtrl.view.addSubview(view)
-      spaceCtrl.addChild(view.controller)
-      
-      view.layer.opacity = 0;
-      
-      UIView.animate(withDuration: 0.5, delay: 0.5, options: []) {
-        view.layer.opacity = 1
-      }
-
-    }
-    
   }
   
   static func attach(spaceCtrl: SpaceController) {
     if __shared == nil {
       __shared = .init()
     } else {
-      __shared?._view?.controller.view.removeFromSuperview()
-      __shared?._view?.controller.removeFromParent()
-      __shared?._view?.removeFromSuperview()
+      
     }
     
     guard let shared = __shared
@@ -465,14 +495,19 @@ class FaceCamManager {
       return
     }
     
+    shared._pipVideoVC.view.removeFromSuperview()
+    shared._pipVideoVC.removeFromParent()
+    shared._view.removeFromSuperview()
+    
+    if shared._pipCtrl.isPictureInPictureActive {
+      shared._pipCtrl.stopPictureInPicture()
+    }
+    
     shared._spaceCtrl = spaceCtrl
     
     let safeFrame = spaceCtrl.safeFrame
     
-    guard let view = shared._view else {
-      return
-    }
-    
+    let view = shared._view
     
     view.center = CGPoint(
       x: safeFrame.minX + safeFrame.width * 0.5,
@@ -481,7 +516,9 @@ class FaceCamManager {
     
     view.bounds.size = .zero
     
+    view.controller.willMove(toParent: spaceCtrl)
     spaceCtrl.view.addSubview(view)
+    view.attach()
     spaceCtrl.addChild(view.controller)
     
     UIView.animate(
@@ -495,19 +532,6 @@ class FaceCamManager {
     )
   }
   
-  static func update(in spaceCtrl: SpaceController) {
-    guard let shared = __shared,
-          let ctrl = shared._spaceCtrl,
-          ctrl == spaceCtrl,
-          let view = shared._view
-    else {
-      return
-    }
-   
-    view.safeFrame = spaceCtrl.safeFrame
-    spaceCtrl.view.bringSubviewToFront(view)
-    view.setNeedsLayout()
-  }
   
   static func turnOff() {
     guard let shared = __shared
@@ -515,8 +539,14 @@ class FaceCamManager {
       return
     }
     
-    guard let view = shared._view else {
-      return
+    let view = shared._view;
+    
+    if shared._pipCtrl.isPictureInPictureActive {
+      shared._pipCtrl.stopPictureInPicture()
+    }
+    
+    if shared._session.isRunning {
+      shared._session.stopRunning()
     }
     
     UIView.animate(
@@ -535,6 +565,18 @@ class FaceCamManager {
       }
     )
     
-    
+  }
+  
+  
+  func pictureInPictureControllerWillStartPictureInPicture(_ pictureInPictureController: AVPictureInPictureController) {
+    _view.isHidden = true
+  }
+  
+  func pictureInPictureController(_ pictureInPictureController: AVPictureInPictureController, restoreUserInterfaceForPictureInPictureStopWithCompletionHandler completionHandler: @escaping (Bool) -> Void) {
+    _view.isHidden = false
+    _pipVideoVC.willMove(toParent: _spaceCtrl)
+    _view.attach()
+    _spaceCtrl?.addChild(_pipVideoVC)
+    completionHandler(true)
   }
 }

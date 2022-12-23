@@ -404,6 +404,7 @@
 		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
 		D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */; };
+		D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */; };
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
@@ -1070,6 +1071,7 @@
 		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
 		D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkClassicPlanView.swift; sourceTree = "<group>"; };
+		D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipFaceCam.swift; sourceTree = "<group>"; };
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
 		D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase.pub"; sourceTree = "<group>"; };
 		D2DE0DDD260331F300A69B6F /* NewKeyView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewKeyView.swift; sourceTree = "<group>"; };
@@ -1295,6 +1297,7 @@
 				D2D8DD9723C8506900BFF223 /* LockView.swift */,
 				D2CF27282428A791009885ED /* KBTracker.swift */,
 				D275492C26A033CC0039CC95 /* FaceCam.swift */,
+				D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */,
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 			);
@@ -3054,6 +3057,7 @@
 				D2A5221E230D279B0010AC04 /* SmarterTermInput.swift in Sources */,
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
 				D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */,
+				D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */,
 				D2AD8E7327A2BAFA00DED28D /* SubscriptionNag.swift in Sources */,
 				BD3E1E53278D190500333C44 /* Archive.swift in Sources */,
 				D2C24419238E44AB0082C69C /* KeyConfigPairView.swift in Sources */,
