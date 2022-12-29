@@ -29,17 +29,22 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-import Purchases
+import RevenueCat
 import Combine
 import SwiftUI
 
 @MainActor
 class PurchasesUserModel: ObservableObject {
-  @Published var plusProduct: SKProduct? = nil
-  @Published var buildBasicProduct: SKProduct? = nil
-  @Published var classicProduct: SKProduct? = nil
+  // MARK: products
+  @Published var plusProduct: StoreProduct? = nil
+  @Published var buildBasicProduct: StoreProduct? = nil
+  @Published var classicProduct: StoreProduct? = nil
+  
+  // MARK: Progress indicators
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
+  
+  // MARK: Migration states
   
   @Published var receiptIsVerified: Bool = false
   @Published var zeroPriceUnlocked: Bool = false
@@ -49,40 +54,34 @@ class PurchasesUserModel: ObservableObject {
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
   
+  
+  // MARK: Blink Build states
+  
   @Published var email: String = "" {
     didSet {
-      emailIsValid = email.contains("@")
+      emailIsValid = !email.isEmpty && _emailPredicate.evaluate(with: email)
     }
   }
-  @Published var emailIsValid: Bool = false
-  @Published var region: BuildRegion = BuildRegion.USEast0
   
+  @Published var emailIsValid: Bool = false
+  @Published var buildRegion: BuildRegion = BuildRegion.USEast0
+  
+  // MARK: Paywall
   
   @Published var paywallPageIndex: Int = 0
   
-  private let _priceFormatter = NumberFormatter()
-  
   private init() {
-    _priceFormatter.numberStyle = .currency
     refresh()
   }
   
   static let shared = PurchasesUserModel()
   
   func refresh() {
-   
-//    let manager = CompatibilityAccessManager.shared
-//
-//    manager.status(of: .unlimitedTimeAccess)
-//      .receive(on: DispatchQueue.main)
-//      .print("!!!!!!")
-//      .assign(to: &$unlimitedTimeAccess)
     
     if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
       self.fetchProducts()
     }
   }
-  
 
   func purchaseBuildBasic() async {
     guard let product = buildBasicProduct else {
@@ -105,29 +104,23 @@ class PurchasesUserModel: ObservableObject {
     }
     
     do {
-      let (_transaction, info, canceled) = try await Purchases.shared.purchaseProduct(product)
+      let (_transaction, _info, canceled) = try await Purchases.shared.purchase(product: product)
       if canceled {
         return
       }
       
-      guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
-            FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
+      guard let receiptB64 = Bundle.main.receiptB64() else {
         return
       }
       
-      let receiptData = try Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
-      
-      let receiptB64 = receiptData.base64EncodedString(options: [])
       let revCatID = Purchases.shared.appUserID
       
-      let params = [
+      let json = try JSONSerialization.data(withJSONObject: [
         "email": self.email,
-        "region": self.region.rawValue,
+        "region": self.buildRegion.rawValue,
         "rev_cat_user_id": revCatID,
         "receipt_b64": receiptB64
-      ]
-      
-      let json = try JSONSerialization.data(withJSONObject: params)
+      ])
       
       var request = URLRequest(
         url: URL(string: "https://raw.api.blink.build/application/signup")!
@@ -169,25 +162,18 @@ class PurchasesUserModel: ObservableObject {
   private func getBuildAccessToken() async {
     do {
       
-      guard let appStoreReceiptURL = Bundle.main.appStoreReceiptURL,
-            FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
+      guard let receiptB64 = Bundle.main.receiptB64() else {
         return
       }
       
-      let receiptData = try Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
-      
-      let receiptB64 = receiptData.base64EncodedString(options: [])
-      let revCatID = Purchases.shared.appUserID
-      
-      let params = [
+      let json = try JSONSerialization.data(withJSONObject: [
         "receipt_b64": receiptB64
-      ]
-      
-      let json = try JSONSerialization.data(withJSONObject: params)
+      ])
       
       var request = URLRequest(
         url: URL(string: "https://raw.api.blink.build/application/signin")!
       )
+      
       request.httpMethod = "POST"
       request.httpBody = json
       request.addValue("application/json", forHTTPHeaderField: "Content-Type")
@@ -212,7 +198,7 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  private func _purchase(product: SKProduct?) {
+  private func _purchase(product: StoreProduct?) {
     guard let product = product else {
       return
     }
@@ -220,7 +206,7 @@ class PurchasesUserModel: ObservableObject {
       self.purchaseInProgress = true
     }
     
-    Purchases.shared.purchaseProduct(product) { (transaction, purchaseInfo, error, cancelled) in
+    Purchases.shared.purchase(product: product) { (transaction, purchaseInfo, error, cancelled) in
       self.refresh()
       self.purchaseInProgress = false
     }
@@ -228,7 +214,7 @@ class PurchasesUserModel: ObservableObject {
   
   func restorePurchases() {
     self.restoreInProgress = true
-    Purchases.shared.restoreTransactions { info, error in
+    Purchases.shared.restorePurchases(completion: { info, error in
       self.refresh()
       self.restoreInProgress = false
       
@@ -243,35 +229,19 @@ class PurchasesUserModel: ObservableObject {
       if let error {
         self.alertErrorMessage = error.localizedDescription
       }
-    }
-  }
-  
-  func openPrivacyAndPolicy() {
-    blink_openurl(URL(string: "https://blink.sh/pp")!)
-  }
-  
-  func openTermsOfUse() {
-    blink_openurl(URL(string: "https://blink.sh/blink-gpl")!)
-  }
-  
-  func openHelp() {
-    blink_openurl(URL(string: "https://blink.sh/docs")!)
-  }
-  
-  func openMigrationHelp() {
-    blink_openurl(URL(string: "https://docs.blink.sh/migration")!)
+    })
   }
   
   func formattedPlusPriceWithPeriod() -> String? {
-    plusProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
+    plusProduct?.formattedPriceWithPeriod()
   }
   
   func formattedBuildPriceWithPeriod() -> String? {
-    buildBasicProduct?.formattedPriceWithPeriod(priceFormatter: _priceFormatter)
+    buildBasicProduct?.formattedPriceWithPeriod()
   }
   
   func fetchProducts() {
-    Purchases.shared.products([
+    Purchases.shared.getProducts([
       ProductBlinkShellClassicID,
       ProductBlinkShellPlusID,
       ProductBlinkBuildBasicID
@@ -290,10 +260,21 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
+  private lazy var _emailPredicate: NSPredicate = {
+    let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
+    return NSPredicate(format:"SELF MATCHES %@", emailRegEx)
+  }()
+  
   enum MigrationStatus {
     case validating, accepted
     case denied(error: Error)
   }
+  
+}
+
+
+// MARK: Migration
+extension PurchasesUserModel {
   
   func startMigration() {
     migrationStatus = .validating
@@ -340,33 +321,41 @@ class PurchasesUserModel: ObservableObject {
   
 }
 
-@objc public class PurchasesUserModelObjc: NSObject {
-
-  @objc public static func preparePurchasesUserModel() {
-    
-    if !FeatureFlags.checkReceipt {
-      configureRevCat()
-      EntitlementsManager.shared.startUpdates()
-      _ = PurchasesUserModel.shared
-    }
+// MARK: Open links
+extension PurchasesUserModel {
+  func openPrivacyAndPolicy() {
+    blink_openurl(URL(string: "https://blink.sh/pp")!)
+  }
+  
+  func openTermsOfUse() {
+    blink_openurl(URL(string: "https://blink.sh/blink-gpl")!)
+  }
+  
+  func openHelp() {
+    blink_openurl(URL(string: "https://blink.sh/docs")!)
+  }
+  
+  func openMigrationHelp() {
+    blink_openurl(URL(string: "https://docs.blink.sh/migration")!)
   }
 }
 
 
-extension SKProduct {
-  
-  func formattedPriceWithPeriod(priceFormatter: NumberFormatter) -> String? {
-    priceFormatter.locale = priceLocale
-    guard let priceStr = priceFormatter.string(for: price) else {
-      return nil
-    }
-    
+extension StoreProduct {
+
+  func formattedPriceWithPeriod() -> String? {
+//    priceFormatter.locale = priceLocale
+//    guard let priceStr = priceFormatter.string(for: price) else {
+//      return nil
+//    }
+
+    let priceStr = localizedPriceString
     guard let period = subscriptionPeriod else {
       return priceStr
     }
-    
-    let n = period.numberOfUnits
-    
+
+    let n = period.value
+
     if n <= 1 {
       switch period.unit {
       case .day: return "\(priceStr)/day"
@@ -377,7 +366,7 @@ extension SKProduct {
         return priceStr
       }
     }
-    
+
     switch period.unit {
     case .day: return "\(priceStr) / \(n) days"
     case .week: return "\(priceStr) / \(n) weeks"
@@ -386,5 +375,31 @@ extension SKProduct {
     @unknown default:
       return priceStr
     }
+  }
+}
+
+
+@objc public class PurchasesUserModelObjc: NSObject {
+  
+  @objc public static func preparePurchasesUserModel() {
+    
+    if !FeatureFlags.checkReceipt {
+      configureRevCat()
+      EntitlementsManager.shared.startUpdates()
+      _ = PurchasesUserModel.shared
+    }
+  }
+}
+
+extension Bundle {
+  func receiptB64() -> String? {
+    guard let appStoreReceiptURL = self.appStoreReceiptURL,
+          FileManager.default.fileExists(atPath: appStoreReceiptURL.path) else {
+      return nil
+    }
+    
+    let receiptData = try? Data(contentsOf: appStoreReceiptURL, options: .alwaysMapped)
+    
+    return receiptData?.base64EncodedString(options: [])
   }
 }
