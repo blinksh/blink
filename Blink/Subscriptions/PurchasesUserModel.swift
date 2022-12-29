@@ -272,7 +272,6 @@ class PurchasesUserModel: ObservableObject {
   
 }
 
-
 // MARK: Migration
 extension PurchasesUserModel {
   
