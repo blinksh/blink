@@ -33,7 +33,7 @@
 import Foundation
 import SwiftUI
 
-import Purchases
+import RevenueCat
 
 
 let Blink14BundleID = "Com.CarlosCabanero.BlinkShell"

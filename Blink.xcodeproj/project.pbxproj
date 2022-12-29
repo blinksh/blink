@@ -353,7 +353,6 @@
 		D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */; };
 		D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */; };
 		D2AD8E7D27A2BAFA00DED28D /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */; };
-		D2AD8E8227A2C79B00DED28D /* Purchases in Frameworks */ = {isa = PBXBuildFile; productRef = D2AD8E8127A2C79B00DED28D /* Purchases */; };
 		D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8327A2C80C00DED28D /* SettingsView.swift */; };
 		D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8627A2C81900DED28D /* PlansView.swift */; };
 		D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8727A2C81900DED28D /* ExplanationView.swift */; };
@@ -405,6 +404,7 @@
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
 		D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */; };
 		D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */; };
+		D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = D2DC5D4A295DB43D007E2B9D /* RevenueCat */; };
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
 		D2DE0DD0260323F400A69B6F /* id_ed25519-passphrase.pub in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */; };
 		D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DE0DDD260331F300A69B6F /* NewKeyView.swift */; };
@@ -1221,7 +1221,6 @@
 				D2334F0025C1C28F00385378 /* shell.xcframework in Frameworks */,
 				D2A0C2162600D16300F0DF97 /* Protobuf_C_.xcframework in Frameworks */,
 				D2334F0C25C1C3C600385378 /* OpenSSH.xcframework in Frameworks */,
-				D2AD8E8227A2C79B00DED28D /* Purchases in Frameworks */,
 				D2C7710726EA49AA001B5659 /* openssl.xcframework in Frameworks */,
 				D2F64CAF25CAAA3300F2225D /* libssh2.xcframework in Frameworks */,
 				D2334EF425C1C28F00385378 /* ios_system.xcframework in Frameworks */,
@@ -1239,6 +1238,7 @@
 				B700AED81DD0F2C200100EBF /* CloudKit.framework in Frameworks */,
 				D2334F0425C1C28F00385378 /* tar.xcframework in Frameworks */,
 				BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */,
+				D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */,
 				D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */,
 				D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
@@ -2468,10 +2468,10 @@
 			name = Blink;
 			packageProductDependencies = (
 				07FAB90E25C8E94E00E1CC2C /* ArgumentParser */,
-				D2AD8E8127A2C79B00DED28D /* Purchases */,
 				D2A6398828CFA0B90066FD18 /* SwiftCBOR */,
 				BD7AFC4028E8E98C004BCDA4 /* Base32Kit */,
 				D297F00E29012FDB002A24F9 /* CachedAsyncImage */,
+				D2DC5D4A295DB43D007E2B9D /* RevenueCat */,
 			);
 			productName = Blink;
 			productReference = EA0BA18B1C0CC57B00719C1A /* Blink.app */;
@@ -4637,7 +4637,7 @@
 			repositoryURL = "https://github.com/RevenueCat/purchases-ios.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -4676,15 +4676,15 @@
 			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
 			productName = SwiftCBOR;
 		};
-		D2AD8E8127A2C79B00DED28D /* Purchases */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */;
-			productName = Purchases;
-		};
 		D2AE682928D06076003E4338 /* SwiftCBOR */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = D2A6398728CFA0B90066FD18 /* XCRemoteSwiftPackageReference "SwiftCBOR" */;
 			productName = SwiftCBOR;
+		};
+		D2DC5D4A295DB43D007E2B9D /* RevenueCat */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D2AD8E8027A2C79B00DED28D /* XCRemoteSwiftPackageReference "purchases-ios" */;
+			productName = RevenueCat;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

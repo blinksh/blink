@@ -33,13 +33,13 @@ import Combine
 import Foundation
 import SystemConfiguration
 
-import Purchases
+import RevenueCat
 import BlinkConfig
 
 public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, PurchasesDelegate {
   public weak var delegate: EntitlementsSourceDelegate?
   
-  public func purchases(_ purchases: Purchases, didReceiveUpdated purchaserInfo: Purchases.PurchaserInfo) {
+  public func purchases(_ purchases: Purchases, receivedUpdated purchaserInfo: CustomerInfo) {
     var dict = Dictionary<String, Entitlement>()
     for (key, value) in purchaserInfo.entitlements.all {      
       dict[key] = Entitlement(
@@ -52,7 +52,7 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
       source: self,
       entitlements: dict,
       activeSubscriptions: purchaserInfo.activeSubscriptions,
-      nonSubscriptionTransactions: Set(purchaserInfo.nonSubscriptionTransactions.map({$0.productId}))
+      nonSubscriptionTransactions: Set(purchaserInfo.nonSubscriptions.map({$0.productIdentifier}))
     )
   }
   
@@ -64,11 +64,13 @@ public class AppStoreEntitlementsSource: NSObject, EntitlementsSource, Purchases
 
 func configureRevCat() {
   Purchases.logLevel = .debug
-  Purchases.configure(
-    withAPIKey: XCConfig.infoPlistRevCatPubliKey(),
-    appUserID: nil,
-    observerMode: false,
-    userDefaults: UserDefaults.suite
-  )
+  let cfg = Configuration
+    .builder(withAPIKey: XCConfig.infoPlistRevCatPubliKey())
+    .with(appUserID: nil)
+    .with(observerMode: false)
+    .with(userDefaults: UserDefaults.suite)
+    .build()
+
+  Purchases.configure(with: cfg)
   print("RevCat UserID is \(Purchases.shared.appUserID)")
 }

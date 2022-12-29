@@ -36,7 +36,7 @@ import Foundation
 import StoreKit
 import SwiftUI
 
-import Purchases
+import RevenueCat
 
 fileprivate let endpointURL = URL(string: "https://us-central1-gold-stone-332203.cloudfunctions.net/receiptEntitlement")!
 

@@ -31,7 +31,7 @@
 
 import Foundation
 import SwiftUI
-import Purchases
+import RevenueCat
 import Network
 
 struct MigrationPageView: Page {

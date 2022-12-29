@@ -31,7 +31,7 @@
 
 
 import SwiftUI
-import Purchases
+import RevenueCat
 import Charts
 
 struct BuildRegionPickerView: View {
@@ -184,7 +184,7 @@ struct BuildAccountView: View {
           Image(systemName: "envelope.badge")
             .symbolRenderingMode(.monochrome)
         }
-        _model.region.full_title_label()
+        _model.buildRegion.full_title_label()
       }
       Section(header: Text("Usage")) {
         list().accentColor(.green)
@@ -208,10 +208,10 @@ struct BuildPurchaseView: View {
         Section() {
           Row(
             content: {
-              _model.region.full_title_label()
+              _model.buildRegion.full_title_label()
             },
             details: {
-              BuildRegionPickerView(currentValue: $_model.region)
+              BuildRegionPickerView(currentValue: $_model.buildRegion)
             }
           )
           Label {

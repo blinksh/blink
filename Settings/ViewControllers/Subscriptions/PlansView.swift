@@ -31,7 +31,7 @@
 
 
 import SwiftUI
-import Purchases
+import RevenueCat
 
 struct PlansView: View {
   
