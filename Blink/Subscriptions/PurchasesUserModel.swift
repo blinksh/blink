@@ -110,6 +110,7 @@ class PurchasesUserModel: ObservableObject {
       }
       
       guard let receiptB64 = Bundle.main.receiptB64() else {
+        self.alertErrorMessage = "No receipt"
         return
       }
       
@@ -134,14 +135,17 @@ class PurchasesUserModel: ObservableObject {
       // 200 ok
       
       guard let response = response as? HTTPURLResponse else {
-        print("hmm")
+        self.alertErrorMessage = "Invalide Response"
         return
       }
       
       if response.statusCode == 200 {
-        let obj = try JSONSerialization.jsonObject(with: data)
-        var url = BlinkPaths.blinkBuildTokenURL()!
+        let url = BlinkPaths.blinkBuildTokenURL()!
         try data.write(to: url)
+      } else if response.statusCode == 409 {
+        await self.getBuildAccessToken()
+      } else {
+        self.alertErrorMessage = "Response code \(response.statusCode)"
       }
       
       
@@ -163,6 +167,7 @@ class PurchasesUserModel: ObservableObject {
     do {
       
       guard let receiptB64 = Bundle.main.receiptB64() else {
+        self.alertErrorMessage = "No receipt"
         return
       }
       
@@ -183,7 +188,7 @@ class PurchasesUserModel: ObservableObject {
       // 200 OK?
       
       guard let response = response as? HTTPURLResponse else {
-        print("hmm")
+        self.alertErrorMessage = "Invalide Response"
         return
       }
       
@@ -191,10 +196,12 @@ class PurchasesUserModel: ObservableObject {
         let obj = try JSONSerialization.jsonObject(with: data)
         var url = BlinkPaths.blinkBuildTokenURL()!
         try data.write(to: url)
+      } else {
+        self.alertErrorMessage = "Response code \(response.statusCode)"
       }
 
     } catch {
-      
+      self.alertErrorMessage = error.localizedDescription
     }
   }
   
