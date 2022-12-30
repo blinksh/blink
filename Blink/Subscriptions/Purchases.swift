@@ -69,6 +69,7 @@ func configureRevCat() {
     .with(appUserID: nil)
     .with(observerMode: false)
     .with(userDefaults: UserDefaults.suite)
+    .with(usesStoreKit2IfAvailable: true)
     .build()
 
   Purchases.configure(with: cfg)
