@@ -37,11 +37,27 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef struct BuildHTTPResponse {
+  UInt32 code;
+  char * body;
+} BuildHTTPResponse;
+
+typedef void (*build_service_callback) (void *, BuildHTTPResponse *);
+
 @interface TokioSignals : NSObject {
   @public void *_signals;
 }
 - (void) signalCtrlC;
-- (void) signalWinsize:(struct winsize)winsize;
+
++ (instancetype) callServiceURL:
+  (NSString *) url
+  method: (NSString *) method
+  body: (NSString *) body
+  contentType: (NSString *) contentType
+  auth: (BOOL) auth
+  ctx: (void *)ctx
+  callback: (build_service_callback) callback;
+
 
 @end
 

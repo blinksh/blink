@@ -109,13 +109,65 @@ struct BasicMachineSection: View {
 }
 
 struct BuildView: View {
+  @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
   var body: some View {
-    if _entitlements.build.active {
+    if _model.hasBuildToken {
       BuildAccountView()
+    } else if _entitlements.build.active {
+      CreateAccountView()
     } else {
       BuildPurchaseView()
+    }
+  }
+}
+
+struct CreateAccountView: View {
+  @ObservedObject private var _model: PurchasesUserModel = .shared
+  var body: some View {
+    List {
+      Section("Setup your account") {
+        Row(
+          content: {
+            _model.buildRegion.full_title_label()
+          },
+          details: {
+            BuildRegionPickerView(currentValue: $_model.buildRegion)
+          }
+        )
+        Label {
+          TextField(
+            "Your Email for Notifications", text: $_model.email
+          )
+          .textContentType(.emailAddress)
+          .keyboardType(.emailAddress)
+          .submitLabel(.go)
+          .onSubmit {
+            Task {
+              await _model.signup()
+            }
+          }
+        } icon: {
+          Image(systemName: "envelope.badge")
+            .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
+        }
+      }
+      
+    }
+    .disabled(_model.purchaseInProgress || _model.restoreInProgress || _model.signupInProgress)
+    .alert(errorMessage: $_model.alertErrorMessage)
+    .navigationTitle("Build Account")
+    .toolbar {
+      if _model.signupInProgress {
+        ProgressView()
+      } else {
+        Button("Signup") {
+          Task {
+            await _model.signup()
+          }
+        }.disabled(_model.restoreInProgress || _model.signupInProgress)
+      }
     }
   }
 }
@@ -196,7 +248,7 @@ struct BuildAccountView: View {
 }
 
 struct BuildPurchaseView: View {
-  
+ 
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
@@ -204,33 +256,7 @@ struct BuildPurchaseView: View {
   var body: some View {
     List {
       BasicMachineSection(formattedPrice: _model.formattedBuildPriceWithPeriod() ?? "")
-      if _entitlements.earlyAccessFeatures.active == true {
-        Section() {
-          Row(
-            content: {
-              _model.buildRegion.full_title_label()
-            },
-            details: {
-              BuildRegionPickerView(currentValue: $_model.buildRegion)
-            }
-          )
-          Label {
-            TextField(
-              "Your Email for Notifications", text: $_model.email
-            )
-            .textContentType(.emailAddress)
-            .keyboardType(.emailAddress)
-            .submitLabel(.go)
-            .onSubmit {
-              Task {
-                await _model.purchaseBuildBasic()
-              }
-            }
-          } icon: {
-            Image(systemName: "envelope.badge")
-              .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
-          }
-        }
+      if  _entitlements.earlyAccessFeatures.active {
       } else {
         Section() {
           Label {
@@ -311,7 +337,7 @@ struct BuildPurchaseView: View {
           Task {
             await _model.purchaseBuildBasic()
           }
-        }.disabled(!_model.emailIsValid || _model.restoreInProgress)
+        }.disabled(_model.restoreInProgress || !_entitlements.earlyAccessFeatures.active)
       }
     }
   }

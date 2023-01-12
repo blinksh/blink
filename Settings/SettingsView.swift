@@ -48,12 +48,16 @@ struct SettingsView: View {
   var body: some View {
     List {
       if FeatureFlags.checkReceipt {        
-        Section(header: Text("Information"), footer: Text("Upgrade is free for you. Thanks for your support. ❤️")) {
+        Section(
+          header: Text("Information"),
+          footer: Text("Upgrade is free for you. Thanks for your support. ❤️")
+        ) {
           Row {
             HStack {
               Label("New Blink.app", systemImage: "exclamationmark.circle")
               Spacer()
-              Image(systemName: "questionmark.circle").foregroundColor(Color(UIColor.blinkTint))
+              Image(systemName: "questionmark.circle")
+                .foregroundColor(Color(UIColor.blinkTint))
             }
           } details: {
             ScrollView {
@@ -81,7 +85,9 @@ struct SettingsView: View {
                 .foregroundColor(.secondary)
             }
           } details: {
-            BuildView()
+            BuildView().onAppear(perform: {
+              PurchasesUserModel.shared.refresh()
+            })
           }
           Row {
             HStack {

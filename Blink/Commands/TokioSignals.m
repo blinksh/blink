@@ -33,23 +33,48 @@
 #import "TokioSignals.h"
 
 
+
 extern void signal_release(void * signals);
 extern void signal_send(void * signals, int signal);
-extern void signal_winsize(void * signals, struct winsize *winsize);
 
+extern void build_call_service(
+                               const char * url,
+                               const char * method,
+                               const char * body,
+                               const char * content_type,
+                               BOOL auth, void * ctx,
+                               build_service_callback callback,
+                               void ** signals);
 
 @implementation TokioSignals {
 }
 
++ (instancetype) callServiceURL:
+  (NSString *) url
+  method: (NSString *) method
+  body: (NSString *) body
+  contentType: (NSString *) contentType
+  auth: (BOOL) auth
+  ctx: (void *)ctx
+  callback: (build_service_callback) callback
+{
+  TokioSignals *signals = [TokioSignals new];
+  
+  build_call_service(
+                     url.UTF8String,
+                     method.UTF8String,
+                     body.UTF8String,
+                     contentType.UTF8String,
+                     auth,
+                     ctx, callback, &signals->_signals);
+  
+  return signals;
+}
+
+
 - (void) signalCtrlC {
   if (_signals) {
     signal_send(_signals, 0);
-  }
-}
-
-- (void) signalWinsize:(struct winsize)winsize {
-  if (_signals) {
-    signal_winsize(_signals, &winsize);
   }
 }
 

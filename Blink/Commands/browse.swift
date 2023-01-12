@@ -65,7 +65,7 @@ struct BrowseCommand: NonStdIOCommand {
     
     let url = url ?? URL(string: "https://google.com")!
     DispatchQueue.main.async {
-      session.device.view.addBrowserWebView(url, agent: "", injectUIO: false)
+      session.device?.view?.addBrowserWebView(url, agent: "", injectUIO: false)
     }
   }
 }
