@@ -44,6 +44,9 @@ class PurchasesUserModel: ObservableObject {
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
+  // MARK: Signup
+  @Published var signupInProgress: Bool = false
+  
   // MARK: Migration states
   
   @Published var receiptIsVerified: Bool = false
@@ -53,7 +56,6 @@ class PurchasesUserModel: ObservableObject {
   @Published var dataCopyFailed: Bool = false
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
-  
   
   // MARK: Blink Build states
   
@@ -65,6 +67,7 @@ class PurchasesUserModel: ObservableObject {
   
   @Published var emailIsValid: Bool = false
   @Published var buildRegion: BuildRegion = BuildRegion.USEast0
+  @Published var hasBuildToken: Bool = false
   
   // MARK: Paywall
   
@@ -77,20 +80,38 @@ class PurchasesUserModel: ObservableObject {
   static let shared = PurchasesUserModel()
   
   func refresh() {
-    
+    _checkBuildToken()
     if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
       self.fetchProducts()
+    }
+  }
+  
+  private func _checkBuildToken() {
+    self.hasBuildToken = FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildTokenURL().path)
+  }
+  
+  func signup() async {
+    guard emailIsValid else {
+      self.alertErrorMessage = "Email is Required"
+      return
+    }
+    
+    self.signupInProgress = true
+    
+    defer {
+      self.signupInProgress = false
+    }
+    
+    do {
+      try await BuildAPI.signup(email: self.email, region: self.buildRegion)
+    } catch {
+      self.alertErrorMessage = error.localizedDescription
     }
   }
 
   func purchaseBuildBasic() async {
     guard let product = buildBasicProduct else {
-      print("product should be loaded")
-      return
-    }
-    
-    guard emailIsValid else {
-      alertErrorMessage = "Valid Email is Required"
+      self.alertErrorMessage = "Product should be loaded"
       return
     }
     
@@ -104,55 +125,16 @@ class PurchasesUserModel: ObservableObject {
     }
     
     do {
-      let (_transaction, _info, canceled) = try await Purchases.shared.purchase(product: product)
+      let (_, _, canceled) = try await Purchases.shared.purchase(product: product)
       if canceled {
         return
       }
-      
-      guard let receiptB64 = Bundle.main.receiptB64() else {
-        self.alertErrorMessage = "No receipt"
-        return
-      }
-      
-      let revCatID = Purchases.shared.appUserID
-      
-      let json = try JSONSerialization.data(withJSONObject: [
-        "email": self.email,
-        "region": self.buildRegion.rawValue,
-        "rev_cat_user_id": revCatID,
-        "receipt_b64": receiptB64
-      ])
-      
-      var request = URLRequest(
-        url: URL(string: "https://raw.api.blink.build/application/signup")!
-      )
-      request.httpMethod = "POST"
-      request.httpBody = json
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      
-      var (data, response) = try await URLSession.shared.data(for: request)
-      // 409 account exists
-      // 200 ok
-      
-      guard let response = response as? HTTPURLResponse else {
-        self.alertErrorMessage = "Invalide Response"
-        return
-      }
-      
-      if response.statusCode == 200 {
-        let url = BlinkPaths.blinkBuildTokenURL()!
-        try data.write(to: url)
-      } else if response.statusCode == 409 {
-        await self.getBuildAccessToken()
-      } else {
-        self.alertErrorMessage = "Response code \(response.statusCode)"
-      }
-      
-      
+      // we have subscription. Lets try to signin first
+      try await BuildAPI.try_signin()
+      self._checkBuildToken()
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
-    
   }
   
   func purchasePlus() {
@@ -161,48 +143,6 @@ class PurchasesUserModel: ObservableObject {
   
   func purchaseClassic() {
     _purchase(product: classicProduct)
-  }
-  
-  private func getBuildAccessToken() async {
-    do {
-      
-      guard let receiptB64 = Bundle.main.receiptB64() else {
-        self.alertErrorMessage = "No receipt"
-        return
-      }
-      
-      let json = try JSONSerialization.data(withJSONObject: [
-        "receipt_b64": receiptB64
-      ])
-      
-      var request = URLRequest(
-        url: URL(string: "https://raw.api.blink.build/application/signin")!
-      )
-      
-      request.httpMethod = "POST"
-      request.httpBody = json
-      request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-      
-      var (data, response) = try await URLSession.shared.data(for: request)
-      // 409 account exists
-      // 200 OK?
-      
-      guard let response = response as? HTTPURLResponse else {
-        self.alertErrorMessage = "Invalide Response"
-        return
-      }
-      
-      if response.statusCode == 200 {
-        let obj = try JSONSerialization.jsonObject(with: data)
-        var url = BlinkPaths.blinkBuildTokenURL()!
-        try data.write(to: url)
-      } else {
-        self.alertErrorMessage = "Response code \(response.statusCode)"
-      }
-
-    } catch {
-      self.alertErrorMessage = error.localizedDescription
-    }
   }
   
   private func _purchase(product: StoreProduct?) {
@@ -224,18 +164,21 @@ class PurchasesUserModel: ObservableObject {
     Purchases.shared.restorePurchases(completion: { info, error in
       self.refresh()
       self.restoreInProgress = false
-      
-      if EntitlementsManager.shared.build.active {
-        
-        Task {
-          await self.getBuildAccessToken()
-        }
-        
-      }
-      
       if let error {
         self.alertErrorMessage = error.localizedDescription
+        return
       }
+      
+      if EntitlementsManager.shared.build.active {
+        Task {
+          do {
+            try await BuildAPI.signin()
+          } catch {
+            self.alertErrorMessage = error.localizedDescription
+          }
+        }
+      }
+      self._checkBuildToken()
     })
   }
   
