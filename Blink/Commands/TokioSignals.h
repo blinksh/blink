@@ -58,6 +58,8 @@ typedef void (*build_service_callback) (void *, BuildHTTPResponse *);
   ctx: (void *)ctx
   callback: (build_service_callback) callback;
 
++ (nullable NSString *)getBuildId;
+
 
 @end
 

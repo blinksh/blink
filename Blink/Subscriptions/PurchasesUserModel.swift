@@ -92,7 +92,7 @@ class PurchasesUserModel: ObservableObject {
   
   func signup() async {
     guard emailIsValid else {
-      self.alertErrorMessage = "Email is Required"
+      self.alertErrorMessage =  self.email.isEmpty ? "Email is Required" :  "Valid email is Required"
       return
     }
     
@@ -104,6 +104,7 @@ class PurchasesUserModel: ObservableObject {
     
     do {
       try await BuildAPI.signup(email: self.email, region: self.buildRegion)
+      self._checkBuildToken()
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
@@ -130,7 +131,7 @@ class PurchasesUserModel: ObservableObject {
         return
       }
       // we have subscription. Lets try to signin first
-      try await BuildAPI.try_signin()
+      try await BuildAPI.trySignin()
       self._checkBuildToken()
     } catch {
       self.alertErrorMessage = error.localizedDescription
