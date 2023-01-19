@@ -37,6 +37,8 @@
 extern void signal_release(void * signals);
 extern void signal_send(void * signals, int signal);
 
+extern char * build_get_build_id(void);
+
 extern void build_call_service(
                                const char * url,
                                const char * method,
@@ -69,6 +71,18 @@ extern void build_call_service(
                      ctx, callback, &signals->_signals);
   
   return signals;
+}
+
++ (nullable NSString *)getBuildId {
+  char *ptr = build_get_build_id();
+  if (ptr) {
+    return [[NSString alloc] initWithBytesNoCopy:ptr
+                                          length:strlen(ptr)
+                                        encoding:NSUTF8StringEncoding
+                                    freeWhenDone:YES];
+  } else {
+    return nil;
+  }
 }
 
 
