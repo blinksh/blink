@@ -90,8 +90,14 @@ struct FaceCam: NonStdIOCommand {
       let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
       DispatchQueue.main.async {
         if let spcCtrl = session.device.view.window?.rootViewController as? SpaceController {
-          if #available(iOS 16.0, *) {
-            if AVCaptureSession().isMultitaskingCameraAccessSupported {
+          if #available(iOS 16.0, *) {            
+            #if targetEnvironment(macCatalyst)
+            var multitaskCameraAccessSupported = false;
+            #else
+            var multitaskCameraAccessSupported = AVCaptureSession().isMultitaskingCameraAccessSupported
+            #endif
+            
+            if multitaskCameraAccessSupported {
               PipFaceCamManager.attach(spaceCtrl: spcCtrl)
             } else {
               FaceCamManager.attach(spaceCtrl: spcCtrl)
