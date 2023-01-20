@@ -34,220 +34,60 @@ import SwiftUI
 import RevenueCat
 import Charts
 
-struct BuildRegionPickerView: View {
-  @Binding var currentValue: BuildRegion
-  @EnvironmentObject var nav: Nav
-  
-  var body: some View {
-    List {
-      Section() {
-        ForEach(BuildRegion.all(), id: \.self) { value in
-          HStack {
-            value.full_title_label()
-            Spacer()
-            Checkmark(checked: currentValue == value)
-          }
-          .contentShape(Rectangle())
-          .onTapGesture {
-            currentValue = value
-            nav.navController.popViewController(animated: true)
-          }
-        }
-      }
-    }
-    .listStyle(InsetGroupedListStyle())
-    .navigationTitle("Build Region")
-    .tint(Color("BuildColor"))
-  }
-}
-
-struct BasicMachineSection: View {
-  let formattedPrice: String
-  var body: some View {
-    Section(
-      header: Text("Build Machine"),
-      footer: Text("Plan auto-renews for \(formattedPrice) until canceled.")
-    ) {
-      Label {
-        Text("8 GiB of RAM")
-      } icon: {
-        Image(systemName: "memorychip")
-          .foregroundColor(.green)
-        
-      }
-      Label {
-        Text("4 vCPUs")
-      } icon: {
-        Image(systemName: "cpu")
-          .foregroundColor(.green)
-      }
-      Label {
-        Text("5,000 GiB Transfer")
-      } icon: {
-        Image(systemName: "network")
-          .foregroundColor(.green)
-      }
-      Label {
-        Text("160 GiB Ephemeral SSD")
-      } icon: {
-        Image(systemName: "internaldrive")
-          .foregroundColor(.green)
-      }
-      Label {
-        Text("2 GiB Main Cloud Disk")
-      } icon: {
-        Image(systemName: "externaldrive.badge.icloud")
-          .foregroundColor(.green)
-      }
-      Label {
-        Text("50 Hours")
-      } icon: {
-        Image(systemName: "timer")
-          .foregroundColor(.green)
-      }
-    }
-  }
-}
+//struct BuildRegionPickerView: View {
+//  @Binding var currentValue: BuildRegion
+//  @EnvironmentObject var nav: Nav
+//
+//  var body: some View {
+//    List {
+//      Section() {
+//        ForEach(BuildRegion.all(), id: \.self) { value in
+//          HStack {
+//            value.fullTitleLabel()
+//            Spacer()
+//            Checkmark(checked: currentValue == value)
+//          }
+//          .contentShape(Rectangle())
+//          .onTapGesture {
+//            currentValue = value
+//            nav.navController.popViewController(animated: true)
+//          }
+//        }
+//      }
+//    }
+//    .listStyle(InsetGroupedListStyle())
+//    .navigationTitle("Build Region")
+//    .tint(Color("BuildColor"))
+//  }
+//}
 
 struct BuildView: View {
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @Namespace var nspace;
   
   var body: some View {
-    if _model.hasBuildToken {
-      BuildAccountView()
-    } else {
-//    } else if _entitlements.build.active && !_model.purchaseInProgress {
-//      CreateAccountView()
+//    BuildCreateAccountView(nspace: self.nspace)
+//    if _model.flow == 0 {
+//      BuildIntroView(nspace: self.nspace)
+//    } else if _model.flow == 1 {
+//      BuildCreateAccountView(nspace: self.nspace)
 //    } else {
-      BuildIntroView()
-    }
-  }
-}
-
-struct CreateAccountView: View {
-  @ObservedObject private var _model: PurchasesUserModel = .shared
-  var body: some View {
-    List {
-      Section("Setup your account") {
-        Row(
-          content: {
-            _model.buildRegion.full_title_label()
-          },
-          details: {
-            BuildRegionPickerView(currentValue: $_model.buildRegion)
-          }
-        )
-        Label {
-          TextField(
-            "Your Email for Notifications", text: $_model.email
-          )
-          .textContentType(.emailAddress)
-          .keyboardType(.emailAddress)
-          .submitLabel(.go)
-          .onSubmit {
-            Task {
-              await _model.signup()
-            }
-          }
-        } icon: {
-          Image(systemName: "envelope.badge")
-            .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
-        }
-      }
-      
-    }
-    .disabled(_model.purchaseInProgress || _model.restoreInProgress || _model.signupInProgress)
-    .alert(errorMessage: $_model.alertErrorMessage)
-    .navigationTitle("Build Account")
-    .toolbar {
-      if _model.signupInProgress {
-        ProgressView()
-      } else {
-        Button("Signup") {
-          Task {
-            await _model.signup()
-          }
-        }.disabled(_model.restoreInProgress || _model.signupInProgress)
-      }
-    }
-  }
-}
-
-struct BuildAccountView: View {
-  
-  @ObservedObject private var _model: PurchasesUserModel = .shared
-  @ObservedObject private var _entitlements: EntitlementsManager = .shared
-  
-  @ViewBuilder
-  func list() -> some View {
-    if #available(iOS 16.0, *) {
-      Chart {
-        BarMark(
-          x: .value("Mount", "Mon"),
-          y: .value("Value", 3)
-        )
-        BarMark(
-          x: .value("Mount", "Tue"),
-          y: .value("Value", 4)
-        )
-        BarMark(
-          x: .value("Mount", "Wed"),
-          y: .value("Value", 7)
-        )
-        BarMark(
-          x: .value("Mount", "Thu"),
-          y: .value("Value", 2)
-        )
-        
-        BarMark(
-          x: .value("Mount", "Fri"),
-          y: .value("Value", 7)
-        )
-        BarMark(
-          x: .value("Mount", "Sat"),
-          y: .value("Value", 8)
-        )
-        BarMark(
-          x: .value("Mount", "Sun"),
-          y: .value("Value", 9)
-        )
-        RuleMark(
-          y: .value("Average", 5.7)
-        )
-        .foregroundStyle(.yellow)
-        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [3, 5]))
-        .annotation(position: .trailing, alignment: .leading) {
-          Text("avg")
-            .font(.caption2)
-            .foregroundStyle(.yellow)
-        }
-      }
-      .frame(height: 100)
+//      BuildAccountView(nspace: self.nspace)
+//    }
+    if _model.hasBuildToken {
+      BuildAccountView(nspace: self.nspace)
+    } else if _entitlements.build.active && !_model.purchaseInProgress {
+      BuildCreateAccountView(nspace: self.nspace)
     } else {
-      EmptyView()
+      BuildIntroView(nspace: self.nspace)
     }
-  }
-  
-  var body: some View {
-    List {
-      Section(header: Text("Account")) {
-        Label {
-          Text(verbatim: "yury@build.sh")
-        } icon: {
-          Image(systemName: "envelope.badge")
-            .symbolRenderingMode(.monochrome)
-        }
-        _model.buildRegion.full_title_label()
-      }
-      Section(header: Text("Usage")) {
-        list().accentColor(.green)
-      }
-    }
-    .alert(errorMessage: $_model.alertErrorMessage)
-    .navigationTitle("Blink Build")
   }
 }
+
+
+
+
 
 
 private struct LayoutProps {
@@ -325,14 +165,11 @@ private struct LayoutProps {
 }
 
 struct BuildIntroView: View {
-  enum Field: Hashable {
-      case email
-  }
   @State var scale = 1.3
-  @FocusState private var focusedField: Field?
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   @EnvironmentObject private var _nav: Nav
+  let nspace : Namespace.ID;
   
   var body: some View {
     
@@ -358,63 +195,9 @@ struct BuildIntroView: View {
         
         
         VStack(alignment: .leading) {
-          Image("build-logo")
+          Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
           
-          if _entitlements.build.active && !_model.purchaseInProgress  {
-            List {
-              Section("Setup your account") {
-                Row(
-                  content: {
-                    _model.buildRegion.full_title_label()
-                  },
-                  details: {
-                    BuildRegionPickerView(currentValue: $_model.buildRegion)
-                  }
-                )
-                Label {
-                  TextField(
-                    "Your Email for Notifications", text: $_model.email
-                  )
-                  .focused($focusedField, equals: .email)
-                  .textContentType(.emailAddress)
-                  .keyboardType(.emailAddress)
-                  .submitLabel(.go)
-                  .onSubmit {
-                    Task {
-                      await _model.signup()
-                    }
-                  }
-                } icon: {
-                  Image(systemName: "envelope.badge")
-                    .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
-                }
-              }
-            }
-            .safeAreaInset(edge: .bottom, content: {
-              Spacer().frame(height: 34)
-            })
-            .frame(minHeight: 140)
-            .disabled(_model.purchaseInProgress || _model.restoreInProgress || _model.signupInProgress)
-            if _model.signupInProgress {
-              ProgressView()
-                .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
-                .padding([.top, .bottom])
-              
-            } else {
-              Button {
-                Task {
-                  await _model.signup()
-                }
-              } label: {
-                Text("Signup")
-                  .font(.system(size: props.h2, weight: .bold))
-                  .frame(maxWidth: .infinity, maxHeight: .infinity)
-              }.foregroundColor(Color.black)
-                .buttonStyle(.borderedProminent)
-                .frame(minHeight: props.button, maxHeight: props.button)
-                .padding([.top, .bottom])
-            }
-          } else if  _entitlements.earlyAccessFeatures.active {
+          if  _entitlements.earlyAccessFeatures.active {
 
             Text("Get 2 Free months to Build")
               .fixedSize(horizontal: false, vertical: true)
@@ -425,8 +208,6 @@ struct BuildIntroView: View {
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h2))
               .padding([.bottom])
-
-
 
             if _model.restoreInProgress || _model.purchaseInProgress {
               ProgressView()
@@ -456,6 +237,9 @@ struct BuildIntroView: View {
               .font(.system(size: props.h2))
               .padding([.bottom])
             Button {
+//              withAnimation {
+//                self._model.flow = 1
+//              }
               let vc = UIHostingController(rootView: PlansView())
               _nav.navController.pushViewController(vc, animated: true)
             } label: {
@@ -472,7 +256,7 @@ struct BuildIntroView: View {
         .alert(errorMessage: $_model.alertErrorMessage)
         .padding(props.padding)
       }
-      
+      .navigationTitle("")
       .padding(.bottom)
       .tint(Color("BuildColor"))
     }
@@ -481,98 +265,201 @@ struct BuildIntroView: View {
       
 }
 
-struct BuildPurchaseView: View {
- 
+struct BuildCreateAccountView: View {
+  enum Field: Hashable {
+      case email
+  }
+
+  @State var showAllRegions = false
+  @State var idiom = UIDevice.current.userInterfaceIdiom
   @ObservedObject private var _model: PurchasesUserModel = .shared
-  @ObservedObject private var _entitlements: EntitlementsManager = .shared
-  
+
+  let nspace : Namespace.ID;
+  @FocusState private var focusedField: Field?
   
   var body: some View {
     List {
-      BasicMachineSection(formattedPrice: _model.formattedBuildPriceWithPeriod() ?? "")
-      if  _entitlements.earlyAccessFeatures.active {
-      } else {
-        Section() {
-          Label {
-            Text("This is Early Access Blink+ Service")
-          } icon: {
-            Image(systemName: "plus")
-              .foregroundColor(.green)
-          }
-          Row {
-            HStack {
-              Label {
-                Text("Compare Plans")
-              } icon: {
-                Image(systemName: "bag.badge.questionmark")
-                  .foregroundColor(.green)
+      Section(
+        header:VStack(alignment: .leading) {
+          HStack {
+            Spacer()
+            Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
+            Spacer()
+          }.padding(.bottom).offset(y: -32)
+          HStack {
+            Text("Select region near you")
+            Spacer()
+            if FeatureFlags.blinkBuild {
+              Button("...") {
+                withAnimation {
+                  self.showAllRegions.toggle()
+                }
               }
-              Spacer()
-              Text(_entitlements.currentPlanName())
-                .foregroundColor(.secondary)
-            }
-          } details: {
-            PlansView()
-          }
-        }
-      }
-      
-      Section() {
-        HStack {
-          Button {
-            _model.openPrivacyAndPolicy()
-          } label: {
-            Label("Learn More about Blink Build", systemImage: "questionmark")
-          }
-        }
-      }
-      
-      if let _ = _model.plusProduct {
-        
-      }
-      
-      Section {
-        HStack {
-          if _model.restoreInProgress {
-            ProgressView()
-            Text("restoring purchases....").padding(.leading, 10)
-          } else {
-            Button {
-              _model.restorePurchases()
-            } label: {
-              Label("Restore Purchases", systemImage: "bag")
             }
           }
-        }
-        HStack {
-          Button {
-            _model.openPrivacyAndPolicy()
-          } label: {
-            Label("Privacy Policy", systemImage: "link")
+        })
+      {
+        ForEach(showAllRegions ? BuildRegion.all() : BuildRegion.available(), id: \.self) { value in
+          HStack {
+            value.largeTitleLabel()
+            Spacer()
+            Checkmark(checked: _model.buildRegion == value)
           }
-        }
-        HStack {
-          Button {
-            _model.openTermsOfUse()
-          } label: {
-            Label("Terms of Use", systemImage: "link")
+          .contentShape(Rectangle())
+          .onTapGesture {
+            _model.buildRegion = value
           }
         }
       }
+      Section(
+        header: Text("Contact"),
+        footer:
+          VStack {
+            if _model.signupInProgress {
+              HStack {
+                Spacer()
+                ProgressView()
+                Spacer()
+              }
+            } else {
+              Button {
+                Task {
+                  //          withAnimation {
+                  //            self._model.flow = 2
+                  //          }
+                  await _model.signup()
+                }
+              } label: {
+                Text("Sign up")
+                  .font(.system(size: 20, weight: .bold))
+                  .frame(maxWidth: .infinity, maxHeight: .infinity)
+              }.foregroundColor(Color("BuildColor"))
+                .buttonStyle(.plain)
+                .frame(minHeight: 70, maxHeight: 70)
+                .padding([.top, .bottom])
+                .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
+            }
+          }
+      )
+      {
+          Label {
+            TextField(
+              "Your Email for Notifications", text: $_model.email
+            )
+            .focused($focusedField, equals: .email)
+            .textContentType(.emailAddress)
+            .keyboardType(.emailAddress)
+            .submitLabel(.go)
+            .onSubmit {
+              Task {
+                await _model.signup()
+              }
+            }
+          } icon: {
+            Image(systemName: "envelope.badge")
+              .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
+          }
+        }
     }
-    .disabled(_model.purchaseInProgress || _model.restoreInProgress)
+    .disabled(_model.purchaseInProgress || _model.restoreInProgress || _model.signupInProgress)
     .alert(errorMessage: $_model.alertErrorMessage)
-    .navigationTitle("Blink Build")
+    .navigationTitle("")
+    .onTapGesture {
+      self.focusedField = nil
+    }
     .toolbar {
-      if _model.purchaseInProgress {
-        ProgressView()
-      } else {
-        Button("Subscribe") {
+      if self.idiom == .phone && focusedField == .email && !_model.signupInProgress {
+        Button("Signup") {
           Task {
-            await _model.purchaseBuildBasic()
+            await _model.signup()
           }
-        }.disabled(_model.restoreInProgress || !_entitlements.earlyAccessFeatures.active)
+        }
       }
     }
+    
+    .tint(.green)
+  }
+}
+
+
+struct BuildAccountView: View {
+  let nspace : Namespace.ID;
+  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  
+  @ViewBuilder
+  func list() -> some View {
+    if #available(iOS 16.0, *) {
+      Chart {
+        BarMark(
+          x: .value("Mount", "Mon"),
+          y: .value("Value", 3)
+        )
+        BarMark(
+          x: .value("Mount", "Tue"),
+          y: .value("Value", 4)
+        )
+        BarMark(
+          x: .value("Mount", "Wed"),
+          y: .value("Value", 7)
+        )
+        BarMark(
+          x: .value("Mount", "Thu"),
+          y: .value("Value", 2)
+        )
+        
+        BarMark(
+          x: .value("Mount", "Fri"),
+          y: .value("Value", 7)
+        )
+        BarMark(
+          x: .value("Mount", "Sat"),
+          y: .value("Value", 8)
+        )
+        BarMark(
+          x: .value("Mount", "Sun"),
+          y: .value("Value", 9)
+        )
+        RuleMark(
+          y: .value("Average", 5.7)
+        )
+        .foregroundStyle(.yellow)
+        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [3, 5]))
+        .annotation(position: .trailing, alignment: .leading) {
+          Text("avg")
+            .font(.caption2)
+            .foregroundStyle(.yellow)
+        }
+      }
+      .frame(height: 100)
+    } else {
+      EmptyView()
+    }
+  }
+  
+  var body: some View {
+    List {
+      Section(header: VStack(alignment: .leading) {
+        Image("build-logo")
+          .matchedGeometryEffect(id: "logo", in: self.nspace)
+          .offset(x: -10, y: -32)
+        Text("Account")
+      })
+      {
+        Label {
+          Text(verbatim: "yury@build.sh")
+        } icon: {
+          Image(systemName: "envelope.badge")
+            .symbolRenderingMode(.monochrome)
+        }
+        _model.buildRegion.largeTitleLabel()
+      }
+      Section(header: Text("Usage")) {
+        list().accentColor(.green)
+      }
+    }
+    .tint(.green)
+    .alert(errorMessage: $_model.alertErrorMessage)
+    .navigationTitle("")
   }
 }

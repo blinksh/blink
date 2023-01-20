@@ -34,70 +34,104 @@ import Foundation
 import SwiftUI
 
 enum BuildRegion: String {
-  case USEast1 = "us_east1"
-  case USWest1 = "us_west1"
-  case Equrope1 = "europe1"
+  case usEast1 = "us_east1"
+  case usWest1 = "us_west1"
+  case europe1 = "europe1"
   
-  case USEast0 = "us_east0"
-  case Europe0 = "europe0"
+  case usEast0 = "us_east0"
+  case europe0 = "europe0"
   
-  case Test = "test_region"
+  case test = "test_region"
+}
+
+extension BuildRegion {
+  var location: String {
+    switch self {
+    case .usEast0: return "New York City" // nyc1
+    case .usEast1: return "New York City" // nyc3
+    case .usWest1: return "San Francisco" // sfo1
+      
+    case .europe0: return "Amsterdam, the Netherlands" // ams3
+    case .europe1: return "Frankfurt, Germany" // fra1
+    case .test: return "London, UK" // lon1
+    }
+  }
 }
 
 extension BuildRegion {
   
   @ViewBuilder
-  func full_title_label() -> some View {
+  func fullTitleLabel() -> some View {
     Label(self.full_title(), systemImage: systemImage())
+  }
+  
+  @ViewBuilder
+  func largeTitleLabel() -> some View {
+    Label(title: {
+      HStack {
+        Text(self.title())
+        Text(self.location).foregroundColor(.secondary)
+      }
+    }, icon: {
+      Image(systemName: systemImage())
+    })
+  }
+  
+  static func available() -> [BuildRegion] {
+    [
+      .usEast1,
+      .usWest1,
+      .europe1,
+    ]
   }
   
   static func all() -> [BuildRegion] {
     [
-      .USEast1,
-      .USWest1,
-      .Equrope1,
-      .USEast0,
-      .Europe0,
-      .Test,
+      .usEast1,
+      .usWest1,
+      .europe1,
+      .usEast0,
+      .europe0,
+      .test,
     ]
   }
   
   func title() -> String {
     switch self {
-    case .USEast1: return "US East"
-    case .USWest1: return "US West"
-    case .Equrope1: return "Europe"
+    case .usEast1: return "US East"
+    case .usWest1: return "US West"
+    case .europe1: return "Europe"
       
-    case .Europe0: return "Europe0"
-    case .USEast0: return "US East0"
+    case .europe0: return "Europe0"
+    case .usEast0: return "US East0"
       
-    case .Test: return "Test"
+    case .test: return "Test"
     }
   }
   
   func full_title() -> String {
     switch self {
-    case .USEast1: return "US East Region"
-    case .USWest1: return "US West Region"
-    case .Equrope1: return "Europe Region"
+    case .usEast1: return "US East Region"
+    case .usWest1: return "US West Region"
+    case .europe1: return "Europe Region"
       
-    case .Europe0: return "Europe Staging Region"
-    case .USEast0: return "US East Staging Region"
+    case .europe0: return "Europe Staging Region"
+    case .usEast0: return "US East Staging Region"
       
-    case .Test: return "Test Region"
+    case .test: return "Test Region"
     }
   }
   
   func systemImage() -> String {
     switch self {
-    case .USEast1: return "globe.americas.fill"
-    case .USWest1: return "globe.americas.fill"
-    case .Equrope1: return "globe.europe.africa.fill"
+    case .usEast1: return "globe.americas.fill"
+    case .usWest1: return "globe.americas.fill"
+    case .europe1: return "globe.europe.africa.fill"
       
-    case .Europe0: return "globe.europe.africa"
-    case .USEast0: return "globe.americas"
+    case .europe0: return "globe.europe.africa"
+    case .usEast0: return "globe.americas"
       
-    case .Test: return  "globe.desk"
+    case .test: return  "globe.desk"
     }
   }
 }
