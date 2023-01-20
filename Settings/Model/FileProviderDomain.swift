@@ -213,7 +213,10 @@ extension _NSFileProviderManager {
   }
   
   static func clearFileProviderCache(_ nsDomain: _NSFileProviderDomain) {
+    #if targetEnvironment(macCatalyst)
+    #else
     let path = Self.default.documentStorageURL.appendingPathComponent(nsDomain.pathRelativeToDocumentStorage)
     try! FileManager.default.removeItem(at: path)
+    #endif
   }
 }

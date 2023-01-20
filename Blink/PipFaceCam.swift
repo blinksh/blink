@@ -446,7 +446,10 @@ class PipFaceCamManager: NSObject, AVCaptureVideoDataOutputSampleBufferDelegate,
       }
       
       if #available(iOS 16.0, *) {
+        #if targetEnvironment(macCatalyst)
+        #else
         session.isMultitaskingCameraAccessEnabled = true
+        #endif
       } else {
         // Fallback on earlier versions
       }
