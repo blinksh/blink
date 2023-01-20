@@ -44,6 +44,8 @@ class PurchasesUserModel: ObservableObject {
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
+//  @Published var flow: Int = 0
+  
   // MARK: Signup
   @Published var signupInProgress: Bool = false
   
@@ -66,7 +68,7 @@ class PurchasesUserModel: ObservableObject {
   }
   
   @Published var emailIsValid: Bool = false
-  @Published var buildRegion: BuildRegion = BuildRegion.USEast0
+  @Published var buildRegion: BuildRegion = BuildRegion.usEast1
   @Published var hasBuildToken: Bool = false
   
   // MARK: Paywall
@@ -80,14 +82,24 @@ class PurchasesUserModel: ObservableObject {
   static let shared = PurchasesUserModel()
   
   func refresh() {
-    _checkBuildToken()
+    _checkBuildToken(animated: false)
     if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
       self.fetchProducts()
     }
   }
   
-  private func _checkBuildToken() {
-    self.hasBuildToken = FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildTokenURL().path)
+  private func _checkBuildToken(animated: Bool) {
+    let value = FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildTokenURL().path)
+    guard self.hasBuildToken != value else {
+      return
+    }
+    if animated {
+      withAnimation {
+        self.hasBuildToken = value
+      }
+    } else {
+      self.hasBuildToken = value
+    }
   }
   
   func signup() async {
@@ -104,13 +116,13 @@ class PurchasesUserModel: ObservableObject {
     
     do {
       try await BuildAPI.signup(email: self.email, region: self.buildRegion)
-      self._checkBuildToken()
+      self._checkBuildToken(animated: true)
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
   }
 
-  func purchaseBuildBasic() async {
+  func purchaseBuildBasic() async {    
     guard let product = buildBasicProduct else {
       self.alertErrorMessage = "Product should be loaded"
       return
@@ -132,7 +144,7 @@ class PurchasesUserModel: ObservableObject {
       }
       // we have subscription. Lets try to signin first
       try await BuildAPI.trySignin()
-      self._checkBuildToken()
+      self._checkBuildToken(animated: true)
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
@@ -179,7 +191,7 @@ class PurchasesUserModel: ObservableObject {
           }
         }
       }
-      self._checkBuildToken()
+      self._checkBuildToken(animated: false)
     })
   }
   
