@@ -169,7 +169,8 @@ struct BuildIntroView: View {
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   @EnvironmentObject private var _nav: Nav
-  let nspace : Namespace.ID;
+  let nspace : Namespace.ID
+  @Environment(\.openURL) private var openURL
   
   var body: some View {
     
@@ -257,6 +258,14 @@ struct BuildIntroView: View {
         .padding(props.padding)
       }
       .navigationTitle("")
+      .toolbar {
+        Button(
+          action: {
+            openURL(URL(string: "https://blink.build")!)
+          },
+          label: { Label("", systemImage: "info.circle") }
+        )
+      }
       .padding(.bottom)
       .tint(Color("BuildColor"))
     }
