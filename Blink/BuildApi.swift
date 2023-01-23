@@ -50,7 +50,15 @@ enum BuildAPIError: Error, LocalizedError {
 
 enum BuildAPI {
   
-  private static func serviceCall(ctx: NSObject, url: String, method: String, body: String, contentType: String, auth: Bool, callback: build_service_callback) -> TokioSignals {
+  private static func serviceCall(
+    ctx: NSObject,
+    url: String,
+    method: String,
+    body: String,
+    contentType: String,
+    auth: Bool,
+    callback: build_service_callback
+  ) -> TokioSignals {
     
     let context = Unmanaged.passRetained(ctx).toOpaque()
     return TokioSignals.callServiceURL(url, method: method, body: body,
