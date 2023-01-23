@@ -210,7 +210,7 @@ struct BuildIntroView: View {
               .font(.system(size: props.h2))
               .padding([.bottom])
 
-            if _model.restoreInProgress || _model.purchaseInProgress {
+            if _model.restoreInProgress || _model.purchaseInProgress || _model.hasBuildToken {
               ProgressView()
                 .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
                 .padding([.top, .bottom])
@@ -265,6 +265,7 @@ struct BuildIntroView: View {
           },
           label: { Label("", systemImage: "info.circle") }
         )
+        .symbolRenderingMode(.hierarchical)
       }
       .padding(.bottom)
       .tint(Color("BuildColor"))
