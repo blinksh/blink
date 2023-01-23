@@ -143,11 +143,7 @@ enum BuildAPI {
     // 200 ok
     
     if code == 200 {
-      let url = BlinkPaths.blinkBuildTokenURL()!
-      try data.write(to: url)
-      if let buildId = TokioSignals.getBuildId() {
-        let _ = try await Purchases.shared.logIn(buildId)
-      }
+      try await loginWithToken(token: data)
     } else if code == 409 {
       try await self.signin()
     } else {
@@ -169,11 +165,7 @@ enum BuildAPI {
     // 200 OK?
     
     if code == 200 {
-      let url = BlinkPaths.blinkBuildTokenURL()!
-      try data.write(to: url)
-      if let buildId = TokioSignals.getBuildId() {
-        let _ = try await Purchases.shared.logIn(buildId)
-      }
+      try await loginWithToken(token: data)
     } else {
       throw BuildAPIError.unexpectedResponseStatus(code)
     }
@@ -191,11 +183,14 @@ enum BuildAPI {
     )
     
     if code == 200 {
-      let url = BlinkPaths.blinkBuildTokenURL()!
-      try data.write(to: url)
-      if let buildId = TokioSignals.getBuildId() {
-        let _ = try await Purchases.shared.logIn(buildId)
-      }
+        try await loginWithToken(token: data)
+    }
+  }
+  
+  static func loginWithToken(token: Data) async throws {
+    try token.write(to: BlinkPaths.blinkBuildTokenURL()!)
+    if let buildId = TokioSignals.getBuildId() {
+      let _ = try await Purchases.shared.logIn(buildId)
     }
   }
 }
