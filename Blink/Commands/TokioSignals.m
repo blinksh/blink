@@ -51,22 +51,19 @@ extern void build_call_service(
 @implementation TokioSignals {
 }
 
-+ (instancetype) callServiceURL:
-  (NSString *) url
-  method: (NSString *) method
-  body: (NSString *) body
-  contentType: (NSString *) contentType
++ (instancetype) requestService:
+  (NSURLRequest *) request
   auth: (BOOL) auth
   ctx: (void *)ctx
   callback: (build_service_callback) callback
 {
   TokioSignals *signals = [TokioSignals new];
-  
+    
   build_call_service(
-                     url.UTF8String,
-                     method.UTF8String,
-                     body.UTF8String,
-                     contentType.UTF8String,
+                     request.URL.absoluteString.UTF8String,
+                     request.HTTPMethod.UTF8String,
+                     request.HTTPBody.bytes,
+                     [request valueForHTTPHeaderField:@"Content-Type"].UTF8String,
                      auth,
                      ctx, callback, &signals->_signals);
   

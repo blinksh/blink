@@ -49,16 +49,15 @@ typedef void (*build_service_callback) (void *, BuildHTTPResponse *);
 }
 - (void) signalCtrlC;
 
-+ (instancetype) callServiceURL:
-  (NSString *) url
-  method: (NSString *) method
-  body: (NSString *) body
-  contentType: (NSString *) contentType
++ (instancetype) requestService:
+  (NSURLRequest *) request
   auth: (BOOL) auth
   ctx: (void *)ctx
   callback: (build_service_callback) callback;
 
 + (nullable NSString *)getBuildId;
+
+
 
 
 @end
