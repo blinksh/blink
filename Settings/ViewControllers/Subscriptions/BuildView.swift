@@ -466,7 +466,11 @@ struct BuildAccountView: View {
       }
       Section(header: Text("Usage")) {
         list().accentColor(.green)
-      }
+      }.onAppear(perform: {
+        Task {
+          await BuildAPI.accountInfo()
+        }
+      })
     }
     .tint(.green)
     .alert(errorMessage: $_model.alertErrorMessage)

@@ -38,8 +38,9 @@
 NS_ASSUME_NONNULL_BEGIN
 
 typedef struct BuildHTTPResponse {
-  UInt32 code;
-  char * body;
+  const int32_t code;
+  const void * body;
+  const NSUInteger body_len;
 } BuildHTTPResponse;
 
 typedef void (*build_service_callback) (void *, BuildHTTPResponse *);
