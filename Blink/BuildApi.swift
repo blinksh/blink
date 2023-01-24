@@ -50,25 +50,35 @@ enum BuildAPIError: Error, LocalizedError {
 
 enum BuildAPI {
   
-  func requestService(request: URLRequest) async {
+  static func requestService(_ request: URLRequest) async -> (Int32, Data) {
     var signal: TokioSignals!
     
-    await withTaskCancellationHandler(operation: {
-      await withCheckedContinuation { (c: CheckedContinuation<(), Never>) in
-        let ctx = UnsafeMutablePointer<CheckedContinuation<(), Never>>.allocate(capacity: 1)
+    return await withTaskCancellationHandler(operation: {
+      await withCheckedContinuation { (c: CheckedContinuation<(Int32, Data), Never>) in
+        let ctx = UnsafeMutablePointer<CheckedContinuation<(Int32, Data), Never>>.allocate(capacity: 1)
         ctx.initialize(to: c)
         
         signal = TokioSignals.requestService(request, auth: true, ctx: ctx) { ctx, w in
-          let ref = UnsafeMutablePointer<CheckedContinuation<(), Never>>(OpaquePointer(ctx))
+          let ref = UnsafeMutablePointer<CheckedContinuation<(Int32, Data), Never>>(OpaquePointer(ctx))
           let c = ref.move()
           ref.deallocate()
-          c.resume(returning: ())
+          let data = Data(bytes: w.pointee.body, count: Int(w.pointee.body_len));
+          c.resume(returning: (w.pointee.code, data))
         }
       }
     }, onCancel: { [signal] in
       signal?.signalCtrlC()
     })
     
+  }
+  
+  public static func accountInfo() async {
+    
+    let (code, data) = try await requestService(.init(getJson: _path("/account")))
+    let s = String(data: data, encoding: .utf8)!;
+    if code == 200 {
+      print(s)
+    }
   }
   
   private static func _baseURL() -> String {
@@ -86,14 +96,7 @@ enum BuildAPI {
   
   private static func _post(_ url: URL, params: [String: Any]) async throws -> (Int, Data, [String: Any]) {
     
-    let json = try JSONSerialization.data(withJSONObject: params)
-    
-    var request = URLRequest(url:  url)
-    request.httpMethod = "POST"
-    request.httpBody = json
-    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-    
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await URLSession.shared.data(for: .init(postJson: url, params: params))
     
     guard let response = response as? HTTPURLResponse else {
       throw BuildAPIError.invalidResponse
@@ -109,13 +112,7 @@ enum BuildAPI {
   
   private static func _get(_ url: URL, params: [String: Any] = [:]) async throws -> (Int, Data, [String: Any]) {
     
-    // TODO: handle params
-    
-    var request = URLRequest(url:  url)
-    request.httpMethod = "GET"
-    request.addValue("application/json", forHTTPHeaderField: "Content-Type")
-    
-    let (data, response) = try await URLSession.shared.data(for: request)
+    let (data, response) = try await URLSession.shared.data(for: .init(getJson: url, params: params))
     
     guard let response = response as? HTTPURLResponse else {
       throw BuildAPIError.invalidResponse
@@ -197,5 +194,23 @@ enum BuildAPI {
     if let buildId = TokioSignals.getBuildId() {
       let _ = try await Purchases.shared.logIn(buildId)
     }
+  }
+}
+
+
+extension URLRequest {
+  init(postJson url: URL, params: [String: Any]) throws {
+    self.init(url: url)
+    self.httpMethod = "POST"
+    self.httpBody = try JSONSerialization.data(withJSONObject: params)
+    self.addValue("application/json", forHTTPHeaderField: "Content-Type")
+  }
+  
+  init(getJson url: URL, params: [String: Any] = [:]) {
+    
+    // TODO: handle params
+    self.init(url: url)
+    self.httpMethod = "GET"
+    self.addValue("application/json", forHTTPHeaderField: "Content-Type")
   }
 }

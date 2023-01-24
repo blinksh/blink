@@ -42,7 +42,8 @@ extern char * build_get_build_id(void);
 extern void build_call_service(
                                const char * url,
                                const char * method,
-                               const char * body,
+                               const void * body,
+                               NSUInteger body_len,
                                const char * content_type,
                                BOOL auth, void * ctx,
                                build_service_callback callback,
@@ -63,6 +64,7 @@ extern void build_call_service(
                      request.URL.absoluteString.UTF8String,
                      request.HTTPMethod.UTF8String,
                      request.HTTPBody.bytes,
+                     request.HTTPBody.length,
                      [request valueForHTTPHeaderField:@"Content-Type"].UTF8String,
                      auth,
                      ctx, callback, &signals->_signals);
