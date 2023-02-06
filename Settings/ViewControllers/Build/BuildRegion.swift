@@ -44,6 +44,10 @@ enum BuildRegion: String {
   case test = "test_region"
 }
 
+extension BuildRegion: Identifiable {
+  var id: String { self.rawValue }
+}
+
 extension BuildRegion {
   var location: String {
     switch self {
@@ -62,7 +66,7 @@ extension BuildRegion {
   
   @ViewBuilder
   func fullTitleLabel() -> some View {
-    Label(self.full_title(), systemImage: systemImage())
+    Label(self.fullTitle(), systemImage: systemImage())
   }
   
   @ViewBuilder
@@ -109,7 +113,7 @@ extension BuildRegion {
     }
   }
   
-  func full_title() -> String {
+  func fullTitle() -> String {
     switch self {
     case .usEast1: return "US East Region"
     case .usWest1: return "US West Region"

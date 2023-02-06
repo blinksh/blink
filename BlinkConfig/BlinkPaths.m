@@ -161,6 +161,13 @@ NSString *__iCloudsDriveDocumentsPath = nil;
   return [NSURL fileURLWithPath:[url stringByAppendingPathComponent:@".build.token"]];
 }
 
++ (NSURL *)blinkBuildStagingMarkURL
+{
+  NSString *url = [self blinkBuild];
+  return [NSURL fileURLWithPath:[url stringByAppendingPathComponent:@".staging"]];
+}
+
+
 
 + (NSURL *)sshURL
 {
