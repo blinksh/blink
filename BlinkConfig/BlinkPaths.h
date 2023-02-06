@@ -49,6 +49,7 @@
 + (NSURL *) blinkURL;
 + (NSURL *) blinkBuildURL;
 + (NSURL *) blinkBuildTokenURL;
++ (NSURL *)blinkBuildStagingMarkURL;
 + (NSURL *) sshURL;
 + (NSURL *) blinkSSHConfigFileURL;
 + (NSURL *) blinkGlobalSSHConfigFileURL;

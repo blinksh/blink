@@ -34,40 +34,152 @@ import SwiftUI
 import RevenueCat
 import Charts
 
-//struct BuildRegionPickerView: View {
-//  @Binding var currentValue: BuildRegion
-//  @EnvironmentObject var nav: Nav
-//
-//  var body: some View {
-//    List {
-//      Section() {
-//        ForEach(BuildRegion.all(), id: \.self) { value in
-//          HStack {
-//            value.fullTitleLabel()
-//            Spacer()
-//            Checkmark(checked: currentValue == value)
-//          }
-//          .contentShape(Rectangle())
-//          .onTapGesture {
-//            currentValue = value
-//            nav.navController.popViewController(animated: true)
-//          }
-//        }
-//      }
-//    }
-//    .listStyle(InsetGroupedListStyle())
-//    .navigationTitle("Build Region")
-//    .tint(Color("BuildColor"))
-//  }
-//}
+struct BuildRegionPickerView: View {
+   @Binding var currentValue: BuildRegion
+   @EnvironmentObject var nav: Nav
+
+   var body: some View {
+     List {
+       Section(header: Text("Choose nearest region")) {
+         ForEach(BuildRegion.all(), id: \.self) { value in
+           HStack {
+             value.fullTitleLabel()
+             Spacer()
+             Checkmark(checked: currentValue == value)
+           }
+           .contentShape(Rectangle())
+           .onTapGesture {
+             currentValue = value
+             nav.navController.popViewController(animated: true)
+           }
+         }
+       }
+     }
+     .listStyle(InsetGroupedListStyle())
+     .navigationTitle("Build Region")
+     .tint(Color("BuildColor"))
+   }
+ }
+
+struct BasicMachineSection: View {
+  let nspace : Namespace.ID;
+  var footer: String = ""
+  
+  var body: some View {
+    Section(
+      header:VStack(alignment: .leading) {
+        HStack {
+          Spacer()
+          Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
+          Spacer()
+        }.padding(.bottom).offset(y: -32)
+        HStack {
+          Text("Basic Machine")
+        }
+      },
+      footer: Text(footer)
+    ) {
+      Label {
+        Text("4 GiB of RAM")
+      } icon: {
+        Image(systemName: "memorychip")
+          .foregroundColor(.green)
+        
+      }
+      Label {
+        Text("2 vCPUs")
+      } icon: {
+        Image(systemName: "cpu")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("4,000 GiB Transfer")
+      } icon: {
+        Image(systemName: "network")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("60 GiB Ephemeral SSD")
+      } icon: {
+        Image(systemName: "internaldrive")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("5 GiB Main Cloud Disk")
+      } icon: {
+        Image(systemName: "externaldrive.badge.icloud")
+          .foregroundColor(.green)
+      }
+      Label {
+        Text("50 Hours")
+      } icon: {
+        Image(systemName: "timer")
+          .foregroundColor(.green)
+      }
+    }
+  }
+}
+
+struct BasicMachinePlanView: View {
+  @ObservedObject private var _purchases: PurchasesUserModel = .shared
+  @ObservedObject private var _account: BuildAccountModel = .shared
+  
+  let nspace : Namespace.ID;
+  
+  var body: some View {
+    GeometryReader { proxy in
+      let compact = proxy.size.width < 400
+      
+      List {
+        BasicMachineSection(nspace: self.nspace)
+        
+        Section(header: Text("Available Regions")) {
+          ForEach(BuildRegion.available()) { region in
+            if compact {
+              region.fullTitleLabel()
+            } else {
+              region.largeTitleLabel()
+            }
+          }
+        }
+        
+        Section(header: Text("Price")) {
+          Label("1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").", systemImage: "bag")
+        }
+        Section {
+          Button(action: {
+            _account.openTermsOfService()
+          }, label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) })
+        }
+      }
+    }
+    .toolbar(content: {
+      Button(action: {
+          _account.showInfo = false
+      }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
+      .symbolRenderingMode(.hierarchical)
+    })
+    .tint(.green)
+    .onDisappear {
+      _account.showInfo = false
+    }
+  }
+}
 
 struct BuildView: View {
-  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _purchases: PurchasesUserModel = .shared
+  @ObservedObject private var _account: BuildAccountModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   @Namespace var nspace;
   
   var body: some View {
-//    BuildCreateAccountView(nspace: self.nspace)
+//    if _account.showInfo {
+//      BasicMachinePlanView(nspace: self.nspace)
+//    } else {
+//      BuildIntroView(nspace: self.nspace)
+//    }
+//    BuildAccountView(nspace: self.nspace)
+    
 //    if _model.flow == 0 {
 //      BuildIntroView(nspace: self.nspace)
 //    } else if _model.flow == 1 {
@@ -75,20 +187,21 @@ struct BuildView: View {
 //    } else {
 //      BuildAccountView(nspace: self.nspace)
 //    }
-    if _model.hasBuildToken {
+    
+    
+    if _account.hasBuildToken {
       BuildAccountView(nspace: self.nspace)
-    } else if _entitlements.build.active && !_model.purchaseInProgress {
+    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
       BuildCreateAccountView(nspace: self.nspace)
     } else {
-      BuildIntroView(nspace: self.nspace)
+      if _account.showInfo {
+        BasicMachinePlanView(nspace: self.nspace)
+      } else {
+        BuildIntroView(nspace: self.nspace)
+      }
     }
   }
 }
-
-
-
-
-
 
 private struct LayoutProps {
   let h1: CGFloat
@@ -105,7 +218,7 @@ private struct LayoutProps {
       var gridOffset: CGSize = .zero
       
       if size.width > size.height {
-        gridOffset =  CGSize(width: 70, height: 24)
+        gridOffset =  CGSize(width: 100, height: 46)
         gridScale = 0.8
       }
       
@@ -166,7 +279,8 @@ private struct LayoutProps {
 
 struct BuildIntroView: View {
   @State var scale = 1.3
-  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _purchases: PurchasesUserModel = .shared
+  @ObservedObject private var _account: BuildAccountModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   @EnvironmentObject private var _nav: Nav
   let nspace : Namespace.ID
@@ -200,24 +314,32 @@ struct BuildIntroView: View {
           
           if  _entitlements.earlyAccessFeatures.active {
 
-            Text("Get 2 Free months to Build")
+            Text("Get Free month to Build")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
 
-            Text("Run work environments from all your devices.\n2\u{00a0}months\u{00a0}free, then $7.99/month.")
-              .fixedSize(horizontal: false, vertical: true)
+            Text("Run work environments from all your devices.")
               .font(.system(size: props.h2))
-              .padding([.bottom])
+            Text("[Basic Machine](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.system(size: props.h2))
+                .padding([.bottom])
+                .environment(\.openURL, OpenURLAction(handler: { url in
+                  withAnimation {
+                    _account.showInfo = true
+                  }
+                  return .handled
+                }))
 
-            if _model.restoreInProgress || _model.purchaseInProgress || _model.hasBuildToken {
+            if _purchases.restoreInProgress || _purchases.purchaseInProgress || _account.hasBuildToken {
               ProgressView()
                 .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
                 .padding([.top, .bottom])
             } else {
               Button {
                 Task {
-                  await _model.purchaseBuildBasic()
+                  await _purchases.purchaseBuildBasic()
                 }
               } label: {
                 Text("Try it Free")
@@ -228,19 +350,26 @@ struct BuildIntroView: View {
                 .frame(minHeight: props.button, maxHeight: props.button)
                 .padding([.top, .bottom])
             }
+            HStack {
+              Spacer()
+              Button("Terms of Use", action: {
+                _account.openTermsOfService()
+              }).padding(.trailing)
+              Button("Restore Purchases", action: {
+                _purchases.restorePurchases()
+              })
+              Spacer()
+            }.padding(.bottom).disabled(_purchases.restoreInProgress)
           } else {
             Text("This is Early Access Blink+ Service")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
-            Text("Run work environments from all your devices.\n2\u{00a0}months\u{00a0}free, then $7.99/month.")
+            Text("Run work environments from all your devices.\n1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h2))
               .padding([.bottom])
             Button {
-//              withAnimation {
-//                self._model.flow = 1
-//              }
               let vc = UIHostingController(rootView: PlansView())
               _nav.navController.pushViewController(vc, animated: true)
             } label: {
@@ -254,25 +383,14 @@ struct BuildIntroView: View {
           }
         }
         .frame(maxWidth: 574)
-        .alert(errorMessage: $_model.alertErrorMessage)
+        .alert(errorMessage: $_purchases.alertErrorMessage)
         .padding(props.padding)
       }
       .navigationTitle("")
-      .toolbar {
-        Button(
-          action: {
-            openURL(URL(string: "https://blink.build")!)
-          },
-          label: { Label("", systemImage: "info.circle") }
-        )
-        .symbolRenderingMode(.hierarchical)
-      }
       .padding(.bottom)
       .tint(Color("BuildColor"))
     }
   }
-    
-      
 }
 
 struct BuildCreateAccountView: View {
@@ -282,106 +400,89 @@ struct BuildCreateAccountView: View {
 
   @State var showAllRegions = false
   @State var idiom = UIDevice.current.userInterfaceIdiom
-  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @ObservedObject private var _account: BuildAccountModel = .shared
+  @ObservedObject private var _purchases: PurchasesUserModel = .shared
 
   let nspace : Namespace.ID;
   @FocusState private var focusedField: Field?
   
   var body: some View {
     List {
-      Section(
-        header:VStack(alignment: .leading) {
-          HStack {
-            Spacer()
-            Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
-            Spacer()
-          }.padding(.bottom).offset(y: -32)
-          HStack {
-            Text("Select region near you")
-            Spacer()
-            if FeatureFlags.blinkBuild {
-              Button("...") {
-                withAnimation {
-                  self.showAllRegions.toggle()
-                }
-              }
-            }
-          }
-        })
-      {
-        ForEach(showAllRegions ? BuildRegion.all() : BuildRegion.available(), id: \.self) { value in
-          HStack {
-            value.largeTitleLabel()
-            Spacer()
-            Checkmark(checked: _model.buildRegion == value)
-          }
-          .contentShape(Rectangle())
-          .onTapGesture {
-            _model.buildRegion = value
-          }
+      BasicMachineSection(nspace: self.nspace)
+        .onTapGesture {
+          self.focusedField = nil
         }
-      }
+
       Section(
-        header: Text("Contact"),
-        footer:
-          VStack {
-            if _model.signupInProgress {
-              HStack {
-                Spacer()
-                ProgressView()
-                Spacer()
-              }
-            } else {
-              Button {
-                Task {
-                  //          withAnimation {
-                  //            self._model.flow = 2
-                  //          }
-                  await _model.signup()
-                }
-              } label: {
-                Text("Sign up")
-                  .font(.system(size: 20, weight: .bold))
-                  .frame(maxWidth: .infinity, maxHeight: .infinity)
-              }.foregroundColor(Color("BuildColor"))
-                .buttonStyle(.plain)
-                .frame(minHeight: 70, maxHeight: 70)
-                .padding([.top, .bottom])
-                .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
-            }
-          }
+        header: Text("Setup your Account"),
+        footer: Text("We will send you verification email.")
       )
       {
-          Label {
-            TextField(
-              "Your Email for Notifications", text: $_model.email
-            )
-            .focused($focusedField, equals: .email)
-            .textContentType(.emailAddress)
-            .keyboardType(.emailAddress)
-            .submitLabel(.go)
-            .onSubmit {
-              Task {
-                await _model.signup()
-              }
-            }
-          } icon: {
-            Image(systemName: "envelope.badge")
-              .symbolRenderingMode(_model.emailIsValid ? .monochrome : .multicolor)
+        Row(
+          content: {
+            _account.buildRegion.fullTitleLabel()
+          },
+          details: {
+            BuildRegionPickerView(currentValue: $_account.buildRegion)
           }
+        )
+        Label {
+          self.emailTextField()
+          .focused($focusedField, equals: .email)
+          .textContentType(.emailAddress)
+          .keyboardType(.emailAddress)
+          .submitLabel(.go)
+          .onSubmit {
+            Task {
+              await _account.signup()
+            }
+          }
+        } icon: {
+          Image(systemName: "envelope.badge")
+            .symbolRenderingMode(_account.emailIsValid ? .monochrome : .multicolor)
         }
+      }
+      Section(footer: VStack {
+        if _account.signupInProgress {
+          HStack {
+            Spacer()
+            ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
+            Spacer()
+          }
+        } else {
+          Button {
+            Task {
+              //          withAnimation {
+              //            self._model.flow = 2
+              //          }
+              await _account.signup()
+            }
+          } label: {
+            Text("Sign up")
+              .font(.system(size: 20, weight: .bold))
+              .frame(maxWidth: .infinity, maxHeight: .infinity)
+          }.foregroundColor(Color("BuildColor"))
+            .buttonStyle(.plain)
+            .frame(minHeight: 70, maxHeight: 70)
+            .padding([.top, .bottom])
+            .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
+        }
+      }) {
+        EmptyView()
+//        Button(
+//          action: { _account.openTermsOfService() },
+//          label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) }
+//        )
+      }
     }
-    .disabled(_model.purchaseInProgress || _model.restoreInProgress || _model.signupInProgress)
-    .alert(errorMessage: $_model.alertErrorMessage)
+    .disabled(_purchases.purchaseInProgress || _purchases.restoreInProgress || _account.signupInProgress)
+    .alert(errorMessage: $_account.alertErrorMessage)
     .navigationTitle("")
-    .onTapGesture {
-      self.focusedField = nil
-    }
     .toolbar {
-      if self.idiom == .phone && focusedField == .email && !_model.signupInProgress {
+      if self.idiom == .phone && focusedField == .email && !_account.signupInProgress {
         Button("Signup") {
           Task {
-            await _model.signup()
+            await _account.signup()
           }
         }
       }
@@ -389,91 +490,251 @@ struct BuildCreateAccountView: View {
     
     .tint(.green)
   }
+  
+  @ViewBuilder
+  func emailTextField() -> some View {
+    if #available(iOS 16.0, *) {
+      TextField(
+        "Your Email for Notifications", text: $_account.email
+      )
+      .scrollDismissesKeyboard(.interactively)
+    } else {
+      TextField(
+        "Your Email for Notifications", text: $_account.email
+      )
+    }
+  }
+}
+
+struct BuildPeriodSection: View {
+  let balance: BuildUsageBalance
+  
+  var body: some View {
+    Section(header: Text("Period")) {
+      HStack {
+        Label("Start", systemImage: "calendar")
+        Spacer()
+        Text(balance.periodStartDate.formatted())
+      }
+      HStack {
+        Label("End", systemImage: "calendar.badge.clock")
+        Spacer()
+        Text(balance.periodEndDate.formatted())
+      }
+      HStack {
+        Label("Status", systemImage: "wallet.pass")
+        Spacer()
+        Text(balance.status)
+      }
+    }
+  }
 }
 
 
+struct BuildCreditsSection: View {
+  let balance: BuildUsageBalance
+  
+  var body: some View {
+    Section(header: Text("Credits")) {
+      HStack {
+        Label("Consumed", systemImage: "number.circle")
+        Spacer()
+        Text("\(balance.credits_consumed)")
+      }
+      HStack {
+        Label("Available", systemImage: "number.circle.fill")
+        Spacer()
+        Text("\(balance.credits_available)")
+      }
+    }
+  }
+}
+
 struct BuildAccountView: View {
   let nspace : Namespace.ID;
-  @ObservedObject private var _model: PurchasesUserModel = .shared
+  @State var showHelp: Bool = false
+  @ObservedObject private var _model: BuildAccountModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @State var showDeleteAccountAlert = false
+  @EnvironmentObject var _nav: Nav;
   
-  @ViewBuilder
-  func list() -> some View {
-    if #available(iOS 16.0, *) {
-      Chart {
-        BarMark(
-          x: .value("Mount", "Mon"),
-          y: .value("Value", 3)
-        )
-        BarMark(
-          x: .value("Mount", "Tue"),
-          y: .value("Value", 4)
-        )
-        BarMark(
-          x: .value("Mount", "Wed"),
-          y: .value("Value", 7)
-        )
-        BarMark(
-          x: .value("Mount", "Thu"),
-          y: .value("Value", 2)
-        )
-        
-        BarMark(
-          x: .value("Mount", "Fri"),
-          y: .value("Value", 7)
-        )
-        BarMark(
-          x: .value("Mount", "Sat"),
-          y: .value("Value", 8)
-        )
-        BarMark(
-          x: .value("Mount", "Sun"),
-          y: .value("Value", 9)
-        )
-        RuleMark(
-          y: .value("Average", 5.7)
-        )
-        .foregroundStyle(.yellow)
-        .lineStyle(StrokeStyle(lineWidth: 1.5, dash: [3, 5]))
-        .annotation(position: .trailing, alignment: .leading) {
-          Text("avg")
-            .font(.caption2)
-            .foregroundStyle(.yellow)
+  var body: some View {
+    if _model.email.isEmpty {
+      VStack {
+        Spacer()
+        Image("build-logo")
+          .matchedGeometryEffect(id: "logo", in: self.nspace)
+        Spacer()
+        if _model.accountInfoLoadingInProgress {
+          ProgressView()
+        } else {
+          Button {
+            Task {
+              await _model.fetchAccountInfo()
+            }
+          } label: {
+            Label("Retry", systemImage: "arrow.triangle.2.circlepath")
+          }
+        }
+        Spacer()
+      }
+      .tint(.green)
+      .alert(errorMessage: $_model.alertErrorMessage)
+      .navigationTitle("")
+      .toolbar(content: {
+        if !_model.accountInfoLoadingInProgress {
+          Button {
+            let vc = UIHostingController(rootView: BuildSupportView(email: _model.email))
+            _nav.navController.pushViewController(vc, animated: true)
+          } label: {
+            Label("Support", systemImage: "lifepreserver")
+          }
+        }
+      })
+      .task {
+        if _model.email.isEmpty {
+          await _model.fetchAccountInfo()
         }
       }
-      .frame(height: 100)
     } else {
-      EmptyView()
+      GeometryReader { proxy in
+        let compact = proxy.size.width < 400
+        
+        List {
+          Section(header: VStack(alignment: .leading) {
+            Image("build-logo")
+              .matchedGeometryEffect(id: "logo", in: self.nspace)
+              .offset(x: -10, y: -32)
+            Text("Account \(proxy.size.width)")
+          })
+          {
+            Label {
+              Text(_model.email)
+            } icon: {
+              Image(systemName: "envelope.badge")
+                .symbolRenderingMode(.monochrome)
+            }
+            if compact {
+              _model.buildRegion.fullTitleLabel()
+            } else {
+              _model.buildRegion.largeTitleLabel()
+            }
+          }
+          if let balance = _model.usageBalance {
+            BuildCreditsSection(balance: balance)
+            BuildPeriodSection(balance: balance)
+          }
+          Section {
+            Row {
+              Label("Support", systemImage: "lifepreserver")
+            } details: {
+              BuildSupportView(email: _model.email)
+            }
+          }
+          Section {
+            if FeatureFlags.blinkBuildStaging {
+              Toggle(isOn: $_model.isStagingEnv, label: {
+                Label("Staging env", systemImage: "wrench.and.screwdriver")
+              })
+            }
+            Button {
+              self.showDeleteAccountAlert = true
+            } label: {
+              Label("Delete Account", systemImage: "hand.raised")
+            }
+            .alert(isPresented: $showDeleteAccountAlert, content: {
+              Alert(
+                title: Text("Warning"),
+                message: Text("You account will be scheduled for deletion."),
+                primaryButton: .destructive(Text("Delete"), action: {
+                  Task {
+                    await _model.requestAccountDelete()
+                  }
+                }),
+                secondaryButton: .cancel()
+              )
+            })
+          }
+        }
+      }
+      .task {
+        await _model.fetchUsageBalance()
+      }
+      .refreshable {
+        await _model.fetchAccountInfo()
+        await _model.fetchUsageBalance()
+      }
+      .tint(.green)
+      .alert(errorMessage: $_model.alertErrorMessage)
+      
+      .navigationTitle("")
+      .toolbar(content: {
+        Button("Help", action: {
+          self.showHelp.toggle()
+        })
+      })
+      
+      .overlay {
+        if showHelp {
+          SizedCmdListView()
+            .padding([.leading, .trailing, .bottom])
+            .padding(.bottom)
+            .padding(.bottom)
+            .background(
+              Rectangle()
+                .foregroundColor(Color(UIColor.systemBackground))
+                .ignoresSafeArea(.all)
+            )
+        } else {
+          EmptyView()
+        }
+      }
     }
+  }
+}
+
+
+struct BuildSupportView: View {
+  public let email: String
+  
+  func emailStr() -> String {
+    if email.isEmpty {
+      return ""
+    }
+    
+    return " (\(email))"
   }
   
   var body: some View {
-    List {
-      Section(header: VStack(alignment: .leading) {
-        Image("build-logo")
-          .matchedGeometryEffect(id: "logo", in: self.nspace)
-          .offset(x: -10, y: -32)
-        Text("Account")
-      })
-      {
-        Label {
-          Text(verbatim: "yury@build.sh")
-        } icon: {
-          Image(systemName: "envelope.badge")
-            .symbolRenderingMode(.monochrome)
+    VStack {
+      ScrollView(.vertical) {
+        VStack(alignment: .leading) {
+          Text(
+            "Thanks for using Blink Build and helping us make this app even more epic! "
+          ).font(.title).fixedSize(horizontal: false, vertical: true)
+            .padding(.bottom).padding(.bottom)
+          Text(
+            "If you’re facing any usage roadblocks, check out our documentation or Community Resources like [GitHub Discussions](https://github.com/blinksh/blink/discussions) or [Discord](https://discord.gg/ZTtMfvK)."
+          )
+          .padding(.bottom)
+          Text(
+            "If it's an account-related problem (e.g. machines, login, or accounting), send an email to support@blink.build from your registered account\(self.emailStr()). Our team will be on it ASAP to help resolve the issue."
+          )
         }
-        _model.buildRegion.largeTitleLabel()
-      }
-      Section(header: Text("Usage")) {
-        list().accentColor(.green)
-      }.onAppear(perform: {
-        Task {
-          await BuildAPI.accountInfo()
-        }
-      })
+        .frame(minWidth: 240, maxWidth: 600)
+        .padding([.leading, .trailing])
+        
+        Spacer().frame(maxWidth: .infinity, minHeight: 620, maxHeight: .infinity)
+          .overlay {
+            VStack  {
+              Spacer().frame(height: 40)
+              Image("iso-grid")
+              Spacer()
+            }
+          }
+//        Spacer().background(content: { Image("iso-grid") })
+//        Image("iso-grid").fixedSize().scaledToFit()
+      }.ignoresSafeArea(edges: [.leading, .bottom, .trailing]).tint(.green)
     }
-    .tint(.green)
-    .alert(errorMessage: $_model.alertErrorMessage)
-    .navigationTitle("")
   }
 }

@@ -33,6 +33,34 @@
 import Foundation
 import RevenueCat
 
+
+struct BuildAccountInfo: Decodable {
+  let build_id: String
+  let region: String
+  let email: String
+}
+
+struct BuildUsageBalance: Decodable {
+  let build_id: String
+  let balance_id: String
+  let status: String
+  let credits_available: UInt64
+  let credits_consumed: UInt64
+  let period_start: UInt64
+  let period_end: UInt64
+  let initial_outstanding_debit: UInt64
+  let last_charges_timestamp: UInt64?
+  let previous_balance_id: String?
+  
+  var periodStartDate: Date {
+    Date(timeIntervalSince1970: TimeInterval(period_start))
+  }
+  
+  var periodEndDate: Date {
+    Date(timeIntervalSince1970: TimeInterval(period_end))
+  }
+}
+
 enum BuildAPIError: Error, LocalizedError {
   case invalidResponse
   case unexpectedResponseStatus(Int)
@@ -72,22 +100,38 @@ enum BuildAPI {
     
   }
   
-  public static func accountInfo() async {
-    
-    let (code, data) = try await requestService(.init(getJson: _path("/account")))
-    let s = String(data: data, encoding: .utf8)!;
+  public static func accountInfo() async throws -> BuildAccountInfo {
+    let (code, data) = await requestService(.init(getJson: _path("/account")))
     if code == 200 {
-      print(s)
+      return try JSONDecoder().decode(BuildAccountInfo.self, from: data)
     }
+    print("Unexpected response: \(code) \(String(data: data, encoding: .utf8) as Any)")
+    throw BuildAPIError.unexpectedResponseStatus(Int(code))
+  }
+  
+  public static func accountCurrentUsageBalance() async throws -> BuildUsageBalance {
+    let (code, data) = await requestService(.init(getJson: _path("/account/current_usage_balance")))
+    if code == 200 {
+      return try JSONDecoder().decode(BuildUsageBalance.self, from: data)
+    }
+    throw BuildAPIError.unexpectedResponseStatus(Int(code))
+  }
+  
+  public static func requestAccountDelete() async throws {
+    let (code, _) = await requestService(try .init(postJson: _path("/account/request_account_delete")))
+    if code == 200 {
+      return
+    }
+    throw BuildAPIError.unexpectedResponseStatus(Int(code))
   }
   
   private static func _baseURL() -> String {
-    let options = PublishingOptions.current;
-    if options.intersection([PublishingOptions.testFlight, PublishingOptions.developer]).isEmpty {
-      return "https://api.blink.build"
-    } else {
-      return "https://raw.api.blink.build"
+    if FeatureFlags.blinkBuildStaging {
+      if FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildStagingMarkURL()!.path) {
+        return "https://raw.api.blink.build"
+      }
     }
+    return "https://api.blink.build"
   }
   
   private static func _path(_ path: String) -> URL {
@@ -199,11 +243,20 @@ enum BuildAPI {
 
 
 extension URLRequest {
-  init(postJson url: URL, params: [String: Any]) throws {
+  init(postJson url: URL, params: [String: Any] = [:]) throws {
     self.init(url: url)
     self.httpMethod = "POST"
-    self.httpBody = try JSONSerialization.data(withJSONObject: params)
     self.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    self.httpBody = try JSONSerialization.data(withJSONObject: params)
+  }
+  
+  init(deleteJson url: URL, params: [String: Any]? = nil) throws {
+    self.init(url: url)
+    self.httpMethod = "DELETE"
+    self.addValue("application/json", forHTTPHeaderField: "Content-Type")
+    if let params = params {
+      self.httpBody = try JSONSerialization.data(withJSONObject: params)
+    }
   }
   
   init(getJson url: URL, params: [String: Any] = [:]) {
@@ -213,4 +266,6 @@ extension URLRequest {
     self.httpMethod = "GET"
     self.addValue("application/json", forHTTPHeaderField: "Content-Type")
   }
+  
+  
 }

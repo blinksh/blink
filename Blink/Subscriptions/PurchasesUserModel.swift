@@ -46,9 +46,6 @@ class PurchasesUserModel: ObservableObject {
   
 //  @Published var flow: Int = 0
   
-  // MARK: Signup
-  @Published var signupInProgress: Bool = false
-  
   // MARK: Migration states
   
   @Published var receiptIsVerified: Bool = false
@@ -58,18 +55,6 @@ class PurchasesUserModel: ObservableObject {
   @Published var dataCopyFailed: Bool = false
   @Published var alertErrorMessage: String = ""
   @Published var migrationStatus: MigrationStatus = .validating
-  
-  // MARK: Blink Build states
-  
-  @Published var email: String = "" {
-    didSet {
-      emailIsValid = !email.isEmpty && _emailPredicate.evaluate(with: email)
-    }
-  }
-  
-  @Published var emailIsValid: Bool = false
-  @Published var buildRegion: BuildRegion = BuildRegion.usEast1
-  @Published var hasBuildToken: Bool = false
   
   // MARK: Paywall
   
@@ -82,46 +67,13 @@ class PurchasesUserModel: ObservableObject {
   static let shared = PurchasesUserModel()
   
   func refresh() {
-    _checkBuildToken(animated: false)
+    BuildAccountModel.shared.checkBuildToken(animated: false)
     if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
       self.fetchProducts()
     }
   }
   
-  private func _checkBuildToken(animated: Bool) {
-    let value = FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildTokenURL().path)
-    guard self.hasBuildToken != value else {
-      return
-    }
-    if animated {
-      withAnimation {
-        self.hasBuildToken = value
-      }
-    } else {
-      self.hasBuildToken = value
-    }
-  }
   
-  func signup() async {
-    guard emailIsValid else {
-      self.alertErrorMessage =  self.email.isEmpty ? "Email is Required" :  "Valid email is Required"
-      return
-    }
-    
-    self.signupInProgress = true
-    
-    defer {
-      self.signupInProgress = false
-    }
-    
-    do {
-      try await BuildAPI.signup(email: self.email, region: self.buildRegion)
-      self._checkBuildToken(animated: true)
-    } catch {
-      self.alertErrorMessage = error.localizedDescription
-    }
-  }
-
   func purchaseBuildBasic() async {    
     guard let product = buildBasicProduct else {
       self.alertErrorMessage = "Product should be loaded"
@@ -142,9 +94,8 @@ class PurchasesUserModel: ObservableObject {
       if canceled {
         return
       }
-      // we have subscription. Lets try to signin first
-      try await BuildAPI.trySignin()
-      self._checkBuildToken(animated: true)
+      
+      try await BuildAccountModel.shared.trySignIn()
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
@@ -185,13 +136,12 @@ class PurchasesUserModel: ObservableObject {
       if EntitlementsManager.shared.build.active {
         Task {
           do {
-            try await BuildAPI.signin()
+            try await BuildAccountModel.shared.singin();
           } catch {
             self.alertErrorMessage = error.localizedDescription
           }
         }
       }
-      self._checkBuildToken(animated: false)
     })
   }
   
