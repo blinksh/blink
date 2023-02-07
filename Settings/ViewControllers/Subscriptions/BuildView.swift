@@ -162,13 +162,13 @@ struct BasicMachinePlanView: View {
     }
     .toolbar(content: {
       Button(action: {
-          _account.showInfo = false
+          _account.showPlanInfo = false
       }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
       .symbolRenderingMode(.hierarchical)
     })
     .tint(.green)
     .onDisappear {
-      _account.showInfo = false
+      _account.showPlanInfo = false
     }
   }
 }
@@ -180,7 +180,7 @@ struct BuildView: View {
   @Namespace var nspace;
   
   var body: some View {
-    BuildAccountView(nspace: self.nspace)
+//    BuildAccountView(nspace: self.nspace)
 //    BuildCreateAccountView(nspace: self.nspace)
 //    if _account.showInfo {
 //      BasicMachinePlanView(nspace: self.nspace)
@@ -189,7 +189,12 @@ struct BuildView: View {
 //    }
 //    BuildAccountView(nspace: self.nspace)
     
-//    if _model.flow == 0 {
+//    if _account.flow == 0 {
+//      BuildCreateAccountView(nspace: self.nspace)
+//    } else {
+//      BuildAccountView(nspace: self.nspace)
+//    }
+//    }
 //      BuildIntroView(nspace: self.nspace)
 //    } else if _model.flow == 1 {
 //      BuildCreateAccountView(nspace: self.nspace)
@@ -198,17 +203,17 @@ struct BuildView: View {
 //    }
     
     
-//    if _account.hasBuildToken {
-//      BuildAccountView(nspace: self.nspace)
-//    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
-//      BuildCreateAccountView(nspace: self.nspace)
-//    } else {
-//      if _account.showInfo {
-//        BasicMachinePlanView(nspace: self.nspace)
-//      } else {
-//        BuildIntroView(nspace: self.nspace)
-//      }
-//    }
+    if _account.hasBuildToken {
+      BuildAccountView(nspace: self.nspace)
+    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
+      BuildCreateAccountView(nspace: self.nspace)
+    } else {
+      if _account.showPlanInfo {
+        BasicMachinePlanView(nspace: self.nspace)
+      } else {
+        BuildIntroView(nspace: self.nspace)
+      }
+    }
   }
 }
 
@@ -336,7 +341,7 @@ struct BuildIntroView: View {
                 .padding([.bottom])
                 .environment(\.openURL, OpenURLAction(handler: { url in
                   withAnimation {
-                    _account.showInfo = true
+                    _account.showPlanInfo = true
                   }
                   return .handled
                 }))
@@ -419,88 +424,105 @@ struct BuildCreateAccountView: View {
     GeometryReader { proxy in
       let compact = proxy.size.width < 400
       
-      List {
-        BasicMachineSection(nspace: self.nspace)
-          .onTapGesture {
+      if _account.signupInProgress {
+        VStack {
+          Spacer()
+          HStack {
+            Spacer()
+            Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
+//              .onTapGesture {
+//                withAnimation {
+//                  _account.showTour = true
+//                  _account.flow = 1
+//                }
+//              }
+            Spacer()
+          }
+          ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
+          Text("Creating your account...")
+          Spacer()
+        }
+      } else {
+        
+        List {
+          BasicMachineSection(nspace: self.nspace)
+            .onTapGesture {
+              self.focusedField = nil
+            }
+          Section(header: Text("Storage")) {
+            Label {
+              Text("5 GiB Main Cloud Disk")
+            } icon: {
+              Image(systemName: "externaldrive.badge.icloud")
+                .foregroundColor(.green)
+            }
+          }.onTapGesture {
             self.focusedField = nil
           }
-        Section(header: Text("Storage")) {
-          Label {
-            Text("5 GiB Main Cloud Disk")
-          } icon: {
-            Image(systemName: "externaldrive.badge.icloud")
-              .foregroundColor(.green)
-          }
-        }.onTapGesture {
-          self.focusedField = nil
-        }
-        
-        Section(
-          header: Text("Setup your Account"),
-          footer: Text("We will send you verification email.")
-        )
-        {
-          Row(
-            content: {
-              Group {
-                if compact {
-                  _account.buildRegion.fullTitleLabel()
-                } else {
-                  _account.buildRegion.largeTitleLabel()
-                }
-              }
-            },
-            details: {
-              BuildRegionPickerView(currentValue: $_account.buildRegion)
-            }
+          
+          Section(
+            header: Text("Setup your Account"),
+            footer: Text("We will send you verification email.")
           )
-          Label {
-            self.emailTextField()
-              .focused($focusedField, equals: .email)
-              .textContentType(.emailAddress)
-              .keyboardType(.emailAddress)
-              .submitLabel(.go)
-              .onSubmit {
+          {
+            Row(
+              content: {
+                Group {
+                  if compact {
+                    _account.buildRegion.fullTitleLabel()
+                  } else {
+                    _account.buildRegion.largeTitleLabel()
+                  }
+                }
+              },
+              details: {
+                BuildRegionPickerView(currentValue: $_account.buildRegion)
+              }
+            )
+            Label {
+              self.emailTextField()
+                .focused($focusedField, equals: .email)
+                .textContentType(.emailAddress)
+                .keyboardType(.emailAddress)
+                .submitLabel(.go)
+                .onSubmit {
+                  Task {
+                    await _account.signup()
+                  }
+                }
+            } icon: {
+              Image(systemName: "envelope.badge")
+                .symbolRenderingMode(_account.emailIsValid ? .monochrome : .multicolor)
+            }
+          }
+          Section(footer: VStack {
+            if _account.signupInProgress {
+              HStack {
+                Spacer()
+                ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
+                Spacer()
+              }
+            } else {
+              Button {
                 Task {
+                  //          withAnimation {
+                  //            self._model.flow = 2
+                  //          }
                   await _account.signup()
                 }
-              }
-          } icon: {
-            Image(systemName: "envelope.badge")
-              .symbolRenderingMode(_account.emailIsValid ? .monochrome : .multicolor)
-          }
-        }
-        Section(footer: VStack {
-          if _account.signupInProgress {
-            HStack {
-              Spacer()
-              ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
-              Spacer()
+              } label: {
+                Text("Sign up")
+                  .font(.system(size: 20, weight: .bold))
+                  .frame(maxWidth: .infinity, maxHeight: .infinity)
+              }.foregroundColor(Color("BuildColor"))
+                .buttonStyle(.plain)
+                .frame(minHeight: 70, maxHeight: 70)
+                .padding([.top, .bottom])
+                .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
             }
-          } else {
-            Button {
-              Task {
-                //          withAnimation {
-                //            self._model.flow = 2
-                //          }
-                await _account.signup()
-              }
-            } label: {
-              Text("Sign up")
-                .font(.system(size: 20, weight: .bold))
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.foregroundColor(Color("BuildColor"))
-              .buttonStyle(.plain)
-              .frame(minHeight: 70, maxHeight: 70)
-              .padding([.top, .bottom])
-              .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
+          }) {
+            EmptyView()
           }
-        }) {
-          EmptyView()
-          //        Button(
-          //          action: { _account.openTermsOfService() },
-          //          label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) }
-          //        )
         }
       }
     }
@@ -581,7 +603,6 @@ struct BuildCreditsSection: View {
 
 struct BuildAccountView: View {
   let nspace : Namespace.ID;
-  @State var showHelp: Bool = false
   @ObservedObject private var _model: BuildAccountModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   @State var showDeleteAccountAlert = false
@@ -625,6 +646,29 @@ struct BuildAccountView: View {
           await _model.fetchAccountInfo()
         }
       }
+    } else if _model.showTour {
+        VStack {
+          SizedCmdListView(nspace: self.nspace)
+            .padding([.leading])
+          
+          Button {
+            withAnimation {
+              _model.showTour = false
+            }
+          } label: {
+            Text("Got it")
+              .font(.system(size: 20, weight: .bold))
+          }
+          .padding(.bottom)
+          .padding(.bottom)
+          .padding(.bottom)
+          
+        }.tint(.green)
+        .background(
+          Rectangle()
+            .foregroundColor(Color(UIColor.systemBackground))
+            .ignoresSafeArea(.all)
+        )
     } else {
       GeometryReader { proxy in
         let compact = proxy.size.width < 400
@@ -653,19 +697,25 @@ struct BuildAccountView: View {
             BuildCreditsSection(balance: balance)
             BuildPeriodSection(balance: balance)
           }
-          Section {
+          Section(header: Text("Help")) {
+            Button(action: {
+              withAnimation {
+                _model.showTour.toggle()
+              }
+            }, label: { Label("Quick Tour", systemImage: "questionmark") })
             Row {
               Label("Support", systemImage: "lifepreserver")
             } details: {
               BuildSupportView(email: _model.email)
             }
           }
+          
           Section(header: Text("Danger Zone")) {
-//            if FeatureFlags.blinkBuildStaging {
-//              Toggle(isOn: $_model.isStagingEnv, label: {
-//                Label("Staging env", systemImage: "wrench.and.screwdriver")
-//              })
-//            }
+            //            if FeatureFlags.blinkBuildStaging {
+            //              Toggle(isOn: $_model.isStagingEnv, label: {
+            //                Label("Staging env", systemImage: "wrench.and.screwdriver")
+            //              })
+            //            }
             Button {
               self.showDeleteAccountAlert = true
             } label: {
@@ -686,37 +736,15 @@ struct BuildAccountView: View {
           }
         }
       }
+      .tint(.green)
+      .alert(errorMessage: $_model.alertErrorMessage)
+      .navigationTitle("")
       .task {
         await _model.fetchUsageBalance()
       }
       .refreshable {
         await _model.fetchAccountInfo()
         await _model.fetchUsageBalance()
-      }
-      .tint(.green)
-      .alert(errorMessage: $_model.alertErrorMessage)
-      
-      .navigationTitle("")
-      .toolbar(content: {
-        Button("Help", action: {
-          self.showHelp.toggle()
-        })
-      })
-      
-      .overlay {
-        if showHelp {
-          SizedCmdListView()
-            .padding([.leading, .trailing, .bottom])
-            .padding(.bottom)
-            .padding(.bottom)
-            .background(
-              Rectangle()
-                .foregroundColor(Color(UIColor.systemBackground))
-                .ignoresSafeArea(.all)
-            )
-        } else {
-          EmptyView()
-        }
       }
     }
   }

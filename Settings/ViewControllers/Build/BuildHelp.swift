@@ -278,6 +278,7 @@ struct CmdListView: View {
   let cmds: [Cmd]
   let topOffset: CGFloat
   let baseFont: Font
+  let nspace : Namespace.ID;
   @State var idx: Int = 0
   @State var paused = false
   @State var timer: Timer? = nil
@@ -293,7 +294,7 @@ struct CmdListView: View {
     ZStack(alignment: .leading) {
       VStack() {
         Spacer().frame(height: topOffset)
-        Text("build").font(baseFont.monospaced())
+        Text("build").font(baseFont.monospaced()).matchedGeometryEffect(id: "logo", in: self.nspace)
         Spacer()
       }
       VTabView(selection: $page, indexPosition: .trailing) {
@@ -373,6 +374,7 @@ struct CmdListView: View {
 }
 
 struct SizedCmdListView: View {
+  let nspace : Namespace.ID;
   
   func baseFont(geom: GeometryProxy) -> Font {
     let width = geom.size.width
@@ -391,7 +393,7 @@ struct SizedCmdListView: View {
       let baseFont = self.baseFont(geom: geom)
       let cmds = geom.size.width < 400 ? short_cmds : cmds
       
-      CmdListView(cmds: cmds, topOffset: topOffset, baseFont: baseFont)
+      CmdListView(cmds: cmds, topOffset: topOffset, baseFont: baseFont, nspace: self.nspace)
         .frame(width: geom.size.width, height: geom.size.height)
     }
   }
