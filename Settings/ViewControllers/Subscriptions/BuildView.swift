@@ -39,18 +39,25 @@ struct BuildRegionPickerView: View {
    @EnvironmentObject var nav: Nav
 
    var body: some View {
-     List {
-       Section(header: Text("Choose nearest region")) {
-         ForEach(BuildRegion.all(), id: \.self) { value in
-           HStack {
-             value.fullTitleLabel()
-             Spacer()
-             Checkmark(checked: currentValue == value)
-           }
-           .contentShape(Rectangle())
-           .onTapGesture {
-             currentValue = value
-             nav.navController.popViewController(animated: true)
+     GeometryReader { proxy in
+       let compact = proxy.size.width < 400
+       List {
+         Section(header: Text("Choose nearest region")) {
+           ForEach(BuildRegion.envAvailable(), id: \.self) { value in
+             HStack {
+               if compact {
+                 value.fullTitleLabel()
+               } else {
+                 value.largeTitleLabel()
+               }
+               Spacer()
+               Checkmark(checked: currentValue == value)
+             }
+             .contentShape(Rectangle())
+             .onTapGesture {
+               currentValue = value
+               nav.navController.popViewController(animated: true)
+             }
            }
          }
        }
@@ -63,7 +70,6 @@ struct BuildRegionPickerView: View {
 
 struct BasicMachineSection: View {
   let nspace : Namespace.ID;
-  var footer: String = ""
   
   var body: some View {
     Section(
@@ -74,10 +80,9 @@ struct BasicMachineSection: View {
           Spacer()
         }.padding(.bottom).offset(y: -32)
         HStack {
-          Text("Basic Machine")
+          Text("Machine")
         }
-      },
-      footer: Text(footer)
+      }
     ) {
       Label {
         Text("4 GiB of RAM")
@@ -105,13 +110,7 @@ struct BasicMachineSection: View {
           .foregroundColor(.green)
       }
       Label {
-        Text("5 GiB Main Cloud Disk")
-      } icon: {
-        Image(systemName: "externaldrive.badge.icloud")
-          .foregroundColor(.green)
-      }
-      Label {
-        Text("50 Hours")
+        Text("50 Credits (1 credit/hour)")
       } icon: {
         Image(systemName: "timer")
           .foregroundColor(.green)
@@ -132,9 +131,17 @@ struct BasicMachinePlanView: View {
       
       List {
         BasicMachineSection(nspace: self.nspace)
+        Section(header: Text("Storage")) {
+          Label {
+            Text("5 GiB Main Cloud Disk")
+          } icon: {
+            Image(systemName: "externaldrive.badge.icloud")
+              .foregroundColor(.green)
+          }
+        }
         
         Section(header: Text("Available Regions")) {
-          ForEach(BuildRegion.available()) { region in
+          ForEach(BuildRegion.envAvailable()) { region in
             if compact {
               region.fullTitleLabel()
             } else {
@@ -144,7 +151,7 @@ struct BasicMachinePlanView: View {
         }
         
         Section(header: Text("Price")) {
-          Label("1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").", systemImage: "bag")
+          Label("First month free with Blink+, \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.", systemImage: "bag")
         }
         Section {
           Button(action: {
@@ -173,6 +180,8 @@ struct BuildView: View {
   @Namespace var nspace;
   
   var body: some View {
+    BuildAccountView(nspace: self.nspace)
+//    BuildCreateAccountView(nspace: self.nspace)
 //    if _account.showInfo {
 //      BasicMachinePlanView(nspace: self.nspace)
 //    } else {
@@ -189,17 +198,17 @@ struct BuildView: View {
 //    }
     
     
-    if _account.hasBuildToken {
-      BuildAccountView(nspace: self.nspace)
-    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
-      BuildCreateAccountView(nspace: self.nspace)
-    } else {
-      if _account.showInfo {
-        BasicMachinePlanView(nspace: self.nspace)
-      } else {
-        BuildIntroView(nspace: self.nspace)
-      }
-    }
+//    if _account.hasBuildToken {
+//      BuildAccountView(nspace: self.nspace)
+//    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
+//      BuildCreateAccountView(nspace: self.nspace)
+//    } else {
+//      if _account.showInfo {
+//        BasicMachinePlanView(nspace: self.nspace)
+//      } else {
+//        BuildIntroView(nspace: self.nspace)
+//      }
+//    }
   }
 }
 
@@ -312,16 +321,16 @@ struct BuildIntroView: View {
         VStack(alignment: .leading) {
           Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
           
-          if  _entitlements.earlyAccessFeatures.active {
+          if  !_entitlements.earlyAccessFeatures.active {
 
-            Text("Get Free month to Build")
+            Text("Get a free month to Build")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
 
             Text("Run work environments from all your devices.")
               .font(.system(size: props.h2))
-            Text("[Basic Machine](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+            Text("[Basic plan](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
                 .fixedSize(horizontal: false, vertical: true)
                 .font(.system(size: props.h2))
                 .padding([.bottom])
@@ -361,11 +370,11 @@ struct BuildIntroView: View {
               Spacer()
             }.padding(.bottom).disabled(_purchases.restoreInProgress)
           } else {
-            Text("This is Early Access Blink+ Service")
+            Text("Beta exclusive to Blink+ users")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
-            Text("Run work environments from all your devices.\n1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+            Text("Run work environments from all your devices.\nFirst month free with Blink+,  \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h2))
               .padding([.bottom])
@@ -407,72 +416,92 @@ struct BuildCreateAccountView: View {
   @FocusState private var focusedField: Field?
   
   var body: some View {
-    List {
-      BasicMachineSection(nspace: self.nspace)
-        .onTapGesture {
+    GeometryReader { proxy in
+      let compact = proxy.size.width < 400
+      
+      List {
+        BasicMachineSection(nspace: self.nspace)
+          .onTapGesture {
+            self.focusedField = nil
+          }
+        Section(header: Text("Storage")) {
+          Label {
+            Text("5 GiB Main Cloud Disk")
+          } icon: {
+            Image(systemName: "externaldrive.badge.icloud")
+              .foregroundColor(.green)
+          }
+        }.onTapGesture {
           self.focusedField = nil
         }
-
-      Section(
-        header: Text("Setup your Account"),
-        footer: Text("We will send you verification email.")
-      )
-      {
-        Row(
-          content: {
-            _account.buildRegion.fullTitleLabel()
-          },
-          details: {
-            BuildRegionPickerView(currentValue: $_account.buildRegion)
-          }
+        
+        Section(
+          header: Text("Setup your Account"),
+          footer: Text("We will send you verification email.")
         )
-        Label {
-          self.emailTextField()
-          .focused($focusedField, equals: .email)
-          .textContentType(.emailAddress)
-          .keyboardType(.emailAddress)
-          .submitLabel(.go)
-          .onSubmit {
-            Task {
-              await _account.signup()
+        {
+          Row(
+            content: {
+              Group {
+                if compact {
+                  _account.buildRegion.fullTitleLabel()
+                } else {
+                  _account.buildRegion.largeTitleLabel()
+                }
+              }
+            },
+            details: {
+              BuildRegionPickerView(currentValue: $_account.buildRegion)
             }
+          )
+          Label {
+            self.emailTextField()
+              .focused($focusedField, equals: .email)
+              .textContentType(.emailAddress)
+              .keyboardType(.emailAddress)
+              .submitLabel(.go)
+              .onSubmit {
+                Task {
+                  await _account.signup()
+                }
+              }
+          } icon: {
+            Image(systemName: "envelope.badge")
+              .symbolRenderingMode(_account.emailIsValid ? .monochrome : .multicolor)
           }
-        } icon: {
-          Image(systemName: "envelope.badge")
-            .symbolRenderingMode(_account.emailIsValid ? .monochrome : .multicolor)
         }
-      }
-      Section(footer: VStack {
-        if _account.signupInProgress {
-          HStack {
-            Spacer()
-            ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
-            Spacer()
-          }
-        } else {
-          Button {
-            Task {
-              //          withAnimation {
-              //            self._model.flow = 2
-              //          }
-              await _account.signup()
+        Section(footer: VStack {
+          if _account.signupInProgress {
+            HStack {
+              Spacer()
+              ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
+              Spacer()
             }
-          } label: {
-            Text("Sign up")
-              .font(.system(size: 20, weight: .bold))
-              .frame(maxWidth: .infinity, maxHeight: .infinity)
-          }.foregroundColor(Color("BuildColor"))
-            .buttonStyle(.plain)
-            .frame(minHeight: 70, maxHeight: 70)
-            .padding([.top, .bottom])
-            .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
+          } else {
+            Button {
+              Task {
+                //          withAnimation {
+                //            self._model.flow = 2
+                //          }
+                await _account.signup()
+              }
+            } label: {
+              Text("Sign up")
+                .font(.system(size: 20, weight: .bold))
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
+            }.foregroundColor(Color("BuildColor"))
+              .buttonStyle(.plain)
+              .frame(minHeight: 70, maxHeight: 70)
+              .padding([.top, .bottom])
+              .opacity(self.idiom == .phone && self.focusedField == .email ? 0 : 1)
+          }
+        }) {
+          EmptyView()
+          //        Button(
+          //          action: { _account.openTermsOfService() },
+          //          label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) }
+          //        )
         }
-      }) {
-        EmptyView()
-//        Button(
-//          action: { _account.openTermsOfService() },
-//          label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) }
-//        )
       }
     }
     .disabled(_purchases.purchaseInProgress || _purchases.restoreInProgress || _account.signupInProgress)
@@ -605,7 +634,7 @@ struct BuildAccountView: View {
             Image("build-logo")
               .matchedGeometryEffect(id: "logo", in: self.nspace)
               .offset(x: -10, y: -32)
-            Text("Account \(proxy.size.width)")
+            Text("Account")
           })
           {
             Label {
@@ -631,16 +660,16 @@ struct BuildAccountView: View {
               BuildSupportView(email: _model.email)
             }
           }
-          Section {
-            if FeatureFlags.blinkBuildStaging {
-              Toggle(isOn: $_model.isStagingEnv, label: {
-                Label("Staging env", systemImage: "wrench.and.screwdriver")
-              })
-            }
+          Section(header: Text("Danger Zone")) {
+//            if FeatureFlags.blinkBuildStaging {
+//              Toggle(isOn: $_model.isStagingEnv, label: {
+//                Label("Staging env", systemImage: "wrench.and.screwdriver")
+//              })
+//            }
             Button {
               self.showDeleteAccountAlert = true
             } label: {
-              Label("Delete Account", systemImage: "hand.raised")
+              Label("Delete Account", systemImage: "hand.raised").foregroundColor(.orange)
             }
             .alert(isPresented: $showDeleteAccountAlert, content: {
               Alert(
