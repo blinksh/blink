@@ -81,7 +81,15 @@ extension BuildRegion {
     })
   }
   
-  static func available() -> [BuildRegion] {
+  static func envAvailable() -> [BuildRegion] {
+    if FeatureFlags.blinkBuildStaging {
+      return all()
+    } else {
+      return productionAvailable()
+    }
+  }
+  
+  static func productionAvailable() -> [BuildRegion] {
     [
       .usEast1,
       .usWest1,
@@ -96,7 +104,7 @@ extension BuildRegion {
       .europe1,
       .usEast0,
       .europe0,
-      .test,
+//      .test,
     ]
   }
   
