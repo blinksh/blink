@@ -110,6 +110,7 @@ struct BasicMachinePlanView: View {
   @ObservedObject private var _account: BuildAccountModel = .shared
   
   let nspace : Namespace.ID;
+  var showClose = true
   
   var body: some View {
     GeometryReader { proxy in
@@ -147,10 +148,12 @@ struct BasicMachinePlanView: View {
       }
     }
     .toolbar(content: {
-      Button(action: {
+      if showClose {
+        Button(action: {
           _account.showPlanInfo = false
-      }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
-      .symbolRenderingMode(.hierarchical)
+        }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
+        .symbolRenderingMode(.hierarchical)
+      }
     })
     .tint(.green)
     .onDisappear {

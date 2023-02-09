@@ -37,6 +37,7 @@ struct PlansView: View {
   
   @ObservedObject private var _model: PurchasesUserModel = .shared
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @Namespace private var nspace;
   
   var body: some View {
     List {
@@ -82,6 +83,16 @@ struct PlansView: View {
             } icon: {
               Image(systemName: "plus")
                 .foregroundColor(.green)
+            }
+            Row(content: {
+              Label {
+                Text("Blink Build")
+              } icon: {
+                Image(systemName: "hammer.circle")
+                  .foregroundColor(.green)
+              }
+            }) {
+              BasicMachinePlanView(nspace: nspace, showClose: false)
             }
             Label {
               Text("Support Blink development")
