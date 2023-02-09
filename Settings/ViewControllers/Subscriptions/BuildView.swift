@@ -32,41 +32,27 @@
 
 import SwiftUI
 import RevenueCat
-import Charts
 
-struct BuildRegionPickerView: View {
-   @Binding var currentValue: BuildRegion
-   @EnvironmentObject var nav: Nav
-
-   var body: some View {
-     GeometryReader { proxy in
-       let compact = proxy.size.width < 400
-       List {
-         Section(header: Text("Choose nearest region")) {
-           ForEach(BuildRegion.envAvailable(), id: \.self) { value in
-             HStack {
-               if compact {
-                 value.fullTitleLabel()
-               } else {
-                 value.largeTitleLabel()
-               }
-               Spacer()
-               Checkmark(checked: currentValue == value)
-             }
-             .contentShape(Rectangle())
-             .onTapGesture {
-               currentValue = value
-               nav.navController.popViewController(animated: true)
-             }
-           }
-         }
-       }
-     }
-     .listStyle(InsetGroupedListStyle())
-     .navigationTitle("Build Region")
-     .tint(Color("BuildColor"))
-   }
- }
+struct BuildView: View {
+  @ObservedObject private var _purchases: PurchasesUserModel = .shared
+  @ObservedObject private var _account: BuildAccountModel = .shared
+  @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @Namespace var nspace;
+  
+  var body: some View {
+    if _account.hasBuildToken {
+      BuildAccountView(nspace: self.nspace)
+    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
+      BuildCreateAccountView(nspace: self.nspace)
+    } else {
+      if _account.showPlanInfo {
+        BasicMachinePlanView(nspace: self.nspace)
+      } else {
+        BuildIntroView(nspace: self.nspace)
+      }
+    }
+  }
+}
 
 struct BasicMachineSection: View {
   let nspace : Namespace.ID;
@@ -169,50 +155,6 @@ struct BasicMachinePlanView: View {
     .tint(.green)
     .onDisappear {
       _account.showPlanInfo = false
-    }
-  }
-}
-
-struct BuildView: View {
-  @ObservedObject private var _purchases: PurchasesUserModel = .shared
-  @ObservedObject private var _account: BuildAccountModel = .shared
-  @ObservedObject private var _entitlements: EntitlementsManager = .shared
-  @Namespace var nspace;
-  
-  var body: some View {
-//    BuildAccountView(nspace: self.nspace)
-//    BuildCreateAccountView(nspace: self.nspace)
-//    if _account.showInfo {
-//      BasicMachinePlanView(nspace: self.nspace)
-//    } else {
-//      BuildIntroView(nspace: self.nspace)
-//    }
-//    BuildAccountView(nspace: self.nspace)
-    
-//    if _account.flow == 0 {
-//      BuildCreateAccountView(nspace: self.nspace)
-//    } else {
-//      BuildAccountView(nspace: self.nspace)
-//    }
-//    }
-//      BuildIntroView(nspace: self.nspace)
-//    } else if _model.flow == 1 {
-//      BuildCreateAccountView(nspace: self.nspace)
-//    } else {
-//      BuildAccountView(nspace: self.nspace)
-//    }
-    
-    
-    if _account.hasBuildToken {
-      BuildAccountView(nspace: self.nspace)
-    } else if _entitlements.build.active && !_purchases.purchaseInProgress {
-      BuildCreateAccountView(nspace: self.nspace)
-    } else {
-      if _account.showPlanInfo {
-        BasicMachinePlanView(nspace: self.nspace)
-      } else {
-        BuildIntroView(nspace: self.nspace)
-      }
     }
   }
 }
@@ -326,7 +268,7 @@ struct BuildIntroView: View {
         VStack(alignment: .leading) {
           Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
           
-          if  !_entitlements.earlyAccessFeatures.active {
+          if  _entitlements.earlyAccessFeatures.active {
 
             Text("Get a free month to Build")
               .fixedSize(horizontal: false, vertical: true)
@@ -430,12 +372,6 @@ struct BuildCreateAccountView: View {
           HStack {
             Spacer()
             Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
-//              .onTapGesture {
-//                withAnimation {
-//                  _account.showTour = true
-//                  _account.flow = 1
-//                }
-//              }
             Spacer()
           }
           ProgressView().frame(minHeight: 70, maxHeight: 70).padding([.top, .bottom])
@@ -505,9 +441,6 @@ struct BuildCreateAccountView: View {
             } else {
               Button {
                 Task {
-                  //          withAnimation {
-                  //            self._model.flow = 2
-                  //          }
                   await _account.signup()
                 }
               } label: {
@@ -663,12 +596,15 @@ struct BuildAccountView: View {
           .padding(.bottom)
           .padding(.bottom)
           
-        }.tint(.green)
-        .background(
+        }
+        .tint(.green)
+        .navigationTitle("")
+        .background(   
           Rectangle()
             .foregroundColor(Color(UIColor.systemBackground))
             .ignoresSafeArea(.all)
         )
+        
     } else {
       GeometryReader { proxy in
         let compact = proxy.size.width < 400
@@ -789,9 +725,41 @@ struct BuildSupportView: View {
               Spacer()
             }
           }
-//        Spacer().background(content: { Image("iso-grid") })
-//        Image("iso-grid").fixedSize().scaledToFit()
       }.ignoresSafeArea(edges: [.leading, .bottom, .trailing]).tint(.green)
     }
+  }
+}
+
+struct BuildRegionPickerView: View {
+  @Binding var currentValue: BuildRegion
+  @EnvironmentObject var nav: Nav
+  
+  var body: some View {
+    GeometryReader { proxy in
+      let compact = proxy.size.width < 400
+      List {
+        Section(header: Text("Choose nearest region")) {
+          ForEach(BuildRegion.envAvailable(), id: \.self) { value in
+            HStack {
+              if compact {
+                value.fullTitleLabel()
+              } else {
+                value.largeTitleLabel()
+              }
+              Spacer()
+              Checkmark(checked: currentValue == value)
+            }
+            .contentShape(Rectangle())
+            .onTapGesture {
+              currentValue = value
+              nav.navController.popViewController(animated: true)
+            }
+          }
+        }
+      }
+    }
+    .listStyle(InsetGroupedListStyle())
+    .navigationTitle("Build Region")
+    .tint(Color("BuildColor"))
   }
 }
