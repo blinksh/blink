@@ -135,11 +135,7 @@ class PurchasesUserModel: ObservableObject {
       
       if EntitlementsManager.shared.build.active {
         Task {
-          do {
-            try await BuildAccountModel.shared.singin();
-          } catch {
-            self.alertErrorMessage = error.localizedDescription
-          }
+          await BuildAccountModel.shared.trySignIn();
         }
       }
     })
