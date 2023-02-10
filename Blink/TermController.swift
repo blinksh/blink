@@ -470,7 +470,7 @@ extension TermController: SuspendableSession {
       andParams: _sessionParams)
     
     if WhatsNewInfo.mustDisplayVersionPrompt() {
-      _termDevice.writeOutLn(WhatsNewInfo.Prompt)
+      _termDevice.writeOutLn(WhatsNewInfo.prompt(viewWidth: view.bounds.width))
       WhatsNewInfo.versionPromptDisplayed()
     }
     
