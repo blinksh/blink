@@ -96,6 +96,9 @@ class PurchasesUserModel: ObservableObject {
       }
       
       await BuildAccountModel.shared.trySignIn()
+      withAnimation {
+        self.purchaseInProgress = false
+      }
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
