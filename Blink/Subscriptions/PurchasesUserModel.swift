@@ -95,7 +95,7 @@ class PurchasesUserModel: ObservableObject {
         return
       }
       
-      try await BuildAccountModel.shared.trySignIn()
+      await BuildAccountModel.shared.trySignIn()
     } catch {
       self.alertErrorMessage = error.localizedDescription
     }
