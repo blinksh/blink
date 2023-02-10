@@ -35,8 +35,12 @@ import Foundation
 
 class WhatsNewInfo {
   // https://stackoverflow.com/questions/4842424/list-of-ansi-color-escape-sequences
-  static var Prompt: String {
-    "\u{1B}[30;48;5;83m New Blink \(Version)! \u{1B}[0m\u{1B}[38;5;83m\u{1B}[0m Check \"whatsnew\""
+  static func prompt(viewWidth: CGFloat) -> String {
+    if viewWidth < 400 {
+      return "\u{1B}[30;48;5;83m New Blink \(Version). Try Blink Build! \u{1B}[0m\u{1B}[38;5;83m\u{1B}[0m\nCheck \"whatsnew\""
+    } else {
+      return "\u{1B}[30;48;5;83m New Blink \(Version). Try Blink Build! \u{1B}[0m\u{1B}[38;5;83m\u{1B}[0m Check \"whatsnew\""
+    }
   }
   static private let MaxDisplayCount = 5
   static private let LastVersionKey = "LastVersionDisplay"
@@ -46,7 +50,7 @@ class WhatsNewInfo {
   private init() {}
 
   static func mustDisplayVersionPrompt() -> Bool {
-//    return true
+    return true
     let version = Version
     let defaults = UserDefaults.standard
     //defaults.set("", forKey: LastVersionKey)
