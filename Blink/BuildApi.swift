@@ -126,10 +126,8 @@ enum BuildAPI {
   }
   
   private static func _baseURL() -> String {
-    if FeatureFlags.blinkBuildStaging {
-      if FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildStagingMarkURL()!.path) {
-        return "https://raw.api.blink.build"
-      }
+    if FileManager.default.fileExists(atPath: BlinkPaths.blinkBuildStagingMarkURL()!.path) {
+      return "https://raw.api.blink.build"
     }
     return "https://api.blink.build"
   }
