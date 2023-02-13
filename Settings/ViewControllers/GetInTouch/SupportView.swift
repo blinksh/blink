@@ -31,6 +31,7 @@
 
 
 import SwiftUI
+import RevenueCat
 
 struct SupportView: View {
     var body: some View {
@@ -79,6 +80,14 @@ struct SupportView: View {
             
             Spacer()
             Text("Discussions").foregroundColor(.secondary)
+          }
+        }
+        
+        Section {
+          Button {
+            UIPasteboard.general.string = Purchases.shared.appUserID
+          } label: {
+            Label("Copy User ID", systemImage: "doc.on.clipboard")
           }
         }
       }
