@@ -56,7 +56,7 @@ var cmds = [
     ("<CONTAINER>", "Start named container"),
     ("node", "Start node container"),
     ("postgres", "Start postgres container"),
-    ("ansible", "Start ansible tools"),
+//    ("ansible", "Start ansible tools"),
     ("itzg/minecraft-server", "Start minecraft server"),
   ]),
   Cmd(text: "machine", args: [
@@ -67,7 +67,8 @@ var cmds = [
     ("add-device", "Add **this** device to running machine")
   ]),
   Cmd(text: "mosh", args: [
-    ("[<CONTAINER>]", "Mosh into container. Default container is htools")
+    ("[<CONTAINER>]", "Mosh into container. Default container is htools"),
+    ("ruby -c irb", "Start ruby container and mosh to irb")
   ]),
   Cmd(text: "down", args: [("<CONTAINER>", "Stop container")]),
   
@@ -79,7 +80,7 @@ var short_cmds = [
     ("<NAME>", "Start named container"),
     ("node", "Start node container"),
     ("postgres", "Start postgres container"),
-    ("ansible", "Start ansible tools"),
+//    ("ansible", "Start ansible tools"),
   ]),
   Cmd(text: "machine", args: [
     ("<cmd>", "Manage your **build** machine"),
@@ -89,7 +90,8 @@ var short_cmds = [
     ("add-device", "Add **this** device to running machine")
   ]),
   Cmd(text: "mosh", args: [
-    ("[<NAME>]", "Mosh into container. Default container is htools")
+    ("[<NAME>]", "Mosh into container. Default container is htools"),
+    ("ruby -c irb", "Start ruby container and mosh to **irb**")
   ]),
   Cmd(text: "down", args: [("<NAME>", "Stop container")]),
   

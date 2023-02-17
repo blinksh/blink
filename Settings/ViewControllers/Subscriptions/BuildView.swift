@@ -113,51 +113,87 @@ struct BasicMachinePlanView: View {
   var showClose = true
   
   var body: some View {
-    GeometryReader { proxy in
-      let compact = proxy.size.width < 400
-      
-      List {
-        BasicMachineSection(nspace: self.nspace)
-        Section(header: Text("Storage")) {
-          Label {
-            Text("5 GiB Main Cloud Disk")
-          } icon: {
-            Image(systemName: "externaldrive.badge.icloud")
-              .foregroundColor(.green)
-          }
-        }
+    if _account.showTour {
+      VStack {
+        SizedCmdListView(nspace: self.nspace)
+          .padding([.leading])
         
-        Section(header: Text("Available Regions")) {
-          ForEach(BuildRegion.envAvailable()) { region in
-            if compact {
-              region.fullTitleLabel()
-            } else {
-              region.largeTitleLabel()
+        Button {
+          withAnimation {
+            _account.showTour = false
+          }
+        } label: {
+          Text("Got it")
+            .font(.system(size: 20, weight: .bold))
+        }
+        .padding(.bottom)
+        .padding(.bottom)
+        .padding(.bottom)
+        
+      }
+      .tint(.green)
+      .navigationTitle("")
+      .background(
+        Rectangle()
+          .foregroundColor(Color(UIColor.systemBackground))
+          .ignoresSafeArea(.all)
+      )
+      
+    } else {
+      GeometryReader { proxy in
+        let compact = proxy.size.width < 400
+        
+        List {
+          BasicMachineSection(nspace: self.nspace)
+          Section(header: Text("Storage")) {
+            Label {
+              Text("5 GiB Main Cloud Disk")
+            } icon: {
+              Image(systemName: "externaldrive.badge.icloud")
+                .foregroundColor(.green)
             }
           }
+          
+          Section(header: Text("Available Regions")) {
+            ForEach(BuildRegion.envAvailable()) { region in
+              if compact {
+                region.fullTitleLabel()
+              } else {
+                region.largeTitleLabel()
+              }
+            }
+          }
+          
+          Section(header: Text("Price")) {
+            Label("First month free with Blink+, \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.", systemImage: "bag")
+          }
+          
+          Section() {
+            Button(action: {
+              withAnimation {
+                _account.showTour.toggle()
+              }
+            }, label: { Label("Quick Tour", systemImage: "questionmark") })
+          }
+          Section {
+            Button(action: {
+              _account.openTermsOfService()
+            }, label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) })
+          }
         }
-        
-        Section(header: Text("Price")) {
-          Label("First month free with Blink+, \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.", systemImage: "bag")
-        }
-        Section {
+      }
+      .toolbar(content: {
+        if showClose {
           Button(action: {
-            _account.openTermsOfService()
-          }, label:  { Label("Terms of Service", systemImage: "link").foregroundColor(.green) })
+            _account.showPlanInfo = false
+          }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
+          .symbolRenderingMode(.hierarchical)
         }
+      })
+      .tint(.green)
+      .onDisappear {
+        _account.showPlanInfo = false
       }
-    }
-    .toolbar(content: {
-      if showClose {
-        Button(action: {
-          _account.showPlanInfo = false
-        }, label:  { Label("", systemImage: "xmark.circle").foregroundColor(.green) })
-        .symbolRenderingMode(.hierarchical)
-      }
-    })
-    .tint(.green)
-    .onDisappear {
-      _account.showPlanInfo = false
     }
   }
 }
