@@ -58,10 +58,14 @@ class WhatsNewInfo {
 
     let displayCount = defaults.integer(forKey: CountVersionDisplayKey)
     if let lastVersion = defaults.string(forKey: LastVersionKey) {
-      return (version != lastVersion) && (displayCount < MaxDisplayCount)
+      return (displayCount < MaxDisplayCount) && !versionsAreEqualIgnoringPatch(v1: version, v2: lastVersion)
     } else {
       return true
     }
+  }
+  
+  static func versionsAreEqualIgnoringPatch(v1: String, v2: String) -> Bool {
+    v1.split(separator: ".").prefix(upTo: 2) == v2.split(separator: ".").prefix(upTo: 2)
   }
 
   static func versionPromptDisplayed() {
