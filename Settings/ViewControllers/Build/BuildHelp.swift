@@ -56,7 +56,7 @@ var cmds = [
     ("<CONTAINER>", "Start named container"),
     ("node", "Start node container"),
     ("postgres", "Start postgres container"),
-    ("asnible", "Start ansible tools"),
+    ("ansible", "Start ansible tools"),
     ("itzg/minecraft-server", "Start minecraft server"),
   ]),
   Cmd(text: "machine", args: [
@@ -79,7 +79,7 @@ var short_cmds = [
     ("<NAME>", "Start named container"),
     ("node", "Start node container"),
     ("postgres", "Start postgres container"),
-    ("asnible", "Start ansible tools"),
+    ("ansible", "Start ansible tools"),
   ]),
   Cmd(text: "machine", args: [
     ("<cmd>", "Manage your **build** machine"),

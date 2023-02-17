@@ -79,7 +79,7 @@ struct SettingsView: View {
           }
           Row {
             HStack {
-              Label("Build", systemImage: "hammer.circle")
+              Label("Build Beta", systemImage: "hammer.circle")
               Spacer()
               Text("") // TODO: show status?
                 .foregroundColor(.secondary)

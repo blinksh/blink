@@ -86,7 +86,7 @@ struct PlansView: View {
             }
             Row(content: {
               Label {
-                Text("Blink Build")
+                Text("Blink Build Beta")
               } icon: {
                 Image(systemName: "hammer.circle")
                   .foregroundColor(.green)
