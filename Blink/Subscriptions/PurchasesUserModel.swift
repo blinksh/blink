@@ -80,6 +80,11 @@ class PurchasesUserModel: ObservableObject {
       return
     }
     
+    guard PublishingOptions.current.contains(.appStore) else {
+      self.alertErrorMessage = "Available only in App Store"
+      return
+    }
+    
     withAnimation {
       self.purchaseInProgress = true
     }

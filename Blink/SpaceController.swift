@@ -148,7 +148,7 @@ class SpaceController: UIViewController {
   
   @objc private func _setupAppearance() {
     self.view.tintColor = .cyan
-    switch BKDefaults.keyboardStyle() {
+    switch BLKDefaults.keyboardStyle() {
     case .light:
       overrideUserInterfaceStyle = .light
     case .dark:
@@ -868,8 +868,8 @@ extension SpaceController {
   }
   
   func _toggleKeyCast() {
-    BKDefaults.setKeycasts(!BKDefaults.isKeyCastsOn())
-    BKDefaults.save()
+    BLKDefaults.setKeycasts(!BLKDefaults.isKeyCastsOn())
+    BLKDefaults.save()
   }
   
   func _activeSessions() -> [UISceneSession] {

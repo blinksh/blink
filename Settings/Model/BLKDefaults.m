@@ -29,7 +29,7 @@
 //
 ////////////////////////////////////////////////////////////////////////////////
 
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "BKMiniLog.h"
 #import "BKFont.h"
 #import "UIDevice+DeviceName.h"
@@ -37,11 +37,11 @@
 #import "LayoutManager.h"
 
 
-BKDefaults *defaults;
+BLKDefaults *defaults;
 
 NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
 
-@implementation BKDefaults
+@implementation BLKDefaults
 
 #pragma mark - NSCoding
 
@@ -118,7 +118,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
                                                        error:&error];
   
   if (error || !data) {
-    NSLog(@"[BKDefaults] Failed to archive: %@", error);
+    NSLog(@"[BLKDefaults] Failed to archive: %@", error);
     return NO;
   }
   
@@ -127,18 +127,18 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
                             error:&error];
   
   if (error || !result) {
-    NSLog(@"[BKDefaults] Failed to save data to file: %@", error);
+    NSLog(@"[BLKDefaults] Failed to save data to file: %@", error);
     return NO;
   }
   
-  [BKDefaults saveGlobalSSHConfig];
+  [BLKDefaults saveGlobalSSHConfig];
   
   return result;
 }
 
 
 + (void)loadDefaults {
-  defaults = [[BKDefaults alloc] init];
+  defaults = [[BLKDefaults alloc] init];
   
   NSError *error = nil;
   NSData *data = [NSData dataWithContentsOfFile:[BlinkPaths blinkDefaultsFile]
@@ -146,13 +146,30 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
                                           error:&error];
   
   if (error || !data) {
-    NSLog(@"[BKDefaults] Failed to load data: %@", error);
+    NSLog(@"[BLKDefaults] Failed to load data: %@", error);
   } else {
-    BKDefaults * result = [NSKeyedUnarchiver unarchivedObjectOfClass:[BKDefaults class]
+    BLKDefaults * result = [NSKeyedUnarchiver unarchivedObjectOfClass:[BLKDefaults class]
                                                             fromData:data
                                                                error:&error];
     if (error || !result) {
-      NSLog(@"[BKDefaults] Failed to unarchive: %@", error);
+      NSLog(@"[BLKDefaults] Failed to unarchive: %@", error);
+//      CFStringRef str = CFStringCreateWithBytesNoCopy(NULL, data.bytes, data.length, kCFStringEncodingASCII, NO, kCFAllocatorNull);
+//      CFRange range = CFStringFind(str, CFSTR("classnameX$classesZBKDefaults"), 0);
+//      CFRelease(str);
+//      if (range.location > 0 && range.length > 0) {
+      
+      NSLog(@"[BLKDefaults] try again with BKDefaults replacement");
+      error = nil;
+      [NSKeyedUnarchiver setClass:[BLKDefaults class] forClassName:@"BKDefaults"];
+      result = [NSKeyedUnarchiver unarchivedObjectOfClass:[BLKDefaults class]
+                                                              fromData:data
+                                                                 error:&error];
+      if (error || ! result) {
+        NSLog(@"[BLKDefaults] Failed again to unarchive with BKDefaults replacement: %@", error);
+      } else {
+        NSLog(@"[BLKDefaults] loaded with BKDefaults replacement");
+        defaults = result;
+      }
     } else {
       defaults = result;
     }
@@ -193,7 +210,7 @@ NSString *const BKAppearanceChanged = @"BKAppearanceChanged";
   }
 
   if(!defaults.globalSSHConfig) {
-    [BKDefaults saveGlobalSSHConfig];
+    [BLKDefaults saveGlobalSSHConfig];
   }
 }
 

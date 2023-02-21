@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKAppearanceViewController.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermView.h"
@@ -126,58 +126,58 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 - (void)loadDefaultValues
 {
-  NSString *selectedThemeName = [BKDefaults selectedThemeName];
+  NSString *selectedThemeName = [BLKDefaults selectedThemeName];
   BKTheme *selectedTheme = [BKTheme withName:selectedThemeName];
   if (selectedTheme != nil) {
     _selectedThemeIndexPath = [NSIndexPath indexPathForRow:[[BKTheme all] indexOfObject:selectedTheme] inSection:BKAppearance_Themes];
   }
-  NSString *selectedFontName = [BKDefaults selectedFontName];
+  NSString *selectedFontName = [BLKDefaults selectedFontName];
   BKFont *selectedFont = [BKFont withName:selectedFontName];
   if (selectedFont != nil) {
     NSInteger row = [[BKFont all] indexOfObject:selectedFont];
     // User have deleted the font, so we set it back to default
     if (row == NSNotFound) {
-      [BKDefaults setFontName:@"Source Code Pro"]; // TODO get it right
-      selectedFontName = [BKDefaults selectedFontName];
+      [BLKDefaults setFontName:@"Source Code Pro"]; // TODO get it right
+      selectedFontName = [BLKDefaults selectedFontName];
       selectedFont = [BKFont withName:selectedFontName];
       row = [[BKFont all] indexOfObject:selectedFont];
     }
     _selectedFontIndexPath = [NSIndexPath indexPathForRow:row inSection:BKAppearance_Fonts];
   }
-  _cursorBlinkValue = [BKDefaults isCursorBlink];
-  _boldAsBrightValue = [BKDefaults isBoldAsBright];
-  _enableBoldValue = [BKDefaults enableBold];
-  _alternateAppIconValue = [BKDefaults isAlternateAppIcon];
-  _defaultLayoutModeValue = BKDefaults.layoutMode;
-  _overscanCompensationValue = BKDefaults.overscanCompensation;
-  _keyboardStyleValue = BKDefaults.keyboardStyle;
-  _keyCastsValue = [BKDefaults isKeyCastsOn];
+  _cursorBlinkValue = [BLKDefaults isCursorBlink];
+  _boldAsBrightValue = [BLKDefaults isBoldAsBright];
+  _enableBoldValue = [BLKDefaults enableBold];
+  _alternateAppIconValue = [BLKDefaults isAlternateAppIcon];
+  _defaultLayoutModeValue = BLKDefaults.layoutMode;
+  _overscanCompensationValue = BLKDefaults.overscanCompensation;
+  _keyboardStyleValue = BLKDefaults.keyboardStyle;
+  _keyCastsValue = [BLKDefaults isKeyCastsOn];
 }
 
 - (void)saveDefaultValues
 {
   if (_fontSizeField.text != nil && ![_fontSizeField.text isEqualToString:@""]) {
-    [BKDefaults setFontSize:[NSNumber numberWithInt:_fontSizeField.text.intValue]];
+    [BLKDefaults setFontSize:[NSNumber numberWithInt:_fontSizeField.text.intValue]];
   }
   if (_selectedFontIndexPath != nil) {
-    [BKDefaults setFontName:[[[BKFont all] objectAtIndex:_selectedFontIndexPath.row] name]];
+    [BLKDefaults setFontName:[[[BKFont all] objectAtIndex:_selectedFontIndexPath.row] name]];
   }
   if (_selectedThemeIndexPath != nil) {
-    [BKDefaults setThemeName:[[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row] name]];
+    [BLKDefaults setThemeName:[[[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row] name]];
   }
   
   _keyboardStyleValue = [self _keyboardStyleFromIndex:_keyboardStyleSegmentedControl.selectedSegmentIndex];
   
-  [BKDefaults setCursorBlink:_cursorBlinkValue];
-  [BKDefaults setBoldAsBright:_boldAsBrightValue];
-  [BKDefaults setAlternateAppIcon:_alternateAppIconValue];
-  [BKDefaults setEnableBold: _enableBoldValue];
-  [BKDefaults setLayoutMode:_defaultLayoutModeValue];
-  [BKDefaults setOversanCompensation:_overscanCompensationValue];
-  [BKDefaults setKeyboardStyle:_keyboardStyleValue];
-  [BKDefaults setKeycasts:_keyCastsValue];
+  [BLKDefaults setCursorBlink:_cursorBlinkValue];
+  [BLKDefaults setBoldAsBright:_boldAsBrightValue];
+  [BLKDefaults setAlternateAppIcon:_alternateAppIconValue];
+  [BLKDefaults setEnableBold: _enableBoldValue];
+  [BLKDefaults setLayoutMode:_defaultLayoutModeValue];
+  [BLKDefaults setOversanCompensation:_overscanCompensationValue];
+  [BLKDefaults setKeyboardStyle:_keyboardStyleValue];
+  [BLKDefaults setKeycasts:_keyCastsValue];
 
-  [BKDefaults saveDefaults];
+  [BLKDefaults saveDefaults];
   [[NSNotificationCenter defaultCenter]
     postNotificationName:BKAppearanceChanged
                   object:self];
@@ -340,16 +340,16 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 0) {
     _fontSizeField = [cell viewWithTag:FONT_SIZE_FIELD_TAG];
     _fontSizeStepper = [cell viewWithTag:FONT_SIZE_STEPPER_TAG];
-    if ([BKDefaults selectedFontSize] != nil) {
-      [_fontSizeStepper setValue:[BKDefaults selectedFontSize].integerValue];
-      _fontSizeField.text = [NSString stringWithFormat:@"%@ px", [BKDefaults selectedFontSize]];
+    if ([BLKDefaults selectedFontSize] != nil) {
+      [_fontSizeStepper setValue:[BLKDefaults selectedFontSize].integerValue];
+      _fontSizeField.text = [NSString stringWithFormat:@"%@ px", [BLKDefaults selectedFontSize]];
     } else {
       _fontSizeField.placeholder = @"";
     }
   } else if (indexPath.section == BKAppearance_FontSize && indexPath.row == 1) {
     _externalDisplayFontSizeField = [cell viewWithTag:EXTERNAL_DISPLAY_FONT_SIZE_FIELD_TAG];
     _externalDisplayFontSizeStepper = [cell viewWithTag:EXTERNAL_DISPLAY_FONT_SIZE_STEPPER_TAG];
-    NSNumber *fontSize = [BKDefaults selectedExternalDisplayFontSize];
+    NSNumber *fontSize = [BLKDefaults selectedExternalDisplayFontSize];
     if (fontSize != nil) {
       [_externalDisplayFontSizeStepper setValue:fontSize.integerValue];
       _externalDisplayFontSizeField.text = [NSString stringWithFormat:@"%@ px", fontSize];
@@ -482,7 +482,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKTheme *theme = [[BKTheme all] objectAtIndex:_selectedThemeIndexPath.row];
-      [BKDefaults setThemeName:[theme name]];
+      [BLKDefaults setThemeName:[theme name]];
       [_termView reloadWith:nil];
     }
   } else if (indexPath.section == BKAppearance_Fonts) {
@@ -497,7 +497,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
       [tableView deselectRowAtIndexPath:indexPath animated:YES];
       [[tableView cellForRowAtIndexPath:indexPath] setAccessoryType:UITableViewCellAccessoryCheckmark];
       BKFont *font = [[BKFont all] objectAtIndex:_selectedFontIndexPath.row];
-      [BKDefaults setFontName:[font name]];
+      [BLKDefaults setFontName:[font name]];
       [_termView reloadWith:nil];
     }
   }
@@ -578,7 +578,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
     [_termView setWidth:60];
   } else if (sender == _externalDisplayFontSizeStepper) {
     NSInteger size = (NSInteger)_externalDisplayFontSizeStepper.value;
-    [BKDefaults setExternalDisplayFontSize:@(size)];
+    [BLKDefaults setExternalDisplayFontSize:@(size)];
     [_externalDisplayFontSizeField setText:[NSString stringWithFormat:@"%@ px", @(size)]];
   }
 }
@@ -610,7 +610,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 {
   _overscanCompensationValue = [self _overscanCompensationFromIndex:sender.selectedSegmentIndex];
   
-  [BKDefaults applyExternalScreenCompensation:_overscanCompensationValue];
+  [BLKDefaults applyExternalScreenCompensation:_overscanCompensationValue];
 }
 
 
@@ -641,7 +641,7 @@ typedef NS_ENUM(NSInteger, BKAppearanceSections) {
 
 - (void)viewFontSizeChanged:(NSInteger)size
 {
-  [BKDefaults setFontSize:@(size)];
+  [BLKDefaults setFontSize:@(size)];
   _fontSizeStepper.value = size;
   [_fontSizeField setText:[NSString stringWithFormat:@"%@ px", @(size)]];
 }

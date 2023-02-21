@@ -129,7 +129,7 @@ fileprivate class NewKeyObservable: ObservableObject {
   }
   @Published var keyName: String = ""
   @Published var keyBits: UInt32 = 4096
-  @Published var keyComment: String = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+  @Published var keyComment: String = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorMessage = ""
   

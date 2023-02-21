@@ -115,7 +115,7 @@ fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
   @Published var steps: [EarlyFeatureAccessSteps] = []
   
   @Published var keyName = ""
-  @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+  @Published var keyComment = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorMessage = ""
   

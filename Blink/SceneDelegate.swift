@@ -253,7 +253,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     if session.role == .windowExternalDisplay,
       let mainScene = UIApplication.shared.connectedScenes.activeAppScene() {
       
-      if BKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
+      if BLKDefaults.overscanCompensation() == .BKBKOverscanCompensationMirror {
         return
       }
       
@@ -653,7 +653,7 @@ extension SceneDelegate {
       return
     }
     
-    guard BKDefaults.isXCallBackURLEnabled() else {
+    guard BLKDefaults.isXCallBackURLEnabled() else {
       if let xCancelURL = xCancelURL {
         blink_openurl(xCancelURL)
       }
@@ -674,7 +674,7 @@ extension SceneDelegate {
     // Cancel the execution of the command as x-callback-url are not
     // enabled for the user's or the x-callback-url does not have
     // the correct key set
-    guard keyItem == BKDefaults.xCallBackURLKey() else {
+    guard keyItem == BLKDefaults.xCallBackURLKey() else {
       
       if let xErrorURL = xErrorURL {
         blink_openurl(xErrorURL)

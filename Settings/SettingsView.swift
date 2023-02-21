@@ -41,8 +41,8 @@ struct SettingsView: View {
   @State private var _blinkVersion = UIApplication.blinkShortVersion() ?? ""
   @State private var _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
   @State private var _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
-  @State private var _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
-  @State private var _defaultUser = BKDefaults.defaultUserName() ?? ""
+  @State private var _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
+  @State private var _defaultUser = BLKDefaults.defaultUserName() ?? ""
   @ObservedObject private var _entitlements: EntitlementsManager = .shared
   
   var body: some View {
@@ -205,8 +205,8 @@ struct SettingsView: View {
     .onAppear {
       _iCloudSyncOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigiCloud)
       _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
-      _xCallbackUrlOn = BKDefaults.isXCallBackURLEnabled()
-      _defaultUser = BKDefaults.defaultUserName() ?? ""
+      _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
+      _defaultUser = BLKDefaults.defaultUserName() ?? ""
     }
     .listStyle(.grouped)
     .navigationTitle("Settings")
