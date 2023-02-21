@@ -32,7 +32,7 @@
 #import "AppDelegate.h"
 #import "BKiCloudSyncHandler.h"
 #import <BlinkConfig/BlinkPaths.h>
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import <BlinkConfig/BKHosts.h>
 #import <BlinkConfig/BKPubKey.h>
 #import <ios_system/ios_system.h>
@@ -155,7 +155,7 @@ void __setupProcessEnv(void) {
 //}
 
 + (void)reloadDefaults {
-  [BKDefaults loadDefaults];
+  [BLKDefaults loadDefaults];
   [BKPubKey loadIDS];
   [BKHosts loadHosts];
   [AppDelegate _loadProfileVars];
@@ -213,7 +213,7 @@ void __setupProcessEnv(void) {
 
 - (BOOL)application:(UIApplication *)application shouldAllowExtensionPointIdentifier:(NSString *)extensionPointIdentifier {
   if ([extensionPointIdentifier isEqualToString: UIApplicationKeyboardExtensionPointIdentifier]) {
-    return ![BKDefaults disableCustomKeyboards];
+    return ![BLKDefaults disableCustomKeyboards];
   }
   return YES;
 }
@@ -358,7 +358,7 @@ configurationForConnectingSceneSession:(UISceneSession *)connectingSceneSession
 }
 
 - (void)_onScreenConnect {
-  [BKDefaults applyExternalScreenCompensation:BKDefaults.overscanCompensation];
+  [BLKDefaults applyExternalScreenCompensation:BLKDefaults.overscanCompensation];
 }
 
 #pragma mark - UNUserNotificationCenterDelegate

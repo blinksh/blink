@@ -95,7 +95,7 @@ struct NewSEKeyView: View {
 fileprivate class NewSEKeyObservable: ObservableObject {
   
   @Published var keyName = ""
-  @Published var keyComment = "\(BKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
+  @Published var keyComment = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
   
   @Published var errorMessage = ""
   

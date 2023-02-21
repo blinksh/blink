@@ -30,7 +30,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 #import "BKDefaultUserViewController.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 @interface BKDefaultUserViewController ()
 
 @property (nonatomic, weak) IBOutlet UITextField *userNameField;
@@ -41,7 +41,7 @@
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.userNameField.text = [BKDefaults defaultUserName];
+  self.userNameField.text = [BLKDefaults defaultUserName];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -70,8 +70,8 @@
 - (IBAction)unwindForSegue:(UIStoryboardSegue *)unwindSegue towardsViewController:(UIViewController *)subsequentVC{
   if(self.userNameField.text != nil && ![self.userNameField.text isEqualToString:@""]){
     NSString *sanitisedName = [self.userNameField.text stringByReplacingOccurrencesOfString:@" " withString:@""];
-    [BKDefaults setDefaultUserName:sanitisedName];
-    [BKDefaults saveDefaults];
+    [BLKDefaults setDefaultUserName:sanitisedName];
+    [BLKDefaults saveDefaults];
   }
 }
 

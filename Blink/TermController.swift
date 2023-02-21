@@ -130,13 +130,13 @@ class TermController: UIViewController {
   private var _sessionParams: MCPParams = {
     let params = MCPParams()
     
-    params.fontSize = BKDefaults.selectedFontSize()?.intValue ?? 16
-    params.fontName = BKDefaults.selectedFontName()
-    params.themeName = BKDefaults.selectedThemeName()
-    params.enableBold = BKDefaults.enableBold()
-    params.boldAsBright = BKDefaults.isBoldAsBright()
+    params.fontSize = BLKDefaults.selectedFontSize()?.intValue ?? 16
+    params.fontName = BLKDefaults.selectedFontName()
+    params.themeName = BLKDefaults.selectedThemeName()
+    params.enableBold = BLKDefaults.enableBold()
+    params.boldAsBright = BLKDefaults.isBoldAsBright()
     params.viewSize = .zero
-    params.layoutMode = BKDefaults.layoutMode().rawValue
+    params.layoutMode = BLKDefaults.layoutMode().rawValue
     
     return params
   }()
@@ -164,7 +164,7 @@ class TermController: UIViewController {
   convenience init(sceneRole: UISceneSession.Role? = nil) {
     self.init(meta: nil)
     if sceneRole == .windowExternalDisplay {
-      _sessionParams.fontSize = BKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
+      _sessionParams.fontSize = BLKDefaults.selectedExternalDisplayFontSize()?.intValue ?? 24
     }
   }
   
@@ -338,14 +338,14 @@ extension TermController: TermDeviceDelegate {
    */
   func viewDidReceiveBellRing() {
     
-    if BKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
+    if BLKDefaults.isPlaySoundOnBellOn() && _termView.isFocused() {
       AudioServicesPlaySystemSound(1103);
     }
   
     viewNotify(["title": "🔔 \(_termView.title ?? "")", "type": BKNotificationType.bell.rawValue])
     
     // Haptic feedback is only visible from iPhones
-    if UIDevice.current.userInterfaceIdiom == .phone && !BKDefaults.hapticFeedbackOnBellOff() {
+    if UIDevice.current.userInterfaceIdiom == .phone && !BLKDefaults.hapticFeedbackOnBellOff() {
       UINotificationFeedbackGenerator().notificationOccurred(.warning)
     }
   }
@@ -362,8 +362,8 @@ extension TermController: TermDeviceDelegate {
       return
     }
         
-    if notificationType  == .bell && (_termView.isFocused() || !BKDefaults.isNotificationOnBellUnfocusedOn())
-        || notificationType == .osc && !BKDefaults.isOscNotificationsOn() {
+    if notificationType  == .bell && (_termView.isFocused() || !BLKDefaults.isNotificationOnBellUnfocusedOn())
+        || notificationType == .osc && !BLKDefaults.isOscNotificationsOn() {
        return
     }
     

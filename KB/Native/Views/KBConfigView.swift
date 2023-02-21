@@ -54,7 +54,7 @@ private func _bindingRow(_ binding: KeyBinding, title: String, last: String) -> 
 
 struct KBConfigView: View {
   @ObservedObject var config: KBConfig
-  @State private var _enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
+  @State private var _enableCustomKeyboards = !BLKDefaults.disableCustomKeyboards()
 //  @State private var _keyboardConnectPublisher = KBConfigView.keyboardPublisher
 //  @State private var _connectedKeyboardVendorName: String? = GCKeyboard.coalesced?.vendorName
   
@@ -74,8 +74,8 @@ struct KBConfigView: View {
       return self._enableCustomKeyboards
     }, set: { value in
       self._enableCustomKeyboards = value
-      BKDefaults.setDisableCustomKeyboards(!value)
-      BKDefaults.save()
+      BLKDefaults.setDisableCustomKeyboards(!value)
+      BLKDefaults.save()
     })
     return List {
       Section(
@@ -117,9 +117,9 @@ struct KBConfigView: View {
     .navigationBarItems(trailing:
       Button(
         action: {
-          BKDefaults.setDisableCustomKeyboards(false)
-          BKDefaults.save()
-          self._enableCustomKeyboards = !BKDefaults.disableCustomKeyboards()
+          BLKDefaults.setDisableCustomKeyboards(false)
+          BLKDefaults.save()
+          self._enableCustomKeyboards = !BLKDefaults.disableCustomKeyboards()
           self.config.reset()
         },
         label: { Text("Reset") }

@@ -31,7 +31,7 @@
 
 #import "TermView.h"
 #import "TermDevice.h"
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "BKFont.h"
 #import "BKTheme.h"
 #import "TermJS.h"
@@ -482,7 +482,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)displayInput:(NSString *)input {
-  [self _evalJSScript: term_displayInput(input, BKDefaults.isKeyCastsOn)];
+  [self _evalJSScript: term_displayInput(input, BLKDefaults.isKeyCastsOn)];
 }
 
 // Write data to terminal control
@@ -826,7 +826,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 {
   NSMutableArray *script = [[NSMutableArray alloc] init];
   BOOL lockdownMode = [[NSUserDefaults.standardUserDefaults objectForKey:@"LDMGlobalEnabled"] boolValue];
-  BKFont *font = lockdownMode ? nil : [BKFont withName: params.fontName ?: [BKDefaults selectedFontName]];
+  BKFont *font = lockdownMode ? nil : [BKFont withName: params.fontName ?: [BLKDefaults selectedFontName]];
   NSString *fontFamily = font.name;
   NSString *content = font.content;
   if (font && font.isCustom && content) {
@@ -843,14 +843,14 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
     [script addObject:term_setBoldEnabled(params.enableBold)];
     [script addObject:term_setBoldAsBright(params.boldAsBright)];
     
-    NSString *themeContent = [[BKTheme withName: params.themeName ?: [BKDefaults selectedThemeName]] content];
+    NSString *themeContent = [[BKTheme withName: params.themeName ?: [BLKDefaults selectedThemeName]] content];
     if (themeContent) {
       [script addObject:themeContent];
     }
     
-    [script addObject:term_setFontSize(params.fontSize == 0 ? [BKDefaults selectedFontSize] : @(params.fontSize))];
+    [script addObject:term_setFontSize(params.fontSize == 0 ? [BLKDefaults selectedFontSize] : @(params.fontSize))];
     
-    [script addObject: term_setCursorBlink([BKDefaults isCursorBlink])];
+    [script addObject: term_setCursorBlink([BLKDefaults isCursorBlink])];
   }
   [script addObject:@"};"];
 
@@ -863,7 +863,7 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 }
 
 - (void)applyTheme:(NSString *)themeName {
-  NSString *themeContent = [[BKTheme withName: themeName ?: [BKDefaults selectedThemeName]] content];
+  NSString *themeContent = [[BKTheme withName: themeName ?: [BLKDefaults selectedThemeName]] content];
   if (themeContent) {
     NSString *script = [NSString stringWithFormat:@"(function(){%@})();", themeContent];
     [_webView evaluateJavaScript:script completionHandler:nil];

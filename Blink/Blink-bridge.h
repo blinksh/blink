@@ -48,7 +48,7 @@ extern void __thread_ssh_execute_command(const char *command, socket_t in, socke
 extern int ios_dup2(int fd1, int fd2);
 extern void ios_exit(int errorCode) __dead2; // set error code and exits from the thread.
 
-#import "BKDefaults.h"
+#import "BLKDefaults.h"
 #import "UIDevice+DeviceName.h"
 #import "BKHosts.h"
 #import "BlinkPaths.h"

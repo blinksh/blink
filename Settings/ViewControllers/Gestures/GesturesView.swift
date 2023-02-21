@@ -44,7 +44,7 @@ struct GesturesView: View {
       .listStyle(GroupedListStyle())
       .navigationBarTitle("Gestures")
       .onDisappear(perform: {
-        BKDefaults.save()
+        BLKDefaults.save()
       })
     }
 }
@@ -53,11 +53,11 @@ struct GesturesView: View {
 class GesturesConfig: ObservableObject {
   @Published var invertVerticalScroll: Bool {
     didSet {
-      BKDefaults.setInvertedVerticalScroll(invertVerticalScroll)
+      BLKDefaults.setInvertedVerticalScroll(invertVerticalScroll)
     }
   }
   
   init() {
-    invertVerticalScroll = BKDefaults.doInvertVerticalScroll()
+    invertVerticalScroll = BLKDefaults.doInvertVerticalScroll()
   }
 }
