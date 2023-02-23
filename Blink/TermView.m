@@ -52,7 +52,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   return res;
 }
 
-@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate, UIGestureRecognizerDelegate>
+
+@interface TermView () <WKScriptMessageHandler, WKUIDelegate, WKNavigationDelegate, UIGestureRecognizerDelegate, UIEditMenuInteractionDelegate>
 @end
 
 @implementation TermView {
@@ -69,6 +70,8 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   UIView *_parentScrollView;
   NSInteger _touchID;
   NSMutableArray *_touchesArray;
+  
+  id<UIInteraction> _editMenuIteraction;
 }
 
 
@@ -172,6 +175,12 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [configuration.userContentController addScriptMessageHandler:self name:@"interOp"];
 
   _webView = [[SmarterTermInput alloc] initWithFrame:[self webViewFrame] configuration:configuration];
+  _webView.UIDelegate = self;
+  
+  if (@available(iOS 16.0, *)) {
+    _editMenuIteraction = [[UIEditMenuInteraction alloc] initWithDelegate:self];
+    [_webView addInteraction:_editMenuIteraction];
+  }
   
    _gestureInteraction = [[WKWebViewGesturesInteraction alloc] initWithJsScrollerPath:@"t.scrollPort_.scroller_"];
   [_webView addInteraction:_gestureInteraction];
@@ -888,6 +897,158 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
   return YES;
+}
+
+@end
+
+
+@implementation TermView (UIEditMenuInteractionDelegate)
+
+- (UIMenu *)editMenuInteraction:(UIEditMenuInteraction *)interaction menuForConfiguration:(UIEditMenuConfiguration *)configuration suggestedActions:(NSArray<UIMenuElement *> *)suggestedActions  API_AVAILABLE(ios(16.0)){
+  
+  NSMutableArray *actions = [[NSMutableArray alloc] init];
+  
+  if (_hasSelection) {
+    if (_detectedLink) {
+      NSString *urlName = [self _menuTitleFromNSURL: _detectedLink];
+      NSMutableArray *urlActions = [[NSMutableArray alloc] init];
+      
+      [urlActions addObject:[UICommand commandWithTitle:@"Copy full URL" image: [UIImage systemImageNamed:@"doc.on.doc"]
+                                                 action:@selector(copyLink:) propertyList: nil]];
+      
+      [urlActions addObject:[UICommand commandWithTitle:@"Open URL" image: [UIImage systemImageNamed:@"safari"]
+                                                 action:@selector(openLink:) propertyList:nil]];
+      
+      UIMenu *urlMenu = [UIMenu menuWithTitle:urlName image:[UIImage systemImageNamed:@"link"]  identifier:nil options:UIMenuOptionsDisplayInline children: urlActions];
+      
+      
+      [actions addObject:urlMenu];
+      
+    } else {
+      [actions addObject:[UICommand commandWithTitle:@"Search" image: [UIImage systemImageNamed:@"safari"]
+                                              action:@selector(googleSelection:) propertyList:nil]];
+    }
+  } else {
+    NSMutableArray *layoutActions = [[NSMutableArray alloc] init];
+    
+    if ([[DeviceInfo shared] hasCorners]) {
+      BKLayoutMode mode = [self _currentLayoutMode];
+      UICommand *fitCmd = [UICommand commandWithTitle:@"Fit" image: nil
+                                               action:@selector(_setLayoutModeFit) propertyList:nil];
+      //      fitCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      fitCmd.state = mode == BKLayoutModeSafeFit ? UIMenuElementStateOn : UIMenuElementStateOff;
+      UICommand *fillCmd = [UICommand commandWithTitle:@"Fill" image: nil
+                                                action:@selector(_setLayoutModeFill) propertyList:nil];
+      //      fillCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      fillCmd.state = mode == BKLayoutModeFill ? UIMenuElementStateOn : UIMenuElementStateOff;
+      UICommand *coverCmd = [UICommand commandWithTitle:@"Cover" image: nil
+                                                 action:@selector(_setLayoutModeCover) propertyList:nil];
+      coverCmd.state = mode == BKLayoutModeCover ? UIMenuElementStateOn : UIMenuElementStateOff;
+      //      coverCmd.attributes = UIMenuElementAttributesKeepsMenuPresented;
+      UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Mode" image:nil identifier:nil options:UIMenuOptionsDisplayInline children: @[ fitCmd, fillCmd, coverCmd ]];
+      
+      [layoutActions addObject:layoutMenu];
+    }
+    
+    if ([self _isLayoutLocked]) {
+      [layoutActions addObject:[UICommand commandWithTitle:@"Unlock" image: [UIImage systemImageNamed:@"lock.slash"]
+                                                    action:@selector(_changeLayoutLock) propertyList:nil]];
+    } else {
+      [layoutActions addObject:[UICommand commandWithTitle:@"Lock" image: [UIImage systemImageNamed:@"lock"]
+                                                    action:@selector(_changeLayoutLock) propertyList:nil]];
+    }
+    
+    UIMenu *layoutMenu = [UIMenu menuWithTitle:@"Layout" image:[UIImage systemImageNamed:@"squareshape.squareshape.dashed"] identifier:nil options:UIMenuOptionsSingleSelection children:layoutActions];
+    
+    [actions addObject:layoutMenu];
+    
+    UICommand *closeTabCmd = [UICommand commandWithTitle:@"Close Tab" image: [UIImage systemImageNamed:@"xmark.rectangle"]
+                                                  action:@selector(_closeCurrentTab) propertyList:nil];
+    
+    closeTabCmd.attributes = UIMenuElementAttributesDestructive;
+    
+    UIMenu *tabsMenu = [UIMenu menuWithTitle:@"Tab" image:[UIImage systemImageNamed:@"rectangle"] identifier:nil options:UIMenuOptionsSingleSelection children:@[
+      [UICommand commandWithTitle:@"New Tab" image: [UIImage systemImageNamed:@"plus.rectangle"]
+                           action:@selector(_createNewTab) propertyList:nil],
+      [UIMenu menuWithTitle:@"" image:nil identifier:nil options:UIMenuOptionsDisplayInline children:@[closeTabCmd] ]
+      
+    ]];
+    
+    [actions addObject:tabsMenu];
+  }
+  
+  
+  // Copy useful commands, skip cut: and replace paste: with pasteSelection:
+  for (UIMenuElement *elem in suggestedActions) {
+    if ([elem isKindOfClass:[UIMenu class]]) {
+      UIMenu *menu = (UIMenu *)elem;
+      if ([menu.identifier isEqual:UIMenuStandardEdit]) {
+        NSMutableArray *editItems = [[NSMutableArray alloc] init];
+        for (UIMenuElement *editElem in menu.children) {
+          if ([editElem isKindOfClass:[UICommand class]]) {
+            
+            UICommand *cmd = (UICommand *)editElem;
+            if (cmd.action == @selector(cut:)) {
+              continue;
+            } else if (cmd.action == @selector(paste:) && _hasSelection) {
+              [editItems addObject:[UICommand commandWithTitle:@"Paste" image:[UIImage systemImageNamed:@"doc.on.clipboard"] action:@selector(pasteSelection:) propertyList:nil]];
+            } else {
+              [editItems addObject:editElem];
+            }
+          }
+        }
+        UIMenu *newMenu = [UIMenu menuWithTitle:menu.title image:menu.image identifier:menu.identifier options:menu.options children:editItems];
+        newMenu.preferredElementSize = menu.preferredElementSize;
+        [actions insertObject: newMenu atIndex:0];
+        continue;
+      }
+      [actions addObject:elem];
+    }
+  }
+  
+  
+  
+  return [UIMenu menuWithChildren:actions];
+}
+
+- (void)_changeLayoutLock {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm toggleLayoutLock];
+}
+
+- (bool)_isLayoutLocked {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  return sp.currentTerm.sessionParams.layoutLocked;
+}
+
+-(void)_setLayoutModeFill {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeFill];
+}
+
+-(void)_setLayoutModeFit {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeSafeFit];
+}
+
+-(void)_setLayoutModeCover {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp.currentTerm setLayoutModeWithLayoutMode:BKLayoutModeCover];
+}
+
+-(BKLayoutMode)_currentLayoutMode {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  return sp.currentTerm.sessionParams.layoutMode;
+}
+
+-(void)_closeCurrentTab {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp closeShellAction];
+}
+
+-(void)_createNewTab {
+  SpaceController *sp = (SpaceController *)self.window.rootViewController;
+  [sp newShellAction];
 }
 
 @end

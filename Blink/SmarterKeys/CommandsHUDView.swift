@@ -143,15 +143,12 @@ class CommandsHUGView: UIView {
   }
   
   @objc func _changeLayoutLock() {
-    guard let params = delegate?.currentTerm()?.sessionParams
+    guard let term = delegate?.currentTerm()
     else {
       return
     }
-    if params.layoutLocked {
-      delegate?.spaceController()?.currentTerm()?.unlockLayout()
-    } else {
-      delegate?.spaceController()?.currentTerm()?.lockLayout()
-    }
+    term.toggleLayoutLock()
+
     updateHUD()
   }
   
@@ -162,11 +159,9 @@ class CommandsHUGView: UIView {
     }
     
     let params = term.sessionParams
-    params.layoutMode = _nextLayoutMode(mode: BKLayoutMode(rawValue: params.layoutMode)).rawValue
-    if (params.layoutLocked) {
-      term.unlockLayout()
-    }
-    term.view?.setNeedsLayout()
+    
+    term.setLayoutMode(layoutMode: _nextLayoutMode(mode: BKLayoutMode(rawValue: params.layoutMode)))
+    
     updateHUD()
   }
   
