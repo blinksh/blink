@@ -154,6 +154,7 @@ class TermController: UIViewController {
     set { _bgColor = newValue }
   }
   
+  
   private var _session: MCPSession? = nil
   
   required init(meta: SessionMeta? = nil) {
@@ -170,6 +171,14 @@ class TermController: UIViewController {
   
   required public init?(coder aDecoder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
+  }
+  
+  @objc public func toggleLayoutLock() {
+    if sessionParams.layoutLocked {
+      self.unlockLayout()
+    } else {
+      self.lockLayout()
+    }
   }
   
   func placeToContainer() {
@@ -447,6 +456,14 @@ extension TermController: TermDeviceDelegate {
   
   public func lineSubmitted(_ line: String!) {
     _session?.enqueueCommand(line)
+  }
+  
+  @objc public func setLayoutMode(layoutMode: BKLayoutMode) {
+    self.sessionParams.layoutMode = layoutMode.rawValue
+    if (self.sessionParams.layoutLocked) {
+      self.unlockLayout()
+    }
+    self.view?.setNeedsLayout()
   }
 }
 
