@@ -365,7 +365,7 @@ struct BuildIntroView: View {
               .font(.system(size: props.h2))
               .padding([.bottom])
             Button {
-              let vc = UIHostingController(rootView: PlansView())
+              let vc = UIHostingController(rootView: PlansView().environmentObject(_nav))
               _nav.navController.pushViewController(vc, animated: true)
             } label: {
               Text("Compare Plans  \(Image(systemName: "bag.badge.questionmark"))")
@@ -606,7 +606,7 @@ struct BuildAccountView: View {
       .toolbar(content: {
         if !_model.accountInfoLoadingInProgress {
           Button {
-            let vc = UIHostingController(rootView: BuildSupportView(email: _model.email))
+            let vc = UIHostingController(rootView: BuildSupportView(email: _model.email).environmentObject(_nav))
             _nav.navController.pushViewController(vc, animated: true)
           } label: {
             Label("Support", systemImage: "lifepreserver")
