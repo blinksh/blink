@@ -44,6 +44,7 @@ final class BlinkItemReference: NSObject {
   private let identifier: BlinkItemIdentifier
   var remote: BlinkFiles.FileAttributes?
   var local: BlinkFiles.FileAttributes?
+  var parentItem: BlinkItemReference?
 
   var primary: BlinkFiles.FileAttributes = [:]
   var replica: BlinkFiles.FileAttributes?
@@ -63,12 +64,15 @@ final class BlinkItemReference: NSObject {
   // Identifier format <encodedRootPath>/path/to/more/components/filename
   init(_ itemIdentifier: BlinkItemIdentifier,
        remote: BlinkFiles.FileAttributes? = nil,
-       local: BlinkFiles.FileAttributes? = nil) {
+       local: BlinkFiles.FileAttributes? = nil,
+       cache: FileTranslatorCache) {
     self.remote = remote
     self.identifier = itemIdentifier
     self.local = local
 
     super.init()
+    
+    self.parentItem = cache.reference(identifier: BlinkItemIdentifier(self.parentItemIdentifier))
 
     evaluate()
   }
@@ -124,11 +128,6 @@ final class BlinkItemReference: NSObject {
       isDownloaded = true
       isUploaded = false
     }
-  }
-
-  var parentItem: BlinkItemReference? {
-    FileTranslatorCache
-      .reference(identifier: BlinkItemIdentifier(self.parentItemIdentifier))
   }
   
   var path: String {
