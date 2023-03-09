@@ -156,15 +156,16 @@ struct CodeCommand: NonStdIOCommand {
 
     let token = fp.service.registerMount(name: "xxx", root: rootURI)
     
-    var observer: NSObjectProtocol = NSObject()
-    observer = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
-      guard let device = notification.userInfo?["device"] as? TermDevice else {
+    var observers: [NSObjectProtocol] = [NSObject()]
+    observers[0] = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
+      guard let device = notification.userInfo?["device"] as? TermDevice
+      else {
         return
       }
-      if session.device == device {
+      if let sessionDevice = session.device, sessionDevice == device {
         fp.service.deregisterMount(token)
       }
-      NotificationCenter.default.removeObserver(observer)
+      NotificationCenter.default.removeObserver(observers[0])
     }
 
     let url = vscodeURL ?? URL(string: "https://vscode.dev")!
