@@ -163,12 +163,15 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           self.executeProxyCommand(command: $0, sockIn: $1, sockOut: $2)
         })
     }
-
-    let environment: [String:String] = host.sendEnv?.reduce([String:String]()) { (result, env) in
-      var result = result
-      result[env] = String(cString: getenv(env))
-      return result
-    } ?? [:]
+    
+    var environment: [String: String] = .init(minimumCapacity: host.sendEnv?.count ?? 0)
+    
+    host.sendEnv?.forEach({ env in
+      // SKIP nil values
+      if let value = getenv(env) {
+        environment[env] = String(cString: value)
+      }
+    })
 
     connect.flatMap { conn -> SSHConnection in
       self.connection = conn
