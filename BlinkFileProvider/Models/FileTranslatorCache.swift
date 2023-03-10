@@ -66,13 +66,10 @@ final class FileTranslatorCache {
   private var translators: [String: TranslatorControl] = [:]
   private var references: [String: BlinkItemReference] = [:]
   private var fileList = [String: [BlinkItemReference]]()
-  private var backgroundThread: Thread? = nil
-  private var backgroundRunLoop: RunLoop = RunLoop.current
-
 
   init() {}
 
-  func translator(for identifier: BlinkItemIdentifier) -> AnyPublisher<Translator, Error> {
+  func rootTranslator(for identifier: BlinkItemIdentifier) -> AnyPublisher<Translator, Error> {
     let encodedRootPath = identifier.encodedRootPath
 
     // Check if we have it cached, if it is still working
@@ -106,6 +103,8 @@ final class FileTranslatorCache {
     case .local:
       return Local().walkTo(pathAtFiles)
     case .sftp:
+      print("Could not find translator for \(host) at \(rootPath)")
+
       guard let host = host else {
         return .fail(error: "Missing host in Translator route")
       }
@@ -122,7 +121,11 @@ final class FileTranslatorCache {
               self.translators[encodedRootPath] = TranslatorControl(t, connectionControl: connControl)
               return t
             }
-        }.eraseToAnyPublisher()
+        }
+      // On start, multiple subscribers may connect here, and they may end up overwriting their translators,
+      // closing their connections, etc... This ensures only one goes through.
+        .shareReplay(maxValues: 1)
+        .eraseToAnyPublisher()
     default:
       return .fail(error: "Not implemented")
     }
