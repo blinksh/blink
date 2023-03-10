@@ -190,7 +190,6 @@ class FileProviderExtension: NSFileProviderExtension {
       return
     }
     
-    // TODO We can now take into account the lifetime of the object itself and be more accurate.
     guard !blinkItemReference.isDownloaded else {
       log.info("\(blinkItemReference.path) - current item up to date")
       completionHandler(nil)
@@ -341,11 +340,14 @@ class FileProviderExtension: NSFileProviderExtension {
     let log = BlinkLogger("itemChanged")
     log.info("\(url.path)")
     
-    guard let blinkItemReference = self.cache.reference(url: url) else {
+    guard var blinkItemReference = self.cache.reference(url: url) else {
       log.error("Could not find reference to item")
       return
     }
-
+    // - if there are existing NSURLSessionTasks uploading this file, cancel them
+    // Cancel an upload if there is a reference to it.
+    blinkItemReference.uploadingTask?.cancel()
+    
     // - mark file at <url> as needing an update in the model
     // Update the model
     var attributes: FileAttributes!
@@ -356,11 +358,12 @@ class FileProviderExtension: NSFileProviderExtension {
       log.error("Could not fetch attributes of item - \(error)")
       return
     }
-    blinkItemReference.updateAttributes(remote: blinkItemReference.remote!, local: attributes)
-    
-    // - if there are existing NSURLSessionTasks uploading this file, cancel them
-    // Cancel an upload if there is a reference to it.
-    blinkItemReference.uploadingTask?.cancel()
+    // Replace the reference to the local
+    blinkItemReference = BlinkItemReference(BlinkItemIdentifier(blinkItemReference.itemIdentifier),
+                                            local: attributes,
+                                            cache: self.cache)
+    self.cache.store(reference: blinkItemReference)
+
 
     // - create a fresh background NSURLSessionTask and schedule it to upload the current modifications
     // 1. Translator for local target path
