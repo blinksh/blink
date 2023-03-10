@@ -91,6 +91,7 @@
 		B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */; };
 		BD11E9E6270CD0FD003EA5AE /* openssl.xcframework in Frameworks */ = {isa = PBXBuildFile; fileRef = D2F64C9425CA99AD00F2225D /* openssl.xcframework */; };
 		BD1758AC26EA8C5400AEC545 /* MenuController.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD1758AB26EA8C5400AEC545 /* MenuController.swift */; };
+		BD2E27B529BAA8DA003AF1DA /* ReplaySubject.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */; };
 		BD3E1E53278D190500333C44 /* Archive.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD3E1E4F278D190500333C44 /* Archive.swift */; };
 		BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */; };
 		BD67FC79272B30F300C1EE75 /* Messages.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD67FC78272B30F300C1EE75 /* Messages.swift */; };
@@ -770,6 +771,7 @@
 		B7D6A6271E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKSmartKeysConfigViewController.h; sourceTree = "<group>"; };
 		B7D6A6281E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSmartKeysConfigViewController.m; sourceTree = "<group>"; };
 		BD1758AB26EA8C5400AEC545 /* MenuController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuController.swift; sourceTree = "<group>"; };
+		BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaySubject.swift; sourceTree = "<group>"; };
 		BD3E1E4F278D190500333C44 /* Archive.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Archive.swift; sourceTree = "<group>"; };
 		BD44DCE526D6BEAC00054338 /* BlinkItemIdentifier.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlinkItemIdentifier.swift; sourceTree = "<group>"; };
 		BD67FC78272B30F300C1EE75 /* Messages.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Messages.swift; sourceTree = "<group>"; };
@@ -1521,6 +1523,7 @@
 		98271251262E4BDB00F883FA /* BlinkFileProvider */ = {
 			isa = PBXGroup;
 			children = (
+				BD2E27B329BAA8DA003AF1DA /* Publisher */,
 				98E7D0AF2638B3AE00758CF9 /* Models */,
 				BD8DB628279B1EC800497C88 /* SSH */,
 				BD9EA17C2718D6C400874007 /* NSFileProviderError.swift */,
@@ -1577,6 +1580,15 @@
 			);
 			path = Security;
 			sourceTree = "<group>";
+		};
+		BD2E27B329BAA8DA003AF1DA /* Publisher */ = {
+			isa = PBXGroup;
+			children = (
+				BD2E27B429BAA8DA003AF1DA /* ReplaySubject.swift */,
+			);
+			name = Publisher;
+			path = BlinkCode/Publisher;
+			sourceTree = SOURCE_ROOT;
 		};
 		BD835DCF27A0BD19002C37D7 /* Publisher */ = {
 			isa = PBXGroup;
@@ -2870,6 +2882,7 @@
 				BD9EA20D271F664D00874007 /* Publisher.swift in Sources */,
 				BD44DCE626D6BEAC00054338 /* BlinkItemIdentifier.swift in Sources */,
 				BD9EA1802718D6C400874007 /* NSFileProviderError.swift in Sources */,
+				BD2E27B529BAA8DA003AF1DA /* ReplaySubject.swift in Sources */,
 				98271253262E4BDB00F883FA /* FileProviderExtension.swift in Sources */,
 				BD8DB62A279B1EC800497C88 /* SSHClient.swift in Sources */,
 				BD9EA20B271F62ED00874007 /* BlinkLogging.swift in Sources */,
