@@ -397,6 +397,9 @@
 		D2C8D30A21B544B100AC39C3 /* say.m in Sources */ = {isa = PBXBuildFile; fileRef = D2C8D30921B544B100AC39C3 /* say.m */; };
 		D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
+		D2CC13B729C05EE7008C71FA /* Intro.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC13B629C05EE7008C71FA /* Intro.swift */; };
+		D2CC13BA29C061C6008C71FA /* PragmataPro_Mono_B_liga_0828.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */; };
+		D2CC13BB29C061C9008C71FA /* PragmataPro_Mono_R_liga_0828.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */; };
 		D2CF27292428A791009885ED /* KBTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF27282428A791009885ED /* KBTracker.swift */; };
 		D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D3B04728FD7A790086F633 /* EmptyStateView.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
@@ -1067,6 +1070,9 @@
 		D2C24436239104250082C69C /* ShortcutsConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShortcutsConfigView.swift; sourceTree = "<group>"; };
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
+		D2CC13B629C05EE7008C71FA /* Intro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intro.swift; sourceTree = "<group>"; };
+		D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PragmataPro_Mono_B_liga_0828.ttf; sourceTree = "<group>"; };
+		D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PragmataPro_Mono_R_liga_0828.ttf; sourceTree = "<group>"; };
 		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
 		D2D3B04728FD7A790086F633 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
@@ -1309,6 +1315,7 @@
 				BD1758AB26EA8C5400AEC545 /* MenuController.swift */,
 				D2A80978270713D200CD0FAF /* FeatureFlags.swift */,
 				D2ECBF4829645814004E95C4 /* BuildApi.swift */,
+				D2CC13B629C05EE7008C71FA /* Intro.swift */,
 			);
 			path = Blink;
 			sourceTree = "<group>";
@@ -1316,6 +1323,7 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				D2CC13BC29C06657008C71FA /* PragmataPro */,
 				D21A3FC521943BE200269705 /* DarkAppIcon */,
 				D29FE548208DC860004679D0 /* commandDictionary.plist */,
 				D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */,
@@ -2094,6 +2102,15 @@
 			path = General;
 			sourceTree = "<group>";
 		};
+		D2CC13BC29C06657008C71FA /* PragmataPro */ = {
+			isa = PBXGroup;
+			children = (
+				D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */,
+				D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */,
+			);
+			path = PragmataPro;
+			sourceTree = "<group>";
+		};
 		D2E4F92A20B2BB4500B30F7B /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2770,6 +2787,7 @@
 				D21A3FDE21943BE200269705 /* dark-app-ipad-76pt.png in Resources */,
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
+				D2CC13BA29C061C6008C71FA /* PragmataPro_Mono_B_liga_0828.ttf in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
@@ -2783,6 +2801,7 @@
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
+				D2CC13BB29C061C9008C71FA /* PragmataPro_Mono_R_liga_0828.ttf in Resources */,
 				D21A3FE121943BE200269705 /* dark-notification-iphone-20pt@2x.png in Resources */,
 				D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */,
 				D266A9DA27295ECE00C85EED /* blink-uio.min.js in Resources */,
@@ -3151,6 +3170,7 @@
 				D21DEE4F260DD60D00D8E640 /* KeyDetailsView.swift in Sources */,
 				D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */,
 				C989E5571D6CC4A1003E0079 /* BKFontCreateViewController.m in Sources */,
+				D2CC13B729C05EE7008C71FA /* Intro.swift in Sources */,
 				D2ECBF4929645814004E95C4 /* BuildApi.swift in Sources */,
 				D241CBD723040734003D64A5 /* KBKeyShape.swift in Sources */,
 				D2C24420238E44AB0082C69C /* Chevron.swift in Sources */,
@@ -3682,7 +3702,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3695,7 +3715,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
@@ -3727,7 +3747,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = BlinkFileProvider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
@@ -3736,7 +3756,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProvider";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -3764,7 +3784,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
@@ -3780,7 +3800,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
@@ -3810,7 +3830,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BlinkFileProviderUI/Info.plist;
@@ -3822,7 +3842,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				MTL_FAST_MATH = YES;
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID).BlinkFileProviderUI";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4419,7 +4439,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				DEAD_CODE_STRIPPING = NO;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEFINES_MODULE = YES;
@@ -4439,7 +4459,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
@@ -4464,7 +4484,7 @@
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 720;
+				CURRENT_PROJECT_VERSION = 725;
 				DEAD_CODE_STRIPPING = NO;
 				DEFINES_MODULE = YES;
 				ENABLE_BITCODE = NO;
@@ -4479,7 +4499,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)/Frameworks",
 				);
-				MARKETING_VERSION = 16.1.5;
+				MARKETING_VERSION = 16.1.6;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;

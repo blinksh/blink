@@ -41,27 +41,6 @@ struct PlansView: View {
   
   var body: some View {
     List {
-      if _entitlements.unlimitedTimeAccess.active == false {
-        Section("Free Plan") {
-          Label {
-            Text("Access to all Blink.app features")
-          } icon: {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-            
-          }
-          Label {
-            Text("Subscription nags 3x day max")
-          } icon: {
-            Image(systemName: "timer")
-              .foregroundColor(.orange)
-            
-          }
-          HStack {
-            Text("This is your current plan").foregroundColor(.green)
-          }
-        }
-      }
       if let _ = _model.plusProduct {
         Section(
           header: Text("Blink+ PLAN"),
@@ -146,35 +125,7 @@ struct PlansView: View {
         )
       }
       
-      if _entitlements.unlimitedTimeAccess.active == true {
-        Section("Free Plan") {
-          Label {
-            Text("Access to all Blink.app features")
-          } icon: {
-            Image(systemName: "checkmark.circle.fill")
-              .foregroundColor(.green)
-          }
-          Label {
-            Text("Subscription nags 3x day max")
-          } icon: {
-            Image(systemName: "timer")
-              .foregroundColor(.orange)
-          }
-        }
-      }
       Section {
-        HStack {
-          if _model.restoreInProgress {
-            ProgressView()
-            Text("restoring purchases....").padding(.leading, 10)
-          } else {
-            Button {
-              _model.restorePurchases()
-            } label: {
-              Label("Restore Purchases", systemImage: "bag")
-            }
-          }
-        }
         HStack {
           Button {
             _model.openPrivacyAndPolicy()
