@@ -42,6 +42,12 @@ let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
 let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
 
+private let NagTimestamp   = "NagTimestamp"
+extension Notification.Name {
+  public static let subscriptionNag = Notification.Name("SubscriptionNag")
+  public static let openMigration = Notification.Name("openMigration")
+  public static let closeMigration = Notification.Name("closeMigration")
+}
 
 // Decoupled from RevCat Entitlement
 public struct Entitlement: Identifiable, Equatable, Hashable {
@@ -141,11 +147,20 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
 //      SubscriptionNag.shared.terminate()
 //      return
 //    }
-    if self.unlimitedTimeAccess.active {
-      SubscriptionNag.shared.terminate()
-    } else {
-      SubscriptionNag.shared.start()
+    
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+  }
+  
+  func didShowSubscriptionNags() -> Bool {
+    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+  }
+  
+  func doShowPaywall() -> Bool {
+    // TODO: Bring back
+    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
+      return false
     }
+    return !self.unlimitedTimeAccess.active
   }
   
   public func currentPlanName() -> String {
