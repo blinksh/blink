@@ -134,7 +134,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
    
     ctrl.presentedViewController?.dismiss(animated: true, completion: nil)
 
-    if !SubscriptionNag.shared.doShowPaywall() {
+    if !EntitlementsManager.shared.doShowPaywall() {
       if let _ = paywallWindow {
           self.paywallWindow = nil
       }
@@ -148,7 +148,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 //      return
 //    }
     
-    guard SubscriptionNag.shared.doShowPaywall()  else {
+    guard EntitlementsManager.shared.doShowPaywall()  else {
       if let window = self.paywallWindow {
         if window.rootViewController?.presentedViewController != nil {
           // We are showing migration view. It will close itself
@@ -389,6 +389,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     term.view?.setNeedsLayout()
     
     if let paywallWindow = paywallWindow {
+      _ = KBTracker.shared.input?.resignFirstResponder()
       paywallWindow.makeKeyAndVisible()
       return;
     }
@@ -424,6 +425,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     if input == nil {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if KBTracker.shared.input == nil {
           window.makeKey()
           spCtrl.focusOnShellAction()
@@ -437,6 +441,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       input?.isRealFirstResponder == false,
       input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if scene.activationState == .foregroundActive,
           input?.isRealFirstResponder == false {
           spCtrl.focusOnShellAction()
@@ -448,6 +455,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     
     if input?.window === window {
       DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.1) {
+        if self.paywallWindow != nil {
+          _ = KBTracker.shared.input?.resignFirstResponder()
+        }
         if scene.activationState == .foregroundActive,
           term.termDevice.view?.isFocused() == false {
           spCtrl.focusOnShellAction()
