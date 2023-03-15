@@ -33,49 +33,50 @@ import Foundation
 import BlinkConfig
 
 
-private let NagTimer       = "NagTimer"
-private let NagTimestamp   = "NagTimestamp"
-private let NagNumDisplays = "NagNumDisplays"
-private let NagTimerMax = 2 * 60
-private let NagInterval: TimeInterval = 10
+//private let NagTimer       = "NagTimer"
 
-extension Notification.Name {
-  public static let subscriptionNag = Notification.Name("SubscriptionNag")
-  public static let openMigration = Notification.Name("openMigration")
-  public static let closeMigration = Notification.Name("closeMigration")
-}
+//private let NagNumDisplays = "NagNumDisplays"
+//private let NagTimerMax = 2 * 60
+//private let NagInterval: TimeInterval = 10
 
-class SubscriptionNag: NSObject {
-  @objc static let shared = SubscriptionNag()
+//private let NagTimestamp   = "NagTimestamp"
+//extension Notification.Name {
+//  public static let subscriptionNag = Notification.Name("SubscriptionNag")
+//  public static let openMigration = Notification.Name("openMigration")
+//  public static let closeMigration = Notification.Name("closeMigration")
+//}
 
-  private override init() {}
+//class SubscriptionNag: NSObject {
+//  @objc static let shared = SubscriptionNag()
 
-  @objc func start() {
-    let entitlements = EntitlementsManager.shared
-    guard entitlements.unlimitedTimeAccess.active == false
-    else {
-      return
-    }
-    
-    
-      if self.doShowPaywall() {
-        NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-        return
-      }
-  }
+//  private override init() {}
+
+//  @objc func start() {
+//    let entitlements = EntitlementsManager.shared
+//    guard entitlements.unlimitedTimeAccess.active == false
+//    else {
+//      return
+//    }
+//
+//
+//      if self.doShowPaywall() {
+//        NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+//        return
+//      }
+//  }
   
-  func didShowNags() -> Bool {
-    UserDefaults.standard.object(forKey: NagTimestamp) != nil
-  }
+//  func didShowNags() -> Bool {
+//    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+//  }
   
-  func doShowPaywall() -> Bool {
+//  func doShowPaywall() -> Bool {
     // TODO: Bring back
 //    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
 //      return false
 //    }
-    return !EntitlementsManager.shared.unlimitedTimeAccess.active
+//    return !EntitlementsManager.shared.unlimitedTimeAccess.active
 //    return _nagCount() > NagTimerMax
-  }
+//  }
   
 //  private func _nagCount() -> Int {
 //    UserDefaults.standard.integer(forKey: NagTimer)
@@ -103,8 +104,8 @@ class SubscriptionNag: NSObject {
 //    nagTimer.invalidate()
 //  }
 //
-  func terminate() {
-    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-  }
-}
+//  func terminate() {
+//    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+//  }
+//}
 

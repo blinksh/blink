@@ -782,11 +782,15 @@ struct IntroView: View {
 
 struct IntroWindow: View {
   let urlHandler: (URL) -> Void
+  @State var withZeroPage = EntitlementsManager.shared.didShowSubscriptionNags()
   
   var body: some View {
     ZStack {
       Rectangle().fill(Color.black).frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea(.all)
-      IntroView(urlHandler: self.urlHandler, withZeroPage: SubscriptionNag.shared.didShowNags())
+      IntroView(
+        urlHandler: self.urlHandler,
+        withZeroPage: withZeroPage
+      )
     }
 
   }
