@@ -39,6 +39,10 @@ class PurchasesUserModel: ObservableObject {
   @Published var plusProduct: StoreProduct? = nil
   @Published var buildBasicProduct: StoreProduct? = nil
   @Published var classicProduct: StoreProduct? = nil
+  @Published var blinkPlusBuildBasicProduct: StoreProduct? = nil
+  
+  @Published var blinkBuildTrial: IntroEligibility? = nil
+  @Published var blinkPlusBuildTrial: IntroEligibility? = nil
   
   // MARK: Progress indicators
   @Published var purchaseInProgress: Bool = false
@@ -68,8 +72,12 @@ class PurchasesUserModel: ObservableObject {
   
   func refresh() {
     BuildAccountModel.shared.checkBuildToken(animated: false)
-    if self.plusProduct == nil || self.classicProduct == nil || self.buildBasicProduct == nil {
+    if self.plusProduct == nil
+        || self.classicProduct == nil
+        || self.buildBasicProduct == nil
+        || self.blinkPlusBuildBasicProduct == nil {
       self.fetchProducts()
+      self.fetchTrialEligibility()
     }
   }
   
@@ -117,6 +125,18 @@ class PurchasesUserModel: ObservableObject {
     _purchase(product: classicProduct)
   }
   
+  func purchaseBlinkPlusBuild() {
+    _purchase(product: blinkPlusBuildBasicProduct)
+  }
+  
+  func buildTrialAvailable() -> Bool {
+    self.blinkBuildTrial?.status == IntroEligibilityStatus.eligible
+  }
+  
+  func blinkPlusBuildTrialAvailable() -> Bool {
+    blinkPlusBuildTrial?.status == IntroEligibilityStatus.eligible
+  }
+  
   private func _purchase(product: StoreProduct?) {
     guard let product = product else {
       return
@@ -157,24 +177,53 @@ class PurchasesUserModel: ObservableObject {
     buildBasicProduct?.formattedPriceWithPeriod()
   }
   
+  func formattedBlinkPlusBuildPriceWithPeriod() -> String? {
+    blinkPlusBuildBasicProduct?.formattedPriceWithPeriod()
+  }
+  
+  func blinkPlusBuildSubscribeButtonText() -> String {
+    let price = self.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
+    if self.blinkPlusBuildTrialAvailable() {
+      return "START 1 WEEK FREE, THEN \(price)"
+    } else {
+      return "GET BLINK+BUILD, \(price)"
+    }
+  }
+  
   func fetchProducts() {
     Purchases.shared.getProducts([
       ProductBlinkShellClassicID,
       ProductBlinkShellPlusID,
-      ProductBlinkBuildBasicID
+      ProductBlinkBuildBasicID,
+      ProductBlinkPlusBuildBasicID
     ]) { products in
-      for product in products {
-        let productID = product.productIdentifier
-        
-        if productID == ProductBlinkShellPlusID {
-          self.plusProduct = product
-        } else if productID == ProductBlinkShellClassicID {
-          self.classicProduct = product
-        } else if productID == ProductBlinkBuildBasicID {
-          self.buildBasicProduct = product
+      DispatchQueue.main.async {
+        for product in products {
+          let productID = product.productIdentifier
+          
+          if productID == ProductBlinkShellPlusID {
+            self.plusProduct = product
+          } else if productID == ProductBlinkShellClassicID {
+            self.classicProduct = product
+          } else if productID == ProductBlinkBuildBasicID {
+            self.buildBasicProduct = product
+          } else if productID == ProductBlinkPlusBuildBasicID {
+            self.blinkPlusBuildBasicProduct = product
+          }
         }
       }
     }
+  }
+  
+  func fetchTrialEligibility() {
+    Purchases.shared.checkTrialOrIntroDiscountEligibility(
+      productIdentifiers: [ProductBlinkBuildBasicID, ProductBlinkPlusBuildBasicID],
+      completion: { map in
+        DispatchQueue.main.async {
+          self.blinkBuildTrial = map[ProductBlinkBuildBasicID];
+          self.blinkPlusBuildTrial = map[ProductBlinkPlusBuildBasicID];
+        }
+      })
   }
   
   private lazy var _emailPredicate: NSPredicate = {

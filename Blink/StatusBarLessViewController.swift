@@ -37,7 +37,17 @@ import SwiftUI
 
 class StatusBarLessViewController<Content>: UIHostingController<Content> where Content: View {
   
+  var lockPortrait: Bool = false
+  
   override var prefersStatusBarHidden: Bool {
     true
+  }
+  
+  override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+    if lockPortrait {
+      return .portrait
+    } else {
+      return .all
+    }
   }
 }

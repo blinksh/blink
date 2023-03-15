@@ -2,6 +2,11 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>PragmataPro_Mono_B_liga_0828.ttf</string>
+		<string>PragmataPro_Mono_R_liga_0828.ttf</string>
+	</array>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
@@ -154,8 +159,8 @@
 					<string>Blink.SceneDelegate</string>
 				</dict>
 				<dict>
-          <key>UISceneConfigurationName</key>
-          <string>whatsnew</string>
+					<key>UISceneConfigurationName</key>
+					<string>whatsnew</string>
 					<key>UISceneDelegateClassName</key>
 					<string>Blink.WhatsNewSceneDelegate</string>
 				</dict>
