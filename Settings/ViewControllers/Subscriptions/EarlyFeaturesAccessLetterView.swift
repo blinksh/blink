@@ -34,12 +34,11 @@ import Foundation
 import SwiftUI
 
 enum EarlyFeatureAccessSteps {
-  case Letter, Plans
+  case Letter
 }
 
 
 struct EarlyFeaturesAccessLetterView<ViewModel: RowsProvider>: View {
-  let presentPlans: () -> ();
   
   @StateObject var rowsProvider: ViewModel
   
@@ -47,7 +46,9 @@ struct EarlyFeaturesAccessLetterView<ViewModel: RowsProvider>: View {
     VStack {
       GridView(rowsProvider: rowsProvider)
       if rowsProvider.hasFetchedData {
-        Button("Upgrade to Blink Plus", action: presentPlans)
+        Button("Upgrade to Blink Plus", action: {
+          EntitlementsManager.shared.showPaywall()
+        })
           .buttonStyle(.borderedProminent)
           .buttonBorderShape(.capsule)
           .padding()

@@ -269,6 +269,30 @@ struct CallToActionButtons: View {
   }
 }
 
+struct FreeUsersCallToActionButtons: View {
+  let ctx: PageCtx
+  let text: Text
+  
+  var body: some View {
+    HStack {
+      Button(
+        action: {
+          EntitlementsManager.shared.dismissPaywall()
+        },
+        label: { text }
+      )
+      .buttonStyle(BlinkButtonStyle.secondary(disabled: false, inProgress: false))
+      Spacer().frame(width: 20)
+      
+      Button("GET STARTED") {
+        ctx.getStartedHandler()
+      }.buttonStyle(BlinkButtonStyle.primary(disabled: false, inProgress: false))
+    }
+    .padding(.bottom, ctx.portrait ? 26 : 0)
+  }
+}
+
+
 struct MigrationButtons: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
@@ -543,11 +567,20 @@ struct PageBlinkPlusBuildView: View {
       
       VStack {
         Button(_purchases.blinkPlusBuildSubscribeButtonText()) {
-          _purchases.purchaseBlinkPlusBuild()
+          Task {
+            await _purchases.purchaseBlinkPlusBuildWithValidation()
+          }
         }
         .buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: _purchases.purchaseInProgress)).disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
         .lineSpacing(5.0)
         .multilineTextAlignment(.center)
+        .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+          Button("OK") {
+            EntitlementsManager.shared.dismissPaywall()
+          }
+        } message: {
+          Text(_purchases.restoredPurchaseMessage)
+        }
         Button("OR CHECK BLINK+ TO CONNECT TO YOUR\nENVIRONMENTS") {
           ctx.checkBlinkPlusHandler()
         }.foregroundColor(BlinkColors.blink).font(BlinkFonts.btn)
@@ -566,7 +599,8 @@ struct PageBlinkPlusView: View {
     VStack {
       Text("THE SHELL OF CHOICE FOR DEVELOPERS FOR 7 YEARS")
         .font(ctx.headerFont())
-        .foregroundColor(BlinkColors.headerText).multilineTextAlignment(.center)
+        .foregroundColor(BlinkColors.headerText)
+        .multilineTextAlignment(.center)
       
       VStack(alignment: .center, spacing: 20) {
         Spacer()
@@ -591,7 +625,16 @@ struct PageBlinkPlusView: View {
           disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
           inProgress: _purchases.purchaseInProgress
         ) {
-          _purchases.purchasePlus()
+          Task {
+            await _purchases.purchasePlusWithValidation()
+          }
+        }
+        .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+          Button("OK") {
+            EntitlementsManager.shared.dismissPaywall()
+          }
+        } message: {
+          Text(_purchases.restoredPurchaseMessage)
         }
         Button("OR CHECK BLINK+ TO CONNECT TO YOUR\nENVIRONMENTS") {
           ctx.getStartedHandler()
@@ -634,10 +677,10 @@ struct PageFreeUsersView: View {
   
   var body: some View {
     VStack {
-      ScrollView {
         Text("BLINK+BUILD FREE TRIAL")
           .font(ctx.headerFont())
           .foregroundColor(BlinkColors.headerText).multilineTextAlignment(.center)
+      ScrollView {
         Text("""
 Dear Blink User,
 
@@ -652,11 +695,12 @@ We invite you to take the new Blink out for a spin, and continue to use Blink as
 _Thanks for your support,_
 _The Blink Shell team_
 """).frame(maxWidth: 600)
-        .font(ctx.infoFont())
-        .foregroundColor(BlinkColors.infoText)
-        .padding()
+          .font(ctx.infoFont())
+          .foregroundColor(BlinkColors.infoText)
+          .padding()
       }
       .padding(.bottom)
+      FreeUsersCallToActionButtons(ctx: ctx, text: Text("DISMISS"))
     }.padding(ctx.pagePadding())
   }
 }
@@ -786,12 +830,15 @@ struct IntroWindow: View {
   
   var body: some View {
     ZStack {
-      Rectangle().fill(Color.black).frame(maxWidth: .infinity, maxHeight: .infinity).ignoresSafeArea(.all)
+      Rectangle()
+        .fill(Color.black)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        
       IntroView(
         urlHandler: self.urlHandler,
         withZeroPage: withZeroPage
       )
-    }
+    }.ignoresSafeArea(.all)
 
   }
 }
