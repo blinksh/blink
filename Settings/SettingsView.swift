@@ -67,15 +67,11 @@ struct SettingsView: View {
       }
       } else {
         Section("Subscription") {
-          Row {
-            HStack {
-              Label("Subscription", systemImage: "bag")
-              Spacer()
-              Text(_entitlements.currentPlanName())
-                .foregroundColor(.secondary)
-            }
-          } details: {
-            PlansView()
+          HStack {
+            Label("Subscription", systemImage: "bag")
+            Spacer()
+            Text(_entitlements.currentPlanName())
+              .foregroundColor(.secondary)
           }
           Row {
             HStack {

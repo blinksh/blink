@@ -62,7 +62,7 @@ struct NewSecurityKeyView: View {
             autocapitalizationType: .none
           )
         }
-        
+
         Section(header: Text("COMMENT (OPTIONAL)")) {
           FixedTextField(
             "Comment for your key",
@@ -74,7 +74,7 @@ struct NewSecurityKeyView: View {
             autocapitalizationType: .none
           )
         }
-        
+
         Section(
           header: Text("INFORMATION"),
           footer: Text("Use Secure Keys to authenticate using specialized hardware, like Yubikey or the Titan key. Blink uses the new Web Authentication standard, which may not be supported by all servers.\nFor more information, visit [docs.blink.sh](https://docs.blink.sh/advanced/webauthn).")
@@ -92,10 +92,7 @@ struct NewSecurityKeyView: View {
         FixedTextField.becomeFirstReponder(id: "keyName")
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
-        switch step {
-        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans, rowsProvider: _provider)
-        case .Plans: PlansView()
-        }
+        EarlyFeaturesAccessLetterView(rowsProvider: _provider)
       })
     }
   }
@@ -119,9 +116,9 @@ fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
   
   @Published var errorMessage = ""
   
-  func presentPlans() {
-    self.steps.append(.Plans)
-  }
+//  func presentPlans() {
+//    EntitlementsManager.shared.showPaywall()
+//  }
   
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
@@ -193,7 +190,8 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
     
     guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
     else {
-      self.steps = [.Letter]
+      // TODO: FIX FLOW
+//      self.steps = [.Letter]
       return
     }
     

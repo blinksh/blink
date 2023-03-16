@@ -48,6 +48,15 @@ class PurchasesUserModel: ObservableObject {
   @Published var purchaseInProgress: Bool = false
   @Published var restoreInProgress: Bool = false
   
+  @Published var buildBasicTrialEligibility: IntroEligibility? = nil
+  
+  @Published var restoredPurchaseMessageVisible = false
+  @Published var restoredPurchaseMessage = ""
+  
+  var isBuildBasicTrialEligible: Bool {
+    self.buildBasicTrialEligibility?.status == .eligible
+  }
+  
 //  @Published var flow: Int = 0
   
   // MARK: Migration states
@@ -117,17 +126,19 @@ class PurchasesUserModel: ObservableObject {
     }
   }
   
-  func purchasePlus() {
-    _purchase(product: plusProduct)
+  func purchaseBlinkPlusBuildWithValidation() async {
+    await _purchaseWithValidation(product: blinkPlusBuildBasicProduct)
   }
   
+  func purchasePlusWithValidation() async {
+    await _purchaseWithValidation(product: plusProduct)
+  }
+  
+
   func purchaseClassic() {
     _purchase(product: classicProduct)
   }
   
-  func purchaseBlinkPlusBuild() {
-    _purchase(product: blinkPlusBuildBasicProduct)
-  }
   
   func buildTrialAvailable() -> Bool {
     self.blinkBuildTrial?.status == IntroEligibilityStatus.eligible
@@ -148,6 +159,36 @@ class PurchasesUserModel: ObservableObject {
     Purchases.shared.purchase(product: product) { (transaction, purchaseInfo, error, cancelled) in
       self.refresh()
       self.purchaseInProgress = false
+    }
+  }
+  
+  private func _purchaseWithValidation(product: StoreProduct?) async {
+    do {
+      self.purchaseInProgress = true
+      EntitlementsManager.shared.keepShowingPaywall = true
+      let res = try await Purchases.shared.restorePurchases()
+
+      if EntitlementsManager.shared.build.active {
+          await BuildAccountModel.shared.trySignIn();
+      }
+      
+      if res.activeSubscriptions.contains(ProductBlinkShellPlusID) {
+        self.restoredPurchaseMessage = "We have restored your subscription to Blink+.\nThanks for your support!"
+        self.restoredPurchaseMessageVisible = true
+        self.purchaseInProgress = false
+        return
+      }
+      if res.activeSubscriptions.contains(ProductBlinkPlusBuildBasicID) {
+        self.restoredPurchaseMessage = "We have restored your subscription to Blink+Build.\nThanks for your support!"
+        self.restoredPurchaseMessageVisible = true
+        self.purchaseInProgress = false
+        return
+      }
+      EntitlementsManager.shared.keepShowingPaywall = false
+      _purchase(product: product)
+    } catch {
+      EntitlementsManager.shared.keepShowingPaywall = false
+      self.alertErrorMessage = error.localizedDescription
     }
   }
   

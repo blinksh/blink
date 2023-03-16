@@ -32,42 +32,42 @@
 import SwiftUI
 
 
-struct ContentView3: View {
-  var body: some View {
-    GeometryReader { gr in
-      if gr.frame(in: .local).height < 400 {
-        PurchasePageView(horizontal: true, switchTab: {_ in})
-          .position(
-            x: gr.frame(in: .local).maxX * 0.5,
-            y: gr.frame(in: .local).maxY * 0.5
-          )
-        closeButton(reader: gr)
-      } else {
-        PurchasePageView(horizontal: false, switchTab: {_ in})
-          .position(
-            x: gr.frame(in: .local).maxX * 0.5,
-            y: gr.frame(in: .local).maxY * 0.5
-          )
-        closeButton(reader: gr)
-      }
-    }
-  }
-  
-  func closeButton(reader: GeometryProxy) -> some View {
-    Button(action: {
-      
-    }) {
-      Image(systemName: "xmark.circle.fill")
-        .resizable()
-        .frame(width: 32, height: 32)
-        .foregroundColor(Color.secondary.opacity(0.7))
-    }
-    .position(x: reader.frame(in: .local).maxX - 40,
-              y: reader.frame(in: .local).minY + 40)
-  }
-}
-
-
+//struct ContentView3: View {
+//  var body: some View {
+//    GeometryReader { gr in
+//      if gr.frame(in: .local).height < 400 {
+//        PurchasePageView(horizontal: true, switchTab: {_ in})
+//          .position(
+//            x: gr.frame(in: .local).maxX * 0.5,
+//            y: gr.frame(in: .local).maxY * 0.5
+//          )
+//        closeButton(reader: gr)
+//      } else {
+//        PurchasePageView(horizontal: false, switchTab: {_ in})
+//          .position(
+//            x: gr.frame(in: .local).maxX * 0.5,
+//            y: gr.frame(in: .local).maxY * 0.5
+//          )
+//        closeButton(reader: gr)
+//      }
+//    }
+//  }
+//  
+//  func closeButton(reader: GeometryProxy) -> some View {
+//    Button(action: {
+//      
+//    }) {
+//      Image(systemName: "xmark.circle.fill")
+//        .resizable()
+//        .frame(width: 32, height: 32)
+//        .foregroundColor(Color.secondary.opacity(0.7))
+//    }
+//    .position(x: reader.frame(in: .local).maxX - 40,
+//              y: reader.frame(in: .local).minY + 40)
+//  }
+//}
+//
+//
 protocol Page: View {
   init(horizontal: Bool, switchTab: @escaping (_ idx: Int) -> ())
 }
@@ -163,29 +163,29 @@ struct SinglePageContainer<T: Page>: View {
     }
   }
 }
-
-
-
-struct PaywallView: View {
-  @ObservedObject private var _model: PurchasesUserModel = .shared
-  
-  var body: some View {
-    TabView(selection: $_model.paywallPageIndex) {
-      PageContainer<PurchasePageView>(onSwitchTabHandler: _onSwitchTab).tag(0)
-      PageContainer<TopupPageView>(onSwitchTabHandler: _onSwitchTab).tag(1)
-      PageContainer<MigratePageView>(onSwitchTabHandler: _onSwitchTab).tag(2)
-    }
-    .tabViewStyle(.page)
-    .indexViewStyle(.page(backgroundDisplayMode: .always))
-    .disabled(_model.purchaseInProgress || _model.restoreInProgress)
-    .onTapGesture {
-      // Just in case hide kb on tap
-      _ = KBTracker.shared.input?.resignFirstResponder()
-    }
-  }
-  
-  private func _onSwitchTab(_ idx: Int) {
-    _model.paywallPageIndex = idx
-  }
-}
-
+//
+//
+//
+//struct PaywallView: View {
+//  @ObservedObject private var _model: PurchasesUserModel = .shared
+//  
+//  var body: some View {
+//    TabView(selection: $_model.paywallPageIndex) {
+//      PageContainer<PurchasePageView>(onSwitchTabHandler: _onSwitchTab).tag(0)
+//      PageContainer<TopupPageView>(onSwitchTabHandler: _onSwitchTab).tag(1)
+//      PageContainer<MigratePageView>(onSwitchTabHandler: _onSwitchTab).tag(2)
+//    }
+//    .tabViewStyle(.page)
+//    .indexViewStyle(.page(backgroundDisplayMode: .always))
+//    .disabled(_model.purchaseInProgress || _model.restoreInProgress)
+//    .onTapGesture {
+//      // Just in case hide kb on tap
+//      _ = KBTracker.shared.input?.resignFirstResponder()
+//    }
+//  }
+//  
+//  private func _onSwitchTab(_ idx: Int) {
+//    _model.paywallPageIndex = idx
+//  }
+//}
+//

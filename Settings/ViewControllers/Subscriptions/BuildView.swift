@@ -165,7 +165,11 @@ struct BasicMachinePlanView: View {
           }
           
           Section(header: Text("Price")) {
-            Label("\(_purchases.formattedBuildPriceWithPeriod() ?? "")", systemImage: "bag")
+            if _purchases.isBuildBasicTrialEligible {
+              Label("First month free with Blink+, \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.", systemImage: "bag")
+            } else {
+              Label("\(_purchases.formattedBuildPriceWithPeriod() ?? "") for Blink+ users.", systemImage: "bag")
+            }
           }
           
           Section() {
@@ -307,75 +311,72 @@ struct BuildIntroView: View {
         VStack(alignment: .leading) {
           Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
           
-          if  _entitlements.earlyAccessFeatures.active {
-
+          if _purchases.isBuildBasicTrialEligible {
             Text("Get a free month to Build")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
-
+            
             Text("Run work environments from all your devices.")
               .font(.system(size: props.h2))
             Text("[Basic plan](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
-                .fixedSize(horizontal: false, vertical: true)
-                .font(.system(size: props.h2))
-                .padding([.bottom])
-                .environment(\.openURL, OpenURLAction(handler: { url in
-                  withAnimation {
-                    _account.showPlanInfo = true
-                  }
-                  return .handled
-                }))
-
-            if _purchases.restoreInProgress || _purchases.purchaseInProgress || _account.hasBuildToken {
-              ProgressView()
-                .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
-                .padding([.top, .bottom])
-            } else {
-              Button {
-                Task {
-                  await _purchases.purchaseBuildBasic()
-                }
-              } label: {
-                Text("Try it Free")
-                  .font(.system(size: props.h2, weight: .bold))
-                  .frame(maxWidth: .infinity, maxHeight: .infinity)
-              }.foregroundColor(Color.black)
-                .buttonStyle(.borderedProminent)
-                .frame(minHeight: props.button, maxHeight: props.button)
-                .padding([.top, .bottom])
-            }
-            HStack {
-              Spacer()
-              Button("Terms of Use", action: {
-                _account.openTermsOfService()
-              }).padding(.trailing)
-              Button("Restore Purchases", action: {
-                _purchases.restorePurchases()
-              })
-              Spacer()
-            }.padding(.bottom).disabled(_purchases.restoreInProgress)
-          } else {
-            Text("Beta exclusive to Blink+ users")
-              .fixedSize(horizontal: false, vertical: true)
-              .font(.system(size: props.h1, weight: .bold))
-              .padding([.top])
-            Text("Run work environments from all your devices.\nFirst month free with Blink+,  \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h2))
               .padding([.bottom])
+              .environment(\.openURL, OpenURLAction(handler: { url in
+                withAnimation {
+                  _account.showPlanInfo = true
+                }
+                return .handled
+              }))
+          } else {
+            Text("Get Build")
+              .fixedSize(horizontal: false, vertical: true)
+              .font(.system(size: props.h1, weight: .bold))
+              .padding([.top])
+            
+            Text("Run work environments from all your devices.")
+              .font(.system(size: props.h2))
+            Text("[Basic plan](#info) \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+              .fixedSize(horizontal: false, vertical: true)
+              .font(.system(size: props.h2))
+              .padding([.bottom])
+              .environment(\.openURL, OpenURLAction(handler: { url in
+                withAnimation {
+                  _account.showPlanInfo = true
+                }
+                return .handled
+              }))
+          }
+          
+          if _purchases.restoreInProgress || _purchases.purchaseInProgress || _account.hasBuildToken {
+            ProgressView()
+              .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
+              .padding([.top, .bottom])
+          } else {
             Button {
-              let vc = UIHostingController(rootView: PlansView().environmentObject(_nav))
-              _nav.navController.pushViewController(vc, animated: true)
+              Task {
+                await _purchases.purchaseBuildBasic()
+              }
             } label: {
-              Text("Compare Plans  \(Image(systemName: "bag.badge.questionmark"))")
+              Text(_purchases.isBuildBasicTrialEligible ? "Try it Free" : "Subscribe")
                 .font(.system(size: props.h2, weight: .bold))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.foregroundColor(Color("BuildColor"))
-              .buttonStyle(.plain)
+            }.foregroundColor(Color.black)
+              .buttonStyle(.borderedProminent)
               .frame(minHeight: props.button, maxHeight: props.button)
               .padding([.top, .bottom])
           }
+          HStack {
+            Spacer()
+            Button("Terms of Use", action: {
+              _account.openTermsOfService()
+            }).padding(.trailing)
+            Button("Restore Purchases", action: {
+              _purchases.restorePurchases()
+            })
+            Spacer()
+          }.padding(.bottom).disabled(_purchases.restoreInProgress)
         }
         .frame(maxWidth: 574)
         .alert(errorMessage: $_purchases.alertErrorMessage)

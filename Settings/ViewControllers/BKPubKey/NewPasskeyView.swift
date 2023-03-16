@@ -61,7 +61,7 @@ struct NewPasskeyView: View {
             autocapitalizationType: .none
           )
         }
-        
+
         Section(header: Text("COMMENT (OPTIONAL)")) {
           FixedTextField(
             "Comment for your key",
@@ -73,7 +73,7 @@ struct NewPasskeyView: View {
             autocapitalizationType: .none
           )
         }
-        
+
         Section(
           header: Text("INFORMATION"),
           footer: Text("Passkeys are ECDSA keys that use the new Web Authentication standard for authentication. They are very new and may not be supported by all servers.\nFor more information, visit [docs.blink.sh](https://docs.blink.sh/advanced/webauthn).")
@@ -91,10 +91,7 @@ struct NewPasskeyView: View {
         FixedTextField.becomeFirstReponder(id: "keyName")
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
-        switch step {
-        case .Letter: EarlyFeaturesAccessLetterView(presentPlans: _state.presentPlans, rowsProvider: _provider)
-        case .Plans: PlansView()
-        }
+        EarlyFeaturesAccessLetterView(rowsProvider: _provider)
       })
     }
   }
@@ -130,9 +127,9 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
   
-  func presentPlans() {
-    self.steps.append(.Plans)
-  }
+//  func presentPlans() {
+//    EntitlementsManager.shared.showPaywall()
+//  }
 
   
   func createKey(anchor: ASPresentationAnchor, onSuccess: @escaping () -> Void) {
@@ -205,7 +202,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    guard EntitlementsManager.shared.earlyAccessFeatures.active// TODO: FIX Flow || FeatureFlags.earlyAccessFeatures
     else {
       self.steps = [.Letter]
       return
