@@ -42,7 +42,7 @@ let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
 let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
 
-private let NagTimestamp   = "NagTimestamp"
+private let NagTimestamp = "NagTimestamp"
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
   public static let openMigration = Notification.Name("openMigration")
@@ -65,7 +65,7 @@ public struct Entitlement: Identifiable, Equatable, Hashable {
 public protocol EntitlementsSourceDelegate: AnyObject {
   func didUpdateEntitlements(
     source: EntitlementsSource,
-    entitlements :Dictionary<String, Entitlement>,
+    entitlements: Dictionary<String, Entitlement>,
     activeSubscriptions: Set<String>,
     nonSubscriptionTransactions: Set<String>
   )
@@ -148,19 +148,41 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
 //      return
 //    }
     
-    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+    showPaywall()
   }
   
   func didShowSubscriptionNags() -> Bool {
-    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+    true
+//    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+  }
+  
+  @Published var keepShowingPaywall: Bool = false
+  @Published var shouldDismissPaywall: Bool = false
+  
+  func showPaywall() {
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
   }
   
   func doShowPaywall() -> Bool {
-    // TODO: Bring back
-    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
+    if keepShowingPaywall {
+      return true
+    }
+    if shouldDismissPaywall {
       return false
     }
+    // TODO: FIX FLOW
+//    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
+//      return false
+//    }
     return !self.unlimitedTimeAccess.active
+    //true
+  }
+  
+  func dismissPaywall() {
+    keepShowingPaywall = false
+    shouldDismissPaywall = true
+    NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+    shouldDismissPaywall = false
   }
   
   public func currentPlanName() -> String {
