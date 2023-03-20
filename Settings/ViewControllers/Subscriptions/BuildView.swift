@@ -311,59 +311,81 @@ struct BuildIntroView: View {
         VStack(alignment: .leading) {
           Image("build-logo").matchedGeometryEffect(id: "logo", in: self.nspace)
           
-          if _purchases.isBuildBasicTrialEligible {
-            Text("Get a free month to Build")
+          if  _entitlements.earlyAccessFeatures.active {
+            
+            if _purchases.isBuildBasicTrialEligible {
+              Text("Get a free month to Build")
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.system(size: props.h1, weight: .bold))
+                .padding([.top])
+              
+              Text("Run work environments from all your devices.")
+                .font(.system(size: props.h2))
+              Text("[Basic plan](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.system(size: props.h2))
+                .padding([.bottom])
+                .environment(\.openURL, OpenURLAction(handler: { url in
+                  withAnimation {
+                    _account.showPlanInfo = true
+                  }
+                  return .handled
+                }))
+            } else {
+              Text("Get Build")
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.system(size: props.h1, weight: .bold))
+                .padding([.top])
+              
+              Text("Run work environments from all your devices.")
+                .font(.system(size: props.h2))
+              Text("[Basic plan](#info) \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+                .fixedSize(horizontal: false, vertical: true)
+                .font(.system(size: props.h2))
+                .padding([.bottom])
+                .environment(\.openURL, OpenURLAction(handler: { url in
+                  withAnimation {
+                    _account.showPlanInfo = true
+                  }
+                  return .handled
+                }))
+            }
+            
+            if _purchases.restoreInProgress || _purchases.purchaseInProgress || _account.hasBuildToken {
+              ProgressView()
+                .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
+                .padding([.top, .bottom])
+            } else {
+              Button {
+                Task {
+                  await _purchases.purchaseBuildBasic()
+                }
+              } label: {
+                Text(_purchases.isBuildBasicTrialEligible ? "Try it Free" : "Subscribe")
+                  .font(.system(size: props.h2, weight: .bold))
+                  .frame(maxWidth: .infinity, maxHeight: .infinity)
+              }.foregroundColor(Color.black)
+                .buttonStyle(.borderedProminent)
+                .frame(minHeight: props.button, maxHeight: props.button)
+                .padding([.top, .bottom])
+            }
+          } else {
+            Text("This is Blink+ Service")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h1, weight: .bold))
               .padding([.top])
-            
-            Text("Run work environments from all your devices.")
-              .font(.system(size: props.h2))
-            Text("[Basic plan](#info) 1\u{00a0}month\u{00a0}free, then \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+            Text("Run work environments from all your devices. For \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
               .fixedSize(horizontal: false, vertical: true)
               .font(.system(size: props.h2))
               .padding([.bottom])
-              .environment(\.openURL, OpenURLAction(handler: { url in
-                withAnimation {
-                  _account.showPlanInfo = true
-                }
-                return .handled
-              }))
-          } else {
-            Text("Get Build")
-              .fixedSize(horizontal: false, vertical: true)
-              .font(.system(size: props.h1, weight: .bold))
-              .padding([.top])
-            
-            Text("Run work environments from all your devices.")
-              .font(.system(size: props.h2))
-            Text("[Basic plan](#info) \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
-              .fixedSize(horizontal: false, vertical: true)
-              .font(.system(size: props.h2))
-              .padding([.bottom])
-              .environment(\.openURL, OpenURLAction(handler: { url in
-                withAnimation {
-                  _account.showPlanInfo = true
-                }
-                return .handled
-              }))
-          }
-          
-          if _purchases.restoreInProgress || _purchases.purchaseInProgress || _account.hasBuildToken {
-            ProgressView()
-              .frame(maxWidth: .infinity, minHeight: props.button, maxHeight: props.button)
-              .padding([.top, .bottom])
-          } else {
             Button {
-              Task {
-                await _purchases.purchaseBuildBasic()
-              }
+              EntitlementsManager.shared.showPaywall(force: true)
             } label: {
-              Text(_purchases.isBuildBasicTrialEligible ? "Try it Free" : "Subscribe")
+              Text("Compare Plans  \(Image(systemName: "bag.badge.questionmark"))")
                 .font(.system(size: props.h2, weight: .bold))
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-            }.foregroundColor(Color.black)
-              .buttonStyle(.borderedProminent)
+            }.foregroundColor(Color("BuildColor"))
+              .buttonStyle(.plain)
               .frame(minHeight: props.button, maxHeight: props.button)
               .padding([.top, .bottom])
           }

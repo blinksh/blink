@@ -151,15 +151,15 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     showPaywall()
   }
   
-  func didShowSubscriptionNags() -> Bool {
-    true
-//    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+  func shouldShowLetterWithDismiss() -> Bool {
+    UserDefaults.standard.object(forKey: NagTimestamp) != nil || self.unlimitedTimeAccess.active
   }
   
   @Published var keepShowingPaywall: Bool = false
   @Published var shouldDismissPaywall: Bool = false
   
-  func showPaywall() {
+  func showPaywall(force: Bool = false) {
+    keepShowingPaywall = force
     NotificationCenter.default.post(name: .subscriptionNag, object: nil)
   }
   
