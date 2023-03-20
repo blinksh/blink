@@ -194,6 +194,7 @@ class PurchasesUserModel: ObservableObject {
   
   func restorePurchases() {
     self.restoreInProgress = true
+    EntitlementsManager.shared.keepShowingPaywall = false
     Purchases.shared.restorePurchases(completion: { info, error in
       self.refresh()
       self.restoreInProgress = false
