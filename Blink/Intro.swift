@@ -306,8 +306,6 @@ struct MigrationButtons: View {
       
       Button("START MIGRATION") {
         NotificationCenter.default.post(name: .openMigration, object: nil)
-//        _purchases.startMigration()
-//        ctx.getStartedHandler()
       }.buttonStyle(BlinkButtonStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false)).disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
         
     }
@@ -504,6 +502,24 @@ struct ShellBulletView: View {
   }
 }
 
+struct ShellClassicBulletView: View {
+  let ctx: PageCtx
+  
+  var body: some View {
+    VStack {
+      HStack(alignment: .firstTextBaseline) {
+        Text("SHELL")
+          .font(ctx.bulletFont()).foregroundColor(BlinkColors.blink)
+          .padding(ctx.bulletPadding())
+          .background(RoundedRectangle(cornerRadius: 6.0).fill(BlinkColors.blinkBG))
+        Text("into remote machines using SSH and Mosh.").font(ctx.bulletTextFont()).foregroundColor(BlinkColors.blink)
+      }
+      Text("Classic functionality • Secure keys • Jump Hosts • Agent • SFTP ").font(Font.system(.callout)).foregroundColor(BlinkColors.blinkText).multilineTextAlignment(.center).padding([.leading, .trailing])
+    }
+  }
+}
+
+
 struct BuildBulletView: View {
   let ctx: PageCtx
   
@@ -636,7 +652,7 @@ struct PageBlinkPlusView: View {
         } message: {
           Text(_purchases.restoredPurchaseMessage)
         }
-        Button("OR CHECK BLINK+ TO CONNECT TO YOUR\nENVIRONMENTS") {
+        Button("GET THE FULL TOOLBOX WITH BLINK+BUILD") {
           ctx.getStartedHandler()
         }.foregroundColor(BlinkColors.code).font(BlinkFonts.btn)
           .padding()
@@ -657,7 +673,7 @@ struct PageBlink14View: View {
       Spacer()
       VStack(alignment: .center, spacing: 20) {
         Spacer()
-        ShellBulletView(ctx: ctx)
+        ShellClassicBulletView(ctx: ctx)
         CodeBulletView(ctx: ctx)
         Spacer()
         Text("After receipt verification with `Blink 14.app` you will be able to access `Blink Classic Plan` for zero cost purchase.\n\nIf you already migrated on a different device, do _Restore Purchases_ instead").font(ctx.infoFont()).foregroundColor(BlinkColors.infoText)
@@ -705,6 +721,32 @@ _The Blink Shell team_
   }
 }
 
+struct PageClassicUsersView: View {
+  let ctx: PageCtx
+  
+  var body: some View {
+    VStack {
+        Text("BLINK+BUILD FREE TRIAL")
+          .font(ctx.headerFont())
+          .foregroundColor(BlinkColors.headerText).multilineTextAlignment(.center)
+      ScrollView {
+        Text("""
+Dear Blink User,
+
+
+_Thanks for your support,_
+_The Blink Shell team_
+""").frame(maxWidth: 600)
+          .font(ctx.infoFont())
+          .foregroundColor(BlinkColors.infoText)
+          .padding()
+      }
+      .padding(.bottom)
+      FreeUsersCallToActionButtons(ctx: ctx, text: Text("DISMISS"))
+    }.padding(ctx.pagePadding())
+  }
+}
+
 
 struct IntroView: View {
   
@@ -713,6 +755,7 @@ struct IntroView: View {
   @State var pages = PageInfo.pages()
   @State var pageIndex: Int
   @StateObject var _purchases = PurchasesUserModel.shared
+  @StateObject var _entitlements = EntitlementsManager.shared
   
   let firstPageIndex: Int
   let startPageIndex = 6
@@ -752,7 +795,11 @@ struct IntroView: View {
       
       TabView(selection: $pageIndex) {
         if withZeroPage {
-          PageFreeUsersView(ctx: ctx).tag(0)
+          if _entitlements.unlimitedTimeAccess.active {
+            PageClassicUsersView(ctx: ctx).tag(0)
+          } else {
+            PageFreeUsersView(ctx: ctx).tag(0)
+          }
         }
         ForEach(pages) { info in
           PageView(ctx: ctx, info: info).tag(info.idx)
@@ -826,20 +873,13 @@ struct IntroView: View {
 
 struct IntroWindow: View {
   let urlHandler: (URL) -> Void
-  @State var withZeroPage = EntitlementsManager.shared.didShowSubscriptionNags()
+  @State var withZeroPage = EntitlementsManager.shared.shouldShowLetterWithDismiss()
   
   var body: some View {
-    ZStack {
-      Rectangle()
-        .fill(Color.black)
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        
       IntroView(
         urlHandler: self.urlHandler,
         withZeroPage: withZeroPage
-      )
-    }.ignoresSafeArea(.all)
-
+      ).background(Color.black, ignoresSafeAreaEdges: .all)
   }
 }
 

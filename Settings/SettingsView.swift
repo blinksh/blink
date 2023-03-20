@@ -43,7 +43,8 @@ struct SettingsView: View {
   @State private var _autoLockOn = BKUserConfigurationManager.userSettingsValue(forKey: BKUserConfigAutoLock)
   @State private var _xCallbackUrlOn = BLKDefaults.isXCallBackURLEnabled()
   @State private var _defaultUser = BLKDefaults.defaultUserName() ?? ""
-  @ObservedObject private var _entitlements: EntitlementsManager = .shared
+  @StateObject private var _entitlements: EntitlementsManager = .shared
+  @StateObject private var _model = PurchasesUserModel.shared
   
   var body: some View {
     List {
@@ -68,10 +69,13 @@ struct SettingsView: View {
       } else {
         Section("Subscription") {
           HStack {
-            Label("Subscription", systemImage: "bag")
+            Label(_entitlements.currentPlanName(), systemImage: "bag")
             Spacer()
-            Text(_entitlements.currentPlanName())
-              .foregroundColor(.secondary)
+            if !_entitlements.earlyAccessFeatures.active {
+              Button("Upgrade") {
+                EntitlementsManager.shared.showPaywall(force: true)
+              }
+            }
           }
           Row {
             HStack {
@@ -196,6 +200,20 @@ struct SettingsView: View {
             Text(_blinkVersion).foregroundColor(.secondary)
           }
         }, storyBoardId: "BKAboutViewController")
+        HStack {
+          Button {
+            _model.openPrivacyAndPolicy()
+          } label: {
+            Label("Privacy Policy", systemImage: "link")
+          }
+        }
+        HStack {
+          Button {
+            _model.openTermsOfUse()
+          } label: {
+            Label("Terms of Use", systemImage: "link")
+          }
+        }
       }
     }
     .onAppear {
