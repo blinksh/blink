@@ -34,19 +34,19 @@ import SwiftUI
 import SSH
 import CryptoKit
 import AuthenticationServices
-//import SwiftCBOR
 
 @available(iOS 16.0, *)
 struct NewPasskeyView: View {
   @EnvironmentObject private var _nav: Nav
   let onCancel: () -> Void
   let onSuccess: () -> Void
-  
+ 
+  @StateObject private var _entitlements = EntitlementsManager.shared
   @StateObject private var _state = NewPasskeyObservable()
   @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "passkeys_feature")])
   
   var body: some View {
-    NavigationStack(path: $_state.steps) {
+    NavigationStack(path: $_entitlements.navigationSteps) {
       List {
         Section(
           header: Text("NAME"),
@@ -91,7 +91,10 @@ struct NewPasskeyView: View {
         FixedTextField.becomeFirstReponder(id: "keyName")
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
-        EarlyFeaturesAccessLetterView(rowsProvider: _provider)
+        switch step {
+        case .letter: EarlyFeaturesAccessLetterView(rowsProvider: _provider)
+        case .plans: OfferForFreeAndClassicsView()
+        }
       })
     }
   }
@@ -116,7 +119,6 @@ func rpIdWith(keyID: String) -> String {
 
 fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
-  @Published var steps: [EarlyFeatureAccessSteps] = []
   
   @Published var keyName = ""
   @Published var keyComment = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
@@ -126,11 +128,6 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
   var isValid: Bool {
     !keyName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
   }
-  
-//  func presentPlans() {
-//    EntitlementsManager.shared.showPaywall()
-//  }
-
   
   func createKey(anchor: ASPresentationAnchor, onSuccess: @escaping () -> Void) {
     self.onSuccess = onSuccess
@@ -204,7 +201,7 @@ extension NewPasskeyObservable: ASAuthorizationControllerDelegate {
     
     guard EntitlementsManager.shared.earlyAccessFeatures.active// TODO: FIX Flow || FeatureFlags.earlyAccessFeatures
     else {
-      self.steps = [.Letter]
+      EntitlementsManager.shared.navigationSteps = [.letter]
       return
     }
     
