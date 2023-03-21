@@ -143,12 +143,38 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     _showPaywallIfNeeded()
   }
   
+  public func showingPaywall() -> Bool {
+    self.paywallWindow != nil
+  }
+  
   @objc private func _showPaywallIfNeeded() {
 //    if FeatureFlags.checkReceipt {
 //      return
 //    }
     
-    guard EntitlementsManager.shared.doShowPaywall()  else {
+    let entitlements = EntitlementsManager.shared
+    let doShowPaywall = entitlements.doShowPaywall()
+    
+    // we are showing plans for keys
+    if entitlements.navigationSteps.contains(.plans) {
+      if !doShowPaywall {
+        entitlements.navigationSteps = []
+      }
+      return
+    }
+    
+    // we are showing offer in settings
+    if let navCtrl = entitlements.navigationCtrl {
+      if !doShowPaywall {
+        navCtrl.popToRootViewController(animated: true)
+      }
+      entitlements.navigationCtrl = nil
+      
+      return
+    }
+    
+    guard doShowPaywall
+    else {
       if let window = self.paywallWindow {
         if window.rootViewController?.presentedViewController != nil {
           // We are showing migration view. It will close itself

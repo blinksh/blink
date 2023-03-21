@@ -71,7 +71,7 @@ class PurchasesUserModel: ObservableObject {
   
   // MARK: Paywall
   
-  @Published var paywallPageIndex: Int = 0
+//  @Published var paywallPageIndex: Int = 0
   
   private init() {
     refresh()
@@ -163,6 +163,7 @@ class PurchasesUserModel: ObservableObject {
   }
   
   private func _purchaseWithValidation(product: StoreProduct?) async {
+//    _purchase(product: product)
     do {
       self.purchaseInProgress = true
       EntitlementsManager.shared.keepShowingPaywall = true
@@ -171,7 +172,7 @@ class PurchasesUserModel: ObservableObject {
       if EntitlementsManager.shared.build.active {
           await BuildAccountModel.shared.trySignIn();
       }
-      
+
       if res.activeSubscriptions.contains(ProductBlinkShellPlusID) {
         self.restoredPurchaseMessage = "We have restored your subscription to Blink+.\nThanks for your support!"
         self.restoredPurchaseMessageVisible = true
@@ -188,6 +189,7 @@ class PurchasesUserModel: ObservableObject {
       _purchase(product: product)
     } catch {
       EntitlementsManager.shared.keepShowingPaywall = false
+      self.purchaseInProgress = false
       self.alertErrorMessage = error.localizedDescription
     }
   }
@@ -229,6 +231,23 @@ class PurchasesUserModel: ObservableObject {
       return "START 1 WEEK FREE, THEN \(price)"
     } else {
       return "GET BLINK+BUILD, \(price)"
+    }
+  }
+  
+  func blinkPlusBuildSubscribeButtonText1() -> String {
+    if self.blinkPlusBuildTrialAvailable() {
+      return "GET BLINK+BUILD, 1 WEEK FREE"
+    } else {
+      return "GET BLINK+BUILD"
+    }
+  }
+  
+  func blinkPlusBuildSubscribeButtonText2() -> String {
+    let price = self.formattedBlinkPlusBuildPriceWithPeriod()?.uppercased() ?? "";
+    if self.blinkPlusBuildTrialAvailable() {
+      return "THEN \(price)"
+    } else {
+      return price
     }
   }
   

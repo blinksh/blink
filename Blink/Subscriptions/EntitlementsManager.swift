@@ -76,7 +76,6 @@ public protocol EntitlementsSource: AnyObject {
   func startUpdates()
 }
 
-
 public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   
   public static let shared = EntitlementsManager([AppStoreEntitlementsSource()])
@@ -88,6 +87,9 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   @Published var activeSubscriptions: Set<String> = .init()
   @Published var nonSubscriptionTransactions: Set<String> = .init()
   @Published var isUnknownState: Bool = true
+  
+  public var navigationCtrl: UINavigationController? = nil
+  @Published var navigationSteps: [EarlyFeatureAccessSteps] = []
 
   private let _sources: [EntitlementsSource]
   
@@ -152,7 +154,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   func shouldShowLetterWithDismiss() -> Bool {
-    UserDefaults.standard.object(forKey: NagTimestamp) != nil || self.unlimitedTimeAccess.active
+    UserDefaults.standard.object(forKey: NagTimestamp) != nil
   }
   
   @Published var keepShowingPaywall: Bool = false
@@ -175,7 +177,6 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
 //      return false
 //    }
     return !self.unlimitedTimeAccess.active
-    //true
   }
   
   func dismissPaywall() {

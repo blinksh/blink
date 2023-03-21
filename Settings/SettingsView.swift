@@ -73,7 +73,9 @@ struct SettingsView: View {
             Spacer()
             if !_entitlements.earlyAccessFeatures.active {
               Button("Upgrade") {
-                EntitlementsManager.shared.showPaywall(force: true)
+                let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
+                _nav.navController.pushViewController(vc, animated: true)
+                _entitlements.navigationCtrl = _nav.navController
               }
             }
           }

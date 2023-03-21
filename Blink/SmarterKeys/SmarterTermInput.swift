@@ -211,6 +211,17 @@ class CaretHider {
     return res
   }
   
+  override func canBeFocused() -> Bool {
+    let res = super.canBeFocused()
+    if let delegate = self.window?.windowScene?.delegate as? SceneDelegate {
+      if delegate.showingPaywall() {
+        return false
+      }
+    }
+    return res
+    
+  }
+  
   var isRealFirstResponder: Bool {
     contentView()?.isFirstResponder == true
   }
