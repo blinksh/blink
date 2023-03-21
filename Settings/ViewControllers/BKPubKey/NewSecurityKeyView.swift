@@ -42,12 +42,13 @@ struct NewSecurityKeyView: View {
   @EnvironmentObject private var _nav: Nav
   let onCancel: () -> Void
   let onSuccess: () -> Void
-  
+ 
+  @StateObject private var _entitlements = EntitlementsManager.shared
   @StateObject private var _state = NewSecurityKeyObservable()
   @StateObject private var _provider = RowsViewModel(baseURL: XCConfig.infoPlistConversionOpportunityURL(), additionalParams: [URLQueryItem(name: "conversion_stage", value: "security_keys_feature")])
   
   var body: some View {
-    NavigationStack(path: $_state.steps) {
+    NavigationStack(path: $_entitlements.navigationSteps) {
       List {
         Section(
           header: Text("NAME"),
@@ -92,7 +93,10 @@ struct NewSecurityKeyView: View {
         FixedTextField.becomeFirstReponder(id: "keyName")
       })
       .navigationDestination(for: EarlyFeatureAccessSteps.self, destination: { step in
-        EarlyFeaturesAccessLetterView(rowsProvider: _provider)
+        switch step {
+        case .letter: EarlyFeaturesAccessLetterView(rowsProvider: _provider)
+        case .plans: OfferForFreeAndClassicsView()
+        }
       })
     }
   }
@@ -109,7 +113,6 @@ struct NewSecurityKeyView: View {
 
 fileprivate class NewSecurityKeyObservable: NSObject, ObservableObject {
   var onSuccess: () -> Void = {}
-  @Published var steps: [EarlyFeatureAccessSteps] = []
   
   @Published var keyName = ""
   @Published var keyComment = "\(BLKDefaults.defaultUserName() ?? "")@\(UIDevice.getInfoType(fromDeviceName: BKDeviceInfoTypeDeviceName) ?? "")"
@@ -188,10 +191,9 @@ extension NewSecurityKeyObservable: ASAuthorizationControllerDelegate {
       return
     }
     
-    guard EntitlementsManager.shared.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures
+    guard EntitlementsManager.shared.earlyAccessFeatures.active // TODO: FIX FLOW || FeatureFlags.earlyAccessFeatures
     else {
-      // TODO: FIX FLOW
-//      self.steps = [.Letter]
+      EntitlementsManager.shared.navigationSteps = [.letter]
       return
     }
     

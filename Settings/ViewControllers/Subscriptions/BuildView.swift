@@ -379,7 +379,9 @@ struct BuildIntroView: View {
               .font(.system(size: props.h2))
               .padding([.bottom])
             Button {
-              EntitlementsManager.shared.showPaywall(force: true)
+              let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
+              _nav.navController.pushViewController(vc, animated: true)
+              _entitlements.navigationCtrl = _nav.navController
             } label: {
               Text("Compare Plans  \(Image(systemName: "bag.badge.questionmark"))")
                 .font(.system(size: props.h2, weight: .bold))
