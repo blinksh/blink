@@ -107,7 +107,7 @@ final class BlinkItemReference: NSObject {
       isDownloaded = false
       return
     }
-
+    
     // Floor modified times as on some platforms it is a dobule with decimals
     let epochRemote = floor(remoteModified.timeIntervalSince1970)
     let epochLocal =  floor(localModified.timeIntervalSince1970)
@@ -117,15 +117,16 @@ final class BlinkItemReference: NSObject {
       isDownloaded = false
       isUploaded = true
     } else if epochRemote == epochLocal {
-      primary = remote!
-      replica = local
+      primary = local!
+      replica = remote
       isDownloaded = true
       isUploaded = true
     } else {
-      primary = local!
+      // This is inconsistent (maybe an interrupted upload?), so we go with
+      // whatever the remote has.
+      primary = remote!
       replica = primary
-      // TODO Not sure in this case.
-      isDownloaded = true
+      isDownloaded = false
       isUploaded = false
     }
   }
