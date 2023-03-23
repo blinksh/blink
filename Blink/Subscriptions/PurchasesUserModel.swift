@@ -36,13 +36,15 @@ import SwiftUI
 @MainActor
 class PurchasesUserModel: ObservableObject {
   // MARK: products
-  @Published var plusProduct: StoreProduct? = nil
+  @Published var blinkShellPlusProduct: StoreProduct? = nil
   @Published var buildBasicProduct: StoreProduct? = nil
   @Published var classicProduct: StoreProduct? = nil
   @Published var blinkPlusBuildBasicProduct: StoreProduct? = nil
+  @Published var blinkPlusProduct: StoreProduct? = nil
   
   @Published var blinkBuildTrial: IntroEligibility? = nil
   @Published var blinkPlusBuildTrial: IntroEligibility? = nil
+  @Published var blinkPlusDiscount: IntroEligibility? = nil
   
   // MARK: Progress indicators
   @Published var purchaseInProgress: Bool = false
@@ -81,7 +83,7 @@ class PurchasesUserModel: ObservableObject {
   
   func refresh() {
     BuildAccountModel.shared.checkBuildToken(animated: false)
-    if self.plusProduct == nil
+    if self.blinkShellPlusProduct == nil
         || self.classicProduct == nil
         || self.buildBasicProduct == nil
         || self.blinkPlusBuildBasicProduct == nil {
@@ -130,10 +132,13 @@ class PurchasesUserModel: ObservableObject {
     await _purchaseWithValidation(product: blinkPlusBuildBasicProduct)
   }
   
-  func purchasePlusWithValidation() async {
-    await _purchaseWithValidation(product: plusProduct)
+  func purchaseBlinkShellPlusWithValidation() async {
+    await _purchaseWithValidation(product: blinkShellPlusProduct)
   }
   
+  func purchaseBlinkPlusWithValidation() async {
+    await _purchaseWithValidation(product: blinkPlusProduct)
+  }
 
   func purchaseClassic() {
     _purchase(product: classicProduct)
@@ -214,7 +219,7 @@ class PurchasesUserModel: ObservableObject {
   }
   
   func formattedPlusPriceWithPeriod() -> String? {
-    plusProduct?.formattedPriceWithPeriod()
+    blinkShellPlusProduct?.formattedPriceWithPeriod()
   }
   
   func formattedBuildPriceWithPeriod() -> String? {
@@ -223,6 +228,18 @@ class PurchasesUserModel: ObservableObject {
   
   func formattedBlinkPlusBuildPriceWithPeriod() -> String? {
     blinkPlusBuildBasicProduct?.formattedPriceWithPeriod()
+  }
+  
+  func formattedBlinkPlusPriceWithPeriod() -> String? {
+    blinkPlusProduct?.formattedPriceWithPeriod()
+  }
+  
+  func formattedBlinkPlusDiscountPrice() -> String? {
+    if let discountPrice =  blinkPlusProduct?.introductoryDiscount?.localizedPriceString {
+      return "\(discountPrice) FIRST YEAR, (\(blinkPlusProduct?.localizedPriceString ?? "") AFTER)"
+    }
+    
+    return blinkPlusProduct?.formattedPriceWithPeriod()
   }
   
   func blinkPlusBuildSubscribeButtonText() -> String {
@@ -256,20 +273,23 @@ class PurchasesUserModel: ObservableObject {
       ProductBlinkShellClassicID,
       ProductBlinkShellPlusID,
       ProductBlinkBuildBasicID,
-      ProductBlinkPlusBuildBasicID
+      ProductBlinkPlusBuildBasicID,
+      ProductBlinkPlusID
     ]) { products in
       DispatchQueue.main.async {
         for product in products {
           let productID = product.productIdentifier
           
           if productID == ProductBlinkShellPlusID {
-            self.plusProduct = product
+            self.blinkShellPlusProduct = product
           } else if productID == ProductBlinkShellClassicID {
             self.classicProduct = product
           } else if productID == ProductBlinkBuildBasicID {
             self.buildBasicProduct = product
           } else if productID == ProductBlinkPlusBuildBasicID {
             self.blinkPlusBuildBasicProduct = product
+          } else if productID == ProductBlinkPlusID {
+            self.blinkPlusProduct = product
           }
         }
       }
@@ -278,11 +298,15 @@ class PurchasesUserModel: ObservableObject {
   
   func fetchTrialEligibility() {
     Purchases.shared.checkTrialOrIntroDiscountEligibility(
-      productIdentifiers: [ProductBlinkBuildBasicID, ProductBlinkPlusBuildBasicID],
+      productIdentifiers: [
+        ProductBlinkBuildBasicID,
+        ProductBlinkPlusBuildBasicID,
+        ProductBlinkPlusID],
       completion: { map in
         DispatchQueue.main.async {
-          self.blinkBuildTrial = map[ProductBlinkBuildBasicID];
-          self.blinkPlusBuildTrial = map[ProductBlinkPlusBuildBasicID];
+          self.blinkBuildTrial = map[ProductBlinkBuildBasicID]
+          self.blinkPlusBuildTrial = map[ProductBlinkPlusBuildBasicID]
+          self.blinkPlusDiscount = map[ProductBlinkPlusID]
         }
       })
   }
@@ -363,6 +387,40 @@ extension PurchasesUserModel {
   
   func openMigrationHelp() {
     blink_openurl(URL(string: "https://docs.blink.sh/migration")!)
+  }
+}
+
+extension StoreProductDiscount {
+  func formattedPriceWithPeriod() -> String? {
+//    priceFormatter.locale = priceLocale
+//    guard let priceStr = priceFormatter.string(for: price) else {
+//      return nil
+//    }
+
+    let priceStr = localizedPriceString
+    let period = self.subscriptionPeriod
+
+    let n = period.value
+
+    if n <= 1 {
+      switch period.unit {
+      case .day: return "\(priceStr)/day"
+      case .week: return "\(priceStr)/week"
+      case .month: return "\(priceStr)/month"
+      case .year: return "\(priceStr)/year"
+      @unknown default:
+        return priceStr
+      }
+    }
+
+    switch period.unit {
+    case .day: return "\(priceStr) / \(n) days"
+    case .week: return "\(priceStr) / \(n) weeks"
+    case .month: return "\(priceStr) / \(n) months"
+    case .year: return "\(priceStr) / \(n) years"
+    @unknown default:
+      return priceStr
+    }
   }
 }
 

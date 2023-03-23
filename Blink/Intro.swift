@@ -504,7 +504,7 @@ struct PageInfo: Identifiable {
       ),
       PageInfo(
         idx: 3,
-        title: "SSH, MOSH & BASIC TOOLS.",
+        title: "SSH, MOSH & BASIC TOOLS",
         linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
         url: URL(string: "https://youtube.com/shorts/VYmrSlG9lX0")!,
         info: Text("Type **`mosh`** for high-performance remote shells. Type **`ssh`** for secure shells and tunnels. Type **`sftp`** or **`scp`** for secure file transfer. Have access to UNIX tools like **`cd`**, **`ls`**, **`ping`**, etc..."),
@@ -521,7 +521,7 @@ struct PageInfo: Identifiable {
       ),
       PageInfo(
         idx: 5,
-        title: "BUILD YOUR DEV ENVIRONMENTS.",
+        title: "BUILD YOUR DEV ENVIRONMENTS",
         linkText: Text("\(Image(systemName: "play.rectangle.fill")) WATCH"),
         url: URL(string: "https://youtu.be/78XukJvz5vg")!,
         
@@ -641,7 +641,7 @@ struct CodeBulletView: View {
         Text("using the world’s most popular editor.").font(ctx.bulletTextFont()).foregroundColor(BlinkColors.code)
       }
       if showList {
-        Text("Edit local files • Edit remote files • Interface adapted to your mobile device.")
+        Text("Edit local files • Edit remote files • Interface adapted to your mobile device")
           .font(Font.system(.callout))
           .foregroundColor(BlinkColors.codeText)
           .multilineTextAlignment(.center)
@@ -746,6 +746,7 @@ struct PageBlinkPlusBuildView: View {
 struct PageBlinkPlusView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
+  @State var isFreeUser = EntitlementsManager.shared.isFreeUser()
   
   var body: some View {
     VStack {
@@ -764,29 +765,51 @@ struct PageBlinkPlusView: View {
               .font(BlinkFonts.bullet).foregroundColor(BlinkColors.build)
               .padding(ctx.bulletPadding())
               .background(RoundedRectangle(cornerRadius: 6.0).fill(BlinkColors.buildBG))
-            Text("as you go for \(_purchases.formattedBuildPriceWithPeriod() ?? "").").font(BlinkFonts.bulletText).foregroundColor(BlinkColors.build)
+            Text("as you go for \(_purchases.formattedBuildPriceWithPeriod() ?? "").")
+              .font(BlinkFonts.bulletText).foregroundColor(BlinkColors.build)
           }
         }
         Spacer()
       }
 
       VStack() {
-        TwoLineButton(
-          line1: Text("GET BLINK+, \(_purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? "") (~~$29.99/YEAR~~)"),
-          line2: "LIMITED TIME OFFER",
-          disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-          inProgress: _purchases.purchaseInProgress || _purchases.formattedPlusPriceWithPeriod() == nil
-        ) {
-          Task {
-            await _purchases.purchasePlusWithValidation()
-          }
-        }.frame(maxWidth: .infinity)
-        .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-          Button("OK") {
-            EntitlementsManager.shared.dismissPaywall()
-          }
-        } message: {
-          Text(_purchases.restoredPurchaseMessage)
+        if isFreeUser {
+          TwoLineButton(
+            line1: Text("GET BLINK+. REDEEM YOUR OFFER SOON."),
+            line2: _purchases.formattedBlinkPlusDiscountPrice() ?? "",
+            disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+            inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusPriceWithPeriod() == nil
+          ) {
+            Task {
+              await _purchases.purchaseBlinkPlusWithValidation()
+            }
+          }.frame(maxWidth: .infinity)
+            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+              Button("OK") {
+                EntitlementsManager.shared.dismissPaywall()
+              }
+            } message: {
+              Text(_purchases.restoredPurchaseMessage)
+            }
+
+        } else {
+          TwoLineButton(
+            line1: Text("GET BLINK+, \(_purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? "") (~~$29.99/YEAR~~)"),
+            line2: "OFFER ENDS SOON",
+            disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+            inProgress: _purchases.purchaseInProgress || _purchases.formattedPlusPriceWithPeriod() == nil
+          ) {
+            Task {
+              await _purchases.purchaseBlinkShellPlusWithValidation()
+            }
+          }.frame(maxWidth: .infinity)
+            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+              Button("OK") {
+                EntitlementsManager.shared.dismissPaywall()
+              }
+            } message: {
+              Text(_purchases.restoredPurchaseMessage)
+            }
         }
         Button("GET THE FULL TOOLBOX WITH BLINK+BUILD") {
           ctx.checkBlinkBuildHandler()
@@ -943,7 +966,7 @@ struct IntroView: View {
   
   @StateObject var _purchases = PurchasesUserModel.shared
   @StateObject var _entitlements = EntitlementsManager.shared
-  @State var canDissmiss = EntitlementsManager.shared.shouldShowLetterWithDismiss()
+  @State var isFreeUser = EntitlementsManager.shared.isFreeUser()
   
   @State var offerPage = LastPageState.blinkBuild
   
@@ -994,7 +1017,7 @@ struct IntroView: View {
       )
       
       TabView(selection: $pageIndex) {
-        if canDissmiss {
+        if isFreeUser {
           PageFreeUsersView(ctx: ctx).tag(0)
         } else {
           PageWelcomeView(ctx: ctx).tag(0)
