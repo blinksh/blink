@@ -37,10 +37,12 @@ let UnlimitedScreenTimeEntitlementID = "unlimited_screen_time"
 let EarlyAccessFeaturesEntitlementID = "early_access_features"
 let BuildEntitlementID = "build"
 
+let ProductBlinkPlusID = "blink_plus_1y_2999"
 let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
 let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
 let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
+
 
 private let NagTimestamp = "NagTimestamp"
 extension Notification.Name {
@@ -153,8 +155,8 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     showPaywall()
   }
   
-  func shouldShowLetterWithDismiss() -> Bool {
-    UserDefaults.standard.object(forKey: NagTimestamp) != nil
+  func isFreeUser() -> Bool {
+    !unlimitedTimeAccess.active && UserDefaults.standard.object(forKey: NagTimestamp) != nil
   }
   
   @Published var keepShowingPaywall: Bool = false
@@ -190,6 +192,9 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     if activeSubscriptions.contains(ProductBlinkShellPlusID) {
       return "Blink+ Plan"
     }
+    if activeSubscriptions.contains(ProductBlinkPlusID) {
+      return "Blink+ Plan"
+    }
     if activeSubscriptions.contains(ProductBlinkPlusBuildBasicID) {
       return "Blink+Build Plan"
     }
@@ -200,7 +205,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   public func customerTier() -> CustomerTier {
-    if activeSubscriptions.contains(ProductBlinkShellPlusID) {
+    if activeSubscriptions.contains(ProductBlinkShellPlusID)  || activeSubscriptions.contains(ProductBlinkPlusID){
       return CustomerTier.Plus
     }
     if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
