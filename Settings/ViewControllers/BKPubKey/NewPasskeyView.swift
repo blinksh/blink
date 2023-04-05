@@ -156,6 +156,8 @@ fileprivate class NewPasskeyObservable: NSObject, ObservableObject {
           name: keyID,
           userID: userID
       )
+      // Ignored
+      // passkeyRequest.userVerificationPreference = .discouraged
       
       let authController = ASAuthorizationController(authorizationRequests: [ passkeyRequest ] )
       authController.delegate = self

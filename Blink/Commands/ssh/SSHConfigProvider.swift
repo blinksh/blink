@@ -129,20 +129,16 @@ extension SSHClientConfigProvider {
 
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
 
-    if let signers = config.signer(forHost: host) {
-      signers.forEach { (signer, name) in
-        // NOTE We could also keep the reference and just read the key at the proper time.
-        // TODO Errors. Either pass or log here, or if we create a different
-        // type of key, then let the Agent fail.
-        if let signer = signer as? BlinkConfig.InputPrompter {
-          signer.setPromptOnView(device.view)
-        }
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
+    let signers = config.signer(forHost: host) ?? config.defaultSigners()
+    
+    signers.forEach { (signer, name) in
+      // NOTE We could also keep the reference and just read the key at the proper time.
+      // TODO Errors. Either pass or log here, or if we create a different
+      // type of key, then let the Agent fail.
+      if let signer = signer as? BlinkConfig.InputPrompter {
+        signer.setPromptOnView(device.view)
       }
-    } else {
-      for (signer, name) in config.defaultSigners() {
-        _ = agent.loadKey(signer, aka: name, constraints: consts)
-      }
+      _ = agent.loadKey(signer, aka: name, constraints: consts)
     }
     
     // Link to Default Agent
