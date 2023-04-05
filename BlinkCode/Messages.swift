@@ -53,7 +53,7 @@ struct GetRootRequest: Codable {
   let op: CodeFileSystemAction
   let token: Int
   let version: Int
-  
+
   init(token: Int, version: Int) {
     self.op = .getRoot
     self.token = token
@@ -64,7 +64,7 @@ struct GetRootRequest: Codable {
 struct StatFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .stat
     self.uri = uri
@@ -74,7 +74,7 @@ struct StatFileSystemRequest: Codable {
 struct ReadDirectoryFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .readDirectory
     self.uri = uri
@@ -85,7 +85,7 @@ struct ReadDirectoryFileSystemRequest: Codable {
 struct ReadFileFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .readFile
     self.uri = uri
@@ -110,7 +110,7 @@ struct RenameFileSystemRequest: Codable {
   let oldUri: URI
   let newUri: URI
   let options: FileSystemOperationOptions
-  
+
   init(oldUri: URI, newUri: URI, options: FileSystemOperationOptions) {
     self.op = .rename
     self.oldUri = oldUri
@@ -123,7 +123,7 @@ struct DeleteFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
   let options: FileSystemOperationOptions
-  
+
   init(uri: URI, options: FileSystemOperationOptions) {
     self.op = .delete
     self.uri = uri
@@ -134,7 +134,7 @@ struct DeleteFileSystemRequest: Codable {
 struct CreateDirectoryFileSystemRequest: Codable {
   let op: CodeFileSystemAction
   let uri: URI
-  
+
   init(uri: URI) {
     self.op = .createDirectory
     self.uri = uri
@@ -142,7 +142,7 @@ struct CreateDirectoryFileSystemRequest: Codable {
 }
 
 
-struct RootPath {
+struct RootPath: Equatable {
   private let url: URL // should be private
 
   //var fullPath: String { url.absoluteString }
@@ -150,7 +150,7 @@ struct RootPath {
   //var host: String? { url.host }
   var filesAtPath: String { url.path }
   var lastPathComponent: String { url.lastPathComponent }
-  
+
   init(_ rootPath: String) {
     self.url = URL(string: rootPath)!
   }
@@ -162,23 +162,27 @@ struct RootPath {
   var parent: RootPath {
     return RootPath(url.deletingLastPathComponent())
   }
+
+  public static func ==(lhs: RootPath, rhs: RootPath) -> Bool {
+      return lhs.url == rhs.url
+  }
 }
 
-public struct URI {
+public struct URI: Equatable {
   let host: String?
   let protocolId: String
   let rootPath: RootPath
-  
+
   var parent: URI {
     URI(host: host, protocolId: protocolId, rootPath: self.rootPath.parent)
   }
-  
+
   private init(host: String?, protocolId: String, rootPath: RootPath) {
     self.host = host
     self.protocolId = protocolId
     self.rootPath = rootPath
   }
-  
+
   public init(string: String) throws {
     guard let url = URL(string: string)
     else {
@@ -188,7 +192,7 @@ public struct URI {
     // The host's URL is not case-sensitive, but our URI is, so we extract it here.
     let urlComponents = string.components(separatedBy: "://")
     let isFileURL = urlComponents.count == 1
-    
+
     let host: String?
     if isFileURL {
       host = nil
@@ -197,6 +201,10 @@ public struct URI {
     }
 
     self.init(host: host, protocolId: protocolId, rootPath: RootPath(url))
+  }
+
+  public static func ==(lhs: URI, rhs: URI) -> Bool {
+    return lhs.host == rhs.host && lhs.protocolId == rhs.protocolId && lhs.rootPath == rhs.rootPath
   }
 }
 
@@ -231,7 +239,7 @@ extension URI: Codable {
     try self.init(stringWithEncodedHost: try String(from: decoder))
     //try self.init(string: try String(from: decoder))
   }
-  
+
   public func encode(to encoder: Encoder) throws {
     //var container = encoder.unkeyedContainer()
     let output: String
@@ -245,7 +253,7 @@ extension URI: Codable {
     } else {
       output = "\(protocolId):\(rootPath.filesAtPath)"
     }
-    
+
     print("ENCODED \(output)")
     try output.encode(to: encoder)
   }
@@ -255,7 +263,7 @@ struct FileSystemOperationOptions: Codable {
   let overwrite: Bool?
   let create: Bool?
   let recursive: Bool?
-  
+
   init(overwrite: Bool? = nil, create: Bool? = nil, recursive: Bool? = nil) {
     self.overwrite = overwrite
     self.create = create
@@ -276,7 +284,7 @@ struct DirectoryTuple: Codable {
     try container.encode(name)
     try container.encode(type)
   }
-  
+
   init(from decoder: Decoder) throws {
     var container = try decoder.unkeyedContainer()
     self.name = try container.decode(String.self)

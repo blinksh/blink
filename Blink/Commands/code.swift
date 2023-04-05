@@ -65,7 +65,7 @@ class SharedFP {
 enum FileLocationPathOrURL {
   case fileLocationPath(FileLocationPath)
   case url(URL)
-  
+
   init(_ str: String) throws {
     if str.starts(with: "http://") || str.starts(with: "https://") {
       if let url = URL(string: str) {
@@ -112,14 +112,14 @@ struct CodeCommand: NonStdIOCommand {
     }
   )
   var vscodeURL: URL?
-  
+
   mutating func run() throws {
     let session = Unmanaged<MCPSession>.fromOpaque(thread_context).takeUnretainedValue()
-    
+
     var path: FileLocationPath
 
     try showBlinkFSWarning()
-    
+
     switch pathOrUrl {
     case .url(var url):
       var str = url.absoluteString
@@ -146,7 +146,7 @@ struct CodeCommand: NonStdIOCommand {
       }
       return
     }
-    
+
     let fp = SharedFP.startedFP(port: 50000)
     let port = fp.service.port
 
@@ -155,7 +155,7 @@ struct CodeCommand: NonStdIOCommand {
     }
 
     let token = fp.service.registerMount(name: "xxx", root: rootURI)
-    
+
     var observers: [NSObjectProtocol] = [NSObject()]
     observers[0] = NotificationCenter.default.addObserver(forName: .deviceTerminated, object: nil, queue: nil) { notification in
       guard let device = notification.userInfo?["device"] as? TermDevice
@@ -197,39 +197,38 @@ public func code_main(argc: Int32, argv: Argv) -> Int32 {
   io.in_ = InputStream(file: thread_stdin)
   io.out = OutputStream(file: thread_stdout)
   io.err = OutputStream(file: thread_stderr)
-  
+
   return CodeCommand.main(Array(argv.args(count: argc)[1...]), io: io)
 }
 
 extension FileLocationPath {
   // blinkfs:/path
   // blinksftp://user@host:port/path
-  
-  fileprivate var codeFileSystemURI: URI? {
+
+  internal var codeFileSystemURI: URI? {
     if proto == .local {
       return try? URI(string: uriProtocolIdentifier +
                       filePath.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed)!)
     } else {
-      // "/user@host#port" -> "/user@host:port"
+      // "user@host#port" -> "user@host:port"
       guard let hostPath = hostPath else {
         return nil
       }
       let host = "/\(hostPath.replacingOccurrences(of: "#", with: ":"))"
-      if !filePath.starts(with: "/") && !filePath.starts(with: "~/") {
-        filePath = "/~/\(filePath)"
-      } else if filePath.isEmpty || filePath.starts(with: "~/"){
-        filePath = "/~/"
-      }
-      
-      return try? URI(string: uriProtocolIdentifier + host + "\(filePath)")
+
+      return try? URI(string: "\(uriProtocolIdentifier)\(host)\(filePath)")
     }
   }
 
   fileprivate var uriProtocolIdentifier: String {
     switch proto {
     case .local:
+      // local paths do not need a domain, just the colon separator.
+      // blinkfs:path/to/files
       return "blinkfs:"
     default:
+      // remote paths need a domain, so we add an extra slash for the host
+      // blinksftp://host/path/to
       return "blinksftp:/"
     }
   }
