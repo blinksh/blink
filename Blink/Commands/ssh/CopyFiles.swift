@@ -80,7 +80,7 @@ struct BlinkCopyCommand: ParsableCommand {
   @Argument(help: "DEST",
             transform: { try FileLocationPath($0) })
   var destination: FileLocationPath = try! FileLocationPath(".")
-  
+
   var preserveFlags: CopyAttributesFlag {
     preserve ? CopyAttributesFlag([.permissions, .timestamp]) : CopyAttributesFlag([])
   }
@@ -99,35 +99,66 @@ class FileLocationPath {
   var hostPath: String? // user@host#port
   var filePath: String
 
+  // The FilePath cannot perform a full canonicalization and standardization of remote paths,
+  // so what we do is to make them all look the same and let the Translator deal with standardizing and
+  // canonicalizing further.
+  // The FileLocationPath is always full, although it may contain special characters like ~.
+  // Because of this, the FilePath must always start with a /
   init(_ path: String) throws {
     self.fullPath = path
 
     let components = self.fullPath.components(separatedBy: ":")
-    
+
     switch components.count {
     case 1:
-      self.filePath = ((FileManager.default.currentDirectoryPath as NSString)
-        .appendingPathComponent(components[0]) as NSString)
-        .standardizingPath
-        
+      // For a local path, we already have either absolute or relative to current
+      let filePath = components[0]
+      if filePath.starts(with: "/") {
+        self.filePath = filePath
+      } else if filePath.starts(with: "~") {
+        self.filePath = ("/" as NSString).appendingPathComponent(filePath)
+      } else {
+        self.filePath = (FileManager.default.currentDirectoryPath as NSString)
+          .appendingPathComponent(filePath)
+      }
+
       self.proto = .local
     case 2:
-      self.filePath = components[1]
+      // For remote paths, we start with absolute / or relative to ~
+      let filePath = components[1]
+      if filePath.isEmpty {
+        self.filePath = "/~"
+      } else if filePath.starts(with: "/") {
+        self.filePath = filePath
+      } else if filePath.starts(with: "~") {
+        self.filePath = "/\(filePath)"
+      } else { // Relative
+        self.filePath = "/~/\(filePath)"
+      }
+
       var host = components[0]
       if host.starts(with: "/") {
         host.removeFirst()
       }
       self.hostPath = host
-    case 3:
-      self.filePath = components[2]
+    default:
+      let filePath = components[2...].joined(separator: ":")
+      if filePath.isEmpty {
+        self.filePath = "/~"
+      } else if filePath.starts(with: "/") {
+        self.filePath = filePath
+      } else if filePath.starts(with: "~") {
+        self.filePath = "/\(filePath)"
+      } else { // Relative
+        self.filePath = "/~/\(filePath)"
+      }
+
       self.hostPath = components[1]
       var proto = components[0]
       if proto.starts(with: "/") {
         proto.removeFirst()
       }
       self.proto = BlinkFilesProtocols(rawValue: proto)
-    default:
-      throw ArgumentParser.ValidationError("Path format can only have three components <protocol>:<host>:<path>")
     }
   }
 }
@@ -166,13 +197,13 @@ public class BlinkCopy: NSObject {
 
     let copyArguments = CopyArguments(preserve: command.preserveFlags,
                                       checkTimes: command.update)
-    
+
     // Connect to the destination first, as it will be the one driving the operation.
     let destProtocol = command.destination.proto ?? defaultRemoteProtocol
 
     let destTranslator = (destProtocol == .local) ? localTranslator(to: command.destination.filePath) :
       remoteTranslator(toFilePath: command.destination.filePath, atHost: command.destination.hostPath!, using: destProtocol, isSource: false)
-    
+
     // Source
     let sourceProtocol = command.source.proto ?? defaultRemoteProtocol
     let sourceTranslator = (sourceProtocol == .local) ? localTranslator(to: command.source.filePath) :
@@ -190,7 +221,7 @@ public class BlinkCopy: NSObject {
     var lastElapsed = 0
     copyCancellable = destTranslator.flatMap { d -> CopyProgressInfoPublisher in
       rootFilePath = d.current
-      
+
       return sourceTranslator
         .flatMap {
           $0.cloneWalkTo(self.command.source.filePath)
@@ -262,12 +293,12 @@ public class BlinkCopy: NSObject {
           currentSpeed = String(format: "%.2f", kbCopied / Double(elapsed))
         }
       }
-      
+
       let progressOutput = [
         "\u{001B}[K\(displayFileName)",
         "\(currentCopied)/\(progress.size)",
         "\(currentSpeed ?? "-")kb/S"].joined(separator: "\t")
-      
+
       if progress.written == 0 {
         print(progressOutput, to: &self.stdout)
       } else {
@@ -279,7 +310,7 @@ public class BlinkCopy: NSObject {
 
     // Make another run on the loop to close extra stuff in blocks.
     RunLoop.current.run(until: Date(timeIntervalSinceNow: 0.5))
-    
+
     return rc
   }
 
@@ -293,7 +324,7 @@ public class BlinkCopy: NSObject {
     var params = [hostPath]
     let host: BKSSHHost
     let config: SSHClientConfig
-    
+
     do {
       // Pass verbosity
       if command.verbose > 0 {
@@ -316,7 +347,7 @@ public class BlinkCopy: NSObject {
   }
 
   @objc func sigwinch() { }
-  
+
   // Make signals objc funcs so we can duck type them.
   @objc func kill() {
     copyCancellable?.cancel()
