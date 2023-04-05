@@ -78,6 +78,9 @@ static UICKeyChainStore *__get_keychain() {
   _proxyJump = [coder decodeObjectOfClasses:strings forKey:@"proxyJump"];
   _sshConfigAttachment = [coder decodeObjectOfClasses:strings forKey:@"sshConfigAttachment"];
   _fpDomainsJSON = [coder decodeObjectOfClasses:strings forKey:@"fpDomainsJSON"];
+  _wolPort = [coder decodeObjectOfClasses:strings forKey:@"wolPort"];
+  _wolMAC = [coder decodeObjectOfClasses:strings forKey:@"wolMAC"];
+  
   return self;
 }
 
@@ -102,6 +105,8 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_proxyJump forKey:@"proxyJump"];
   [encoder encodeObject:_sshConfigAttachment forKey:@"sshConfigAttachment"];
   [encoder encodeObject:_fpDomainsJSON forKey:@"fpDomainsJSON"];
+  [encoder encodeObject:_wolPort forKey:@"wolPort"];
+  [encoder encodeObject:_wolMAC forKey:@"wolMAC"];
 }
 
 -  (id)initWithAlias:(NSString *)alias
@@ -119,6 +124,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
            proxyJump:(NSString *)proxyJump
  sshConfigAttachment:(NSString *)sshConfigAttachment
        fpDomainsJSON:(NSString *)fpDomainsJSON
+            wolPort:(NSString *)wolPort
+              wolMAC:(NSString *)wolMAC
 {
   self = [super init];
   if (self) {
@@ -149,6 +156,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
     _proxyJump = proxyJump;
     _sshConfigAttachment = sshConfigAttachment;
     _fpDomainsJSON = fpDomainsJSON;
+    _wolPort = wolPort;
+    _wolMAC = wolMAC;
   }
   return self;
 }
@@ -219,6 +228,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                proxyJump:(NSString *)proxyJump
      sshConfigAttachment:(NSString *)sshConfigAttachment
            fpDomainsJSON:(NSString *)fpDomainsJSON
+                 wolPort:(NSString *)wolPort
+                  wolMAC:(NSString *)wolMAC
 {
   NSString *pwdRef = @"";
   if (password) {
@@ -244,6 +255,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                                   proxyJump:proxyJump
                         sshConfigAttachment:sshConfigAttachment
                               fpDomainsJSON:fpDomainsJSON
+                                    wolPort:wolPort
+                                     wolMAC:wolMAC
     ];
     [__hosts addObject:bkHost];
   } else {
@@ -274,6 +287,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
     bkHost.proxyJump = proxyJump;
     bkHost.sshConfigAttachment = sshConfigAttachment;
     bkHost.fpDomainsJSON = fpDomainsJSON;
+    bkHost.wolPort = wolPort;
+    bkHost.wolMAC = wolMAC;
   }
   if (![BKHosts saveHosts]) {
     return nil;
@@ -413,6 +428,10 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
   [hostRecord setValue:host.proxyJump forKey:@"proxyJump"];
   [hostRecord setValue:host.sshConfigAttachment forKey:@"sshConfigAttachment"];
   [hostRecord setValue:host.fpDomainsJSON forKey:@"fpDomainsJSON"];
+  
+  [hostRecord setValue:host.wolPort forKey:@"wolPort"];
+  [hostRecord setValue:host.wolMAC forKey:@"wolMAC"];
+
   return hostRecord;
 }
 
@@ -440,8 +459,11 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                                       prediction:[[hostRecord valueForKey:@"prediction"] intValue]
                                         proxyCmd:[hostRecord valueForKey:@"proxyCmd"]
                                        proxyJump:[hostRecord valueForKey:@"proxyJump"]
-                             sshConfigAttachment: [hostRecord valueForKey:@"sshConfigAttachment"]
+                             sshConfigAttachment:[hostRecord valueForKey:@"sshConfigAttachment"]
                                    fpDomainsJSON:[hostRecord valueForKey:@"fpDomainsJSON"]
+                                           wolPort:[hostRecord valueForKey:@"wolPort"]
+                                          wolMAC:[hostRecord valueForKey:@"wolMAC"]
+
   ];
   return host;
 }

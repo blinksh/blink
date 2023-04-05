@@ -63,6 +63,10 @@ enum BKMoshPrediction {
 @property (nonatomic, strong) NSString *sshConfigAttachment;
 @property (nonatomic, strong) NSString *fpDomainsJSON;
 
+@property (nonatomic, strong) NSString *wolPort;
+@property (nonatomic, strong) NSString *wolMAC;
+
+
 + (instancetype)withHost:(NSString *)ID;
 + (void)loadHosts NS_SWIFT_NAME(loadHosts());
 + (void)resetHostsiCloudInformation;
@@ -84,7 +88,10 @@ enum BKMoshPrediction {
                proxyJump:(NSString *)proxyJump
      sshConfigAttachment:(NSString *)sshConfigAttachment
            fpDomainsJSON:(NSString *)fpDomainsJSON
+                 wolPort:(NSString *)wolPort
+                  wolMAC:(NSString *)wolMAC
 ;
+
 + (void)updateHost:(NSString *)host withiCloudId:(CKRecordID *)iCloudId andLastModifiedTime:(NSDate *)lastModifiedTime;
 + (void)markHost:(NSString *)host forRecord:(CKRecord *)record withConflict:(BOOL)hasConflict;
 + (NSMutableArray<BKHosts *> *)all;
@@ -109,6 +116,9 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
            proxyCmd:(NSString *)proxyCmd
           proxyJump:(NSString *)proxyJump
 sshConfigAttachment:(NSString *)sshConfigAttachment
-      fpDomainsJSON:(NSString *)fpDomainsJSON;
+      fpDomainsJSON:(NSString *)fpDomainsJSON
+            wolPort:(NSString *)wolPort
+             wolMAC:(NSString *)wolMAC
+;
 
 @end

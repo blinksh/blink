@@ -274,6 +274,8 @@ struct HostView: View {
   @State private var _domainsListVersion = 0;
   @State private var _loaded = false
   @State private var _enabled: Bool = true
+  @State private var _wolPort: String = ""
+  @State private var _wolMAC: String = ""
   
   @State private var _errorMessage: String = ""
   
@@ -361,6 +363,12 @@ struct HostView: View {
         )
       }.disabled(!_enabled)
       
+      Section(header: Label("WAKE ON LAN", systemImage: "zzz")) {
+        Field("Port",  $_wolPort,  next: "wolMAC", placeholder: "UDP PORT. 9", kbType: .numberPad)
+        Field("MAC",    $_wolMAC,  next: "", placeholder: "", id: "wolMAC", kbType: .numbersAndPunctuation)
+      }
+      .disabled(!_enabled)
+      
       Section(header: Label("Files.app", systemImage: "folder")) {
         ForEach(_domains, content: { FileDomainRow(domain: $0, alias: _cleanAlias, refreshList: _refreshDomainsList) })
           .onDelete { indexSet in
@@ -381,6 +389,8 @@ struct HostView: View {
       }
       .id(_domainsListVersion)
       .disabled(!_enabled)
+      
+      
     }
     .listStyle(GroupedListStyle())
     .alert(errorMessage: $_errorMessage)
@@ -483,6 +493,9 @@ struct HostView: View {
   }
   
   private func _saveHost() {
+    let wolPort = _wolPort.trimmingCharacters(in: .whitespacesAndNewlines)
+    let wolMAC = _wolMAC.trimmingCharacters(in: .whitespacesAndNewlines)
+    
     let savedHost = BKHosts.saveHost(
       _host?.host.trimmingCharacters(in: .whitespacesAndNewlines),
       withNewHost: _cleanAlias,
@@ -499,7 +512,9 @@ struct HostView: View {
       proxyCmd: _proxyCmd,
       proxyJump: _proxyJump,
       sshConfigAttachment: _sshConfigAttachment == HostView.__sshConfigAttachmentExample ? "" : _sshConfigAttachment,
-      fpDomainsJSON: FileProviderDomain.toJson(list: _domains)
+      fpDomainsJSON: FileProviderDomain.toJson(list: _domains),
+      wolPort: wolPort.isEmpty ? nil : wolPort,
+      wolMAC: wolMAC.isEmpty ? nil : wolMAC
     )
     
     guard let host = savedHost else {
@@ -550,7 +565,9 @@ struct HostView: View {
       proxyCmd: iCloudHost.proxyCmd,
       proxyJump: iCloudHost.proxyJump,
       sshConfigAttachment: iCloudHost.sshConfigAttachment,
-      fpDomainsJSON: iCloudHost.fpDomainsJSON
+      fpDomainsJSON: iCloudHost.fpDomainsJSON,
+      wolPort: iCloudHost.wolPort,
+      wolMAC: iCloudHost.wolMAC
     )
     
     BKHosts.updateHost(
