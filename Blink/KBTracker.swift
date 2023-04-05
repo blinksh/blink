@@ -45,9 +45,13 @@ class KBTracker: NSObject {
   
   @objc var isHardwareKB: Bool = true {
     didSet {
+      let oldValue = kbTraits.isHKBAttached;
       kbTraits.isHKBAttached = isHardwareKB
       input?.kbView.traits.isHKBAttached = isHardwareKB
       input?.kbView.setNeedsLayout()
+      if kbTraits.isHKBAttached != oldValue {
+        input?.sync(traits: kbTraits, device: kbDevice, hideSmartKeysWithHKB: hideSmartKeysWithHKB)
+      }
     }
   }
   
@@ -205,10 +209,10 @@ class KBTracker: NSObject {
     let screenMaxY = UIScreen.main.bounds.size.height
     
     var bottomInset: CGFloat = 0
+    let idiom = UIDevice.current.userInterfaceIdiom
     if !isHardwareKB, let fr = self.input?.spaceController?.trackingKBFrame {
       bottomInset = screenMaxY - CGRectGetMinY(fr)
       
-      let idiom = UIDevice.current.userInterfaceIdiom
       
       if idiom == UIUserInterfaceIdiom.pad {
         
@@ -260,6 +264,11 @@ class KBTracker: NSObject {
       }
       kbTraits.isFloatingKB = false
       bottomInset = 0
+      
+      if !hideSmartKeysWithHKB && idiom == .phone,
+         let safeInsets = input?.kbView.superview?.safeAreaInsets {
+        bottomInset = (input?.kbView.intrinsicContentSize.height ?? 0) + safeInsets.bottom;
+      }
     }
     LayoutManager.updateMainWindowKBBottomInset(bottomInset);
   }

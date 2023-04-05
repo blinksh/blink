@@ -281,11 +281,12 @@ class CaretHider {
       
     }
     
-    // TODO: Only on iphone
-//    if hideSmartKeysWithHKB && traits.isHKBAttached {
-//      _removeSmartKeys()
-//      return
-//    }
+    if traitCollection.userInterfaceIdiom == .phone {
+      if hideSmartKeysWithHKB && traits.isHKBAttached {
+        _removeSmartKeys()
+        return
+      }
+    }
     
     if traits.isFloatingKB {
       _setupAccessoryView()
@@ -313,7 +314,11 @@ class CaretHider {
 //  }
   
   func _removeSmartKeys() {
-    _inputAccessoryView = UIView(frame: .zero)
+    if let _ = _inputAccessoryView as? KBAccessoryView {
+      _inputAccessoryView = UIView(frame: .zero)
+      self.contentView()?.reloadInputViews()      
+    }
+    
     guard let item = contentView()?.inputAssistantItem
       else {
         return
