@@ -102,6 +102,11 @@ class BuildAccountModel: ObservableObject {
   }
   
   func signup() async {
+    if FeatureFlags.earlyAccessFeatures {
+      self.alertErrorMessage =  "Signup with App Store version first."
+      return
+    }
+    
     guard emailIsValid else {
       self.alertErrorMessage =  self.email.isEmpty ? "Email is Required" :  "Valid email is Required"
       return

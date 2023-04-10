@@ -71,7 +71,7 @@ struct SettingsView: View {
           HStack {
             Label(_entitlements.currentPlanName(), systemImage: "bag")
             Spacer()
-            if !_entitlements.earlyAccessFeatures.active {
+            if !(_entitlements.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures) {
               Button("Upgrade") {
                 let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
                 _nav.navController.pushViewController(vc, animated: true)

@@ -178,7 +178,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
 //    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
 //      return false
 //    }
-    return !self.unlimitedTimeAccess.active
+    return !(self.unlimitedTimeAccess.active || FeatureFlags.earlyAccessFeatures)
   }
   
   func dismissPaywall() {
@@ -189,6 +189,9 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   public func currentPlanName() -> String {
+    if FeatureFlags.earlyAccessFeatures {
+      return "TestFlight Plan"
+    }
     if activeSubscriptions.contains(ProductBlinkShellPlusID) {
       return "Blink+ Plan"
     }
