@@ -218,7 +218,6 @@ struct PageCtx {
   let getStartedHandler: () -> ()
   let checkBlinkBuildHandler: () -> ()
   let checkBlinkPlusHandler: () -> ()
-  let build14UsersHandler: () -> ()
   let nextPageHandler: () -> ()
   let urlHandler: (URL) -> ()
   
@@ -301,7 +300,6 @@ struct PageCtx {
        getStartedHandler: @escaping () -> (),
        checkBlinkBuildHandler: @escaping () -> (),
        checkBlinkPlusHandler: @escaping () -> (),
-       build14UsersHandler: @escaping () -> (),
        nextPageHandler: @escaping () -> ()
   ) {
     self.classicsMode = classicsMode
@@ -314,7 +312,6 @@ struct PageCtx {
     self.verticalCompact = proxy.size.height < 706
     self.portrait = proxy.size.width < proxy.size.height
     self.urlHandler = urlHandler
-    self.build14UsersHandler = build14UsersHandler
     self.nextPageHandler = nextPageHandler
   }
   
@@ -372,26 +369,6 @@ struct FreeUsersCallToActionButtons: View {
 }
 
 
-struct MigrationButtons: View {
-  let ctx: PageCtx
-  @StateObject var _purchases = PurchasesUserModel.shared
-  
-  var body: some View {
-    HStack {
-      Button("BACK") {
-        ctx.checkBlinkBuildHandler()
-      }.buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: false, inProgress: false))
-      Spacer().frame(width: 20)
-      
-      Button("START MIGRATION") {
-        NotificationCenter.default.post(name: .openMigration, object: nil)
-      }.buttonStyle(BlinkButtonWithoutHoverStyle.primary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false)).disabled(_purchases.restoreInProgress || _purchases.purchaseInProgress)
-        
-    }
-    .padding()
-  }
-}
-
 struct TwoLineButton: View {
   let line1: Text
   let line2: String
@@ -410,7 +387,6 @@ struct TwoLineButton: View {
 
 struct TermsButtons: View {
   let ctx: PageCtx
-  let showBuild14: Bool
   @StateObject var _purchases = PurchasesUserModel.shared
   @State var opacity: CGFloat = 0.5
   
@@ -434,16 +410,6 @@ struct TermsButtons: View {
           _purchases.restorePurchases()
         }
         .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-      }
-      
-      if showBuild14 {
-        Text("•").foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-        
-        Button("BLINK 14 USERS") {
-          ctx.build14UsersHandler()
-        }
-        .foregroundColor(BlinkColors.termsText).font(BlinkFonts.btnSub)
-        .disabled(_purchases.purchaseInProgress || _purchases.restoreInProgress)
       }
     }
     .padding(.bottom, ctx.portrait ? 26 : 0)
@@ -736,7 +702,7 @@ struct PageBlinkPlusBuildView: View {
         .padding()
       }
       if !ctx.classicsMode {
-        TermsButtons(ctx: ctx, showBuild14: true)
+        TermsButtons(ctx: ctx)
       }
     }
     .padding(ctx.pagePadding())
@@ -746,7 +712,6 @@ struct PageBlinkPlusBuildView: View {
 struct PageBlinkPlusView: View {
   let ctx: PageCtx
   @StateObject var _purchases = PurchasesUserModel.shared
-  @State var isFreeUser = EntitlementsManager.shared.isFreeUser()
   
   var body: some View {
     VStack {
@@ -771,85 +736,38 @@ struct PageBlinkPlusView: View {
         }
         Spacer()
       }
-
+      
       VStack() {
-        if isFreeUser {
-          TwoLineButton(
-            line1: Text("GET BLINK+. REDEEM YOUR OFFER SOON."),
-            line2: _purchases.formattedBlinkPlusDiscountPrice() ?? "",
-            disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-            inProgress: _purchases.purchaseInProgress || _purchases.formattedBlinkPlusPriceWithPeriod() == nil
-          ) {
-            Task {
-              await _purchases.purchaseBlinkPlusWithValidation()
+        
+        TwoLineButton(
+          line1: Text("GET BLINK+, \(_purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? "") (~~$29.99/YEAR~~)"),
+          line2: "OFFER ENDS SOON",
+          disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
+          inProgress: _purchases.purchaseInProgress || _purchases.formattedPlusPriceWithPeriod() == nil
+        ) {
+          Task {
+            await _purchases.purchaseBlinkShellPlusWithValidation()
+          }
+        }.frame(maxWidth: .infinity)
+          .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
+            Button("OK") {
+              EntitlementsManager.shared.dismissPaywall()
             }
-          }.frame(maxWidth: .infinity)
-            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-              Button("OK") {
-                EntitlementsManager.shared.dismissPaywall()
-              }
-            } message: {
-              Text(_purchases.restoredPurchaseMessage)
-            }
-
-        } else {
-          TwoLineButton(
-            line1: Text("GET BLINK+, \(_purchases.formattedPlusPriceWithPeriod()?.uppercased() ?? "") (~~$29.99/YEAR~~)"),
-            line2: "OFFER ENDS SOON",
-            disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress,
-            inProgress: _purchases.purchaseInProgress || _purchases.formattedPlusPriceWithPeriod() == nil
-          ) {
-            Task {
-              await _purchases.purchaseBlinkShellPlusWithValidation()
-            }
-          }.frame(maxWidth: .infinity)
-            .alert("Info", isPresented: $_purchases.restoredPurchaseMessageVisible) {
-              Button("OK") {
-                EntitlementsManager.shared.dismissPaywall()
-              }
-            } message: {
-              Text(_purchases.restoredPurchaseMessage)
-            }
-        }
+          } message: {
+            Text(_purchases.restoredPurchaseMessage)
+          }
+        
         Button("GET THE FULL TOOLBOX WITH BLINK+BUILD") {
           ctx.checkBlinkBuildHandler()
         }.buttonStyle(BlinkButtonWithoutHoverStyle.secondary(disabled: _purchases.restoreInProgress || _purchases.purchaseInProgress, inProgress: false))
           .padding().id("switch to blink+build")
       }
       if !ctx.classicsMode {
-        TermsButtons(ctx: ctx, showBuild14: true)
+        TermsButtons(ctx: ctx)
       }
     }.padding(ctx.pagePadding())
   }
 }
-
-struct PageBlink14View: View {
-  let ctx: PageCtx
-  
-  var body: some View {
-    VStack {
-      Text("BLINK CLASSIC FOR BLINK 14 OWNERS")
-        .font(ctx.headerFont())
-        .foregroundColor(BlinkColors.headerText).multilineTextAlignment(.center)
-      Spacer()
-      VStack(alignment: .center, spacing: 20) {
-        Spacer()
-        ShellClassicBulletView(ctx: ctx, showList: true)
-        CodeBulletView(ctx: ctx, showList: true)
-        Spacer()
-        Text("After receipt verification with `Blink 14.app` you will be able to access `Blink Classic Plan` for zero cost purchase.\n\nIf you already migrated on a different device, do _Restore Purchases_ instead").font(ctx.infoFont()).foregroundColor(BlinkColors.infoText)
-          .frame(maxWidth: 700).multilineTextAlignment(.center)
-          .padding()
-      }
-      Spacer()
-      MigrationButtons(ctx: ctx)
-      if !ctx.classicsMode {
-        TermsButtons(ctx: ctx, showBuild14: false)
-      }
-    }.padding(ctx.pagePadding())
-  }
-}
-
 
 struct PageFreeUsersView: View {
   let ctx: PageCtx
@@ -892,7 +810,6 @@ struct OfferView: View {
       switch page {
       case .blinkBuild: PageBlinkPlusBuildView(ctx: ctx).transition(.move(edge: .top))
       case .blinkPlus: PageBlinkPlusView(ctx: ctx).transition(.move(edge: .bottom))
-      case .blink14: PageBlink14View(ctx: ctx).transition(.move(edge: .bottom))
       }
     }
   }
@@ -921,11 +838,6 @@ struct OfferForFreeAndClassicsView: View {
         checkBlinkPlusHandler: {
           withAnimation {
             offerPage = .blinkPlus
-          }
-        },
-        build14UsersHandler: {
-          withAnimation {
-            offerPage = .blink14
           }
         },
         nextPageHandler: {}
@@ -966,7 +878,6 @@ struct IntroView: View {
   
   @StateObject var _purchases = PurchasesUserModel.shared
   @StateObject var _entitlements = EntitlementsManager.shared
-  @State var isFreeUser = EntitlementsManager.shared.isFreeUser()
   
   @State var offerPage = LastPageState.blinkBuild
   
@@ -1002,11 +913,6 @@ struct IntroView: View {
             offerPage = .blinkPlus
           }
         },
-        build14UsersHandler: {
-          withAnimation {
-            offerPage = .blink14
-          }
-        },
         nextPageHandler: {
           if self.pageIndex < lastPageIndex {
             withAnimation {
@@ -1017,11 +923,7 @@ struct IntroView: View {
       )
       
       TabView(selection: $pageIndex) {
-        if isFreeUser {
-          PageFreeUsersView(ctx: ctx).tag(0)
-        } else {
-          PageWelcomeView(ctx: ctx).tag(0)
-        }
+        PageWelcomeView(ctx: ctx).tag(0)
         ForEach(pages) { info in
           PageView(ctx: ctx, info: info).tag(info.idx)
         }
@@ -1104,5 +1006,4 @@ struct IntroWindow: View {
 enum LastPageState {
   case blinkBuild
   case blinkPlus
-  case blink14
 }

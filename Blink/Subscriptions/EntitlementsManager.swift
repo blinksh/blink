@@ -47,8 +47,6 @@ let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
 private let NagTimestamp = "NagTimestamp"
 extension Notification.Name {
   public static let subscriptionNag = Notification.Name("SubscriptionNag")
-  public static let openMigration = Notification.Name("openMigration")
-  public static let closeMigration = Notification.Name("closeMigration")
 }
 
 // Decoupled from RevCat Entitlement
@@ -147,16 +145,7 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   private func _updateSubscriptionNag() {
-//    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
-//      SubscriptionNag.shared.terminate()
-//      return
-//    }
-    
     showPaywall()
-  }
-  
-  func isFreeUser() -> Bool {
-    !unlimitedTimeAccess.active && UserDefaults.standard.object(forKey: NagTimestamp) != nil
   }
   
   @Published var keepShowingPaywall: Bool = false
@@ -174,10 +163,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
     if shouldDismissPaywall {
       return false
     }
-    // TODO: FIX FLOW
-//    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
-//      return false
-//    }
+    
+    if ProcessInfo().isMacCatalystApp {
+      return false
+    }
     return !(self.unlimitedTimeAccess.active || FeatureFlags.earlyAccessFeatures)
   }
   

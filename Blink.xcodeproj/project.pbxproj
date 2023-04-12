@@ -192,6 +192,7 @@
 		C9B2E0351D6B612400B89F69 /* BKSettingsFileDownloader.m in Sources */ = {isa = PBXBuildFile; fileRef = C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */; };
 		D2011CD726A6FF9F002E4E85 /* Alert.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2011CD626A6FF9F002E4E85 /* Alert.swift */; };
 		D2036B6323967F2F0013D2A3 /* BindingConfigView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */; };
+		D20394AA29E6B30400FB337F /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20394A929E6B30400FB337F /* Receipt.swift */; };
 		D2094662204D3FC5003C4F72 /* cacert.pem in Resources */ = {isa = PBXBuildFile; fileRef = D209465B204D3FC5003C4F72 /* cacert.pem */; };
 		D20CBA4F2360319600D93301 /* NSCoder+CodingKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = D265FBC8231905AC0017EAC4 /* NSCoder+CodingKey.swift */; };
 		D20CBA57236031D700D93301 /* CompleteUtilsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */; };
@@ -343,18 +344,9 @@
 		D2AB612023AB5AE000BE6585 /* UIApplication+Version.h in Sources */ = {isa = PBXBuildFile; fileRef = D2AB611F23AB5AE000BE6585 /* UIApplication+Version.h */; };
 		D2AC6749220303D900177BC5 /* openurl.m in Sources */ = {isa = PBXBuildFile; fileRef = D2AC6742220303D900177BC5 /* openurl.m */; };
 		D2AD8E5E27A2BAD600DED28D /* StatusBarLessViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E5D27A2BAD600DED28D /* StatusBarLessViewController.swift */; };
-		D2AD8E7027A2BAFA00DED28D /* ArchiveAlertUI.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */; };
-		D2AD8E7127A2BAFA00DED28D /* MigrationPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */; };
-		D2AD8E7227A2BAFA00DED28D /* Receipt.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6327A2BAFA00DED28D /* Receipt.swift */; };
-		D2AD8E7327A2BAFA00DED28D /* SubscriptionNag.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */; };
 		D2AD8E7427A2BAFA00DED28D /* EntitlementsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */; };
 		D2AD8E7527A2BAFA00DED28D /* PurchasesUserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */; };
 		D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6727A2BAFA00DED28D /* Purchases.swift */; };
-		D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */; };
-		D2AD8E7827A2BAFA00DED28D /* TopupPageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */; };
-		D2AD8E7927A2BAFA00DED28D /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */; };
-		D2AD8E7A27A2BAFA00DED28D /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */; };
-		D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */; };
 		D2AD8E7C27A2BAFA00DED28D /* PurchasePageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */; };
 		D2AD8E7D27A2BAFA00DED28D /* CheckmarkRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */; };
 		D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2AD8E8327A2C80C00DED28D /* SettingsView.swift */; };
@@ -409,7 +401,6 @@
 		D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */; };
 		D2D8DD9023C84A6E00BFF223 /* StuckView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */; };
 		D2D8DD9823C8506900BFF223 /* LockView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D8DD9723C8506900BFF223 /* LockView.swift */; };
-		D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */; };
 		D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */; };
 		D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */ = {isa = PBXBuildFile; productRef = D2DC5D4A295DB43D007E2B9D /* RevenueCat */; };
 		D2DE0DCF260323F400A69B6F /* id_ed25519-passphrase in Resources */ = {isa = PBXBuildFile; fileRef = D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */; };
@@ -870,6 +861,7 @@
 		C9B2E0131D6B612300B89F69 /* BKSettingsFileDownloader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKSettingsFileDownloader.m; sourceTree = "<group>"; };
 		D2011CD626A6FF9F002E4E85 /* Alert.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alert.swift; sourceTree = "<group>"; };
 		D2036B6223967F2F0013D2A3 /* BindingConfigView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BindingConfigView.swift; sourceTree = "<group>"; };
+		D20394A929E6B30400FB337F /* Receipt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Receipt.swift; sourceTree = "<group>"; };
 		D209465B204D3FC5003C4F72 /* cacert.pem */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = cacert.pem; sourceTree = "<group>"; };
 		D20CBA56236031D700D93301 /* CompleteUtilsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtilsTests.swift; sourceTree = "<group>"; };
 		D20CBA592360324100D93301 /* CompleteUtils.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompleteUtils.swift; sourceTree = "<group>"; };
@@ -1017,18 +1009,9 @@
 		D2AC6742220303D900177BC5 /* openurl.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = openurl.m; sourceTree = "<group>"; };
 		D2AC674A22031EE600177BC5 /* openurl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = openurl.h; sourceTree = "<group>"; };
 		D2AD8E5D27A2BAD600DED28D /* StatusBarLessViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = StatusBarLessViewController.swift; sourceTree = "<group>"; };
-		D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArchiveAlertUI.swift; sourceTree = "<group>"; };
-		D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigrationPageView.swift; sourceTree = "<group>"; };
-		D2AD8E6327A2BAFA00DED28D /* Receipt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Receipt.swift; sourceTree = "<group>"; };
-		D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SubscriptionNag.swift; sourceTree = "<group>"; };
 		D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EntitlementsManager.swift; sourceTree = "<group>"; };
 		D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasesUserModel.swift; sourceTree = "<group>"; };
 		D2AD8E6727A2BAFA00DED28D /* Purchases.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Purchases.swift; sourceTree = "<group>"; };
-		D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LegacyMigrationView.swift; sourceTree = "<group>"; };
-		D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TopupPageView.swift; sourceTree = "<group>"; };
-		D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
-		D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
-		D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MigratePageView.swift; sourceTree = "<group>"; };
 		D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PurchasePageView.swift; sourceTree = "<group>"; };
 		D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CheckmarkRow.swift; sourceTree = "<group>"; };
 		D2AD8E8327A2C80C00DED28D /* SettingsView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -1085,7 +1068,6 @@
 		D2D8DD8423C71CC500BFF223 /* LocalAuth.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalAuth.swift; sourceTree = "<group>"; };
 		D2D8DD8F23C84A6E00BFF223 /* StuckView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StuckView.swift; sourceTree = "<group>"; };
 		D2D8DD9723C8506900BFF223 /* LockView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LockView.swift; sourceTree = "<group>"; };
-		D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlinkClassicPlanView.swift; sourceTree = "<group>"; };
 		D2DC5D1229547CF3007E2B9D /* PipFaceCam.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PipFaceCam.swift; sourceTree = "<group>"; };
 		D2DE0DCD260323F400A69B6F /* id_ed25519-passphrase */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase"; sourceTree = "<group>"; };
 		D2DE0DCE260323F400A69B6F /* id_ed25519-passphrase.pub */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "id_ed25519-passphrase.pub"; sourceTree = "<group>"; };
@@ -1988,14 +1970,10 @@
 		D2AD8E6027A2BAFA00DED28D /* Subscriptions */ = {
 			isa = PBXGroup;
 			children = (
-				D2AD8E6127A2BAFA00DED28D /* ArchiveAlertUI.swift */,
-				D2AD8E6227A2BAFA00DED28D /* MigrationPageView.swift */,
-				D2AD8E6327A2BAFA00DED28D /* Receipt.swift */,
-				D2AD8E6427A2BAFA00DED28D /* SubscriptionNag.swift */,
+				D20394A929E6B30400FB337F /* Receipt.swift */,
 				D2AD8E6527A2BAFA00DED28D /* EntitlementsManager.swift */,
 				D2AD8E6627A2BAFA00DED28D /* PurchasesUserModel.swift */,
 				D2AD8E6727A2BAFA00DED28D /* Purchases.swift */,
-				D2AD8E6827A2BAFA00DED28D /* LegacyMigrationView.swift */,
 				D2AD8E6927A2BAFA00DED28D /* Paywall */,
 			);
 			path = Subscriptions;
@@ -2004,10 +1982,6 @@
 		D2AD8E6927A2BAFA00DED28D /* Paywall */ = {
 			isa = PBXGroup;
 			children = (
-				D2AD8E6A27A2BAFA00DED28D /* TopupPageView.swift */,
-				D2AD8E6B27A2BAFA00DED28D /* PaywallView.swift */,
-				D2AD8E6C27A2BAFA00DED28D /* ShakeDetector.swift */,
-				D2AD8E6D27A2BAFA00DED28D /* MigratePageView.swift */,
 				D2AD8E6E27A2BAFA00DED28D /* PurchasePageView.swift */,
 				D2AD8E6F27A2BAFA00DED28D /* CheckmarkRow.swift */,
 			);
@@ -2020,7 +1994,6 @@
 				D264D2AC28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift */,
 				D2AD8E8627A2C81900DED28D /* PlansView.swift */,
 				D2AD8E8727A2C81900DED28D /* ExplanationView.swift */,
-				D2D9D03D27BA92DF00BF584D /* BlinkClassicPlanView.swift */,
 				D2B788842949C53100F19E4F /* BuildView.swift */,
 			);
 			path = Subscriptions;
@@ -3015,14 +2988,12 @@
 				D241CBDF23040734003D64A5 /* KBKeyAccessibilityElement.swift in Sources */,
 				D2DE0DDE260331F300A69B6F /* NewKeyView.swift in Sources */,
 				D27C4DA42987F124008427F2 /* BuildHelp.swift in Sources */,
-				D2AD8E7A27A2BAFA00DED28D /* ShakeDetector.swift in Sources */,
 				D23890BD2900175100B5CEA6 /* FeatureColorPalette.swift in Sources */,
 				D2D75EE021AFDA10007336B6 /* LayoutManager.m in Sources */,
 				D241CBD923040734003D64A5 /* KBKeyView.swift in Sources */,
 				803B99D72582869200DC99C8 /* BKNotificationsView.swift in Sources */,
 				BD8152542743FF84002BB169 /* skstore.swift in Sources */,
 				C94E9B631D6BA21C00DA4DD6 /* DismissSegue.m in Sources */,
-				D2AD8E7027A2BAFA00DED28D /* ArchiveAlertUI.swift in Sources */,
 				D29B4A92274D206C00C66ED9 /* BrowserController.swift in Sources */,
 				803B99E3258381B200DC99C8 /* SettingsHostingController.swift in Sources */,
 				D2C2441C238E44AB0082C69C /* NavButton.swift in Sources */,
@@ -3034,7 +3005,6 @@
 				D23742CA21106ADF00366359 /* bench.m in Sources */,
 				D240806120BC8DF800F30099 /* tool_main.c in Sources */,
 				B7D6A6291E2D43A800EDF7B0 /* BKSmartKeysConfigViewController.m in Sources */,
-				D2D9D03E27BA92DF00BF584D /* BlinkClassicPlanView.swift in Sources */,
 				D23AA645223EA3C40020FA77 /* BKXCallBackUrlConfigurationViewController.m in Sources */,
 				D2FBEC0B27CF505D00FD974A /* browse.swift in Sources */,
 				D277150D287F0C2200D31F4E /* build.m in Sources */,
@@ -3060,7 +3030,6 @@
 				07FAB8F425C8E6C500E1CC2C /* SSHConfig.swift in Sources */,
 				D2CF27292428A791009885ED /* KBTracker.swift in Sources */,
 				D264D2AD28F81DD4002B1B14 /* EarlyFeaturesAccessLetterView.swift in Sources */,
-				D2AD8E7927A2BAFA00DED28D /* PaywallView.swift in Sources */,
 				07F670771D05EEE200C0A53C /* SSHSession.m in Sources */,
 				D241CBD323040734003D64A5 /* KBSound.swift in Sources */,
 				07F670761D05EEE200C0A53C /* SSHCopyIDSession.m in Sources */,
@@ -3104,13 +3073,11 @@
 				D23D258823438B15002850CA /* UIColor.swift in Sources */,
 				D2AD8E7627A2BAFA00DED28D /* Purchases.swift in Sources */,
 				D2DC5D1329547DFD007E2B9D /* PipFaceCam.swift in Sources */,
-				D2AD8E7327A2BAFA00DED28D /* SubscriptionNag.swift in Sources */,
 				BD3E1E53278D190500333C44 /* Archive.swift in Sources */,
 				D2C24419238E44AB0082C69C /* KeyConfigPairView.swift in Sources */,
 				D2AD8E8827A2C81900DED28D /* PlansView.swift in Sources */,
 				D2AB611E23AB5ACD00BE6585 /* UIApplication+Version.m in Sources */,
 				07FAB8F525C8E6C500E1CC2C /* SSHConfigProvider.swift in Sources */,
-				D2AD8E7727A2BAFA00DED28D /* LegacyMigrationView.swift in Sources */,
 				D241CBD523040734003D64A5 /* KBKey.swift in Sources */,
 				D215AC30233521B600E164C3 /* WKWebView.swift in Sources */,
 				D21DEE46260CB03900D8E640 /* PassphraseView.swift in Sources */,
@@ -3134,6 +3101,7 @@
 				D264D2B628F84724002B1B14 /* whatsnew.m in Sources */,
 				D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */,
 				C9B2E0311D6B612400B89F69 /* BLKDefaults.m in Sources */,
+				D20394AA29E6B30400FB337F /* Receipt.swift in Sources */,
 				D26A37F026A0AB7000534A4D /* facecam.swift in Sources */,
 				D21DEE41260C9A3D00D8E640 /* ImportKeyView.swift in Sources */,
 				D242157822E878950037E5A6 /* UIColor+Codable.swift in Sources */,
@@ -3149,7 +3117,6 @@
 				D2D8DD8523C71CC500BFF223 /* LocalAuth.swift in Sources */,
 				D2C24424238E44AB0082C69C /* KBWebViewBase.m in Sources */,
 				D2F330D220A6EF030074ADD7 /* showkey.m in Sources */,
-				D2AD8E7827A2BAFA00DED28D /* TopupPageView.swift in Sources */,
 				D2B788882949E8CA00F19E4F /* BuildRegion.swift in Sources */,
 				D2BC514D2355C3AE0034FDD4 /* History.swift in Sources */,
 				D23EA9592604CB4C00BCF1FF /* FixedTextField.swift in Sources */,
@@ -3186,7 +3153,6 @@
 				D2AD8E8927A2C81900DED28D /* ExplanationView.swift in Sources */,
 				D25DE9C02939EB36008246EB /* NonStdIO.swift in Sources */,
 				D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */,
-				D2AD8E7B27A2BAFA00DED28D /* MigratePageView.swift in Sources */,
 				D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */,
 				D2887A5E22DCA6D500701BD5 /* SceneDelegate.swift in Sources */,
 				D2C2441F238E44AB0082C69C /* Row.swift in Sources */,
@@ -3200,10 +3166,8 @@
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */,
-				D2AD8E7227A2BAFA00DED28D /* Receipt.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
-				D2AD8E7127A2BAFA00DED28D /* MigrationPageView.swift in Sources */,
 				D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,

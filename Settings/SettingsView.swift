@@ -48,56 +48,29 @@ struct SettingsView: View {
   
   var body: some View {
     List {
-      if FeatureFlags.checkReceipt {        
-        Section(
-          header: Text("Information"),
-          footer: Text("Upgrade is free for you. Thanks for your support. ❤️")
-        ) {
-          Row {
-            HStack {
-              Label("New Blink.app", systemImage: "exclamationmark.circle")
-              Spacer()
-              Image(systemName: "questionmark.circle")
-                .foregroundColor(Color(UIColor.blinkTint))
+      Section("Subscription") {
+        HStack {
+          Label(_entitlements.currentPlanName(), systemImage: "bag")
+          Spacer()
+          if !(_entitlements.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures) {
+            Button("Upgrade") {
+              let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
+              _nav.navController.pushViewController(vc, animated: true)
+              _entitlements.navigationCtrl = _nav.navController
             }
-          } details: {
-            ScrollView {
-              ExplanationView()
           }
         }
-      }
-      } else {
-        Section("Subscription") {
+        Row {
           HStack {
-            Label(_entitlements.currentPlanName(), systemImage: "bag")
+            Label("Build Beta", systemImage: "hammer.circle")
             Spacer()
-            if !(_entitlements.earlyAccessFeatures.active || FeatureFlags.earlyAccessFeatures) {
-              Button("Upgrade") {
-                let vc = UIHostingController(rootView: OfferForFreeAndClassicsView().environmentObject(_nav))
-                _nav.navController.pushViewController(vc, animated: true)
-                _entitlements.navigationCtrl = _nav.navController
-              }
-            }
+            Text("") // TODO: show status?
+              .foregroundColor(.secondary)
           }
-          Row {
-            HStack {
-              Label("Build Beta", systemImage: "hammer.circle")
-              Spacer()
-              Text("") // TODO: show status?
-                .foregroundColor(.secondary)
-            }
-          } details: {
-            BuildView().onAppear(perform: {
-              PurchasesUserModel.shared.refresh()
-            })
-          }
-          Row {
-            HStack {
-              Label("For Blink 14 Owners", systemImage: "14.square")
-            }
-          } details: {
-            BlinkClassPlanView()
-          }
+        } details: {
+          BuildView().onAppear(perform: {
+            PurchasesUserModel.shared.refresh()
+          })
         }
       }
       Section("Connect") {
