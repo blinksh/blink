@@ -54,26 +54,12 @@ class PurchasesUserModel: ObservableObject {
   
   @Published var restoredPurchaseMessageVisible = false
   @Published var restoredPurchaseMessage = ""
+  @Published var alertErrorMessage: String = ""
   
   var isBuildBasicTrialEligible: Bool {
     self.buildBasicTrialEligibility?.status == .eligible
   }
-  
-//  @Published var flow: Int = 0
-  
-  // MARK: Migration states
-  
-  @Published var receiptIsVerified: Bool = false
-  @Published var zeroPriceUnlocked: Bool = false
-  @Published var receiptVerificationFailed = false
-  @Published var dataCopied: Bool = false
-  @Published var dataCopyFailed: Bool = false
-  @Published var alertErrorMessage: String = ""
-  @Published var migrationStatus: MigrationStatus = .validating
-  
-  // MARK: Paywall
-  
-//  @Published var paywallPageIndex: Int = 0
+
   
   private init() {
     refresh()
@@ -323,54 +309,6 @@ class PurchasesUserModel: ObservableObject {
   
 }
 
-// MARK: Migration
-extension PurchasesUserModel {
-  
-  func startMigration() {
-    migrationStatus = .validating
-    let url = URL(string: "blinkv14://validatereceipt?originalUserId=\(Purchases.shared.appUserID)")!
-    UIApplication.shared.open(url, completionHandler: { success in
-      if success {
-        self.alertErrorMessage = ""
-      } else {
-        self.alertErrorMessage = "Please install Blink 14 latest version first."
-      }
-    })
-  }
-  
-  func continueMigrationWith(migrationToken: Data) {
-    let originalUserId = Purchases.shared.appUserID
-
-    do {
-      let migrationToken = try JSONDecoder()
-        .decode(MigrationToken.self, from: migrationToken)
-      try migrationToken.validateReceiptForMigration(attachedTo: originalUserId)
-      migrationStatus = .accepted
-      receiptIsVerified = true
-      zeroPriceUnlocked = true
-      purchaseClassic()
-    } catch {
-      migrationStatus = .denied(error: error)
-    }
-  }
-  
-  func startDataMigration() {
-    let url = URL(string: "blinkv14://exportdata?password=\(Purchases.shared.appUserID)")!
-    UIApplication.shared.open(url, completionHandler: { success in
-      if success {
-        self.alertErrorMessage = ""
-      } else {
-        self.alertErrorMessage = "Please install Blink 14 latest version first."
-      }
-    })
-  }
-  
-  func closeMigration() {
-    NotificationCenter.default.post(name: .closeMigration, object: nil)
-  }
-  
-}
-
 // MARK: Open links
 extension PurchasesUserModel {
   func openPrivacyAndPolicy() {
@@ -466,12 +404,9 @@ extension StoreProduct {
 @objc public class PurchasesUserModelObjc: NSObject {
   
   @objc public static func preparePurchasesUserModel() {
-    
-    if !FeatureFlags.checkReceipt {
-      configureRevCat()
-      EntitlementsManager.shared.startUpdates()
-      _ = PurchasesUserModel.shared
-    }
+    configureRevCat()
+    EntitlementsManager.shared.startUpdates()
+    _ = PurchasesUserModel.shared
   }
 }
 

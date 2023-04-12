@@ -37,8 +37,9 @@ extension FeatureFlags {
   @objc static let noSubscriptionNag     = _enabled(for: .developer, .testFlight)
   @objc static let blinkBuild            = _enabled(for: .developer, .testFlight)
   @objc static let blinkBuildStaging     = _enabled(for: .developer, .testFlight)
-  @objc static let checkReceipt          = _enabled(for: .legacy)
+//  @objc static let checkReceipt          = _enabled(for: .legacy)
   @objc static let earlyAccessFeatures   = _enabled(for: .developer, .testFlight)
+//  @objc static let earlyAccessFeatures   = _enabled(for: .legacy)
 }
 
 struct PublishingOptions: OptionSet, CustomStringConvertible, CustomDebugStringConvertible {
