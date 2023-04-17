@@ -45,6 +45,23 @@
   font-style: normal;
 }
 
+/* FiraCode Nerd Font */
+
+@font-face {
+  font-family: 'Fira Code Nerd Font';
+  src: url('Fonts/NF-FiraCode-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Fira Code Nerd Font';
+  src: url('Fonts/NF-FiraCode-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+
 /* Menlo */
 
 @font-face {
@@ -131,6 +148,96 @@
 @font-face {
   font-family: 'JetBrains Mono';
   src: url('Fonts/JetBrainsMono-Bold-Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* JetBrains Mono Nerd Font */
+
+@font-face {
+  font-family: 'JetBrains Mono Nerd Font';
+  src: url('Fonts/NF-JetBrainsMono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Nerd Font';
+  src: url('Fonts/NF-JetBrainsMono-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Nerd Font';
+  src: url('Fonts/NF-JetBrainsMono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'JetBrains Mono Nerd Font';
+  src: url('Fonts/NF-JetBrainsMono-Bold-Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Victor Mono Nerd Font */
+
+@font-face {
+  font-family: 'Victor Mono Nerd Font';
+  src: url('Fonts/NF-Victor-Mono-Regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Victor Mono Nerd Font';
+  src: url('Fonts/NF-Victor-Mono-Italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Victor Mono Nerd Font';
+  src: url('Fonts/NF-Victor-Mono-Bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Victor Mono Nerd Font';
+  src: url('Fonts/NF-Victor-Mono-Bold-Italic.ttf') format('truetype');
+  font-weight: bold;
+  font-style: italic;
+}
+
+/* Iosevka Nerd Font */
+
+@font-face {
+  font-family: 'Iosevka Nerd Font';
+  src: url('Fonts/nf-iosevka-regular.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Iosevka Nerd Font';
+  src: url('Fonts/nf-iosevka-italic.ttf') format('truetype');
+  font-weight: normal;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: 'Iosevka Nerd Font';
+  src: url('Fonts/nf-iosevka-bold.ttf') format('truetype');
+  font-weight: bold;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Iosevka Nerd Font';
+  src: url('Fonts/nf-iosevka-bolditalic.ttf') format('truetype');
   font-weight: bold;
   font-style: italic;
 }
