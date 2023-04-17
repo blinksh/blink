@@ -89,7 +89,7 @@ class KeyConfigPair: ObservableObject, Codable {
   }
   
   static var option: KeyConfigPair {
-    KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .none).pair(code: .optionRight)
+    KeyConfig(code: .optionLeft, up: .none, down: .none, mod: .escape).pair(code: .optionRight)
   }
   
   static var command: KeyConfigPair {
