@@ -311,7 +311,6 @@
 		D276AB0D28D1D36200950728 /* NewSecurityKeyView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D276AB0C28D1D36200950728 /* NewSecurityKeyView.swift */; };
 		D277150D287F0C2200D31F4E /* build.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150A287F0C2100D31F4E /* build.m */; };
 		D277150E287F0C2200D31F4E /* TokioSignals.m in Sources */ = {isa = PBXBuildFile; fileRef = D277150C287F0C2200D31F4E /* TokioSignals.m */; };
-		D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D2771510287F0EA200D31F4E /* libbuild_cli.a */; };
 		D27AD9BC222FDD3D00379872 /* xcall.m in Sources */ = {isa = PBXBuildFile; fileRef = D27AD9BB222FDD3D00379872 /* xcall.m */; };
 		D27BBA1C20529FFF00AEA303 /* TermStream.m in Sources */ = {isa = PBXBuildFile; fileRef = D27BBA1B20529FFF00AEA303 /* TermStream.m */; };
 		D27C4DA42987F124008427F2 /* BuildHelp.swift in Sources */ = {isa = PBXBuildFile; fileRef = D27C4DA32987F124008427F2 /* BuildHelp.swift */; };
@@ -1238,7 +1237,6 @@
 				BDB72CB227A9C08500DCC446 /* StoreKit.framework in Frameworks */,
 				D2DC5D4B295DB43D007E2B9D /* RevenueCat in Frameworks */,
 				D2A9B2F7272E6F26009FCBDE /* BlinkCode.framework in Frameworks */,
-				D2771511287F0EA200D31F4E /* libbuild_cli.a in Frameworks */,
 				D2334EF225C1C28F00385378 /* files.xcframework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -4428,7 +4426,12 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				MARKETING_VERSION = 16.1.8;
-				OTHER_LDFLAGS = "-ObjC";
+				NEW_SETTING = "";
+				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"$(BLINK_OTHER_LDFLAGS)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -4468,7 +4471,12 @@
 					"$(PROJECT_DIR)/Frameworks",
 				);
 				MARKETING_VERSION = 16.1.8;
-				OTHER_LDFLAGS = "-ObjC";
+				NEW_SETTING = "";
+				OTHER_CFLAGS = "$(BLINK_OTHER_CFLAGS)";
+				OTHER_LDFLAGS = (
+					"-ObjC",
+					"$(BLINK_OTHER_LDFLAGS)",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(BUNDLE_ID)";
 				PRODUCT_NAME = Blink;
 				PROVISIONING_PROFILE_SPECIFIER = "";

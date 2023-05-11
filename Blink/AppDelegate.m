@@ -41,8 +41,10 @@
 #include "xcall.h"
 #include "Blink-Swift.h"
 
+#ifdef BLINK_BUILD_ENABLED
 extern void build_auto_start_wg_ports(void);
 extern void rebind_ports(void);
+#endif
 
 
 @import CloudKit;
@@ -134,7 +136,9 @@ void __setupProcessEnv(void) {
   
   [PurchasesUserModelObjc preparePurchasesUserModel];
   
+#ifdef BLINK_BUILD_ENABLED
   build_auto_start_wg_ports();
+#endif
   
   return YES;
 }
@@ -272,7 +276,9 @@ void __setupProcessEnv(void) {
   // We can't resume if we don't have access to protected data
   if (UIApplication.sharedApplication.isProtectedDataAvailable) {
     if (_suspendedMode) {
+#ifdef BLINK_BUILD_ENABLED
       rebind_ports();
+#endif
     }
 
     _suspendedMode = NO;
