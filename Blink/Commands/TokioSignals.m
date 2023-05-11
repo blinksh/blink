@@ -33,7 +33,7 @@
 #import "TokioSignals.h"
 
 
-
+#ifdef BLINK_BUILD_ENABLED
 extern void signal_release(void * signals);
 extern void signal_send(void * signals, int signal);
 
@@ -48,6 +48,7 @@ extern void build_call_service(
                                BOOL auth, void * ctx,
                                build_service_callback callback,
                                void ** signals);
+#endif
 
 @implementation TokioSignals {
 }
@@ -59,7 +60,7 @@ extern void build_call_service(
   callback: (build_service_callback) callback
 {
   TokioSignals *signals = [TokioSignals new];
-    
+#ifdef BLINK_BUILD_ENABLED
   build_call_service(
                      request.URL.absoluteString.UTF8String,
                      request.HTTPMethod.UTF8String,
@@ -68,11 +69,13 @@ extern void build_call_service(
                      [request valueForHTTPHeaderField:@"Content-Type"].UTF8String,
                      auth,
                      ctx, callback, &signals->_signals);
+#endif
   
   return signals;
 }
 
 + (nullable NSString *)getBuildId {
+#ifdef BLINK_BUILD_ENABLED
   char *ptr = build_get_build_id();
   if (ptr) {
     return [[NSString alloc] initWithBytesNoCopy:ptr
@@ -82,18 +85,25 @@ extern void build_call_service(
   } else {
     return nil;
   }
+#else
+  return nil;
+#endif
 }
 
 
 - (void) signalCtrlC {
   if (_signals) {
+#ifdef BLINK_BUILD_ENABLED
     signal_send(_signals, 0);
+#endif
   }
 }
 
 - (void)dealloc {
   if (_signals) {
+#ifdef BLINK_BUILD_ENABLED
     signal_release(_signals);
+#endif
     _signals = NULL;
   }
 }

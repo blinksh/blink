@@ -47,12 +47,18 @@ struct IOSEnv {
   void * start_mosh_fn;
 };
 
+
+
+
 void tokio_open_url(char *url) {
+#ifdef BLINK_BUILD_ENABLED
   NSString * str = @(url);
   blink_openurl([NSURL URLWithString:str]);
+#endif
 }
 
 void tokio_start_mosh(char * key, char * host, char * port) {
+#ifdef BLINK_BUILD_ENABLED
   MCPSession *session = (__bridge MCPSession *)thread_context;
   if (!session) {
     return;
@@ -63,13 +69,14 @@ void tokio_start_mosh(char * key, char * host, char * port) {
   dispatch_async(session.cmdQueue, ^{
     [session enqueueCommand:cmd skipHistoryRecord:YES];
   });
-//
+#endif
 }
 
 extern int blink_build_cmd(int argc, char *argv[], struct IOSEnv * env, void ** signals);
   
 __attribute__ ((visibility("default")))
 int build_main(int argc, char *argv[]) {
+#ifdef BLINK_BUILD_ENABLED
   MCPSession *session = (__bridge MCPSession *)thread_context;
   if (!session) {
     return -1;
@@ -92,4 +99,7 @@ int build_main(int argc, char *argv[]) {
   session.tokioSignals = nil;
   
   return res;
+#else
+  return 0;
+#endif
 }
