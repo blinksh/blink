@@ -470,6 +470,10 @@ struct winsize __winSizeFromJSON(NSDictionary *json) {
   [_webView evaluateJavaScript:term_resetFontSize() completionHandler:nil];
 }
 
+- (void)setClipboardWrite:(BOOL)state {
+  [_webView evaluateJavaScript:term_setClipboardWrite(state) completionHandler:nil];
+}
+
 - (void)focus {
   _gestureInteraction.focused = YES;
 //  [_webView evaluateJavaScript:term_focus() completionHandler:nil];

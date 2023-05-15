@@ -141,6 +141,11 @@ NSString *term_setBoldEnabled(NSUInteger state)
   return [NSString stringWithFormat:@"term_set('enable-bold', %@);", stateStr];
 }
 
+NSString *term_setClipboardWrite(BOOL state)
+{
+  return [NSString stringWithFormat:@"term_setClipboardWrite(%@);", state ? @"true" : @"false"];
+}
+
 NSString *term_setFontFamily(NSString *family, NSString * fontSizeDetectionMethod)
 {
   return [NSString stringWithFormat:@"term_setFontFamily(%@, %@);", _encodeString(family), _encodeString(fontSizeDetectionMethod)];
