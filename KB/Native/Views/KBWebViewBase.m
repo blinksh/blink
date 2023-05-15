@@ -159,6 +159,9 @@ NSString *_encodeString(NSString *str);
     _focused = NO;
     [self.configuration.userContentController addScriptMessageHandler:self name:_interopName];
     self.configuration.defaultWebpagePreferences.preferredContentMode = WKContentModeDesktop;
+    if (@available(iOS 16.4, *)) {
+      self.inspectable = true;
+    }
 //    [self.configuration.preferences setJavaScriptCanOpenWindowsAutomatically:true];
     NSMutableArray *imeGuards = [[NSMutableArray alloc] init];
     

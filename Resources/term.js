@@ -338,6 +338,18 @@ function term_setFontFamily(name, fontSizeDetectionMethod) {
   term_set('font-family', name + ', "DejaVu Sans Mono"');
 }
 
+function term_setClipboardWrite(state) {
+  if (state === false) {
+    t.vt.enableClipboardWrite = false;
+  } else {
+    setTimeout(() => {
+      // Delay a tiny bit so operations that reset the clipboard
+      // can have a tiny bit more margin. #1205
+      t.vt.enableClipboardWrite = true;
+    }, 500);
+  }
+}
+
 function term_appendUserCss(css) {
   var style = document.createElement('style');
 
