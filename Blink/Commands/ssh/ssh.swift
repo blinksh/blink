@@ -181,11 +181,21 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
           print("Connected to \(addr)", to: &self.stdout)
         }
 
+        // AgentForwardingPrompt
+        var sendAgent = host.forwardAgent ?? false
+
+        if let bkHost = BKHosts.withHost(cmd.hostAlias),
+           let agent = conn.agent {
+          if self.loadAgentForwardKeys(bkHost: bkHost, agent: agent) {
+            sendAgent = true
+          }
+        }
+
         return self.startInteractiveSessions(conn,
                                              command: host.remoteCommand,
                                              requestTTY: host.requestTty ?? .auto,
                                              withEnvVars: environment,
-                                             sendAgent: host.forwardAgent ?? false)
+                                             sendAgent: sendAgent)
       }
       return .just(conn)
     }
@@ -433,7 +443,31 @@ public func blink_ssh_main(argc: Int32, argv: Argv) -> Int32 {
       .map { conn }
       .eraseToAnyPublisher()    
   }
-  
+
+  private func loadAgentForwardKeys(bkHost: BKHosts, agent: SSHAgent) -> Bool {
+    var constraints: [SSHAgentConstraint]? = nil
+    let agentForwardPrompt = BKAgentForward(UInt32(bkHost.agentForwardPrompt?.intValue ?? 0))
+
+    if agentForwardPrompt == BKAgentForwardConfirm {
+      constraints = [SSHAgentUserPrompt()]
+    } else if agentForwardPrompt == BKAgentForwardYes {
+      constraints = []
+    } else {
+      return false
+    }
+
+    if constraints != nil {
+      let _allIdentities = BKPubKey.all()
+      for keyName in bkHost.agentForwardKeys {
+        if let signer = _allIdentities.signerWithID(keyName) {
+          _ = agent.loadKey(signer, aka: keyName, constraints: constraints)
+        }
+      }
+    }
+
+    return true
+  }
+
   @objc public func sigwinch() {
     var c: AnyCancellable?
     c = stream?

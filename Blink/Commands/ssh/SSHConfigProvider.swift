@@ -128,9 +128,10 @@ extension SSHClientConfigProvider {
     let agent = SSHAgent()
 
     let consts: [SSHAgentConstraint] = [SSHConstraintTrustedConnectionOnly()]
+    //let consts: [SSHAgentConstraint] = [SSHAgentUserPrompt()]
 
     let signers = config.signer(forHost: host) ?? config.defaultSigners()
-    
+
     signers.forEach { (signer, name) in
       // NOTE We could also keep the reference and just read the key at the proper time.
       // TODO Errors. Either pass or log here, or if we create a different
@@ -140,7 +141,7 @@ extension SSHClientConfigProvider {
       }
       _ = agent.loadKey(signer, aka: name, constraints: consts)
     }
-    
+
     // Link to Default Agent
     agent.linkTo(agent: SSHAgentPool.defaultAgent)
     return agent

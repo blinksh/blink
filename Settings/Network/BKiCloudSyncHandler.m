@@ -316,6 +316,8 @@ static BKiCloudSyncHandler *sharedHandler = nil;
           proxyJump:updatedHost.proxyJump
 sshConfigAttachment:updatedHost.sshConfigAttachment
       fpDomainsJSON:updatedHost.fpDomainsJSON
+ agentForwardPrompt:updatedHost.agentForwardPrompt
+   agentForwardKeys:updatedHost.agentForwardKeys
    ];
   [BKHosts updateHost:updatedHost.host withiCloudId:hostRecord.recordID andLastModifiedTime:hostRecord.modificationDate];
 }

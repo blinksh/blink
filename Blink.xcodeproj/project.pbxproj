@@ -127,6 +127,7 @@
 		BD8DB642279B2FA200497C88 /* SSHClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB641279B2FA200497C88 /* SSHClient.swift */; };
 		BD8DB647279B512900497C88 /* CodeFileSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB645279B512900497C88 /* CodeFileSystem.swift */; };
 		BD8DB648279B512900497C88 /* CodeFileSystemService.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD8DB646279B512900497C88 /* CodeFileSystemService.swift */; };
+		BD90BE4A2A18466E00DA5686 /* AgentForwardPromptPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD90BE492A18466E00DA5686 /* AgentForwardPromptPickerView.swift */; };
 		BD98AC84260BD8DC00B4E6A1 /* SSHAgentAdd.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */; };
 		BD98AC95260BE20000B4E6A1 /* SSHAgentPool.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */; };
 		BD9BF7E7262A6B0300B02074 /* SOCKS.swift in Sources */ = {isa = PBXBuildFile; fileRef = BD9BF7E3262A6B0300B02074 /* SOCKS.swift */; };
@@ -176,6 +177,7 @@
 		BDD6D14527594E6500E76F1F /* BKSSHHost.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD6D14427594E6500E76F1F /* BKSSHHost.swift */; };
 		BDD6D14727594E8700E76F1F /* SSHClientConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD6D14627594E8700E76F1F /* SSHClientConfig.swift */; };
 		BDD6D149275951D900E76F1F /* BKGlobalSSHConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDD6D148275951D900E76F1F /* BKGlobalSSHConfig.swift */; };
+		BDE7125D2A141E3100164F70 /* SSHAgentUserPrompt.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */; };
 		BDE7C45C29DCAEFA005E033E /* FileLocationPathTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */; };
 		BDF471BA268CD17B00A7A41B /* SSH.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 07FABB8425C9AEC000E1CC2C /* SSH.framework */; };
 		C94437571D8311960096F84E /* BKResource.m in Sources */ = {isa = PBXBuildFile; fileRef = C94437561D8311960096F84E /* BKResource.m */; };
@@ -390,8 +392,6 @@
 		D2CB059A273BBB0800394A4F /* SEKey.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDCB7175268E15A2007D7047 /* SEKey.swift */; };
 		D2CB353B23339D5C00088765 /* UIView+Touches.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CB353A23339D5C00088765 /* UIView+Touches.swift */; };
 		D2CC13B729C05EE7008C71FA /* Intro.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CC13B629C05EE7008C71FA /* Intro.swift */; };
-		D2CC13BA29C061C6008C71FA /* PragmataPro_Mono_B_liga_0828.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */; };
-		D2CC13BB29C061C9008C71FA /* PragmataPro_Mono_R_liga_0828.ttf in Resources */ = {isa = PBXBuildFile; fileRef = D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */; };
 		D2CF27292428A791009885ED /* KBTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2CF27282428A791009885ED /* KBTracker.swift */; };
 		D2D3B04828FD7A790086F633 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = D2D3B04728FD7A790086F633 /* EmptyStateView.swift */; };
 		D2D6D78620527651003CBEC4 /* TermDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = D2D6D78520527651003CBEC4 /* TermDevice.m */; };
@@ -792,6 +792,7 @@
 		BD8DB641279B2FA200497C88 /* SSHClient.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHClient.swift; sourceTree = "<group>"; };
 		BD8DB645279B512900497C88 /* CodeFileSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeFileSystem.swift; sourceTree = "<group>"; };
 		BD8DB646279B512900497C88 /* CodeFileSystemService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CodeFileSystemService.swift; sourceTree = "<group>"; };
+		BD90BE492A18466E00DA5686 /* AgentForwardPromptPickerView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgentForwardPromptPickerView.swift; sourceTree = "<group>"; };
 		BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentAdd.swift; sourceTree = "<group>"; };
 		BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentPool.swift; sourceTree = "<group>"; };
 		BD9BF7E3262A6B0300B02074 /* SOCKS.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SOCKS.swift; sourceTree = "<group>"; };
@@ -836,6 +837,7 @@
 		BDD6D14427594E6500E76F1F /* BKSSHHost.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKSSHHost.swift; sourceTree = "<group>"; };
 		BDD6D14627594E8700E76F1F /* SSHClientConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SSHClientConfig.swift; sourceTree = "<group>"; };
 		BDD6D148275951D900E76F1F /* BKGlobalSSHConfig.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BKGlobalSSHConfig.swift; sourceTree = "<group>"; };
+		BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSHAgentUserPrompt.swift; sourceTree = "<group>"; };
 		BDE7C45B29DCAEFA005E033E /* FileLocationPathTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileLocationPathTests.swift; sourceTree = "<group>"; };
 		C94437551D8311960096F84E /* BKResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BKResource.h; sourceTree = "<group>"; };
 		C94437561D8311960096F84E /* BKResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = BKResource.m; sourceTree = "<group>"; };
@@ -1055,8 +1057,6 @@
 		D2C8D30921B544B100AC39C3 /* say.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = say.m; sourceTree = "<group>"; };
 		D2CB353A23339D5C00088765 /* UIView+Touches.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Touches.swift"; sourceTree = "<group>"; };
 		D2CC13B629C05EE7008C71FA /* Intro.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Intro.swift; sourceTree = "<group>"; };
-		D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PragmataPro_Mono_B_liga_0828.ttf; sourceTree = "<group>"; };
-		D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = PragmataPro_Mono_R_liga_0828.ttf; sourceTree = "<group>"; };
 		D2CF27282428A791009885ED /* KBTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KBTracker.swift; sourceTree = "<group>"; };
 		D2D3B04728FD7A790086F633 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
 		D2D6D78420527651003CBEC4 /* TermDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TermDevice.h; sourceTree = "<group>"; };
@@ -1305,7 +1305,6 @@
 		0732F0481D062B9A00AB5438 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				D2CC13BC29C06657008C71FA /* PragmataPro */,
 				D21A3FC521943BE200269705 /* DarkAppIcon */,
 				D29FE548208DC860004679D0 /* commandDictionary.plist */,
 				D2C21F3220FCD6CD00F125E0 /* blinkCommandsDictionary.plist */,
@@ -1424,6 +1423,7 @@
 				07FAB8EF25C8E6C500E1CC2C /* SSHConfigProvider.swift */,
 				BD98AC83260BD8DC00B4E6A1 /* SSHAgentAdd.swift */,
 				BD98AC94260BE20000B4E6A1 /* SSHAgentPool.swift */,
+				BDE7125C2A141E3100164F70 /* SSHAgentUserPrompt.swift */,
 			);
 			path = ssh;
 			sourceTree = "<group>";
@@ -1712,6 +1712,7 @@
 		C989E53B1D6CC488003E0079 /* BKHosts */ = {
 			isa = PBXGroup;
 			children = (
+				BD90BE492A18466E00DA5686 /* AgentForwardPromptPickerView.swift */,
 				D2D878622695AEBA00F78018 /* HostView.swift */,
 				D2E66D132695B100007D42AA /* HostListView.swift */,
 				D259479B269C671F008B5305 /* MoshPredictionPickerView.swift */,
@@ -2074,15 +2075,6 @@
 				D2011CD626A6FF9F002E4E85 /* Alert.swift */,
 			);
 			path = General;
-			sourceTree = "<group>";
-		};
-		D2CC13BC29C06657008C71FA /* PragmataPro */ = {
-			isa = PBXGroup;
-			children = (
-				D2CC13B829C05F4F008C71FA /* PragmataPro_Mono_B_liga_0828.ttf */,
-				D2CC13B929C05F4F008C71FA /* PragmataPro_Mono_R_liga_0828.ttf */,
-			);
-			path = PragmataPro;
 			sourceTree = "<group>";
 		};
 		D2E4F92A20B2BB4500B30F7B /* Products */ = {
@@ -2761,7 +2753,6 @@
 				D21A3FDE21943BE200269705 /* dark-app-ipad-76pt.png in Resources */,
 				D2F30EAD205009CD008C5F35 /* base64js.min.js in Resources */,
 				D29FE54A208DC860004679D0 /* commandDictionary.plist in Resources */,
-				D2CC13BA29C061C6008C71FA /* PragmataPro_Mono_B_liga_0828.ttf in Resources */,
 				D21A3FD821943BE200269705 /* dark-notification-ipad-20pt.png in Resources */,
 				C94437601D831CD30096F84E /* Themes in Resources */,
 				D29FE54B208DC860004679D0 /* extraCommandsDictionary.plist in Resources */,
@@ -2775,7 +2766,6 @@
 				07E3AECD1D9191B4007BC086 /* about.html in Resources */,
 				0716B5741CFFAB9300268B5B /* LaunchScreen.storyboard in Resources */,
 				85A34307200A837A009324F1 /* webfontloader.js in Resources */,
-				D2CC13BB29C061C9008C71FA /* PragmataPro_Mono_R_liga_0828.ttf in Resources */,
 				D21A3FE121943BE200269705 /* dark-notification-iphone-20pt@2x.png in Resources */,
 				D2C21F3920FCD7B800F125E0 /* blinkCommandsDictionary.plist in Resources */,
 				D266A9DA27295ECE00C85EED /* blink-uio.min.js in Resources */,
@@ -3164,10 +3154,12 @@
 				D265FBC9231905AC0017EAC4 /* NSCoder+CodingKey.swift in Sources */,
 				D2D878632695AEBA00F78018 /* HostView.swift in Sources */,
 				D2AD8E8427A2C80C00DED28D /* SettingsView.swift in Sources */,
+				BD90BE4A2A18466E00DA5686 /* AgentForwardPromptPickerView.swift in Sources */,
 				D241CBE023040734003D64A5 /* KBKeyViewSymbol.swift in Sources */,
 				D21DEE4A260DD3FE00D8E640 /* NewSEKeyView.swift in Sources */,
 				D2B0BD1C2720312C00485854 /* GesturesView.swift in Sources */,
 				D2C244332390FB830082C69C /* KeyBinding.swift in Sources */,
+				BDE7125D2A141E3100164F70 /* SSHAgentUserPrompt.swift in Sources */,
 				D2C8D30A21B544B100AC39C3 /* say.m in Sources */,
 				D2A80979270713D200CD0FAF /* FeatureFlags.swift in Sources */,
 				D2C2441A238E44AB0082C69C /* KeySection.swift in Sources */,
