@@ -165,7 +165,7 @@ struct BasicMachinePlanView: View {
           }
           
           Section(header: Text("Price")) {
-            Label("First month free with Blink+, \(_purchases.formattedBuildPriceWithPeriod() ?? "") thereafter.", systemImage: "bag")
+            Label("\(_purchases.formattedBuildPriceWithPeriod() ?? "")", systemImage: "bag")
           }
           
           Section() {

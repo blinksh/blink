@@ -116,7 +116,7 @@ class BuildAccountModel: ObservableObject {
     }
     
     do {
-      try await BuildAPI.signup(email: self.email, region: self.buildRegion)
+      try await BuildAPI.signup(email: self.email.lowercased(), region: self.buildRegion)
       self.checkBuildToken(animated: true, showTour: true)
     } catch {
       self.alertErrorMessage = error.localizedDescription

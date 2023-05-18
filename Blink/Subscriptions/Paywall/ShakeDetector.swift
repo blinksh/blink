@@ -119,7 +119,7 @@ class ShakeDetector: ObservableObject {
     defer {
       self.progress = p
       if p >= 1 {
-        SubscriptionNag.shared.restart()
+//        SubscriptionNag.shared.restart()
       }
     }
     

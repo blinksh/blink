@@ -40,6 +40,7 @@ let BuildEntitlementID = "build"
 let ProductBlinkShellPlusID = "blink_shell_plus_1y_1999"
 let ProductBlinkShellClassicID = "blink_shell_classic_unlimited_0"
 let ProductBlinkBuildBasicID = "blink_build_basic_1m_799"
+let ProductBlinkPlusBuildBasicID = "blink_plus_build_1m_999"
 
 
 // Decoupled from RevCat Entitlement
@@ -136,10 +137,10 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   }
   
   private func _updateSubscriptionNag() {
-    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
-      SubscriptionNag.shared.terminate()
-      return
-    }
+//    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
+//      SubscriptionNag.shared.terminate()
+//      return
+//    }
     if self.unlimitedTimeAccess.active {
       SubscriptionNag.shared.terminate()
     } else {
@@ -150,6 +151,9 @@ public class EntitlementsManager: ObservableObject, EntitlementsSourceDelegate {
   public func currentPlanName() -> String {
     if activeSubscriptions.contains(ProductBlinkShellPlusID) {
       return "Blink+ Plan"
+    }
+    if activeSubscriptions.contains(ProductBlinkPlusBuildBasicID) {
+      return "Blink+Build Plan"
     }
     if nonSubscriptionTransactions.contains(ProductBlinkShellClassicID) {
       return "Blink Classic Plan"

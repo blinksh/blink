@@ -47,7 +47,6 @@ extension Notification.Name {
 
 class SubscriptionNag: NSObject {
   @objc static let shared = SubscriptionNag()
-  private var nagTimer = Timer()
 
   private override init() {}
 
@@ -58,92 +57,53 @@ class SubscriptionNag: NSObject {
       return
     }
     
-    // Set the timestamp if it was less than 24h ago.
-    let now = Date()
-    if !(_nagDate()...Calendar.current.date(byAdding: .day, value: 1, to: _nagDate())!)
-        .contains(now) {
-      UserDefaults.standard.set(now.timeIntervalSince1970, forKey: NagTimestamp)
-      UserDefaults.standard.set(0, forKey: NagNumDisplays)
-    } else if _nagNumDisplays() >= 3 {
-      return
-    }
     
-    self.nagTimer.invalidate()
-    self.nagTimer = Timer.scheduledTimer(
-      withTimeInterval: NagInterval,
-      repeats: true
-    ) { _ in
       if self.doShowPaywall() {
-        self.stop()
-        let numDisplays = self._nagNumDisplays() + 1;
-        UserDefaults.standard.set(numDisplays, forKey: NagNumDisplays)
         NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-        let value: String;
-        if numDisplays == 1 {
-          value = "first_display"
-        } else if numDisplays == 2 {
-          value = "second_display"
-        } else {
-          value = "third_display"
-        }
-        DispatchQueue.global().async {
-          guard let url = URL(string: XCConfig.infoPlistConversionOpportunityURL()) else {
-            return
-          }
-          let request = URLRequest(url: url.customerTierURL(
-            additionalParams: [URLQueryItem(name: "conversion_stage", value: value)]
-          ))
-          
-          URLSession.shared.dataTask(with: request) { _, _, error in
-            if let error {
-              debugPrint("data task error", error)
-            }
-          }.resume()
-        }
         return
       }
-      let nag = self._nagCount() + 1
-      print("nag ", Date.now, nag)
-      UserDefaults.standard.set(nag, forKey: NagTimer)
-    }
+  }
+  
+  func didShowNags() -> Bool {
+    UserDefaults.standard.object(forKey: NagTimestamp) != nil
   }
   
   func doShowPaywall() -> Bool {
-    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
-      return false
-    }
-    return _nagCount() > NagTimerMax
+    // TODO: Bring back
+//    if ProcessInfo().isMacCatalystApp || FeatureFlags.noSubscriptionNag {
+//      return false
+//    }
+    return !EntitlementsManager.shared.unlimitedTimeAccess.active
+//    return _nagCount() > NagTimerMax
   }
   
-  private func _nagCount() -> Int {
-    UserDefaults.standard.integer(forKey: NagTimer)
-  }
-
-  private func _nagNumDisplays() -> Int {
-    UserDefaults.standard.integer(forKey: NagNumDisplays)
-  }
-  
-  private func _nagDate() -> Date {
-    Date(timeIntervalSince1970: TimeInterval(UserDefaults.standard.integer(forKey: NagTimestamp)))
-  }
-  
-  func restart() {
-    if _nagNumDisplays() < 3 {
-      UserDefaults.standard.set(0, forKey: NagTimer)
-      NotificationCenter.default.post(name: .subscriptionNag, object: nil)
-      start()
-    } else {
-      terminate()
-    }
-  }
-
-  func stop() {
-    nagTimer.invalidate()
-  }
-  
+//  private func _nagCount() -> Int {
+//    UserDefaults.standard.integer(forKey: NagTimer)
+//  }
+//
+//  private func _nagNumDisplays() -> Int {
+//    UserDefaults.standard.integer(forKey: NagNumDisplays)
+//  }
+//
+//  private func _nagDate() -> Date {
+//    Date(timeIntervalSince1970: TimeInterval(UserDefaults.standard.integer(forKey: NagTimestamp)))
+//  }
+//
+//  func restart() {
+//    if _nagNumDisplays() < 3 {
+//      UserDefaults.standard.set(0, forKey: NagTimer)
+//      NotificationCenter.default.post(name: .subscriptionNag, object: nil)
+//      start()
+//    } else {
+//      terminate()
+//    }
+//  }
+//
+//  func stop() {
+//    nagTimer.invalidate()
+//  }
+//
   func terminate() {
-    UserDefaults.standard.set(0, forKey: NagTimer)
-    nagTimer.invalidate()
     NotificationCenter.default.post(name: .subscriptionNag, object: nil)
   }
 }

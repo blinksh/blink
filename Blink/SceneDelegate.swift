@@ -31,6 +31,7 @@
 
 
 import Foundation
+import SafariServices
 import SwiftUI
 
 import RevenueCat
@@ -137,15 +138,17 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       if let _ = paywallWindow {
           self.paywallWindow = nil
       }
+      return
     }
+    _showPaywallIfNeeded()
   }
   
   @objc private func _showPaywallIfNeeded() {
-    if FeatureFlags.checkReceipt {
-      return
-    }
+//    if FeatureFlags.checkReceipt {
+//      return
+//    }
     
-    guard SubscriptionNag.shared.doShowPaywall() else {
+    guard SubscriptionNag.shared.doShowPaywall()  else {
       if let window = self.paywallWindow {
         if window.rootViewController?.presentedViewController != nil {
           // We are showing migration view. It will close itself
@@ -173,7 +176,11 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       
     self.paywallWindow = UIWindow(windowScene: windowScene)
     self.paywallWindow?.windowLevel = .statusBar + 0.5
-    self.paywallWindow?.rootViewController = StatusBarLessViewController(rootView: PaywallView())
+    UIPageControl.appearance().currentPageIndicatorTintColor = UIColor.blinkTint
+    let view = IntroWindow(urlHandler: self.presetSafariViewController(url:))
+    let ctrl = StatusBarLessViewController(rootView: view)
+    ctrl.lockPortrait = UIDevice.current.userInterfaceIdiom == .phone
+    self.paywallWindow?.rootViewController = ctrl
     self.paywallWindow?.makeKeyAndVisible()
     self.paywallWindow?.layer.opacity = 0;
 
@@ -181,6 +188,10 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
       self.paywallWindow?.layer.opacity = 1;
     }
     
+  }
+  
+  func presetSafariViewController(url: URL) {
+    self.paywallWindow?.rootViewController?.present(SFSafariViewController(url: url), animated: true)
   }
   
   func sceneDidDisconnect(_ scene: UIScene) {
