@@ -38,7 +38,7 @@ fileprivate struct KeyCard {
   let name: String
   let keyType: String?
   let certType: String?
-  
+
   init(key: BKPubKey) {
     self.key = key
     self.name = key.id
@@ -50,7 +50,7 @@ fileprivate struct KeyCard {
 struct KeyRow: View {
   fileprivate let card: KeyCard
   let reloadCards: () -> ()
-  
+
   var body: some View {
     Row(
       content: {
@@ -74,7 +74,7 @@ struct KeyRow: View {
 
 struct KeySortView: View {
   @Binding fileprivate var sortType: KeysObservable.KeySortType
-  
+
   var body: some View {
     Menu {
       Section(header: Text("Order")) {
@@ -83,45 +83,24 @@ struct KeySortView: View {
         SortButton(label: "Storage", sortType: $sortType, asc: .storageAsc, desc: .storageDesc)
       }
     } label: { Image(systemName: "list.bullet").frame(width: 38, height: 38, alignment: .center) }
-    
+
   }
 }
 
 struct NewKeyMenuView: View {
-  
+
   fileprivate var state: KeysObservable
   fileprivate var title: String? = nil
-  
+
   var body: some View {
     Menu {
       Section(header: Text("Add key")) {
-        if #available(iOS 16.0, *) {
-          Button {
-            self.state.modal = .newPasskey
-          } label: {
-            Label("Passkey", systemImage: "person.badge.key")
-          }
-          
-          Button {
-            self.state.modal = .newSecurityKey
-          } label: {
-            Label("Security Key", systemImage: "key")
-          }
-        }
-        
-        Button {
-          self.state.modal = .newSEKey
-        } label: {
-          Label("Secure Enclave", systemImage: "memorychip")
-        }
-        
-        Divider()
         Button {
           self.state.modal = .newKey
         } label: {
           Label("Generate new", systemImage: "wand.and.rays.inverse")
         }
-        
+
         Button {
           self.state.importFromClipboard()
         } label: {
@@ -132,7 +111,27 @@ struct NewKeyMenuView: View {
         } label: {
           Label("Import from file", systemImage: "doc.text")
         }
-        
+
+        Divider()
+        if #available(iOS 16.0, *) {
+          Button {
+            self.state.modal = .newPasskey
+          } label: {
+            Label("Passkey", systemImage: "person.badge.key")
+          }
+
+          Button {
+            self.state.modal = .newSecurityKey
+          } label: {
+            Label("Security Key", systemImage: "key")
+          }
+        }
+
+        Button {
+          self.state.modal = .newSEKey
+        } label: {
+          Label("Secure Enclave", systemImage: "memorychip")
+        }
       }
     } label: {
       if let title = self.title {
@@ -146,7 +145,7 @@ struct NewKeyMenuView: View {
 
 struct KeyListView: View {
   @StateObject private var _state = KeysObservable()
-  
+
   var body: some View {
     Group {
       if _state.list.isEmpty {
@@ -231,7 +230,7 @@ struct KeyListView: View {
 fileprivate class KeysObservable: ObservableObject {
   enum KeySortType {
     case nameAsc, nameDesc, typeAsc, typeDesc, storageAsc, storageDesc
-    
+
     var sortFn: (_ a: KeyCard, _ b: KeyCard) -> Bool {
       switch self {
       case .nameAsc:     return { a, b in a.name < b.name }
@@ -243,13 +242,13 @@ fileprivate class KeysObservable: ObservableObject {
       }
     }
   }
-  
+
   @Published var sortType: KeySortType = .nameAsc {
     didSet {
       list = list.sorted(by: sortType.sortFn)
     }
   }
-  
+
   @Published var list: [KeyCard] = BKPubKey.all().map(KeyCard.init(key:)).sorted(by: KeySortType.nameAsc.sortFn)
   @Published var actionSheetIsPresented: Bool = false
   @Published var filePickerIsPresented: Bool = false
@@ -257,28 +256,28 @@ fileprivate class KeysObservable: ObservableObject {
   var addKeyObservable: ImportKeyObservable? = nil
   @Published var errorMessage = ""
   var proposedKeyName = ""
-  
+
   init() { }
-  
+
   func reloadCards() {
     self.list = BKPubKey.all().map(KeyCard.init(key:)).sorted(by: sortType.sortFn)
   }
-  
+
   func removeKey(card: BKPubKey) {
     BKPubKey.removeCard(card: card)
     list.removeAll { k in
       k.key.tag == card.tag
     }
   }
-  
+
   func deleteKeys(indexSet: IndexSet) {
     guard let index = indexSet.first else {
       return
     }
-    
+
     let card = list[index]
     self.list.remove(atOffsets: indexSet)
-    
+
     LocalAuth.shared.authenticate(callback: { success in
       if success {
         BKPubKey.removeCard(card: card.key)
@@ -287,7 +286,7 @@ fileprivate class KeysObservable: ObservableObject {
       }
     }, reason: "to delete key.")
   }
-  
+
   func importFromFile(result: Result<URL, Error>) {
     do {
       let url = try result.get()
@@ -299,14 +298,14 @@ fileprivate class KeysObservable: ObservableObject {
       defer {
         url.stopAccessingSecurityScopedResource()
       }
-      
+
       let blob = try Data(contentsOf: url, options: .alwaysMapped)
       _importKeyFromBlob(blob: blob, proposedKeyName: url.lastPathComponent)
     } catch {
       _showError(message: error.localizedDescription)
     }
   }
-  
+
   func importFromClipboard() {
     guard
       let string = UIPasteboard.general.string,
@@ -314,25 +313,25 @@ fileprivate class KeysObservable: ObservableObject {
     else {
       return _showError(message: "Clipboard is empty");
     }
-    
+
     guard
       let blob = SSHKey.sanitize(key: string).data(using: .utf8)
     else {
       return _showError(message: "Can't convert to data")
     }
-    
+
     _importKeyFromBlob(blob: blob, proposedKeyName: "")
   }
-  
+
   func onModalCancel() {
     self.modal = nil
   }
-  
+
   func onModalSuccess() {
     self.modal = nil
     reloadCards()
   }
-  
+
   private func _importKeyFromBlob(blob: Data, proposedKeyName: String) {
     do {
       let key = try SSHKey(fromFileBlob: blob, passphrase: "")
@@ -343,7 +342,7 @@ fileprivate class KeysObservable: ObservableObject {
       return _showError(message: error.localizedDescription)
     }
   }
-  
+
   private func _showError(message: String) {
     errorMessage = message
   }
@@ -356,7 +355,7 @@ fileprivate enum KeyModals: Identifiable {
   case newSEKey
   case newPasskey
   case newSecurityKey
-  
+
   var id: Int {
     switch self {
     case .passphrasePrompt: return 0
@@ -373,7 +372,7 @@ extension View {
   func navigatePush(whenTrue toggle: Binding<Bool>) -> some View {
     NavigationLink(destination: self, isActive: toggle) { EmptyView() }
   }
-  
+
   func navigatePush<H>(whenPresent toggle: Binding<H?>) -> some View {
     navigatePush(
       whenTrue: Binding(
