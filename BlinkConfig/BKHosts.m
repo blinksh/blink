@@ -57,8 +57,7 @@ static UICKeyChainStore *__get_keychain() {
   
   NSSet *strings = [NSSet setWithObjects:NSString.class, nil];
   NSSet *numbers = [NSSet setWithObjects:NSNumber.class, nil];
-  
-  
+
   _host = [coder decodeObjectOfClasses:strings forKey:@"host"];
   _hostName = [coder decodeObjectOfClasses:strings forKey:@"hostName"];
   _port = [coder decodeObjectOfClasses:numbers forKey:@"port"];
@@ -78,6 +77,8 @@ static UICKeyChainStore *__get_keychain() {
   _proxyJump = [coder decodeObjectOfClasses:strings forKey:@"proxyJump"];
   _sshConfigAttachment = [coder decodeObjectOfClasses:strings forKey:@"sshConfigAttachment"];
   _fpDomainsJSON = [coder decodeObjectOfClasses:strings forKey:@"fpDomainsJSON"];
+  _agentForwardPrompt = [coder decodeObjectOfClasses:numbers forKey:@"agentForwardPrompt"];
+  _agentForwardKeys = [coder decodeArrayOfObjectsOfClass:NSString.class forKey:@"agentForwardKeys"];
   return self;
 }
 
@@ -102,23 +103,27 @@ static UICKeyChainStore *__get_keychain() {
   [encoder encodeObject:_proxyJump forKey:@"proxyJump"];
   [encoder encodeObject:_sshConfigAttachment forKey:@"sshConfigAttachment"];
   [encoder encodeObject:_fpDomainsJSON forKey:@"fpDomainsJSON"];
+  [encoder encodeObject:_agentForwardPrompt forKey:@"agentForwardPrompt"];
+  [encoder encodeObject:_agentForwardKeys forKey:@"agentForwardKeys"];
 }
 
--  (id)initWithAlias:(NSString *)alias
-            hostName:(NSString *)hostName
-             sshPort:(NSString *)sshPort
-                user:(NSString *)user
-         passwordRef:(NSString *)passwordRef
-             hostKey:(NSString *)hostKey
-          moshServer:(NSString *)moshServer
+- (id)initWithAlias:(NSString *)alias
+           hostName:(NSString *)hostName
+            sshPort:(NSString *)sshPort
+               user:(NSString *)user
+        passwordRef:(NSString *)passwordRef
+            hostKey:(NSString *)hostKey
+         moshServer:(NSString *)moshServer
+      moshPortRange:(NSString *)moshPortRange
 moshPredictOverwrite:(NSString *)moshPredictOverwrite
-       moshPortRange:(NSString *)moshPortRange
-          startUpCmd:(NSString *)startUpCmd
-          prediction:(enum BKMoshPrediction)prediction
-            proxyCmd:(NSString *)proxyCmd
-           proxyJump:(NSString *)proxyJump
- sshConfigAttachment:(NSString *)sshConfigAttachment
-       fpDomainsJSON:(NSString *)fpDomainsJSON
+         startUpCmd:(NSString *)startUpCmd
+         prediction:(enum BKMoshPrediction)prediction
+           proxyCmd:(NSString *)proxyCmd
+          proxyJump:(NSString *)proxyJump
+sshConfigAttachment:(NSString *)sshConfigAttachment
+      fpDomainsJSON:(NSString *)fpDomainsJSON
+ agentForwardPrompt:(enum BKAgentForward)agentForwardPrompt
+   agentForwardKeys:(NSArray<NSString *> *)agentForwardKeys
 {
   self = [super init];
   if (self) {
@@ -149,6 +154,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
     _proxyJump = proxyJump;
     _sshConfigAttachment = sshConfigAttachment;
     _fpDomainsJSON = fpDomainsJSON;
+    _agentForwardPrompt = [NSNumber numberWithInt: agentForwardPrompt];
+    _agentForwardKeys = agentForwardKeys;
   }
   return self;
 }
@@ -219,6 +226,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                proxyJump:(NSString *)proxyJump
      sshConfigAttachment:(NSString *)sshConfigAttachment
            fpDomainsJSON:(NSString *)fpDomainsJSON
+      agentForwardPrompt:(enum BKAgentForward)agentForwardPrompt
+        agentForwardKeys:(NSArray *)agentForwardKeys
 {
   NSString *pwdRef = @"";
   if (password) {
@@ -236,14 +245,16 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                                 passwordRef:pwdRef
                                     hostKey:hostKey
                                  moshServer:moshServer
-                       moshPredictOverwrite:moshPredictOverwrite
                               moshPortRange:moshPortRange
+                       moshPredictOverwrite:moshPredictOverwrite
                                  startUpCmd:startUpCmd
                                  prediction:prediction
                                    proxyCmd:proxyCmd
                                   proxyJump:proxyJump
                         sshConfigAttachment:sshConfigAttachment
                               fpDomainsJSON:fpDomainsJSON
+                         agentForwardPrompt:agentForwardPrompt
+                           agentForwardKeys:agentForwardKeys
     ];
     [__hosts addObject:bkHost];
   } else {
@@ -274,6 +285,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
     bkHost.proxyJump = proxyJump;
     bkHost.sshConfigAttachment = sshConfigAttachment;
     bkHost.fpDomainsJSON = fpDomainsJSON;
+    bkHost.agentForwardPrompt = [NSNumber numberWithInt: agentForwardPrompt];
+    bkHost.agentForwardKeys = agentForwardKeys;
   }
   if (![BKHosts saveHosts]) {
     return nil;
@@ -413,6 +426,8 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
   [hostRecord setValue:host.proxyJump forKey:@"proxyJump"];
   [hostRecord setValue:host.sshConfigAttachment forKey:@"sshConfigAttachment"];
   [hostRecord setValue:host.fpDomainsJSON forKey:@"fpDomainsJSON"];
+  [hostRecord setValue:host.agentForwardPrompt forKey:@"agentForwardPrompt"];
+  [hostRecord setValue:host.agentForwardKeys forKey:@"agentForwardKeys"];
   return hostRecord;
 }
 
@@ -434,15 +449,18 @@ moshPredictOverwrite:(NSString *)moshPredictOverwrite
                                      passwordRef:[hostRecord valueForKey:@"passwordRef"]
                                          hostKey:[hostRecord valueForKey:@"key"]
                                       moshServer:[hostRecord valueForKey:@"moshServer"]
-                            moshPredictOverwrite:[hostRecord valueForKey:@"moshPredictOverwrite"]
                                    moshPortRange:moshPortRange
+                            moshPredictOverwrite:[hostRecord valueForKey:@"moshPredictOverwrite"]
                                       startUpCmd:[hostRecord valueForKey:@"moshStartup"]
                                       prediction:[[hostRecord valueForKey:@"prediction"] intValue]
                                         proxyCmd:[hostRecord valueForKey:@"proxyCmd"]
                                        proxyJump:[hostRecord valueForKey:@"proxyJump"]
-                             sshConfigAttachment: [hostRecord valueForKey:@"sshConfigAttachment"]
+                             sshConfigAttachment:[hostRecord valueForKey:@"sshConfigAttachment"]
                                    fpDomainsJSON:[hostRecord valueForKey:@"fpDomainsJSON"]
+                              agentForwardPrompt:[[hostRecord valueForKey:@"agentForwardPrompt"] intValue]
+                                agentForwardKeys:[hostRecord valueForKey:@"agentForwardKeys"]
   ];
+
   return host;
 }
 

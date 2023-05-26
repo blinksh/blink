@@ -64,6 +64,11 @@ struct BlinkSSHAgentAddCommand: ParsableCommand {
   )
   var hashAlgorithm: String = "sha256"
   
+  @Flag(name: [.customShort("c")],
+        help: "Confirm before using identity"
+  )
+  var askConfirmation: Bool = false
+
   @Argument(help: "Key name")
   var keyName: String?
   
@@ -147,7 +152,12 @@ public class BlinkSSHAgentAdd: NSObject {
       if let signer = signer as? BlinkConfig.InputPrompter {
         signer.setPromptOnView(session.device.view)
       }
-      SSHAgentPool.addKey(signer, named: name)
+      var constraints: [SSHAgentConstraint]? = nil
+      if command.askConfirmation {
+        constraints = [SSHAgentUserPrompt()]
+      }
+      
+      SSHAgentPool.addKey(signer, named: name, constraints: constraints)
       print("Key \(name) - added to agent.", to: &stdout)
       return 0
     } else {
