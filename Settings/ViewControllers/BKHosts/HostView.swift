@@ -495,8 +495,8 @@ struct HostView: View {
       _moshServer  = host.moshServer ?? ""
       _moshCommand = host.moshStartup ?? ""
       _domains = FileProviderDomain.listFrom(jsonString: host.fpDomainsJSON)
-      _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt.intValue)
-      _agentForwardKeys = host.agentForwardKeys
+      _agentForwardPrompt.rawValue = UInt32(host.agentForwardPrompt?.intValue ?? 0)
+      _agentForwardKeys = host.agentForwardKeys ?? []
       _enabled = !( _conflictedICloudHost != nil || _iCloudVersion)
     }
   }
