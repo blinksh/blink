@@ -69,7 +69,6 @@ enum BKAgentForward {
 @property (nonatomic, strong) BKHosts *iCloudConflictCopy;
 @property (nonatomic, strong) NSString *sshConfigAttachment;
 @property (nonatomic, strong) NSString *fpDomainsJSON;
-@property (nonatomic, strong) NSString *hostAgentKeys;
 @property (nonatomic, strong) NSNumber *agentForwardPrompt;
 @property (nonatomic, strong) NSArray<NSString *> *agentForwardKeys;
 
