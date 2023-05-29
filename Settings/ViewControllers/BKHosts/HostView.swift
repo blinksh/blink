@@ -475,7 +475,7 @@ struct HostView: View {
       _port = host.port == nil ? "" : host.port.stringValue
       _user = host.user ?? ""
       _password = host.password ?? ""
-      _sshKeyName = host.key.isEmpty ? [] : [host.key]
+      _sshKeyName = (host.key == nil || host.key.isEmpty) ? [] : [host.key]
       _proxyCmd = host.proxyCmd ?? ""
       _proxyJump = host.proxyJump ?? ""
       _sshConfigAttachment = host.sshConfigAttachment ?? ""

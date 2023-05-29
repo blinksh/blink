@@ -77,19 +77,19 @@ struct KeyPickerView: View {
   
   private func _selectKey(_ key: String) {
     if multipleSelection {
-//      if currentKey.isEmpty {
-//        currentKey = key
-//        return
-//      }
-//
-//      var keys = currentKey.components(separatedBy: ",")
-      if let idx = currentKey.firstIndex(of: key) {
+      if key.isEmpty {
+        currentKey = []
+      } else if let idx = currentKey.firstIndex(of: key) {
         currentKey.remove(at: idx)
       } else {
         currentKey.append(key)
       }
     } else {
-      currentKey.append(key)
+      if key.isEmpty {
+        currentKey = []
+      } else {
+        currentKey = [key]
+      }
       _nav.navController.popViewController(animated: true)
     }
   }
